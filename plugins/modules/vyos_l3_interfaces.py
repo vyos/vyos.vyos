@@ -21,17 +21,19 @@
 #   builder template.
 #
 #############################################
+
 """
 The module file for vyos_l3_interfaces
 """
 
-from __future__ import (absolute_import, division, print_function)
+from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'status': ['preview'],
-    'supported_by': 'network'
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
 }
 
 DOCUMENTATION = """
@@ -348,12 +350,15 @@ commands:
   sample: ['set interfaces ethernet eth1 192.0.2.14/2', 'set interfaces ethernet eth3 vif 101 address 198.51.100.130/25']
 """
 
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.argspec.l3_interfaces.l3_interfaces import L3_interfacesArgs
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.config.l3_interfaces.l3_interfaces import L3_interfaces
+from ansible.module_utils.basic import AnsibleModule
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.l3_interfaces.l3_interfaces import (
+    L3_interfacesArgs,
+)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.l3_interfaces.l3_interfaces import (
+    L3_interfaces,
+)
 
 
 def main():
@@ -362,12 +367,13 @@ def main():
 
     :returns: the result form module invocation
     """
-    module = AnsibleModule(argument_spec=L3_interfacesArgs.argument_spec,
-                           supports_check_mode=True)
+    module = AnsibleModule(
+        argument_spec=L3_interfacesArgs.argument_spec, supports_check_mode=True
+    )
 
     result = L3_interfaces(module).execute_module()
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

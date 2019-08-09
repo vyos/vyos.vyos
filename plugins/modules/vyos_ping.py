@@ -20,12 +20,13 @@
 #
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'status': ['preview'],
-    'supported_by': 'community'
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "community",
 }
 
 DOCUMENTATION = """
@@ -132,11 +133,13 @@ rtt:
 """
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import run_commands
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    run_commands,
+)
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import vyos_argument_spec
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    vyos_argument_spec,
+)
 
 import re
 
@@ -148,12 +151,10 @@ def main():
         count=dict(type="int", default=5),
         dest=dict(type="str", required=True),
         source=dict(type="str"),
-        ttl=dict(type='int'),
-        size=dict(type='int'),
-        interval=dict(type='int'),
-        state=dict(type="str",
-                   choices=["absent", "present"],
-                   default="present"),
+        ttl=dict(type="int"),
+        size=dict(type="int"),
+        interval=dict(type="int"),
+        state=dict(type="str", choices=["absent", "present"], default="present"),
     )
 
     argument_spec.update(vyos_argument_spec)
@@ -173,18 +174,16 @@ def main():
     if warnings:
         results["warnings"] = warnings
 
-    results["commands"] = [
-        build_ping(dest, count, size, interval, source, ttl)
-    ]
+    results["commands"] = [build_ping(dest, count, size, interval, source, ttl)]
 
     ping_results = run_commands(module, commands=results["commands"])
     ping_results_list = ping_results[0].split("\n")
 
     rtt_info, rate_info = None, None
     for line in ping_results_list:
-        if line.startswith('rtt'):
+        if line.startswith("rtt"):
             rtt_info = line
-        if line.startswith('%s packets transmitted' % count):
+        if line.startswith("%s packets transmitted" % count):
             rate_info = line
 
     if rtt_info:

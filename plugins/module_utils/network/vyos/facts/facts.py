@@ -8,28 +8,36 @@ calls the appropriate facts gathering function
 """
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.argspec.facts.facts import FactsArgs
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.facts.facts import (
+    FactsArgs,
+)
 
 from ansible.module_utils.network.common.facts.facts import FactsBase
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.facts.interfaces.interfaces import InterfacesFacts
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.interfaces.interfaces import (
+    InterfacesFacts,
+)
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.facts.l3_interfaces.l3_interfaces import L3_interfacesFacts
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.l3_interfaces.l3_interfaces import (
+    L3_interfacesFacts,
+)
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.facts.legacy.base import Default, Neighbors, Config
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
+    Default,
+    Neighbors,
+    Config,
+)
 
-from ansible.module_utils. \
-    network.vyos.vyos import run_commands, get_capabilities
+from ansible.module_utils.network.vyos.vyos import run_commands, get_capabilities
+
 
 FACT_LEGACY_SUBSETS = dict(default=Default, neighbors=Neighbors, config=Config)
-FACT_RESOURCE_SUBSETS = dict(interfaces=InterfacesFacts,
-                             l3_interfaces=L3_interfacesFacts)
+FACT_RESOURCE_SUBSETS = dict(
+    interfaces=InterfacesFacts, l3_interfaces=L3_interfacesFacts
+)
 
 
 class Facts(FactsBase):
@@ -42,10 +50,7 @@ class Facts(FactsBase):
     def __init__(self, module):
         super(Facts, self).__init__(module)
 
-    def get_facts(self,
-                  legacy_facts_type=None,
-                  resource_facts_type=None,
-                  data=None):
+    def get_facts(self, legacy_facts_type=None, resource_facts_type=None, data=None):
         """ Collect the facts for vyos
 
         :param legacy_facts_type: List of legacy facts types
@@ -54,15 +59,15 @@ class Facts(FactsBase):
         :rtype: dict
         :return: the facts gathered
         """
-        netres_choices = FactsArgs.argument_spec[
-            'gather_network_resources'].get('choices', [])
+        netres_choices = FactsArgs.argument_spec["gather_network_resources"].get(
+            "choices", []
+        )
         if self.VALID_RESOURCE_SUBSETS:
-            self.get_network_resources_facts(netres_choices,
-                                             FACT_RESOURCE_SUBSETS,
-                                             resource_facts_type, data)
+            self.get_network_resources_facts(
+                netres_choices, FACT_RESOURCE_SUBSETS, resource_facts_type, data
+            )
 
         if self.VALID_LEGACY_GATHER_SUBSETS:
-            self.get_network_legacy_facts(FACT_LEGACY_SUBSETS,
-                                          legacy_facts_type)
+            self.get_network_legacy_facts(FACT_LEGACY_SUBSETS, legacy_facts_type)
 
         return self.ansible_facts, self._warnings
