@@ -101,7 +101,10 @@ import re
 from copy import deepcopy
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.network.common.utils import is_masklen, validate_ip_address
+from ansible.module_utils.network.common.utils import (
+    is_masklen,
+    validate_ip_address,
+)
 from ansible.module_utils.network.common.utils import remove_default_spec
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     load_config,
@@ -154,30 +157,48 @@ def map_obj_to_commands(updates, module):
         obj_in_have = search_obj_in_list(name, have)
 
         if state == "absent" and obj_in_have:
-            if not ipv4 and not ipv6 and (obj_in_have["ipv4"] or obj_in_have["ipv6"]):
+            if (
+                not ipv4
+                and not ipv6
+                and (obj_in_have["ipv4"] or obj_in_have["ipv6"])
+            ):
                 if name == "lo":
                     commands.append("delete interfaces loopback lo address")
                 else:
-                    commands.append("delete interfaces ethernet " + name + " address")
+                    commands.append(
+                        "delete interfaces ethernet " + name + " address"
+                    )
             else:
                 if ipv4 and ipv4 in obj_in_have["ipv4"]:
                     if name == "lo":
-                        commands.append("delete interfaces loopback lo address " + ipv4)
+                        commands.append(
+                            "delete interfaces loopback lo address " + ipv4
+                        )
                     else:
                         commands.append(
-                            "delete interfaces ethernet " + name + " address " + ipv4
+                            "delete interfaces ethernet "
+                            + name
+                            + " address "
+                            + ipv4
                         )
                 if ipv6 and ipv6 in obj_in_have["ipv6"]:
                     if name == "lo":
-                        commands.append("delete interfaces loopback lo address " + ipv6)
+                        commands.append(
+                            "delete interfaces loopback lo address " + ipv6
+                        )
                     else:
                         commands.append(
-                            "delete interfaces ethernet " + name + " address " + ipv6
+                            "delete interfaces ethernet "
+                            + name
+                            + " address "
+                            + ipv6
                         )
         elif state == "present" and obj_in_have:
             if ipv4 and ipv4 not in obj_in_have["ipv4"]:
                 if name == "lo":
-                    commands.append("set interfaces loopback lo address " + ipv4)
+                    commands.append(
+                        "set interfaces loopback lo address " + ipv4
+                    )
                 else:
                     commands.append(
                         "set interfaces ethernet " + name + " address " + ipv4
@@ -185,7 +206,9 @@ def map_obj_to_commands(updates, module):
 
             if ipv6 and ipv6 not in obj_in_have["ipv6"]:
                 if name == "lo":
-                    commands.append("set interfaces loopback lo address " + ipv6)
+                    commands.append(
+                        "set interfaces loopback lo address " + ipv6
+                    )
                 else:
                     commands.append(
                         "set interfaces ethernet " + name + " address " + ipv6

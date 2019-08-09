@@ -160,7 +160,9 @@ def main():
 
     argument_spec.update(vyos_argument_spec)
 
-    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
+    module = AnsibleModule(
+        argument_spec=argument_spec, supports_check_mode=True
+    )
 
     warnings = [
         "default value for `gather_subset` "

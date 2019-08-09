@@ -16,7 +16,11 @@ __metaclass__ = type
 
 from copy import deepcopy
 from ansible.module_utils.network.common.cfg.base import ConfigBase
-from ansible.module_utils.network.common.utils import to_list, dict_diff, remove_empties
+from ansible.module_utils.network.common.utils import (
+    to_list,
+    dict_diff,
+    remove_empties,
+)
 from ansible.module_utils.six import iteritems
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
     Facts,
@@ -117,7 +121,9 @@ class Interfaces(ConfigBase):
         elif state == "deleted":
             if not want:
                 for intf in have:
-                    commands.extend(self._state_deleted({"name": intf["name"]}, intf))
+                    commands.extend(
+                        self._state_deleted({"name": intf["name"]}, intf)
+                    )
             else:
                 for item in want:
                     obj_in_have = search_obj_in_list(item["name"], have)
@@ -165,7 +171,9 @@ class Interfaces(ConfigBase):
         for intf in have:
             intf_in_want = search_obj_in_list(intf["name"], want)
             if not intf_in_want:
-                commands.extend(self._state_deleted({"name": intf["name"]}, intf))
+                commands.extend(
+                    self._state_deleted({"name": intf["name"]}, intf)
+                )
 
         for intf in want:
             intf_in_have = search_obj_in_list(intf["name"], have)
@@ -203,7 +211,10 @@ class Interfaces(ConfigBase):
                     want_vif["vlan_id"], have_vifs, key="vlan_id"
                 )
                 if not have_vif:
-                    have_vif = {"vlan_id": want_vif["vlan_id"], "enabled": True}
+                    have_vif = {
+                        "vlan_id": want_vif["vlan_id"],
+                        "enabled": True,
+                    }
 
                 vif_updates = dict_diff(have_vif, want_vif)
                 if vif_updates:
@@ -255,7 +266,10 @@ class Interfaces(ConfigBase):
                     have_vif["vlan_id"], want_vifs, key="vlan_id"
                 )
                 if not want_vif:
-                    want_vif = {"vlan_id": have_vif["vlan_id"], "enabled": True}
+                    want_vif = {
+                        "vlan_id": have_vif["vlan_id"],
+                        "enabled": True,
+                    }
 
                 for key in dict_delete(have_vif, want_vif).keys():
                     if key == "enabled":
@@ -280,7 +294,9 @@ class Interfaces(ConfigBase):
 
         return commands
 
-    def _compute_commands(self, interface, key, vif=None, value=None, remove=False):
+    def _compute_commands(
+        self, interface, key, vif=None, value=None, remove=False
+    ):
         intf_context = "interfaces {0} {1}".format(
             get_interface_type(interface), interface
         )

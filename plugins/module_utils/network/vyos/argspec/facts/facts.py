@@ -18,7 +18,13 @@ class FactsArgs(object):  # pylint: disable=R0903
     def __init__(self, **kwargs):
         pass
 
-    choices = ["all", "interfaces", "!interfaces", "l3_interfaces", "!l3_interfaces"]
+    choices = [
+        "all",
+        "interfaces",
+        "!interfaces",
+        "l3_interfaces",
+        "!l3_interfaces",
+    ]
 
     argument_spec = {
         "gather_subset": dict(default=["!config"], type="list"),

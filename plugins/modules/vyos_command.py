@@ -143,7 +143,10 @@ import time
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.network.common.parsing import Conditional
-from ansible.module_utils.network.common.utils import transform_commands, to_lines
+from ansible.module_utils.network.common.utils import (
+    transform_commands,
+    to_lines,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     run_commands,
 )
@@ -215,7 +218,9 @@ def main():
         msg = "One or more conditional statements have not been satisfied"
         module.fail_json(msg=msg, failed_conditions=failed_conditions)
 
-    result.update({"stdout": responses, "stdout_lines": list(to_lines(responses))})
+    result.update(
+        {"stdout": responses, "stdout_lines": list(to_lines(responses))}
+    )
 
     module.exit_json(**result)
 

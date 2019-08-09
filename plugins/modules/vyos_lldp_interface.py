@@ -133,13 +133,19 @@ def map_obj_to_commands(updates, module):
                 and obj_in_have["state"] == "disabled"
                 and state == "enabled"
             ):
-                commands.append("delete service lldp interface " + name + " disable")
+                commands.append(
+                    "delete service lldp interface " + name + " disable"
+                )
         elif state == "disabled":
             if not obj_in_have:
                 commands.append("set service lldp interface " + name)
-                commands.append("set service lldp interface " + name + " disable")
+                commands.append(
+                    "set service lldp interface " + name + " disable"
+                )
             elif obj_in_have and obj_in_have["state"] != "disabled":
-                commands.append("set service lldp interface " + name + " disable")
+                commands.append(
+                    "set service lldp interface " + name + " disable"
+                )
 
     return commands
 
@@ -179,7 +185,9 @@ def map_params_to_obj(module):
 
             obj.append(item.copy())
     else:
-        obj.append({"name": module.params["name"], "state": module.params["state"]})
+        obj.append(
+            {"name": module.params["name"], "state": module.params["state"]}
+        )
 
     return obj
 
@@ -190,7 +198,8 @@ def main():
     element_spec = dict(
         name=dict(),
         state=dict(
-            default="present", choices=["present", "absent", "enabled", "disabled"]
+            default="present",
+            choices=["present", "absent", "enabled", "disabled"],
         ),
     )
 
