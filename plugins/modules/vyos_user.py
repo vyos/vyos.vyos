@@ -19,9 +19,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
 ---
@@ -137,60 +139,67 @@ from functools import partial
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.network.common.utils import remove_default_spec
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import get_config, load_config
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    get_config,
+    load_config,
+)
 
 from ansible.module_utils.six import iteritems
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import vyos_argument_spec
-
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    vyos_argument_spec,
+)
 
 
 def validate_level(value, module):
-    if value not in ('admin', 'operator'):
-        module.fail_json(msg='level must be either admin or operator, got %s' % value)
+    if value not in ("admin", "operator"):
+        module.fail_json(msg="level must be either admin or operator, got %s" % value)
 
 
 def spec_to_commands(updates, module):
     commands = list()
-    state = module.params['state']
-    update_password = module.params['update_password']
+    state = module.params["state"]
+    update_password = module.params["update_password"]
 
     def needs_update(want, have, x):
         return want.get(x) and (want.get(x) != have.get(x))
 
     def add(command, want, x):
-        command.append('set system login user %s %s' % (want['name'], x))
+        command.append("set system login user %s %s" % (want["name"], x))
 
     for update in updates:
         want, have = update
 
-        if want['state'] == 'absent':
-            commands.append('delete system login user %s' % want['name'])
+        if want["state"] == "absent":
+            commands.append("delete system login user %s" % want["name"])
             continue
 
-        if needs_update(want, have, 'level'):
-            add(commands, want, "level %s" % want['level'])
+        if needs_update(want, have, "level"):
+            add(commands, want, "level %s" % want["level"])
 
-        if needs_update(want, have, 'full_name'):
-            add(commands, want, "full-name %s" % want['full_name'])
+        if needs_update(want, have, "full_name"):
+            add(commands, want, "full-name %s" % want["full_name"])
 
-        if needs_update(want, have, 'configured_password'):
-            if update_password == 'always' or not have:
-                add(commands, want, 'authentication plaintext-password %s' % want['configured_password'])
+        if needs_update(want, have, "configured_password"):
+            if update_password == "always" or not have:
+                add(
+                    commands,
+                    want,
+                    "authentication plaintext-password %s"
+                    % want["configured_password"],
+                )
 
     return commands
 
 
 def parse_level(data):
-    match = re.search(r'level (\S+)', data, re.M)
+    match = re.search(r"level (\S+)", data, re.M)
     if match:
         level = match.group(1)[1:-1]
         return level
 
 
 def parse_full_name(data):
-    match = re.search(r'full-name (\S+)', data, re.M)
+    match = re.search(r"full-name (\S+)", data, re.M)
     if match:
         full_name = match.group(1)[1:-1]
         return full_name
@@ -199,22 +208,22 @@ def parse_full_name(data):
 def config_to_dict(module):
     data = get_config(module)
 
-    match = re.findall(r'^set system login user (\S+)', data, re.M)
+    match = re.findall(r"^set system login user (\S+)", data, re.M)
     if not match:
         return list()
 
     instances = list()
 
     for user in set(match):
-        regex = r' %s .+$' % user
+        regex = r" %s .+$" % user
         cfg = re.findall(regex, data, re.M)
-        cfg = '\n'.join(cfg)
+        cfg = "\n".join(cfg)
         obj = {
-            'name': user,
-            'state': 'present',
-            'configured_password': None,
-            'level': parse_level(cfg),
-            'full_name': parse_full_name(cfg)
+            "name": user,
+            "state": "present",
+            "configured_password": None,
+            "level": parse_level(cfg),
+            "full_name": parse_full_name(cfg),
         }
         instances.append(obj)
 
@@ -227,7 +236,7 @@ def get_param_value(key, item, module):
         value = module.params[key]
 
     # validate the param value (if validator func exists)
-    validator = globals().get('validate_%s' % key)
+    validator = globals().get("validate_%s" % key)
     if all((value, validator)):
         validator(value, module)
 
@@ -235,17 +244,17 @@ def get_param_value(key, item, module):
 
 
 def map_params_to_obj(module):
-    aggregate = module.params['aggregate']
+    aggregate = module.params["aggregate"]
     if not aggregate:
-        if not module.params['name'] and module.params['purge']:
+        if not module.params["name"] and module.params["purge"]:
             return list()
         else:
-            users = [{'name': module.params['name']}]
+            users = [{"name": module.params["name"]}]
     else:
         users = list()
         for item in aggregate:
             if not isinstance(item, dict):
-                users.append({'name': item})
+                users.append({"name": item})
             else:
                 users.append(item)
 
@@ -253,10 +262,10 @@ def map_params_to_obj(module):
 
     for item in users:
         get_value = partial(get_param_value, item=item, module=module)
-        item['configured_password'] = get_value('configured_password')
-        item['full_name'] = get_value('full_name')
-        item['level'] = get_value('level')
-        item['state'] = get_value('state')
+        item["configured_password"] = get_value("configured_password")
+        item["full_name"] = get_value("full_name")
+        item["level"] = get_value("level")
+        item["state"] = get_value("state")
         objects.append(item)
 
     return objects
@@ -265,7 +274,7 @@ def map_params_to_obj(module):
 def update_objects(want, have):
     updates = list()
     for entry in want:
-        item = next((i for i in have if i['name'] == entry['name']), None)
+        item = next((i for i in have if i["name"] == entry["name"]), None)
         if item is None:
             updates.append((entry, {}))
         elif item:
@@ -280,65 +289,69 @@ def main():
     """
     element_spec = dict(
         name=dict(),
-
         full_name=dict(),
-        level=dict(aliases=['role']),
-
+        level=dict(aliases=["role"]),
         configured_password=dict(no_log=True),
-        update_password=dict(default='always', choices=['on_create', 'always']),
-
-        state=dict(default='present', choices=['present', 'absent'])
+        update_password=dict(default="always", choices=["on_create", "always"]),
+        state=dict(default="present", choices=["present", "absent"]),
     )
 
     aggregate_spec = deepcopy(element_spec)
-    aggregate_spec['name'] = dict(required=True)
+    aggregate_spec["name"] = dict(required=True)
 
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
 
     argument_spec = dict(
-        aggregate=dict(type='list', elements='dict', options=aggregate_spec, aliases=['users', 'collection']),
-        purge=dict(type='bool', default=False)
+        aggregate=dict(
+            type="list",
+            elements="dict",
+            options=aggregate_spec,
+            aliases=["users", "collection"],
+        ),
+        purge=dict(type="bool", default=False),
     )
 
     argument_spec.update(element_spec)
     argument_spec.update(vyos_argument_spec)
 
-    mutually_exclusive = [('name', 'aggregate')]
-    module = AnsibleModule(argument_spec=argument_spec,
-                           mutually_exclusive=mutually_exclusive,
-                           supports_check_mode=True)
+    mutually_exclusive = [("name", "aggregate")]
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        mutually_exclusive=mutually_exclusive,
+        supports_check_mode=True,
+    )
 
     warnings = list()
-    if module.params['password'] and not module.params['configured_password']:
+    if module.params["password"] and not module.params["configured_password"]:
         warnings.append(
-            'The "password" argument is used to authenticate the current connection. ' +
-            'To set a user password use "configured_password" instead.'
+            'The "password" argument is used to authenticate the current connection. '
+            + 'To set a user password use "configured_password" instead.'
         )
 
-    result = {'changed': False}
+    result = {"changed": False}
     if warnings:
-        result['warnings'] = warnings
+        result["warnings"] = warnings
 
     want = map_params_to_obj(module)
     have = config_to_dict(module)
     commands = spec_to_commands(update_objects(want, have), module)
 
-    if module.params['purge']:
-        want_users = [x['name'] for x in want]
-        have_users = [x['name'] for x in have]
+    if module.params["purge"]:
+        want_users = [x["name"] for x in want]
+        have_users = [x["name"] for x in have]
         for item in set(have_users).difference(want_users):
-            commands.append('delete system login user %s' % item)
+            commands.append("delete system login user %s" % item)
 
-    result['commands'] = commands
+    result["commands"] = commands
 
     if commands:
         commit = not module.check_mode
         load_config(module, commands, commit=commit)
-        result['changed'] = True
+        result["changed"] = True
 
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

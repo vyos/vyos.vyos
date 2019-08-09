@@ -7,10 +7,11 @@
 
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 
-def search_obj_in_list(name, lst, key='name'):
+def search_obj_in_list(name, lst, key="name"):
     for item in lst:
         if item[key] == name:
             return item
@@ -20,14 +21,14 @@ def search_obj_in_list(name, lst, key='name'):
 def get_interface_type(interface):
     """Gets the type of interface
     """
-    if interface.startswith('eth'):
-        return 'ethernet'
-    elif interface.startswith('bond'):
-        return 'bonding'
-    elif interface.startswith('vti'):
-        return 'vti'
-    elif interface.startswith('lo'):
-        return 'loopback'
+    if interface.startswith("eth"):
+        return "ethernet"
+    elif interface.startswith("bond"):
+        return "bonding"
+    elif interface.startswith("vti"):
+        return "vti"
+    elif interface.startswith("lo"):
+        return "loopback"
 
 
 def dict_delete(base, comparable):

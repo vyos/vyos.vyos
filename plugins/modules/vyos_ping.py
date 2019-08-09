@@ -20,11 +20,14 @@
 #
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'community'}
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "community",
+}
 
 DOCUMENTATION = """
 ---
@@ -130,11 +133,13 @@ rtt:
 """
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import run_commands
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    run_commands,
+)
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import vyos_argument_spec
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    vyos_argument_spec,
+)
 
 import re
 
@@ -146,9 +151,9 @@ def main():
         count=dict(type="int", default=5),
         dest=dict(type="str", required=True),
         source=dict(type="str"),
-        ttl=dict(type='int'),
-        size=dict(type='int'),
-        interval=dict(type='int'),
+        ttl=dict(type="int"),
+        size=dict(type="int"),
+        interval=dict(type="int"),
         state=dict(type="str", choices=["absent", "present"], default="present"),
     )
 
@@ -176,9 +181,9 @@ def main():
 
     rtt_info, rate_info = None, None
     for line in ping_results_list:
-        if line.startswith('rtt'):
+        if line.startswith("rtt"):
             rtt_info = line
-        if line.startswith('%s packets transmitted' % count):
+        if line.startswith("%s packets transmitted" % count):
             rate_info = line
 
     if rtt_info:
@@ -218,9 +223,11 @@ def build_ping(dest, count, size=None, interval=None, source=None, ttl=None):
 
 def parse_rate(rate_info):
     rate_re = re.compile(
-        r"(?P<tx>\d+) (?:\w+) (?:\w+), (?P<rx>\d+) (?:\w+), (?P<pkt_loss>\d+)% (?:\w+) (?:\w+), (?:\w+) (?P<time>\d+)")
+        r"(?P<tx>\d+) (?:\w+) (?:\w+), (?P<rx>\d+) (?:\w+), (?P<pkt_loss>\d+)% (?:\w+) (?:\w+), (?:\w+) (?P<time>\d+)"
+    )
     rate_err_re = re.compile(
-        r"(?P<tx>\d+) (?:\w+) (?:\w+), (?P<rx>\d+) (?:\w+), (?:[+-])(?P<err>\d+) (?:\w+), (?P<pkt_loss>\d+)% (?:\w+) (?:\w+), (?:\w+) (?P<time>\d+)")
+        r"(?P<tx>\d+) (?:\w+) (?:\w+), (?P<rx>\d+) (?:\w+), (?:[+-])(?P<err>\d+) (?:\w+), (?P<pkt_loss>\d+)% (?:\w+) (?:\w+), (?:\w+) (?P<time>\d+)"
+    )
 
     if rate_re.match(rate_info):
         rate = rate_re.match(rate_info)
@@ -232,7 +239,8 @@ def parse_rate(rate_info):
 
 def parse_rtt(rtt_info):
     rtt_re = re.compile(
-        r"rtt (?:.*)=(?:\s*)(?P<min>\d*).(?:\d*)/(?P<avg>\d*).(?:\d*)/(?P<max>\d+).(?:\d*)/(?P<mdev>\d*)")
+        r"rtt (?:.*)=(?:\s*)(?P<min>\d*).(?:\d*)/(?P<avg>\d*).(?:\d*)/(?P<max>\d+).(?:\d*)/(?P<mdev>\d*)"
+    )
     rtt = rtt_re.match(rtt_info)
 
     return rtt.groupdict()

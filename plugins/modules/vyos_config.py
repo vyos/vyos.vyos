@@ -16,9 +16,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 
 DOCUMENTATION = """
@@ -187,28 +189,32 @@ import re
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import ConnectionError
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import load_config, get_config, run_commands
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    load_config,
+    get_config,
+    run_commands,
+)
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import vyos_argument_spec, get_connection
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    vyos_argument_spec,
+    get_connection,
+)
 
 
-
-DEFAULT_COMMENT = 'configured by vyos_config'
+DEFAULT_COMMENT = "configured by vyos_config"
 
 CONFIG_FILTERS = [
-    re.compile(r'set system login user \S+ authentication encrypted-password')
+    re.compile(r"set system login user \S+ authentication encrypted-password")
 ]
 
 
 def get_candidate(module):
-    contents = module.params['src'] or module.params['lines']
+    contents = module.params["src"] or module.params["lines"]
 
-    if module.params['src']:
+    if module.params["src"]:
         contents = format_commands(contents.splitlines())
 
-    contents = '\n'.join(contents)
+    contents = "\n".join(contents)
     return contents
 
 
@@ -217,25 +223,25 @@ def format_commands(commands):
 
 
 def diff_config(commands, config):
-    config = [str(c).replace("'", '') for c in config.splitlines()]
+    config = [str(c).replace("'", "") for c in config.splitlines()]
 
     updates = list()
     visited = set()
 
     for line in commands:
-        item = str(line).replace("'", '')
+        item = str(line).replace("'", "")
 
-        if not item.startswith('set') and not item.startswith('delete'):
-            raise ValueError('line must start with either `set` or `delete`')
+        if not item.startswith("set") and not item.startswith("delete"):
+            raise ValueError("line must start with either `set` or `delete`")
 
-        elif item.startswith('set') and item not in config:
+        elif item.startswith("set") and item not in config:
             updates.append(line)
 
-        elif item.startswith('delete'):
+        elif item.startswith("delete"):
             if not config:
                 updates.append(line)
             else:
-                item = re.sub(r'delete', 'set', item)
+                item = re.sub(r"delete", "set", item)
                 for entry in config:
                     if entry.startswith(item) and line not in visited:
                         updates.append(line)
@@ -245,12 +251,12 @@ def diff_config(commands, config):
 
 
 def sanitize_config(config, result):
-    result['filtered'] = list()
+    result["filtered"] = list()
     index_to_filter = list()
     for regex in CONFIG_FILTERS:
         for index, line in enumerate(list(config)):
             if regex.search(line):
-                result['filtered'].append(line)
+                result["filtered"].append(line)
                 index_to_filter.append(index)
     # Delete all filtered configs
     for filter_index in sorted(index_to_filter, reverse=True):
@@ -260,7 +266,7 @@ def sanitize_config(config, result):
 def run(module, result):
     # get the current active config from the node or passed in via
     # the config param
-    config = module.params['config'] or get_config(module)
+    config = module.params["config"] or get_config(module)
 
     # create the candidate config object from the arguments
     candidate = get_candidate(module)
@@ -268,81 +274,78 @@ def run(module, result):
     # create loadable config that includes only the configuration updates
     connection = get_connection(module)
     try:
-        response = connection.get_diff(candidate=candidate, running=config, diff_match=module.params['match'])
+        response = connection.get_diff(
+            candidate=candidate, running=config, diff_match=module.params["match"]
+        )
     except ConnectionError as exc:
-        module.fail_json(msg=to_text(exc, errors='surrogate_then_replace'))
+        module.fail_json(msg=to_text(exc, errors="surrogate_then_replace"))
 
-    commands = response.get('config_diff')
+    commands = response.get("config_diff")
     sanitize_config(commands, result)
 
-    result['commands'] = commands
+    result["commands"] = commands
 
     commit = not module.check_mode
-    comment = module.params['comment']
+    comment = module.params["comment"]
 
     diff = None
     if commands:
         diff = load_config(module, commands, commit=commit, comment=comment)
 
-        if result.get('filtered'):
-            result['warnings'].append('Some configuration commands were '
-                                      'removed, please see the filtered key')
+        if result.get("filtered"):
+            result["warnings"].append(
+                "Some configuration commands were "
+                "removed, please see the filtered key"
+            )
 
-        result['changed'] = True
+        result["changed"] = True
 
     if module._diff:
-        result['diff'] = {'prepared': diff}
+        result["diff"] = {"prepared": diff}
 
 
 def main():
-    backup_spec = dict(
-        filename=dict(),
-        dir_path=dict(type='path')
-    )
+    backup_spec = dict(filename=dict(), dir_path=dict(type="path"))
     argument_spec = dict(
-        src=dict(type='path'),
-        lines=dict(type='list'),
-
-        match=dict(default='line', choices=['line', 'none']),
-
+        src=dict(type="path"),
+        lines=dict(type="list"),
+        match=dict(default="line", choices=["line", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
-
         config=dict(),
-
-        backup=dict(type='bool', default=False),
-        backup_options=dict(type='dict', options=backup_spec),
-        save=dict(type='bool', default=False),
+        backup=dict(type="bool", default=False),
+        backup_options=dict(type="dict", options=backup_spec),
+        save=dict(type="bool", default=False),
     )
 
     argument_spec.update(vyos_argument_spec)
 
-    mutually_exclusive = [('lines', 'src')]
+    mutually_exclusive = [("lines", "src")]
 
     module = AnsibleModule(
         argument_spec=argument_spec,
         mutually_exclusive=mutually_exclusive,
-        supports_check_mode=True
+        supports_check_mode=True,
     )
 
     warnings = list()
 
     result = dict(changed=False, warnings=warnings)
 
-    if module.params['backup']:
-        result['__backup__'] = get_config(module=module)
+    if module.params["backup"]:
+        result["__backup__"] = get_config(module=module)
 
-    if any((module.params['src'], module.params['lines'])):
+    if any((module.params["src"], module.params["lines"])):
         run(module, result)
 
-    if module.params['save']:
-        diff = run_commands(module, commands=['configure', 'compare saved'])[1]
-        if diff != '[edit]':
-            run_commands(module, commands=['save'])
-            result['changed'] = True
-        run_commands(module, commands=['exit'])
+    if module.params["save"]:
+        diff = run_commands(module, commands=["configure", "compare saved"])[1]
+        if diff != "[edit]":
+            run_commands(module, commands=["save"])
+            result["changed"] = True
+        run_commands(module, commands=["exit"])
 
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

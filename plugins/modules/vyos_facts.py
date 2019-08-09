@@ -8,9 +8,11 @@ The module file for vyos_facts
 """
 
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': [u'preview'],
-                    'supported_by': 'network'}
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": [u"preview"],
+    "supported_by": "network",
+}
 
 
 DOCUMENTATION = """
@@ -135,15 +137,17 @@ ansible_net_gather_network_resources:
 """
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.argspec.facts.facts import FactsArgs
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.facts.facts import (
+    FactsArgs,
+)
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.facts.facts import Facts
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
+    Facts,
+)
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import vyos_argument_spec
-
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    vyos_argument_spec,
+)
 
 
 def main():
@@ -156,11 +160,12 @@ def main():
 
     argument_spec.update(vyos_argument_spec)
 
-    module = AnsibleModule(argument_spec=argument_spec,
-                           supports_check_mode=True)
+    module = AnsibleModule(argument_spec=argument_spec, supports_check_mode=True)
 
-    warnings = ['default value for `gather_subset` '
-                'will be changed to `min` from `!config` v2.11 onwards']
+    warnings = [
+        "default value for `gather_subset` "
+        "will be changed to `min` from `!config` v2.11 onwards"
+    ]
 
     result = Facts(module).get_facts()
 
@@ -170,5 +175,5 @@ def main():
     module.exit_json(ansible_facts=ansible_facts, warnings=warnings)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

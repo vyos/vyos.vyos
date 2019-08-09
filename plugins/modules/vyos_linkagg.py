@@ -19,9 +19,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 
 DOCUMENTATION = """
@@ -100,17 +102,19 @@ from copy import deepcopy
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.network.common.utils import remove_default_spec
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import load_config, run_commands
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    load_config,
+    run_commands,
+)
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import vyos_argument_spec
-
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    vyos_argument_spec,
+)
 
 
 def search_obj_in_list(name, lst):
     for o in lst:
-        if o['name'] == name:
+        if o["name"] == name:
             return o
 
     return None
@@ -121,51 +125,55 @@ def map_obj_to_commands(updates, module):
     want, have = updates
 
     for w in want:
-        name = w['name']
-        members = w.get('members') or []
-        mode = w['mode']
+        name = w["name"]
+        members = w.get("members") or []
+        mode = w["mode"]
 
-        if mode == 'on':
-            mode = '802.3ad'
+        if mode == "on":
+            mode = "802.3ad"
 
-        state = w['state']
+        state = w["state"]
 
         obj_in_have = search_obj_in_list(name, have)
 
-        if state == 'absent':
+        if state == "absent":
             if obj_in_have:
-                for m in obj_in_have['members']:
-                    commands.append('delete interfaces ethernet ' + m + ' bond-group')
+                for m in obj_in_have["members"]:
+                    commands.append("delete interfaces ethernet " + m + " bond-group")
 
-                commands.append('delete interfaces bonding ' + name)
+                commands.append("delete interfaces bonding " + name)
         else:
             if not obj_in_have:
-                commands.append('set interfaces bonding ' + name + ' mode ' + mode)
+                commands.append("set interfaces bonding " + name + " mode " + mode)
 
                 for m in members:
-                    commands.append('set interfaces ethernet ' + m + ' bond-group ' + name)
+                    commands.append(
+                        "set interfaces ethernet " + m + " bond-group " + name
+                    )
 
-                if state == 'down':
-                    commands.append('set interfaces bonding ' + name + ' disable')
+                if state == "down":
+                    commands.append("set interfaces bonding " + name + " disable")
             else:
-                if mode != obj_in_have['mode']:
-                    commands.append('set interfaces bonding ' + name + ' mode ' + mode)
+                if mode != obj_in_have["mode"]:
+                    commands.append("set interfaces bonding " + name + " mode " + mode)
 
-                missing_members = list(set(members) - set(obj_in_have['members']))
+                missing_members = list(set(members) - set(obj_in_have["members"]))
                 for m in missing_members:
-                    commands.append('set interfaces ethernet ' + m + ' bond-group ' + name)
+                    commands.append(
+                        "set interfaces ethernet " + m + " bond-group " + name
+                    )
 
-                if state == 'down' and obj_in_have['state'] == 'up':
-                    commands.append('set interfaces bonding ' + name + ' disable')
-                elif state == 'up' and obj_in_have['state'] == 'down':
-                    commands.append('delete interfaces bonding ' + name + ' disable')
+                if state == "down" and obj_in_have["state"] == "up":
+                    commands.append("set interfaces bonding " + name + " disable")
+                elif state == "up" and obj_in_have["state"] == "down":
+                    commands.append("delete interfaces bonding " + name + " disable")
 
     return commands
 
 
 def map_config_to_obj(module):
     obj = []
-    output = run_commands(module, ['show interfaces bonding slaves'])
+    output = run_commands(module, ["show interfaces bonding slaves"])
     lines = output[0].splitlines()
 
     if len(lines) > 1:
@@ -181,17 +189,14 @@ def map_config_to_obj(module):
             else:
                 members = []
 
-            obj.append({'name': name,
-                        'mode': mode,
-                        'members': members,
-                        'state': state})
+            obj.append({"name": name, "mode": mode, "members": members, "state": state})
 
     return obj
 
 
 def map_params_to_obj(module):
     obj = []
-    aggregate = module.params.get('aggregate')
+    aggregate = module.params.get("aggregate")
     if aggregate:
         for item in aggregate:
             for key in item:
@@ -200,12 +205,14 @@ def map_params_to_obj(module):
 
             obj.append(item.copy())
     else:
-        obj.append({
-            'name': module.params['name'],
-            'mode': module.params['mode'],
-            'members': module.params['members'],
-            'state': module.params['state']
-        })
+        obj.append(
+            {
+                "name": module.params["name"],
+                "mode": module.params["mode"],
+                "members": module.params["members"],
+                "state": module.params["state"],
+            }
+        )
 
     return obj
 
@@ -215,55 +222,65 @@ def main():
     """
     element_spec = dict(
         name=dict(),
-        mode=dict(choices=['802.3ad', 'active-backup', 'broadcast',
-                           'round-robin', 'transmit-load-balance',
-                           'adaptive-load-balance', 'xor-hash', 'on'],
-                  default='802.3ad'),
-        members=dict(type='list'),
-        state=dict(default='present',
-                   choices=['present', 'absent', 'up', 'down'])
+        mode=dict(
+            choices=[
+                "802.3ad",
+                "active-backup",
+                "broadcast",
+                "round-robin",
+                "transmit-load-balance",
+                "adaptive-load-balance",
+                "xor-hash",
+                "on",
+            ],
+            default="802.3ad",
+        ),
+        members=dict(type="list"),
+        state=dict(default="present", choices=["present", "absent", "up", "down"]),
     )
 
     aggregate_spec = deepcopy(element_spec)
-    aggregate_spec['name'] = dict(required=True)
+    aggregate_spec["name"] = dict(required=True)
 
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
 
     argument_spec = dict(
-        aggregate=dict(type='list', elements='dict', options=aggregate_spec),
+        aggregate=dict(type="list", elements="dict", options=aggregate_spec)
     )
 
     argument_spec.update(element_spec)
     argument_spec.update(vyos_argument_spec)
 
-    required_one_of = [['name', 'aggregate']]
-    mutually_exclusive = [['name', 'aggregate']]
-    module = AnsibleModule(argument_spec=argument_spec,
-                           required_one_of=required_one_of,
-                           mutually_exclusive=mutually_exclusive,
-                           supports_check_mode=True)
+    required_one_of = [["name", "aggregate"]]
+    mutually_exclusive = [["name", "aggregate"]]
+    module = AnsibleModule(
+        argument_spec=argument_spec,
+        required_one_of=required_one_of,
+        mutually_exclusive=mutually_exclusive,
+        supports_check_mode=True,
+    )
 
     warnings = list()
 
-    result = {'changed': False}
+    result = {"changed": False}
 
     if warnings:
-        result['warnings'] = warnings
+        result["warnings"] = warnings
 
     want = map_params_to_obj(module)
     have = map_config_to_obj(module)
 
     commands = map_obj_to_commands((want, have), module)
-    result['commands'] = commands
+    result["commands"] = commands
 
     if commands:
         commit = not module.check_mode
         load_config(module, commands, commit=commit)
-        result['changed'] = True
+        result["changed"] = True
 
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

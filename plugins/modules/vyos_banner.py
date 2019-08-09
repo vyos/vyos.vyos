@@ -19,9 +19,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
 ---
@@ -86,28 +88,33 @@ commands:
 import re
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import get_config, load_config
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    get_config,
+    load_config,
+)
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network. \
-  vyos.vyos import vyos_argument_spec
-
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    vyos_argument_spec,
+)
 
 
 def spec_to_commands(updates, module):
     commands = list()
     want, have = updates
-    state = module.params['state']
+    state = module.params["state"]
 
-    if state == 'absent':
-        if have.get('state') != 'absent' or (have.get('state') != 'absent' and
-                                             'text' in have.keys() and have['text']):
-            commands.append('delete system login banner %s' % module.params['banner'])
+    if state == "absent":
+        if have.get("state") != "absent" or (
+            have.get("state") != "absent" and "text" in have.keys() and have["text"]
+        ):
+            commands.append("delete system login banner %s" % module.params["banner"])
 
-    elif state == 'present':
-        if want['text'] and want['text'].encode().decode('unicode_escape') != have.get('text'):
-            banner_cmd = 'set system login banner %s ' % module.params['banner']
-            banner_cmd += want['text'].strip()
+    elif state == "present":
+        if want["text"] and want["text"].encode().decode("unicode_escape") != have.get(
+            "text"
+        ):
+            banner_cmd = "set system login banner %s " % module.params["banner"]
+            banner_cmd += want["text"].strip()
             commands.append(banner_cmd)
 
     return commands
@@ -116,28 +123,28 @@ def spec_to_commands(updates, module):
 def config_to_dict(module):
     data = get_config(module)
     output = None
-    obj = {'banner': module.params['banner'], 'state': 'absent'}
+    obj = {"banner": module.params["banner"], "state": "absent"}
 
-    for line in data.split('\n'):
-        if line.startswith('set system login banner %s' % obj['banner']):
-            match = re.findall(r'%s (.*)' % obj['banner'], line, re.M)
+    for line in data.split("\n"):
+        if line.startswith("set system login banner %s" % obj["banner"]):
+            match = re.findall(r"%s (.*)" % obj["banner"], line, re.M)
             output = match
     if output:
-        obj['text'] = output[0].encode().decode('unicode_escape')
-        obj['state'] = 'present'
+        obj["text"] = output[0].encode().decode("unicode_escape")
+        obj["state"] = "present"
 
     return obj
 
 
 def map_params_to_obj(module):
-    text = module.params['text']
+    text = module.params["text"]
     if text:
         text = "%r" % (str(text).strip())
 
     return {
-        'banner': module.params['banner'],
-        'text': text,
-        'state': module.params['state']
+        "banner": module.params["banner"],
+        "text": text,
+        "state": module.params["state"],
     }
 
 
@@ -145,38 +152,38 @@ def main():
     """ main entry point for module execution
     """
     argument_spec = dict(
-        banner=dict(required=True, choices=['pre-login', 'post-login']),
+        banner=dict(required=True, choices=["pre-login", "post-login"]),
         text=dict(),
-        state=dict(default='present', choices=['present', 'absent'])
+        state=dict(default="present", choices=["present", "absent"]),
     )
 
     argument_spec.update(vyos_argument_spec)
 
-    required_if = [('state', 'present', ('text',))]
+    required_if = [("state", "present", ("text",))]
 
-    module = AnsibleModule(argument_spec=argument_spec,
-                           required_if=required_if,
-                           supports_check_mode=True)
+    module = AnsibleModule(
+        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+    )
 
     warnings = list()
 
-    result = {'changed': False}
+    result = {"changed": False}
     if warnings:
-        result['warnings'] = warnings
+        result["warnings"] = warnings
 
     want = map_params_to_obj(module)
     have = config_to_dict(module)
 
     commands = spec_to_commands((want, have), module)
-    result['commands'] = commands
+    result["commands"] = commands
 
     if commands:
         commit = not module.check_mode
         load_config(module, commands, commit=commit)
-        result['changed'] = True
+        result["changed"] = True
 
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

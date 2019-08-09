@@ -27,6 +27,7 @@ The arg spec for the vyos_l3_interfaces module
 
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 
@@ -38,64 +39,43 @@ class L3_interfacesArgs(object):  # pylint: disable=R0903
         pass
 
     argument_spec = {
-        'config': {
-            'elements': 'dict',
-            'options': {
-                'ipv4': {
-                    'elements': 'dict',
-                    'options': {
-                        'address': {
-                            'type': 'str'
-                        }
-                    },
-                    'type': 'list'
+        "config": {
+            "elements": "dict",
+            "options": {
+                "ipv4": {
+                    "elements": "dict",
+                    "options": {"address": {"type": "str"}},
+                    "type": "list",
                 },
-                'ipv6': {
-                    'elements': 'dict',
-                    'options': {
-                        'address': {
-                            'type': 'str'
-                        }
-                    },
-                    'type': 'list'
+                "ipv6": {
+                    "elements": "dict",
+                    "options": {"address": {"type": "str"}},
+                    "type": "list",
                 },
-                'name': {
-                    'required': True,
-                    'type': 'str'
-                },
-                'vifs': {
-                    'elements': 'dict',
-                    'options': {
-                        'ipv4': {
-                            'elements': 'dict',
-                            'options': {
-                                'address': {
-                                    'type': 'str'
-                                }
-                            },
-                            'type': 'list'
+                "name": {"required": True, "type": "str"},
+                "vifs": {
+                    "elements": "dict",
+                    "options": {
+                        "ipv4": {
+                            "elements": "dict",
+                            "options": {"address": {"type": "str"}},
+                            "type": "list",
                         },
-                        'ipv6': {
-                            'elements': 'dict',
-                            'options': {
-                                'address': {
-                                    'type': 'str'
-                                }
-                            },
-                            'type': 'list'
+                        "ipv6": {
+                            "elements": "dict",
+                            "options": {"address": {"type": "str"}},
+                            "type": "list",
                         },
-                        'vlan_id': {
-                            'type': 'int'
-                        }
+                        "vlan_id": {"type": "int"},
                     },
-                    'type': 'list'
-                }
+                    "type": "list",
+                },
             },
-            'type': 'list'
+            "type": "list",
         },
-        'state': {
-            'choices': ['merged', 'replaced', 'overridden', 'deleted'],
-            'default': 'merged',
-            'type': 'str'
-        }
+        "state": {
+            "choices": ["merged", "replaced", "overridden", "deleted"],
+            "default": "merged",
+            "type": "str",
+        },
     }  # pylint: disable=C0301
