@@ -31,11 +31,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legac
     Config,
 )
 
-from ansible.module_utils.network.vyos.vyos import (
-    run_commands,
-    get_capabilities,
-)
-
 
 FACT_LEGACY_SUBSETS = dict(default=Default, neighbors=Neighbors, config=Config)
 FACT_RESOURCE_SUBSETS = dict(
