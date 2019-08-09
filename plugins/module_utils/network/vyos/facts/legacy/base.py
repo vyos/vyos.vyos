@@ -16,7 +16,10 @@ __metaclass__ = type
 
 import platform
 import re
-from ansible.module_utils.network.vyos.vyos import run_commands, get_capabilities
+from ansible.module_utils.network.vyos.vyos import (
+    run_commands,
+    get_capabilities,
+)
 
 
 class LegacyFactsBase(object):

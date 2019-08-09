@@ -132,7 +132,9 @@ def spec_to_commands(updates, module):
         del w["state"]
 
         if state == "absent" and w in have:
-            commands.append("delete protocols static route %s/%s" % (prefix, mask))
+            commands.append(
+                "delete protocols static route %s/%s" % (prefix, mask)
+            )
         elif state == "present" and w not in have:
             cmd = "set protocols static route %s/%s next-hop %s" % (
                 prefix,

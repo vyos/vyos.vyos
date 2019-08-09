@@ -275,7 +275,9 @@ def run(module, result):
     connection = get_connection(module)
     try:
         response = connection.get_diff(
-            candidate=candidate, running=config, diff_match=module.params["match"]
+            candidate=candidate,
+            running=config,
+            diff_match=module.params["match"],
         )
     except ConnectionError as exc:
         module.fail_json(msg=to_text(exc, errors="surrogate_then_replace"))

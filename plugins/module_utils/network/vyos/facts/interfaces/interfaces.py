@@ -69,7 +69,9 @@ class InterfacesFacts(object):
         facts = {}
         if objs:
             facts["interfaces"] = []
-            params = utils.validate_config(self.argument_spec, {"config": objs})
+            params = utils.validate_config(
+                self.argument_spec, {"config": objs}
+            )
             for cfg in params["config"]:
                 facts["interfaces"].append(utils.remove_empties(cfg))
 
@@ -88,7 +90,9 @@ class InterfacesFacts(object):
         """
         vif_conf = "\n".join(filter(lambda x: ("vif" in x), conf))
         eth_conf = "\n".join(filter(lambda x: ("vif" not in x), conf))
-        config = self.parse_attribs(["description", "speed", "mtu", "duplex"], eth_conf)
+        config = self.parse_attribs(
+            ["description", "speed", "mtu", "duplex"], eth_conf
+        )
         config["vifs"] = self.parse_vifs(vif_conf)
 
         return utils.remove_empties(config)

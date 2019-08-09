@@ -152,7 +152,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
 
 def validate_level(value, module):
     if value not in ("admin", "operator"):
-        module.fail_json(msg="level must be either admin or operator, got %s" % value)
+        module.fail_json(
+            msg="level must be either admin or operator, got %s" % value
+        )
 
 
 def spec_to_commands(updates, module):
@@ -292,7 +294,9 @@ def main():
         full_name=dict(),
         level=dict(aliases=["role"]),
         configured_password=dict(no_log=True),
-        update_password=dict(default="always", choices=["on_create", "always"]),
+        update_password=dict(
+            default="always", choices=["on_create", "always"]
+        ),
         state=dict(default="present", choices=["present", "absent"]),
     )
 

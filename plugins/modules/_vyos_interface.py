@@ -175,7 +175,10 @@ from time import sleep
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import exec_command
-from ansible.module_utils.network.common.utils import conditional, remove_default_spec
+from ansible.module_utils.network.common.utils import (
+    conditional,
+    remove_default_spec,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     load_config,
     get_config,
@@ -218,7 +221,9 @@ def map_obj_to_commands(updates):
                     if value and value != obj_in_have.get(item):
                         if item == "description":
                             value = "'" + str(value) + "'"
-                        commands.append(set_interface + " " + item + " " + str(value))
+                        commands.append(
+                            set_interface + " " + item + " " + str(value)
+                        )
 
                 if disable and not obj_in_have.get("disable", False):
                     commands.append(set_interface + " disable")
@@ -231,7 +236,9 @@ def map_obj_to_commands(updates):
                     if value:
                         if item == "description":
                             value = "'" + str(value) + "'"
-                        commands.append(set_interface + " " + item + " " + str(value))
+                        commands.append(
+                            set_interface + " " + item + " " + str(value)
+                        )
 
                 if disable:
                     commands.append(set_interface + " disable")
@@ -399,7 +406,9 @@ def main():
         enabled=dict(default=True, type="bool"),
         neighbors=dict(type="list", elements="dict", options=neighbors_spec),
         delay=dict(default=10, type="int"),
-        state=dict(default="present", choices=["present", "absent", "up", "down"]),
+        state=dict(
+            default="present", choices=["present", "absent", "up", "down"]
+        ),
     )
 
     aggregate_spec = deepcopy(element_spec)

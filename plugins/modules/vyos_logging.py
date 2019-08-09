@@ -192,7 +192,12 @@ def config_to_dict(module):
                 level = match.group(1).strip("'")
 
                 obj.append(
-                    {"dest": dest, "name": name, "facility": facility, "level": level}
+                    {
+                        "dest": dest,
+                        "name": name,
+                        "facility": facility,
+                        "level": level,
+                    }
                 )
 
     return obj
@@ -232,7 +237,9 @@ def main():
     """ main entry point for module execution
     """
     element_spec = dict(
-        dest=dict(type="str", choices=["console", "file", "global", "host", "user"]),
+        dest=dict(
+            type="str", choices=["console", "file", "global", "host", "user"]
+        ),
         name=dict(type="str"),
         facility=dict(type="str"),
         level=dict(type="str"),
@@ -260,7 +267,9 @@ def main():
     ]
 
     module = AnsibleModule(
-        argument_spec=argument_spec, required_if=required_if, supports_check_mode=True
+        argument_spec=argument_spec,
+        required_if=required_if,
+        supports_check_mode=True,
     )
 
     warnings = list()

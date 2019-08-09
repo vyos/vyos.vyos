@@ -52,7 +52,9 @@ class L3_interfaces(ConfigBase):
         facts, _warnings = Facts(self._module).get_facts(
             self.gather_subset, self.gather_network_resources
         )
-        l3_interfaces_facts = facts["ansible_network_resources"].get("l3_interfaces")
+        l3_interfaces_facts = facts["ansible_network_resources"].get(
+            "l3_interfaces"
+        )
         if not l3_interfaces_facts:
             return []
         return l3_interfaces_facts
@@ -120,7 +122,9 @@ class L3_interfaces(ConfigBase):
         elif state == "deleted":
             if not want:
                 for intf in have:
-                    commands.extend(self._state_deleted({"name": intf["name"]}, intf))
+                    commands.extend(
+                        self._state_deleted({"name": intf["name"]}, intf)
+                    )
             else:
                 for item in want:
                     obj_in_have = search_obj_in_list(item["name"], have)
@@ -168,7 +172,9 @@ class L3_interfaces(ConfigBase):
         for intf in have:
             intf_in_want = search_obj_in_list(intf["name"], want)
             if not intf_in_want:
-                commands.extend(self._state_deleted({"name": intf["name"]}, intf))
+                commands.extend(
+                    self._state_deleted({"name": intf["name"]}, intf)
+                )
 
         for intf in want:
             intf_in_have = search_obj_in_list(intf["name"], have)
@@ -237,7 +243,10 @@ class L3_interfaces(ConfigBase):
             for key, value in iteritems(update):
                 commands.append(
                     self._compute_commands(
-                        key=key, value=value, interface=want_copy["name"], remove=True
+                        key=key,
+                        value=value,
+                        interface=want_copy["name"],
+                        remove=True,
                     )
                 )
 
@@ -263,7 +272,9 @@ class L3_interfaces(ConfigBase):
 
         return commands
 
-    def _compute_commands(self, interface, key, vif=None, value=None, remove=False):
+    def _compute_commands(
+        self, interface, key, vif=None, value=None, remove=False
+    ):
         intf_context = "interfaces {0} {1}".format(
             get_interface_type(interface), interface
         )
@@ -284,7 +295,11 @@ class L3_interfaces(ConfigBase):
     def _get_updates(self, want, have):
         updates = []
 
-        updates = diff_list_of_dicts(want.get("ipv4", []), have.get("ipv4", []))
-        updates.extend(diff_list_of_dicts(want.get("ipv6", []), have.get("ipv6", [])))
+        updates = diff_list_of_dicts(
+            want.get("ipv4", []), have.get("ipv4", [])
+        )
+        updates.extend(
+            diff_list_of_dicts(want.get("ipv6", []), have.get("ipv6", []))
+        )
 
         return updates
