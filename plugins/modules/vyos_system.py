@@ -92,8 +92,12 @@ EXAMPLES = """
 """
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_config, load_config
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import vyos_argument_spec
+from ansible_collections.vyos.vyos.plugins.module_utils.network. \
+  vyos.vyos import get_config, load_config
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network. \
+  vyos.vyos import vyos_argument_spec
+
 
 
 def spec_key_to_device_key(key):
