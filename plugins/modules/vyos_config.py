@@ -16,10 +16,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
-
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -193,8 +194,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
 from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec, get_connection
 
-
-
 DEFAULT_COMMENT = 'configured by vyos_config'
 
 CONFIG_FILTERS = [
@@ -268,7 +267,9 @@ def run(module, result):
     # create loadable config that includes only the configuration updates
     connection = get_connection(module)
     try:
-        response = connection.get_diff(candidate=candidate, running=config, diff_match=module.params['match'])
+        response = connection.get_diff(candidate=candidate,
+                                       running=config,
+                                       diff_match=module.params['match'])
     except ConnectionError as exc:
         module.fail_json(msg=to_text(exc, errors='surrogate_then_replace'))
 
@@ -295,20 +296,13 @@ def run(module, result):
 
 
 def main():
-    backup_spec = dict(
-        filename=dict(),
-        dir_path=dict(type='path')
-    )
+    backup_spec = dict(filename=dict(), dir_path=dict(type='path'))
     argument_spec = dict(
         src=dict(type='path'),
         lines=dict(type='list'),
-
         match=dict(default='line', choices=['line', 'none']),
-
         comment=dict(default=DEFAULT_COMMENT),
-
         config=dict(),
-
         backup=dict(type='bool', default=False),
         backup_options=dict(type='dict', options=backup_spec),
         save=dict(type='bool', default=False),
@@ -318,11 +312,9 @@ def main():
 
     mutually_exclusive = [('lines', 'src')]
 
-    module = AnsibleModule(
-        argument_spec=argument_spec,
-        mutually_exclusive=mutually_exclusive,
-        supports_check_mode=True
-    )
+    module = AnsibleModule(argument_spec=argument_spec,
+                           mutually_exclusive=mutually_exclusive,
+                           supports_check_mode=True)
 
     warnings = list()
 

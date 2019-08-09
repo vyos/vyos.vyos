@@ -19,9 +19,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -117,7 +119,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def spec_to_commands(updates, module):
     commands = list()
     want, have = updates
@@ -132,18 +133,22 @@ def spec_to_commands(updates, module):
 
         if state == 'absent' and w in have:
             if w['name']:
-                commands.append('delete system syslog {0} {1} facility {2} level {3}'.format(
-                    dest, name, facility, level))
+                commands.append(
+                    'delete system syslog {0} {1} facility {2} level {3}'.
+                    format(dest, name, facility, level))
             else:
-                commands.append('delete system syslog {0} facility {1} level {2}'.format(
-                    dest, facility, level))
+                commands.append(
+                    'delete system syslog {0} facility {1} level {2}'.format(
+                        dest, facility, level))
         elif state == 'present' and w not in have:
             if w['name']:
-                commands.append('set system syslog {0} {1} facility {2} level {3}'.format(
-                    dest, name, facility, level))
+                commands.append(
+                    'set system syslog {0} {1} facility {2} level {3}'.format(
+                        dest, name, facility, level))
             else:
-                commands.append('set system syslog {0} facility {1} level {2}'.format(
-                    dest, facility, level))
+                commands.append(
+                    'set system syslog {0} facility {1} level {2}'.format(
+                        dest, facility, level))
 
     return commands
 
@@ -175,10 +180,12 @@ def config_to_dict(module):
                 match = re.search(r'level (\S+)', line, re.M)
                 level = match.group(1).strip("'")
 
-                obj.append({'dest': dest,
-                            'name': name,
-                            'facility': facility,
-                            'level': level})
+                obj.append({
+                    'dest': dest,
+                    'name': name,
+                    'facility': facility,
+                    'level': level
+                })
 
     return obj
 
@@ -215,7 +222,8 @@ def main():
     """ main entry point for module execution
     """
     element_spec = dict(
-        dest=dict(type='str', choices=['console', 'file', 'global', 'host', 'user']),
+        dest=dict(type='str',
+                  choices=['console', 'file', 'global', 'host', 'user']),
         name=dict(type='str'),
         facility=dict(type='str'),
         level=dict(type='str'),
@@ -227,9 +235,9 @@ def main():
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
 
-    argument_spec = dict(
-        aggregate=dict(type='list', elements='dict', options=aggregate_spec),
-    )
+    argument_spec = dict(aggregate=dict(type='list',
+                                        elements='dict',
+                                        options=aggregate_spec), )
 
     argument_spec.update(element_spec)
 

@@ -19,9 +19,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -93,19 +95,21 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def spec_to_commands(updates, module):
     commands = list()
     want, have = updates
     state = module.params['state']
 
     if state == 'absent':
-        if have.get('state') != 'absent' or (have.get('state') != 'absent' and
-                                             'text' in have.keys() and have['text']):
-            commands.append('delete system login banner %s' % module.params['banner'])
+        if have.get('state') != 'absent' or (have.get('state') != 'absent'
+                                             and 'text' in have.keys()
+                                             and have['text']):
+            commands.append('delete system login banner %s' %
+                            module.params['banner'])
 
     elif state == 'present':
-        if want['text'] and want['text'].encode().decode('unicode_escape') != have.get('text'):
+        if want['text'] and want['text'].encode().decode(
+                'unicode_escape') != have.get('text'):
             banner_cmd = 'set system login banner %s ' % module.params['banner']
             banner_cmd += want['text'].strip()
             commands.append(banner_cmd)
@@ -144,15 +148,15 @@ def map_params_to_obj(module):
 def main():
     """ main entry point for module execution
     """
-    argument_spec = dict(
-        banner=dict(required=True, choices=['pre-login', 'post-login']),
-        text=dict(),
-        state=dict(default='present', choices=['present', 'absent'])
-    )
+    argument_spec = dict(banner=dict(required=True,
+                                     choices=['pre-login', 'post-login']),
+                         text=dict(),
+                         state=dict(default='present',
+                                    choices=['present', 'absent']))
 
     argument_spec.update(vyos_argument_spec)
 
-    required_if = [('state', 'present', ('text',))]
+    required_if = [('state', 'present', ('text', ))]
 
     module = AnsibleModule(argument_spec=argument_spec,
                            required_if=required_if,

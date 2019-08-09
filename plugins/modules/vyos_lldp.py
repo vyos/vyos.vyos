@@ -19,10 +19,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
-
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -70,7 +71,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def has_lldp(module):
     config = get_config(module).splitlines()
 
@@ -86,9 +86,7 @@ def main():
     argument_spec = dict(
         interfaces=dict(type='list'),
         state=dict(default='present',
-                   choices=['present', 'absent',
-                            'enabled', 'disabled'])
-    )
+                   choices=['present', 'absent', 'enabled', 'disabled']))
 
     argument_spec.update(vyos_argument_spec)
 

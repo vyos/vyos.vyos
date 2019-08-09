@@ -25,7 +25,6 @@
 The arg spec for the vyos_l3_interfaces module
 """
 
-
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
@@ -33,7 +32,6 @@ __metaclass__ = type
 class L3_interfacesArgs(object):  # pylint: disable=R0903
     """The arg spec for the vyos_l3_interfaces module
     """
-
     def __init__(self, **kwargs):
         pass
 

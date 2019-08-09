@@ -16,10 +16,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
-
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -149,7 +150,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def parse_commands(module, warnings):
     commands = transform_commands(module)
 
@@ -158,23 +158,18 @@ def parse_commands(module, warnings):
             if not item['command'].startswith('show'):
                 warnings.append(
                     'Only show commands are supported when using check mode, not '
-                    'executing %s' % item['command']
-                )
+                    'executing %s' % item['command'])
                 commands.remove(item)
 
     return commands
 
 
 def main():
-    spec = dict(
-        commands=dict(type='list', required=True),
-
-        wait_for=dict(type='list', aliases=['waitfor']),
-        match=dict(default='all', choices=['all', 'any']),
-
-        retries=dict(default=10, type='int'),
-        interval=dict(default=1, type='int')
-    )
+    spec = dict(commands=dict(type='list', required=True),
+                wait_for=dict(type='list', aliases=['waitfor']),
+                match=dict(default='all', choices=['all', 'any']),
+                retries=dict(default=10, type='int'),
+                interval=dict(default=1, type='int'))
 
     spec.update(vyos_argument_spec)
 

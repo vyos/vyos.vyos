@@ -17,10 +17,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
-
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -99,7 +100,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def spec_key_to_device_key(key):
     device_key = key.replace('_', '-')
 
@@ -154,9 +154,11 @@ def spec_to_commands(want, have):
                 commands.append("delete system %s" % device_key)
             for config in proposed:
                 if state == 'absent' and config in current:
-                    commands.append("delete system %s '%s'" % (device_key, config))
+                    commands.append("delete system %s '%s'" %
+                                    (device_key, config))
                 elif state == 'present' and config not in current:
-                    commands.append("set system %s '%s'" % (device_key, config))
+                    commands.append("set system %s '%s'" %
+                                    (device_key, config))
         else:
             if state == 'absent' and current and proposed:
                 commands.append('delete system %s' % device_key)
@@ -182,7 +184,9 @@ def main():
         domain_name=dict(type='str'),
         domain_search=dict(type='list'),
         name_server=dict(type='list', aliases=['name_servers']),
-        state=dict(type='str', default='present', choices=['present', 'absent']),
+        state=dict(type='str',
+                   default='present',
+                   choices=['present', 'absent']),
     )
 
     argument_spec.update(vyos_argument_spec)

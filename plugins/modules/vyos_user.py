@@ -19,9 +19,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -145,10 +147,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def validate_level(value, module):
     if value not in ('admin', 'operator'):
-        module.fail_json(msg='level must be either admin or operator, got %s' % value)
+        module.fail_json(msg='level must be either admin or operator, got %s' %
+                         value)
 
 
 def spec_to_commands(updates, module):
@@ -177,7 +179,9 @@ def spec_to_commands(updates, module):
 
         if needs_update(want, have, 'configured_password'):
             if update_password == 'always' or not have:
-                add(commands, want, 'authentication plaintext-password %s' % want['configured_password'])
+                add(
+                    commands, want, 'authentication plaintext-password %s' %
+                    want['configured_password'])
 
     return commands
 
@@ -278,17 +282,14 @@ def update_objects(want, have):
 def main():
     """ main entry point for module execution
     """
-    element_spec = dict(
-        name=dict(),
-
-        full_name=dict(),
-        level=dict(aliases=['role']),
-
-        configured_password=dict(no_log=True),
-        update_password=dict(default='always', choices=['on_create', 'always']),
-
-        state=dict(default='present', choices=['present', 'absent'])
-    )
+    element_spec = dict(name=dict(),
+                        full_name=dict(),
+                        level=dict(aliases=['role']),
+                        configured_password=dict(no_log=True),
+                        update_password=dict(default='always',
+                                             choices=['on_create', 'always']),
+                        state=dict(default='present',
+                                   choices=['present', 'absent']))
 
     aggregate_spec = deepcopy(element_spec)
     aggregate_spec['name'] = dict(required=True)
@@ -296,10 +297,11 @@ def main():
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
 
-    argument_spec = dict(
-        aggregate=dict(type='list', elements='dict', options=aggregate_spec, aliases=['users', 'collection']),
-        purge=dict(type='bool', default=False)
-    )
+    argument_spec = dict(aggregate=dict(type='list',
+                                        elements='dict',
+                                        options=aggregate_spec,
+                                        aliases=['users', 'collection']),
+                         purge=dict(type='bool', default=False))
 
     argument_spec.update(element_spec)
     argument_spec.update(vyos_argument_spec)
@@ -312,9 +314,8 @@ def main():
     warnings = list()
     if module.params['password'] and not module.params['configured_password']:
         warnings.append(
-            'The "password" argument is used to authenticate the current connection. ' +
-            'To set a user password use "configured_password" instead.'
-        )
+            'The "password" argument is used to authenticate the current connection. '
+            + 'To set a user password use "configured_password" instead.')
 
     result = {'changed': False}
     if warnings:

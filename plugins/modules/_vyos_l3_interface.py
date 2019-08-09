@@ -19,10 +19,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['deprecated'],
-                    'supported_by': 'network'}
-
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['deprecated'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -108,7 +109,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def is_ipv4(value):
     if value:
         address = value.split('/')
@@ -150,34 +150,44 @@ def map_obj_to_commands(updates, module):
         obj_in_have = search_obj_in_list(name, have)
 
         if state == 'absent' and obj_in_have:
-            if not ipv4 and not ipv6 and (obj_in_have['ipv4'] or obj_in_have['ipv6']):
+            if not ipv4 and not ipv6 and (obj_in_have['ipv4']
+                                          or obj_in_have['ipv6']):
                 if name == "lo":
                     commands.append('delete interfaces loopback lo address')
                 else:
-                    commands.append('delete interfaces ethernet ' + name + ' address')
+                    commands.append('delete interfaces ethernet ' + name +
+                                    ' address')
             else:
                 if ipv4 and ipv4 in obj_in_have['ipv4']:
                     if name == "lo":
-                        commands.append('delete interfaces loopback lo address ' + ipv4)
+                        commands.append(
+                            'delete interfaces loopback lo address ' + ipv4)
                     else:
-                        commands.append('delete interfaces ethernet ' + name + ' address ' + ipv4)
+                        commands.append('delete interfaces ethernet ' + name +
+                                        ' address ' + ipv4)
                 if ipv6 and ipv6 in obj_in_have['ipv6']:
                     if name == "lo":
-                        commands.append('delete interfaces loopback lo address ' + ipv6)
+                        commands.append(
+                            'delete interfaces loopback lo address ' + ipv6)
                     else:
-                        commands.append('delete interfaces ethernet ' + name + ' address ' + ipv6)
+                        commands.append('delete interfaces ethernet ' + name +
+                                        ' address ' + ipv6)
         elif (state == 'present' and obj_in_have):
             if ipv4 and ipv4 not in obj_in_have['ipv4']:
                 if name == "lo":
-                    commands.append('set interfaces loopback lo address ' + ipv4)
+                    commands.append('set interfaces loopback lo address ' +
+                                    ipv4)
                 else:
-                    commands.append('set interfaces ethernet ' + name + ' address ' + ipv4)
+                    commands.append('set interfaces ethernet ' + name +
+                                    ' address ' + ipv4)
 
             if ipv6 and ipv6 not in obj_in_have['ipv6']:
                 if name == "lo":
-                    commands.append('set interfaces loopback lo address ' + ipv6)
+                    commands.append('set interfaces loopback lo address ' +
+                                    ipv6)
                 else:
-                    commands.append('set interfaces ethernet ' + name + ' address ' + ipv6)
+                    commands.append('set interfaces ethernet ' + name +
+                                    ' address ' + ipv6)
 
     return commands
 
@@ -208,9 +218,7 @@ def map_config_to_obj(module):
                         elif is_ipv6(value):
                             ipv6.append(value)
 
-                obj.append({'name': name,
-                            'ipv4': ipv4,
-                            'ipv6': ipv6})
+                obj.append({'name': name, 'ipv4': ipv4, 'ipv6': ipv6})
 
     return obj
 
@@ -240,13 +248,11 @@ def map_params_to_obj(module):
 def main():
     """ main entry point for module execution
     """
-    element_spec = dict(
-        name=dict(),
-        ipv4=dict(),
-        ipv6=dict(),
-        state=dict(default='present',
-                   choices=['present', 'absent'])
-    )
+    element_spec = dict(name=dict(),
+                        ipv4=dict(),
+                        ipv6=dict(),
+                        state=dict(default='present',
+                                   choices=['present', 'absent']))
 
     aggregate_spec = deepcopy(element_spec)
     aggregate_spec['name'] = dict(required=True)
@@ -254,9 +260,9 @@ def main():
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
 
-    argument_spec = dict(
-        aggregate=dict(type='list', elements='dict', options=aggregate_spec),
-    )
+    argument_spec = dict(aggregate=dict(type='list',
+                                        elements='dict',
+                                        options=aggregate_spec), )
 
     argument_spec.update(element_spec)
     argument_spec.update(vyos_argument_spec)

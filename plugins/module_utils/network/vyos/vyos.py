@@ -34,14 +34,18 @@ from ansible.module_utils.connection import Connection, ConnectionError
 _DEVICE_CONFIGS = {}
 
 vyos_provider_spec = {
-    'host': dict(),
-    'port': dict(type='int'),
-
-    'username': dict(fallback=(env_fallback, ['ANSIBLE_NET_USERNAME'])),
-    'password': dict(fallback=(env_fallback, ['ANSIBLE_NET_PASSWORD']), no_log=True),
-    'ssh_keyfile': dict(fallback=(env_fallback, ['ANSIBLE_NET_SSH_KEYFILE']), type='path'),
-
-    'timeout': dict(type='int'),
+    'host':
+    dict(),
+    'port':
+    dict(type='int'),
+    'username':
+    dict(fallback=(env_fallback, ['ANSIBLE_NET_USERNAME'])),
+    'password':
+    dict(fallback=(env_fallback, ['ANSIBLE_NET_PASSWORD']), no_log=True),
+    'ssh_keyfile':
+    dict(fallback=(env_fallback, ['ANSIBLE_NET_SSH_KEYFILE']), type='path'),
+    'timeout':
+    dict(type='int'),
 }
 vyos_argument_spec = {
     'provider': dict(type='dict', options=vyos_provider_spec),
@@ -49,11 +53,9 @@ vyos_argument_spec = {
 vyos_top_spec = {
     'host': dict(removed_in_version=2.9),
     'port': dict(removed_in_version=2.9, type='int'),
-
     'username': dict(removed_in_version=2.9),
     'password': dict(removed_in_version=2.9, no_log=True),
     'ssh_keyfile': dict(removed_in_version=2.9, type='path'),
-
     'timeout': dict(removed_in_version=2.9, type='int'),
 }
 vyos_argument_spec.update(vyos_top_spec)
@@ -110,7 +112,8 @@ def get_config(module, flags=None, format=None):
 def run_commands(module, commands, check_rc=True):
     connection = get_connection(module)
     try:
-        response = connection.run_commands(commands=commands, check_rc=check_rc)
+        response = connection.run_commands(commands=commands,
+                                           check_rc=check_rc)
     except ConnectionError as exc:
         module.fail_json(msg=to_text(exc, errors='surrogate_then_replace'))
     return response
@@ -120,7 +123,9 @@ def load_config(module, commands, commit=False, comment=None):
     connection = get_connection(module)
 
     try:
-        response = connection.edit_config(candidate=commands, commit=commit, comment=comment)
+        response = connection.edit_config(candidate=commands,
+                                          commit=commit,
+                                          comment=comment)
     except ConnectionError as exc:
         module.fail_json(msg=to_text(exc, errors='surrogate_then_replace'))
 

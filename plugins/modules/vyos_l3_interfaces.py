@@ -21,7 +21,6 @@
 #   builder template.
 #
 #############################################
-
 """
 The module file for vyos_l3_interfaces
 """
@@ -349,14 +348,12 @@ commands:
   sample: ['set interfaces ethernet eth1 192.0.2.14/2', 'set interfaces ethernet eth3 vif 101 address 198.51.100.130/25']
 """
 
-
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.argspec.l3_interfaces.l3_interfaces import L3_interfacesArgs
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.config.l3_interfaces.l3_interfaces import L3_interfaces
-
 
 
 def main():

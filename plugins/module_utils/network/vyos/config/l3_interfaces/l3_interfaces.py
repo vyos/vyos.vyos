@@ -14,7 +14,6 @@ created
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
 from copy import deepcopy
 from ansible.module_utils.network.common.cfg.base import ConfigBase
 from ansible.module_utils.network.common.utils import to_list, remove_empties
@@ -24,7 +23,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.utils.utils import search_obj_in_list, get_interface_type, diff_list_of_dicts
-
 
 
 class L3_interfaces(ConfigBase):
@@ -50,8 +48,10 @@ class L3_interfaces(ConfigBase):
         :rtype: A dictionary
         :returns: The current configuration as a dictionary
         """
-        facts, _warnings = Facts(self._module).get_facts(self.gather_subset, self.gather_network_resources)
-        l3_interfaces_facts = facts['ansible_network_resources'].get('l3_interfaces')
+        facts, _warnings = Facts(self._module).get_facts(
+            self.gather_subset, self.gather_network_resources)
+        l3_interfaces_facts = facts['ansible_network_resources'].get(
+            'l3_interfaces')
         if not l3_interfaces_facts:
             return []
         return l3_interfaces_facts
@@ -120,19 +120,11 @@ class L3_interfaces(ConfigBase):
             if not want:
                 for intf in have:
                     commands.extend(
-                        self._state_deleted(
-                            {'name': intf['name']},
-                            intf
-                        )
-                    )
+                        self._state_deleted({'name': intf['name']}, intf))
             else:
                 for item in want:
                     obj_in_have = search_obj_in_list(item['name'], have)
-                    commands.extend(
-                        self._state_deleted(
-                            item, obj_in_have
-                        )
-                    )
+                    commands.extend(self._state_deleted(item, obj_in_have))
         else:
             for item in want:
                 name = item['name']
@@ -142,18 +134,10 @@ class L3_interfaces(ConfigBase):
                     obj_in_have = {'name': item['name']}
 
                 if state == 'merged':
-                    commands.extend(
-                        self._state_merged(
-                            item, obj_in_have
-                        )
-                    )
+                    commands.extend(self._state_merged(item, obj_in_have))
 
                 elif state == 'replaced':
-                    commands.extend(
-                        self._state_replaced(
-                            item, obj_in_have
-                        )
-                    )
+                    commands.extend(self._state_replaced(item, obj_in_have))
 
         return commands
 
@@ -184,7 +168,8 @@ class L3_interfaces(ConfigBase):
         for intf in have:
             intf_in_want = search_obj_in_list(intf['name'], want)
             if not intf_in_want:
-                commands.extend(self._state_deleted({'name': intf['name']}, intf))
+                commands.extend(
+                    self._state_deleted({'name': intf['name']}, intf))
 
         for intf in want:
             intf_in_have = search_obj_in_list(intf['name'], have)
@@ -208,17 +193,26 @@ class L3_interfaces(ConfigBase):
 
         for update in self._get_updates(want_copy, have_copy):
             for key, value in iteritems(update):
-                commands.append(self._compute_commands(key=key, value=value, interface=want_copy['name']))
+                commands.append(
+                    self._compute_commands(key=key,
+                                           value=value,
+                                           interface=want_copy['name']))
 
         if want_vifs:
             for want_vif in want_vifs:
-                have_vif = search_obj_in_list(want_vif['vlan_id'], have_vifs, key='vlan_id')
+                have_vif = search_obj_in_list(want_vif['vlan_id'],
+                                              have_vifs,
+                                              key='vlan_id')
                 if not have_vif:
                     have_vif = {}
 
                 for update in self._get_updates(want_vif, have_vif):
                     for key, value in iteritems(update):
-                        commands.append(self._compute_commands(key=key, value=value, interface=want_copy['name'], vif=want_vif['vlan_id']))
+                        commands.append(
+                            self._compute_commands(key=key,
+                                                   value=value,
+                                                   interface=want_copy['name'],
+                                                   vif=want_vif['vlan_id']))
 
         return commands
 
@@ -238,22 +232,39 @@ class L3_interfaces(ConfigBase):
 
         for update in self._get_updates(have_copy, want_copy):
             for key, value in iteritems(update):
-                commands.append(self._compute_commands(key=key, value=value, interface=want_copy['name'], remove=True))
+                commands.append(
+                    self._compute_commands(key=key,
+                                           value=value,
+                                           interface=want_copy['name'],
+                                           remove=True))
 
         if have_vifs:
             for have_vif in have_vifs:
-                want_vif = search_obj_in_list(have_vif['vlan_id'], want_vifs, key='vlan_id')
+                want_vif = search_obj_in_list(have_vif['vlan_id'],
+                                              want_vifs,
+                                              key='vlan_id')
                 if not want_vif:
                     want_vif = {'vlan_id': have_vif['vlan_id']}
 
                 for update in self._get_updates(have_vif, want_vif):
                     for key, value in iteritems(update):
-                        commands.append(self._compute_commands(key=key, interface=want_copy['name'], value=value, vif=want_vif['vlan_id'], remove=True))
+                        commands.append(
+                            self._compute_commands(key=key,
+                                                   interface=want_copy['name'],
+                                                   value=value,
+                                                   vif=want_vif['vlan_id'],
+                                                   remove=True))
 
         return commands
 
-    def _compute_commands(self, interface, key, vif=None, value=None, remove=False):
-        intf_context = 'interfaces {0} {1}'.format(get_interface_type(interface), interface)
+    def _compute_commands(self,
+                          interface,
+                          key,
+                          vif=None,
+                          value=None,
+                          remove=False):
+        intf_context = 'interfaces {0} {1}'.format(
+            get_interface_type(interface), interface)
         set_cmd = 'set {0}'.format(intf_context)
         del_cmd = 'delete {0}'.format(intf_context)
 
@@ -271,7 +282,9 @@ class L3_interfaces(ConfigBase):
     def _get_updates(self, want, have):
         updates = []
 
-        updates = diff_list_of_dicts(want.get('ipv4', []), have.get('ipv4', []))
-        updates.extend(diff_list_of_dicts(want.get('ipv6', []), have.get('ipv6', [])))
+        updates = diff_list_of_dicts(want.get('ipv4', []),
+                                     have.get('ipv4', []))
+        updates.extend(
+            diff_list_of_dicts(want.get('ipv6', []), have.get('ipv6', [])))
 
         return updates

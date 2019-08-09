@@ -13,7 +13,6 @@ based on the configuration.
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
 import re
 from copy import deepcopy
 from ansible.module_utils.network.common import utils
@@ -23,11 +22,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.argspec.l3_interfaces.l3_interfaces import L3_interfacesArgs
 
 
-
 class L3_interfacesFacts(object):
     """ The vyos l3_interfaces fact class
     """
-
     def __init__(self, module, subspec='config', options='options'):
         self._module = module
         self.argument_spec = L3_interfacesArgs.argument_spec
@@ -55,7 +52,9 @@ class L3_interfacesFacts(object):
 
         # operate on a collection of resource x
         objs = []
-        interface_names = re.findall(r'set interfaces (?:ethernet|bonding|vti|vxlan) (?:\'*)(\S+)(?:\'*)', data, re.M)
+        interface_names = re.findall(
+            r'set interfaces (?:ethernet|bonding|vti|vxlan) (?:\'*)(\S+)(?:\'*)',
+            data, re.M)
         if interface_names:
             for interface in set(interface_names):
                 intf_regex = r' %s .+$' % interface
@@ -69,7 +68,8 @@ class L3_interfacesFacts(object):
         facts = {}
         if objs:
             facts['l3_interfaces'] = []
-            params = utils.validate_config(self.argument_spec, {'config': objs})
+            params = utils.validate_config(self.argument_spec,
+                                           {'config': objs})
             for cfg in params['config']:
                 facts['l3_interfaces'].append(utils.remove_empties(cfg))
 

@@ -19,10 +19,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['deprecated'],
-                    'supported_by': 'network'}
-
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['deprecated'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -181,7 +182,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def search_obj_in_list(name, lst):
     for o in lst:
         if o['name'] == name:
@@ -214,7 +214,8 @@ def map_obj_to_commands(updates):
                     if value and value != obj_in_have.get(item):
                         if item == 'description':
                             value = "\'" + str(value) + "\'"
-                        commands.append(set_interface + ' ' + item + ' ' + str(value))
+                        commands.append(set_interface + ' ' + item + ' ' +
+                                        str(value))
 
                 if disable and not obj_in_have.get('disable', False):
                     commands.append(set_interface + ' disable')
@@ -227,7 +228,8 @@ def map_obj_to_commands(updates):
                     if value:
                         if item == 'description':
                             value = "\'" + str(value) + "\'"
-                        commands.append(set_interface + ' ' + item + ' ' + str(value))
+                        commands.append(set_interface + ' ' + item + ' ' +
+                                        str(value))
 
                 if disable:
                     commands.append(set_interface + ' disable')
@@ -330,23 +332,31 @@ def check_declarative_intent_params(module, want, result):
         command = 'show interfaces ethernet %s' % w['name']
         rc, out, err = exec_command(module, command)
         if rc != 0:
-            module.fail_json(msg=to_text(err, errors='surrogate_then_replace'), command=command, rc=rc)
+            module.fail_json(msg=to_text(err, errors='surrogate_then_replace'),
+                             command=command,
+                             rc=rc)
 
         if want_state in ('up', 'down'):
             match = re.search(r'%s (\w+)' % 'state', out, re.M)
             have_state = None
             if match:
                 have_state = match.group(1)
-            if have_state is None or not conditional(want_state, have_state.strip().lower()):
+            if have_state is None or not conditional(
+                    want_state,
+                    have_state.strip().lower()):
                 failed_conditions.append('state ' + 'eq(%s)' % want_state)
 
         if want_neighbors:
             have_host = []
             have_port = []
             if have_neighbors is None:
-                rc, have_neighbors, err = exec_command(module, 'show lldp neighbors detail')
+                rc, have_neighbors, err = exec_command(
+                    module, 'show lldp neighbors detail')
                 if rc != 0:
-                    module.fail_json(msg=to_text(err, errors='surrogate_then_replace'), command=command, rc=rc)
+                    module.fail_json(msg=to_text(
+                        err, errors='surrogate_then_replace'),
+                                     command=command,
+                                     rc=rc)
 
             if have_neighbors:
                 lines = have_neighbors.strip().split('Interface: ')
@@ -372,23 +382,21 @@ def check_declarative_intent_params(module, want, result):
 def main():
     """ main entry point for module execution
     """
-    neighbors_spec = dict(
-        host=dict(),
-        port=dict()
-    )
+    neighbors_spec = dict(host=dict(), port=dict())
 
-    element_spec = dict(
-        name=dict(),
-        description=dict(),
-        speed=dict(),
-        mtu=dict(type='int'),
-        duplex=dict(choices=['full', 'half', 'auto']),
-        enabled=dict(default=True, type='bool'),
-        neighbors=dict(type='list', elements='dict', options=neighbors_spec),
-        delay=dict(default=10, type='int'),
-        state=dict(default='present',
-                   choices=['present', 'absent', 'up', 'down'])
-    )
+    element_spec = dict(name=dict(),
+                        description=dict(),
+                        speed=dict(),
+                        mtu=dict(type='int'),
+                        duplex=dict(choices=['full', 'half', 'auto']),
+                        enabled=dict(default=True, type='bool'),
+                        neighbors=dict(type='list',
+                                       elements='dict',
+                                       options=neighbors_spec),
+                        delay=dict(default=10, type='int'),
+                        state=dict(default='present',
+                                   choices=['present', 'absent', 'up',
+                                            'down']))
 
     aggregate_spec = deepcopy(element_spec)
     aggregate_spec['name'] = dict(required=True)
@@ -396,9 +404,9 @@ def main():
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
 
-    argument_spec = dict(
-        aggregate=dict(type='list', elements='dict', options=aggregate_spec),
-    )
+    argument_spec = dict(aggregate=dict(type='list',
+                                        elements='dict',
+                                        options=aggregate_spec), )
 
     argument_spec.update(element_spec)
     argument_spec.update(vyos_argument_spec)

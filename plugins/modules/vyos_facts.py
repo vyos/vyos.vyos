@@ -7,11 +7,11 @@
 The module file for vyos_facts
 """
 
-
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': [u'preview'],
-                    'supported_by': 'network'}
-
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': [u'preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -145,7 +145,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def main():
     """
     Main entry point for module execution
@@ -159,8 +158,10 @@ def main():
     module = AnsibleModule(argument_spec=argument_spec,
                            supports_check_mode=True)
 
-    warnings = ['default value for `gather_subset` '
-                'will be changed to `min` from `!config` v2.11 onwards']
+    warnings = [
+        'default value for `gather_subset` '
+        'will be changed to `min` from `!config` v2.11 onwards'
+    ]
 
     result = Facts(module).get_facts()
 

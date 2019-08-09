@@ -19,10 +19,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
-
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -115,7 +116,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def spec_to_commands(updates, module):
     commands = list()
     want, have = updates
@@ -128,9 +128,11 @@ def spec_to_commands(updates, module):
         del w['state']
 
         if state == 'absent' and w in have:
-            commands.append('delete protocols static route %s/%s' % (prefix, mask))
+            commands.append('delete protocols static route %s/%s' %
+                            (prefix, mask))
         elif state == 'present' and w not in have:
-            cmd = 'set protocols static route %s/%s next-hop %s' % (prefix, mask, next_hop)
+            cmd = 'set protocols static route %s/%s next-hop %s' % (
+                prefix, mask, next_hop)
             if admin_distance != 'None':
                 cmd += ' distance %s' % (admin_distance)
             commands.append(cmd)
@@ -158,15 +160,19 @@ def config_to_dict(module):
                     admin_distance = None
 
                 if admin_distance is not None:
-                    obj.append({'prefix': prefix,
-                                'mask': mask,
-                                'next_hop': next_hop,
-                                'admin_distance': admin_distance})
+                    obj.append({
+                        'prefix': prefix,
+                        'mask': mask,
+                        'next_hop': next_hop,
+                        'admin_distance': admin_distance
+                    })
                 else:
-                    obj.append({'prefix': prefix,
-                                'mask': mask,
-                                'next_hop': next_hop,
-                                'admin_distance': 'None'})
+                    obj.append({
+                        'prefix': prefix,
+                        'mask': mask,
+                        'next_hop': next_hop,
+                        'admin_distance': 'None'
+                    })
 
     return obj
 
@@ -215,13 +221,12 @@ def map_params_to_obj(module, required_together=None):
 def main():
     """ main entry point for module execution
     """
-    element_spec = dict(
-        prefix=dict(type='str'),
-        mask=dict(type='str'),
-        next_hop=dict(type='str'),
-        admin_distance=dict(type='int'),
-        state=dict(default='present', choices=['present', 'absent'])
-    )
+    element_spec = dict(prefix=dict(type='str'),
+                        mask=dict(type='str'),
+                        next_hop=dict(type='str'),
+                        admin_distance=dict(type='int'),
+                        state=dict(default='present',
+                                   choices=['present', 'absent']))
 
     aggregate_spec = deepcopy(element_spec)
     aggregate_spec['prefix'] = dict(required=True)
@@ -229,9 +234,9 @@ def main():
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
 
-    argument_spec = dict(
-        aggregate=dict(type='list', elements='dict', options=aggregate_spec),
-    )
+    argument_spec = dict(aggregate=dict(type='list',
+                                        elements='dict',
+                                        options=aggregate_spec), )
 
     argument_spec.update(element_spec)
     argument_spec.update(vyos_argument_spec)

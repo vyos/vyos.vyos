@@ -19,10 +19,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
-
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -107,7 +108,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def search_obj_in_list(name, lst):
     for o in lst:
         if o['name'] == name:
@@ -135,30 +135,39 @@ def map_obj_to_commands(updates, module):
         if state == 'absent':
             if obj_in_have:
                 for m in obj_in_have['members']:
-                    commands.append('delete interfaces ethernet ' + m + ' bond-group')
+                    commands.append('delete interfaces ethernet ' + m +
+                                    ' bond-group')
 
                 commands.append('delete interfaces bonding ' + name)
         else:
             if not obj_in_have:
-                commands.append('set interfaces bonding ' + name + ' mode ' + mode)
+                commands.append('set interfaces bonding ' + name + ' mode ' +
+                                mode)
 
                 for m in members:
-                    commands.append('set interfaces ethernet ' + m + ' bond-group ' + name)
+                    commands.append('set interfaces ethernet ' + m +
+                                    ' bond-group ' + name)
 
                 if state == 'down':
-                    commands.append('set interfaces bonding ' + name + ' disable')
+                    commands.append('set interfaces bonding ' + name +
+                                    ' disable')
             else:
                 if mode != obj_in_have['mode']:
-                    commands.append('set interfaces bonding ' + name + ' mode ' + mode)
+                    commands.append('set interfaces bonding ' + name +
+                                    ' mode ' + mode)
 
-                missing_members = list(set(members) - set(obj_in_have['members']))
+                missing_members = list(
+                    set(members) - set(obj_in_have['members']))
                 for m in missing_members:
-                    commands.append('set interfaces ethernet ' + m + ' bond-group ' + name)
+                    commands.append('set interfaces ethernet ' + m +
+                                    ' bond-group ' + name)
 
                 if state == 'down' and obj_in_have['state'] == 'up':
-                    commands.append('set interfaces bonding ' + name + ' disable')
+                    commands.append('set interfaces bonding ' + name +
+                                    ' disable')
                 elif state == 'up' and obj_in_have['state'] == 'down':
-                    commands.append('delete interfaces bonding ' + name + ' disable')
+                    commands.append('delete interfaces bonding ' + name +
+                                    ' disable')
 
     return commands
 
@@ -181,10 +190,12 @@ def map_config_to_obj(module):
             else:
                 members = []
 
-            obj.append({'name': name,
-                        'mode': mode,
-                        'members': members,
-                        'state': state})
+            obj.append({
+                'name': name,
+                'mode': mode,
+                'members': members,
+                'state': state
+            })
 
     return obj
 
@@ -213,16 +224,17 @@ def map_params_to_obj(module):
 def main():
     """ main entry point for module execution
     """
-    element_spec = dict(
-        name=dict(),
-        mode=dict(choices=['802.3ad', 'active-backup', 'broadcast',
-                           'round-robin', 'transmit-load-balance',
-                           'adaptive-load-balance', 'xor-hash', 'on'],
-                  default='802.3ad'),
-        members=dict(type='list'),
-        state=dict(default='present',
-                   choices=['present', 'absent', 'up', 'down'])
-    )
+    element_spec = dict(name=dict(),
+                        mode=dict(choices=[
+                            '802.3ad', 'active-backup', 'broadcast',
+                            'round-robin', 'transmit-load-balance',
+                            'adaptive-load-balance', 'xor-hash', 'on'
+                        ],
+                                  default='802.3ad'),
+                        members=dict(type='list'),
+                        state=dict(default='present',
+                                   choices=['present', 'absent', 'up',
+                                            'down']))
 
     aggregate_spec = deepcopy(element_spec)
     aggregate_spec['name'] = dict(required=True)
@@ -230,9 +242,9 @@ def main():
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
 
-    argument_spec = dict(
-        aggregate=dict(type='list', elements='dict', options=aggregate_spec),
-    )
+    argument_spec = dict(aggregate=dict(type='list',
+                                        elements='dict',
+                                        options=aggregate_spec), )
 
     argument_spec.update(element_spec)
     argument_spec.update(vyos_argument_spec)

@@ -12,7 +12,6 @@ based on the configuration.
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
 import platform
 import re
 from ansible.module_utils. \
@@ -114,9 +113,7 @@ class Neighbors(LegacyFactsBase):
 
         all_neighbors = self.responses[0]
         if 'LLDP not configured' not in all_neighbors:
-            neighbors = self.parse(
-                self.responses[1]
-            )
+            neighbors = self.parse(self.responses[1])
             self.facts['neighbors'] = self.parse_neighbors(neighbors)
 
     def parse(self, data):

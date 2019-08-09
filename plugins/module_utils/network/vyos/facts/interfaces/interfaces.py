@@ -13,7 +13,6 @@ based on the configuration.
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
 from re import findall, M
 from copy import deepcopy
 from ansible.module_utils.network.common import utils
@@ -21,11 +20,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.argspec.interfaces.interfaces import InterfacesArgs
 
 
-
 class InterfacesFacts(object):
     """ The vyos interfaces fact class
     """
-
     def __init__(self, module, subspec='config', options='options'):
         self._module = module
         self.argument_spec = InterfacesArgs.argument_spec
@@ -52,8 +49,9 @@ class InterfacesFacts(object):
             data = connection.get_config(flags=['| grep interfaces'])
 
         objs = []
-        interface_names = findall(r'^set interfaces (?:ethernet|bonding|vti|loopback|vxlan) (?:\'*)(\S+)(?:\'*)',
-                                  data, M)
+        interface_names = findall(
+            r'^set interfaces (?:ethernet|bonding|vti|loopback|vxlan) (?:\'*)(\S+)(?:\'*)',
+            data, M)
         if interface_names:
             for interface in set(interface_names):
                 intf_regex = r' %s .+$' % interface.strip("'")
@@ -65,7 +63,8 @@ class InterfacesFacts(object):
         facts = {}
         if objs:
             facts['interfaces'] = []
-            params = utils.validate_config(self.argument_spec, {'config': objs})
+            params = utils.validate_config(self.argument_spec,
+                                           {'config': objs})
             for cfg in params['config']:
                 facts['interfaces'].append(utils.remove_empties(cfg))
 
@@ -84,8 +83,8 @@ class InterfacesFacts(object):
         """
         vif_conf = '\n'.join(filter(lambda x: ('vif' in x), conf))
         eth_conf = '\n'.join(filter(lambda x: ('vif' not in x), conf))
-        config = self.parse_attribs(
-            ['description', 'speed', 'mtu', 'duplex'], eth_conf)
+        config = self.parse_attribs(['description', 'speed', 'mtu', 'duplex'],
+                                    eth_conf)
         config['vifs'] = self.parse_vifs(vif_conf)
 
         return utils.remove_empties(config)

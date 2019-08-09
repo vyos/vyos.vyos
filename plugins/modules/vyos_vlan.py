@@ -7,10 +7,11 @@
 from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
-
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -129,7 +130,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def search_obj_in_list(vlan_id, lst):
     obj = list()
     for o in lst:
@@ -156,17 +156,22 @@ def map_obj_to_commands(updates, module):
             if obj_in_have:
                 for obj in obj_in_have:
                     for i in obj['interfaces']:
-                        commands.append('delete interfaces ethernet {0} vif {1}'.format(i, vlan_id))
+                        commands.append(
+                            'delete interfaces ethernet {0} vif {1}'.format(
+                                i, vlan_id))
 
         elif state == 'present':
             if not obj_in_have:
                 if w['interfaces'] and w['vlan_id']:
                     for i in w['interfaces']:
-                        cmd = 'set interfaces ethernet {0} vif {1}'.format(i, vlan_id)
+                        cmd = 'set interfaces ethernet {0} vif {1}'.format(
+                            i, vlan_id)
                         if w['name']:
-                            commands.append(cmd + ' description {0}'.format(name))
+                            commands.append(cmd +
+                                            ' description {0}'.format(name))
                         elif w['address']:
-                            commands.append(cmd + ' address {0}'.format(address))
+                            commands.append(cmd +
+                                            ' address {0}'.format(address))
                         else:
                             commands.append(cmd)
 
@@ -175,7 +180,9 @@ def map_obj_to_commands(updates, module):
             obj_in_want = search_obj_in_list(h['vlan_id'], want)
             if not obj_in_want:
                 for i in h['interfaces']:
-                    commands.append('delete interfaces ethernet {0} vif {1}'.format(i, h['vlan_id']))
+                    commands.append(
+                        'delete interfaces ethernet {0} vif {1}'.format(
+                            i, h['vlan_id']))
 
     return commands
 
@@ -200,12 +207,18 @@ def map_params_to_obj(module):
             obj.append(d)
     else:
         obj.append({
-            'vlan_id': str(module.params['vlan_id']),
-            'name': module.params['name'],
-            'address': module.params['address'],
-            'state': module.params['state'],
-            'interfaces': module.params['interfaces'],
-            'associated_interfaces': module.params['associated_interfaces']
+            'vlan_id':
+            str(module.params['vlan_id']),
+            'name':
+            module.params['name'],
+            'address':
+            module.params['address'],
+            'state':
+            module.params['state'],
+            'interfaces':
+            module.params['interfaces'],
+            'associated_interfaces':
+            module.params['associated_interfaces']
         })
 
     return obj
@@ -270,33 +283,34 @@ def check_declarative_intent_params(want, module, result):
         if w.get('associated_interfaces') is None:
             continue
         for i in w['associated_interfaces']:
-            if (set(obj_interface) - set(w['associated_interfaces'])) != set([]):
-                module.fail_json(msg='Interface {0} not configured on vlan {1}'.format(i, w['vlan_id']))
+            if (set(obj_interface) - set(w['associated_interfaces'])) != set(
+                []):
+                module.fail_json(
+                    msg='Interface {0} not configured on vlan {1}'.format(
+                        i, w['vlan_id']))
 
 
 def main():
     """ main entry point for module execution
     """
-    element_spec = dict(
-        vlan_id=dict(type='int'),
-        name=dict(),
-        address=dict(),
-        interfaces=dict(type='list'),
-        associated_interfaces=dict(type='list'),
-        delay=dict(default=10, type='int'),
-        state=dict(default='present',
-                   choices=['present', 'absent'])
-    )
+    element_spec = dict(vlan_id=dict(type='int'),
+                        name=dict(),
+                        address=dict(),
+                        interfaces=dict(type='list'),
+                        associated_interfaces=dict(type='list'),
+                        delay=dict(default=10, type='int'),
+                        state=dict(default='present',
+                                   choices=['present', 'absent']))
 
     aggregate_spec = deepcopy(element_spec)
 
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
 
-    argument_spec = dict(
-        aggregate=dict(type='list', elements='dict', options=aggregate_spec),
-        purge=dict(default=False, type='bool')
-    )
+    argument_spec = dict(aggregate=dict(type='list',
+                                        elements='dict',
+                                        options=aggregate_spec),
+                         purge=dict(default=False, type='bool'))
 
     argument_spec.update(element_spec)
     argument_spec.update(vyos_argument_spec)

@@ -19,10 +19,11 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {'metadata_version': '1.1',
-                    'status': ['preview'],
-                    'supported_by': 'network'}
-
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 ---
@@ -100,7 +101,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network. \
   vyos.vyos import vyos_argument_spec
 
 
-
 def search_obj_in_list(name, lst):
     for o in lst:
         if o['name'] == name:
@@ -124,14 +124,18 @@ def map_obj_to_commands(updates, module):
         elif state in ('present', 'enabled'):
             if not obj_in_have:
                 commands.append('set service lldp interface ' + name)
-            elif obj_in_have and obj_in_have['state'] == 'disabled' and state == 'enabled':
-                commands.append('delete service lldp interface ' + name + ' disable')
+            elif obj_in_have and obj_in_have[
+                    'state'] == 'disabled' and state == 'enabled':
+                commands.append('delete service lldp interface ' + name +
+                                ' disable')
         elif state == 'disabled':
             if not obj_in_have:
                 commands.append('set service lldp interface ' + name)
-                commands.append('set service lldp interface ' + name + ' disable')
+                commands.append('set service lldp interface ' + name +
+                                ' disable')
             elif obj_in_have and obj_in_have['state'] != 'disabled':
-                commands.append('set service lldp interface ' + name + ' disable')
+                commands.append('set service lldp interface ' + name +
+                                ' disable')
 
     return commands
 
@@ -171,7 +175,10 @@ def map_params_to_obj(module):
 
             obj.append(item.copy())
     else:
-        obj.append({'name': module.params['name'], 'state': module.params['state']})
+        obj.append({
+            'name': module.params['name'],
+            'state': module.params['state']
+        })
 
     return obj
 
@@ -182,9 +189,7 @@ def main():
     element_spec = dict(
         name=dict(),
         state=dict(default='present',
-                   choices=['present', 'absent',
-                            'enabled', 'disabled'])
-    )
+                   choices=['present', 'absent', 'enabled', 'disabled']))
 
     aggregate_spec = deepcopy(element_spec)
     aggregate_spec['name'] = dict(required=True)
@@ -192,9 +197,9 @@ def main():
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
 
-    argument_spec = dict(
-        aggregate=dict(type='list', elements='dict', options=aggregate_spec),
-    )
+    argument_spec = dict(aggregate=dict(type='list',
+                                        elements='dict',
+                                        options=aggregate_spec), )
 
     argument_spec.update(element_spec)
     argument_spec.update(vyos_argument_spec)
