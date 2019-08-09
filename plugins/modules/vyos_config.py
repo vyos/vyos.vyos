@@ -187,8 +187,12 @@ import re
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import ConnectionError
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import load_config, get_config, run_commands
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import vyos_argument_spec, get_connection
+from ansible_collections.vyos.vyos.plugins.module_utils.network. \
+  vyos.vyos import load_config, get_config, run_commands
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network. \
+  vyos.vyos import vyos_argument_spec, get_connection
+
 
 
 DEFAULT_COMMENT = 'configured by vyos_config'

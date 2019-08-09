@@ -142,8 +142,12 @@ from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.network.common.parsing import Conditional
 from ansible.module_utils.network.common.utils import transform_commands, to_lines
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import run_commands
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import vyos_argument_spec
+from ansible_collections.vyos.vyos.plugins.module_utils.network. \
+  vyos.vyos import run_commands
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network. \
+  vyos.vyos import vyos_argument_spec
+
 
 
 def parse_commands(module, warnings):
