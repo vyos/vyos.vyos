@@ -29,6 +29,7 @@ description:
 author:
   - Nathaniel Case (@qalthos)
   - Nilashish Chakraborty (@Nilashishc)
+  - Rohit Thakur (@rohitthakur2590)
 extends_documentation_fragment: vyos
 notes:
   - Tested against VyOS 1.1.8
@@ -53,7 +54,7 @@ options:
         specific subset should not be collected.
     required: false
     version_added: "2.9"
-    choices: ['all', 'interfaces', '!interfaces', 'l3_interfaces', '!l3_interfaces']
+    choices: ['all', 'interfaces', '!interfaces', 'l3_interfaces', '!l3_interfaces', 'lag_interfaces', '!lag_interfaces']
 """
 
 EXAMPLES = """
@@ -140,11 +141,9 @@ from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.facts.facts import (
     FactsArgs,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
     Facts,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     vyos_argument_spec,
 )

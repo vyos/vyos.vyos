@@ -23,7 +23,6 @@ from ansible.module_utils.six import iteritems
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
     Facts,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     search_obj_in_list,
     get_interface_type,
