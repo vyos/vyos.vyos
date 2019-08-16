@@ -15,16 +15,16 @@ __metaclass__ = type
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.facts.facts import (
     FactsArgs,
 )
-
 from ansible.module_utils.network.common.facts.facts import FactsBase
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.interfaces.interfaces import (
     InterfacesFacts,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.l3_interfaces.l3_interfaces import (
     L3_interfacesFacts,
 )
-
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.lag_interfaces.lag_interfaces import (
+    Lag_interfacesFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
     Default,
     Neighbors,
@@ -34,7 +34,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legac
 
 FACT_LEGACY_SUBSETS = dict(default=Default, neighbors=Neighbors, config=Config)
 FACT_RESOURCE_SUBSETS = dict(
-    interfaces=InterfacesFacts, l3_interfaces=L3_interfacesFacts
+    interfaces=InterfacesFacts,
+    l3_interfaces=L3_interfacesFacts,
+    lag_interfaces=Lag_interfacesFacts,
 )
 
 

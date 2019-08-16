@@ -150,7 +150,6 @@ from ansible.module_utils.network.common.utils import (
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     run_commands,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     vyos_argument_spec,
 )

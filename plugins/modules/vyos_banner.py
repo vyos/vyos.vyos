@@ -92,7 +92,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
     get_config,
     load_config,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     vyos_argument_spec,
 )
