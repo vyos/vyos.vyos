@@ -6,12 +6,9 @@ The facts class for vyos
 this file validates each subset of facts and selectively
 calls the appropriate facts gathering function
 """
-
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
-
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.facts.facts import (
     FactsArgs,
 )
@@ -25,6 +22,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.l3_in
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.lag_interfaces.lag_interfaces import (
     Lag_interfacesFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.lldp_global.lldp_global import (
+    Lldp_globalFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
     Default,
     Neighbors,
@@ -37,6 +37,7 @@ FACT_RESOURCE_SUBSETS = dict(
     interfaces=InterfacesFacts,
     l3_interfaces=L3_interfacesFacts,
     lag_interfaces=Lag_interfacesFacts,
+    lldp_global=Lldp_globalFacts,
 )
 
 
@@ -71,7 +72,6 @@ class Facts(FactsBase):
                 resource_facts_type,
                 data,
             )
-
         if self.VALID_LEGACY_GATHER_SUBSETS:
             self.get_network_legacy_facts(
                 FACT_LEGACY_SUBSETS, legacy_facts_type
