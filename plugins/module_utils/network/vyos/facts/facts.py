@@ -25,6 +25,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.lag_i
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.lldp_global.lldp_global import (
     Lldp_globalFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.lldp_interfaces.lldp_interfaces import (
+    Lldp_interfacesFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
     Default,
     Neighbors,
@@ -38,6 +41,7 @@ FACT_RESOURCE_SUBSETS = dict(
     l3_interfaces=L3_interfacesFacts,
     lag_interfaces=Lag_interfacesFacts,
     lldp_global=Lldp_globalFacts,
+    lldp_interfaces=Lldp_interfacesFacts,
 )
 
 
@@ -55,7 +59,6 @@ class Facts(FactsBase):
         self, legacy_facts_type=None, resource_facts_type=None, data=None
     ):
         """ Collect the facts for vyos
-
         :param legacy_facts_type: List of legacy facts types
         :param resource_facts_type: List of resource fact types
         :param data: previously collected conf
