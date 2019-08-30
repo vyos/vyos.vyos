@@ -1,3 +1,4 @@
+---
 authors: []
 dependencies: {}
 description: ''
@@ -7,7 +8,7 @@ issues: ''
 license: []
 name: vyos
 namespace: vyos
-readme: README.md
+readme: README.rst
 repository: ''
 tags: []
 version: 1.0.0
