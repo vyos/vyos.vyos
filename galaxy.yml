@@ -6,4 +6,3 @@ name: vyos
 namespace: vyos
 readme: README.rst
 repository: https://github.com/ansible-network/ansible_collections.vyos.vyos
-version: 0.0.1
