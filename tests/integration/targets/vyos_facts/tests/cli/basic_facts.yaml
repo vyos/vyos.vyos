@@ -1,3 +1,4 @@
+---
 - name: get host name
   vyos.vyos.vyos_command:
     commands:
