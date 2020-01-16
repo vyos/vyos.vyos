@@ -9,49 +9,49 @@
       - delete interfaces ethernet eth1 vif 100
 
 - name: Add multiple interfaces to vlan
-  vyos.vyos.vyos_vlan: &multiple
+  register: result
+  vyos.vyos.vyos_vlan: &id001
     vlan_id: 100
     interfaces:
       - eth0
       - eth1
-  register: result
 
 - assert:
     that:
-      - "result.changed == true"
+      - result.changed == true
       - "'set interfaces ethernet eth0 vif 100' in result.commands"
       - "'set interfaces ethernet eth1 vif 100' in result.commands"
 
 - name: Add multiple interfaces to vlan(idempotence)
-  vyos.vyos.vyos_vlan: *multiple
   register: result
+  vyos.vyos.vyos_vlan: *id001
 
 - assert:
     that:
-      - "result.changed == false"
+      - result.changed == false
 
 - name: delete vlan with multiple interfaces
-  vyos.vyos.vyos_vlan: &delete_multiple
+  register: result
+  vyos.vyos.vyos_vlan: &id002
     vlan_id: 100
     interfaces:
       - eth0
       - eth1
     state: absent
-  register: result
 
 - assert:
     that:
-      - "result.changed == true"
+      - result.changed == true
       - "'delete interfaces ethernet eth0 vif 100' in result.commands"
       - "'delete interfaces ethernet eth1 vif 100' in result.commands"
 
 - name: delete vlan with multiple interfaces(idempotence)
-  vyos.vyos.vyos_vlan: *delete_multiple
   register: result
+  vyos.vyos.vyos_vlan: *id002
 
 - assert:
     that:
-      - "result.changed == false"
+      - result.changed == false
 
 - name: teardown
   vyos.vyos.vyos_config:

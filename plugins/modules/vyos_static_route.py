@@ -26,41 +26,40 @@ ANSIBLE_METADATA = {
 }
 
 
-DOCUMENTATION = """
----
-module: vyos_static_route
-version_added: "2.4"
-author: "Trishna Guha (@trishnaguha)"
+DOCUMENTATION = """module: vyos_static_route
+author: Trishna Guha (@trishnaguha)
 short_description: Manage static IP routes on Vyatta VyOS network devices
 description:
-  - This module provides declarative management of static
-    IP routes on Vyatta VyOS network devices.
+- This module provides declarative management of static IP routes on Vyatta VyOS network
+  devices.
 notes:
-  - Tested against VyOS 1.1.8 (helium).
-  - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- Tested against VyOS 1.1.8 (helium).
+- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 options:
   prefix:
     description:
-      - Network prefix of the static route.
-        C(mask) param should be ignored if C(prefix) is provided
-        with C(mask) value C(prefix/mask).
+    - Network prefix of the static route. C(mask) param should be ignored if C(prefix)
+      is provided with C(mask) value C(prefix/mask).
   mask:
     description:
-      - Network prefix mask of the static route.
+    - Network prefix mask of the static route.
   next_hop:
     description:
-      - Next hop IP of the static route.
+    - Next hop IP of the static route.
   admin_distance:
     description:
-      - Admin distance of the static route.
+    - Admin distance of the static route.
   aggregate:
     description: List of static route definitions
   state:
     description:
-      - State of the static route configuration.
+    - State of the static route configuration.
     default: present
-    choices: ['present', 'absent']
-extends_documentation_fragment: vyos
+    choices:
+    - present
+    - absent
+extends_documentation_fragment:
+- vyos.vyos.vyos
 """
 
 EXAMPLES = """
@@ -110,7 +109,9 @@ import re
 from copy import deepcopy
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.network.common.utils import remove_default_spec
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    remove_default_spec,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     get_config,
     load_config,
@@ -250,7 +251,7 @@ def main():
     remove_default_spec(aggregate_spec)
 
     argument_spec = dict(
-        aggregate=dict(type="list", elements="dict", options=aggregate_spec)
+        aggregate=dict(type="list", elements="dict", options=aggregate_spec),
     )
 
     argument_spec.update(element_spec)

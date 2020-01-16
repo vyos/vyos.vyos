@@ -1,17 +1,15 @@
 ---
 - name: Remove Config
-  network.cli.cli_config:
-    config: "{{ lines }}"
   vars:
-    lines: |
-      delete interfaces ethernet "{{ intf }}" description
-      delete interfaces ethernet "{{ intf }}" speed
-      delete interfaces ethernet "{{ intf }}" duplex
-      delete interfaces ethernet "{{ intf }}" mtu
-      delete interfaces ethernet "{{ intf }}" disable
-      delete interfaces ethernet "{{ intf }}" vif
+    lines: "delete interfaces ethernet \"{{ intf }}\" description\ndelete interfaces\
+      \ ethernet \"{{ intf }}\" speed\ndelete interfaces ethernet \"{{ intf }}\"\
+      \ duplex\ndelete interfaces ethernet \"{{ intf }}\" mtu\ndelete interfaces\
+      \ ethernet \"{{ intf }}\" disable\ndelete interfaces ethernet \"{{ intf }}\"\
+      \ vif\n"
   loop:
     - eth1
     - eth2
   loop_control:
     loop_var: intf
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'

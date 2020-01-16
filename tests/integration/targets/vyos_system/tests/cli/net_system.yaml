@@ -1,8 +1,6 @@
 ---
-- debug: msg="START vyos cli/net_system.yaml on connection={{ ansible_connection }}"
-
-# Add minimal testcase to check args are passed correctly to
-# implementation module and module run is successful.
+- debug: msg="START vyos cli/net_system.yaml on connection={{ ansible_connection
+    }}"
 
 - name: setup
   vyos.vyos.vyos_config:
@@ -11,10 +9,10 @@
     match: none
 
 - name: configure name servers using platform agnostic module
-  net_system:
+  register: result
+  ansible.netcommon.net_system:
     name_servers:
       - 192.0.2.1
-  register: result
 
 - assert:
     that:

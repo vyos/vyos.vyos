@@ -11,11 +11,16 @@ created
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
-from ansible.module_utils.network.common.cfg.base import ConfigBase
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
+    ConfigBase,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
     Facts,
 )
-from ansible.module_utils.network.common.utils import to_list, dict_diff
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    to_list,
+    dict_diff,
+)
 from ansible.module_utils.six import iteritems
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     search_obj_in_list,
@@ -30,9 +35,14 @@ class Lag_interfaces(ConfigBase):
     The vyos_lag_interfaces class
     """
 
-    gather_subset = ["!all", "!min"]
+    gather_subset = [
+        "!all",
+        "!min",
+    ]
 
-    gather_network_resources = ["lag_interfaces"]
+    gather_network_resources = [
+        "lag_interfaces",
+    ]
 
     params = [
         "arp_monitor",

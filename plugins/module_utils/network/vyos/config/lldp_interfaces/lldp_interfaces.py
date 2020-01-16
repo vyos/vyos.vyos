@@ -16,13 +16,18 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-from ansible.module_utils.network.common.cfg.base import ConfigBase
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
+    ConfigBase,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
     Facts,
 )
-from ansible.module_utils.network.common.utils import to_list, dict_diff
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    to_list,
+    dict_diff,
+)
 from ansible.module_utils.six import iteritems
-from ansible.module_utils.network.vyos.utils.utils import (
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     search_obj_in_list,
     search_dict_tv_in_list,
     key_value_in_dict,
@@ -35,9 +40,14 @@ class Lldp_interfaces(ConfigBase):
     The vyos_lldp_interfaces class
     """
 
-    gather_subset = ["!all", "!min"]
+    gather_subset = [
+        "!all",
+        "!min",
+    ]
 
-    gather_network_resources = ["lldp_interfaces"]
+    gather_network_resources = [
+        "lldp_interfaces",
+    ]
 
     params = ["enable", "location", "name"]
 

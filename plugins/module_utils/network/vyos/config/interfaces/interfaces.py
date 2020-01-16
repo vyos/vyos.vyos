@@ -15,8 +15,10 @@ __metaclass__ = type
 
 
 from copy import deepcopy
-from ansible.module_utils.network.common.cfg.base import ConfigBase
-from ansible.module_utils.network.common.utils import (
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
+    ConfigBase,
+)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     to_list,
     dict_diff,
     remove_empties,
@@ -37,7 +39,10 @@ class Interfaces(ConfigBase):
     The vyos_interfaces class
     """
 
-    gather_subset = ["!all", "!min"]
+    gather_subset = [
+        "!all",
+        "!min",
+    ]
 
     gather_network_resources = ["interfaces"]
 

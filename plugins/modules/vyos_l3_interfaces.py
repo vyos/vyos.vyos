@@ -36,15 +36,12 @@ ANSIBLE_METADATA = {
     "supported_by": "network",
 }
 
-DOCUMENTATION = """
----
-module: vyos_l3_interfaces
-version_added: 2.9
+DOCUMENTATION = """module: vyos_l3_interfaces
 short_description: Manages L3 interface attributes of VyOS network devices.
 description: This module manages the L3 interface attributes on VyOS network devices.
 notes:
-  - Tested against VyOS 1.1.8 (helium).
-  - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- Tested against VyOS 1.1.8 (helium).
+- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author: Nilashish Chakraborty (@NilashishC)
 options:
   config:
@@ -54,62 +51,62 @@ options:
     suboptions:
       name:
         description:
-          - Full name of the interface, e.g. eth0, eth1.
+        - Full name of the interface, e.g. eth0, eth1.
         type: str
-        required: True
+        required: true
       ipv4:
         description:
-          - List of IPv4 addresses of the interface.
+        - List of IPv4 addresses of the interface.
         type: list
         elements: dict
         suboptions:
           address:
             description:
-              - IPv4 address of the interface.
+            - IPv4 address of the interface.
             type: str
       ipv6:
         description:
-          - List of IPv6 addresses of the interface.
+        - List of IPv6 addresses of the interface.
         type: list
         elements: dict
         suboptions:
           address:
             description:
-              - IPv6 address of the interface.
+            - IPv6 address of the interface.
             type: str
       vifs:
         description:
-          - Virtual sub-interfaces L3 configurations.
+        - Virtual sub-interfaces L3 configurations.
         elements: dict
         type: list
         suboptions:
           vlan_id:
             description:
-              - Identifier for the virtual sub-interface.
+            - Identifier for the virtual sub-interface.
             type: int
           ipv4:
             description:
-              - List of IPv4 addresses of the virtual interface.
+            - List of IPv4 addresses of the virtual interface.
             type: list
             elements: dict
             suboptions:
               address:
                 description:
-                  - IPv4 address of the virtual interface.
+                - IPv4 address of the virtual interface.
                 type: str
           ipv6:
             description:
-              - List of IPv6 addresses of the virtual interface.
+            - List of IPv6 addresses of the virtual interface.
             type: list
             elements: dict
             suboptions:
               address:
                 description:
-                  - IPv6 address of the virtual interface.
+                - IPv6 address of the virtual interface.
                 type: str
   state:
     description:
-      - The state of the configuration after module completion.
+    - The state of the configuration after module completion.
     type: str
     choices:
     - merged
@@ -117,7 +114,6 @@ options:
     - overridden
     - deleted
     default: merged
-
 """
 EXAMPLES = """
 # Using merged

@@ -1,15 +1,17 @@
 ---
 - debug:
-    msg: "Start vyos_lldp_global deleted integration tests ansible_connection={{ ansible_connection }}"
+    msg: Start vyos_lldp_global deleted integration tests ansible_connection={{
+      ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
+
     - name: Delete attributes of LLDP service.
-      vyos.vyos.vyos_lldp_global: &deleted
+      register: result
+      vyos.vyos.vyos_lldp_global: &id001
         config:
         state: deleted
-      register: result
 
     - name: Assert that the before dicts were correctly generated
       assert:
@@ -19,7 +21,8 @@
     - name: Assert that the correct set of commands were generated
       assert:
         that:
-          - "{{ deleted['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+          - "{{ deleted['commands'] | symmetric_difference(result['commands']) |length\
+            \ == 0 }}"
 
     - name: Assert that the after dicts were correctly generated
       assert:
@@ -27,18 +30,18 @@
           - "{{ deleted['after'] == result['after']}}"
 
     - name: Delete attributes of given interfaces (IDEMPOTENT)
-      vyos.vyos.vyos_lldp_global: *deleted
       register: result
+      vyos.vyos.vyos_lldp_global: *id001
 
     - name: Assert that the previous task was idempotent
       assert:
         that:
-          - "result.changed == false"
+          - result.changed == false
 
     - name: Assert that the before dicts were correctly generated
       assert:
         that:
           - "{{ deleted['after'] == result['before'] }}"
-
   always:
+
     - include_tasks: _remove_config.yaml
