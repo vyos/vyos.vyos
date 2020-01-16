@@ -1,19 +1,21 @@
 ---
 - debug:
-    msg: "START vyos_lldp_global round trip integration tests on connection={{ ansible_connection }}"
+    msg: START vyos_lldp_global round trip integration tests on connection={{ ansible_connection
+      }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
+
     - name: Apply the provided configuration (base config)
+      register: base_config
       vyos.vyos.vyos_lldp_global:
         config:
           legacy_protocols:
-            - 'fdp'
-            - 'cdp'
+            - fdp
+            - cdp
           address: 192.0.2.11
         state: merged
-      register: base_config
 
     - name: Gather vyos_lldp_global facts
       vyos.vyos.vyos_facts:
@@ -23,29 +25,29 @@
           - lldp_global
 
     - name: Apply the provided configuration (config to be reverted)
+      register: result
       vyos.vyos.vyos_lldp_global:
         config:
           legacy_protocols:
-            - 'edp'
-            - 'sonmp'
-            - 'cdp'
+            - edp
+            - sonmp
+            - cdp
           address: 192.0.2.14
         state: merged
-      register: result
 
     - name: Assert that changes were applied
       assert:
         that: "{{ round_trip['after'] == result['after'] }}"
 
     - name: Revert back to base config using facts round trip
+      register: revert
       vyos.vyos.vyos_lldp_global:
         config: "{{ ansible_facts['network_resources']['lldp_global'] }}"
         state: replaced
-      register: revert
 
     - name: Assert that config was reverted
       assert:
         that: "{{ base_config['after'] == revert['after'] }}"
-
   always:
+
     - include_tasks: _remove_config.yaml

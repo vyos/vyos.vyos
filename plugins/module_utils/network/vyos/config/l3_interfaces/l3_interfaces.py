@@ -17,8 +17,13 @@ __metaclass__ = type
 
 
 from copy import deepcopy
-from ansible.module_utils.network.common.cfg.base import ConfigBase
-from ansible.module_utils.network.common.utils import to_list, remove_empties
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
+    ConfigBase,
+)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    to_list,
+    remove_empties,
+)
 from ansible.module_utils.six import iteritems
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
     Facts,
@@ -35,9 +40,14 @@ class L3_interfaces(ConfigBase):
     The vyos_l3_interfaces class
     """
 
-    gather_subset = ["!all", "!min"]
+    gather_subset = [
+        "!all",
+        "!min",
+    ]
 
-    gather_network_resources = ["l3_interfaces"]
+    gather_network_resources = [
+        "l3_interfaces",
+    ]
 
     def __init__(self, module):
         super(L3_interfaces, self).__init__(module)

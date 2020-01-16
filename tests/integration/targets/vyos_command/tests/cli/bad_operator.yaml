@@ -2,14 +2,14 @@
 - debug: msg="START cli/bad_operator.yaml on connection={{ ansible_connection }}"
 
 - name: test bad operator
+  register: result
+  ignore_errors: true
   vyos.vyos.vyos_command:
     commands:
       - show version
       - show interfaces
     wait_for:
       - result[0] is 'VyOS'
-  register: result
-  ignore_errors: true
 
 - assert:
     that:

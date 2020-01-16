@@ -23,72 +23,64 @@ ANSIBLE_METADATA = {
 }
 
 
-DOCUMENTATION = """
----
-module: vyos_command
-version_added: "2.2"
-author: "Nathaniel Case (@Qalthos)"
+DOCUMENTATION = """module: vyos_command
+author: Nathaniel Case (@Qalthos)
 short_description: Run one or more commands on VyOS devices
 description:
-  - The command module allows running one or more commands on remote
-    devices running VyOS.  This module can also be introspected
-    to validate key parameters before returning successfully.  If the
-    conditional statements are not met in the wait period, the task
-    fails.
-  - Certain C(show) commands in VyOS produce many lines of output and
-    use a custom pager that can cause this module to hang.  If the
-    value of the environment variable C(ANSIBLE_VYOS_TERMINAL_LENGTH)
-    is not set, the default number of 10000 is used.
-extends_documentation_fragment: vyos
+- The command module allows running one or more commands on remote devices running
+  VyOS.  This module can also be introspected to validate key parameters before returning
+  successfully.  If the conditional statements are not met in the wait period, the
+  task fails.
+- Certain C(show) commands in VyOS produce many lines of output and use a custom pager
+  that can cause this module to hang.  If the value of the environment variable C(ANSIBLE_VYOS_TERMINAL_LENGTH)
+  is not set, the default number of 10000 is used.
+extends_documentation_fragment:
+- vyos.vyos.vyos
 options:
   commands:
     description:
-      - The ordered set of commands to execute on the remote device
-        running VyOS.  The output from the command execution is
-        returned to the playbook.  If the I(wait_for) argument is
-        provided, the module is not returned until the condition is
-        satisfied or the number of retries has been exceeded.
+    - The ordered set of commands to execute on the remote device running VyOS.  The
+      output from the command execution is returned to the playbook.  If the I(wait_for)
+      argument is provided, the module is not returned until the condition is satisfied
+      or the number of retries has been exceeded.
     required: true
   wait_for:
     description:
-      - Specifies what to evaluate from the output of the command
-        and what conditionals to apply.  This argument will cause
-        the task to wait for a particular conditional to be true
-        before moving forward.  If the conditional is not true
-        by the configured I(retries), the task fails. See examples.
-    aliases: ['waitfor']
+    - Specifies what to evaluate from the output of the command and what conditionals
+      to apply.  This argument will cause the task to wait for a particular conditional
+      to be true before moving forward.  If the conditional is not true by the configured
+      I(retries), the task fails. See examples.
+    aliases:
+    - waitfor
   match:
     description:
-      - The I(match) argument is used in conjunction with the
-        I(wait_for) argument to specify the match policy. Valid
-        values are C(all) or C(any).  If the value is set to C(all)
-        then all conditionals in the wait_for must be satisfied.  If
-        the value is set to C(any) then only one of the values must be
-        satisfied.
+    - The I(match) argument is used in conjunction with the I(wait_for) argument to
+      specify the match policy. Valid values are C(all) or C(any).  If the value is
+      set to C(all) then all conditionals in the wait_for must be satisfied.  If the
+      value is set to C(any) then only one of the values must be satisfied.
     default: all
-    choices: ['any', 'all']
+    choices:
+    - any
+    - all
   retries:
     description:
-      - Specifies the number of retries a command should be tried
-        before it is considered failed. The command is run on the
-        target device every retry and evaluated against the I(wait_for)
-        conditionals.
+    - Specifies the number of retries a command should be tried before it is considered
+      failed. The command is run on the target device every retry and evaluated against
+      the I(wait_for) conditionals.
     default: 10
   interval:
     description:
-      - Configures the interval in seconds to wait between I(retries)
-        of the command. If the command does not pass the specified
-        conditions, the interval indicates how long to wait before
-        trying the command again.
+    - Configures the interval in seconds to wait between I(retries) of the command.
+      If the command does not pass the specified conditions, the interval indicates
+      how long to wait before trying the command again.
     default: 1
-
 notes:
-  - Tested against VyOS 1.1.8 (helium).
-  - Running C(show system boot-messages all) will cause the module to hang since
-    VyOS is using a custom pager setting to display the output of that command.
-  - If a command sent to the device requires answering a prompt, it is possible
-    to pass a dict containing I(command), I(answer) and I(prompt). See examples.
-  - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- Tested against VyOS 1.1.8 (helium).
+- Running C(show system boot-messages all) will cause the module to hang since VyOS
+  is using a custom pager setting to display the output of that command.
+- If a command sent to the device requires answering a prompt, it is possible to pass
+  a dict containing I(command), I(answer) and I(prompt). See examples.
+- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 """
 
 EXAMPLES = """
@@ -143,8 +135,10 @@ import time
 
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import AnsibleModule
-from ansible.module_utils.network.common.parsing import Conditional
-from ansible.module_utils.network.common.utils import (
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.parsing import (
+    Conditional,
+)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     transform_commands,
     to_lines,
 )
@@ -219,7 +213,7 @@ def main():
         module.fail_json(msg=msg, failed_conditions=failed_conditions)
 
     result.update(
-        {"stdout": responses, "stdout_lines": list(to_lines(responses))}
+        {"stdout": responses, "stdout_lines": list(to_lines(responses)),}
     )
 
     module.exit_json(**result)

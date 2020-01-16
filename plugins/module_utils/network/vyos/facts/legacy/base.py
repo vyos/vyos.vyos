@@ -14,7 +14,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 import platform
 import re
-from ansible.module_utils.network.vyos.vyos import (
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     run_commands,
     get_capabilities,
 )
@@ -36,7 +36,9 @@ class LegacyFactsBase(object):
 
 class Default(LegacyFactsBase):
 
-    COMMANDS = ["show version"]
+    COMMANDS = [
+        "show version",
+    ]
 
     def populate(self):
         super(Default, self).populate()
@@ -70,7 +72,10 @@ class Default(LegacyFactsBase):
 
 class Config(LegacyFactsBase):
 
-    COMMANDS = ["show configuration commands", "show system commit"]
+    COMMANDS = [
+        "show configuration commands",
+        "show system commit",
+    ]
 
     def populate(self):
         super(Config, self).populate()
@@ -102,7 +107,10 @@ class Config(LegacyFactsBase):
 
 class Neighbors(LegacyFactsBase):
 
-    COMMANDS = ["show lldp neighbors", "show lldp neighbors detail"]
+    COMMANDS = [
+        "show lldp neighbors",
+        "show lldp neighbors detail",
+    ]
 
     def populate(self):
         super(Neighbors, self).populate()

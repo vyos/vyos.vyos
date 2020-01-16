@@ -1,41 +1,34 @@
 ---
 - debug:
-    msg: "cli/basic-no-login.yaml on connection={{ ansible_connection }}"
+    msg: cli/basic-no-login.yaml on connection={{ ansible_connection }}
 
 - name: Setup
   vyos.vyos.vyos_banner:
     banner: pre-login
-    text: |
-      Junk pre-login banner
-      over multiple lines
+    text: "Junk pre-login banner\nover multiple lines\n"
     state: present
 
 - name: remove pre-login
+  register: result
   vyos.vyos.vyos_banner:
     banner: pre-login
     state: absent
-  register: result
 
 - debug:
-    msg: "{{ result }}"
+    msg: '{{ result }}'
 
 - assert:
     that:
-      - "result.changed == true"
+      - result.changed == true
       - "'delete system login banner pre-login' in result.commands"
 
 - name: remove pre-login (idempotent)
+  register: result
   vyos.vyos.vyos_banner:
     banner: pre-login
     state: absent
-  register: result
 
 - assert:
     that:
-      - "result.changed == false"
-      - "result.commands | length == 0"
-
-
-# FIXME add in tests for everything defined in docs
-# FIXME Test state:absent + test:
-# FIXME Without powers ensure "privileged mode required"
+      - result.changed == false
+      - result.commands | length == 0

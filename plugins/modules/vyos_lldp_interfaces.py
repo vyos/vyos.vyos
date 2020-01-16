@@ -36,17 +36,14 @@ ANSIBLE_METADATA = {
     "supported_by": "network",
 }
 
-DOCUMENTATION = """
----
-module: vyos_lldp_interfaces
-version_added: 2.9
+DOCUMENTATION = """module: vyos_lldp_interfaces
 short_description: Manages attributes of lldp interfaces on VyOS devices.
 description: This module manages attributes of lldp interfaces on VyOS network devices.
 notes:
-  - Tested against VyOS 1.1.8 (helium).
-  - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- Tested against VyOS 1.1.8 (helium).
+- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
-   - Rohit Thakur (@rohitthakur2590)
+- Rohit Thakur (@rohitthakur2590)
 options:
   config:
     description: A list of lldp interfaces configurations.
@@ -54,43 +51,43 @@ options:
     suboptions:
       name:
         description:
-          - Name of the  lldp interface.
+        - Name of the  lldp interface.
         type: str
-        required: True
+        required: true
       enable:
         description:
-          - to disable lldp on the interface.
+        - to disable lldp on the interface.
         type: bool
-        default: True
+        default: true
       location:
         description:
-          - LLDP-MED location data.
+        - LLDP-MED location data.
         type: dict
         suboptions:
           civic_based:
             description:
-              - Civic-based location data.
+            - Civic-based location data.
             type: dict
             suboptions:
               ca_info:
-                 description: LLDP-MED address info
-                 type: list
-                 suboptions:
-                   ca_type:
-                     description: LLDP-MED Civic Address type.
-                     type: int
-                     required: True
-                   ca_value:
-                     description: LLDP-MED Civic Address value.
-                     type: str
-                     required: True
+                description: LLDP-MED address info
+                type: list
+                suboptions:
+                  ca_type:
+                    description: LLDP-MED Civic Address type.
+                    type: int
+                    required: true
+                  ca_value:
+                    description: LLDP-MED Civic Address value.
+                    type: str
+                    required: true
               country_code:
                 description: Country Code
                 type: str
-                required: True
+                required: true
           coordinate_based:
             description:
-              - Coordinate-based location.
+            - Coordinate-based location.
             type: dict
             suboptions:
               altitude:
@@ -100,23 +97,23 @@ options:
                 description: Coordinate datum type.
                 type: str
                 choices:
-                  - WGS84
-                  - NAD83
-                  - MLLW
+                - WGS84
+                - NAD83
+                - MLLW
               latitude:
                 description: Latitude.
                 type: str
-                required: True
+                required: true
               longitude:
                 description: Longitude.
                 type: str
-                required: True
+                required: true
           elin:
             description: Emergency Call Service ELIN number (between 10-25 numbers).
             type: str
   state:
     description:
-      - The state of the configuration after module completion.
+    - The state of the configuration after module completion.
     type: str
     choices:
     - merged
@@ -124,7 +121,6 @@ options:
     - overridden
     - deleted
     default: merged
-
 """
 EXAMPLES = """
 # Using merged

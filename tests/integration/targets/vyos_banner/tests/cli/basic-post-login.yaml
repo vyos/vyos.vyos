@@ -1,6 +1,6 @@
 ---
 - debug:
-    msg: "cli/basic-post-login.yaml on connection={{ ansible_connection }}"
+    msg: cli/basic-post-login.yaml on connection={{ ansible_connection }}
 
 - name: setup - remove post-login
   vyos.vyos.vyos_banner:
@@ -8,40 +8,29 @@
     state: absent
 
 - name: Set post-login
+  register: result
   vyos.vyos.vyos_banner:
     banner: post-login
-    text: |
-      this is my post-login banner
-      that has a multiline
-      string
+    text: "this is my post-login banner\nthat has a multiline\nstring\n"
     state: present
-  register: result
 
 - debug:
-    msg: "{{ result }}"
+    msg: '{{ result }}'
 
 - assert:
     that:
-      - "result.changed == true"
+      - result.changed == true
       - "'this is my post-login banner' in result.commands[0]"
       - "'that has a multiline' in result.commands[0]"
 
 - name: Set post-login again (idempotent)
+  register: result
   vyos.vyos.vyos_banner:
     banner: post-login
-    text: |
-      this is my post-login banner
-      that has a multiline
-      string
+    text: "this is my post-login banner\nthat has a multiline\nstring\n"
     state: present
-  register: result
 
 - assert:
     that:
-      - "result.changed == false"
-      - "result.commands | length == 0"
-
-
-# FIXME add in tests for everything defined in docs
-# FIXME Test state:absent + test:
-# FIXME Without powers ensure "privileged mode required"
+      - result.changed == false
+      - result.commands | length == 0

@@ -11,8 +11,13 @@ created
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
-from ansible.module_utils.network.common.cfg.base import ConfigBase
-from ansible.module_utils.network.common.utils import to_list, dict_diff
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
+    ConfigBase,
+)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    to_list,
+    dict_diff,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
     Facts,
 )
@@ -28,9 +33,14 @@ class Lldp_global(ConfigBase):
     The vyos_lldp_global class
     """
 
-    gather_subset = ["!all", "!min"]
+    gather_subset = [
+        "!all",
+        "!min",
+    ]
 
-    gather_network_resources = ["lldp_global"]
+    gather_network_resources = [
+        "lldp_global",
+    ]
 
     params = ["enable", "address", "snmp", "legacy_protocols"]
 

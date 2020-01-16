@@ -1,28 +1,30 @@
 ---
-- debug: msg="START cli_config/cli_basic.yaml on connection={{ ansible_connection }}"
+- debug: msg="START cli_config/cli_basic.yaml on connection={{ ansible_connection
+    }}"
 
 - name: setup - remove interface description
-  network.cli.cli_config: &rm
+  ansible.netcommon.cli_config: &id002
     config: delete interfaces loopback lo description
 
 - name: configure device with config
-  network.cli.cli_config: &conf
-    config: set interfaces loopback lo description 'this is a test'
   register: result
+  ansible.netcommon.cli_config: &id001
+    config: set interfaces loopback lo description 'this is a test'
 
 - assert:
     that:
-      - "result.changed == true"
+      - result.changed == true
 
 - name: Idempotence
-  network.cli.cli_config: *conf
   register: result
+  ansible.netcommon.cli_config: *id001
 
 - assert:
     that:
-      - "result.changed == false"
+      - result.changed == false
 
 - name: teardown
-  network.cli.cli_config: *rm
+  ansible.netcommon.cli_config: *id002
 
-- debug: msg="END cli_config/cli_basic.yaml on connection={{ ansible_connection }}"
+- debug: msg="END cli_config/cli_basic.yaml on connection={{ ansible_connection
+    }}"

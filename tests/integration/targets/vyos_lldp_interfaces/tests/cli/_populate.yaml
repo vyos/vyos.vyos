@@ -1,14 +1,12 @@
 ---
 - name: Setup
-  network.cli.cli_config:
-    config: "{{ lines }}"
   vars:
-    lines: |
-      set service lldp interface eth1
-      set service lldp interface eth1 location civic-based country-code US
-      set service lldp interface eth1 location civic-based ca-type 0 ca-value ENGLISH
-      set service lldp interface eth2
-      set service lldp interface eth2 location coordinate-based latitude 33.524449N
-      set service lldp interface eth2 location coordinate-based altitude 2200
-      set service lldp interface eth2 location coordinate-based datum WGS84
-      set service lldp interface eth2 location coordinate-based longitude 222.267255W
+    lines: "set service lldp interface eth1\nset service lldp interface eth1 location\
+      \ civic-based country-code US\nset service lldp interface eth1 location civic-based\
+      \ ca-type 0 ca-value ENGLISH\nset service lldp interface eth2\nset service\
+      \ lldp interface eth2 location coordinate-based latitude 33.524449N\nset service\
+      \ lldp interface eth2 location coordinate-based altitude 2200\nset service\
+      \ lldp interface eth2 location coordinate-based datum WGS84\nset service lldp\
+      \ interface eth2 location coordinate-based longitude 222.267255W\n"
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'

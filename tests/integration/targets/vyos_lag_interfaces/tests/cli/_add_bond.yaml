@@ -1,8 +1,6 @@
 ---
 - name: Add Bond
-  network.cli.cli_config:
-    config: "{{ lines }}"
   vars:
-    lines: |
-      set interfaces bonding bond0
-      set interfaces bonding bond1
+    lines: "set interfaces bonding bond0\nset interfaces bonding bond1\n"
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'

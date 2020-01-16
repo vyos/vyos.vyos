@@ -10,12 +10,12 @@
     match: none
 
 - name: configure name servers
+  register: result
   vyos.vyos.vyos_system:
     name_servers:
       - 192.0.2.1
       - 192.0.2.2
       - 192.0.2.3
-  register: result
 
 - assert:
     that:
@@ -26,23 +26,23 @@
       - result.commands[2]  is search("set system name-server '192.0.2.3'")
 
 - name: verify name_servers
+  register: result
   vyos.vyos.vyos_system:
     name_servers:
       - 192.0.2.1
       - 192.0.2.2
       - 192.0.2.3
-  register: result
 
 - assert:
     that:
       - result.changed == false
 
 - name: remove one
+  register: result
   vyos.vyos.vyos_system:
     name_servers:
       - 192.0.2.3
     state: absent
-  register: result
 
 - assert:
     that:

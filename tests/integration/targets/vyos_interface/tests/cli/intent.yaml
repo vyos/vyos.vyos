@@ -1,157 +1,160 @@
 ---
 - debug: msg="START cli/intent.yaml on connection={{ ansible_connection }}"
 
-# To be able to run the lldp test we need to have a neighbor configured to talk to
-# In DCI & Zuul we (currently) only spin up a single network VM, so we can't configure a neighbor
-# In the future when we have multi-network-nodes running we can run these tests again
-# https://github.com/ansible/ansible/issues/39667
-
 - name: Detect if we have existing lldp neighbors configured
+  register: neighbors_out
   vyos.vyos.vyos_command:
     commands:
       - show lldp neighbors detail
-  register: neighbors_out
 
 - name: Should we run lldp tests?
   set_fact:
     run_lldp_tests: "'PortDescr:    eth0' in neighbors_out.stdout[0]"
 
 - name: Enable LLDP service
+  when: run_lldp_tests
   vyos.vyos.vyos_lldp:
     state: present
-  when: run_lldp_tests
 
 - name: Create LLDP configuration
+  when: run_lldp_tests
   vyos.vyos.vyos_lldp_interface:
     name: eth1
     state: present
-  when: run_lldp_tests
 
 - name: Setup (interface is up)
+  register: result
   vyos.vyos.vyos_interface:
     name: eth1
     enabled: true
     state: present
-  register: result
 
 - name: Check intent arguments
+  register: result
   vyos.vyos.vyos_interface:
     name: eth1
     state: up
-  register: result
 
 - assert:
     that:
-      - "result.failed == false"
+      - result.failed == false
 
 - name: Check lldp neighbors intent arguments
+  when: run_lldp_tests
+  register: result
   vyos.vyos.vyos_interface:
     name: eth0
     neighbors:
+
       - port: eth0
-  when: run_lldp_tests
-  register: result
 
 - assert:
     that:
-      - "result.failed == false"
+      - result.failed == false
   when: run_lldp_tests
 
 - name: Check intent arguments (failed condition)
+  ignore_errors: true
+  register: result
   vyos.vyos.vyos_interface:
     name: eth1
     state: down
-  ignore_errors: true
-  register: result
 
 - assert:
     that:
-      - "result.failed == true"
+      - result.failed == true
       - "'state eq(down)' in result.failed_conditions"
 
 - name: Check lldp neighbors intent arguments (failed)
-  vyos.vyos.vyos_interface:
-    name: eth0
-    neighbors:
-      - port: dummy_port
-        host: dummy_host
   ignore_errors: true
   when: run_lldp_tests
   register: result
+  vyos.vyos.vyos_interface:
+    name: eth0
+    neighbors:
+
+      - port: dummy_port
+        host: dummy_host
 
 - assert:
     that:
-      - "result.failed == true"
+      - result.failed == true
       - "'host dummy_host' in result.failed_conditions"
       - "'port dummy_port' in result.failed_conditions"
   when: run_lldp_tests
 
 - name: Config + intent
+  register: result
   vyos.vyos.vyos_interface:
     name: eth1
     enabled: false
     state: down
-  register: result
 
 - assert:
     that:
-      - "result.failed == false"
+      - result.failed == false
 
 - name: Config + intent (fail)
+  ignore_errors: true
+  register: result
   vyos.vyos.vyos_interface:
     name: eth1
     enabled: false
     state: up
-  ignore_errors: true
-  register: result
 
 - assert:
     that:
-      - "result.failed == true"
+      - result.failed == true
       - "'state eq(up)' in result.failed_conditions"
 
 - name: Aggregate config + intent (pass)
+  ignore_errors: true
+  register: result
   vyos.vyos.vyos_interface:
     aggregate:
+
       - name: eth1
         enabled: true
         state: up
-  ignore_errors: true
-  register: result
 
 - assert:
     that:
-      - "result.failed == false"
+      - result.failed == false
 
 - name: Check lldp neighbors intent aggregate arguments
-  vyos.vyos.vyos_interface:
-    aggregate:
-      - name: eth0
-        neighbors:
-          - port: eth0
   when: run_lldp_tests
   register: result
+  vyos.vyos.vyos_interface:
+    aggregate:
+
+      - name: eth0
+        neighbors:
+
+          - port: eth0
 
 - assert:
     that:
-      - "result.failed == false"
+      - result.failed == false
   when: run_lldp_tests
 
 - name: Check lldp neighbors intent aggregate arguments (failed)
-  vyos.vyos.vyos_interface:
-    aggregate:
-      - name: eth0
-        neighbors:
-          - port: eth0
-          - port: dummy_port
-            host: dummy_host
   ignore_errors: true
   when: run_lldp_tests
   register: result
+  vyos.vyos.vyos_interface:
+    aggregate:
+
+      - name: eth0
+        neighbors:
+
+          - port: eth0
+
+          - port: dummy_port
+            host: dummy_host
 
 - assert:
     that:
-      - "result.failed == true"
+      - result.failed == true
       - "'host dummy_host' in result.failed_conditions"
       - "'port dummy_port' in result.failed_conditions"
   when: run_lldp_tests

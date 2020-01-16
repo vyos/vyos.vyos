@@ -7,43 +7,43 @@
     match: none
 
 - name: configure hostaname and save
+  register: result
   vyos.vyos.vyos_config:
     lines: set system host-name foo
     save: true
-  register: result
 
 - assert:
     that:
-      - "result.changed == true"
+      - result.changed == true
       - "'set system host-name foo' in result.commands"
 
 - name: configure hostaname and don't save
+  register: result
   vyos.vyos.vyos_config:
     lines: set system host-name bar
-  register: result
 
 - assert:
     that:
-      - "result.changed == true"
+      - result.changed == true
       - "'set system host-name bar' in result.commands"
 
 - name: save config
+  register: result
   vyos.vyos.vyos_config:
     save: true
-  register: result
 
 - assert:
     that:
-      - "result.changed == true"
+      - result.changed == true
 
 - name: save config again
+  register: result
   vyos.vyos.vyos_config:
     save: true
-  register: result
 
 - assert:
     that:
-      - "result.changed == false"
+      - result.changed == false
 
 - name: teardown
   vyos.vyos.vyos_config:

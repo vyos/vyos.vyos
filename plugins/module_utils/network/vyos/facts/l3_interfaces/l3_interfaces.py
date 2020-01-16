@@ -17,7 +17,9 @@ __metaclass__ = type
 
 import re
 from copy import deepcopy
-from ansible.module_utils.network.common import utils
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
+    utils,
+)
 from ansible.module_utils.six import iteritems
 from ansible.module_utils.compat import ipaddress
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.l3_interfaces.l3_interfaces import (

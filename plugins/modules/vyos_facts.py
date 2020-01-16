@@ -15,48 +15,40 @@ ANSIBLE_METADATA = {
 }
 
 
-DOCUMENTATION = """
----
-module: vyos_facts
-version_added: 2.2
+DOCUMENTATION = """module: vyos_facts
 short_description: Get facts about vyos devices.
 description:
-  - Collects facts from network devices running the vyos operating
-    system. This module places the facts gathered in the fact tree keyed by the
-    respective resource name.  The facts module will always collect a
-    base set of facts from the device and can enable or disable
-    collection of additional facts.
+- Collects facts from network devices running the vyos operating system. This module
+  places the facts gathered in the fact tree keyed by the respective resource name.  The
+  facts module will always collect a base set of facts from the device and can enable
+  or disable collection of additional facts.
 author:
-  - Nathaniel Case (@qalthos)
-  - Nilashish Chakraborty (@Nilashishc)
-  - Rohit Thakur (@rohitthakur2590)
-extends_documentation_fragment: vyos
+- Nathaniel Case (@qalthos)
+- Nilashish Chakraborty (@Nilashishc)
+- Rohit Thakur (@rohitthakur2590)
+extends_documentation_fragment:
+- vyos.vyos.vyos
 notes:
-  - Tested against VyOS 1.1.8 (helium).
-  - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- Tested against VyOS 1.1.8 (helium).
+- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 options:
   gather_subset:
     description:
-      - When supplied, this argument will restrict the facts collected
-        to a given subset.  Possible values for this argument include
-        all, default, config, and neighbors. Can specify a list of
-        values to include a larger subset. Values can also be used
-        with an initial C(M(!)) to specify that a specific subset should
-        not be collected.
+    - When supplied, this argument will restrict the facts collected to a given subset.  Possible
+      values for this argument include all, default, config, and neighbors. Can specify
+      a list of values to include a larger subset. Values can also be used with an
+      initial C(M(!)) to specify that a specific subset should not be collected.
     required: false
-    default: "!config"
+    default: '!config'
   gather_network_resources:
     description:
-      - When supplied, this argument will restrict the facts collected
-        to a given subset. Possible values for this argument include
-        all and the resources like interfaces.
-        Can specify a list of values to include a larger subset. Values
-        can also be used with an initial C(M(!)) to specify that a
-        specific subset should not be collected.
-        Valid subsets are 'all', 'interfaces', 'l3_interfaces', 'lag_interfaces',
-        'lldp_global', 'lldp_interfaces'.
+    - When supplied, this argument will restrict the facts collected to a given subset.
+      Possible values for this argument include all and the resources like interfaces.
+      Can specify a list of values to include a larger subset. Values can also be
+      used with an initial C(M(!)) to specify that a specific subset should not be
+      collected. Valid subsets are 'all', 'interfaces', 'l3_interfaces', 'lag_interfaces',
+      'lldp_global', 'lldp_interfaces'.
     required: false
-    version_added: "2.9"
 """
 
 EXAMPLES = """
@@ -158,17 +150,17 @@ def main():
     :returns: ansible_facts
     """
     argument_spec = FactsArgs.argument_spec
-
     argument_spec.update(vyos_argument_spec)
 
     module = AnsibleModule(
         argument_spec=argument_spec, supports_check_mode=True
     )
 
-    warnings = [
-        "default value for `gather_subset` "
-        "will be changed to `min` from `!config` v2.11 onwards"
-    ]
+    warnings = []
+    if module.params["gather_subset"] == "!config":
+        warnings.append(
+            "default value for `gather_subset` will be changed to `min` from `!config` v2.11 onwards"
+        )
 
     result = Facts(module).get_facts()
 
