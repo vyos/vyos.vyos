@@ -1,0 +1,27 @@
+---
+- name: Setup
+  vars:
+    lines: "set firewall group address-group 'inbound'\nset firewall ipv6-name UPLINK\
+      \ default-action 'accept'\nset firewall ipv6-name UPLINK description 'This\
+      \ is ipv6 specific rule-set'\nset firewall ipv6-name UPLINK rule 1 action\
+      \ 'accept'\nset firewall ipv6-name UPLINK rule 1 description 'Fwipv6-Rule\
+      \ 1 is configured by Ansible'\nset firewall ipv6-name UPLINK rule 1 ipsec\
+      \ 'match-ipsec'\nset firewall ipv6-name UPLINK rule 2 action 'accept'\nset\
+      \ firewall ipv6-name UPLINK rule 2 description 'Fwipv6-Rule 2 is configured\
+      \ by Ansible'\nset firewall ipv6-name UPLINK rule 2 ipsec 'match-ipsec'\n\
+      set firewall name INBOUND default-action 'accept'\nset firewall name INBOUND\
+      \ description 'IPv4 INBOUND rule set'\nset firewall name INBOUND rule 101\
+      \ action 'accept'\nset firewall name INBOUND rule 101 description 'Rule 101\
+      \ is configured by Ansible'\nset firewall name INBOUND rule 101 ipsec 'match-ipsec'\n\
+      set firewall name INBOUND rule 102 action 'reject'\nset firewall name INBOUND\
+      \ rule 102 description 'Rule 102 is configured by Ansible'\nset firewall name\
+      \ INBOUND rule 102 ipsec 'match-ipsec'\nset firewall name INBOUND rule 103\
+      \ action 'accept'\nset firewall name INBOUND rule 103 description 'Rule 103\
+      \ is configured by Ansible'\nset firewall name INBOUND rule 103 destination\
+      \ group address-group 'inbound'\nset firewall name INBOUND rule 103 source\
+      \ address '192.0.2.0'\nset firewall name INBOUND rule 103 state established\
+      \ 'enable'\nset firewall name INBOUND rule 103 state invalid 'disable'\nset\
+      \ firewall name INBOUND rule 103 state new 'disable'\nset firewall name INBOUND\
+      \ rule 103 state related 'enable'\n"
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'
