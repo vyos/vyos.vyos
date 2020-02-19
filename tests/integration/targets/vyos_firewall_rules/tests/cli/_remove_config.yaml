@@ -1,0 +1,6 @@
+---
+- name: Remove Config
+  vars:
+    lines: "delete firewall ipv6-name\ndelete firewall name\n"
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'

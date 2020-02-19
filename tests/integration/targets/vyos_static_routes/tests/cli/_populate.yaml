@@ -1,0 +1,12 @@
+---
+- name: Setup
+  vars:
+    lines: "set protocols static route 192.0.2.32/28 next-hop '192.0.2.10'\nset\
+      \ protocols static route 192.0.2.32/28 next-hop '192.0.2.9'\nset protocols\
+      \ static route 192.0.2.32/28 blackhole\nset protocols static route 192.0.2.32/28\n\
+      set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::1'\n\
+      set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'\n\
+      set protocols static route6 2001:db8:1000::/36 blackhole distance '2'\nset\
+      \ protocols static route6 2001:db8:1000::/36\n"
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'

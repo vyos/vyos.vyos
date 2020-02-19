@@ -45,16 +45,6 @@ plugins/modules/vyos_logging.py validate-modules:undocumented-parameter
 plugins/modules/vyos_ping.py validate-modules:doc-default-does-not-match-spec
 plugins/modules/vyos_ping.py validate-modules:doc-required-mismatch
 plugins/modules/vyos_ping.py validate-modules:parameter-type-not-in-doc
-plugins/modules/vyos_static_route.py future-import-boilerplate
-plugins/modules/vyos_static_route.py metaclass-boilerplate
-plugins/modules/vyos_static_route.py validate-modules:doc-choices-do-not-match-spec
-plugins/modules/vyos_static_route.py validate-modules:doc-default-does-not-match-spec
-plugins/modules/vyos_static_route.py validate-modules:doc-elements-mismatch
-plugins/modules/vyos_static_route.py validate-modules:doc-missing-type
-plugins/modules/vyos_static_route.py validate-modules:doc-required-mismatch
-plugins/modules/vyos_static_route.py validate-modules:missing-suboption-docs
-plugins/modules/vyos_static_route.py validate-modules:parameter-type-not-in-doc
-plugins/modules/vyos_static_route.py validate-modules:undocumented-parameter
 plugins/modules/vyos_system.py future-import-boilerplate
 plugins/modules/vyos_system.py metaclass-boilerplate
 plugins/modules/vyos_system.py validate-modules:doc-default-does-not-match-spec
