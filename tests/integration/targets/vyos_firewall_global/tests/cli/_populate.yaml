@@ -1,0 +1,18 @@
+---
+- name: Setup
+  vars:
+    lines: "set firewall all-ping 'enable'\nset firewall broadcast-ping 'enable'\n\
+      set firewall config-trap 'enable'\nset firewall group address-group MGMT-HOSTS\
+      \ address '192.0.1.1'\nset firewall group address-group MGMT-HOSTS address\
+      \ '192.0.1.3'\nset firewall group address-group MGMT-HOSTS address '192.0.1.5'\n\
+      set firewall group address-group MGMT-HOSTS description 'This group has the\
+      \ Management hosts address list'\nset firewall group network-group MGMT description\
+      \ 'This group has the Management network addresses'\nset firewall group network-group\
+      \ MGMT network '192.0.1.0/24'\nset firewall ip-src-route 'enable'\nset firewall\
+      \ log-martians 'enable'\nset firewall receive-redirects 'disable'\nset firewall\
+      \ send-redirects 'enable'\nset firewall source-validation 'strict'\nset firewall\
+      \ state-policy established action 'accept'\nset firewall state-policy established\
+      \ log 'enable'\nset firewall state-policy invalid action 'reject'\nset firewall\
+      \ syn-cookies 'enable'\nset firewall twa-hazards-protection 'enable'\n"
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'

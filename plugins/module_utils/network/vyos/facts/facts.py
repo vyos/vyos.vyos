@@ -33,6 +33,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firew
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes import (
     Static_routesFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_global.firewall_global import (
+    Firewall_globalFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
     Default,
     Neighbors,
@@ -49,6 +52,7 @@ FACT_RESOURCE_SUBSETS = dict(
     lldp_interfaces=Lldp_interfacesFacts,
     static_routes=Static_routesFacts,
     firewall_rules=Firewall_rulesFacts,
+    firewall_global=Firewall_globalFacts,
 )
 
 
