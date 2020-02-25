@@ -1,0 +1,41 @@
+---
+- debug:
+    msg: START vyos_firewall_global parsed integration tests on connection={{ ansible_connection
+      }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+
+    - name: Gather firewall_global facts
+      register: firewall_global_facts
+      vyos.vyos.vyos_facts:
+        gather_subset:
+          - default
+        gather_network_resources:
+          - firewall_global
+
+    - name: Provide the running configuration for parsing (config to be parsed)
+      register: result
+      vyos.vyos.vyos_firewall_global: &id001
+        running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
+        state: parsed
+
+    - name: Assert that correct parsing done
+      assert:
+        that: "{{ ansible_facts['network_resources']['firewall_global'] == result['parsed']\
+          \ }}"
+
+    - name: Gather the existing running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_firewall_global: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+  always:
+
+    - include_tasks: _remove_config.yaml
