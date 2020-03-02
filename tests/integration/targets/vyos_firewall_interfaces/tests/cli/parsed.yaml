@@ -1,0 +1,47 @@
+---
+- debug:
+    msg: START vyos_firewall_interfaces parsed integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _remove_firewall_config.yaml
+
+- include_tasks: _populate_rule_sets.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+
+    - name: Gather firewall_interfaces facts
+      register: firewall_interfaces_facts
+      vyos.vyos.vyos_facts:
+        gather_subset:
+          - default
+        gather_network_resources:
+          - firewall_interfaces
+
+    - name: Provide the running configuration for parsing (config to be parsed)
+      register: result
+      vyos.vyos.vyos_firewall_interfaces: &id001
+        running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
+        state: parsed
+
+    - name: Assert that correct parsing done
+      assert:
+        that: "{{ ansible_facts['network_resources']['firewall_interfaces'] | symmetric_difference(result['parsed'])\
+          \ |length == 0 }}"
+
+    - name: Gather the existing running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_firewall_interfaces: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+  always:
+
+    - include_tasks: _remove_config.yaml
+
+    - include_tasks: _remove_firewall_config.yaml
