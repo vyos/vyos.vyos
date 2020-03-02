@@ -20,10 +20,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import (
-    patch,
-    MagicMock,
-)
+from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
 from ansible_collections.vyos.vyos.plugins.modules import (
     vyos_firewall_interfaces,
 )
@@ -64,7 +61,8 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         )
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_interfaces.firewall_interfaces.Firewall_interfacesFacts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos."
+            "facts.firewall_interfaces.firewall_interfaces.Firewall_interfacesFacts.get_device_data"
         )
         self.execute_show_command = self.mock_execute_show_command.start()
 
