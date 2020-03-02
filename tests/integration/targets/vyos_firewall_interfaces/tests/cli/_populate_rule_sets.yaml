@@ -1,0 +1,7 @@
+---
+- name: Setup
+  vars:
+    lines: "set firewall name 'INBOUND'\nset firewall name 'OUTBOUND'\nset firewall\
+      \ name 'LOCAL'\nset firewall ipv6-name 'V6-LOCAL'\n"
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'

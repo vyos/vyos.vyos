@@ -9,6 +9,7 @@ calls the appropriate facts gathering function
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts import (
     FactsBase,
 )
@@ -36,6 +37,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.stati
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_global.firewall_global import (
     Firewall_globalFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_interfaces.firewall_interfaces import (
+    Firewall_interfacesFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
     Default,
     Neighbors,
@@ -53,6 +57,7 @@ FACT_RESOURCE_SUBSETS = dict(
     static_routes=Static_routesFacts,
     firewall_rules=Firewall_rulesFacts,
     firewall_global=Firewall_globalFacts,
+    firewall_interfaces=Firewall_interfacesFacts,
 )
 
 

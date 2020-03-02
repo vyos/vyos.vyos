@@ -1,0 +1,12 @@
+---
+- name: Setup
+  vars:
+    lines: "set interfaces ethernet eth1 firewall in name 'INBOUND' \nset interfaces\
+      \ ethernet eth1 firewall out name 'OUTBOUND' \nset interfaces ethernet eth1\
+      \ firewall local name 'LOCAL' \nset interfaces ethernet eth1 firewall local\
+      \ ipv6-name 'V6-LOCAL'\nset interfaces ethernet eth2 firewall in name 'INBOUND'\n\
+      set interfaces ethernet eth2 firewall out name 'OUTBOUND'\nset interfaces\
+      \ ethernet eth2 firewall local name 'LOCAL' \nset interfaces ethernet eth2\
+      \ firewall local ipv6-name 'V6-LOCAL'\n"
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'
