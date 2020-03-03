@@ -20,6 +20,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.c
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     to_list,
+    dict_diff,
     remove_empties,
     search_obj_in_list,
 )
