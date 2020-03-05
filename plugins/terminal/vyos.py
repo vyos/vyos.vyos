@@ -41,10 +41,13 @@ class TerminalModule(TerminalBase):
     ]
 
     try:
-        terminal_length = os.getenv('ANSIBLE_VYOS_TERMINAL_LENGTH', 10000)
+        terminal_length = os.getenv("ANSIBLE_VYOS_TERMINAL_LENGTH", 10000)
         terminal_length = int(terminal_length)
     except ValueError:
-        raise AnsibleConnectionFailure("Invalid value set for vyos terminal length '%s', value should be a valid integer string" % terminal_length)
+        raise AnsibleConnectionFailure(
+            "Invalid value set for vyos terminal length '%s', value should be a valid integer string"
+            % terminal_length
+        )
 
     def on_open_shell(self):
         try:
