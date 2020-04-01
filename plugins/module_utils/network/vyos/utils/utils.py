@@ -7,6 +7,7 @@
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
+import q
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.compat import (
     ipaddress,
@@ -238,13 +239,7 @@ def _bool_to_str(val):
     :param val: bool value.
     :return: enable/disable.
     """
-    return (
-        "enable"
-        if str(val) == "True"
-        else "disable"
-        if str(val) == "False"
-        else val
-    )
+    return "enable" if str(val) == "True" else "disable" if str(val) == "False" else val
 
 
 def _is_w_same(w, h, key):
