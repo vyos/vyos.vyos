@@ -39,21 +39,24 @@ DOCUMENTATION = """
 ---
 module: vyos_ospfv2
 version_added: 2.10
-short_description: Manages attributes of OSPF IPv4 routes on VyOS network devices.
-description: This module manages attributes of OSPF IPv4 routes on VyOS network devices.
-author: Rohit Thakur (@rohitthakur2590)
+short_description: This resource module configures and manages attributes of OSPFv2 routes on VyOS network devices.
+description: This resource module configures and manages attributes of OSPFv2 routes on VyOS network devices.
+notes:
+  - Tested against VyOS 1.1.8 (helium).
+  - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+author:
+  - Rohit Thakur (@rohitthakur2590)
 options:
   config:
-    description: A provided OSPF route configuration.
-    type: list
-    elements: dict
+    description: A provided OSPFv2 route configuration.
+    type: dict
     suboptions:
-      ospf_area:
-        description: OSPF area.
+      areas:
+        description: OSPFv2 area.
         type: list
         elements: dict
         suboptions:
-          area:
+          area_id:
             description: Configured to discard packets.
             type: str
           area_type:
@@ -61,12 +64,15 @@ options:
             type: dict
             suboptions:
               normal:
-                description: Normal OSPF area.
+                description: Normal OSPFv2 area.
                 type: bool
               nssa:
-                description: Nssa OSPF area.
+                description: Nssa OSPFv2 area.
                 type: dict
                 suboptions:
+                  set: 
+                    description: Enabling nssa.
+                    type: bool
                   default_cost:
                     description: Summary-default cost of nssa area.
                     type: int
@@ -78,9 +84,12 @@ options:
                     type: str
                     choices: ['always', 'candidate', 'never']
               stub: 
-                description: Stub OSPF area.
+                description: Stub OSPFv2 area.
                 type: dict
                 suboptions:
+                  set: 
+                    description: Enabling stub.
+                    type: bool
                   default_cost:
                     description: Summary-default cost of stub area.
                     type: int
@@ -88,17 +97,17 @@ options:
                     description: Do not inject inter-area routes into stub.
                     type: bool
           authentication:
-            description: OSPF area authentication type.
+            description: OSPFv2 area authentication type.
             type: str
             choices: ['plaintext-password', 'md5']
           network:
-            description: OSPF network.
+            description: OSPFv2 network.
             type: list
             elements: dict
             suboptions:
               address:
                 required: True
-                description: OSPF IPv4 network address.
+                description: OSPFv2 IPv4 network address.
                 type: str 
           range:
             description: Summarize routes matching prefix (border routers only).
@@ -130,12 +139,13 @@ options:
                 description: virtual link address.
                 type: str
               authentication:
-                description: OSPF area authentication type.
+                description: OSPFv2 area authentication type.
                 type: dict
                 suboptions:
                   md5:
                     description: MD5 key id based authentication.
-                    type: dict
+                    type: list
+                    elements: dict
                     suboptions:
                       key_id:
                         description: MD5 key id.
@@ -163,7 +173,7 @@ options:
          type: str
          choices: ['detail']
       max_metric: 
-        description: OSPF maximum/infinite-distance metric.
+        description: OSPFv2 maximum/infinite-distance metric.
         type: dict
         suboptions:
           router_lsa:
@@ -180,7 +190,7 @@ options:
                 description: Time to advertise self as stub-router
                 type: int   
       auto_cost:
-        description: Calculate OSPF interface cost according to bandwidth.
+        description: Calculate OSPFv2 interface cost according to bandwidth.
         type: dict
         suboptions:
           reference_bandwidth:
@@ -198,10 +208,10 @@ options:
                 description: Always advertise default route.
                 type: bool
               metric:
-                description: OSPF default metric.
+                description: OSPFv2 default metric.
                 type: int
               metric_type:
-                description: OSPF Metric types for default routes.
+                description: OSPFv2 Metric types for default routes.
                 type: int
               route_map:
                 description: Route map references.
@@ -214,10 +224,10 @@ options:
         type: dict
         suboptions:
           global:
-            description: Global OSPF administrative distance.
+            description: Global OSPFv2 administrative distance.
             type: int
           ospf: 
-            description: OSPF administrative distance.
+            description: OSPFv2 administrative distance.
             type: dict
             suboptions:
               external: 
@@ -255,11 +265,11 @@ options:
             description: Neighbor priority.
             type: int       
       parameters:
-        descriptions: OSPF specific parameters.
+        descriptions: OSPFv2 specific parameters.
         type: dict
         suboptions: 
          abr_type: 
-           description: OSPF ABR Type.
+           description: OSPFv2 ABR Type.
            type: str
            choices: ['cisco', 'ibm', 'shortcut', 'standard']
          opaque_lsa:
@@ -290,7 +300,7 @@ options:
             description: Metric for redistribution routes.
             type: int
           metric_type:
-            description: OSPF Metric types.
+            description: OSPFv2 Metric types.
             type: int
           route_map:
             description: Route map references.
@@ -315,7 +325,7 @@ options:
             type: dict
             suboptions:
               spf:
-                description: OSPF SPF timers.
+                description: OSPFv2 SPF timers.
                 type: dict
                 suboptions:
                   delay:
@@ -327,6 +337,16 @@ options:
                   max_holdtime:
                     description: maximum hold time (sec).
                     type: int
+  running_config:
+    description:
+    - The module, by default, will connect to the remote device and retrieve the current
+      running-config to use as a base for comparing against the contents of source.
+      There are times when it is not desirable to have the task get the current running-config
+      for every task in a playbook.  The I(running_config) argument allows the implementer
+      to pass in the configuration to use as the base config for comparison. This
+      value of this option should be the output received from device by executing
+      command C(show configuration commands | grep 'ospf')
+    type: str
   state:
     description:
       - The state the configuration should be left in.
@@ -346,35 +366,66 @@ EXAMPLES = """
 # Before state:
 # -------------
 #
-# vyos@192# run show configuration commands | grep ospf
+# vyos@vyos# run show  configuration commands | grep ospf 
+# 
 #
-- name: Merge the provided configuration with the existing running configuration
-      vyos_ospf_routes:
+- name: Merge the provided configuration with the exisiting running configuration
+      vyos.vyos.vyos_ospfv2:
         config:
-          - afi: 'ipv4'
-            ospf_area:
-              - area: 0
-                network: 192.168.0.0/24
-            default_information:
-              originate:
-                always: true
-                metric: 2
-                metric_type: 10
-            log_adjacency_changes: "details"
-            parameters:
-              router_id: 10.1.1.1
-            redistribute:
-              - route_type: 'connected'
-                metric_type: 2
-                route_map: 'CONNECT'
-          - afi: 'ipv6'
-            ospf_area:
-              - area: 0.0.0.0
-                range: 2001:db8:1::/64
-            parameters:
-              router-id 192.168.1.1
-            redistribute:
-              - route_type: 'connected'
+           log_adjacency_changes: 'detail'
+           max_metric:
+             router_lsa:
+               administrative: true
+               on_shutdown: 10
+               on_startup: 10
+           default_information:
+             originate:
+               always: true
+               metric: 10
+               metric_type: 2
+               route_map: 'ingress'
+           mpls_te:
+             enabled: true
+             router_address: '192.0.11.11'
+           auto_cost:
+             reference_bandwidth: 2
+           neighbor:
+             - neighbor_id: '192.0.11.12'
+               poll_interval: 10
+               priority: 2
+           redistribute:
+             - route_type: 'bgp'
+               metric: 10
+               metric_type: 2
+           passive_interface:
+             - 'eth1'
+             - 'eth2'
+           parameters:
+             router_id: '192.0.1.1'
+             opaque_lsa: true
+             rfc1583_compatibility: true
+             abr_type: 'cisco'
+           areas:
+             - area_id: '2'
+               area_type:
+                 normal: true
+               authentication: "plaintext-password"
+               shortcut: 'enable'
+             - area_id: '3'
+               area_type:
+                 nssa:
+                  set: true
+             - area_id: '4'
+               area_type:
+                 stub:
+                  default_cost: 20
+               network:
+                 - address: '192.0.2.0/24'
+               range:
+                 - address: '192.0.3.0/24'
+                   cost: 10
+                 - address: '192.0.4.0/24'
+                   cost: 12
         state: merged
 #
 #
@@ -385,934 +436,1492 @@ EXAMPLES = """
 # before": []
 #
 #    "commands": [
-#       "set interfaces ethernet eth1 firewall in name 'INBOUND'", 
-#       "set protocols ospf area 0 network 192.168.0.0/24",
+#       "set protocols ospf mpls-te enable",
+#       "set protocols ospf mpls-te router-address '192.0.11.11'",
+#       "set protocols ospf redistribute bgp",
+#       "set protocols ospf redistribute bgp metric-type 2",
+#       "set protocols ospf redistribute bgp metric 10",
+#       "set protocols ospf default-information originate metric-type 2",
 #       "set protocols ospf default-information originate always",
 #       "set protocols ospf default-information originate metric 10",
+#       "set protocols ospf default-information originate route-map ingress",
+#       "set protocols ospf auto-cost reference-bandwidth '2'",
+#       "set protocols ospf parameters router-id '192.0.1.1'",
+#       "set protocols ospf parameters opaque-lsa",
+#       "set protocols ospf parameters abr-type 'cisco'",
+#       "set protocols ospf parameters rfc1583-compatibility",
+#       "set protocols ospf passive-interface eth1",
+#       "set protocols ospf passive-interface eth2",
+#       "set protocols ospf max-metric router-lsa on-shutdown 10",
+#       "set protocols ospf max-metric router-lsa administrative",
+#       "set protocols ospf max-metric router-lsa on-startup 10",
+#       "set protocols ospf log-adjacency-changes 'detail'",
+#       "set protocols ospf neighbor 192.0.11.12 priority 2",
+#       "set protocols ospf neighbor 192.0.11.12 poll-interval 10",
+#       "set protocols ospf neighbor 192.0.11.12",
+#       "set protocols ospf area '2'",
+#       "set protocols ospf area 2 authentication plaintext-password",
+#       "set protocols ospf area 2 shortcut enable",
+#       "set protocols ospf area 2 area-type normal",
+#       "set protocols ospf area '3'",
+#       "set protocols ospf area 3 area-type nssa",
+#       "set protocols ospf area 4 range 192.0.3.0/24 cost 10",
+#       "set protocols ospf area 4 range 192.0.3.0/24",
+#       "set protocols ospf area 4 range 192.0.4.0/24 cost 12",
+#       "set protocols ospf area 4 range 192.0.4.0/24",
+#       "set protocols ospf area 4 area-type stub default-cost 20",
+#       "set protocols ospf area '4'",
+#       "set protocols ospf area 4 network 192.0.2.0/24"
+#    ]
+#
+# "after": {
+#        "areas": [
+#            {
+#                "area_id": "2",
+#                "area_type": {
+#                    "normal": true
+#                },
+#                "authentication": "plaintext-password",
+#                "shortcut": "enable"
+#            },
+#            {
+#                "area_id": "3",
+#                "area_type": {
+#                    "nssa": {
+#                        "set": true
+#                    }
+#                }
+#            },
+#            {
+#                "area_id": "4",
+#                "area_type": {
+#                    "stub": {
+#                        "default_cost": 20,
+#                        "set": true
+#                    }
+#                },
+#                "network": [
+#                    {
+#                        "address": "192.0.2.0/24"
+#                    }
+#                ],
+#                "range": [
+#                    {
+#                        "address": "192.0.3.0/24",
+#                        "cost": 10
+#                    },
+#                    {
+#                        "address": "192.0.4.0/24",
+#                        "cost": 12
+#                    }
+#                ]
+#            }
+#        ],
+#        "auto_cost": {
+#            "reference_bandwidth": 2
+#        },
+#        "default_information": {
+#            "originate": {
+#                "always": true,
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_map": "ingress"
+#            }
+#        },
+#        "log_adjacency_changes": "detail",
+#        "max_metric": {
+#            "router_lsa": {
+#                "administrative": true,
+#                "on_shutdown": 10,
+#                "on_startup": 10
+#            }
+#        },
+#        "mpls_te": {
+#            "enabled": true,
+#            "router_address": "192.0.11.11"
+#        },
+#        "neighbor": [
+#            {
+#                "neighbor_id": "192.0.11.12",
+#                "poll_interval": 10,
+#                "priority": 2
+#            }
+#        ],
+#        "parameters": {
+#            "abr_type": "cisco",
+#            "opaque_lsa": true,
+#            "rfc1583_compatibility": true,
+#            "router_id": "192.0.1.1"
+#        },
+#        "passive_interface": [
+#            "eth2",
+#            "eth1"
+#        ],
+#        "redistribute": [
+#            {
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_type": "bgp"
+#            }
+#        ]
+#    }
+#
+# After state:
+# -------------
+#
+# vyos@192# run show configuration commands | grep ospf
+# set protocols ospf area 2 area-type 'normal'
+# set protocols ospf area 2 authentication 'plaintext-password'
+# set protocols ospf area 2 shortcut 'enable'
+# set protocols ospf area 3 area-type 'nssa'
+# set protocols ospf area 4 area-type stub default-cost '20'
+# set protocols ospf area 4 network '192.0.2.0/24'
+# set protocols ospf area 4 range 192.0.3.0/24 cost '10'
+# set protocols ospf area 4 range 192.0.4.0/24 cost '12'
+# set protocols ospf auto-cost reference-bandwidth '2'
+# set protocols ospf default-information originate 'always'
+# set protocols ospf default-information originate metric '10'
+# set protocols ospf default-information originate metric-type '2'
+# set protocols ospf default-information originate route-map 'ingress'
+# set protocols ospf log-adjacency-changes 'detail'
+# set protocols ospf max-metric router-lsa 'administrative'
+# set protocols ospf max-metric router-lsa on-shutdown '10'
+# set protocols ospf max-metric router-lsa on-startup '10'
+# set protocols ospf mpls-te 'enable'
+# set protocols ospf mpls-te router-address '192.0.11.11'
+# set protocols ospf neighbor 192.0.11.12 poll-interval '10'
+# set protocols ospf neighbor 192.0.11.12 priority '2'
+# set protocols ospf parameters abr-type 'cisco'
+# set protocols ospf parameters 'opaque-lsa'
+# set protocols ospf parameters 'rfc1583-compatibility'
+# set protocols ospf parameters router-id '192.0.1.1'
+# set protocols ospf passive-interface 'eth1'
+# set protocols ospf passive-interface 'eth2'
+# set protocols ospf redistribute bgp metric '10'
+# set protocols ospf redistribute bgp metric-type '2'
+
+
+# Using merged
+#
+# Before state:
+# -------------
+#
+# vyos@vyos# run show  configuration commands | grep ospf 
+# 
+#
+- name: Merge the provided configuration to update exisiting running configuration
+      vyos.vyos.vyos_ospfv2:
+        config:
+           areas:
+             - area_id: '2'
+               area_type:
+                 normal: true
+               authentication: "plaintext-password"
+               shortcut: 'enable'
+             - area_id: '3'
+               area_type:
+                 nssa:
+                  set: false
+             - area_id: '4'
+               area_type:
+                 stub:
+                  default_cost: 20
+               network:
+                 - address: '192.0.2.0/24'
+                 - address: '192.0.22.0/24'
+                 - address: '192.0.32.0/24'
+        state: merged
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+# "before": {
+#        "areas": [
+#            {
+#                "area_id": "2",
+#                "area_type": {
+#                    "normal": true
+#                },
+#                "authentication": "plaintext-password",
+#                "shortcut": "enable"
+#            },
+#            {
+#                "area_id": "3",
+#                "area_type": {
+#                    "nssa": {
+#                        "set": true
+#                    }
+#                }
+#            },
+#            {
+#                "area_id": "4",
+#                "area_type": {
+#                    "stub": {
+#                        "default_cost": 20,
+#                        "set": true
+#                    }
+#                },
+#                "network": [
+#                    {
+#                        "address": "192.0.2.0/24"
+#                    }
+#                ],
+#                "range": [
+#                    {
+#                        "address": "192.0.3.0/24",
+#                        "cost": 10
+#                    },
+#                    {
+#                        "address": "192.0.4.0/24",
+#                        "cost": 12
+#                    }
+#                ]
+#            }
+#        ],
+#        "auto_cost": {
+#            "reference_bandwidth": 2
+#        },
+#        "default_information": {
+#            "originate": {
+#                "always": true,
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_map": "ingress"
+#            }
+#        },
+#        "log_adjacency_changes": "detail",
+#        "max_metric": {
+#            "router_lsa": {
+#                "administrative": true,
+#                "on_shutdown": 10,
+#                "on_startup": 10
+#            }
+#        },
+#        "mpls_te": {
+#            "enabled": true,
+#            "router_address": "192.0.11.11"
+#        },
+#        "neighbor": [
+#            {
+#                "neighbor_id": "192.0.11.12",
+#                "poll_interval": 10,
+#                "priority": 2
+#            }
+#        ],
+#        "parameters": {
+#            "abr_type": "cisco",
+#            "opaque_lsa": true,
+#            "rfc1583_compatibility": true,
+#            "router_id": "192.0.1.1"
+#        },
+#        "passive_interface": [
+#            "eth2",
+#            "eth1"
+#        ],
+#        "redistribute": [
+#            {
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_type": "bgp"
+#            }
+#        ]
+#    }
+#
+#    "commands": [
+#       "delete protocols ospf area 4 area-type stub",
+#       "set protocols ospf area 4 network 192.0.22.0/24"
+#       "set protocols ospf area 4 network 192.0.32.0/24"
+#    ]
+#
+# "after": {
+#        "areas": [
+#            {
+#                "area_id": "2",
+#                "area_type": {
+#                    "normal": true
+#                },
+#                "authentication": "plaintext-password",
+#                "shortcut": "enable"
+#            },
+#            {
+#                "area_id": "3",
+#                "area_type": {
+#                    "nssa": {
+#                        "set": true
+#                    }
+#                }
+#            },
+#            {
+#                "area_id": "4",
+#                },
+#                "network": [
+#                    {
+#                        "address": "192.0.2.0/24"
+#                    },
+#                    {
+#                        "address": "192.0.22.0/24"
+#                    },
+#                    {
+#                        "address": "192.0.32.0/24"
+#                    }
+#                ],
+#                "range": [
+#                    {
+#                        "address": "192.0.3.0/24",
+#                        "cost": 10
+#                    },
+#                    {
+#                        "address": "192.0.4.0/24",
+#                        "cost": 12
+#                    }
+#                ]
+#            }
+#        ],
+#        "auto_cost": {
+#            "reference_bandwidth": 2
+#        },
+#        "default_information": {
+#            "originate": {
+#                "always": true,
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_map": "ingress"
+#            }
+#        },
+#        "log_adjacency_changes": "detail",
+#        "max_metric": {
+#            "router_lsa": {
+#                "administrative": true,
+#                "on_shutdown": 10,
+#                "on_startup": 10
+#            }
+#        },
+#        "mpls_te": {
+#            "enabled": true,
+#            "router_address": "192.0.11.11"
+#        },
+#        "neighbor": [
+#            {
+#                "neighbor_id": "192.0.11.12",
+#                "poll_interval": 10,
+#                "priority": 2
+#            }
+#        ],
+#        "parameters": {
+#            "abr_type": "cisco",
+#            "opaque_lsa": true,
+#            "rfc1583_compatibility": true,
+#            "router_id": "192.0.1.1"
+#        },
+#        "passive_interface": [
+#            "eth2",
+#            "eth1"
+#        ],
+#        "redistribute": [
+#            {
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_type": "bgp"
+#            }
+#        ]
+#    }
+#
+# After state:
+# -------------
+#
+# vyos@192# run show configuration commands | grep ospf
+# set protocols ospf area 2 area-type 'normal'
+# set protocols ospf area 2 authentication 'plaintext-password'
+# set protocols ospf area 2 shortcut 'enable'
+# set protocols ospf area 3 area-type 'nssa'
+# set protocols ospf area 4 network '192.0.2.0/24'
+# set protocols ospf area 4 network '192.0.22.0/24'
+# set protocols ospf area 4 network '192.0.32.0/24'
+# set protocols ospf area 4 range 192.0.3.0/24 cost '10'
+# set protocols ospf area 4 range 192.0.4.0/24 cost '12'
+# set protocols ospf auto-cost reference-bandwidth '2'
+# set protocols ospf default-information originate 'always'
+# set protocols ospf default-information originate metric '10'
+# set protocols ospf default-information originate metric-type '2'
+# set protocols ospf default-information originate route-map 'ingress'
+# set protocols ospf log-adjacency-changes 'detail'
+# set protocols ospf max-metric router-lsa 'administrative'
+# set protocols ospf max-metric router-lsa on-shutdown '10'
+# set protocols ospf max-metric router-lsa on-startup '10'
+# set protocols ospf mpls-te 'enable'
+# set protocols ospf mpls-te router-address '192.0.11.11'
+# set protocols ospf neighbor 192.0.11.12 poll-interval '10'
+# set protocols ospf neighbor 192.0.11.12 priority '2'
+# set protocols ospf parameters abr-type 'cisco'
+# set protocols ospf parameters 'opaque-lsa'
+# set protocols ospf parameters 'rfc1583-compatibility'
+# set protocols ospf parameters router-id '192.0.1.1'
+# set protocols ospf passive-interface 'eth1'
+# set protocols ospf passive-interface 'eth2'
+# set protocols ospf redistribute bgp metric '10'
+# set protocols ospf redistribute bgp metric-type '2'
+
+
+# Using replaced
+#
+# Before state:
+# -------------
+#
+# vyos@192# run show configuration commands | grep ospf
+# set protocols ospf area 2 area-type 'normal'
+# set protocols ospf area 2 authentication 'plaintext-password'
+# set protocols ospf area 2 shortcut 'enable'
+# set protocols ospf area 3 area-type 'nssa'
+# set protocols ospf area 4 area-type stub default-cost '20'
+# set protocols ospf area 4 network '192.0.2.0/24'
+# set protocols ospf area 4 range 192.0.3.0/24 cost '10'
+# set protocols ospf area 4 range 192.0.4.0/24 cost '12'
+# set protocols ospf auto-cost reference-bandwidth '2'
+# set protocols ospf default-information originate 'always'
+# set protocols ospf default-information originate metric '10'
+# set protocols ospf default-information originate metric-type '2'
+# set protocols ospf default-information originate route-map 'ingress'
+# set protocols ospf log-adjacency-changes 'detail'
+# set protocols ospf max-metric router-lsa 'administrative'
+# set protocols ospf max-metric router-lsa on-shutdown '10'
+# set protocols ospf max-metric router-lsa on-startup '10'
+# set protocols ospf mpls-te 'enable'
+# set protocols ospf mpls-te router-address '192.0.11.11'
+# set protocols ospf neighbor 192.0.11.12 poll-interval '10'
+# set protocols ospf neighbor 192.0.11.12 priority '2'
+# set protocols ospf parameters abr-type 'cisco'
+# set protocols ospf parameters 'opaque-lsa'
+# set protocols ospf parameters 'rfc1583-compatibility'
+# set protocols ospf parameters router-id '192.0.1.1'
+# set protocols ospf passive-interface 'eth1'
+# set protocols ospf passive-interface 'eth2'
+# set protocols ospf redistribute bgp metric '10'
+# set protocols ospf redistribute bgp metric-type '2'
+#
+- name: Replace ospfv2 routes attributes configuration.
+      vyos.vyos.vyos_ospfv2:
+        config:
+           log_adjacency_changes: 'detail'
+           max_metric:
+             router_lsa:
+               administrative: true
+               on_shutdown: 10
+               on_startup: 10
+           default_information:
+             originate:
+               always: true
+               metric: 10
+               metric_type: 2
+               route_map: 'ingress'
+           mpls_te:
+             enabled: true
+             router_address: '192.0.22.22'
+           auto_cost:
+             reference_bandwidth: 2
+           neighbor:
+             - neighbor_id: '192.0.11.12'
+               poll_interval: 10
+               priority: 2
+           redistribute:
+             - route_type: 'bgp'
+               metric: 10
+               metric_type: 2
+           passive_interface:
+             - 'eth1'
+           parameters:
+             router_id: '192.0.1.1'
+             opaque_lsa: true
+             rfc1583_compatibility: true
+             abr_type: 'cisco'
+           areas:
+             - area_id: '2'
+               area_type:
+                 normal: true
+               authentication: "plaintext-password"
+               shortcut: 'enable'
+             - area_id: '4'
+               area_type:
+                 stub:
+                  default_cost: 20
+               network:
+                 - address: '192.0.2.0/24'
+                 - address: '192.0.12.0/24'
+                 - address: '192.0.22.0/24'
+                 - address: '192.0.32.0/24'
+               range:
+                 - address: '192.0.42.0/24'
+                   cost: 10
+        state: replaced
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#    "before": {
+#        "areas": [
+#            {
+#                "area_id": "2",
+#                "area_type": {
+#                    "normal": true
+#                },
+#                "authentication": "plaintext-password",
+#                "shortcut": "enable"
+#            },
+#            {
+#                "area_id": "3",
+#                "area_type": {
+#                    "nssa": {
+#                        "set": true
+#                    }
+#                }
+#            },
+#            {
+#                "area_id": "4",
+#                "area_type": {
+#                    "stub": {
+#                        "default_cost": 20,
+#                        "set": true
+#                    }
+#                },
+#                "network": [
+#                    {
+#                        "address": "192.0.2.0/24"
+#                    }
+#                ],
+#                "range": [
+#                    {
+#                        "address": "192.0.3.0/24",
+#                        "cost": 10
+#                    },
+#                    {
+#                        "address": "192.0.4.0/24",
+#                        "cost": 12
+#                    }
+#                ]
+#            }
+#        ],
+#        "auto_cost": {
+#            "reference_bandwidth": 2
+#        },
+#        "default_information": {
+#            "originate": {
+#                "always": true,
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_map": "ingress"
+#            }
+#        },
+#        "log_adjacency_changes": "detail",
+#        "max_metric": {
+#            "router_lsa": {
+#                "administrative": true,
+#                "on_shutdown": 10,
+#                "on_startup": 10
+#            }
+#        },
+#        "mpls_te": {
+#            "enabled": true,
+#            "router_address": "192.0.11.11"
+#        },
+#        "neighbor": [
+#            {
+#                "neighbor_id": "192.0.11.12",
+#                "poll_interval": 10,
+#                "priority": 2
+#            }
+#        ],
+#        "parameters": {
+#            "abr_type": "cisco",
+#            "opaque_lsa": true,
+#            "rfc1583_compatibility": true,
+#            "router_id": "192.0.1.1"
+#        },
+#        "passive_interface": [
+#            "eth2",
+#            "eth1"
+#        ],
+#        "redistribute": [
+#            {
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_type": "bgp"
+#            }
+#        ]
+#    }
+#
+# "commands": [
+#     "delete protocols ospf passive-interface eth2",
+#     "delete protocols ospf area 3",
+#     "delete protocols ospf area 4 range 192.0.3.0/24 cost",
+#     "delete protocols ospf area 4 range 192.0.3.0/24",
+#     "delete protocols ospf area 4 range 192.0.4.0/24 cost",
+#     "delete protocols ospf area 4 range 192.0.4.0/24",
+#     "set protocols ospf mpls-te router-address '192.0.22.22'",
+#     "set protocols ospf area 4 range 192.0.42.0/24 cost 10",
+#     "set protocols ospf area 4 range 192.0.42.0/24",
+#     "set protocols ospf area 4 network 192.0.12.0/24",
+#     "set protocols ospf area 4 network 192.0.22.0/24",
+#     "set protocols ospf area 4 network 192.0.32.0/24"
+#    ]
+#
+#    "after": {
+#        "areas": [
+#            {
+#                "area_id": "2",
+#                "area_type": {
+#                    "normal": true
+#                },
+#                "authentication": "plaintext-password",
+#                "shortcut": "enable"
+#            },
+#            {
+#                "area_id": "4",
+#                "area_type": {
+#                    "stub": {
+#                        "default_cost": 20,
+#                        "set": true
+#                    }
+#                },
+#                "network": [
+#                    {
+#                        "address": "192.0.12.0/24"
+#                    },
+#                    {
+#                        "address": "192.0.2.0/24"
+#                    },
+#                    {
+#                        "address": "192.0.22.0/24"
+#                    },
+#                    {
+#                        "address": "192.0.32.0/24"
+#                    }
+#                ],
+#                "range": [
+#                    {
+#                        "address": "192.0.42.0/24",
+#                        "cost": 10
+#                    }
+#                ]
+#            }
+#        ],
+#        "auto_cost": {
+#            "reference_bandwidth": 2
+#        },
+#        "default_information": {
+#            "originate": {
+#                "always": true,
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_map": "ingress"
+#            }
+#        },
+#        "log_adjacency_changes": "detail",
+#        "max_metric": {
+#            "router_lsa": {
+#                "administrative": true,
+#                "on_shutdown": 10,
+#                "on_startup": 10
+#            }
+#        },
+#        "mpls_te": {
+#            "enabled": true,
+#            "router_address": "192.0.22.22"
+#        },
+#        "neighbor": [
+#            {
+#                "neighbor_id": "192.0.11.12",
+#                "poll_interval": 10,
+#                "priority": 2
+#            }
+#        ],
+#        "parameters": {
+#            "abr_type": "cisco",
+#            "opaque_lsa": true,
+#            "rfc1583_compatibility": true,
+#            "router_id": "192.0.1.1"
+#        },
+#        "passive_interface": [
+#            "eth1"
+#        ],
+#        "redistribute": [
+#            {
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_type": "bgp"
+#            }
+#        ]
+#    }
+# 
+# After state:
+# -------------
+#
+# vyos@192# run show configuration commands | grep ospf
+# set protocols ospf area 2 area-type 'normal'
+# set protocols ospf area 2 authentication 'plaintext-password'
+# set protocols ospf area 2 shortcut 'enable'
+# set protocols ospf area 4 area-type stub default-cost '20'
+# set protocols ospf area 4 network '192.0.2.0/24'
+# set protocols ospf area 4 network '192.0.12.0/24'
+# set protocols ospf area 4 network '192.0.22.0/24'
+# set protocols ospf area 4 network '192.0.32.0/24'
+# set protocols ospf area 4 range 192.0.42.0/24 cost '10'
+# set protocols ospf auto-cost reference-bandwidth '2'
+# set protocols ospf default-information originate 'always'
+# set protocols ospf default-information originate metric '10'
+# set protocols ospf default-information originate metric-type '2'
+# set protocols ospf default-information originate route-map 'ingress'
+# set protocols ospf log-adjacency-changes 'detail'
+# set protocols ospf max-metric router-lsa 'administrative'
+# set protocols ospf max-metric router-lsa on-shutdown '10'
+# set protocols ospf max-metric router-lsa on-startup '10'
+# set protocols ospf mpls-te 'enable'
+# set protocols ospf mpls-te router-address '192.0.22.22'
+# set protocols ospf neighbor 192.0.11.12 poll-interval '10'
+# set protocols ospf neighbor 192.0.11.12 priority '2'
+# set protocols ospf parameters abr-type 'cisco'
+# set protocols ospf parameters 'opaque-lsa'
+# set protocols ospf parameters 'rfc1583-compatibility'
+# set protocols ospf parameters router-id '192.0.1.1'
+# set protocols ospf passive-interface 'eth1'
+# set protocols ospf redistribute bgp metric '10'
+# set protocols ospf redistribute bgp metric-type '2'
+
+
+# Using rendered
+#
+#
+- name: Render the commands for provided  configuration
+      vyos.vyos.vyos_ospfv2:
+        config:
+           log_adjacency_changes: 'detail'
+           max_metric:
+             router_lsa:
+               administrative: true
+               on_shutdown: 10
+               on_startup: 10
+           default_information:
+             originate:
+               always: true
+               metric: 10
+               metric_type: 2
+               route_map: 'ingress'
+           mpls_te:
+             enabled: true
+             router_address: '192.0.11.11'
+           auto_cost:
+             reference_bandwidth: 2
+           neighbor:
+             - neighbor_id: '192.0.11.12'
+               poll_interval: 10
+               priority: 2
+           redistribute:
+             - route_type: 'bgp'
+               metric: 10
+               metric_type: 2
+           passive_interface:
+             - 'eth1'
+             - 'eth2'
+           parameters:
+             router_id: '192.0.1.1'
+             opaque_lsa: true
+             rfc1583_compatibility: true
+             abr_type: 'cisco'
+           areas:
+             - area_id: '2'
+               area_type:
+                 normal: true
+               authentication: "plaintext-password"
+               shortcut: 'enable'
+             - area_id: '3'
+               area_type:
+                 nssa:
+                  set: true
+             - area_id: '4'
+               area_type:
+                 stub:
+                  default_cost: 20
+               network:
+                 - address: '192.0.2.0/24'
+               range:
+                 - address: '192.0.3.0/24'
+                   cost: 10
+                 - address: '192.0.4.0/24'
+                   cost: 12
+        state: rendered
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#
+# "rendered": [
+#        [
+#       "set protocols ospf mpls-te enable",
+#       "set protocols ospf mpls-te router-address '192.0.11.11'",
+#       "set protocols ospf redistribute bgp",
+#       "set protocols ospf redistribute bgp metric-type 2",
+#       "set protocols ospf redistribute bgp metric 10",
 #       "set protocols ospf default-information originate metric-type 2",
-#       "set protocols ospf log-adjacency-changes",
-#       "set protocols ospf parameters router-id 10.1.1.1",
-#       "set protocols ospf redistribute connected metric-type 2",
-#       "set protocols ospf redistribute connected route-map CONNECT",
-#       "set protocols ospfv3 area 0.0.0.0 range 2001:db8:1::/64,
-#       "set protocols ospfv3 parameters router-id 192.168.1.1,
-#       "set protocols ospfv3 redistribute connected
+#       "set protocols ospf default-information originate always",
+#       "set protocols ospf default-information originate metric 10",
+#       "set protocols ospf default-information originate route-map ingress",
+#       "set protocols ospf auto-cost reference-bandwidth '2'",
+#       "set protocols ospf parameters router-id '192.0.1.1'",
+#       "set protocols ospf parameters opaque-lsa",
+#       "set protocols ospf parameters abr-type 'cisco'",
+#       "set protocols ospf parameters rfc1583-compatibility",
+#       "set protocols ospf passive-interface eth1",
+#       "set protocols ospf passive-interface eth2",
+#       "set protocols ospf max-metric router-lsa on-shutdown 10",
+#       "set protocols ospf max-metric router-lsa administrative",
+#       "set protocols ospf max-metric router-lsa on-startup 10",
+#       "set protocols ospf log-adjacency-changes 'detail'",
+#       "set protocols ospf neighbor 192.0.11.12 priority 2",
+#       "set protocols ospf neighbor 192.0.11.12 poll-interval 10",
+#       "set protocols ospf neighbor 192.0.11.12",
+#       "set protocols ospf area '2'",
+#       "set protocols ospf area 2 authentication plaintext-password",
+#       "set protocols ospf area 2 shortcut enable",
+#       "set protocols ospf area 2 area-type normal",
+#       "set protocols ospf area '3'",
+#       "set protocols ospf area 3 area-type nssa",
+#       "set protocols ospf area 4 range 192.0.3.0/24 cost 10",
+#       "set protocols ospf area 4 range 192.0.3.0/24",
+#       "set protocols ospf area 4 range 192.0.4.0/24 cost 12",
+#       "set protocols ospf area 4 range 192.0.4.0/24",
+#       "set protocols ospf area 4 area-type stub default-cost 20",
+#       "set protocols ospf area '4'",
+#       "set protocols ospf area 4 network 192.0.2.0/24"
 #    ]
-#
-# "after": [
-#        {
-#                {
-#                    "afi": "ipv4",
-#                    "ospf_area":[
-#                        {
-#                            "area": "0", 
-#                            "network": "192.168.0.0/24"
-#                        }
-#                      ],
-#                    "default_information": 
-#                        {
-#                            "originate": 
-#                               {
-#                                 always: true,
-#                                 metric: 2, 
-#                                 metric_type: 10 
-#                               }
-#                        },
-#                   "log_adjacency_changes": "details"
-#                   "parameters":
-#                        {
-#                            "router_id": "10.1.1.1"
-#                        },
-#                    "redistribute":[
-#                        {
-#                            "route_type": "connetced", 
-#                            "metric_type": 2
-#                            "route_map": "CONNECT"
-#                        }
-#                      ]
-#                }, 
-#                {
-#                    "afi": "ipv6", 
-#                    "ospf_area":[
-#                        {
-#                            "area": "0.0.0.0", 
-#                        }
-#                       ],
-#                    "range": "2001:db8:1::/64", 
-#                    "parameters":
-#                        {
-#                            "router_id": "192.168.1.1"
-#                        },
-#                    "redistribute":
-#                        [
-#                            {
-#                               "route_type": "connetced",
-#                            } 
-#                        ]
-#                }
-#    ]
-#
-# After state:
-# -------------
-#
-# vyos@vyos:~$ show configuration commands| grep firewall
-# set protocols ospf area 0 network 192.168.0.0/24
-# set protocols ospf default-information originate always
-# set protocols ospf default-information originate metric 10
-# set protocols ospf default-information originate metric-type 2
-# set protocols ospf log-adjacency-changes details
-# set protocols ospf parameters router-id 10.1.1.1
-# set protocols ospf redistribute connected metric-type 2
-# set protocols ospf redistribute connected route-map CONNECT
-# set protocols ospfv3 area 0.0.0.0 range 2001:db8:1::/64
-# set protocols ospfv3 parameters router-id 192.168.1.1
-# set protocols ospfv3 redistribute connected
 
 
-# Using replaced
+# Using parsed
 #
-# Before state:
-# -------------
 #
-# vyos@192# run show configuration commands | grep ospf
-# set protocols ospf area 0 network 192.168.0.0/24
-# set protocols ospf default-information originate always
-# set protocols ospf default-information originate metric 10
-# set protocols ospf default-information originate metric-type 2
-# set protocols ospf log-adjacency-changes details
-# set protocols ospf parameters router-id 10.1.1.1
-# set protocols ospf redistribute connected metric-type 2
-# set protocols ospf redistribute connected route-map CONNECT
-# set protocols ospfv3 area 0.0.0.0 range 2001:db8:1::/64
-# set protocols ospfv3 parameters router-id 192.168.1.1
-# set protocols ospfv3 redistribute connected
-#
-- name: Replace the provided configuration with the existing running configuration
-      vyos_ospf_routes:
-        config:
-          - afi: 'ipv4'
-            ospf_area:
-              - area: 0
-                network: 192.168.0.0/24
-                area_type:
-                  normal: True
-            default_information:
-              originate:
-                always: true
-                metric: 2
-                metric_type: 10
-            log_adjacency_changes: "details"
-            parameters:
-              router_id: 10.1.1.1
-            redistribute:
-              - route_type: 'static'
-                metric_type: 2
-                route_map: 'STATIC'
-          - afi: 'ipv6'
-            ospf_area:
-              - area: 0.0.0.0
-                range: 2001:db8:1::/64
-            parameters:
-              router-id 192.168.1.1
-            redistribute:
-              - route_type: 'connected'
-        state: replaced
+- name: Render the commands for provided  configuration
+      vyos.vyos.vyos_ospfv2:
+        running_config: 
+         "set protocols ospf area 2 area-type 'normal'
+ set protocols ospf area 2 authentication 'plaintext-password'
+ set protocols ospf area 2 shortcut 'enable'
+ set protocols ospf area 3 area-type 'nssa'
+ set protocols ospf area 4 area-type stub default-cost '20'
+ set protocols ospf area 4 network '192.0.2.0/24'
+ set protocols ospf area 4 range 192.0.3.0/24 cost '10'
+ set protocols ospf area 4 range 192.0.4.0/24 cost '12'
+ set protocols ospf auto-cost reference-bandwidth '2'
+ set protocols ospf default-information originate 'always'
+ set protocols ospf default-information originate metric '10'
+ set protocols ospf default-information originate metric-type '2'
+ set protocols ospf default-information originate route-map 'ingress'
+ set protocols ospf log-adjacency-changes 'detail'
+ set protocols ospf max-metric router-lsa 'administrative'
+ set protocols ospf max-metric router-lsa on-shutdown '10'
+ set protocols ospf max-metric router-lsa on-startup '10'
+ set protocols ospf mpls-te 'enable'
+ set protocols ospf mpls-te router-address '192.0.11.11'
+ set protocols ospf neighbor 192.0.11.12 poll-interval '10'
+ set protocols ospf neighbor 192.0.11.12 priority '2'
+ set protocols ospf parameters abr-type 'cisco'
+ set protocols ospf parameters 'opaque-lsa'
+ set protocols ospf parameters 'rfc1583-compatibility'
+ set protocols ospf parameters router-id '192.0.1.1'
+ set protocols ospf passive-interface 'eth1'
+ set protocols ospf passive-interface 'eth2'
+ set protocols ospf redistribute bgp metric '10'
+ set protocols ospf redistribute bgp metric-type '2'"
+        state: parsed
 #
 #
 # -------------------------
 # Module Execution Result
 # -------------------------
 #
-# before": [
-#        {
-#                {
-#                    "afi": "ipv4",
-#                    "ospf_area":[
-#                        {
-#                            "area": "0", 
-#                            "network": "192.168.0.0/24"
-#                        }
-#                      ],
-#                    "default_information": 
-#                        {
-#                            "originate": 
-#                               {
-#                                 always: true,
-#                                 metric: 2, 
-#                                 metric_type: 10 
-#                               }
-#                        },
-#                   "log_adjacency_changes": "details"
-#                   "parameters":
-#                        {
-#                            "router_id": "10.1.1.1"
-#                        },
-#                    "redistribute":[
-#                        {
-#                            "route_type": "connetced", 
-#                            "metric_type": 2
-#                            "route_map": "CONNECT"
-#                        }
-#                      ]
-#                }, 
-#                {
-#                    "afi": "ipv6", 
-#                    "ospf_area":[
-#                        {
-#                            "area": "0.0.0.0", 
-#                        }
-#                       ],
-#                    "range": "2001:db8:1::/64", 
-#                    "parameters":
-#                        {
-#                            "router_id": "192.168.1.1"
-#                        },
-#                    "redistribute":
-#                        [
-#                            {
-#                               "route_type": "connetced",
-#                            } 
-#                        ]
+#
+# "parsed": {
+#        "areas": [
+#            {
+#                "area_id": "2",
+#                "area_type": {
+#                    "normal": true
+#                },
+#                "authentication": "plaintext-password",
+#                "shortcut": "enable"
+#            },
+#            {
+#                "area_id": "3",
+#                "area_type": {
+#                    "nssa": {
+#                        "set": true
+#                    }
 #                }
-#    ]
-#
-#    "commands": [
-#       "delete protocols ospf redistribute connected",
-#       "set protocols ospf area 0 area_type normal",
-#       "set protocols ospf redistribute static metric-type 2",
-#       "set protocols ospf redistribute static route-map CONNECT"
-#    ]
-#
-# "after": [
-#        {
-#                {
-#                    "afi": "ipv4",
-#                    "ospf_area":[
-#                        {
-#                            "area": "0", 
-#                            "area_type": 
-#                               {
-#                                 normal: true
-#                               }
-#                            "network": "192.168.0.0/24"
-#                        }
-#                      ],
-#                    "default_information": 
-#                        {
-#                            "originate": 
-#                               {
-#                                 always: true,
-#                                 metric: 2, 
-#                                 metric_type: 10 
-#                               }
-#                        },
-#                   "log_adjacency_changes": "details"
-#                   "parameters":
-#                        {
-#                            "router_id": "10.1.1.1"
-#                        },
-#                    "redistribute":[
-#                        {
-#                            "route_type": "static", 
-#                            "metric_type": 2
-#                            "route_map": "STATIC"
-#                        }
-#                      ]
-#                }, 
-#                {
-#                    "afi": "ipv6", 
-#                    "ospf_area":[
-#                        {
-#                            "area": "0.0.0.0", 
-#                        }
-#                       ],
-#                    "range": "2001:db8:1::/64", 
-#                    "parameters":
-#                        {
-#                            "router_id": "192.168.1.1"
-#                        },
-#                    "redistribute":
-#                        [
-#                            {
-#                               "route_type": "connected",
-#                            } 
-#                        ]
-#                }
-#    ]
-#
-# After state:
-# -------------
-#
-# vyos@vyos:~$ show configuration commands| grep firewall
-# set protocols ospf area 0 network 192.168.0.0/24
-# set protocols ospf default-information originate always
-# set protocols ospf default-information originate metric 10
-# set protocols ospf default-information originate metric-type 2
-# set protocols ospf log-adjacency-changes details
-# set protocols ospf parameters router-id 10.1.1.1
-# set protocols ospf redistribute static metric-type 2
-# set protocols ospf redistribute static route-map CONNECT
-# set protocols ospfv3 area 0.0.0.0 range 2001:db8:2::/64
-# set protocols ospfv3 parameters router-id 192.168.2.1
-# set protocols ospfv3 redistribute connected
+#            },
+#            {
+#                "area_id": "4",
+#                "area_type": {
+#                    "stub": {
+#                        "default_cost": 20,
+#                        "set": true
+#                    }
+#                },
+#                "network": [
+#                    {
+#                        "address": "192.0.2.0/24"
+#                    }
+#                ],
+#                "range": [
+#                    {
+#                        "address": "192.0.3.0/24",
+#                        "cost": 10
+#                    },
+#                    {
+#                        "address": "192.0.4.0/24",
+#                        "cost": 12
+#                    }
+#                ]
+#            }
+#        ],
+#        "auto_cost": {
+#            "reference_bandwidth": 2
+#        },
+#        "default_information": {
+#            "originate": {
+#                "always": true,
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_map": "ingress"
+#            }
+#        },
+#        "log_adjacency_changes": "detail",
+#        "max_metric": {
+#            "router_lsa": {
+#                "administrative": true,
+#                "on_shutdown": 10,
+#                "on_startup": 10
+#            }
+#        },
+#        "mpls_te": {
+#            "enabled": true,
+#            "router_address": "192.0.11.11"
+#        },
+#        "neighbor": [
+#            {
+#                "neighbor_id": "192.0.11.12",
+#                "poll_interval": 10,
+#                "priority": 2
+#            }
+#        ],
+#        "parameters": {
+#            "abr_type": "cisco",
+#            "opaque_lsa": true,
+#            "rfc1583_compatibility": true,
+#            "router_id": "192.0.1.1"
+#        },
+#        "passive_interface": [
+#            "eth2",
+#            "eth1"
+#        ],
+#        "redistribute": [
+#            {
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_type": "bgp"
+#            }
+#        ]
+#    }
+# }
 
 
-# Using replaced
+# Using gathered
 #
 # Before state:
 # -------------
 #
 # vyos@192# run show configuration commands | grep ospf
-# set protocols ospf area 0 network 192.168.0.0/24
-# set protocols ospf default-information originate always
-# set protocols ospf default-information originate metric 10
-# set protocols ospf default-information originate metric-type 2
-# set protocols ospf log-adjacency-changes details
-# set protocols ospf parameters router-id 10.1.1.1
-# set protocols ospf redistribute connected metric-type 2
-# set protocols ospf redistribute connected route-map CONNECT
-# set protocols ospfv3 area 0.0.0.0 range 2001:db8:1::/64
-# set protocols ospfv3 parameters router-id 192.168.1.1
-# set protocols ospfv3 redistribute connected
+# set protocols ospf area 2 area-type 'normal'
+# set protocols ospf area 2 authentication 'plaintext-password'
+# set protocols ospf area 2 shortcut 'enable'
+# set protocols ospf area 3 area-type 'nssa'
+# set protocols ospf area 4 area-type stub default-cost '20'
+# set protocols ospf area 4 network '192.0.2.0/24'
+# set protocols ospf area 4 range 192.0.3.0/24 cost '10'
+# set protocols ospf area 4 range 192.0.4.0/24 cost '12'
+# set protocols ospf auto-cost reference-bandwidth '2'
+# set protocols ospf default-information originate 'always'
+# set protocols ospf default-information originate metric '10'
+# set protocols ospf default-information originate metric-type '2'
+# set protocols ospf default-information originate route-map 'ingress'
+# set protocols ospf log-adjacency-changes 'detail'
+# set protocols ospf max-metric router-lsa 'administrative'
+# set protocols ospf max-metric router-lsa on-shutdown '10'
+# set protocols ospf max-metric router-lsa on-startup '10'
+# set protocols ospf mpls-te 'enable'
+# set protocols ospf mpls-te router-address '192.0.11.11'
+# set protocols ospf neighbor 192.0.11.12 poll-interval '10'
+# set protocols ospf neighbor 192.0.11.12 priority '2'
+# set protocols ospf parameters abr-type 'cisco'
+# set protocols ospf parameters 'opaque-lsa'
+# set protocols ospf parameters 'rfc1583-compatibility'
+# set protocols ospf parameters router-id '192.0.1.1'
+# set protocols ospf passive-interface 'eth1'
+# set protocols ospf passive-interface 'eth2'
+# set protocols ospf redistribute bgp metric '10'
+# set protocols ospf redistribute bgp metric-type '2'
 #
-- name: Replace the provided configuration with the existing running configuration
-      vyos_ospf_routes:
-        config:
-          - afi: 'ipv4'
-            ospf_area:
-              - area: 0
-                network: 192.168.0.0/24
-                area_type:
-                  normal: True
-            default_information:
-              originate:
-                always: true
-                metric: 2
-                metric_type: 10
-            log_adjacency_changes: "details"
-            parameters:
-              router_id: 10.1.1.1
-            redistribute:
-              - route_type: 'static'
-                metric_type: 2
-                route_map: 'STATIC'
-          - afi: 'ipv6'
-            ospf_area:
-              - area: 0.0.0.0
-                range: 2001:db8:1::/64
-            parameters:
-              router-id 192.168.1.1
-            redistribute:
-              - route_type: 'connected'
-        state: replaced
+- name: Gather ospfv2 routes config with provided configurations
+      vyos.vyos.vyos_ospfv2:
+          config:
+          state: gathered
 #
 #
 # -------------------------
 # Module Execution Result
 # -------------------------
 #
-# before": [
-#        {
-#                {
-#                    "afi": "ipv4",
-#                    "ospf_area":[
-#                        {
-#                            "area": "0", 
-#                            "network": "192.168.0.0/24"
-#                        }
-#                      ],
-#                    "default_information": 
-#                        {
-#                            "originate": 
-#                               {
-#                                 always: true,
-#                                 metric: 2, 
-#                                 metric_type: 10 
-#                               }
-#                        },
-#                   "log_adjacency_changes": "details"
-#                   "parameters":
-#                        {
-#                            "router_id": "10.1.1.1"
-#                        },
-#                    "redistribute":[
-#                        {
-#                            "route_type": "connetced", 
-#                            "metric_type": 2
-#                            "route_map": "CONNECT"
-#                        }
-#                      ]
-#                }, 
-#                {
-#                    "afi": "ipv6", 
-#                    "ospf_area":[
-#                        {
-#                            "area": "0.0.0.0", 
-#                        }
-#                       ],
-#                    "range": "2001:db8:1::/64", 
-#                    "parameters":
-#                        {
-#                            "router_id": "192.168.1.1"
-#                        },
-#                    "redistribute":
-#                        [
-#                            {
-#                               "route_type": "connetced",
-#                            } 
-#                        ]
+#    "gathered": {
+#        "areas": [
+#            {
+#                "area_id": "2",
+#                "area_type": {
+#                    "normal": true
+#                },
+#                "authentication": "plaintext-password",
+#                "shortcut": "enable"
+#            },
+#            {
+#                "area_id": "3",
+#                "area_type": {
+#                    "nssa": {
+#                        "set": true
+#                    }
 #                }
-#    ]
-#
-#    "commands": [
-#       "delete protocols ospf redistribute connected",
-#       "set protocols ospf area 0 area_type normal",
-#       "set protocols ospf redistribute static metric-type 2",
-#       "set protocols ospf redistribute static route-map CONNECT"
-#    ]
-#
-# "after": [
-#        {
-#                {
-#                    "afi": "ipv4",
-#                    "ospf_area":[
-#                        {
-#                            "area": "0", 
-#                            "area_type": 
-#                               {
-#                                 normal: true
-#                               }
-#                            "network": "192.168.0.0/24"
-#                        }
-#                      ],
-#                    "default_information": 
-#                        {
-#                            "originate": 
-#                               {
-#                                 always: true,
-#                                 metric: 2, 
-#                                 metric_type: 10 
-#                               }
-#                        },
-#                   "log_adjacency_changes": "details"
-#                   "parameters":
-#                        {
-#                            "router_id": "10.1.1.1"
-#                        },
-#                    "redistribute":[
-#                        {
-#                            "route_type": "static", 
-#                            "metric_type": 2
-#                            "route_map": "STATIC"
-#                        }
-#                      ]
-#                }, 
-#                {
-#                    "afi": "ipv6", 
-#                    "ospf_area":[
-#                        {
-#                            "area": "0.0.0.0", 
-#                        }
-#                       ],
-#                    "range": "2001:db8:1::/64", 
-#                    "parameters":
-#                        {
-#                            "router_id": "192.168.1.1"
-#                        },
-#                    "redistribute":
-#                        [
-#                            {
-#                               "route_type": "connected",
-#                            } 
-#                        ]
-#                }
-#    ]
+#            },
+#            {
+#                "area_id": "4",
+#                "area_type": {
+#                    "stub": {
+#                        "default_cost": 20,
+#                        "set": true
+#                    }
+#                },
+#                "network": [
+#                    {
+#                        "address": "192.0.2.0/24"
+#                    }
+#                ],
+#                "range": [
+#                    {
+#                        "address": "192.0.3.0/24",
+#                        "cost": 10
+#                    },
+#                    {
+#                        "address": "192.0.4.0/24",
+#                        "cost": 12
+#                    }
+#                ]
+#            }
+#        ],
+#        "auto_cost": {
+#            "reference_bandwidth": 2
+#        },
+#        "default_information": {
+#            "originate": {
+#                "always": true,
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_map": "ingress"
+#            }
+#        },
+#        "log_adjacency_changes": "detail",
+#        "max_metric": {
+#            "router_lsa": {
+#                "administrative": true,
+#                "on_shutdown": 10,
+#                "on_startup": 10
+#            }
+#        },
+#        "mpls_te": {
+#            "enabled": true,
+#            "router_address": "192.0.11.11"
+#        },
+#        "neighbor": [
+#            {
+#                "neighbor_id": "192.0.11.12",
+#                "poll_interval": 10,
+#                "priority": 2
+#            }
+#        ],
+#        "parameters": {
+#            "abr_type": "cisco",
+#            "opaque_lsa": true,
+#            "rfc1583_compatibility": true,
+#            "router_id": "192.0.1.1"
+#        },
+#        "passive_interface": [
+#            "eth2",
+#            "eth1"
+#        ],
+#        "redistribute": [
+#            {
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_type": "bgp"
+#            }
+#        ]
+#    }
 #
 # After state:
-# -------------
-#
-# vyos@vyos:~$ show configuration commands| grep firewall
-# set protocols ospf area 0 network 192.168.0.0/24
-# set protocols ospf default-information originate always
-# set protocols ospf default-information originate metric 10
-# set protocols ospf default-information originate metric-type 2
-# set protocols ospf log-adjacency-changes details
-# set protocols ospf parameters router-id 10.1.1.1
-# set protocols ospf redistribute static metric-type 2
-# set protocols ospf redistribute static route-map CONNECT
-# set protocols ospfv3 area 0.0.0.0 range 2001:db8:2::/64
-# set protocols ospfv3 parameters router-id 192.168.2.1
-# set protocols ospfv3 redistribute connected
-
-
-# Using replaced
-#
-# Before state:
 # -------------
 #
 # vyos@192# run show configuration commands | grep ospf
-# set protocols ospf area 0 network 192.168.0.0/24
-# set protocols ospf default-information originate always
-# set protocols ospf default-information originate metric 10
-# set protocols ospf default-information originate metric-type 2
-# set protocols ospf log-adjacency-changes details
-# set protocols ospf parameters router-id 10.1.1.1
-# set protocols ospf redistribute connected metric-type 2
-# set protocols ospf redistribute connected route-map CONNECT
-# set protocols ospfv3 area 0.0.0.0 range 2001:db8:1::/64
-# set protocols ospfv3 parameters router-id 192.168.1.1
-# set protocols ospfv3 redistribute connected
-#
-- name: Replace the provided configuration with the existing running configuration
-      vyos_ospf_routes:
-        config:
-          - afi: 'ipv4'
-            ospf_area:
-              - area: 0
-                network: 192.168.0.0/24
-                area_type:
-                  normal: True
-            default_information:
-              originate:
-                always: true
-                metric: 2
-                metric_type: 10
-            log_adjacency_changes: "details"
-            parameters:
-              router_id: 10.1.1.1
-            redistribute:
-              - route_type: 'static'
-                metric_type: 2
-                route_map: 'STATIC'
-          - afi: 'ipv6'
-            ospf_area:
-              - area: 0.0.0.0
-                range: 2001:db8:1::/64
-            parameters:
-              router-id 192.168.1.1
-            redistribute:
-              - route_type: 'connected'
-        state: replaced
-#
-#
-# -------------------------
-# Module Execution Result
-# -------------------------
-#
-# before": [
-#        {
-#                {
-#                    "afi": "ipv4",
-#                    "ospf_area":[
-#                        {
-#                            "area": "0", 
-#                            "network": "192.168.0.0/24"
-#                        }
-#                      ],
-#                    "default_information": 
-#                        {
-#                            "originate": 
-#                               {
-#                                 always: true,
-#                                 metric: 2, 
-#                                 metric_type: 10 
-#                               }
-#                        },
-#                   "log_adjacency_changes": "details"
-#                   "parameters":
-#                        {
-#                            "router_id": "10.1.1.1"
-#                        },
-#                    "redistribute":[
-#                        {
-#                            "route_type": "connetced", 
-#                            "metric_type": 2
-#                            "route_map": "CONNECT"
-#                        }
-#                      ]
-#                }, 
-#                {
-#                    "afi": "ipv6", 
-#                    "ospf_area":[
-#                        {
-#                            "area": "0.0.0.0", 
-#                        }
-#                       ],
-#                    "range": "2001:db8:1::/64", 
-#                    "parameters":
-#                        {
-#                            "router_id": "192.168.1.1"
-#                        },
-#                    "redistribute":
-#                        [
-#                            {
-#                               "route_type": "connetced",
-#                            } 
-#                        ]
-#                }
-#    ]
-#
-#    "commands": [
-#       "delete protocols ospf redistribute connected",
-#       "set protocols ospf area 0 area_type normal",
-#       "set protocols ospf redistribute static metric-type 2",
-#       "set protocols ospf redistribute static route-map CONNECT"
-#    ]
-#
-# "after": [
-#        {
-#                {
-#                    "afi": "ipv4",
-#                    "ospf_area":[
-#                        {
-#                            "area": "0", 
-#                            "area_type": 
-#                               {
-#                                 normal: true
-#                               }
-#                            "network": "192.168.0.0/24"
-#                        }
-#                      ],
-#                    "default_information": 
-#                        {
-#                            "originate": 
-#                               {
-#                                 always: true,
-#                                 metric: 2, 
-#                                 metric_type: 10 
-#                               }
-#                        },
-#                   "log_adjacency_changes": "details"
-#                   "parameters":
-#                        {
-#                            "router_id": "10.1.1.1"
-#                        },
-#                    "redistribute":[
-#                        {
-#                            "route_type": "static", 
-#                            "metric_type": 2
-#                            "route_map": "STATIC"
-#                        }
-#                      ]
-#                }, 
-#                {
-#                    "afi": "ipv6", 
-#                    "ospf_area":[
-#                        {
-#                            "area": "0.0.0.0", 
-#                        }
-#                       ],
-#                    "range": "2001:db8:1::/64", 
-#                    "parameters":
-#                        {
-#                            "router_id": "192.168.1.1"
-#                        },
-#                    "redistribute":
-#                        [
-#                            {
-#                               "route_type": "connected",
-#                            } 
-#                        ]
-#                }
-#    ]
-#
-# After state:
-# -------------
-#
-# vyos@vyos:~$ show configuration commands| grep firewall
-# set protocols ospf area 0 network 192.168.0.0/24
-# set protocols ospf default-information originate always
-# set protocols ospf default-information originate metric 10
-# set protocols ospf default-information originate metric-type 2
-# set protocols ospf log-adjacency-changes details
-# set protocols ospf parameters router-id 10.1.1.1
-# set protocols ospf redistribute static metric-type 2
-# set protocols ospf redistribute static route-map CONNECT
-# set protocols ospfv3 area 0.0.0.0 range 2001:db8:2::/64
-# set protocols ospfv3 parameters router-id 192.168.2.1
-# set protocols ospfv3 redistribute connected
-
-
-# Using replaced
-#
-# Before state:
-# -------------
-#
-# vyos@192# run show configuration commands | grep ospf
-# set protocols ospf area 0 network 192.168.0.0/24
-# set protocols ospf default-information originate always
-# set protocols ospf default-information originate metric 10
-# set protocols ospf default-information originate metric-type 2
-# set protocols ospf log-adjacency-changes details
-# set protocols ospf parameters router-id 10.1.1.1
-# set protocols ospf redistribute connected metric-type 2
-# set protocols ospf redistribute connected route-map CONNECT
-# set protocols ospfv3 area 0.0.0.0 range 2001:db8:1::/64
-# set protocols ospfv3 parameters router-id 192.168.1.1
-# set protocols ospfv3 redistribute connected
-#
-- name: Replace the provided configuration with the existing running configuration
-      vyos_ospf_routes:
-        config:
-          - afi: 'ipv4'
-            ospf_area:
-              - area: 0
-                network: 192.168.0.0/24
-                area_type:
-                  normal: True
-            default_information:
-              originate:
-                always: true
-                metric: 2
-                metric_type: 10
-            log_adjacency_changes: "details"
-            parameters:
-              router_id: 10.1.1.1
-            redistribute:
-              - route_type: 'static'
-                metric_type: 2
-                route_map: 'STATIC'
-          - afi: 'ipv6'
-            ospf_area:
-              - area: 0.0.0.0
-                range: 2001:db8:1::/64
-            parameters:
-              router-id 192.168.1.1
-            redistribute:
-              - route_type: 'connected'
-        state: replaced
-#
-#
-# -------------------------
-# Module Execution Result
-# -------------------------
-#
-# before": [
-#        {
-#                {
-#                    "afi": "ipv4",
-#                    "ospf_area":[
-#                        {
-#                            "area": "0", 
-#                            "network": "192.168.0.0/24"
-#                        }
-#                      ],
-#                    "default_information": 
-#                        {
-#                            "originate": 
-#                               {
-#                                 always: true,
-#                                 metric: 2, 
-#                                 metric_type: 10 
-#                               }
-#                        },
-#                   "log_adjacency_changes": "details"
-#                   "parameters":
-#                        {
-#                            "router_id": "10.1.1.1"
-#                        },
-#                    "redistribute":[
-#                        {
-#                            "route_type": "connetced", 
-#                            "metric_type": 2
-#                            "route_map": "CONNECT"
-#                        }
-#                      ]
-#                }, 
-#                {
-#                    "afi": "ipv6", 
-#                    "ospf_area":[
-#                        {
-#                            "area": "0.0.0.0", 
-#                        }
-#                       ],
-#                    "range": "2001:db8:1::/64", 
-#                    "parameters":
-#                        {
-#                            "router_id": "192.168.1.1"
-#                        },
-#                    "redistribute":
-#                        [
-#                            {
-#                               "route_type": "connetced",
-#                            } 
-#                        ]
-#                }
-#    ]
-#
-#    "commands": [
-#       "delete protocols ospf redistribute connected",
-#       "set protocols ospf area 0 area_type normal",
-#       "set protocols ospf redistribute static metric-type 2",
-#       "set protocols ospf redistribute static route-map CONNECT"
-#    ]
-#
-# "after": [
-#        {
-#                {
-#                    "afi": "ipv4",
-#                    "ospf_area":[
-#                        {
-#                            "area": "0", 
-#                            "area_type": 
-#                               {
-#                                 normal: true
-#                               }
-#                            "network": "192.168.0.0/24"
-#                        }
-#                      ],
-#                    "default_information": 
-#                        {
-#                            "originate": 
-#                               {
-#                                 always: true,
-#                                 metric: 2, 
-#                                 metric_type: 10 
-#                               }
-#                        },
-#                   "log_adjacency_changes": "details"
-#                   "parameters":
-#                        {
-#                            "router_id": "10.1.1.1"
-#                        },
-#                    "redistribute":[
-#                        {
-#                            "route_type": "static", 
-#                            "metric_type": 2
-#                            "route_map": "STATIC"
-#                        }
-#                      ]
-#                }, 
-#                {
-#                    "afi": "ipv6", 
-#                    "ospf_area":[
-#                        {
-#                            "area": "0.0.0.0", 
-#                        }
-#                       ],
-#                    "range": "2001:db8:1::/64", 
-#                    "parameters":
-#                        {
-#                            "router_id": "192.168.1.1"
-#                        },
-#                    "redistribute":
-#                        [
-#                            {
-#                               "route_type": "connected",
-#                            } 
-#                        ]
-#                }
-#    ]
-#
-# After state:
-# -------------
-#
-# vyos@vyos:~$ show configuration commands| grep firewall
-# set protocols ospf area 0 network 192.168.0.0/24
-# set protocols ospf default-information originate always
-# set protocols ospf default-information originate metric 10
-# set protocols ospf default-information originate metric-type 2
-# set protocols ospf log-adjacency-changes details
-# set protocols ospf parameters router-id 10.1.1.1
-# set protocols ospf redistribute static metric-type 2
-# set protocols ospf redistribute static route-map CONNECT
-# set protocols ospfv3 area 0.0.0.0 range 2001:db8:2::/64
-# set protocols ospfv3 parameters router-id 192.168.2.1
-# set protocols ospfv3 redistribute connected
+# set protocols ospf area 2 area-type 'normal'
+# set protocols ospf area 2 authentication 'plaintext-password'
+# set protocols ospf area 2 shortcut 'enable'
+# set protocols ospf area 3 area-type 'nssa'
+# set protocols ospf area 4 area-type stub default-cost '20'
+# set protocols ospf area 4 network '192.0.2.0/24'
+# set protocols ospf area 4 range 192.0.3.0/24 cost '10'
+# set protocols ospf area 4 range 192.0.4.0/24 cost '12'
+# set protocols ospf auto-cost reference-bandwidth '2'
+# set protocols ospf default-information originate 'always'
+# set protocols ospf default-information originate metric '10'
+# set protocols ospf default-information originate metric-type '2'
+# set protocols ospf default-information originate route-map 'ingress'
+# set protocols ospf log-adjacency-changes 'detail'
+# set protocols ospf max-metric router-lsa 'administrative'
+# set protocols ospf max-metric router-lsa on-shutdown '10'
+# set protocols ospf max-metric router-lsa on-startup '10'
+# set protocols ospf mpls-te 'enable'
+# set protocols ospf mpls-te router-address '192.0.11.11'
+# set protocols ospf neighbor 192.0.11.12 poll-interval '10'
+# set protocols ospf neighbor 192.0.11.12 priority '2'
+# set protocols ospf parameters abr-type 'cisco'
+# set protocols ospf parameters 'opaque-lsa'
+# set protocols ospf parameters 'rfc1583-compatibility'
+# set protocols ospf parameters router-id '192.0.1.1'
+# set protocols ospf passive-interface 'eth1'
+# set protocols ospf passive-interface 'eth2'
+# set protocols ospf redistribute bgp metric '10'
+# set protocols ospf redistribute bgp metric-type '2'
 
 
 # Using deleted
 #
-# Before state:
+# Before state
 # -------------
 #
 # vyos@192# run show configuration commands | grep ospf
-# set protocols ospf area 0 network 192.168.0.0/24
-# set protocols ospf default-information originate always
-# set protocols ospf default-information originate metric 10
-# set protocols ospf default-information originate metric-type 2
-# set protocols ospf log-adjacency-changes details
-# set protocols ospf parameters router-id 10.1.1.1
-# set protocols ospf redistribute connected metric-type 2
-# set protocols ospf redistribute connected route-map CONNECT
-# set protocols ospfv3 area 0.0.0.0 range 2001:db8:1::/64
-# set protocols ospfv3 parameters router-id 192.168.1.1
-# set protocols ospfv3 redistribute connected
+# set protocols ospf area 2 area-type 'normal'
+# set protocols ospf area 2 authentication 'plaintext-password'
+# set protocols ospf area 2 shortcut 'enable'
+# set protocols ospf area 3 area-type 'nssa'
+# set protocols ospf area 4 area-type stub default-cost '20'
+# set protocols ospf area 4 network '192.0.2.0/24'
+# set protocols ospf area 4 range 192.0.3.0/24 cost '10'
+# set protocols ospf area 4 range 192.0.4.0/24 cost '12'
+# set protocols ospf auto-cost reference-bandwidth '2'
+# set protocols ospf default-information originate 'always'
+# set protocols ospf default-information originate metric '10'
+# set protocols ospf default-information originate metric-type '2'
+# set protocols ospf default-information originate route-map 'ingress'
+# set protocols ospf log-adjacency-changes 'detail'
+# set protocols ospf max-metric router-lsa 'administrative'
+# set protocols ospf max-metric router-lsa on-shutdown '10'
+# set protocols ospf max-metric router-lsa on-startup '10'
+# set protocols ospf mpls-te 'enable'
+# set protocols ospf mpls-te router-address '192.0.11.11'
+# set protocols ospf neighbor 192.0.11.12 poll-interval '10'
+# set protocols ospf neighbor 192.0.11.12 priority '2'
+# set protocols ospf parameters abr-type 'cisco'
+# set protocols ospf parameters 'opaque-lsa'
+# set protocols ospf parameters 'rfc1583-compatibility'
+# set protocols ospf parameters router-id '192.0.1.1'
+# set protocols ospf passive-interface 'eth1'
+# set protocols ospf passive-interface 'eth2'
+# set protocols ospf redistribute bgp metric '10'
+# set protocols ospf redistribute bgp metric-type '2'
 #
-- name: Delete all the configuration
-      vyos_ospf_routes:
+- name: Delete single attributes of ospfv2 routes.
+      vyos.vyos.vyos_ospfv2:
+        config:
+          log_adjacency_changes: 'detail'
+          max_metric:
+          default_information:
+          mpls_te:
+          neighbor:
+          redistribute:
+          parameters:
+          passive_interface:
+          areas:
+        state: deleted
+#
+#
+# ------------------------
+# Module Execution Results
+# ------------------------
+#
+#    "before": {
+#        "areas": [
+#            {
+#                "area_id": "2",
+#                "area_type": {
+#                    "normal": true
+#                },
+#                "authentication": "plaintext-password",
+#                "shortcut": "enable"
+#            },
+#            {
+#                "area_id": "3",
+#                "area_type": {
+#                    "nssa": {
+#                        "set": true
+#                    }
+#                }
+#            },
+#            {
+#                "area_id": "4",
+#                "area_type": {
+#                    "stub": {
+#                        "default_cost": 20,
+#                        "set": true
+#                    }
+#                },
+#                "network": [
+#                    {
+#                        "address": "192.0.2.0/24"
+#                    }
+#                ],
+#                "range": [
+#                    {
+#                        "address": "192.0.3.0/24",
+#                        "cost": 10
+#                    },
+#                    {
+#                        "address": "192.0.4.0/24",
+#                        "cost": 12
+#                    }
+#                ]
+#            }
+#        ],
+#        "auto_cost": {
+#            "reference_bandwidth": 2
+#        },
+#        "default_information": {
+#            "originate": {
+#                "always": true,
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_map": "ingress"
+#            }
+#        },
+#        "log_adjacency_changes": "detail",
+#        "max_metric": {
+#            "router_lsa": {
+#                "administrative": true,
+#                "on_shutdown": 10,
+#                "on_startup": 10
+#            }
+#        },
+#        "mpls_te": {
+#            "enabled": true,
+#            "router_address": "192.0.11.11"
+#        },
+#        "neighbor": [
+#            {
+#                "neighbor_id": "192.0.11.12",
+#                "poll_interval": 10,
+#                "priority": 2
+#            }
+#        ],
+#        "parameters": {
+#            "abr_type": "cisco",
+#            "opaque_lsa": true,
+#            "rfc1583_compatibility": true,
+#            "router_id": "192.0.1.1"
+#        },
+#        "passive_interface": [
+#            "eth2",
+#            "eth1"
+#        ],
+#        "redistribute": [
+#            {
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_type": "bgp"
+#            }
+#        ]
+#    }
+# "commands": [
+#        "delete protocols ospf mpls-te", 
+#        "delete protocols ospf redistribute", 
+#        "delete protocols ospf auto-cost", 
+#        "delete protocols ospf passive-interface", 
+#        "delete protocols ospf parameters", 
+#        "delete protocols ospf default-information", 
+#        "delete protocols ospf max-metric", 
+#        "delete protocols ospf log-adjacency-changes", 
+#        "delete protocols ospf neighbor", 
+#        "delete protocols ospf area 2", 
+#        "delete protocols ospf area 3", 
+#        "delete protocols ospf area 4", 
+#        "delete protocols ospf area"
+#    ]
+#
+# "after": []
+# After state
+# ------------
+# vyos@192# run show configuration commands | grep ospf
+
+
+# Using deleted
+#
+# Before state
+# -------------
+#
+# vyos@192# run show configuration commands | grep ospf
+# set protocols ospf area 2 area-type 'normal'
+# set protocols ospf area 2 authentication 'plaintext-password'
+# set protocols ospf area 2 shortcut 'enable'
+# set protocols ospf area 3 area-type 'nssa'
+# set protocols ospf area 4 area-type stub default-cost '20'
+# set protocols ospf area 4 network '192.0.2.0/24'
+# set protocols ospf area 4 range 192.0.3.0/24 cost '10'
+# set protocols ospf area 4 range 192.0.4.0/24 cost '12'
+# set protocols ospf auto-cost reference-bandwidth '2'
+# set protocols ospf default-information originate 'always'
+# set protocols ospf default-information originate metric '10'
+# set protocols ospf default-information originate metric-type '2'
+# set protocols ospf default-information originate route-map 'ingress'
+# set protocols ospf log-adjacency-changes 'detail'
+# set protocols ospf max-metric router-lsa 'administrative'
+# set protocols ospf max-metric router-lsa on-shutdown '10'
+# set protocols ospf max-metric router-lsa on-startup '10'
+# set protocols ospf mpls-te 'enable'
+# set protocols ospf mpls-te router-address '192.0.11.11'
+# set protocols ospf neighbor 192.0.11.12 poll-interval '10'
+# set protocols ospf neighbor 192.0.11.12 priority '2'
+# set protocols ospf parameters abr-type 'cisco'
+# set protocols ospf parameters 'opaque-lsa'
+# set protocols ospf parameters 'rfc1583-compatibility'
+# set protocols ospf parameters router-id '192.0.1.1'
+# set protocols ospf passive-interface 'eth1'
+# set protocols ospf passive-interface 'eth2'
+# set protocols ospf redistribute bgp metric '10'
+# set protocols ospf redistribute bgp metric-type '2'
+#
+- name: Delete attributes of ospfv2 routes.
+      vyos.vyos.vyos_ospfv2:
         config:
         state: deleted
 #
 #
-# -------------------------
-# Module Execution Result
-# -------------------------
+# ------------------------
+# Module Execution Results
+# ------------------------
 #
-# before": [
-#        {
-#                {
-#                    "afi": "ipv4",
-#                    "ospf_area":[
-#                        {
-#                            "area": "0", 
-#                            "network": "192.168.0.0/24"
-#                        }
-#                      ],
-#                    "default_information": 
-#                        {
-#                            "originate": 
-#                               {
-#                                 always: true,
-#                                 metric: 2, 
-#                                 metric_type: 10 
-#                               }
-#                        },
-#                   "log_adjacency_changes": "details"
-#                   "parameters":
-#                        {
-#                            "router_id": "10.1.1.1"
-#                        },
-#                    "redistribute":[
-#                        {
-#                            "route_type": "connetced", 
-#                            "metric_type": 2
-#                            "route_map": "CONNECT"
-#                        }
-#                      ]
-#                }, 
-#                {
-#                    "afi": "ipv6", 
-#                    "ospf_area":[
-#                        {
-#                            "area": "0.0.0.0", 
-#                        }
-#                       ],
-#                    "range": "2001:db8:1::/64", 
-#                    "parameters":
-#                        {
-#                            "router_id": "192.168.1.1"
-#                        },
-#                    "redistribute":
-#                        [
-#                            {
-#                               "route_type": "connetced",
-#                            } 
-#                        ]
+#    "before": {
+#        "areas": [
+#            {
+#                "area_id": "2",
+#                "area_type": {
+#                    "normal": true
+#                },
+#                "authentication": "plaintext-password",
+#                "shortcut": "enable"
+#            },
+#            {
+#                "area_id": "3",
+#                "area_type": {
+#                    "nssa": {
+#                        "set": true
+#                    }
 #                }
-#    ]
-#
-#    "commands": [
-#       "delete protocols ospf",
-#       "delete protocols ospfv3",
+#            },
+#            {
+#                "area_id": "4",
+#                "area_type": {
+#                    "stub": {
+#                        "default_cost": 20,
+#                        "set": true
+#                    }
+#                },
+#                "network": [
+#                    {
+#                        "address": "192.0.2.0/24"
+#                    }
+#                ],
+#                "range": [
+#                    {
+#                        "address": "192.0.3.0/24",
+#                        "cost": 10
+#                    },
+#                    {
+#                        "address": "192.0.4.0/24",
+#                        "cost": 12
+#                    }
+#                ]
+#            }
+#        ],
+#        "auto_cost": {
+#            "reference_bandwidth": 2
+#        },
+#        "default_information": {
+#            "originate": {
+#                "always": true,
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_map": "ingress"
+#            }
+#        },
+#        "log_adjacency_changes": "detail",
+#        "max_metric": {
+#            "router_lsa": {
+#                "administrative": true,
+#                "on_shutdown": 10,
+#                "on_startup": 10
+#            }
+#        },
+#        "mpls_te": {
+#            "enabled": true,
+#            "router_address": "192.0.11.11"
+#        },
+#        "neighbor": [
+#            {
+#                "neighbor_id": "192.0.11.12",
+#                "poll_interval": 10,
+#                "priority": 2
+#            }
+#        ],
+#        "parameters": {
+#            "abr_type": "cisco",
+#            "opaque_lsa": true,
+#            "rfc1583_compatibility": true,
+#            "router_id": "192.0.1.1"
+#        },
+#        "passive_interface": [
+#            "eth2",
+#            "eth1"
+#        ],
+#        "redistribute": [
+#            {
+#                "metric": 10,
+#                "metric_type": 2,
+#                "route_type": "bgp"
+#            }
+#        ]
+#    }
+# "commands": [
+#        "delete protocols ospf"
 #    ]
 #
 # "after": []
-#
-# After state:
-# -------------
-#
-# vyos@vyos:~$ show configuration commands| grep firewall
+# After state
+# ------------
+# vyos@192# run show configuration commands | grep ospf
 
 
 """
@@ -1320,12 +1929,14 @@ RETURN = """
 before:
   description: The configuration prior to the model invocation.
   returned: always
+  type: dict
   sample: >
     The configuration returned will always be in the same format
      of the parameters above.
 after:
   description: The resulting configuration model invocation.
   returned: when changed
+  type: dict
   sample: >
     The configuration returned will always be in the same format
      of the parameters above.
@@ -1333,7 +1944,8 @@ commands:
   description: The set of commands pushed to the remote device.
   returned: always
   type: list
-  sample: ['command 1', 'command 2', 'command 3']
+  sample: ['set protocols ospf parameters router-id 192.0.1.1',
+           'set protocols ospf passive-interface 'eth1']
 """
 
 

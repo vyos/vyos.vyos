@@ -34,7 +34,6 @@ class Ospfv2Args(object):  # pylint: disable=R0903
 
     argument_spec = {
         'config': {
-            'elements': 'dict',
             'options': {
                 'auto_cost': {
                     'options': {
@@ -140,10 +139,10 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                     },
                     'type': 'list'
                 },
-                'ospf_area': {
+                'areas': {
                     'elements': 'dict',
                     'options': {
-                        'area': {
+                        'area_id': {
                             'type': 'str'
                         },
                         'area_type': {
@@ -157,6 +156,9 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                                             'type': 'int'
                                         },
                                         'no_summary': {
+                                            'type': 'bool'
+                                        },
+                                        'set': {
                                             'type': 'bool'
                                         },
                                         'translate': {
@@ -174,6 +176,9 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                                             'type': 'int'
                                         },
                                         'no_summary': {
+                                            'type': 'bool'
+                                        },
+                                        'set': {
                                             'type': 'bool'
                                         }
                                     },
@@ -227,6 +232,7 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                                 'authentication': {
                                     'options': {
                                         'md5': {
+                                            'elements': 'dict',
                                             'options': {
                                                 'key_id': {
                                                     'type': 'int'
@@ -235,7 +241,7 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                                                     'type': 'str'
                                                 }
                                             },
-                                            'type': 'dict'
+                                            'type': 'list'
                                         },
                                         'plaintext_password': {
                                             'type': 'str'
@@ -343,7 +349,7 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                     'type': 'dict'
                 }
             },
-            'type': 'list'
+            'type': 'dict'
         },
         "running_config": {"type": "str"},
         'state': {

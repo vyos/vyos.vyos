@@ -1,0 +1,35 @@
+---
+- name: Setup
+  vars:
+    lines: "set protocols ospf mpls-te 'enable' \n
+            set protocols ospf mpls-te router-address '192.0.11.11' \n
+            set protocols ospf redistribute bgp metric-type '2' \n
+            set protocols ospf redistribute bgp metric '10'\n
+            set protocols ospf default-information originate metric-type '2' \n
+            set protocols ospf default-information originate 'always' \n
+            set protocols ospf default-information originate metric '10' \n
+            set protocols ospf default-information originate route-map 'ingress' \n
+            set protocols ospf auto-cost reference-bandwidth '2' \n
+            set protocols ospf parameters router-id '192.0.1.1' \n
+            set protocols ospf parameters 'opaque-lsa' \n
+            set protocols ospf parameters abr-type 'cisco' \n
+            set protocols ospf parameters 'rfc1583-compatibility' \n
+            set protocols ospf passive-interface 'eth1' \n
+            set protocols ospf passive-interface 'eth2' \n
+            set protocols ospf max-metric router-lsa on-shutdown '10' \n
+            set protocols ospf max-metric router-lsa 'administrative' \n
+            set protocols ospf max-metric router-lsa on-startup '10' \n
+            set protocols ospf log-adjacency-changes 'detail' \n
+            set protocols ospf neighbor 192.0.11.12 priority '2' \n
+            set protocols ospf neighbor 192.0.11.12 poll-interval '10' \n
+            set protocols ospf area 2 authentication 'plaintext-password' \n
+            set protocols ospf area 2 shortcut 'enable' \n
+            set protocols ospf area 2 area-type 'normal' \n
+            set protocols ospf area 3 area-type 'nssa' \n
+            set protocols ospf area 4 range 192.0.3.0/24 cost '10' \n
+            set protocols ospf area 4 range 192.0.4.0/24 cost '12' \n
+            set protocols ospf area 4 area-type stub default-cost '20' \n
+            set protocols ospf area 4 network '192.0.2.0/24'"
+
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'

@@ -1,0 +1,70 @@
+---
+- debug:
+    msg: START vyos_ospfv2 merged integration tests on connection={{ ansible_connection
+      }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+
+    - name: Merge the provided configuration with the exisiting running configuration
+      register: result
+      vyos.vyos.vyos_ospfv2: &id001
+        config:
+          log_adjacency_changes: 'detail'
+          max_metric:
+            router_lsa:
+              administrative: true
+              on_shutdown: 10
+              on_startup: 10
+          passive_interface:
+            - 'eth1'
+          areas:
+            - area_id: '3'
+              area_type:
+                nssa:
+                  set: true
+            - area_id: '4'
+              area_type:
+                stub:
+                  set: false
+              network:
+                - address: '192.0.2.0/24'
+                - address: '192.0.22.0/24'
+                - address: '192.0.32.0/24'
+        state: merged
+
+    - name: Assert that before dicts were correctly generated
+      assert:
+        that: "{{ merged_update['before'] == result['before'] }}"
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ merged_update['commands'] | symmetric_difference(result['commands']) |length\
+            \ == 0 }}"
+
+    - name: Assert that after dicts was correctly generated
+      assert:
+        that:
+          - "{{ merged_update['after'] == result['after'] }}"
+
+    - name: Merge the provided configuration with the existing running configuration
+        (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_ospfv2: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+    - name: Assert that before dicts were correctly generated
+      assert:
+        that:
+          - "{{ merged_update['after'] == result['before'] }}"
+  always:
+
+    - include_tasks: _remove_config.yaml
