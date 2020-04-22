@@ -51,20 +51,14 @@ class Ospfv3Facts(object):
             # typically data is populated from the current device configuration
             # data = connection.get('show running-config | section ^interface')
             # using mock data instead
-        objs = []
+        objs = {}
         ospfv3 = findall(r"^set protocols ospfv3 (.+)", data, M)
         if ospfv3:
-            config = self.render_config(ospfv3)
-            if config:
-                objs.append(config)
-        ansible_facts["ansible_network_resources"].pop("ospfv3", None)
+            objs = self.render_config(ospfv3)
         facts = {}
-        if objs:
-            facts["ospfv3"] = []
-            params = utils.validate_config(self.argument_spec, {"config": objs})
-            for cfg in params["config"]:
-                facts["ospfv3"].append(utils.remove_empties(cfg))
-        ansible_facts["ansible_network_resources"].update(facts)
+        params = utils.validate_config(self.argument_spec, {'config': objs})
+        facts['ospfv3'] = utils.remove_empties(params['config'])
+        ansible_facts['ansible_network_resources'].update(facts)
         return ansible_facts
 
     def render_config(self, conf):
@@ -92,9 +86,9 @@ class Ospfv3Facts(object):
         """
         r_lst = []
         if attrib == "area":
-            items = findall(r"^" + attrib + " (?:\'*)(\S+)(?:\'*)", conf, M)
+            items = findall(r"^" + attrib + " (?:\'*)(\\S+)(?:\'*)", conf, M)
         else:
-            items = findall(r"" + attrib + " (?:\'*)(\S+)(?:\'*)", conf, M)
+            items = findall(r"" + attrib + " (?:\'*)(\\S+)(?:\'*)", conf, M)
         if items:
             a_lst = []
             for item in set(items):
