@@ -34,12 +34,11 @@ class Ospfv3Args(object):  # pylint: disable=R0903
 
     argument_spec = {
         'config': {
-            'elements': 'dict',
             'options': {
-                'ospf_area': {
+                'areas': {
                     'elements': 'dict',
                     'options': {
-                        'area': {
+                        'area_id': {
                             'type': 'str'
                         },
                         'export_list': {
@@ -90,7 +89,10 @@ class Ospfv3Args(object):  # pylint: disable=R0903
                     'type': 'list'
                 }
             },
-            'type': 'list'
+            'type': 'dict'
+        },
+        'running_config': {
+            'type': 'str'
         },
         "running_config": {"type": "str"},
         'state': {

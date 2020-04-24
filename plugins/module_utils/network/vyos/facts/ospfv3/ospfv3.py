@@ -71,7 +71,7 @@ class Ospfv3Facts(object):
         conf = "\n".join(filter(lambda x: x, conf))
         config = {}
         config["parameters"] = self.parse_attrib(conf, "parameters", "parameters")
-        config["ospf_area"] = self.parse_attrib_list(conf, "area", "area")
+        config["areas"] = self.parse_attrib_list(conf, "area", "area_id")
         config["redistribute"] = self.parse_attrib_list(conf, "redistribute", "route_type")
         return config
 
@@ -111,8 +111,11 @@ class Ospfv3Facts(object):
         :param area_id: area identity
         :return: generated rule configuration dictionary.
         """
-        cfg_dict = {"range": self.parse_attrib_list(conf, "range", "address")}
-        return cfg_dict
+
+        rule = self.parse_attrib(conf, 'area_id', match=area_id)
+        r_sub = {'range': self.parse_attrib_list(conf, 'range', 'address')}
+        rule.update(r_sub)
+        return rule
 
     def parse_attrib(self, conf, param, match=None):
         """
@@ -121,6 +124,7 @@ class Ospfv3Facts(object):
         :return: generated configuration dictionary
         """
         param_lst = {
+            'area_id': ['export_list', 'import_list'],
             'redistribute': ["route_map"],
             'range': ["advertise", "not_advertise"],
             'parameters': ["router_id"]

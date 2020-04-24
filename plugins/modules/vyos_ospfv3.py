@@ -39,22 +39,21 @@ DOCUMENTATION = """
 ---
 module: vyos_ospfv3
 version_added: 2.10
-short_description: Manages attributes of OSPF IPv6 routes on VyOS network devices.
-description: This module manages attributes of OSPF IPv6 routes on VyOS network devices.
+short_description: OSPFv3 resource module.
+description: This resource module configures and manages attributes of OSPFv3 routes on VyOS network devices.
 author: Rohit Thakur (@rohitthakur2590)
 options:
   config:
-    description: A provided OSPF route configuration.
-    type: list
-    elements: dict
+    description: A provided OSPFv3 route configuration.
+    type: dict
     suboptions:
-      ospf_area:
-        description: OSPF area.
+      areas:
+        description: OSPFv3 area.
         type: list
         elements: dict
         suboptions:
-          area:
-            description: Area name/identity.
+          area_id:
+            description: OSPFv3 Area name/identity.
             type: str
           export_list:
             description: Name of export-list.
@@ -95,6 +94,10 @@ options:
           route_map:
             description: Route map references.
             type: str 
+  running_config:
+    description:
+      - The configuration to be parsed.
+    type: str
   state:
     description:
       - The state the configuration should be left in.

@@ -11,8 +11,9 @@ necessary to bring the current configuration to it's desired end-state is
 created
 """
 from __future__ import absolute_import, division, print_function
-
 __metaclass__ = type
+
+import q
 
 from copy import deepcopy
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
@@ -21,6 +22,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.c
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     to_list,
     remove_empties,
+    search_obj_in_list
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible.module_utils.six import iteritems
@@ -143,15 +145,13 @@ class Ospfv3(ConfigBase):
             commands.extend(self._state_overridden(w, h))
         elif self.state == "deleted":
             commands.extend(self._state_deleted(w, h))
-        elif w:
-            if self.state == "merged" or self.state == "rendered":
-                for w_item in w:
-                    commands.extend(self._state_merged(w_item, h))
-            elif self.state == "replaced":
-                for w_item in w:
-                    commands.extend(self._state_replaced(w_item, h))
+        elif self.state in ("merged", "rendered"):
+            commands.extend(self._state_merged(w, h))
+        elif self.state == "replaced":
+            commands.extend(self._state_replaced(w, h))
         return commands
 
+    '''
     def search_obj_in_have(self, have, w_name, key):
         """
         This function  returns the rule-set/rule if it is present in target config.
@@ -166,6 +166,15 @@ class Ospfv3(ConfigBase):
                     return item
         return None
 
+    def search_obj_in_list(name, lst, key="name"):
+        if not lst:
+            return None
+        else:
+            for item in lst:
+                if item.get(key) == name:
+                    return item
+    '''
+
     def _state_replaced(self, want, have):
         """ The command generator when state is replaced
 
@@ -174,11 +183,9 @@ class Ospfv3(ConfigBase):
                   to the desired configuration
         """
         commands = []
-        h_item = {}
         if have:
-            h_item = have[0]
-            commands.extend(self._render_ospf_param(h_item, want, opr=False))
-        commands.extend(self._render_ospf_param(want, h_item))
+            commands.extend(self._render_ospf_param(have, want, opr=False))
+        commands.extend(self._render_ospf_param(want, have))
         return commands
 
     def _state_merged(self, want, have):
@@ -189,10 +196,7 @@ class Ospfv3(ConfigBase):
                   the current configuration
         """
         commands = []
-        h_item = {}
-        if have:
-            h_item = have[0]
-        commands.extend(self._render_ospf_param(want, h_item))
+        commands.extend(self._render_ospf_param(want, have))
         return commands
 
     def _state_deleted(self, want, have):
@@ -204,16 +208,14 @@ class Ospfv3(ConfigBase):
         """
         commands = []
         if want:
-            for w in want:
+            if have:
                 if have:
-                    h = have[0]
-                    if h:
-                        for key, val in iteritems(w):
-                            if key in h:
-                                if key == 'ospf_area':
-                                    key = 'area'
-                                commands.append(self._compute_command(attr=key, opr=False))
-        elif have and have[0]:
+                    for key, val in iteritems(want):
+                        if key in have:
+                            if key == 'areas':
+                                key = 'area'
+                            commands.append(self._compute_command(attr=key, opr=False))
+        elif have:
             commands.append('delete protocols ospfv3')
         return commands
 
@@ -245,8 +247,8 @@ class Ospfv3(ConfigBase):
         :return: list of commands.
         """
         commands = []
-        if key == 'ospf_area':
-            commands.extend(self._render_ospf_area(key, w, h, opr=opr))
+        if key == 'areas':
+            commands.extend(self._render_areas(key, w, h, opr=opr))
         elif key == 'parameters':
             commands.extend(self._render_dict_param(key, w, h, opr=opr))
         elif key == 'redistribute':
@@ -278,46 +280,6 @@ class Ospfv3(ConfigBase):
                     commands.append(self._form_attr_cmd(key=attr, attr=item, opr=opr))
         return commands
 
-    def _render_list_param(self, attr, want, have, cmd=None, opr=True):
-        """
-        This function forms the commands for passed target list attributes'.
-        :param attr: attribute name.
-        :param w: the desired config.
-        :param h: the target config.
-        :param cmd: commands to be prepend.
-        :param opr: True/False.
-        :return: generated list of commands.
-        """
-        commands = []
-        h = []
-        if want:
-            w = want.get(attr) or []
-        if have:
-            h = have.get(attr) or []
-        if not cmd:
-            cmd = self._compute_command(opr=opr)
-        if w:
-            if opr:
-                members = list_diff_want_only(w, h)
-                for member in members:
-                    command = cmd + attr.replace("_","-") + " "
-                    if attr == 'network':
-                        command += member['address']
-                    else:
-                        command += member
-                    commands.append(command)
-            elif not opr:
-                if h:
-                    for member in w:
-                        if attr == 'network':
-                            if not self.search_obj_in_have(h, member, 'address'):
-                                commands.append(cmd + attr.replace("_","-") + ' ' + member['address'])
-                        elif member not in h:
-                            commands.append(cmd + attr.replace("_","-") + ' ' + member)
-                else:
-                    commands.append(cmd + " " + attr.replace("_","-"))
-        return commands
-
     def _render_list_dict_param(self, attr, want, have, cmd=None, opr=True):
         """
         This function forms the set/delete commands based on the 'opr' type
@@ -346,24 +308,30 @@ class Ospfv3(ConfigBase):
         elif w:
             for w_item in w:
                 for key, val in iteritems(w_item):
+                    q(key)
+                    q(val)
+                    q(name[attr])
+                    q(w_item)
+                    q(attr)
                     if not cmd:
                         cmd = self._compute_command(opr=opr)
-                    h_item = self.search_obj_in_have(h, w_item, name[attr])
+                    h_item = search_obj_in_list(w_item[name[attr]], h, name[attr])
                     if opr and key in leaf and not _is_w_same(w_item, h_item, key):
-                        if key in ('route_type', 'address'):
+                        if key == 'route_type' or (key == 'address' and not ('advertise', 'not-advertise') not in w_item):
                             commands.append(cmd + attr + ' ' + str(val))
-                        elif key in leaf_dict['range']:
-                            commands.append(cmd + attr + ' ' + w_item[name[attr]] + ' ' + key.replace("_","-"))
-                        else:
+                        elif key in leaf_dict['range'] and key != 'address':
+                            commands.append(cmd + attr + ' ' + w_item[name[attr]] + ' ' + key.replace("_", "-"))
+                        elif key == 'route_map':
                             commands.append(cmd + attr + ' ' + w_item[name[attr]] + ' ' + key.replace("_", "-") + ' ' + str(val))
                     elif not opr and key in leaf and not _in_target(h_item, key):
                         if key in ('route_type', 'address'):
                             commands.append(cmd + attr + ' ' + str(val))
                         else:
                             commands.append(cmd + (attr + ' ' + w_item[name[attr]] + ' ' + key))
+                    q(commands)
         return commands
 
-    def _render_ospf_area(self, attr, want, have, opr=True):
+    def _render_areas(self, attr, want, have, opr=True):
         """
         This function forms the set/delete commands based on the 'opr' type
         for ospf area attributes.
@@ -376,29 +344,29 @@ class Ospfv3(ConfigBase):
         commands = []
         h_lst = {}
         w_lst = want.get(attr) or []
-        l_set = ("area")
+        l_set = ("area_id, export_list, import_list")
         if have:
             h_lst = have.get(attr) or []
         if not opr and not h_lst:
             commands.append(self._form_attr_cmd(attr='area', opr=opr))
         elif w_lst:
             for w_area in w_lst:
-                cmd = self._compute_command(key='area', attr=_bool_to_str(w_area['area']), opr=opr) + ' '
-                h_area = self.search_obj_in_have(h_lst, w_area, 'area')
+                cmd = self._compute_command(key='area', attr=_bool_to_str(w_area['area_id']), opr=opr) + ' '
+                h_area = search_obj_in_list(w_area['area_id'], h_lst, 'area_id')
                 if not opr and not h_area:
-                    commands.append(self._form_attr_cmd(key='area', attr=w_area['area'], opr=opr))
+                    commands.append(self._form_attr_cmd(key='area', attr=w_area['area_id'], opr=opr))
                 else:
                     for key, val in iteritems(w_area):
                         if opr and key in l_set and not _is_w_same(w_area, h_area, key):
-                            if key == 'area':
-                                commands.append(self._form_attr_cmd(attr=key, val=_bool_to_str(val), opr=opr))
+                            if key == 'area_id':
+                                commands.append(self._form_attr_cmd(attr='area', val=_bool_to_str(val), opr=opr))
                             else:
-                                commands.append(cmd + key + ' ' + _bool_to_str(val).replace("_","-"))
+                                commands.append(cmd + key.replace("_", "-") + ' ' + _bool_to_str(val).replace("_", "-"))
                         elif not opr and key in l_set:
-                            if key == 'area' and not _in_target(h_area, key):
+                            if key == 'area_id' and not _in_target(h_area, key):
                                 commands.append(cmd)
                                 continue
-                            elif key != 'area' and not _in_target(h_area, key):
+                            elif key != 'area_id' and not _in_target(h_area, key):
                                 commands.append(cmd + val + ' ' + key)
                         elif key == 'range':
                             commands.extend(self._render_list_dict_param(key, w_area, h_area, cmd, opr))
