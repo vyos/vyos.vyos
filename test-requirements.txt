@@ -1,4 +1,6 @@
 black ; python_version > '3.5'
 flake8
+mock
 pexpect
+pytest-xdist
 yamllint
