@@ -11,15 +11,11 @@
       register: result
       vyos.vyos.vyos_firewall_rules: &id001
         config:
-
           - afi: ipv6
             rule_sets:
-
               - name: UPLINK
-
           - afi: ipv4
             rule_sets:
-
               - name: INBOUND
         state: deleted
 

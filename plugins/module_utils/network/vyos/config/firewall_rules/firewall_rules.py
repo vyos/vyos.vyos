@@ -235,28 +235,11 @@ class Firewall_rules(ConfigBase):
                             have, rs["name"], "r_list"
                         )
                         if h:
-                            w_rules = rs.get("rules") or []
-                            h_rules = h.get("rules") or []
-                            if w_rules and h_rules:
-                                for rule in w_rules:
-                                    if self.search_r_sets_in_have(
-                                        h_rules, rule["number"], "rules"
-                                    ):
-                                        commands.append(
-                                            self._add_r_base_attrib(
-                                                w["afi"],
-                                                rs["name"],
-                                                "number",
-                                                rule,
-                                                opr=False,
-                                            )
-                                        )
-                            else:
-                                commands.append(
-                                    self._compute_command(
-                                        w["afi"], h["name"], remove=True
-                                    )
+                            commands.append(
+                                self._compute_command(
+                                    w["afi"], h["name"], remove=True
                                 )
+                            )
                 elif have:
                     for h in have:
                         if h["afi"] == w["afi"]:
