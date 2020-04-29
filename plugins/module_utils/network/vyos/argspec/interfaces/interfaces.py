@@ -31,7 +31,6 @@ __metaclass__ = type
 class InterfacesArgs(object):  # pylint: disable=R0903
     """The arg spec for the vyos_interfaces module
     """
-
     def __init__(self, **kwargs):
         pass
 
@@ -39,11 +38,23 @@ class InterfacesArgs(object):  # pylint: disable=R0903
         "config": {
             "elements": "dict",
             "options": {
-                "description": {"type": "str"},
-                "duplex": {"choices": ["full", "half", "auto"]},
-                "enabled": {"default": True, "type": "bool"},
-                "mtu": {"type": "int"},
-                "name": {"required": True, "type": "str"},
+                "description": {
+                    "type": "str"
+                },
+                "duplex": {
+                    "choices": ["full", "half", "auto"]
+                },
+                "enabled": {
+                    "default": True,
+                    "type": "bool"
+                },
+                "mtu": {
+                    "type": "int"
+                },
+                "name": {
+                    "required": True,
+                    "type": "str"
+                },
                 "speed": {
                     "choices": ["auto", "10", "100", "1000", "2500", "10000"],
                     "type": "str",
@@ -51,19 +62,34 @@ class InterfacesArgs(object):  # pylint: disable=R0903
                 "vifs": {
                     "elements": "dict",
                     "options": {
-                        "vlan_id": {"type": "int"},
-                        "description": {"type": "str"},
-                        "enabled": {"default": True, "type": "bool"},
-                        "mtu": {"type": "int"},
+                        "vlan_id": {
+                            "type": "int"
+                        },
+                        "description": {
+                            "type": "str"
+                        },
+                        "enabled": {
+                            "default": True,
+                            "type": "bool"
+                        },
+                        "mtu": {
+                            "type": "int"
+                        },
                     },
                     "type": "list",
                 },
             },
             "type": "list",
         },
+        "running_config": {"type": "str"},
         "state": {
-            "choices": ["merged", "replaced", "overridden", "deleted"],
-            "default": "merged",
-            "type": "str",
+            "choices": [
+                "merged", "replaced", "overridden", "deleted", "rendered",
+                "parsed", "gathered"
+            ],
+            "default":
+            "merged",
+            "type":
+            "str",
         },
     }  # pylint: disable=C0301

@@ -133,6 +133,23 @@ overridden:
       vifs:
         - vlan_id: 200
           enabled: true
+rendered:
+  commands:
+    - set interfaces ethernet eth0 duplex 'auto'
+    - set interfaces ethernet eth0 speed 'auto'
+    - delete interfaces ethernet eth0 disable
+    - set interfaces ethernet eth1 duplex 'auto'
+    - delete interfaces ethernet eth1 disable
+    - set interfaces ethernet eth1 speed 'auto'
+    - set interfaces ethernet eth1 description 'Configured by Ansible - Interface 1'
+    - set interfaces ethernet eth1 mtu '1500'
+    - set interfaces ethernet eth1 vif 100 description 'Eth1 - VIF 100'
+    - set interfaces ethernet eth1 vif 100 mtu '400'
+    - set interfaces ethernet eth1 vif 101 description 'Eth1 - VIF 101'
+    - set interfaces ethernet eth2 disable
+    - set interfaces ethernet eth2 description 'Configured by Ansible - Interface 2 (ADMIN DOWN)'
+    - set interfaces ethernet eth2 mtu '600'
+
 deleted:
   commands:
     - delete interfaces ethernet eth1 description
