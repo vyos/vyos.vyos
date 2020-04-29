@@ -37,7 +37,7 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = """module: vyos_lag_interfaces
-short_description: Manages attributes of link aggregation groups on VyOS network devices.
+short_description: LAG interfaces resource module
 description: This module manages attributes of link aggregation groups on VyOS network
   devices.
 notes:
@@ -100,6 +100,15 @@ options:
             description:
             - IP address to use for ARP monitoring.
             type: list
+  running_config:
+    description:
+      - This option is used only with state I(parsed).
+      - The value of this option should be the output received from the VyOS device by executing
+        the command B(show configuration commands | grep bond).
+      - The state I(parsed) reads the configuration from C(running_config) option and transforms
+        it into Ansible structured data as per the resource module's argspec and the value is then
+        returned in the I(parsed) key within the result.
+    type: str
   state:
     description:
     - The state of the configuration after module completion.
@@ -109,6 +118,9 @@ options:
     - replaced
     - overridden
     - deleted
+    - parsed
+    - gathered
+    - rendered
     default: merged
 """
 EXAMPLES = """
@@ -122,7 +134,7 @@ EXAMPLES = """
 # set interfaces bonding bond3
 #
 - name: Merge provided configuration with device configuration
-  vyos_lag_interfaces:
+  vyos.vyos.vyos_lag_interfaces:
     config:
       - name: bond2
         mode: active-backup
@@ -226,7 +238,7 @@ EXAMPLES = """
 # set interfaces ethernet eth3 bond-group 'bond3'
 #
 - name: Replace device configurations of listed LAGs with provided configurations
-  vyos_lag_interfaces:
+  vyos.vyos.vyos_lag_interfaces:
     config:
       - name: bond3
         mode: '802.3ad'
@@ -331,7 +343,7 @@ EXAMPLES = """
 # set interfaces ethernet eth3 bond-group 'bond3'
 #
 - name: Overrides all device configuration with provided configuration
-  vyos_lag_interfaces:
+  vyos.vyos.vyos_lag_interfaces:
     config:
       - name: bond3
         mode: active-backup
@@ -441,7 +453,7 @@ EXAMPLES = """
 # set interfaces ethernet eth3 bond-group 'bond3'
 #
 - name: Delete LAG attributes of given interfaces (Note This won't delete the interface itself)
-  vyos_lag_interfaces:
+  vyos.vyos.vyos_lag_interfaces:
     config:
       - name: bond2
       - name: bond3
@@ -507,6 +519,202 @@ EXAMPLES = """
 # set interfaces bonding bond3
 
 
+# Using gathered
+#
+# Before state:
+# -------------
+#
+# vyos@192# run show configuration commands | grep bond
+# set interfaces bonding bond0 hash-policy 'layer2'
+# set interfaces bonding bond0 mode 'active-backup'
+# set interfaces bonding bond0 primary 'eth1'
+# set interfaces bonding bond1 hash-policy 'layer2+3'
+# set interfaces bonding bond1 mode 'active-backup'
+# set interfaces bonding bond1 primary 'eth2'
+# set interfaces ethernet eth1 bond-group 'bond0'
+# set interfaces ethernet eth2 bond-group 'bond1'
+#
+- name: Gather listed  lag interfaces with provided configurations
+  vyos.vyos.vyos_lag_interfaces:
+    config:
+    state: gathered
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#    "gathered": [
+#        {
+#            "afi": "ipv6",
+#            "rule_sets": [
+#                {
+#                    "default_action": "accept",
+#                    "description": "This is ipv6 specific rule-set",
+#                    "name": "UPLINK",
+#                    "rules": [
+#                        {
+#                            "action": "accept",
+#                            "description": "Fwipv6-Rule 1 is configured by Ansible",
+#                            "ipsec": "match-ipsec",
+#                            "number": 1
+#                        },
+#                        {
+#                            "action": "accept",
+#                            "description": "Fwipv6-Rule 2 is configured by Ansible",
+#                            "ipsec": "match-ipsec",
+#                            "number": 2
+#                        }
+#                    ]
+#                }
+#            ]
+#        },
+#        {
+#            "afi": "ipv4",
+#            "rule_sets": [
+#                {
+#                    "default_action": "accept",
+#                    "description": "IPv4 INBOUND rule set",
+#                    "name": "INBOUND",
+#                    "rules": [
+#                        {
+#                            "action": "accept",
+#                            "description": "Rule 101 is configured by Ansible",
+#                            "ipsec": "match-ipsec",
+#                            "number": 101
+#                        },
+#                        {
+#                            "action": "reject",
+#                            "description": "Rule 102 is configured by Ansible",
+#                            "ipsec": "match-ipsec",
+#                            "number": 102
+#                        },
+#                        {
+#                            "action": "accept",
+#                            "description": "Rule 103 is configured by Ansible",
+#                            "destination": {
+#                                "group": {
+#                                    "address_group": "inbound"
+#                                }
+#                            },
+#                            "number": 103,
+#                            "source": {
+#                                "address": "192.0.2.0"
+#                            },
+#                            "state": {
+#                                "established": true,
+#                                "invalid": false,
+#                                "new": false,
+#                                "related": true
+#                            }
+#                        }
+#                    ]
+#                }
+#            ]
+#        }
+#    ]
+#
+#
+# After state:
+# -------------
+#
+# vyos@192# run show configuration commands | grep bond
+# set interfaces bonding bond0 hash-policy 'layer2'
+# set interfaces bonding bond0 mode 'active-backup'
+# set interfaces bonding bond0 primary 'eth1'
+# set interfaces bonding bond1 hash-policy 'layer2+3'
+# set interfaces bonding bond1 mode 'active-backup'
+# set interfaces bonding bond1 primary 'eth2'
+# set interfaces ethernet eth1 bond-group 'bond0'
+# set interfaces ethernet eth2 bond-group 'bond1'
+
+
+# Using rendered
+#
+#
+- name: Render the commands for provided  configuration
+  vyos.vyos.vyos_lag_interfaces:
+    config:
+       - name: bond0
+         hash_policy: layer2
+         members:
+           - member: eth1
+         mode: active-backup
+         primary: eth1
+       - name: bond1
+         hash_policy: layer2+3
+         members:
+           - member: eth2
+         mode: active-backup
+         primary: eth2
+    state: rendered
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#
+# "rendered": [
+#        "set interfaces bonding bond0 hash-policy 'layer2'",
+#        "set interfaces ethernet eth1 bond-group 'bond0'",
+#        "set interfaces bonding bond0 mode 'active-backup'",
+#        "set interfaces bonding bond0 primary 'eth1'",
+#        "set interfaces bonding bond1 hash-policy 'layer2+3'",
+#        "set interfaces ethernet eth2 bond-group 'bond1'",
+#        "set interfaces bonding bond1 mode 'active-backup'",
+#        "set interfaces bonding bond1 primary 'eth2'"
+#    ]
+
+
+# Using parsed
+#
+#
+- name: Parsed the commands for provided  configuration
+  vyos.vyos.vyos_l3_interfaces:
+    running_config:
+      "set interfaces bonding bond0 hash-policy 'layer2'
+ set interfaces bonding bond0 mode 'active-backup'
+ set interfaces bonding bond0 primary 'eth1'
+ set interfaces bonding bond1 hash-policy 'layer2+3'
+ set interfaces bonding bond1 mode 'active-backup'
+ set interfaces bonding bond1 primary 'eth2'
+ set interfaces ethernet eth1 bond-group 'bond0'
+ set interfaces ethernet eth2 bond-group 'bond1'"
+    state: parsed
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#
+# "parsed": [
+#         {
+#             "hash_policy": "layer2",
+#             "members": [
+#                 {
+#                     "member": "eth1"
+#                 }
+#             ],
+#             "mode": "active-backup",
+#             "name": "bond0",
+#             "primary": "eth1"
+#         },
+#         {
+#             "hash_policy": "layer2+3",
+#             "members": [
+#                 {
+#                     "member": "eth2"
+#                 }
+#             ],
+#             "mode": "active-backup",
+#             "name": "bond1",
+#             "primary": "eth2"
+#         }
+#     ]
+
+
 """
 RETURN = """
 before:
@@ -551,12 +759,17 @@ def main():
     required_if = [
         ("state", "merged", ("config",)),
         ("state", "replaced", ("config",)),
+        ("state", "rendered", ("config",)),
         ("state", "overridden", ("config",)),
+        ("state", "parsed", ("running_config",)),
     ]
+    mutually_exclusive = [("config", "running_config")]
+
     module = AnsibleModule(
         argument_spec=Lag_interfacesArgs.argument_spec,
         required_if=required_if,
         supports_check_mode=True,
+        mutually_exclusive=mutually_exclusive,
     )
 
     result = Lag_interfaces(module).execute_module()

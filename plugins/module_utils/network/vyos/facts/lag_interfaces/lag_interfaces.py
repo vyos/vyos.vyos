@@ -12,6 +12,7 @@ based on the configuration.
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
+
 from re import findall, search, M
 from copy import deepcopy
 
@@ -59,30 +60,21 @@ class Lag_interfacesFacts(object):
                 lag_regex = r" %s .+$" % lag
                 cfg = findall(lag_regex, data, M)
                 obj = self.render_config(cfg)
-
-                output = connection.run_commands(
-                    ["show interfaces bonding " + lag + " slaves"]
-                )
-                lines = output[0].splitlines()
                 members = []
                 member = {}
-                if len(lines) > 1:
-                    for line in lines[2:]:
-                        splitted_line = line.split()
 
-                        if len(splitted_line) > 1:
-                            member["member"] = splitted_line[0]
-                            members.append(member)
-                        else:
-                            members = []
-                        member = {}
+                group_regex = r".*eth.* '%s'" % lag
+                g_cfg = findall(group_regex, data, M)
+                for item in g_cfg:
+                    output = search("^set interfaces ethernet (\\S+)", item, M)
+                    if output:
+                        member["member"] = output.group(1).strip("'")
+                        members.append(member)
                 obj["name"] = lag.strip("'")
                 if members:
                     obj["members"] = members
-
                 if obj:
                     objs.append(obj)
-
         facts = {}
         if objs:
             facts["lag_interfaces"] = []
