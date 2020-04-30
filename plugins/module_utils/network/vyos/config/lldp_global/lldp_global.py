@@ -47,20 +47,20 @@ class Lldp_global(ConfigBase):
     def __init__(self, module):
         super(Lldp_global, self).__init__(module)
 
-    def get_lldp_global_facts(self):
+    def get_lldp_global_facts(self, data=None):
         """ Get the 'facts' (the current configuration)
 
         :rtype: A dictionary
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources
+            self.gather_subset, self.gather_network_resources, data=data
         )
         lldp_global_facts = facts["ansible_network_resources"].get(
             "lldp_global"
         )
         if not lldp_global_facts:
-            return {}
+            return []
         return lldp_global_facts
 
     def execute_module(self):
@@ -70,22 +70,45 @@ class Lldp_global(ConfigBase):
         :returns: The result from module execution
         """
         result = {"changed": False}
-        commands = list()
         warnings = list()
+        commands = list()
 
-        existing_lldp_global_facts = self.get_lldp_global_facts()
-        commands.extend(self.set_config(existing_lldp_global_facts))
-        if commands:
+        if self.state in self.ACTION_STATES:
+            existing_lldp_global_facts = self.get_lldp_global_facts()
+        else:
+            existing_lldp_global_facts = []
+
+        if self.state in self.ACTION_STATES or self.state == "rendered":
+            commands.extend(self.set_config(existing_lldp_global_facts))
+
+        if commands and self.state in self.ACTION_STATES:
             if not self._module.check_mode:
                 self._connection.edit_config(commands)
             result["changed"] = True
-        result["commands"] = commands
 
-        changed_lldp_global_facts = self.get_lldp_global_facts()
+        if self.state in self.ACTION_STATES:
+            result["commands"] = commands
 
-        result["before"] = existing_lldp_global_facts
-        if result["changed"]:
-            result["after"] = changed_lldp_global_facts
+        if self.state in self.ACTION_STATES or self.state == "gathered":
+            changed_lldp_global_facts = self.get_lldp_global_facts()
+        elif self.state == "rendered":
+            result["rendered"] = commands
+        elif self.state == "parsed":
+            running_config = self._module.params["running_config"]
+            if not running_config:
+                self._module.fail_json(
+                    msg="value of running_config parameter must not be empty for state parsed"
+                )
+            result["parsed"] = self.get_lldp_global_facts(data=running_config)
+        else:
+            changed_lldp_global_facts = []
+
+        if self.state in self.ACTION_STATES:
+            result["before"] = existing_lldp_global_facts
+            if result["changed"]:
+                result["after"] = changed_lldp_global_facts
+        elif self.state == "gathered":
+            result["gathered"] = changed_lldp_global_facts
 
         result["warnings"] = warnings
         return result
@@ -113,18 +136,17 @@ class Lldp_global(ConfigBase):
                   to the desired configuration
         """
         commands = []
-        state = self._module.params["state"]
-        if state in ("merged", "replaced") and not want:
+        if self.state in ("merged", "replaced", "rendered") and not want:
             self._module.fail_json(
                 msg="value of config parameter must not be empty for state {0}".format(
-                    state
+                    self.state
                 )
             )
-        if state == "deleted":
+        if self.state == "deleted":
             commands.extend(self._state_deleted(want=None, have=have))
-        elif state == "merged":
+        elif self.state in ("merged", "rendered"):
             commands.extend(self._state_merged(want=want, have=have))
-        elif state == "replaced":
+        elif self.state == "replaced":
             commands.extend(self._state_replaced(want=want, have=have))
         return commands
 
