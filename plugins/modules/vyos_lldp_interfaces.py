@@ -37,7 +37,7 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = """module: vyos_lldp_interfaces
-short_description: Manages attributes of lldp interfaces on VyOS devices.
+short_description: LLDP interfaces resource module
 description: This module manages attributes of lldp interfaces on VyOS network devices.
 notes:
 - Tested against VyOS 1.1.8 (helium).
@@ -111,6 +111,15 @@ options:
           elin:
             description: Emergency Call Service ELIN number (between 10-25 numbers).
             type: str
+  running_config:
+    description:
+      - This option is used only with state I(parsed).
+      - The value of this option should be the output received from the VyOS device by executing
+        the command B(show configuration commands | grep lldp).
+      - The state I(parsed) reads the configuration from C(running_config) option and transforms
+        it into Ansible structured data as per the resource module's argspec and the value is then
+        returned in the I(parsed) key within the result.
+    type: str
   state:
     description:
     - The state of the configuration after module completion.
@@ -120,6 +129,9 @@ options:
     - replaced
     - overridden
     - deleted
+    - rendered
+    - parsed
+    - gathered
     default: merged
 """
 EXAMPLES = """
@@ -131,7 +143,7 @@ EXAMPLES = """
 # vyos@vyos:~$ show configuration  commands | grep lldp
 #
 - name: Merge provided configuration with device configuration
-  vyos_lldp_interfaces:
+  vyos.vyos.vyos_lldp_interfaces:
     config:
       - name: 'eth1'
         location:
@@ -225,7 +237,7 @@ EXAMPLES = """
 # set service lldp interface eth2 location coordinate-based longitude '222.267255W'
 #
 - name: Replace device configurations of listed LLDP interfaces with provided configurations
-  vyos_lldp_interfaces:
+  vyos.vyos.vyos_lldp_interfaces:
     config:
       - name: 'eth2'
         location:
@@ -348,7 +360,7 @@ EXAMPLES = """
 # set service lldp interface eth2 location civic-based country-code 'US'
 #
 - name: Overrides all device configuration with provided configuration
-  vyos_lag_interfaces:
+  vyos.vyos.vyos_lldp_interfaces:
     config:
      - name: 'eth2'
        location:
@@ -423,7 +435,7 @@ EXAMPLES = """
 # set service lldp interface eth2 location elin '0000000911'
 #
 - name: Delete lldp  interface attributes of given interfaces.
-  vyos_lag_interfaces:
+  vyos.vyos.vyos_lldp_interfaces:
     config:
      - name: 'eth2'
     state: deleted
@@ -451,6 +463,159 @@ EXAMPLES = """
 # ------------
 # vyos@vyos# run show configuration commands | grep lldp
 # set service 'lldp'
+
+
+# Using gathered
+#
+# Before state:
+# -------------
+#
+# vyos@192# run show configuration commands | grep lldp
+# set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
+# set service lldp interface eth1 location civic-based country-code 'US'
+# set service lldp interface eth2 location coordinate-based altitude '2200'
+# set service lldp interface eth2 location coordinate-based datum 'WGS84'
+# set service lldp interface eth2 location coordinate-based latitude '33.524449N'
+# set service lldp interface eth2 location coordinate-based longitude '222.267255W'
+#
+- name: Gather listed lldp interfaces from running configuration
+  vyos.vyos.vyos_lldp_interfaces:
+    config:
+    state: gathered
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#    "gathered": [
+#         {
+#             "location": {
+#                 "coordinate_based": {
+#                     "altitude": 2200,
+#                     "datum": "WGS84",
+#                     "latitude": "33.524449N",
+#                     "longitude": "222.267255W"
+#                 }
+#             },
+#             "name": "eth2"
+#         },
+#         {
+#             "location": {
+#                 "civic_based": {
+#                     "ca_info": [
+#                         {
+#                             "ca_type": 0,
+#                             "ca_value": "ENGLISH"
+#                         }
+#                     ],
+#                     "country_code": "US"
+#                 }
+#             },
+#             "name": "eth1"
+#         }
+#     ]
+#
+#
+# After state:
+# -------------
+#
+# vyos@192# run show configuration commands | grep lldp
+# set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
+# set service lldp interface eth1 location civic-based country-code 'US'
+# set service lldp interface eth2 location coordinate-based altitude '2200'
+# set service lldp interface eth2 location coordinate-based datum 'WGS84'
+# set service lldp interface eth2 location coordinate-based latitude '33.524449N'
+# set service lldp interface eth2 location coordinate-based longitude '222.267255W'
+
+
+# Using rendered
+#
+#
+- name: Render the commands for provided  configuration
+  vyos.vyos.vyos_lldp_interfaces:
+    config:
+          - name: eth1
+            location:
+              civic_based:
+                country_code: US
+                ca_info:
+                  - ca_type: 0
+                    ca_value: ENGLISH
+          - name: eth2
+            location:
+              coordinate_based:
+                altitude: 2200
+                datum: WGS84
+                longitude: 222.267255W
+                latitude: 33.524449N
+    state: rendered
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#
+# "rendered": [
+#         "set service lldp interface eth1 location civic-based country-code 'US'",
+#         "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'",
+#         "set service lldp interface eth1",
+#         "set service lldp interface eth2 location coordinate-based latitude '33.524449N'",
+#         "set service lldp interface eth2 location coordinate-based altitude '2200'",
+#         "set service lldp interface eth2 location coordinate-based datum 'WGS84'",
+#         "set service lldp interface eth2 location coordinate-based longitude '222.267255W'",
+#         "set service lldp interface eth2"
+#     ]
+
+
+# Using parsed
+#
+#
+- name: Parsed the commands to provide structured configuration.
+  vyos.vyos.vyos_lldp_interfaces:
+    running_config:
+      "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
+ set service lldp interface eth1 location civic-based country-code 'US'
+ set service lldp interface eth2 location coordinate-based altitude '2200'
+ set service lldp interface eth2 location coordinate-based datum 'WGS84'
+ set service lldp interface eth2 location coordinate-based latitude '33.524449N'
+ set service lldp interface eth2 location coordinate-based longitude '222.267255W'"
+    state: parsed
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#
+# "parsed": [
+#         {
+#             "location": {
+#                 "coordinate_based": {
+#                     "altitude": 2200,
+#                     "datum": "WGS84",
+#                     "latitude": "33.524449N",
+#                     "longitude": "222.267255W"
+#                 }
+#             },
+#             "name": "eth2"
+#         },
+#         {
+#             "location": {
+#                 "civic_based": {
+#                     "ca_info": [
+#                         {
+#                             "ca_type": 0,
+#                             "ca_value": "ENGLISH"
+#                         }
+#                     ],
+#                     "country_code": "US"
+#                 }
+#             },
+#             "name": "eth1"
+#         }
+#     ]
 
 
 """
@@ -497,12 +662,17 @@ def main():
     required_if = [
         ("state", "merged", ("config",)),
         ("state", "replaced", ("config",)),
+        ("state", "rendered", ("config",)),
         ("state", "overridden", ("config",)),
+        ("state", "parsed", ("running_config",)),
     ]
+    mutually_exclusive = [("config", "running_config")]
+
     module = AnsibleModule(
         argument_spec=Lldp_interfacesArgs.argument_spec,
         required_if=required_if,
         supports_check_mode=True,
+        mutually_exclusive=mutually_exclusive,
     )
 
     result = Lldp_interfaces(module).execute_module()

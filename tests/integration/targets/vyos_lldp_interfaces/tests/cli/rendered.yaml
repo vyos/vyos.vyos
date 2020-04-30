@@ -1,0 +1,48 @@
+---
+- debug:
+    msg: START vyos_lldp_interfaces rendered integration tests on connection={{ ansible_connection
+      }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+
+    - name: Structure provided configuration into device specific commands
+      register: result
+      vyos.vyos.vyos_lldp_interfaces: &id001
+        config:
+          - name: eth1
+            location:
+              civic_based:
+                country_code: US
+                ca_info:
+                  - ca_type: 0
+                    ca_value: ENGLISH
+          - name: eth2
+            location:
+              coordinate_based:
+                altitude: 2200
+                datum: WGS84
+                longitude: 222.267255W
+                latitude: 33.524449N
+        state: rendered
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ rendered['commands'] | symmetric_difference(result['rendered'])\
+            \ |length == 0 }}"
+
+    - name: Structure provided configuration into device specific commands (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_lldp_interfaces: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+  always:
+
+    - include_tasks: _remove_config.yaml

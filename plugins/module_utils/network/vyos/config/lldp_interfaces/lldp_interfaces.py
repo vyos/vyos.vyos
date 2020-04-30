@@ -15,7 +15,6 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
@@ -54,14 +53,14 @@ class Lldp_interfaces(ConfigBase):
     def __init__(self, module):
         super(Lldp_interfaces, self).__init__(module)
 
-    def get_lldp_interfaces_facts(self):
+    def get_lldp_interfaces_facts(self, data=None):
         """ Get the 'facts' (the current configuration)
 
         :rtype: A dictionary
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources
+            self.gather_subset, self.gather_network_resources, data=data
         )
         lldp_interfaces_facts = facts["ansible_network_resources"].get(
             "lldp_interfaces"
@@ -77,26 +76,47 @@ class Lldp_interfaces(ConfigBase):
         :returns: The result from module execution
         """
         result = {"changed": False}
-        commands = list()
         warnings = list()
-        existing_lldp_interfaces_facts = self.get_lldp_interfaces_facts()
-        commands.extend(self.set_config(existing_lldp_interfaces_facts))
-        if commands:
-            if self._module.check_mode:
-                resp = self._connection.edit_config(commands, commit=False)
-            else:
-                resp = self._connection.edit_config(commands)
+        commands = list()
+
+        if self.state in self.ACTION_STATES:
+            existing_lldp_interfaces_facts = self.get_lldp_interfaces_facts()
+        else:
+            existing_lldp_interfaces_facts = []
+
+        if self.state in self.ACTION_STATES or self.state == "rendered":
+            commands.extend(self.set_config(existing_lldp_interfaces_facts))
+
+        if commands and self.state in self.ACTION_STATES:
+            if not self._module.check_mode:
+                self._connection.edit_config(commands)
             result["changed"] = True
 
-        result["commands"] = commands
+        if self.state in self.ACTION_STATES:
+            result["commands"] = commands
 
-        if self._module._diff:
-            result["diff"] = resp["diff"] if result["changed"] else None
+        if self.state in self.ACTION_STATES or self.state == "gathered":
+            changed_lldp_interfaces_facts = self.get_lldp_interfaces_facts()
+        elif self.state == "rendered":
+            result["rendered"] = commands
+        elif self.state == "parsed":
+            running_config = self._module.params["running_config"]
+            if not running_config:
+                self._module.fail_json(
+                    msg="value of running_config parameter must not be empty for state parsed"
+                )
+            result["parsed"] = self.get_lldp_interfaces_facts(
+                data=running_config
+            )
+        else:
+            changed_lldp_interfaces_facts = []
 
-        changed_lldp_interfaces_facts = self.get_lldp_interfaces_facts()
-        result["before"] = existing_lldp_interfaces_facts
-        if result["changed"]:
-            result["after"] = changed_lldp_interfaces_facts
+        if self.state in self.ACTION_STATES:
+            result["before"] = existing_lldp_interfaces_facts
+            if result["changed"]:
+                result["after"] = changed_lldp_interfaces_facts
+        elif self.state == "gathered":
+            result["gathered"] = changed_lldp_interfaces_facts
 
         result["warnings"] = warnings
         return result
@@ -124,16 +144,18 @@ class Lldp_interfaces(ConfigBase):
                   to the desired configuration
         """
         commands = []
-        state = self._module.params["state"]
-        if state in ("merged", "replaced", "overridden") and not want:
+        if (
+            self.state in ("merged", "replaced", "overridden", "rendered")
+            and not want
+        ):
             self._module.fail_json(
                 msg="value of config parameter must not be empty for state {0}".format(
-                    state
+                    self.state
                 )
             )
-        if state == "overridden":
+        if self.state == "overridden":
             commands.extend(self._state_overridden(want=want, have=have))
-        elif state == "deleted":
+        elif self.state == "deleted":
             if want:
                 for item in want:
                     name = item["name"]
@@ -150,11 +172,11 @@ class Lldp_interfaces(ConfigBase):
             for want_item in want:
                 name = want_item["name"]
                 have_item = search_obj_in_list(name, have)
-                if state == "merged":
+                if self.state in ("merged", "rendered"):
                     commands.extend(
                         self._state_merged(want=want_item, have=have_item)
                     )
-                else:
+                if self.state == "replaced":
                     commands.extend(
                         self._state_replaced(want=want_item, have=have_item)
                     )
@@ -243,7 +265,6 @@ class Lldp_interfaces(ConfigBase):
         lldp_name = want["name"]
         params = Lldp_interfaces.params
 
-        commands.extend(self._add_location(lldp_name, want, have))
         for attrib in params:
             value = want[attrib]
             if value:
