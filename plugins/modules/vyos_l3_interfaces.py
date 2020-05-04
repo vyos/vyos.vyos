@@ -37,12 +37,14 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = """module: vyos_l3_interfaces
-short_description: Manages L3 interface attributes of VyOS network devices.
+short_description: L3 interfaces resource module
 description: This module manages the L3 interface attributes on VyOS network devices.
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
-author: Nilashish Chakraborty (@NilashishC)
+author:
+- Nilashish Chakraborty (@NilashishC)
+- Rohit Thakur (@rohitthakur2590)
 options:
   config:
     description: The provided L3 interfaces configuration.
@@ -104,6 +106,16 @@ options:
                 description:
                 - IPv6 address of the virtual interface.
                 type: str
+  running_config:
+    description:
+      - This option is used only with state I(parsed).
+      - The value of this option should be the output received from the VyOS device by executing
+        the command B(show configuration commands | grep -e eth[2,3]).
+      - The state I(parsed) reads the configuration from C(running_config) option and transforms
+        it into Ansible structured data as per the resource module's argspec and the value is then
+        returned in the I(parsed) key within the result.
+    type: str
+    version_added: "1.0.0"
   state:
     description:
     - The state of the configuration after module completion.
@@ -113,6 +125,9 @@ options:
     - replaced
     - overridden
     - deleted
+    - parsed
+    - gathered
+    - rendered
     default: merged
 """
 EXAMPLES = """
@@ -128,7 +143,7 @@ EXAMPLES = """
 # set interfaces ethernet eth3 vif 102
 
 - name: Merge provided configuration with device configuration
-  vyos_l3_interfaces:
+  vyos.vyos.vyos_l3_interfaces:
     config:
       - name: eth2
         ipv4:
@@ -196,7 +211,7 @@ EXAMPLES = """
 # set interfaces ethernet eth3 vif 102 address '2001:db8:4000::2/34'
 #
 - name: Replace device configurations of listed interfaces with provided configurations
-  vyos_l3_interfaces:
+  vyos.vyos.vyos_l3_interfaces:
     config:
       - name: eth2
         ipv4:
@@ -252,7 +267,7 @@ EXAMPLES = """
 # set interfaces ethernet eth3 vif 102 address '2001:db8:4000::2/34'
 
 - name: Overrides all device configuration with provided configuration
-  vyos_l3_interfaces:
+  vyos.vyos.vyos_l3_interfaces:
     config:
       - name: eth0
         ipv4:
@@ -303,7 +318,7 @@ EXAMPLES = """
 # set interfaces ethernet eth3 vif 102 address '2001:db8:4000::2/34'
 
 - name: Delete L3 attributes of given interfaces (Note - This won't delete the interface itself)
-  vyos_l3_interfaces:
+  vyos.vyos.vyos_l3_interfaces:
     config:
       - name: eth1
       - name: eth2
@@ -324,6 +339,180 @@ EXAMPLES = """
 # set interfaces ethernet eth2 smp_affinity 'auto'
 # set interfaces ethernet eth3 hw-id '08:00:27:17:3c:85'
 # set interfaces ethernet eth3 smp_affinity 'auto'
+
+
+# Using gathered
+#
+# Before state:
+# -------------
+#
+# vyos:~$ show configuration commands | grep -e eth[2,3,0]
+# set interfaces ethernet eth0 address 'dhcp'
+# set interfaces ethernet eth0 duplex 'auto'
+# set interfaces ethernet eth0 hw-id '08:00:27:50:5e:19'
+# set interfaces ethernet eth0 smp_affinity 'auto'
+# set interfaces ethernet eth0 speed 'auto'
+# set interfaces ethernet eth1 address '192.0.2.14/24'
+# set interfaces ethernet eth2 address '192.0.2.11/24'
+# set interfaces ethernet eth2 address '192.0.2.10/24'
+# set interfaces ethernet eth2 address '2001:db8::10/32'
+# set interfaces ethernet eth2 address '2001:db8::12/32'
+#
+- name: Gather listed l3 interfaces with provided configurations
+  vyos.vyos.vyos_l3_interfaces:
+    config:
+    state: gathered
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#    "gathered": [
+#         {
+#             "ipv4": [
+#                 {
+#                     "address": "192.0.2.11/24"
+#                 },
+#                 {
+#                     "address": "192.0.2.10/24"
+#                 }
+#             ],
+#             "ipv6": [
+#                 {
+#                     "address": "2001:db8::10/32"
+#                 },
+#                 {
+#                     "address": "2001:db8::12/32"
+#                 }
+#             ],
+#             "name": "eth2"
+#         },
+#         {
+#             "ipv4": [
+#                 {
+#                     "address": "192.0.2.14/24"
+#                 }
+#             ],
+#             "name": "eth1"
+#         },
+#         {
+#             "ipv4": [
+#                 {
+#                     "address": "dhcp"
+#                 }
+#             ],
+#             "name": "eth0"
+#         }
+#     ]
+#
+#
+# After state:
+# -------------
+#
+# vyos:~$ show configuration commands | grep -e eth[2,3]
+# set interfaces ethernet eth0 address 'dhcp'
+# set interfaces ethernet eth0 duplex 'auto'
+# set interfaces ethernet eth0 hw-id '08:00:27:50:5e:19'
+# set interfaces ethernet eth0 smp_affinity 'auto'
+# set interfaces ethernet eth0 speed 'auto'
+# set interfaces ethernet eth1 address '192.0.2.14/24'
+# set interfaces ethernet eth2 address '192.0.2.11/24'
+# set interfaces ethernet eth2 address '192.0.2.10/24'
+# set interfaces ethernet eth2 address '2001:db8::10/32'
+# set interfaces ethernet eth2 address '2001:db8::12/32'
+
+
+# Using rendered
+#
+#
+- name: Render the commands for provided  configuration
+  vyos.vyos.vyos_l3_interfaces:
+    config:
+      - name: eth1
+        ipv4:
+          - address: 192.0.2.14/24
+      - name: eth2
+        ipv4:
+          - address: 192.0.2.10/24
+          - address: 192.0.2.11/24
+        ipv6:
+          - address: 2001:db8::10/32
+          - address: 2001:db8::12/32
+    state: rendered
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#
+# "rendered": [
+#         "set interfaces ethernet eth1 address '192.0.2.14/24'",
+#         "set interfaces ethernet eth2 address '192.0.2.11/24'",
+#         "set interfaces ethernet eth2 address '192.0.2.10/24'",
+#         "set interfaces ethernet eth2 address '2001:db8::10/32'",
+#         "set interfaces ethernet eth2 address '2001:db8::12/32'"
+#     ]
+
+
+# Using parsed
+#
+#
+- name: parse the provided running configuration
+  vyos.vyos.vyos_l3_interfaces:
+    running_config:
+      "set interfaces ethernet eth0 address 'dhcp'
+ set interfaces ethernet eth1 address '192.0.2.14/24'
+ set interfaces ethernet eth2 address '192.0.2.10/24'
+ set interfaces ethernet eth2 address '192.0.2.11/24'
+ set interfaces ethernet eth2 address '2001:db8::10/32'
+ set interfaces ethernet eth2 address '2001:db8::12/32'"
+    state: parsed
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#
+# "parsed": [
+#         {
+#             "ipv4": [
+#                 {
+#                     "address": "192.0.2.10/24"
+#                 },
+#                 {
+#                     "address": "192.0.2.11/24"
+#                 }
+#             ],
+#             "ipv6": [
+#                 {
+#                     "address": "2001:db8::10/32"
+#                 },
+#                 {
+#                     "address": "2001:db8::12/32"
+#                 }
+#             ],
+#             "name": "eth2"
+#         },
+#         {
+#             "ipv4": [
+#                 {
+#                     "address": "192.0.2.14/24"
+#                 }
+#             ],
+#             "name": "eth1"
+#         },
+#         {
+#             "ipv4": [
+#                 {
+#                     "address": "dhcp"
+#                 }
+#             ],
+#             "name": "eth0"
+#         }
+#     ]
 
 
 """
@@ -365,8 +554,20 @@ def main():
 
     :returns: the result form module invocation
     """
+    required_if = [
+        ("state", "merged", ("config",)),
+        ("state", "replaced", ("config",)),
+        ("state", "rendered", ("config",)),
+        ("state", "overridden", ("config",)),
+        ("state", "parsed", ("running_config",)),
+    ]
+    mutually_exclusive = [("config", "running_config")]
+
     module = AnsibleModule(
-        argument_spec=L3_interfacesArgs.argument_spec, supports_check_mode=True
+        argument_spec=L3_interfacesArgs.argument_spec,
+        required_if=required_if,
+        supports_check_mode=True,
+        mutually_exclusive=mutually_exclusive,
     )
 
     result = L3_interfaces(module).execute_module()

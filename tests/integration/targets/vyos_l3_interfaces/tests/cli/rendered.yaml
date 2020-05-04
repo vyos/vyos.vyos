@@ -1,0 +1,44 @@
+---
+- debug:
+    msg: START vyos_l3_interfaces rendered integration tests on connection={{ ansible_connection
+      }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+
+    - name: Structure provided configuration into device specific commands
+      register: result
+      vyos.vyos.vyos_l3_interfaces: &id001
+        config:
+          - name: eth1
+            ipv4:
+              - address: 192.0.2.14/24
+          - name: eth2
+            ipv4:
+              - address: 192.0.2.10/24
+              - address: 192.0.2.11/24
+            ipv6:
+              - address: 2001:db8::10/32
+              - address: 2001:db8::12/32
+        state: rendered
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ rendered['commands'] | symmetric_difference(result['rendered'])\
+            \ |length == 0 }}"
+
+    - name: Structure provided configuration into device specific commands (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_l3_interfaces: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+  always:
+
+    - include_tasks: _remove_config.yaml
