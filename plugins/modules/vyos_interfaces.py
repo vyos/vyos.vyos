@@ -37,7 +37,7 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = """module: vyos_interfaces
-short_description: Manages attributes of interfaces for VyOS - interfaces resource module
+short_description: Interfaces resource module
 description:
 - This module manages the interface attributes on VyOS network devices.
 - This module supports managing base attributes of Ethernet, Bonding, VXLAN, Loopback
@@ -129,6 +129,8 @@ options:
       - The state I(parsed) reads the configuration from C(running_config) option and transforms
         it into Ansible structured data as per the resource module's argspec and the value is then
         returned in the I(parsed) key within the result.
+    type: str
+    version_added: "1.0.0"
   state:
     description:
     - The state of the configuration after module completion.

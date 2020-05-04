@@ -57,9 +57,7 @@ class Interfaces(ConfigBase):
         facts, _warnings = Facts(self._module).get_facts(
             self.gather_subset, self.gather_network_resources, data=data
         )
-        interfaces_facts = facts["ansible_network_resources"].get(
-            "interfaces"
-        )
+        interfaces_facts = facts["ansible_network_resources"].get("interfaces")
         if not interfaces_facts:
             return []
         return interfaces_facts
@@ -99,9 +97,7 @@ class Interfaces(ConfigBase):
                 self._module.fail_json(
                     msg="value of running_config parameter must not be empty for state parsed"
                 )
-            result["parsed"] = self.get_interfaces_facts(
-                data=running_config
-            )
+            result["parsed"] = self.get_interfaces_facts(data=running_config)
         else:
             changed_interfaces_facts = []
 
@@ -139,7 +135,10 @@ class Interfaces(ConfigBase):
         """
         commands = []
 
-        if self.state in ("merged", "replaced", "overridden", "rendered") and not want:
+        if (
+            self.state in ("merged", "replaced", "overridden", "rendered")
+            and not want
+        ):
             self._module.fail_json(
                 msg="value of config parameter must not be empty for state {0}".format(
                     self.state
