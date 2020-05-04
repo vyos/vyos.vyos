@@ -36,7 +36,36 @@ This collection includes [network resource modules](https://docs.ansible.com/ans
 
 ### Using modules from the VyOS collection in your playbooks
 
-You can either call modules by their Fully Qualified Collection Namespace (FQCN), like `vyos.vyos.vyos_l3_interfaces`, or you can call modules by their short name if you list the `vyos.vyos` collection in the playbook's `collections`, as follows:
+You can call modules by their Fully Qualified Collection Namespace (FQCN), such as `vyos.vyos.vyos_static_routes`.
+The following example task replaces configuration changes in the existing configuration on a VyOS network device, using the FQCN:
+
+```yaml
+---
+  - name: Replace device configurations of listed static routes with provided
+      configurations
+    register: result
+    vyos.vyos.vyos_static_routes: &id001
+      config:
+
+        - address_families:
+
+            - afi: ipv4
+              routes:
+
+                - dest: 192.0.2.32/28
+                  blackhole_config:
+                    distance: 2
+                  next_hops:
+
+                    - forward_router_address: 192.0.2.7
+
+                    - forward_router_address: 192.0.2.8
+
+                    - forward_router_address: 192.0.2.9
+      state: replaced
+```
+
+Alternately, you can call modules by their short name if you list the `vyos.vyos` collection in the playbook's `collections`, as follows:
 
 ```yaml
 ---
@@ -50,7 +79,7 @@ You can either call modules by their Fully Qualified Collection Namespace (FQCN)
   tasks:
     - name: Merge the provided configuration with the existing running configuration
       register: result
-      vyos.vyos.vyos_l3_interfaces: &id001
+      vyos_l3_interfaces: &id001
         config:
 
           - name: eth1
@@ -78,33 +107,7 @@ You can either call modules by their Fully Qualified Collection Namespace (FQCN)
 ```
 
 
- The following example task replaces configuration changes in the existing configuration on a VyOS network device, using the FQCN:
 
- ```yaml
- ---
-   - name: Replace device configurations of listed static routes with provided
-       configurations
-     register: result
-     vyos.vyos.vyos_static_routes: &id001
-       config:
-
-         - address_families:
-
-             - afi: ipv4
-               routes:
-
-                 - dest: 192.0.2.32/28
-                   blackhole_config:
-                     distance: 2
-                   next_hops:
-
-                     - forward_router_address: 192.0.2.7
-
-                     - forward_router_address: 192.0.2.8
-
-                     - forward_router_address: 192.0.2.9
-       state: replaced
-```
 
 
 
