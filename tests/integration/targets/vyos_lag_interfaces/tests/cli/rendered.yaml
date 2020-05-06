@@ -11,7 +11,7 @@
 
     - name: Structure provided configuration into device specific commands
       register: result
-      vyos.vyos.vyos_lag_interfaces: &id001
+      vyos.vyos.vyos_lag_interfaces:
         config:
           - name: bond0
             hash_policy: layer2
@@ -33,14 +33,6 @@
           - "{{ rendered['commands'] | symmetric_difference(result['rendered'])\
             \ |length == 0 }}"
 
-    - name: Structure provided configuration into device specific commands (IDEMPOTENT)
-      register: result
-      vyos.vyos.vyos_lag_interfaces: *id001
-
-    - name: Assert that the previous task was idempotent
-      assert:
-        that:
-          - result['changed'] == false
   always:
 
     - include_tasks: _remove_config.yaml
