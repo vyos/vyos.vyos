@@ -30,11 +30,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "network",
-}
+ANSIBLE_METADATA = {"metadata_version": "1.1", "supported_by": "Ansible"}
 
 DOCUMENTATION = """module: vyos_lldp_interfaces
 short_description: LLDP interfaces resource module
@@ -42,6 +38,7 @@ description: This module manages attributes of lldp interfaces on VyOS network d
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+version_added: "1.0.0"
 author:
 - Rohit Thakur (@rohitthakur2590)
 options:
@@ -120,7 +117,6 @@ options:
         it into Ansible structured data as per the resource module's argspec and the value is then
         returned in the I(parsed) key within the result.
     type: str
-    version_added: "1.0.0"
   state:
     description:
     - The state of the configuration after module completion.
