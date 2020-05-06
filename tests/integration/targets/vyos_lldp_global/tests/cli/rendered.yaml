@@ -11,7 +11,7 @@
 
     - name: Structure provided configuration into device specific commands
       register: result
-      vyos.vyos.vyos_lldp_global: &id001
+      vyos.vyos.vyos_lldp_global:
         config:
           address: 192.0.2.17
           enable: true
@@ -25,14 +25,6 @@
           - "{{ rendered['commands'] | symmetric_difference(result['rendered'])\
             \ |length == 0 }}"
 
-    - name: Structure provided configuration into device specific commands (IDEMPOTENT)
-      register: result
-      vyos.vyos.vyos_lldp_global: *id001
-
-    - name: Assert that the previous task was idempotent
-      assert:
-        that:
-          - result['changed'] == false
   always:
 
     - include_tasks: _remove_config.yaml

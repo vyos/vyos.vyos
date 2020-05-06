@@ -9,9 +9,9 @@
 
 - block:
 
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Gather the provided configuration with the exisiting running configuration
       register: result
-      vyos.vyos.vyos_lldp_global: &id001
+      vyos.vyos.vyos_lldp_global:
         config:
         state: gathered
 
@@ -20,14 +20,6 @@
         that:
           - "{{ populate  == result['gathered'] }}"
 
-    - name: Gather the existing running configuration (IDEMPOTENT)
-      register: result
-      vyos.vyos.vyos_lldp_global: *id001
-
-    - name: Assert that the previous task was idempotent
-      assert:
-        that:
-          - result['changed'] == false
   always:
 
     - include_tasks: _remove_config.yaml
