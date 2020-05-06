@@ -160,7 +160,7 @@ class Static_routes(ConfigBase):
             routes = self._get_routes(want)
             for r in routes:
                 h_item = self.search_route_in_have(have, r["dest"])
-                if self.state == "merged" or self.state == "rendered":
+                if self.state in ("merged", "rendered"):
                     commands.extend(self._state_merged(want=r, have=h_item))
                 elif self.state == "replaced":
                     commands.extend(self._state_replaced(want=r, have=h_item))
@@ -253,12 +253,6 @@ class Static_routes(ConfigBase):
                                     afi=item["afi"], remove=True
                                 )
                             )
-            for r in routes:
-                h_route = self.search_route_in_have(have, r["dest"])
-                if h_route:
-                    commands.extend(
-                        self._render_updates(r, h_route, opr=False)
-                    )
         else:
             routes = self._get_routes(have)
             if self._is_ip_route_exist(routes):
