@@ -1,0 +1,38 @@
+---
+- debug:
+    msg: START vyos_lag_interfaces rendered integration tests on connection={{ ansible_connection
+      }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+
+    - name: Structure provided configuration into device specific commands
+      register: result
+      vyos.vyos.vyos_lag_interfaces:
+        config:
+          - name: bond0
+            hash_policy: layer2
+            members:
+              - member: eth1
+            mode: active-backup
+            primary: eth1
+          - name: bond1
+            hash_policy: layer2+3
+            members:
+              - member: eth2
+            mode: active-backup
+            primary: eth2
+        state: rendered
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ rendered['commands'] | symmetric_difference(result['rendered'])\
+            \ |length == 0 }}"
+
+  always:
+
+    - include_tasks: _remove_config.yaml

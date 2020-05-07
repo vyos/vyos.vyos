@@ -1,0 +1,33 @@
+---
+- debug:
+    msg: START vyos_lag_interfaces parsed integration tests on connection={{ ansible_connection
+      }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+
+    - name: Gather lag_interfaces facts
+      register: lag_interfaces_facts
+      vyos.vyos.vyos_facts:
+        gather_subset:
+          - default
+        gather_network_resources:
+          - lag_interfaces
+
+    - name: Provide the running configuration for parsing (config to be parsed)
+      register: result
+      vyos.vyos.vyos_lag_interfaces:
+        running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
+        state: parsed
+
+    - name: Assert that correct parsing done
+      assert:
+        that: "{{ ansible_facts['network_resources']['lag_interfaces'] | symmetric_difference(result['parsed'])\
+          \ |length == 0 }}"
+
+  always:
+
+    - include_tasks: _remove_config.yaml
