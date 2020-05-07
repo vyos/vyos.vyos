@@ -3,32 +3,14 @@
     msg: START vyos_interfaces parsed integration tests on connection={{ ansible_connection
       }}
 
-- include_tasks: _remove_config.yaml
+- name: Parse externally provided interfaces config to agnostic model
+  register: result
+  vyos.vyos.vyos_interfaces:
+    running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
+    state: parsed
 
-- include_tasks: _populate.yaml
-
-- block:
-
-    - name: Gather interfaces facts
-      register: interfaces_facts
-      vyos.vyos.vyos_facts:
-        gather_subset:
-          - default
-        gather_network_resources:
-          - interfaces
-
-    - name: Provide the running configuration for parsing (config to be parsed)
-      register: result
-      vyos.vyos.vyos_interfaces:
-        running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
-        state: parsed
-    - debug:
-        msg: "{{ ansible_facts['network_resources']['interfaces'] }}"
-    - name: Assert that correct parsing done
-      assert:
-        that: "{{ ansible_facts['network_resources']['interfaces'] | symmetric_difference(result['parsed'])\
-          \ |length == 0 }}"
-
-  always:
-
-    - include_tasks: _remove_config.yaml
+- name: Assert that config was correctly parsed
+  assert:
+    that:
+      - "{{ parsed['after'] | symmetric_difference(result['parsed']) |length ==\
+        \ 0 }}"

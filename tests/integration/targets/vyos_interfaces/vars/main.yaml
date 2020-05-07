@@ -104,6 +104,26 @@ replaced:
       enabled: true
       duplex: auto
       speed: auto
+parsed:
+  after:
+    - name: eth1
+      description: Configured by Ansible - Interface 1
+      mtu: 1500
+      speed: auto
+      duplex: auto
+      enabled: true
+      vifs:
+        - vlan_id: 100
+          description: Eth1 - VIF 100
+          mtu: 400
+          enabled: true
+        - vlan_id: 101
+          description: Eth1 - VIF 101
+          enabled: true
+    - name: eth2
+      description: Configured by Ansible - Interface 2 (ADMIN DOWN)
+      mtu: 600
+      enabled: false
 overridden:
   commands:
     - delete interfaces ethernet eth1 description
