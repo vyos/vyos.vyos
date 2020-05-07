@@ -13,7 +13,6 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-
 from copy import deepcopy
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
@@ -49,14 +48,14 @@ class Interfaces(ConfigBase):
     def __init__(self, module):
         super(Interfaces, self).__init__(module)
 
-    def get_interfaces_facts(self):
+    def get_interfaces_facts(self, data=None):
         """ Get the 'facts' (the current configuration)
 
         :rtype: A dictionary
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources
+            self.gather_subset, self.gather_network_resources, data=data
         )
         interfaces_facts = facts["ansible_network_resources"].get("interfaces")
         if not interfaces_facts:
@@ -72,25 +71,42 @@ class Interfaces(ConfigBase):
         commands = list()
         warnings = list()
 
-        existing_interfaces_facts = self.get_interfaces_facts()
-        commands.extend(self.set_config(existing_interfaces_facts))
-        if commands:
-            if self._module.check_mode:
-                resp = self._connection.edit_config(commands, commit=False)
-            else:
-                resp = self._connection.edit_config(commands)
+        if self.state in self.ACTION_STATES:
+            existing_interfaces_facts = self.get_interfaces_facts()
+        else:
+            existing_interfaces_facts = []
+
+        if self.state in self.ACTION_STATES or self.state == "rendered":
+            commands.extend(self.set_config(existing_interfaces_facts))
+
+        if commands and self.state in self.ACTION_STATES:
+            if not self._module.check_mode:
+                self._connection.edit_config(commands)
             result["changed"] = True
 
-        result["commands"] = commands
+        if self.state in self.ACTION_STATES:
+            result["commands"] = commands
 
-        if self._module._diff:
-            result["diff"] = resp["diff"] if result["changed"] else None
+        if self.state in self.ACTION_STATES or self.state == "gathered":
+            changed_interfaces_facts = self.get_interfaces_facts()
+        elif self.state == "rendered":
+            result["rendered"] = commands
+        elif self.state == "parsed":
+            running_config = self._module.params["running_config"]
+            if not running_config:
+                self._module.fail_json(
+                    msg="value of running_config parameter must not be empty for state parsed"
+                )
+            result["parsed"] = self.get_interfaces_facts(data=running_config)
+        else:
+            changed_interfaces_facts = []
 
-        changed_interfaces_facts = self.get_interfaces_facts()
-
-        result["before"] = existing_interfaces_facts
-        if result["changed"]:
-            result["after"] = changed_interfaces_facts
+        if self.state in self.ACTION_STATES:
+            result["before"] = existing_interfaces_facts
+            if result["changed"]:
+                result["after"] = changed_interfaces_facts
+        elif self.state == "gathered":
+            result["gathered"] = changed_interfaces_facts
 
         result["warnings"] = warnings
         return result
@@ -118,19 +134,21 @@ class Interfaces(ConfigBase):
                   to the desired configuration
         """
         commands = []
-        state = self._module.params["state"]
 
-        if state in ("merged", "replaced", "overridden") and not want:
+        if (
+            self.state in ("merged", "replaced", "overridden", "rendered")
+            and not want
+        ):
             self._module.fail_json(
                 msg="value of config parameter must not be empty for state {0}".format(
-                    state
+                    self.state
                 )
             )
 
-        if state == "overridden":
+        if self.state == "overridden":
             commands.extend(self._state_overridden(want=want, have=have))
 
-        elif state == "deleted":
+        elif self.state == "deleted":
             if not want:
                 for intf in have:
                     commands.extend(
@@ -146,12 +164,12 @@ class Interfaces(ConfigBase):
                 obj_in_have = search_obj_in_list(name, have)
 
                 if not obj_in_have:
-                    obj_in_have = {"name": item["name"]}
+                    obj_in_have = {"name": name}
 
-                elif state == "merged":
+                if self.state in ("merged", "rendered"):
                     commands.extend(self._state_merged(item, obj_in_have))
 
-                elif state == "replaced":
+                elif self.state == "replaced":
                     commands.extend(self._state_replaced(item, obj_in_have))
 
         return commands
