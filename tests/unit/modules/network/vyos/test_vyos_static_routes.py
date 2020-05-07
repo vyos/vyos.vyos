@@ -277,17 +277,9 @@ class TestVyosStaticRoutesModule(TestVyosModule):
     def test_vyos_static_routes_deleted(self):
         set_module_args(
             dict(
-                config=[
-                    dict(
-                        address_families=[
-                            dict(
-                                afi="ipv4", routes=[dict(dest="192.0.2.32/28")]
-                            )
-                        ]
-                    )
-                ],
+                config=[dict(address_families=[dict(afi="ipv4")])],
                 state="deleted",
             )
         )
-        commands = ["delete protocols static route 192.0.2.32/28"]
+        commands = ["delete protocols static route"]
         self.execute_module(changed=True, commands=commands)

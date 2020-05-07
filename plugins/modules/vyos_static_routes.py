@@ -30,16 +30,13 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "network",
-}
+ANSIBLE_METADATA = {"metadata_version": "1.1", "supported_by": "Ansible"}
 
 DOCUMENTATION = """module: vyos_static_routes
-short_description: Manages attributes of static routes on VyOS network devices.
+short_description: Static routes resource module
 description: This module manages attributes of static routes on VyOS network devices.
 notes:
+version_added: "1.0.0"
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
@@ -114,13 +111,12 @@ options:
                     type: str
   running_config:
     description:
-    - The module, by default, will connect to the remote device and retrieve the current
-      running-config to use as a base for comparing against the contents of source.
-      There are times when it is not desirable to have the task get the current running-config
-      for every task in a playbook.  The I(running_config) argument allows the implementer
-      to pass in the configuration to use as the base config for comparison. This
-      value of this option should be the output received from device by executing
-      command C(show configuration commands | grep 'static route')
+      - This option is used only with state I(parsed).
+      - The value of this option should be the output received from the VyOS device by executing
+        the command B(show configuration commands | grep static route).
+      - The state I(parsed) reads the configuration from C(running_config) option and transforms
+        it into Ansible structured data as per the resource module's argspec and the value is then
+        returned in the I(parsed) key within the result.
     type: str
   state:
     description:
@@ -145,7 +141,7 @@ EXAMPLES = """
 # vyos@vyos:~$ show configuration  commands | grep static
 #
 - name: Merge the provided configuration with the exisiting running configuration
-  vyos_static_routes:
+  vyos.vyos.vyos_static_routes:
     config:
      - address_families:
        - afi: 'ipv4'
@@ -259,7 +255,7 @@ EXAMPLES = """
 # set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'
 #
 - name: Replace device configurations of listed static routes with provided configurations
-  vyos_static_routes:
+  vyos.vyos.vyos_static_routes:
     config:
      - address_families:
        - afi: 'ipv4'
@@ -435,7 +431,7 @@ EXAMPLES = """
 # set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'
 #
 - name: Overrides all device configuration with provided configuration
-  vyos_static_routes:
+  vyos.vyos.vyos_static_routes:
     config:
      - address_families:
        - afi: 'ipv4'
@@ -531,92 +527,6 @@ EXAMPLES = """
 # set protocols static route 198.0.2.48/28 next-hop '192.0.2.18'
 
 
-# Using deleted to delete static route based on destination
-#
-# Before state
-# -------------
-#
-# vyos@vyos:~$ show configuration commands| grep static
-# set protocols static route 192.0.2.32/28 'blackhole'
-# set protocols static route 192.0.2.32/28 next-hop '192.0.2.6'
-# set protocols static route 192.0.2.32/28 next-hop '192.0.2.7'
-# set protocols static route6 2001:db8:1000::/36 blackhole distance '2'
-# set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::1'
-# set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'
-#
-- name: Delete static route per destination.
-  vyos_static_routes:
-    config:
-     - address_families:
-       - afi: 'ipv4'
-         routes:
-           - dest: '192.0.2.32/28'
-       - afi: 'ipv6'
-         routes:
-           - dest: '2001:db8:1000::/36'
-    state: deleted
-#
-#
-# ------------------------
-# Module Execution Results
-# ------------------------
-#
-#    "before": [
-#        {
-#            "address_families": [
-#                {
-#                    "afi": "ipv4",
-#                    "routes": [
-#                        {
-#                            "blackhole_config": {
-#                                "type": "blackhole"
-#                            },
-#                            "dest": "192.0.2.32/28",
-#                            "next_hops": [
-#                                {
-#                                    "forward_router_address": "192.0.2.6"
-#                                },
-#                                {
-#                                    "forward_router_address": "192.0.2.7"
-#                                }
-#                            ]
-#                        }
-#                    ]
-#                },
-#                {
-#                    "afi": "ipv6",
-#                    "routes": [
-#                        {
-#                            "blackhole_config": {
-#                                "distance": 2
-#                            },
-#                            "dest": "2001:db8:1000::/36",
-#                            "next_hops": [
-#                                {
-#                                    "forward_router_address": "2001:db8:2000:2::1"
-#                                },
-#                                {
-#                                    "forward_router_address": "2001:db8:2000:2::2"
-#                                }
-#                            ]
-#                        }
-#                    ]
-#                }
-#            ]
-#        }
-#    ]
-#    "commands": [
-#       "delete protocols static route 192.0.2.32/28",
-#       "delete protocols static route6 2001:db8:1000::/36"
-#    ]
-#
-# "after": []
-# After state
-# ------------
-# vyos@vyos# run show configuration commands | grep static
-# set protocols 'static'
-
-
 # Using deleted to delete static route based on afi
 #
 # Before state
@@ -631,7 +541,7 @@ EXAMPLES = """
 # set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'
 #
 - name: Delete static route based on afi.
-  vyos_static_routes:
+  vyos.vyos.vyos_static_routes:
     config:
      - address_families:
        - afi: 'ipv4'
@@ -713,7 +623,7 @@ EXAMPLES = """
 # set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'
 #
 - name: Delete all the static routes.
-  vyos_static_routes:
+  vyos.vyos.vyos_static_routes:
     config:
     state: deleted
 #
@@ -778,141 +688,11 @@ EXAMPLES = """
 # set protocols 'static'
 
 
-# Using deleted to delete static route based on next-hop
-#
-# Before state
-# -------------
-#
-# vyos@vyos:~$ show configuration commands| grep static
-# set protocols static route 192.0.2.32/28 'blackhole'
-# set protocols static route 192.0.2.32/28 next-hop '192.0.2.6'
-# set protocols static route 192.0.2.32/28 next-hop '192.0.2.7'
-# set protocols static route6 2001:db8:1000::/36 blackhole distance '2'
-# set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::1'
-# set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'
-#
-- name: Delete static routes per next-hops
-  vyos_static_routes:
-    config:
-     - address_families:
-       - afi: 'ipv4'
-         routes:
-           - dest: '192.0.2.32/28'
-             next-hops:
-               - forward_router_address: '192.0.2.6'
-       - afi: 'ipv6'
-         routes:
-           - dest: '2001:db8:1000::/36'
-             next-hops:
-               - forward_router_address: '2001:db8:2000:2::1'
-    state: deleted
-#
-#
-# ------------------------
-# Module Execution Results
-# ------------------------
-#
-#    "before": [
-#        {
-#            "address_families": [
-#                {
-#                    "afi": "ipv4",
-#                    "routes": [
-#                        {
-#                            "blackhole_config": {
-#                                "type": "blackhole"
-#                            },
-#                            "dest": "192.0.2.32/28",
-#                            "next_hops": [
-#                                {
-#                                    "forward_router_address": "192.0.2.6"
-#                                },
-#                                {
-#                                    "forward_router_address": "192.0.2.7"
-#                                }
-#                            ]
-#                        }
-#                    ]
-#                },
-#                {
-#                    "afi": "ipv6",
-#                    "routes": [
-#                        {
-#                            "blackhole_config": {
-#                                "distance": 2
-#                            },
-#                            "dest": "2001:db8:1000::/36",
-#                            "next_hops": [
-#                                {
-#                                    "forward_router_address": "2001:db8:2000:2::1"
-#                                },
-#                                {
-#                                    "forward_router_address": "2001:db8:2000:2::2"
-#                                }
-#                            ]
-#                        }
-#                    ]
-#                }
-#            ]
-#        }
-#    ]
-#    "commands": [
-#       "delete protocols static route 192.0.2.32/28 next-hop '192.0.2.6'",
-#       "delete protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::1'"
-#    ]
-#
-#    "after": [
-#        {
-#            "address_families": [
-#                {
-#                    "afi": "ipv4",
-#                    "routes": [
-#                        {
-#                            "blackhole_config": {
-#                                "type": "blackhole"
-#                            },
-#                            "dest": "192.0.2.32/28",
-#                            "next_hops": [
-#                                {
-#                                    "forward_router_address": "192.0.2.7"
-#                                }
-#                            ]
-#                        }
-#                    ]
-#                },
-#                {
-#                    "afi": "ipv6",
-#                    "routes": [
-#                        {
-#                            "blackhole_config": {
-#                                "distance": 2
-#                            },
-#                            "dest": "2001:db8:1000::/36",
-#                            "next_hops": [
-#                                {
-#                                    "forward_router_address": "2001:db8:2000:2::2"
-#                                }
-#                            ]
-#                        }
-#                    ]
-#                }
-#            ]
-#        }
-#    ]
-# After state
-# ------------
-# vyos@vyos:~$ show configuration commands| grep static
-# set protocols static route 192.0.2.32/28 'blackhole'
-# set protocols static route 192.0.2.32/28 next-hop '192.0.2.7'
-# set protocols static route6 2001:db8:1000::/36 blackhole distance '2'
-# set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'
-
-
 # Using rendered
 #
 #
 - name: Render the commands for provided  configuration
-  vyos_static_routes:
+  vyos.vyos.vyos_static_routes:
     config:
       - address_families:
           - afi: 'ipv4'
@@ -955,8 +735,8 @@ EXAMPLES = """
 # Using parsed
 #
 #
-- name: Render the commands for provided  configuration
-  vyos_static_routes:
+- name: Parse the provided running configuration
+  vyos.vyos.vyos_static_routes:
     running_config:
       "set protocols static route 192.0.2.32/28 'blackhole'
  set protocols static route 192.0.2.32/28 next-hop '192.0.2.6'
@@ -1026,7 +806,7 @@ EXAMPLES = """
 # set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'
 #
 - name: Gather listed static routes with provided configurations
-  vyos_static_routes:
+  vyos.vyos.vyos_static_routes:
     config:
     state: gathered
 #
@@ -1137,6 +917,7 @@ def main():
     required_if = [
         ("state", "merged", ("config",)),
         ("state", "replaced", ("config",)),
+        ("state", "rendered", ("config",)),
         ("state", "overridden", ("config",)),
         ("state", "parsed", ("running_config",)),
     ]
