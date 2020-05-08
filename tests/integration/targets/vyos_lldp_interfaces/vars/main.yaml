@@ -9,10 +9,6 @@ merged:
     - set service lldp interface eth2 location coordinate-based altitude '2200'
     - set service lldp interface eth2 location coordinate-based datum 'WGS84'
     - set service lldp interface eth2 location coordinate-based longitude '222.267255W'
-    - set service lldp interface eth2 location coordinate-based latitude '33.524449N'
-    - set service lldp interface eth2 location coordinate-based altitude '2200'
-    - set service lldp interface eth2 location coordinate-based datum 'WGS84'
-    - set service lldp interface eth2 location coordinate-based longitude '222.267255W'
     - set service lldp interface eth2
   after:
     - name: eth1
@@ -44,6 +40,16 @@ populate:
         datum: WGS84
         longitude: 222.267255W
         latitude: 33.524449N
+rendered:
+  commands:
+    - set service lldp interface eth1 location civic-based country-code 'US'
+    - set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
+    - set service lldp interface eth1
+    - set service lldp interface eth2 location coordinate-based latitude '33.524449N'
+    - set service lldp interface eth2 location coordinate-based altitude '2200'
+    - set service lldp interface eth2 location coordinate-based datum 'WGS84'
+    - set service lldp interface eth2 location coordinate-based longitude '222.267255W'
+    - set service lldp interface eth2
 replaced:
   commands:
     - delete service lldp interface eth2 location
@@ -91,6 +97,22 @@ overridden:
     - name: eth2
       location:
         elin: 0000000911
+parsed:
+  after:
+    - name: eth1
+      location:
+        civic_based:
+          country_code: US
+          ca_info:
+            - ca_type: 0
+              ca_value: ENGLISH
+    - name: eth2
+      location:
+        coordinate_based:
+          altitude: 2200
+          datum: WGS84
+          longitude: 222.267255W
+          latitude: 33.524449N
 deleted:
   commands:
     - delete service lldp interface eth1
