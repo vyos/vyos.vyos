@@ -31,6 +31,13 @@ replaced:
       - cdp
       - edp
       - sonmp
+parsed:
+  after:
+    address: 192.0.2.17
+    enable: true
+    legacy_protocols:
+      - fdp
+      - cdp
 rendered:
   commands:
     - set service lldp legacy-protocols 'cdp'

@@ -3,31 +3,13 @@
     msg: START vyos_lldp_global parsed integration tests on connection={{ ansible_connection
       }}
 
-- include_tasks: _remove_config.yaml
+- name: Parse externally provided LLDP global config to agnostic model
+  register: result
+  vyos.vyos.vyos_lldp_global:
+    running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
+    state: parsed
 
-- include_tasks: _populate.yaml
-
-- block:
-
-    - name: Gather lldp_global facts
-      register: lldp_global_facts
-      vyos.vyos.vyos_facts:
-        gather_subset:
-          - default
-        gather_network_resources:
-          - lldp_global
-
-    - name: Provide the running configuration for parsing (config to be parsed)
-      register: result
-      vyos.vyos.vyos_lldp_global:
-        running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
-        state: parsed
-
-    - name: Assert that correct parsing done
-      assert:
-        that: "{{ ansible_facts['network_resources']['lldp_global'] == result['parsed']\
-          \ }}"
-
-  always:
-
-    - include_tasks: _remove_config.yaml
+- name: Assert that config was correctly parsed
+  assert:
+    that:
+      - "{{ parsed['after'] == result['parsed'] }}"

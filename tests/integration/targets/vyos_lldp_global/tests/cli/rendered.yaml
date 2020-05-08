@@ -5,8 +5,6 @@
 
 - include_tasks: _remove_config.yaml
 
-- include_tasks: _populate.yaml
-
 - block:
 
     - name: Structure provided configuration into device specific commands
