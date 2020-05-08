@@ -10,7 +10,12 @@ for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
 
-from __future__ import absolute_import, division, print_function
+from __future__ import (
+    absolute_import,
+    division,
+    print_function,
+    unicode_literals,
+)
 
 __metaclass__ = type
 

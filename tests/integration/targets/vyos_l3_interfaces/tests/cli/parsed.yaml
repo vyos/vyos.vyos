@@ -1,0 +1,16 @@
+---
+- debug:
+    msg: START vyos_l3_nterfaces parsed integration tests on connection={{ ansible_connection
+      }}
+
+- name: Parse externally provided interfaces config to agnostic model
+  register: result
+  vyos.vyos.vyos_l3_interfaces:
+    running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
+    state: parsed
+
+- name: Assert that config was correctly parsed
+  assert:
+    that:
+      - "{{ parsed['after'] | symmetric_difference(result['parsed']) |length ==\
+        \ 0 }}"

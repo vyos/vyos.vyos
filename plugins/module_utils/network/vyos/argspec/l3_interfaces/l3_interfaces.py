@@ -25,7 +25,6 @@
 The arg spec for the vyos_l3_interfaces module
 """
 
-
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
@@ -73,8 +72,17 @@ class L3_interfacesArgs(object):  # pylint: disable=R0903
             },
             "type": "list",
         },
+        "running_config": {"type": "str"},
         "state": {
-            "choices": ["merged", "replaced", "overridden", "deleted"],
+            "choices": [
+                "merged",
+                "replaced",
+                "overridden",
+                "deleted",
+                "rendered",
+                "gathered",
+                "parsed",
+            ],
             "default": "merged",
             "type": "str",
         },
