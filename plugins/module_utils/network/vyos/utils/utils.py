@@ -232,13 +232,21 @@ def get_route_type(address):
     elif version == 4:
         return "route"
 
+
 def _bool_to_str(val):
     """
     This function converts the bool value into string.
     :param val: bool value.
     :return: enable/disable.
     """
-    return "enable" if str(val) == "True" else "disable" if str(val) == "False" else val
+    return (
+        "enable"
+        if str(val) == "True"
+        else "disable"
+        if str(val) == "False"
+        else val
+    )
+
 
 def _is_w_same(w, h, key):
     """
@@ -250,6 +258,7 @@ def _is_w_same(w, h, key):
     :return: True/False.
     """
     return True if h and key in h and h[key] == w[key] else False
+
 
 def _in_target(h, key):
     """

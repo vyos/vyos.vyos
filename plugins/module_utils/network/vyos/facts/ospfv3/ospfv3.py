@@ -9,19 +9,25 @@ It is in this file the configuration is collected from the device
 for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
+from __future__ import absolute_import, division, print_function
+
+__metaclass__ = type
+
 from re import findall, search, M
 from copy import deepcopy
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
     utils,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv3.ospfv3 import Ospfv3Args
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv3.ospfv3 import (
+    Ospfv3Args,
+)
 
 
 class Ospfv3Facts(object):
     """ The vyos ospfv3 fact class
     """
 
-    def __init__(self, module, subspec='config', options='options'):
+    def __init__(self, module, subspec="config", options="options"):
         self._module = module
         self.argument_spec = Ospfv3Args.argument_spec
         spec = deepcopy(self.argument_spec)
@@ -56,9 +62,9 @@ class Ospfv3Facts(object):
         if ospfv3:
             objs = self.render_config(ospfv3)
         facts = {}
-        params = utils.validate_config(self.argument_spec, {'config': objs})
-        facts['ospfv3'] = utils.remove_empties(params['config'])
-        ansible_facts['ansible_network_resources'].update(facts)
+        params = utils.validate_config(self.argument_spec, {"config": objs})
+        facts["ospfv3"] = utils.remove_empties(params["config"])
+        ansible_facts["ansible_network_resources"].update(facts)
         return ansible_facts
 
     def render_config(self, conf):
@@ -70,9 +76,13 @@ class Ospfv3Facts(object):
         """
         conf = "\n".join(filter(lambda x: x, conf))
         config = {}
-        config["parameters"] = self.parse_attrib(conf, "parameters", "parameters")
+        config["parameters"] = self.parse_attrib(
+            conf, "parameters", "parameters"
+        )
         config["areas"] = self.parse_attrib_list(conf, "area", "area_id")
-        config["redistribute"] = self.parse_attrib_list(conf, "redistribute", "route_type")
+        config["redistribute"] = self.parse_attrib_list(
+            conf, "redistribute", "route_type"
+        )
         return config
 
     def parse_attrib_list(self, conf, attrib, param):
@@ -86,15 +96,15 @@ class Ospfv3Facts(object):
         """
         r_lst = []
         if attrib == "area":
-            items = findall(r"^" + attrib + " (?:\'*)(\\S+)(?:\'*)", conf, M)
+            items = findall(r"^" + attrib + " (?:'*)(\\S+)(?:'*)", conf, M)
         else:
-            items = findall(r"" + attrib + " (?:\'*)(\\S+)(?:\'*)", conf, M)
+            items = findall(r"" + attrib + " (?:'*)(\\S+)(?:'*)", conf, M)
         if items:
             a_lst = []
             for item in set(items):
                 i_regex = r" %s .+$" % item
                 cfg = "\n".join(findall(i_regex, conf, M))
-                if attrib == 'area':
+                if attrib == "area":
                     obj = self.parse_area(cfg, item)
                 else:
                     obj = self.parse_attrib(cfg, attrib)
@@ -112,8 +122,8 @@ class Ospfv3Facts(object):
         :return: generated rule configuration dictionary.
         """
 
-        rule = self.parse_attrib(conf, 'area_id', match=area_id)
-        r_sub = {'range': self.parse_attrib_list(conf, 'range', 'address')}
+        rule = self.parse_attrib(conf, "area_id", match=area_id)
+        r_sub = {"range": self.parse_attrib_list(conf, "range", "address")}
         rule.update(r_sub)
         return rule
 
@@ -124,11 +134,11 @@ class Ospfv3Facts(object):
         :return: generated configuration dictionary
         """
         param_lst = {
-            'area_id': ['export_list', 'import_list'],
-            'redistribute': ["route_map"],
-            'range': ["advertise", "not_advertise"],
-            'parameters': ["router_id"]
-            }
+            "area_id": ["export_list", "import_list"],
+            "redistribute": ["route_map"],
+            "range": ["advertise", "not_advertise"],
+            "parameters": ["router_id"],
+        }
         cfg_dict = self.parse_attr(conf, param_lst[param], match)
         return cfg_dict
 
@@ -176,7 +186,13 @@ class Ospfv3Facts(object):
         :param attrib: attribute
         :return: regex string
         """
-        return 'disable' if attrib == "disabled" else 'enable' if attrib == "enabled" else attrib.replace("_","-")
+        return (
+            "disable"
+            if attrib == "disabled"
+            else "enable"
+            if attrib == "enabled"
+            else attrib.replace("_", "-")
+        )
 
     def is_bool(self, attrib):
         """
@@ -193,5 +209,5 @@ class Ospfv3Facts(object):
         :param attrib: attribute.
         :return: True/false.
         """
-        num_set = ("ospf")
+        num_set = "ospf"
         return True if attrib in num_set else False

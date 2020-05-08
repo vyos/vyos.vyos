@@ -60,6 +60,7 @@ class TestVyosModule(ModuleTestCase):
         commands=None,
         sort=True,
         defaults=False,
+        filename=None,
     ):
         self.load_fixtures(commands)
 

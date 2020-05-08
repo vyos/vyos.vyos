@@ -41,7 +41,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firew
     Firewall_interfacesFacts,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3 import (
-   Ospfv3Facts,
+    Ospfv3Facts,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
     Default,
@@ -61,7 +61,7 @@ FACT_RESOURCE_SUBSETS = dict(
     firewall_rules=Firewall_rulesFacts,
     firewall_global=Firewall_globalFacts,
     firewall_interfaces=Firewall_interfacesFacts,
-    ospfv3=Ospfv3Facts
+    ospfv3=Ospfv3Facts,
 )
 
 
