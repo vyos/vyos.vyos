@@ -11,7 +11,7 @@
 
     - name: Gather the provided configuration with the exisiting running configuration
       register: result
-      vyos.vyos.vyos_lldp_interfaces: &id001
+      vyos.vyos.vyos_lldp_interfaces:
         config:
         state: gathered
 
