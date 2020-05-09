@@ -19,7 +19,6 @@
 #   builder template.
 #
 #############################################
-
 """
 The arg spec for the vyos_lldp_global module
 """
@@ -48,8 +47,16 @@ class Lldp_globalArgs(object):  # pylint: disable=R0903
             },
             "type": "dict",
         },
+        "running_config": {"type": "str"},
         "state": {
-            "choices": ["merged", "replaced", "deleted"],
+            "choices": [
+                "merged",
+                "replaced",
+                "deleted",
+                "rendered",
+                "parsed",
+                "gathered",
+            ],
             "default": "merged",
             "type": "str",
         },

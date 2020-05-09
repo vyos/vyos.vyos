@@ -30,17 +30,13 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "network",
-}
+ANSIBLE_METADATA = {"metadata_version": "1.1", "supported_by": "Ansible"}
 
 DOCUMENTATION = """module: vyos_lldp_global
-short_description: Manage link layer discovery protocol (LLDP) attributes on VyOS
-  devices..
+short_description: LLDP global resource module
 description: This module manages link layer discovery protocol (LLDP) attributes on
   VyOS devices.
+version_added: "1.0.0"
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
@@ -72,6 +68,15 @@ options:
         - edp
         - fdp
         - sonmp
+  running_config:
+    description:
+      - This option is used only with state I(parsed).
+      - The value of this option should be the output received from the VyOS device by executing
+        the command B(show configuration commands | grep lldp).
+      - The state I(parsed) reads the configuration from C(running_config) option and transforms
+        it into Ansible structured data as per the resource module's argspec and the value is then
+        returned in the I(parsed) key within the result.
+    type: str
   state:
     description:
     - The state of the configuration after module completion.
@@ -80,6 +85,9 @@ options:
     - merged
     - replaced
     - deleted
+    - gathered
+    - rendered
+    - parsed
     default: merged
 """
 EXAMPLES = """
@@ -89,10 +97,9 @@ EXAMPLES = """
 # -------------
 #
 # vyos@vyos:~$ show configuration commands|grep lldp
-# vyos@vyos:~$
 #
 - name: Merge provided configuration with device configuration
-  vyos_lldp_global:
+  vyos.vyos.vyos_lldp_global:
     config:
       legacy_protocols:
         - 'fdp'
@@ -154,7 +161,7 @@ EXAMPLES = """
 # set service lldp snmp enable
 #
 - name: Replace device configurations with provided configurations
-  vyos_lldp_global:
+  vyos.vyos.vyos_lldp_global:
     config:
       legacy_protocols:
         - 'edp'
@@ -231,7 +238,7 @@ EXAMPLES = """
 # set service lldp management-address '192.0.2.14'
 #
 - name: Delete attributes of given lldp service (This won't delete the LLDP service itself)
-  vyos_lldp_global:
+  vyos.vyos.vyos_lldp_global:
     config:
     state: deleted
 #
@@ -271,6 +278,163 @@ EXAMPLES = """
 # ------------
 # vyos@vyos:~$ show configuration commands | grep lldp
 # set service lldp
+
+
+# Using gathered
+#
+# Before state:
+# -------------
+#
+# vyos@192# run show configuration commands | grep lldp
+# set service lldp legacy-protocols 'cdp'
+# set service lldp management-address '192.0.2.17'
+#
+- name: Gather lldp global config with provided configurations
+  vyos.vyos.vyos_lldp_global:
+    config:
+    state: gathered
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#    "gathered": [
+# {
+#        "config_trap": true,
+#        "group": {
+#            "address_group": [
+#                {
+#                    "description": "Sales office hosts address list",
+#                    "members": [
+#                        {
+#                            "address": "192.0.3.1"
+#                        },
+#                        {
+#                            "address": "192.0.3.2"
+#                        }
+#                    ],
+#                    "name": "ENG-HOSTS"
+#                },
+#                {
+#                    "description": "Sales office hosts address list",
+#                    "members": [
+#                        {
+#                            "address": "192.0.2.1"
+#                        },
+#                        {
+#                            "address": "192.0.2.2"
+#                        },
+#                        {
+#                            "address": "192.0.2.3"
+#                        }
+#                    ],
+#                    "name": "SALES-HOSTS"
+#                }
+#            ],
+#            "network_group": [
+#                {
+#                    "description": "This group has the Management network addresses",
+#                    "members": [
+#                        {
+#                            "address": "192.0.1.0/24"
+#                        }
+#                    ],
+#                    "name": "MGMT"
+#                }
+#            ]
+#        },
+#        "log_martians": true,
+#        "ping": {
+#            "all": true,
+#            "broadcast": true
+#        },
+#        "route_redirects": [
+#            {
+#                "afi": "ipv4",
+#                "icmp_redirects": {
+#                    "receive": false,
+#                    "send": true
+#                },
+#                "ip_src_route": true
+#            }
+#        ],
+#        "state_policy": [
+#            {
+#                "action": "accept",
+#                "connection_type": "established",
+#                "log": true
+#            },
+#            {
+#                "action": "reject",
+#                "connection_type": "invalid"
+#            }
+#        ],
+#        "syn_cookies": true,
+#        "twa_hazards_protection": true,
+#        "validation": "strict"
+#    }
+#
+# After state:
+# -------------
+#
+# vyos@192# run show configuration commands | grep lldp
+# set service lldp legacy-protocols 'cdp'
+# set service lldp management-address '192.0.2.17'
+
+
+# Using rendered
+#
+#
+- name: Render the commands for provided  configuration
+  vyos.vyos.vyos_lldp_global:
+    config:
+      address: 192.0.2.17
+      enable: true
+      legacy_protocols:
+        - cdp
+    state: rendered
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#
+# "rendered": [
+#         "set service lldp legacy-protocols 'cdp'",
+#         "set service lldp",
+#         "set service lldp management-address '192.0.2.17'"
+#     ]
+#
+
+
+# Using parsed
+#
+#
+- name: Parse the provided commands to provide structured configuration
+  vyos.vyos.vyos_lldp_global:
+    running_config:
+      "set service lldp legacy-protocols 'cdp'
+ set service lldp legacy-protocols 'fdp'
+ set service lldp management-address '192.0.2.11'"
+    state: parsed
+#
+#
+# -------------------------
+# Module Execution Result
+# -------------------------
+#
+#
+# "parsed": {
+#         "address": "192.0.2.11",
+#         "enable": true,
+#         "legacy_protocols": [
+#             "cdp",
+#             "fdp"
+#         ]
+#     }
+#
 
 
 """
@@ -317,13 +481,16 @@ def main():
     required_if = [
         ("state", "merged", ("config",)),
         ("state", "replaced", ("config",)),
+        ("state", "rendered", ("config",)),
+        ("state", "parsed", ("running_config",)),
     ]
+    mutually_exclusive = [("config", "running_config")]
     module = AnsibleModule(
         argument_spec=Lldp_globalArgs.argument_spec,
         required_if=required_if,
         supports_check_mode=True,
+        mutually_exclusive=mutually_exclusive,
     )
-
     result = Lldp_global(module).execute_module()
     module.exit_json(**result)
 

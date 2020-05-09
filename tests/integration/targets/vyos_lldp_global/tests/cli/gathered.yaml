@@ -1,0 +1,25 @@
+---
+- debug:
+    msg: START vyos_lldp_global gathered integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+
+    - name: Gather the provided configuration with the exisiting running configuration
+      register: result
+      vyos.vyos.vyos_lldp_global:
+        config:
+        state: gathered
+
+    - name: Assert that gathered dicts was correctly generated
+      assert:
+        that:
+          - "{{ populate  == result['gathered'] }}"
+
+  always:
+
+    - include_tasks: _remove_config.yaml

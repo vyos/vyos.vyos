@@ -1,0 +1,28 @@
+---
+- debug:
+    msg: START vyos_lldp_global rendered integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+
+    - name: Structure provided configuration into device specific commands
+      register: result
+      vyos.vyos.vyos_lldp_global:
+        config:
+          address: 192.0.2.17
+          enable: true
+          legacy_protocols:
+            - cdp
+        state: rendered
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ rendered['commands'] | symmetric_difference(result['rendered'])\
+            \ |length == 0 }}"
+
+  always:
+
+    - include_tasks: _remove_config.yaml
