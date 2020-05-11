@@ -1,0 +1,38 @@
+---
+- debug:
+    msg: START vyos_ospfv3 rendered integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+
+    - name: Structure provided configuration into device specific commands
+      register: result
+      vyos.vyos.vyos_ospfv3:
+        config:
+          redistribute:
+            - route_type: 'bgp'
+          parameters:
+            router_id: '192.0.2.10'
+          areas:
+            - area_id: '2'
+              export_list: 'export1'
+              import_list: 'import1'
+              range:
+                - address: '2001:db10::/32'
+                - address: '2001:db20::/32'
+                - address: '2001:db30::/32'
+            - area_id: '3'
+              range:
+                - address: '2001:db40::/32'
+        state: rendered
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ rendered['commands'] | symmetric_difference(result['rendered'])\
+            \ |length == 0 }}"
+
+- debug:
+    msg: END vyos_ospfv3 rendered integration tests on connection={{ ansible_connection }}

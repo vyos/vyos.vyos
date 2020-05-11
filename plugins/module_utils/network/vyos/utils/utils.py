@@ -113,7 +113,7 @@ def get_lst_same_for_dicts(want, have, lst):
 
 
 def list_diff_have_only(want_list, have_list):
-    """
+    """ -
     This function generated the list containing values
     that are only in have list.
     :param want_list:
@@ -230,3 +230,40 @@ def get_route_type(address):
         return "route6"
     elif version == 4:
         return "route"
+
+
+def _bool_to_str(val):
+    """
+    This function converts the bool value into string.
+    :param val: bool value.
+    :return: enable/disable.
+    """
+    return (
+        "enable"
+        if str(val) == "True"
+        else "disable"
+        if str(val) == "False"
+        else val
+    )
+
+
+def _is_w_same(w, h, key):
+    """
+    This function checks whether the key value is same in desired and
+    target config dictionary.
+    :param w: base config.
+    :param h: target config.
+    :param key:attribute name.
+    :return: True/False.
+    """
+    return True if h and key in h and h[key] == w[key] else False
+
+
+def _in_target(h, key):
+    """
+    This function checks whether the target exist and key present in target config.
+    :param h: target config.
+    :param key: attribute name.
+    :return: True/False.
+    """
+    return True if h and key in h else False

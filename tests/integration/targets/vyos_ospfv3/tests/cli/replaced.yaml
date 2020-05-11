@@ -1,0 +1,66 @@
+---
+- debug:
+    msg: START vyos_ospfv3 replaced integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+
+    - name: Replace device configurations of listed ospfv3 routes with provided configurations
+      register: result
+      vyos.vyos.vyos_ospfv3: &id001
+        config:
+          redistribute:
+            - route_type: 'bgp'
+          parameters:
+            router_id: '192.0.2.10'
+          areas:
+            - area_id: '2'
+              export_list: 'export1'
+              import_list: 'import1'
+
+              range:
+                - address: '2001:db10::/32'
+                - address: '2001:db30::/32'
+                - address: '2001:db50::/32'
+            - area_id: '4'
+              range:
+                - address: '2001:db60::/32'
+        state: replaced
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands'])\
+            \ |length == 0 }}"
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ populate == result['before'] }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] == result['after'] }}"
+
+    - name: Replace device configurations of listed ospfv3 routes with provided configurarions
+        (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_ospfv3: *id001
+
+    - name: Assert that task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+    - name: Assert that before dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['after'] == result['before'] }}"
+  always:
+
+    - include_tasks: _remove_config.yaml

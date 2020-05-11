@@ -1,0 +1,13 @@
+---
+- name: Setup
+  vars:
+    lines: "set protocols ospfv3 area 2 export-list 'export1' \n
+            set protocols ospfv3 area 2 import-list 'import1' \n
+            set protocols ospfv3 area 2 range '2001:db10::/32' \n
+            set protocols ospfv3 area 2 range '2001:db20::/32' \n
+            set protocols ospfv3 area 2 range '2001:db30::/32' \n
+            set protocols ospfv3 area 3 range '2001:db40::/32' \n
+            set protocols ospfv3 parameters router-id '192.0.2.10' \n
+            set protocols ospfv3 redistribute 'bgp'"
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'
