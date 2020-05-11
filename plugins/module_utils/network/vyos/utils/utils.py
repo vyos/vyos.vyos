@@ -113,7 +113,7 @@ def get_lst_same_for_dicts(want, have, lst):
 
 
 def list_diff_have_only(want_list, have_list):
-    """ -
+    """
     This function generated the list containing values
     that are only in have list.
     :param want_list:
@@ -238,7 +238,14 @@ def _bool_to_str(val):
     :param val: bool value.
     :return: enable/disable.
     """
-    return "enable" if str(val) == "True" else "disable" if str(val) == "False" else val
+    return (
+        "enable"
+        if str(val) == "True"
+        else "disable"
+        if str(val) == "False"
+        else val
+    )
+
 
 
 def _is_w_same(w, h, key):

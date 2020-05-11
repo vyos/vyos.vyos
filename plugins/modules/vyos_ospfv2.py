@@ -27,20 +27,18 @@ The module file for vyos_ospfv2
 """
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
-ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'status': ['preview'],
-    'supported_by': 'network'
-}
+ANSIBLE_METADATA = {"metadata_version": "1.1", "supported_by": "Ansible"}
 
 DOCUMENTATION = """
 ---
 module: vyos_ospfv2
 version_added: 2.10
-short_description: This resource module configures and manages attributes of OSPFv2 routes on VyOS network devices.
+short_description: OSPFV2 resource module
 description: This resource module configures and manages attributes of OSPFv2 routes on VyOS network devices.
+version_added: "1.0.0"
 notes:
   - Tested against VyOS 1.1.8 (helium).
   - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
@@ -57,7 +55,7 @@ options:
         elements: dict
         suboptions:
           area_id:
-            description: Configured to discard packets.
+            description: OSPFv2 area identity.
             type: str
           area_type:
             description: Area type.
@@ -67,27 +65,27 @@ options:
                 description: Normal OSPFv2 area.
                 type: bool
               nssa:
-                description: Nssa OSPFv2 area.
+                description: NSSA OSPFv2 area.
                 type: dict
                 suboptions:
-                  set: 
-                    description: Enabling nssa.
+                  set:
+                    description: Enabling NSSA.
                     type: bool
                   default_cost:
-                    description: Summary-default cost of nssa area.
+                    description: Summary-default cost of NSSA area.
                     type: int
                   no_summary:
                     description: Do not inject inter-area routes into stub.
                     type: bool
-                  translate: 
-                    description: Nssa-abr.
+                  translate:
+                    description: NSSA-ABR.
                     type: str
                     choices: ['always', 'candidate', 'never']
-              stub: 
+              stub:
                 description: Stub OSPFv2 area.
                 type: dict
                 suboptions:
-                  set: 
+                  set:
                     description: Enabling stub.
                     type: bool
                   default_cost:
@@ -108,7 +106,7 @@ options:
               address:
                 required: True
                 description: OSPFv2 IPv4 network address.
-                type: str 
+                type: str
           range:
             description: Summarize routes matching prefix (border routers only).
             type: list
@@ -162,7 +160,7 @@ options:
               hello_interval:
                 description: Interval between hello packets.
                 type: int
-              retransmit_interval: 
+              retransmit_interval:
                 description: Interval between retransmitting lost link state advertisements.
                 type: int
               transmit_delay:
@@ -172,7 +170,7 @@ options:
          description: Log changes in adjacency state.
          type: str
          choices: ['detail']
-      max_metric: 
+      max_metric:
         description: OSPFv2 maximum/infinite-distance metric.
         type: dict
         suboptions:
@@ -185,10 +183,10 @@ options:
                 type: bool
               on_shutdown:
                 description: Time to advertise self as stub-router.
-                type: int   
+                type: int
               on_startup:
                 description: Time to advertise self as stub-router
-                type: int   
+                type: int
       auto_cost:
         description: Calculate OSPFv2 interface cost according to bandwidth.
         type: dict
@@ -215,7 +213,7 @@ options:
                 type: int
               route_map:
                 description: Route map references.
-                type: str           
+                type: str
       default_metric:
         description: Metric of redistributed routes
         type: int
@@ -226,11 +224,11 @@ options:
           global:
             description: Global OSPFv2 administrative distance.
             type: int
-          ospf: 
+          ospf:
             description: OSPFv2 administrative distance.
             type: dict
             suboptions:
-              external: 
+              external:
                 description: Distance for external routes.
                 type: int
               inter_area:
@@ -257,18 +255,18 @@ options:
         suboptions:
           neighbor_id:
             description: Identity (number/IP address) of neighbor.
-            type: str 
+            type: str
           poll_interval:
             description: Seconds between dead neighbor polling interval.
             type: int
           priority:
             description: Neighbor priority.
-            type: int       
+            type: int
       parameters:
         descriptions: OSPFv2 specific parameters.
         type: dict
-        suboptions: 
-         abr_type: 
+        suboptions:
+         abr_type:
            description: OSPFv2 ABR Type.
            type: str
            choices: ['cisco', 'ibm', 'shortcut', 'standard']
@@ -278,7 +276,7 @@ options:
          rfc1583_compatibility:
            description: Enable rfc1583 criteria for handling AS external routes.
            type: bool
-         router_id: 
+         router_id:
            description: Override the default router identifier.
            type: str
       passive_interface:
@@ -287,11 +285,11 @@ options:
       passive_interface_exclude:
         description: Interface to exclude when using passive-interface default.
         type: list
-      redistribute:  
+      redistribute:
         description: Redistribute information from another routing protocol.
         type: list
         elements: dict
-        suboptions: 
+        suboptions:
           route_type:
             description: Route type to redistribute.
             type: str
@@ -304,10 +302,9 @@ options:
             type: int
           route_map:
             description: Route map references.
-            type: str 
-      
+            type: str
       route_map:
-        description: Filter routes installed in local route map.       
+        description: Filter routes installed in local route map.
         type: list
       timers:
         description: Adjust routing timers.
@@ -339,13 +336,12 @@ options:
                     type: int
   running_config:
     description:
-    - The module, by default, will connect to the remote device and retrieve the current
-      running-config to use as a base for comparing against the contents of source.
-      There are times when it is not desirable to have the task get the current running-config
-      for every task in a playbook.  The I(running_config) argument allows the implementer
-      to pass in the configuration to use as the base config for comparison. This
-      value of this option should be the output received from device by executing
-      command C(show configuration commands | grep 'ospf')
+      - This option is used only with state I(parsed).
+      - The value of this option should be the output received from the VyOS device by executing
+        the command B(show configuration commands | grep ospf).
+      - The state I(parsed) reads the configuration from C(running_config) option and transforms
+        it into Ansible structured data as per the resource module's argspec and the value is then
+        returned in the I(parsed) key within the result.
     type: str
   state:
     description:
@@ -366,74 +362,74 @@ EXAMPLES = """
 # Before state:
 # -------------
 #
-# vyos@vyos# run show  configuration commands | grep ospf 
-# 
+# vyos@vyos# run show  configuration commands | grep ospf
 #
-- name: Merge the provided configuration with the exisiting running configuration
-      vyos.vyos.vyos_ospfv2:
-        config:
-           log_adjacency_changes: 'detail'
-           max_metric:
-             router_lsa:
-               administrative: true
-               on_shutdown: 10
-               on_startup: 10
-           default_information:
-             originate:
-               always: true
-               metric: 10
-               metric_type: 2
-               route_map: 'ingress'
-           mpls_te:
-             enabled: true
-             router_address: '192.0.11.11'
-           auto_cost:
-             reference_bandwidth: 2
-           neighbor:
-             - neighbor_id: '192.0.11.12'
-               poll_interval: 10
-               priority: 2
-           redistribute:
-             - route_type: 'bgp'
-               metric: 10
-               metric_type: 2
-           passive_interface:
-             - 'eth1'
-             - 'eth2'
-           parameters:
-             router_id: '192.0.1.1'
-             opaque_lsa: true
-             rfc1583_compatibility: true
-             abr_type: 'cisco'
-           areas:
-             - area_id: '2'
-               area_type:
-                 normal: true
-               authentication: "plaintext-password"
-               shortcut: 'enable'
-             - area_id: '3'
-               area_type:
-                 nssa:
-                  set: true
-             - area_id: '4'
-               area_type:
-                 stub:
-                  default_cost: 20
-               network:
-                 - address: '192.0.2.0/24'
-               range:
-                 - address: '192.0.3.0/24'
-                   cost: 10
-                 - address: '192.0.4.0/24'
-                   cost: 12
-        state: merged
+#
+- name: Merge the provided configuration with the existing running configuration
+  vyos.vyos.vyos_ospfv2:
+    config:
+      log_adjacency_changes: 'detail'
+      max_metric:
+        router_lsa:
+          administrative: true
+          on_shutdown: 10
+          on_startup: 10
+        default_information:
+          originate:
+            always: true
+            metric: 10
+            metric_type: 2
+            route_map: 'ingress'
+        mpls_te:
+          enabled: true
+          router_address: '192.0.11.11'
+        auto_cost:
+           reference_bandwidth: 2
+        neighbor:
+          - neighbor_id: '192.0.11.12'
+            poll_interval: 10
+            priority: 2
+        redistribute:
+          - route_type: 'bgp'
+            metric: 10
+            metric_type: 2
+        passive_interface:
+          - 'eth1'
+          - 'eth2'
+        parameters:
+          router_id: '192.0.1.1'
+          opaque_lsa: true
+          rfc1583_compatibility: true
+          abr_type: 'cisco'
+        areas:
+          - area_id: '2'
+            area_type:
+              normal: true
+              authentication: "plaintext-password"
+              shortcut: 'enable'
+          - area_id: '3'
+            area_type:
+              nssa:
+                set: true
+          - area_id: '4'
+            area_type:
+              stub:
+                default_cost: 20
+            network:
+              - address: '192.0.2.0/24'
+            range:
+              - address: '192.0.3.0/24'
+                cost: 10
+              - address: '192.0.4.0/24'
+            cost: 12
+    state: merged
 #
 #
 # -------------------------
 # Module Execution Result
 # -------------------------
 #
-# before": []
+# before": {}
 #
 #    "commands": [
 #       "set protocols ospf mpls-te enable",
@@ -606,31 +602,31 @@ EXAMPLES = """
 # Before state:
 # -------------
 #
-# vyos@vyos# run show  configuration commands | grep ospf 
-# 
+# vyos@vyos# run show  configuration commands | grep ospf
 #
-- name: Merge the provided configuration to update exisiting running configuration
-      vyos.vyos.vyos_ospfv2:
-        config:
-           areas:
-             - area_id: '2'
-               area_type:
-                 normal: true
-               authentication: "plaintext-password"
-               shortcut: 'enable'
-             - area_id: '3'
-               area_type:
-                 nssa:
-                  set: false
-             - area_id: '4'
-               area_type:
-                 stub:
-                  default_cost: 20
-               network:
-                 - address: '192.0.2.0/24'
-                 - address: '192.0.22.0/24'
-                 - address: '192.0.32.0/24'
-        state: merged
+#
+- name: Merge the provided configuration to update existing running configuration
+  vyos.vyos.vyos_ospfv2:
+    config:
+      areas:
+        - area_id: '2'
+          area_type:
+            normal: true
+          authentication: "plaintext-password"
+          shortcut: 'enable'
+        - area_id: '3'
+          area_type:
+            nssa:
+              set: false
+        - area_id: '4'
+          area_type:
+            stub:
+              default_cost: 20
+          network:
+            - address: '192.0.2.0/24'
+            - address: '192.0.22.0/24'
+            - address: '192.0.32.0/24'
+    state: merged
 #
 #
 # -------------------------
@@ -901,59 +897,59 @@ EXAMPLES = """
 # set protocols ospf redistribute bgp metric-type '2'
 #
 - name: Replace ospfv2 routes attributes configuration.
-      vyos.vyos.vyos_ospfv2:
-        config:
-           log_adjacency_changes: 'detail'
-           max_metric:
-             router_lsa:
-               administrative: true
-               on_shutdown: 10
-               on_startup: 10
-           default_information:
-             originate:
-               always: true
-               metric: 10
-               metric_type: 2
-               route_map: 'ingress'
-           mpls_te:
-             enabled: true
-             router_address: '192.0.22.22'
-           auto_cost:
-             reference_bandwidth: 2
-           neighbor:
-             - neighbor_id: '192.0.11.12'
-               poll_interval: 10
-               priority: 2
-           redistribute:
-             - route_type: 'bgp'
-               metric: 10
-               metric_type: 2
-           passive_interface:
-             - 'eth1'
-           parameters:
-             router_id: '192.0.1.1'
-             opaque_lsa: true
-             rfc1583_compatibility: true
-             abr_type: 'cisco'
-           areas:
-             - area_id: '2'
-               area_type:
-                 normal: true
-               authentication: "plaintext-password"
-               shortcut: 'enable'
-             - area_id: '4'
-               area_type:
-                 stub:
-                  default_cost: 20
-               network:
-                 - address: '192.0.2.0/24'
-                 - address: '192.0.12.0/24'
-                 - address: '192.0.22.0/24'
-                 - address: '192.0.32.0/24'
-               range:
-                 - address: '192.0.42.0/24'
-                   cost: 10
-        state: replaced
+  vyos.vyos.vyos_ospfv2:
+    config:
+      log_adjacency_changes: 'detail'
+      max_metric:
+        router_lsa:
+          administrative: true
+          on_shutdown: 10
+          on_startup: 10
+        default_information:
+          originate:
+            always: true
+            metric: 10
+            metric_type: 2
+            route_map: 'ingress'
+        mpls_te:
+          enabled: true
+          router_address: '192.0.22.22'
+        auto_cost:
+          reference_bandwidth: 2
+        neighbor:
+          - neighbor_id: '192.0.11.12'
+            poll_interval: 10
+            priority: 2
+        redistribute:
+          - route_type: 'bgp'
+            metric: 10
+            metric_type: 2
+        passive_interface:
+          - 'eth1'
+        parameters:
+          router_id: '192.0.1.1'
+          opaque_lsa: true
+          rfc1583_compatibility: true
+          abr_type: 'cisco'
+        areas:
+          - area_id: '2'
+            area_type:
+              normal: true
+            authentication: "plaintext-password"
+            shortcut: 'enable'
+          - area_id: '4'
+            area_type:
+              stub:
+                default_cost: 20
+            network:
+              - address: '192.0.2.0/24'
+              - address: '192.0.12.0/24'
+              - address: '192.0.22.0/24'
+              - address: '192.0.32.0/24'
+            range:
+              - address: '192.0.42.0/24'
+                cost: 10
+    state: replaced
 #
 #
 # -------------------------
@@ -1154,7 +1150,7 @@ EXAMPLES = """
 #            }
 #        ]
 #    }
-# 
+#
 # After state:
 # -------------
 #
@@ -1194,63 +1190,63 @@ EXAMPLES = """
 #
 #
 - name: Render the commands for provided  configuration
-      vyos.vyos.vyos_ospfv2:
-        config:
-           log_adjacency_changes: 'detail'
-           max_metric:
-             router_lsa:
-               administrative: true
-               on_shutdown: 10
-               on_startup: 10
-           default_information:
-             originate:
-               always: true
-               metric: 10
-               metric_type: 2
-               route_map: 'ingress'
-           mpls_te:
-             enabled: true
-             router_address: '192.0.11.11'
-           auto_cost:
-             reference_bandwidth: 2
-           neighbor:
-             - neighbor_id: '192.0.11.12'
-               poll_interval: 10
-               priority: 2
-           redistribute:
-             - route_type: 'bgp'
-               metric: 10
-               metric_type: 2
-           passive_interface:
-             - 'eth1'
-             - 'eth2'
-           parameters:
-             router_id: '192.0.1.1'
-             opaque_lsa: true
-             rfc1583_compatibility: true
-             abr_type: 'cisco'
-           areas:
-             - area_id: '2'
-               area_type:
-                 normal: true
-               authentication: "plaintext-password"
-               shortcut: 'enable'
-             - area_id: '3'
-               area_type:
-                 nssa:
-                  set: true
-             - area_id: '4'
-               area_type:
-                 stub:
-                  default_cost: 20
-               network:
-                 - address: '192.0.2.0/24'
-               range:
-                 - address: '192.0.3.0/24'
-                   cost: 10
-                 - address: '192.0.4.0/24'
-                   cost: 12
-        state: rendered
+  vyos.vyos.vyos_ospfv2:
+    config:
+      log_adjacency_changes: 'detail'
+      max_metric:
+        router_lsa:
+          administrative: true
+          on_shutdown: 10
+          on_startup: 10
+        default_information:
+          originate:
+            always: true
+            metric: 10
+            metric_type: 2
+            route_map: 'ingress'
+        mpls_te:
+          enabled: true
+          router_address: '192.0.11.11'
+        auto_cost:
+          reference_bandwidth: 2
+        neighbor:
+          - neighbor_id: '192.0.11.12'
+            poll_interval: 10
+            priority: 2
+        redistribute:
+          - route_type: 'bgp'
+            metric: 10
+            metric_type: 2
+        passive_interface:
+          - 'eth1'
+          - 'eth2'
+        parameters:
+          router_id: '192.0.1.1'
+          opaque_lsa: true
+          rfc1583_compatibility: true
+          abr_type: 'cisco'
+        areas:
+          - area_id: '2'
+            area_type:
+              normal: true
+            authentication: "plaintext-password"
+            shortcut: 'enable'
+          - area_id: '3'
+            area_type:
+              nssa:
+                set: true
+          - area_id: '4'
+            area_type:
+              stub:
+                default_cost: 20
+            network:
+              - address: '192.0.2.0/24'
+            range:
+              - address: '192.0.3.0/24'
+                cost: 10
+              - address: '192.0.4.0/24'
+                cost: 12
+    state: rendered
 #
 #
 # -------------------------
@@ -1302,10 +1298,10 @@ EXAMPLES = """
 # Using parsed
 #
 #
-- name: Render the commands for provided  configuration
-      vyos.vyos.vyos_ospfv2:
-        running_config: 
-         "set protocols ospf area 2 area-type 'normal'
+- name: Parse the commands for provided  structured configuration
+  vyos.vyos.vyos_ospfv2:
+    running_config:
+      "set protocols ospf area 2 area-type 'normal'
  set protocols ospf area 2 authentication 'plaintext-password'
  set protocols ospf area 2 shortcut 'enable'
  set protocols ospf area 3 area-type 'nssa'
@@ -1334,7 +1330,7 @@ EXAMPLES = """
  set protocols ospf passive-interface 'eth2'
  set protocols ospf redistribute bgp metric '10'
  set protocols ospf redistribute bgp metric-type '2'"
-        state: parsed
+    state: parsed
 #
 #
 # -------------------------
@@ -1473,9 +1469,9 @@ EXAMPLES = """
 # set protocols ospf redistribute bgp metric-type '2'
 #
 - name: Gather ospfv2 routes config with provided configurations
-      vyos.vyos.vyos_ospfv2:
-          config:
-          state: gathered
+  vyos.vyos.vyos_ospfv2:
+    config:
+    state: gathered
 #
 #
 # -------------------------
@@ -1645,178 +1641,10 @@ EXAMPLES = """
 # set protocols ospf redistribute bgp metric '10'
 # set protocols ospf redistribute bgp metric-type '2'
 #
-- name: Delete single attributes of ospfv2 routes.
-      vyos.vyos.vyos_ospfv2:
-        config:
-          log_adjacency_changes: 'detail'
-          max_metric:
-          default_information:
-          mpls_te:
-          neighbor:
-          redistribute:
-          parameters:
-          passive_interface:
-          areas:
-        state: deleted
-#
-#
-# ------------------------
-# Module Execution Results
-# ------------------------
-#
-#    "before": {
-#        "areas": [
-#            {
-#                "area_id": "2",
-#                "area_type": {
-#                    "normal": true
-#                },
-#                "authentication": "plaintext-password",
-#                "shortcut": "enable"
-#            },
-#            {
-#                "area_id": "3",
-#                "area_type": {
-#                    "nssa": {
-#                        "set": true
-#                    }
-#                }
-#            },
-#            {
-#                "area_id": "4",
-#                "area_type": {
-#                    "stub": {
-#                        "default_cost": 20,
-#                        "set": true
-#                    }
-#                },
-#                "network": [
-#                    {
-#                        "address": "192.0.2.0/24"
-#                    }
-#                ],
-#                "range": [
-#                    {
-#                        "address": "192.0.3.0/24",
-#                        "cost": 10
-#                    },
-#                    {
-#                        "address": "192.0.4.0/24",
-#                        "cost": 12
-#                    }
-#                ]
-#            }
-#        ],
-#        "auto_cost": {
-#            "reference_bandwidth": 2
-#        },
-#        "default_information": {
-#            "originate": {
-#                "always": true,
-#                "metric": 10,
-#                "metric_type": 2,
-#                "route_map": "ingress"
-#            }
-#        },
-#        "log_adjacency_changes": "detail",
-#        "max_metric": {
-#            "router_lsa": {
-#                "administrative": true,
-#                "on_shutdown": 10,
-#                "on_startup": 10
-#            }
-#        },
-#        "mpls_te": {
-#            "enabled": true,
-#            "router_address": "192.0.11.11"
-#        },
-#        "neighbor": [
-#            {
-#                "neighbor_id": "192.0.11.12",
-#                "poll_interval": 10,
-#                "priority": 2
-#            }
-#        ],
-#        "parameters": {
-#            "abr_type": "cisco",
-#            "opaque_lsa": true,
-#            "rfc1583_compatibility": true,
-#            "router_id": "192.0.1.1"
-#        },
-#        "passive_interface": [
-#            "eth2",
-#            "eth1"
-#        ],
-#        "redistribute": [
-#            {
-#                "metric": 10,
-#                "metric_type": 2,
-#                "route_type": "bgp"
-#            }
-#        ]
-#    }
-# "commands": [
-#        "delete protocols ospf mpls-te", 
-#        "delete protocols ospf redistribute", 
-#        "delete protocols ospf auto-cost", 
-#        "delete protocols ospf passive-interface", 
-#        "delete protocols ospf parameters", 
-#        "delete protocols ospf default-information", 
-#        "delete protocols ospf max-metric", 
-#        "delete protocols ospf log-adjacency-changes", 
-#        "delete protocols ospf neighbor", 
-#        "delete protocols ospf area 2", 
-#        "delete protocols ospf area 3", 
-#        "delete protocols ospf area 4", 
-#        "delete protocols ospf area"
-#    ]
-#
-# "after": []
-# After state
-# ------------
-# vyos@192# run show configuration commands | grep ospf
-
-
-# Using deleted
-#
-# Before state
-# -------------
-#
-# vyos@192# run show configuration commands | grep ospf
-# set protocols ospf area 2 area-type 'normal'
-# set protocols ospf area 2 authentication 'plaintext-password'
-# set protocols ospf area 2 shortcut 'enable'
-# set protocols ospf area 3 area-type 'nssa'
-# set protocols ospf area 4 area-type stub default-cost '20'
-# set protocols ospf area 4 network '192.0.2.0/24'
-# set protocols ospf area 4 range 192.0.3.0/24 cost '10'
-# set protocols ospf area 4 range 192.0.4.0/24 cost '12'
-# set protocols ospf auto-cost reference-bandwidth '2'
-# set protocols ospf default-information originate 'always'
-# set protocols ospf default-information originate metric '10'
-# set protocols ospf default-information originate metric-type '2'
-# set protocols ospf default-information originate route-map 'ingress'
-# set protocols ospf log-adjacency-changes 'detail'
-# set protocols ospf max-metric router-lsa 'administrative'
-# set protocols ospf max-metric router-lsa on-shutdown '10'
-# set protocols ospf max-metric router-lsa on-startup '10'
-# set protocols ospf mpls-te 'enable'
-# set protocols ospf mpls-te router-address '192.0.11.11'
-# set protocols ospf neighbor 192.0.11.12 poll-interval '10'
-# set protocols ospf neighbor 192.0.11.12 priority '2'
-# set protocols ospf parameters abr-type 'cisco'
-# set protocols ospf parameters 'opaque-lsa'
-# set protocols ospf parameters 'rfc1583-compatibility'
-# set protocols ospf parameters router-id '192.0.1.1'
-# set protocols ospf passive-interface 'eth1'
-# set protocols ospf passive-interface 'eth2'
-# set protocols ospf redistribute bgp metric '10'
-# set protocols ospf redistribute bgp metric-type '2'
-#
 - name: Delete attributes of ospfv2 routes.
-      vyos.vyos.vyos_ospfv2:
-        config:
-        state: deleted
+  vyos.vyos.vyos_ospfv2:
+    config:
+    state: deleted
 #
 #
 # ------------------------
@@ -1918,11 +1746,11 @@ EXAMPLES = """
 #        "delete protocols ospf"
 #    ]
 #
-# "after": []
+# "after": {}
 # After state
 # ------------
 # vyos@192# run show configuration commands | grep ospf
-
+#
 
 """
 RETURN = """
@@ -1950,8 +1778,12 @@ commands:
 
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv2.ospfv2 import Ospfv2Args
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv2.ospfv2 import Ospfv2
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv2.ospfv2 import (
+    Ospfv2Args,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv2.ospfv2 import (
+    Ospfv2,
+)
 
 
 def main():
@@ -1963,6 +1795,7 @@ def main():
     required_if = [
         ("state", "merged", ("config",)),
         ("state", "replaced", ("config",)),
+        ("state", "rendered", ("config",)),
         ("state", "parsed", ("running_config",)),
     ]
     mutually_exclusive = [("config", "running_config")]
@@ -1977,5 +1810,5 @@ def main():
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

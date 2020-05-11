@@ -15,9 +15,13 @@ __metaclass__ = type
 
 from re import findall, search, M
 from copy import deepcopy
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
+    utils,
+)
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv2.ospfv2 import Ospfv2Args
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv2.ospfv2 import (
+    Ospfv2Args,
+)
 
 
 class Ospfv2Facts(object):
@@ -26,11 +30,8 @@ class Ospfv2Facts(object):
     """
 
     def __init__(
-        self,
-        module,
-        subspec='config',
-        options='options',
-        ):
+        self, module, subspec="config", options="options",
+    ):
 
         self._module = module
         self.argument_spec = Ospfv2Args.argument_spec
@@ -69,9 +70,9 @@ class Ospfv2Facts(object):
         if ospfv2:
             objs = self.render_config(ospfv2)
         facts = {}
-        params = utils.validate_config(self.argument_spec,{'config': objs})
-        facts['ospfv2'] = utils.remove_empties(params['config'])
-        ansible_facts['ansible_network_resources'].update(facts)
+        params = utils.validate_config(self.argument_spec, {"config": objs})
+        facts["ospfv2"] = utils.remove_empties(params["config"])
+        ansible_facts["ansible_network_resources"].update(facts)
         return ansible_facts
 
     def render_config(self, conf):
@@ -82,25 +83,35 @@ class Ospfv2Facts(object):
         :returns: The generated config
         """
 
-        conf = '\n'.join(filter(lambda x: x, conf))
-        a_lst = ['default_metric', 'log_adjacency_changes']
+        conf = "\n".join(filter(lambda x: x, conf))
+        a_lst = ["default_metric", "log_adjacency_changes"]
         config = self.parse_attr(conf, a_lst)
 
         if not config:
             config = {}
-        config['timers'] = self.parse_timers(conf)
-        config['auto_cost'] = self.parse_auto_cost(conf)
-        config['distance'] = self.parse_distance(conf)
-        config['max_metric'] = self.parse_max_metric(conf)
-        config['default_information'] = self.parse_def_info(conf)
-        config['route_map'] = self.parse_leaf_list(conf, 'route-map')
-        config['mpls_te'] = self.parse_attrib(conf, 'mpls_te', 'mpls-te')
-        config['areas'] = self.parse_attrib_list(conf, 'area', 'area_id')
-        config['parameters'] = self.parse_attrib(conf, 'parameters', 'parameters')
-        config['neighbor'] = self.parse_attrib_list(conf, 'neighbor', 'neighbor_id')
-        config['passive_interface'] = self.parse_leaf_list(conf, 'passive-interface')
-        config['redistribute'] = self.parse_attrib_list(conf, 'redistribute', 'route_type')
-        config['passive_interface_exclude'] = self.parse_leaf_list(conf, 'passive-interface-exclude')
+        config["timers"] = self.parse_timers(conf)
+        config["auto_cost"] = self.parse_auto_cost(conf)
+        config["distance"] = self.parse_distance(conf)
+        config["max_metric"] = self.parse_max_metric(conf)
+        config["default_information"] = self.parse_def_info(conf)
+        config["route_map"] = self.parse_leaf_list(conf, "route-map")
+        config["mpls_te"] = self.parse_attrib(conf, "mpls_te", "mpls-te")
+        config["areas"] = self.parse_attrib_list(conf, "area", "area_id")
+        config["parameters"] = self.parse_attrib(
+            conf, "parameters", "parameters"
+        )
+        config["neighbor"] = self.parse_attrib_list(
+            conf, "neighbor", "neighbor_id"
+        )
+        config["passive_interface"] = self.parse_leaf_list(
+            conf, "passive-interface"
+        )
+        config["redistribute"] = self.parse_attrib_list(
+            conf, "redistribute", "route_type"
+        )
+        config["passive_interface_exclude"] = self.parse_leaf_list(
+            conf, "passive-interface-exclude"
+        )
         return config
 
     def parse_timers(self, conf):
@@ -111,8 +122,8 @@ class Ospfv2Facts(object):
         """
 
         cfg_dict = {}
-        cfg_dict['refresh'] = self.parse_refresh(conf, 'refresh')
-        cfg_dict['throttle'] = self.parse_throttle(conf, 'spf')
+        cfg_dict["refresh"] = self.parse_refresh(conf, "refresh")
+        cfg_dict["throttle"] = self.parse_throttle(conf, "spf")
         return cfg_dict
 
     def parse_throttle(self, conf, attrib=None):
@@ -135,7 +146,7 @@ class Ospfv2Facts(object):
         :return: generated config dictionary
         """
 
-        cfg_dict = self.parse_attr(conf, ['timers'], match=attrib)
+        cfg_dict = self.parse_attr(conf, ["timers"], match=attrib)
         return cfg_dict
 
     def parse_leaf_list(self, conf, attrib):
@@ -148,10 +159,11 @@ class Ospfv2Facts(object):
         """
 
         lst = []
-        items = findall(r"^" + attrib + " (?:\'*)(\\S+)(?:\'*)", conf, M)
+        items = findall(r"^" + attrib + " (?:'*)(\\S+)(?:'*)", conf, M)
         if items:
             for i in set(items):
                 lst.append(i.strip("'"))
+                lst.sort()
         return lst
 
     def parse_distance(self, conf, attrib=None):
@@ -162,8 +174,8 @@ class Ospfv2Facts(object):
         :return: generated config dictionary
         """
 
-        cfg_dict = self.parse_attr(conf, ['global'], match=attrib)
-        cfg_dict['ospf'] = self.parse_ospf(conf, 'ospf')
+        cfg_dict = self.parse_attr(conf, ["global"], match=attrib)
+        cfg_dict["ospf"] = self.parse_ospf(conf, "ospf")
         return cfg_dict
 
     def parse_ospf(self, conf, attrib=None):
@@ -174,7 +186,7 @@ class Ospfv2Facts(object):
         :return: generated config dictionary
         """
 
-        cfg_dict = self.parse_attrib(conf, 'ospf', match=attrib)
+        cfg_dict = self.parse_attrib(conf, "ospf", match=attrib)
         return cfg_dict
 
     def parse_max_metric(self, conf):
@@ -185,7 +197,9 @@ class Ospfv2Facts(object):
         """
 
         cfg_dict = {}
-        cfg_dict['router_lsa'] = self.parse_attrib(conf, 'router_lsa', match='router-lsa')
+        cfg_dict["router_lsa"] = self.parse_attrib(
+            conf, "router_lsa", match="router-lsa"
+        )
         return cfg_dict
 
     def parse_auto_cost(self, conf, attrib=None):
@@ -196,8 +210,7 @@ class Ospfv2Facts(object):
         :return: generated config dictionary
         """
 
-        cfg_dict = self.parse_attr(conf, ['reference_bandwidth'],
-                                   match=attrib)
+        cfg_dict = self.parse_attr(conf, ["reference_bandwidth"], match=attrib)
         return cfg_dict
 
     def parse_def_info(self, conf):
@@ -208,7 +221,9 @@ class Ospfv2Facts(object):
         """
 
         cfg_dict = {}
-        cfg_dict['originate'] = self.parse_attrib(conf, 'originate', 'originate')
+        cfg_dict["originate"] = self.parse_attrib(
+            conf, "originate", "originate"
+        )
         return cfg_dict
 
     def parse_area(self, conf, area_id):
@@ -219,13 +234,15 @@ class Ospfv2Facts(object):
         :return: generated rule configuration dictionary.
         """
 
-        rule = self.parse_attrib(conf, 'area_id', match=area_id)
+        rule = self.parse_attrib(conf, "area_id", match=area_id)
         r_sub = {
-            'area_type': self.parse_area_type(conf, 'area-type'),
-            'network': self.parse_network(conf),
-            'range': self.parse_attrib_list(conf, 'range', 'address'),
-            'virtual_link': self.parse_attrib_list(conf, 'virtual-link', 'address'),
-            }
+            "area_type": self.parse_area_type(conf, "area-type"),
+            "network": self.parse_network(conf),
+            "range": self.parse_attrib_list(conf, "range", "address"),
+            "virtual_link": self.parse_attrib_list(
+                conf, "virtual-link", "address"
+            ),
+        }
         rule.update(r_sub)
         return rule
 
@@ -237,7 +254,7 @@ class Ospfv2Facts(object):
         :return: generated rule configuration dictionary.
         """
 
-        rule = self.parse_attrib(conf, 'key_id', match=key_id)
+        rule = self.parse_attrib(conf, "key_id", match=key_id)
         return rule
 
     def parse_area_type(self, conf, attrib=None):
@@ -248,9 +265,9 @@ class Ospfv2Facts(object):
         :return: generated config dictionary
         """
 
-        cfg_dict = self.parse_attr(conf, ['normal'], match=attrib)
-        cfg_dict['nssa'] = self.parse_attrib(conf, 'nssa', match='nssa')
-        cfg_dict['stub'] = self.parse_attrib(conf, 'stub', match='stub')
+        cfg_dict = self.parse_attr(conf, ["normal"], match=attrib)
+        cfg_dict["nssa"] = self.parse_attrib(conf, "nssa", match="nssa")
+        cfg_dict["stub"] = self.parse_attrib(conf, "stub", match="stub")
         return cfg_dict
 
     def parse_network(self, conf):
@@ -265,9 +282,9 @@ class Ospfv2Facts(object):
         if applications:
             app_lst = []
             for r in set(applications):
-                obj = {'address': r.strip("'")}
+                obj = {"address": r.strip("'")}
                 app_lst.append(obj)
-            a_lst = sorted(app_lst, key=lambda i: i['address'])
+            a_lst = sorted(app_lst, key=lambda i: i["address"])
         return a_lst
 
     def parse_vlink(self, conf):
@@ -277,9 +294,10 @@ class Ospfv2Facts(object):
         :return: generated rule configuration dictionary
         """
 
-        rule = self.parse_attrib(conf, 'vlink')
-        r_sub = {'authentication': self.parse_authentication(conf,
-                 'authentication')}
+        rule = self.parse_attrib(conf, "vlink")
+        r_sub = {
+            "authentication": self.parse_authentication(conf, "authentication")
+        }
         rule.update(r_sub)
         return rule
 
@@ -291,9 +309,8 @@ class Ospfv2Facts(object):
         :return: generated config dictionary
         """
 
-        cfg_dict = self.parse_attr(conf, ['plaintext_password'],
-                                   match=attrib)
-        cfg_dict['md5'] = self.parse_attrib_list(conf, 'key-id', 'key_id')
+        cfg_dict = self.parse_attr(conf, ["plaintext_password"], match=attrib)
+        cfg_dict["md5"] = self.parse_attrib_list(conf, "key-id", "key_id")
         return cfg_dict
 
     def parse_attrib_list(self, conf, attrib, param):
@@ -307,24 +324,30 @@ class Ospfv2Facts(object):
         """
 
         r_lst = []
-        if attrib == 'area':
-            items = findall(r"^" + attrib.replace('_', '-')
-                            + " (?:\'*)(\\S+)(?:\'*)", conf, M)
-        elif attrib == 'key-id':
-            items = findall(r"^.*" + attrib.replace('_', '-')
-                            + " (?:\'*)(\\S+)(?:\'*)", conf, M)
+        if attrib == "area":
+            items = findall(
+                r"^" + attrib.replace("_", "-") + " (?:'*)(\\S+)(?:'*)",
+                conf,
+                M,
+            )
+        elif attrib == "key-id":
+            items = findall(
+                r"^.*" + attrib.replace("_", "-") + " (?:'*)(\\S+)(?:'*)",
+                conf,
+                M,
+            )
         else:
-            items = findall(r"" + attrib + " (?:\'*)(\\S+)(?:\'*)", conf, M)
+            items = findall(r"" + attrib + " (?:'*)(\\S+)(?:'*)", conf, M)
         if items:
             a_lst = []
             for item in set(items):
                 i_regex = r" %s .+$" % item
-                cfg = '\n'.join(findall(i_regex, conf, M))
-                if attrib == 'area':
+                cfg = "\n".join(findall(i_regex, conf, M))
+                if attrib == "area":
                     obj = self.parse_area(cfg, item)
-                elif attrib == 'virtual-link':
+                elif attrib == "virtual-link":
                     obj = self.parse_vlink(cfg)
-                elif attrib == 'key-id':
+                elif attrib == "key-id":
                     obj = self.parse_key(cfg, item)
                 else:
                     obj = self.parse_attrib(cfg, attrib)
@@ -342,27 +365,32 @@ class Ospfv2Facts(object):
         """
 
         param_lst = {
-            'key_id': ['md5_key'],
-            'mpls_te': ['enabled', 'router_address'],
-            'area_id': ['shortcut', 'authentication'],
-            'neighbor': ['priority', 'poll_interval'],
-            'stub': ['set', 'default_cost', 'no_summary'],
-            'range': ['cost', 'substitute', 'not_advertise'],
-            'ospf': ['external', 'inter_area', 'intra_area'],
-            'spf': ['delay', 'max_holdtime', 'initial_holdtime'],
-            'redistribute': ['metric', 'metric_type', 'route_map'],
-            'nssa': ['set', 'translate', 'default_cost', 'no_summary'],
-            'config_routes': ['default_metric', 'log_adjacency_changes'
-                              ],
-            'originate': ['always', 'metric', 'metric_type', 'route_map'
-                          ],
-            'router_lsa': ['administrative', 'on_shutdown', 'on_startup'
-                           ],
-            'parameters': ['abr_type', 'opaque_lsa', 'router_id',
-                           'rfc1583_compatibility'],
-            'vlink': ['dead_interval', 'hello_interval',
-                      'transmit_delay', 'retransmit_interval'],
-            }
+            "key_id": ["md5_key"],
+            "mpls_te": ["enabled", "router_address"],
+            "area_id": ["shortcut", "authentication"],
+            "neighbor": ["priority", "poll_interval"],
+            "stub": ["set", "default_cost", "no_summary"],
+            "range": ["cost", "substitute", "not_advertise"],
+            "ospf": ["external", "inter_area", "intra_area"],
+            "spf": ["delay", "max_holdtime", "initial_holdtime"],
+            "redistribute": ["metric", "metric_type", "route_map"],
+            "nssa": ["set", "translate", "default_cost", "no_summary"],
+            "config_routes": ["default_metric", "log_adjacency_changes"],
+            "originate": ["always", "metric", "metric_type", "route_map"],
+            "router_lsa": ["administrative", "on_shutdown", "on_startup"],
+            "parameters": [
+                "abr_type",
+                "opaque_lsa",
+                "router_id",
+                "rfc1583_compatibility",
+            ],
+            "vlink": [
+                "dead_interval",
+                "hello_interval",
+                "transmit_delay",
+                "retransmit_interval",
+            ],
+        }
         cfg_dict = self.parse_attr(conf, param_lst[param], match)
         return cfg_dict
 
@@ -382,14 +410,13 @@ class Ospfv2Facts(object):
             regex = self.map_regex(attrib)
 
             if match:
-                regex = match.replace('_', '-') + ' ' + regex
+                regex = match.replace("_", "-") + " " + regex
             if conf:
                 if self.is_bool(attrib):
-                    out = conf.find(attrib.replace('_', '-'))
-                    dis = conf.find(attrib.replace('_', '-')
-                                    + " 'disable'")
+                    out = conf.find(attrib.replace("_", "-"))
+                    dis = conf.find(attrib.replace("_", "-") + " 'disable'")
                     if match:
-                        if attrib == 'set' and conf.find(match) >= 1:
+                        if attrib == "set" and conf.find(match) >= 1:
                             config[attrib] = True
                         en = conf.find(match + " 'enable'")
                     if out >= 1:
@@ -400,7 +427,7 @@ class Ospfv2Facts(object):
                     elif match and en >= 1:
                         config[attrib] = True
                 else:
-                    out = search(r"^.*" + regex + ' (.+)', conf, M)
+                    out = search(r"^.*" + regex + " (.+)", conf, M)
                     if out:
                         val = out.group(1).strip("'")
                         if self.is_num(attrib):
@@ -416,9 +443,17 @@ class Ospfv2Facts(object):
         :return: regex string
         """
 
-        return ('disable' if attrib == 'disabled' else ('enable'
-                 if attrib == 'enabled' else ('area' if attrib
-                == 'area_id' else attrib.replace('_', '-'))))
+        return (
+            "disable"
+            if attrib == "disabled"
+            else (
+                "enable"
+                if attrib == "enabled"
+                else (
+                    "area" if attrib == "area_id" else attrib.replace("_", "-")
+                )
+            )
+        )
 
     def is_bool(self, attrib):
         """
@@ -428,15 +463,15 @@ class Ospfv2Facts(object):
         """
 
         bool_set = (
-            'set',
-            'always',
-            'normal',
-            'enabled',
-            'opaque_lsa',
-            'not_advertise',
-            'administrative',
-            'rfc1583_compatibility',
-            )
+            "set",
+            "always",
+            "normal",
+            "enabled",
+            "opaque_lsa",
+            "not_advertise",
+            "administrative",
+            "rfc1583_compatibility",
+        )
         return True if attrib in bool_set else False
 
     def is_num(self, attrib):
@@ -447,18 +482,18 @@ class Ospfv2Facts(object):
         """
 
         num_set = (
-            'ospf',
-            'delay',
-            'metric',
-            'inter_area',
-            'intra_area',
-            'on_startup',
-            'metric_type',
-            'on_shutdown',
-            'max_holdtime',
-            'poll_interval',
-            'default_metric',
-            'initial_holdtime',
-            'key_id',
-            )
+            "ospf",
+            "delay",
+            "metric",
+            "inter_area",
+            "intra_area",
+            "on_startup",
+            "metric_type",
+            "on_shutdown",
+            "max_holdtime",
+            "poll_interval",
+            "default_metric",
+            "initial_holdtime",
+            "key_id",
+        )
         return True if attrib in num_set else False

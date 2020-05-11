@@ -71,7 +71,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         self.mock_get_config.stop()
         self.mock_load_config.stop()
         self.mock_execute_show_command.stop()
-    
+
     def load_fixtures(self, commands=None, transport="cli", filename=None):
         if filename is None:
             filename = "vyos_ospfv2_config.cfg"
@@ -87,27 +87,23 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             dict(
                 config=dict(
                     log_adjacency_changes="detail",
-                    mpls_te=dict(enabled=True, router_address='192.0.11.11'),
+                    mpls_te=dict(enabled=True, router_address="192.0.11.11"),
                     auto_cost=dict(reference_bandwidth=2),
                     areas=[
                         dict(
                             area_id="2",
                             area_type=dict(normal=True),
                             authentication="plaintext-password",
-                            shortcut='enable',
+                            shortcut="enable",
                         ),
                         dict(
                             area_id="4",
-                            area_type=dict(
-                                stub=dict(default_cost=10)
-                            ),
-                            network=[
-                                dict(address="192.0.2.0/24"),
-                            ],
+                            area_type=dict(stub=dict(default_cost=10)),
+                            network=[dict(address="192.0.2.0/24"),],
                             range=[
                                 dict(address="192.0.3.0/24", cost=10),
-                                dict(address="192.0.4.0/24", cost=12)
-                            ]
+                                dict(address="192.0.4.0/24", cost=12),
+                            ],
                         ),
                     ],
                 ),
@@ -115,21 +111,21 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             )
         )
         commands = [
-          "set protocols ospf mpls-te enable",
-          "set protocols ospf mpls-te router-address '192.0.11.11'",
-          "set protocols ospf auto-cost reference-bandwidth '2'",
-          "set protocols ospf log-adjacency-changes 'detail'",
-          "set protocols ospf area '2'",
-          "set protocols ospf area 2 authentication plaintext-password",
-          "set protocols ospf area 2 shortcut enable",
-          "set protocols ospf area 2 area-type normal",
-          "set protocols ospf area 4 range 192.0.3.0/24 cost 10",
-          "set protocols ospf area 4 range 192.0.3.0/24",
-          "set protocols ospf area 4 range 192.0.4.0/24 cost 12",
-          "set protocols ospf area 4 range 192.0.4.0/24",
-          "set protocols ospf area 4 area-type stub default-cost 10",
-          "set protocols ospf area '4'",
-          "set protocols ospf area 4 network 192.0.2.0/24"
+            "set protocols ospf mpls-te enable",
+            "set protocols ospf mpls-te router-address '192.0.11.11'",
+            "set protocols ospf auto-cost reference-bandwidth '2'",
+            "set protocols ospf log-adjacency-changes 'detail'",
+            "set protocols ospf area '2'",
+            "set protocols ospf area 2 authentication plaintext-password",
+            "set protocols ospf area 2 shortcut enable",
+            "set protocols ospf area 2 area-type normal",
+            "set protocols ospf area 4 range 192.0.3.0/24 cost 10",
+            "set protocols ospf area 4 range 192.0.3.0/24",
+            "set protocols ospf area 4 range 192.0.4.0/24 cost 12",
+            "set protocols ospf area 4 range 192.0.4.0/24",
+            "set protocols ospf area 4 area-type stub default-cost 10",
+            "set protocols ospf area '4'",
+            "set protocols ospf area 4 network 192.0.2.0/24",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -142,20 +138,16 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             area_id="12",
                             area_type=dict(normal=True),
                             authentication="plaintext-password",
-                            shortcut='enable',
+                            shortcut="enable",
                         ),
                         dict(
                             area_id="14",
-                            area_type=dict(
-                                stub=dict(default_cost=20)
-                            ),
-                            network=[
-                                dict(address="192.0.12.0/24"),
-                            ],
+                            area_type=dict(stub=dict(default_cost=20)),
+                            network=[dict(address="192.0.12.0/24"),],
                             range=[
                                 dict(address="192.0.13.0/24", cost=10),
-                                dict(address="192.0.14.0/24", cost=12)
-                            ]
+                                dict(address="192.0.14.0/24", cost=12),
+                            ],
                         ),
                     ],
                 ),
@@ -173,21 +165,19 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             area_id="12",
                             area_type=dict(normal=True),
                             authentication="plaintext-password",
-                            shortcut='enable',
+                            shortcut="enable",
                         ),
                         dict(
                             area_id="14",
-                            area_type=dict(
-                                stub=dict(set=False)
-                            ),
+                            area_type=dict(stub=dict(set=False)),
                             network=[
                                 dict(address="192.0.12.0/24"),
                                 dict(address="192.0.22.0/24"),
                             ],
                             range=[
                                 dict(address="192.0.13.0/24", cost=10),
-                                dict(address="192.0.14.0/24", cost=12)
-                            ]
+                                dict(address="192.0.14.0/24", cost=12),
+                            ],
                         ),
                     ],
                 ),
@@ -196,7 +186,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         )
         commands = [
             "delete protocols ospf area 14 area-type stub",
-            "set protocols ospf area 14 network 192.0.22.0/24"
+            "set protocols ospf area 14 network 192.0.22.0/24",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -205,28 +195,24 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             dict(
                 config=dict(
                     log_adjacency_changes="detail",
-                    mpls_te=dict(enabled=True, router_address='192.0.11.11'),
+                    mpls_te=dict(enabled=True, router_address="192.0.11.11"),
                     auto_cost=dict(reference_bandwidth=2),
                     areas=[
                         dict(
                             area_id="12",
                             area_type=dict(normal=True),
                             authentication="plaintext-password",
-                            shortcut='enable',
+                            shortcut="enable",
                         ),
                         dict(
                             area_id="15",
-                            area_type=dict(
-                                stub=dict(default_cost=10)
-                            ),
-                            network=[
-                                dict(address="192.0.12.0/24"),
-                            ],
+                            area_type=dict(stub=dict(default_cost=10)),
+                            network=[dict(address="192.0.12.0/24"),],
                             range=[
                                 dict(address="192.0.13.0/24", cost=10),
                                 dict(address="192.0.14.0/24", cost=12),
-                                dict(address="192.0.15.0/24", cost=14)
-                            ]
+                                dict(address="192.0.15.0/24", cost=14),
+                            ],
                         ),
                     ],
                 ),
@@ -247,7 +233,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set protocols ospf area 15 range 192.0.15.0/24",
             "set protocols ospf area 15 area-type stub default-cost 10",
             "set protocols ospf area '15'",
-            "set protocols ospf area 15 network 192.0.12.0/24"
+            "set protocols ospf area 15 network 192.0.12.0/24",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -260,20 +246,16 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             area_id="12",
                             area_type=dict(normal=True),
                             authentication="plaintext-password",
-                            shortcut='enable',
+                            shortcut="enable",
                         ),
                         dict(
                             area_id="14",
-                            area_type=dict(
-                                stub=dict(default_cost=20)
-                            ),
-                            network=[
-                                dict(address="192.0.12.0/24"),
-                            ],
+                            area_type=dict(stub=dict(default_cost=20)),
+                            network=[dict(address="192.0.12.0/24"),],
                             range=[
                                 dict(address="192.0.13.0/24", cost=10),
-                                dict(address="192.0.14.0/24", cost=12)
-                            ]
+                                dict(address="192.0.14.0/24", cost=12),
+                            ],
                         ),
                     ],
                 ),
@@ -287,63 +269,30 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         commands = ["delete protocols ospf"]
         self.execute_module(changed=True, commands=commands)
 
-    def test_vyos_ospfv2_set_01_deleted_single_attributes(self):
-        set_module_args(
-            dict(
-                config=dict(
-                    mpls_te=dict(),
-                    auto_cost=dict(),
-                    areas=[]
-                ),
-                state="deleted",
-            )
-        )
-        commands = ["delete protocols ospf area 12",
-                    "delete protocols ospf area 14",
-                    "delete protocols ospf area"]
-        self.execute_module(changed=True, commands=commands)
-
     def test_vyos_ospfv2_gathered(self):
         set_module_args(dict(state="gathered"))
         result = self.execute_module(
             changed=False, filename="vyos_ospfv2_config.cfg"
         )
         gather_dict = {
-              "areas": [
-                  {
-                      "area_id": "2",
-                      "area_type": {
-                          "normal": True
-                      },
-                      "authentication": "plaintext-password",
-                      "shortcut": "enable"
-                  },
-                  {
-                      "area_id": "14",
-                      "area_type": {
-                          "stub": {
-                              "default_cost": 20,
-                              "set": True
-                          }
-                      },
-                      "network": [
-                          {
-                              "address": "192.0.12.0/24"
-                          }
-                      ],
-                      "range": [
-                          {
-                              "address": "192.0.13.0/24",
-                              "cost": 10
-                          },
-                          {
-                              "address": "192.0.14.0/24",
-                              "cost": 12
-                          }
-                      ]
-                  }
-              ],
-          }
+            "areas": [
+                {
+                    "area_id": "2",
+                    "area_type": {"normal": True},
+                    "authentication": "plaintext-password",
+                    "shortcut": "enable",
+                },
+                {
+                    "area_id": "14",
+                    "area_type": {"stub": {"default_cost": 20, "set": True}},
+                    "network": [{"address": "192.0.12.0/24"}],
+                    "range": [
+                        {"address": "192.0.13.0/24", "cost": 10},
+                        {"address": "192.0.14.0/24", "cost": 12},
+                    ],
+                },
+            ],
+        }
         self.assertEqual(sorted(gather_dict), sorted(result["gathered"]))
 
     def test_vyos_ospfv2_parsed(self):
@@ -382,54 +331,28 @@ set protocols ospf redistribute bgp metric-type '2'"""
             "areas": [
                 {
                     "area_id": "2",
-                    "area_type": {
-                        "normal": True
-                    },
+                    "area_type": {"normal": True},
                     "authentication": "plaintext-password",
-                    "shortcut": "enable"
+                    "shortcut": "enable",
                 },
-                {
-                    "area_id": "3",
-                    "area_type": {
-                        "nssa": {
-                            "set": True
-                        }
-                    }
-                },
+                {"area_id": "3", "area_type": {"nssa": {"set": True}}},
                 {
                     "area_id": "4",
-                    "area_type": {
-                        "stub": {
-                            "default_cost": 20,
-                            "set": True
-                        }
-                    },
-                    "network": [
-                        {
-                            "address": "192.0.2.0/24"
-                        }
-                    ],
+                    "area_type": {"stub": {"default_cost": 20, "set": True}},
+                    "network": [{"address": "192.0.2.0/24"}],
                     "range": [
-                        {
-                            "address": "192.0.3.0/24",
-                            "cost": 10
-                        },
-                        {
-                            "address": "192.0.4.0/24",
-                            "cost": 12
-                        }
-                    ]
-                }
+                        {"address": "192.0.3.0/24", "cost": 10},
+                        {"address": "192.0.4.0/24", "cost": 12},
+                    ],
+                },
             ],
-            "auto_cost": {
-                "reference_bandwidth": 2
-            },
+            "auto_cost": {"reference_bandwidth": 2},
             "default_information": {
                 "originate": {
                     "always": True,
                     "metric": 10,
                     "metric_type": 2,
-                    "route_map": "ingress"
+                    "route_map": "ingress",
                 }
             },
             "log_adjacency_changes": "detail",
@@ -437,37 +360,27 @@ set protocols ospf redistribute bgp metric-type '2'"""
                 "router_lsa": {
                     "administrative": True,
                     "on_shutdown": 10,
-                    "on_startup": 10
+                    "on_startup": 10,
                 }
             },
-            "mpls_te": {
-                "enabled": True,
-                "router_address": "192.0.11.11"
-            },
+            "mpls_te": {"enabled": True, "router_address": "192.0.11.11"},
             "neighbor": [
                 {
                     "neighbor_id": "192.0.11.12",
                     "poll_interval": 10,
-                    "priority": 2
+                    "priority": 2,
                 }
             ],
             "parameters": {
                 "abr_type": "cisco",
                 "opaque_lsa": True,
                 "rfc1583_compatibility": True,
-                "router_id": "192.0.1.1"
+                "router_id": "192.0.1.1",
             },
-            "passive_interface": [
-                "eth2",
-                "eth1"
-            ],
+            "passive_interface": ["eth2", "eth1"],
             "redistribute": [
-                {
-                    "metric": 10,
-                    "metric_type": 2,
-                    "route_type": "bgp"
-                }
-            ]
+                {"metric": 10, "metric_type": 2, "route_type": "bgp"}
+            ],
         }
         self.assertEqual(sorted(parsed_list), sorted(result["parsed"]))
 
@@ -476,27 +389,23 @@ set protocols ospf redistribute bgp metric-type '2'"""
             dict(
                 config=dict(
                     log_adjacency_changes="detail",
-                    mpls_te=dict(enabled=True, router_address='192.0.11.11'),
+                    mpls_te=dict(enabled=True, router_address="192.0.11.11"),
                     auto_cost=dict(reference_bandwidth=2),
                     areas=[
                         dict(
                             area_id="2",
                             area_type=dict(normal=True),
                             authentication="plaintext-password",
-                            shortcut='enable',
+                            shortcut="enable",
                         ),
                         dict(
                             area_id="4",
-                            area_type=dict(
-                                stub=dict(default_cost=10)
-                            ),
-                            network=[
-                                dict(address="192.0.2.0/24"),
-                            ],
+                            area_type=dict(stub=dict(default_cost=10)),
+                            network=[dict(address="192.0.2.0/24"),],
                             range=[
                                 dict(address="192.0.3.0/24", cost=10),
-                                dict(address="192.0.4.0/24", cost=12)
-                            ]
+                                dict(address="192.0.4.0/24", cost=12),
+                            ],
                         ),
                     ],
                 ),
@@ -518,7 +427,7 @@ set protocols ospf redistribute bgp metric-type '2'"""
             "set protocols ospf area 4 range 192.0.4.0/24",
             "set protocols ospf area 4 area-type stub default-cost 10",
             "set protocols ospf area '4'",
-            "set protocols ospf area 4 network 192.0.2.0/24"
+            "set protocols ospf area 4 network 192.0.2.0/24",
         ]
         result = self.execute_module(changed=False)
         self.assertEqual(
