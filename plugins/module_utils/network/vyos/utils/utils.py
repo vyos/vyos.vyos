@@ -247,7 +247,6 @@ def _bool_to_str(val):
     )
 
 
-
 def _is_w_same(w, h, key):
     """
     This function checks whether the key value is same in desired and
