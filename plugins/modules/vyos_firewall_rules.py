@@ -37,8 +37,9 @@ ANSIBLE_METADATA = {
 }
 
 DOCUMENTATION = """module: vyos_firewall_rules
-short_description: Manage firewall rule-set attributes on VyOS devices
+short_description: Firewall rules resource module
 description: This module manages firewall rule-set attributes on VyOS devices
+version_added: "1.0.0"
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
@@ -397,13 +398,12 @@ options:
                     type: str
   running_config:
     description:
-    - The module, by default, will connect to the remote device and retrieve the current
-      running-config to use as a base for comparing against the contents of source.
-      There are times when it is not desirable to have the task get the current running-config
-      for every task in a playbook.  The I(running_config) argument allows the implementer
-      to pass in the configuration to use as the base config for comparison. This
-      value of this option should be the output received from device by executing
-      command C(show configuration commands | grep 'firewall'
+      - This option is used only with state I(parsed).
+      - The value of this option should be the output received from the VyOS device by executing
+        the command B(show configuration commands | grep firewall).
+      - The state I(parsed) reads the configuration from C(running_config) option and transforms
+        it into Ansible structured data as per the resource module's argspec and the value is then
+        returned in the I(parsed) key within the result.
     type: str
   state:
     description:
@@ -437,7 +437,7 @@ EXAMPLES = """
 # set firewall name Downlink rule 502 ipsec 'match-ipsec'
 #
 - name: Delete attributes of given firewall rules.
-  vyos_firewall_rules:
+  vyos.vyos.vyos_firewall_rules:
     config:
       - afi: ipv4
         rule_sets:
@@ -486,6 +486,114 @@ EXAMPLES = """
 # set firewall group address-group 'inbound'
 
 
+# Using deleted to delete firewall rules based on afi
+#
+# Before state
+# -------------
+#
+# vyos@vyos:~$ show configuration commands| grep firewall
+# set firewall ipv6-name UPLINK default-action 'accept'
+# set firewall ipv6-name UPLINK description 'This is ipv6 specific rule-set'
+# set firewall ipv6-name UPLINK rule 1 action 'accept'
+# set firewall ipv6-name UPLINK rule 1
+# set firewall ipv6-name UPLINK rule 1 description 'Fwipv6-Rule 1 is configured by Ansible'
+# set firewall ipv6-name UPLINK rule 1 ipsec 'match-ipsec'
+# set firewall ipv6-name UPLINK rule 2 action 'accept'
+# set firewall ipv6-name UPLINK rule 2
+# set firewall ipv6-name UPLINK rule 2 description 'Fwipv6-Rule 2 is configured by Ansible'
+# set firewall ipv6-name UPLINK rule 2 ipsec 'match-ipsec'
+# set firewall group address-group 'inbound'
+# set firewall name Downlink default-action 'accept'
+# set firewall name Downlink description 'IPv4 INBOUND rule set'
+# set firewall name Downlink rule 501 action 'accept'
+# set firewall name Downlink rule 501 description 'Rule 501 is configured by Ansible'
+# set firewall name Downlink rule 501 ipsec 'match-ipsec'
+# set firewall name Downlink rule 502 action 'reject'
+# set firewall name Downlink rule 502 description 'Rule 502 is configured by Ansible'
+# set firewall name Downlink rule 502 ipsec 'match-ipsec'
+
+#
+- name: Delete attributes of given firewall rules.
+  vyos.vyos.vyos_firewall_rules:
+    config:
+      - afi: ipv4
+    state: deleted
+#
+#
+# ------------------------
+# Module Execution Results
+# ------------------------
+#
+#    "before": [
+#        {
+#            "afi": "ipv6",
+#            "rule_sets": [
+#                {
+#                    "default_action": "accept",
+#                    "description": "This is ipv6 specific rule-set",
+#                    "name": "UPLINK",
+#                    "rules": [
+#                        {
+#                            "action": "accept",
+#                            "description": "Fwipv6-Rule 1 is configured by Ansible",
+#                            "ipsec": "match-ipsec",
+#                            "number": 1
+#                        },
+#                        {
+#                            "action": "accept",
+#                            "description": "Fwipv6-Rule 2 is configured by Ansible",
+#                            "ipsec": "match-ipsec",
+#                            "number": 2
+#                        }
+#                    ]
+#                }
+#            ]
+#        },
+#        {
+#            "afi": "ipv4",
+#            "rule_sets": [
+#                {
+#                    "default_action": "accept",
+#                    "description": "IPv4 INBOUND rule set",
+#                    "name": "Downlink",
+#                    "rules": [
+#                        {
+#                            "action": "accept",
+#                            "description": "Rule 501 is configured by Ansible",
+#                            "ipsec": "match-ipsec",
+#                            "number": 501
+#                        },
+#                        {
+#                            "action": "reject",
+#                            "description": "Rule 502 is configured by Ansible",
+#                            "ipsec": "match-ipsec",
+#                            "number": 502
+#                        }
+#                    ]
+#               }
+#            ]
+#        }
+#    ]
+#    "commands": [
+#        "delete firewall name"
+#    ]
+#
+# "after": []
+# After state
+# ------------
+# vyos@vyos:~$ show configuration commands| grep firewall
+# set firewall ipv6-name UPLINK default-action 'accept'
+# set firewall ipv6-name UPLINK description 'This is ipv6 specific rule-set'
+# set firewall ipv6-name UPLINK rule 1 action 'accept'
+# set firewall ipv6-name UPLINK rule 1
+# set firewall ipv6-name UPLINK rule 1 description 'Fwipv6-Rule 1 is configured by Ansible'
+# set firewall ipv6-name UPLINK rule 1 ipsec 'match-ipsec'
+# set firewall ipv6-name UPLINK rule 2 action 'accept'
+# set firewall ipv6-name UPLINK rule 2
+# set firewall ipv6-name UPLINK rule 2 description 'Fwipv6-Rule 2 is configured by Ansible'
+# set firewall ipv6-name UPLINK rule 2 ipsec 'match-ipsec'
+
+
 # Using deleted to delete all the the firewall rules when provided config is empty
 #
 # Before state
@@ -503,7 +611,7 @@ EXAMPLES = """
 # set firewall name Downlink rule 502 ipsec 'match-ipsec'
 #
 - name: Delete attributes of given firewall rules.
-  vyos_firewall_rules:
+  vyos.vyos.vyos_firewall_rules:
     config:
     state: deleted
 #
@@ -549,163 +657,6 @@ EXAMPLES = """
 # set firewall group address-group 'inbound'
 
 
-# Using deleted to delete the the firewall rules based on afi
-#
-# Before state
-# -------------
-#
-# vyos@vyos:~$ show configuration commands| grep firewall
-# set firewall group address-group 'inbound'
-# set firewall name Downlink default-action 'accept'
-# set firewall name Downlink description 'IPv4 INBOUND rule set'
-# set firewall name Downlink rule 501 action 'accept'
-# set firewall name Downlink rule 501 description 'Rule 501 is configured by Ansible'
-# set firewall name Downlink rule 501 ipsec 'match-ipsec'
-# set firewall name Downlink rule 502 action 'reject'
-# set firewall name Downlink rule 502 description 'Rule 502 is configured by Ansible'
-# set firewall name Downlink rule 502 ipsec 'match-ipsec'
-#
-- name: Delete attributes of given firewall rules.
-  vyos_firewall_rules:
-    config:
-      - afi: ipv4
-    state: deleted
-#
-#
-# ------------------------
-# Module Execution Results
-# ------------------------
-#
-#    "before": [
-#        {
-#            "afi": "ipv4",
-#            "rule_sets": [
-#                {
-#                    "default_action": "accept",
-#                    "description": "IPv4 INBOUND rule set",
-#                    "name": "Downlink",
-#                    "rules": [
-#                        {
-#                            "action": "accept",
-#                            "description": "Rule 501 is configured by Ansible",
-#                            "ipsec": "match-ipsec",
-#                            "number": 501
-#                        },
-#                        {
-#                            "action": "reject",
-#                            "description": "Rule 502 is configured by Ansible",
-#                            "ipsec": "match-ipsec",
-#                            "number": 502
-#                        }
-#                    ]
-#               }
-#            ]
-#        }
-#    ]
-#    "commands": [
-#        "delete firewall name",
-#    ]
-#
-# "after": []
-# After state
-# ------------
-# vyos@vyos# run show configuration commands | grep firewall
-# set firewall group address-group 'inbound'
-
-
-
-# Using deleted to delete the the firewall rules based on rule number/id
-#
-# Before state
-# -------------
-#
-# vyos@vyos:~$ show configuration commands| grep firewall
-# set firewall group address-group 'inbound'
-# set firewall name Downlink default-action 'accept'
-# set firewall name Downlink description 'IPv4 INBOUND rule set'
-# set firewall name Downlink rule 501 action 'accept'
-# set firewall name Downlink rule 501 description 'Rule 501 is configured by Ansible'
-# set firewall name Downlink rule 501 ipsec 'match-ipsec'
-# set firewall name Downlink rule 502 action 'reject'
-# set firewall name Downlink rule 502 description 'Rule 502 is configured by Ansible'
-# set firewall name Downlink rule 502 ipsec 'match-ipsec'
-#
-- name: Delete attributes of given firewall rules.
-  vyos_firewall_rules:
-    config:
-      - afi: ipv4
-        rule_sets:
-          - name: 'Downlink'
-            rules:
-              - number: 501
-    state: deleted
-#
-#
-# ------------------------
-# Module Execution Results
-# ------------------------
-#
-#    "before": [
-#        {
-#            "afi": "ipv4",
-#            "rule_sets": [
-#                {
-#                    "default_action": "accept",
-#                    "description": "IPv4 INBOUND rule set",
-#                    "name": "Downlink",
-#                    "rules": [
-#                        {
-#                            "action": "accept",
-#                            "description": "Rule 501 is configured by Ansible",
-#                            "ipsec": "match-ipsec",
-#                            "number": 501
-#                        },
-#                        {
-#                            "action": "reject",
-#                            "description": "Rule 502 is configured by Ansible",
-#                            "ipsec": "match-ipsec",
-#                            "number": 502
-#                        }
-#                    ]
-#               }
-#            ]
-#        }
-#    ]
-#    "commands": [
-#        "delete firewall ipv6-name Downlink rule 501"
-#    ]
-#
-#    "after": [
-#        {
-#            "afi": "ipv4",
-#            "rule_sets": [
-#                {
-#                    "default_action": "accept",
-#                    "description": "IPv4 INBOUND rule set",
-#                    "name": "Downlink",
-#                    "rules": [
-#                        {
-#                            "action": "reject",
-#                            "description": "Rule 502 is configured by Ansible",
-#                            "ipsec": "match-ipsec",
-#                            "number": 502
-#                        }
-#                    ]
-#               }
-#            ]
-#        }
-#    ]
-# After state
-# ------------
-# vyos@vyos:~$ show configuration commands| grep firewall
-# set firewall group address-group 'inbound'
-# set firewall name Downlink default-action 'accept'
-# set firewall name Downlink description 'IPv4 INBOUND rule set'
-# set firewall name Downlink rule 502 action 'reject'
-# set firewall name Downlink rule 502 description 'Rule 502 is configured by Ansible'
-# set firewall name Downlink rule 502 ipsec 'match-ipsec'
-
-
 # Using merged
 #
 # Before state:
@@ -715,7 +666,7 @@ EXAMPLES = """
 # set firewall group address-group 'inbound'
 #
 - name: Merge the provided configuration with the exisiting running configuration
-  vyos_firewall_rules:
+  vyos.vyos.vyos_firewall_rules:
     config:
       - afi: 'ipv6'
         rule_sets:
@@ -934,7 +885,7 @@ EXAMPLES = """
 # set firewall name INBOUND rule 103 state related 'enable'
 #
 - name: Replace device configurations of listed firewall rules with provided configurations
-  vyos_firewall_rules:
+  vyos.vyos.vyos_firewall_rules:
     config:
       - afi: 'ipv6'
         rule_sets:
@@ -1116,7 +1067,7 @@ EXAMPLES = """
 # set firewall name INBOUND rule 104 ipsec 'match-none'
 #
 - name: Overrides all device configuration with provided configuration
-  vyos_firewall_rules:
+  vyos.vyos.vyos_firewall_rules:
     config:
       - afi: 'ipv4'
         rule_sets:
@@ -1267,7 +1218,7 @@ EXAMPLES = """
 # set firewall name INBOUND rule 103 state related 'enable'
 #
 - name: Gather listed firewall rules with provided configurations
-  vyos_firewall_rules:
+  vyos.vyos.vyos_firewall_rules:
     config:
     state: gathered
 #
@@ -1382,7 +1333,7 @@ EXAMPLES = """
 #
 #
 - name: Render the commands for provided  configuration
-  vyos_firewall_rules:
+  vyos.vyos.vyos_firewall_rules:
     config:
       - afi: 'ipv6'
         rule_sets:
@@ -1452,8 +1403,8 @@ EXAMPLES = """
 # Using parsed
 #
 #
-- name: Render the commands for provided  configuration
-  vyos_firewall_rules:
+- name: Parsed the provided input commands.
+  vyos.vyos.vyos_firewall_rules:
     running_config:
       "set firewall group address-group 'inbound'
  set firewall name Downlink default-action 'accept'
@@ -1546,6 +1497,7 @@ def main():
     required_if = [
         ("state", "merged", ("config",)),
         ("state", "replaced", ("config",)),
+        ("state", "rendered", ("config",)),
         ("state", "overridden", ("config",)),
         ("state", "parsed", ("running_config",)),
     ]
