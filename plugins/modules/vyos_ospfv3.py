@@ -80,11 +80,11 @@ options:
       parameters:
         descriptions: OSPFv3 specific parameters.
         type: dict
-        suboptions: 
-         router_id: 
+        suboptions:
+         router_id:
            description: Override the default router identifier.
            type: str
-      redistribute:  
+      redistribute:
         description: Redistribute information from another routing protocol.
         type: list
         elements: dict
@@ -92,10 +92,10 @@ options:
           route_type:
             description: Route type to redistribute.
             type: str
-            choices: ['bgp', 'connected', 'kernel', 'ripng', 'static'] 
+            choices: ['bgp', 'connected', 'kernel', 'ripng', 'static']
           route_map:
             description: Route map references.
-            type: str 
+            type: str
   running_config:
     description:
       - This option is used only with state I(parsed).
@@ -128,25 +128,24 @@ EXAMPLES = """
 #
 #
 - name: Merge the provided configuration with the exisiting running configuration
-      vyos.vyos.vyos_ospfv3:
-        config:
-           redistribute:
-             - route_type: 'bgp'
-           parameters:
-             router_id: '192.0.2.10'
-           areas:
-             - area_id: '2'
-               export_list: 'export1'
-               import_list: 'import1'
-
-               range:
-                 - address: '2001:db10::/32'
-                 - address: '2001:db20::/32'
-                 - address: '2001:db30::/32'
-             - area_id: '3'
-               range:
-                 - address: '2001:db40::/32'
-        state: merged
+  vyos.vyos.vyos_ospfv3:
+    config:
+      redistribute:
+        - route_type: 'bgp'
+      parameters:
+        router_id: '192.0.2.10'
+      areas:
+        - area_id: '2'
+          export_list: 'export1'
+          import_list: 'import1'
+          range:
+            - address: '2001:db10::/32'
+            - address: '2001:db20::/32'
+            - address: '2001:db30::/32'
+        - area_id: '3'
+          range:
+            - address: '2001:db40::/32'
+    state: merged
 #
 #
 # -------------------------
@@ -235,25 +234,24 @@ EXAMPLES = """
 # set protocols ospfv3 redistribute 'bgp'
 #
 - name: Replace ospfv3 routes attributes configuration.
-      vyos.vyos.vyos_ospfv3:
-        config:
-           redistribute:
-             - route_type: 'bgp'
-           parameters:
-             router_id: '192.0.2.10'
-           areas:
-             - area_id: '2'
-               export_list: 'export1'
-               import_list: 'import1'
-
-               range:
-                 - address: '2001:db10::/32'
-                 - address: '2001:db30::/32'
-                 - address: '2001:db50::/32'
-             - area_id: '4'
-               range:
-                 - address: '2001:db60::/32'
-        state: replaced
+  vyos.vyos.vyos_ospfv3:
+    config:
+      redistribute:
+        - route_type: 'bgp'
+      parameters:
+        router_id: '192.0.2.10'
+      areas:
+        - area_id: '2'
+          export_list: 'export1'
+          import_list: 'import1'
+          range:
+            - address: '2001:db10::/32'
+            - address: '2001:db30::/32'
+            - address: '2001:db50::/32'
+        - area_id: '4'
+          range:
+            - address: '2001:db60::/32'
+    state: replaced
 #
 #
 # -------------------------
@@ -360,25 +358,24 @@ EXAMPLES = """
 #
 #
 - name: Render the commands for provided  configuration
-      vyos.vyos.vyos_ospfv3:
-        config:
-           redistribute:
-             - route_type: 'bgp'
-           parameters:
-             router_id: '192.0.2.10'
-           areas:
-             - area_id: '2'
-               export_list: 'export1'
-               import_list: 'import1'
-
-               range:
-                 - address: '2001:db10::/32'
-                 - address: '2001:db20::/32'
-                 - address: '2001:db30::/32'
-             - area_id: '3'
-               range:
-                 - address: '2001:db40::/32'
-        state: rendered
+  vyos.vyos.vyos_ospfv3:
+    config:
+      redistribute:
+        - route_type: 'bgp'
+      parameters:
+        router_id: '192.0.2.10'
+      areas:
+        - area_id: '2'
+          export_list: 'export1'
+          import_list: 'import1'
+          range:
+            - address: '2001:db10::/32'
+            - address: '2001:db20::/32'
+            - address: '2001:db30::/32'
+        - area_id: '3'
+          range:
+            - address: '2001:db40::/32'
+    state: rendered
 #
 #
 # -------------------------
@@ -405,9 +402,9 @@ EXAMPLES = """
 #
 #
 - name: Parse the commands to provide structured configuration.
-      vyos.vyos.vyos_ospfv3:
-        running_config:
-          "set protocols ospfv3 area 2 export-list 'export1'
+  vyos.vyos.vyos_ospfv3:
+    running_config:
+      "set protocols ospfv3 area 2 export-list 'export1'
 set protocols ospfv3 area 2 import-list 'import1'
 set protocols ospfv3 area 2 range '2001:db10::/32'
 set protocols ospfv3 area 2 range '2001:db20::/32'
@@ -415,7 +412,7 @@ set protocols ospfv3 area 2 range '2001:db30::/32'
 set protocols ospfv3 area 3 range '2001:db40::/32'
 set protocols ospfv3 parameters router-id '192.0.2.10'
 set protocols ospfv3 redistribute 'bgp'"
-        state: parsed
+    state: parsed
 #
 #
 # -------------------------
@@ -477,9 +474,9 @@ set protocols ospfv3 redistribute 'bgp'"
 # set protocols ospfv3 redistribute 'bgp'
 #
 - name: Gather ospfv3 routes config with provided configurations
-      vyos.vyos.vyos_ospfv3:
-          config:
-          state: gathered
+  vyos.vyos.vyos_ospfv3:
+    config:
+    state: gathered
 #
 #
 # -------------------------
@@ -553,9 +550,9 @@ set protocols ospfv3 redistribute 'bgp'"
 # set protocols ospfv3 redistribute 'bgp'
 #
 - name: Delete attributes of ospfv3 routes.
-      vyos.vyos.vyos_ospfv3:
-        config:
-        state: deleted
+  vyos.vyos.vyos_ospfv3:
+    config:
+    state: deleted
 #
 #
 # ------------------------

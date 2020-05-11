@@ -7,7 +7,7 @@
 
 - block:
 
-    - name: Delete attributes of firewall.
+    - name: Delete ospfv3 routes
       register: result
       vyos.vyos.vyos_ospfv3: &id001
         config:
@@ -29,7 +29,7 @@
         that:
           - "{{ deleted['after'] == result['after'] }}"
 
-    - name: Delete attributes of given interfaces (IDEMPOTENT)
+    - name: Delete ospfv3 routes (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_ospfv3: *id001
 

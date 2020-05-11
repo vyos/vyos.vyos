@@ -29,7 +29,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts
 from ansible.module_utils.six import iteritems
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
-    list_diff_want_only,
     _in_target,
     _is_w_same,
     _bool_to_str,
