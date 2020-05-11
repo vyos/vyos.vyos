@@ -42,6 +42,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firew
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3 import (
     Ospfv3Facts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv2.ospfv2 import (
     Ospfv2Facts,
 )
