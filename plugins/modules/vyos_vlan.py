@@ -240,8 +240,8 @@ def map_config_to_obj(module):
     output = run_commands(module, "show interfaces")
     lines = output[0].strip().splitlines()[3:]
 
-    for l in lines:
-        splitted_line = re.split(r"\s{2,}", l.strip())
+    for line in lines:
+        splitted_line = re.split(r"\s{2,}", line.strip())
         obj = {}
 
         eth = splitted_line[0].strip("'")
