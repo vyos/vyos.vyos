@@ -1,0 +1,485 @@
+---
+merged:
+  before: {}
+  commands:
+    - set protocols ospf mpls-te enable
+    - set protocols ospf mpls-te router-address '192.0.11.11'
+    - set protocols ospf redistribute bgp
+    - set protocols ospf redistribute bgp metric-type 2
+    - set protocols ospf redistribute bgp metric 10
+    - set protocols ospf default-information originate metric-type 2
+    - set protocols ospf default-information originate always
+    - set protocols ospf default-information originate metric 10
+    - set protocols ospf default-information originate route-map ingress
+    - set protocols ospf auto-cost reference-bandwidth '2'
+    - set protocols ospf parameters router-id '192.0.1.1'
+    - set protocols ospf parameters opaque-lsa
+    - set protocols ospf parameters abr-type 'cisco'
+    - set protocols ospf parameters rfc1583-compatibility
+    - set protocols ospf passive-interface eth1
+    - set protocols ospf passive-interface eth2
+    - set protocols ospf max-metric router-lsa on-shutdown 10
+    - set protocols ospf max-metric router-lsa administrative
+    - set protocols ospf max-metric router-lsa on-startup 10
+    - set protocols ospf log-adjacency-changes 'detail'
+    - set protocols ospf neighbor 192.0.11.12 priority 2
+    - set protocols ospf neighbor 192.0.11.12 poll-interval 10
+    - set protocols ospf neighbor 192.0.11.12
+    - set protocols ospf area '2'
+    - set protocols ospf area 2 authentication plaintext-password
+    - set protocols ospf area 2 shortcut enable
+    - set protocols ospf area 2 area-type normal
+    - set protocols ospf area '3'
+    - set protocols ospf area 3 area-type nssa
+    - set protocols ospf area 4 range 192.0.3.0/24 cost 10
+    - set protocols ospf area 4 range 192.0.3.0/24
+    - set protocols ospf area 4 range 192.0.4.0/24 cost 12
+    - set protocols ospf area 4 range 192.0.4.0/24
+    - set protocols ospf area 4 area-type stub default-cost 20
+    - set protocols ospf area '4'
+    - set protocols ospf area 4 network 192.0.2.0/24
+  after:
+    areas:
+      - area_id: '2'
+        area_type:
+          normal: true
+        authentication: "plaintext-password"
+        shortcut: 'enable'
+      - area_id: '3'
+        area_type:
+          nssa:
+            set: true
+      - area_id: '4'
+        area_type:
+          stub:
+            default_cost: 20
+            set: true
+        network:
+          - address: '192.0.2.0/24'
+        range:
+          - address: '192.0.3.0/24'
+            cost: 10
+          - address: '192.0.4.0/24'
+            cost: 12
+    auto_cost:
+      reference_bandwidth: 2
+    default_information:
+      originate:
+        always: true
+        metric: 10
+        metric_type: 2
+        route_map: 'ingress'
+    log_adjacency_changes: 'detail'
+    max_metric:
+      router_lsa:
+        administrative: true
+        on_shutdown: 10
+        on_startup: 10
+    mpls_te:
+      enabled: true
+      router_address: '192.0.11.11'
+    neighbor:
+      - neighbor_id: '192.0.11.12'
+        poll_interval: 10
+        priority: 2
+    parameters:
+      abr_type: 'cisco'
+      opaque_lsa: true
+      rfc1583_compatibility: true
+      router_id: '192.0.1.1'
+    passive_interface:
+      - 'eth1'
+      - 'eth2'
+    redistribute:
+      - metric: 10
+        metric_type: 2
+        route_type: 'bgp'
+merged_update:
+  before:
+    areas:
+      - area_id: '2'
+        area_type:
+          normal: true
+        authentication: "plaintext-password"
+        shortcut: 'enable'
+      - area_id: '3'
+        area_type:
+          nssa:
+            set: true
+      - area_id: '4'
+        area_type:
+          stub:
+            default_cost: 20
+            set: true
+        network:
+          - address: '192.0.2.0/24'
+        range:
+          - address: '192.0.3.0/24'
+            cost: 10
+          - address: '192.0.4.0/24'
+            cost: 12
+    auto_cost:
+      reference_bandwidth: 2
+    default_information:
+      originate:
+        always: true
+        metric: 10
+        metric_type: 2
+        route_map: 'ingress'
+    log_adjacency_changes: 'detail'
+    max_metric:
+      router_lsa:
+        administrative: true
+        on_shutdown: 10
+        on_startup: 10
+    mpls_te:
+      enabled: true
+      router_address: '192.0.11.11'
+    neighbor:
+      - neighbor_id: '192.0.11.12'
+        poll_interval: 10
+        priority: 2
+    parameters:
+      abr_type: 'cisco'
+      opaque_lsa: true
+      rfc1583_compatibility: true
+      router_id: '192.0.1.1'
+    passive_interface:
+      - 'eth1'
+      - 'eth2'
+    redistribute:
+      - metric: 10
+        metric_type: 2
+        route_type: 'bgp'
+  after:
+    areas:
+      - area_id: '2'
+        area_type:
+          normal: true
+        authentication: "plaintext-password"
+        shortcut: 'enable'
+      - area_id: '3'
+        area_type:
+          nssa:
+            set: true
+      - area_id: '4'
+        network:
+          - address: '192.0.2.0/24'
+          - address: '192.0.22.0/24'
+          - address: '192.0.32.0/24'
+        range:
+          - address: '192.0.3.0/24'
+            cost: 10
+          - address: '192.0.4.0/24'
+            cost: 12
+    auto_cost:
+      reference_bandwidth: 2
+    default_information:
+      originate:
+        always: true
+        metric: 10
+        metric_type: 2
+        route_map: 'ingress'
+    log_adjacency_changes: 'detail'
+    max_metric:
+      router_lsa:
+        administrative: true
+        on_shutdown: 10
+        on_startup: 10
+    mpls_te:
+      enabled: true
+      router_address: '192.0.11.11'
+    neighbor:
+      - neighbor_id: '192.0.11.12'
+        poll_interval: 10
+        priority: 2
+    parameters:
+      abr_type: 'cisco'
+      opaque_lsa: true
+      rfc1583_compatibility: true
+      router_id: '192.0.1.1'
+    passive_interface:
+      - 'eth1'
+      - 'eth2'
+    redistribute:
+      - metric: 10
+        metric_type: 2
+        route_type: 'bgp'
+  commands:
+    - delete protocols ospf area 4 area-type stub
+    - set protocols ospf area 4 network 192.0.22.0/24
+    - set protocols ospf area 4 network 192.0.32.0/24
+populate:
+  areas:
+    - area_id: '2'
+      area_type:
+        normal: true
+      authentication: "plaintext-password"
+      shortcut: 'enable'
+    - area_id: '3'
+      area_type:
+        nssa:
+          set: true
+    - area_id: '4'
+      area_type:
+        stub:
+          default_cost: 20
+          set: true
+      network:
+        - address: '192.0.2.0/24'
+      range:
+        - address: '192.0.3.0/24'
+          cost: 10
+        - address: '192.0.4.0/24'
+          cost: 12
+  auto_cost:
+    reference_bandwidth: 2
+  default_information:
+    originate:
+      always: true
+      metric: 10
+      metric_type: 2
+      route_map: 'ingress'
+  log_adjacency_changes: 'detail'
+  max_metric:
+    router_lsa:
+      administrative: true
+      on_shutdown: 10
+      on_startup: 10
+  mpls_te:
+    enabled: true
+    router_address: '192.0.11.11'
+  neighbor:
+    - neighbor_id: '192.0.11.12'
+      poll_interval: 10
+      priority: 2
+  parameters:
+    abr_type: 'cisco'
+    opaque_lsa: true
+    rfc1583_compatibility: true
+    router_id: '192.0.1.1'
+  passive_interface:
+    - 'eth1'
+    - 'eth2'
+  redistribute:
+    - metric: 10
+      metric_type: 2
+      route_type: 'bgp'
+replaced:
+  commands:
+    - delete protocols ospf passive-interface eth2
+    - delete protocols ospf area 3
+    - delete protocols ospf area 4 range 192.0.3.0/24 cost
+    - delete protocols ospf area 4 range 192.0.3.0/24
+    - delete protocols ospf area 4 range 192.0.4.0/24 cost
+    - delete protocols ospf area 4 range 192.0.4.0/24
+    - set protocols ospf mpls-te router-address '192.0.22.22'
+    - set protocols ospf area 4 range 1.1.2.0/24 cost 10
+    - set protocols ospf area 4 range 1.1.2.0/24
+    - set protocols ospf area 4 network 192.0.12.0/24
+    - set protocols ospf area 4 network 192.0.22.0/24
+    - set protocols ospf area 4 network 192.0.32.0/24
+  after:
+    areas:
+      - area_id: '2'
+        area_type:
+          normal: true
+        authentication: "plaintext-password"
+        shortcut: 'enable'
+      - area_id: '4'
+        area_type:
+          stub:
+            default_cost: 20
+            set: true
+        network:
+          - address: '192.0.12.0/24'
+          - address: '192.0.2.0/24'
+          - address: '192.0.22.0/24'
+          - address: '192.0.32.0/24'
+        range:
+          - address: '1.1.2.0/24'
+            cost: 10
+    auto_cost:
+      reference_bandwidth: 2
+    default_information:
+      originate:
+        always: true
+        metric: 10
+        metric_type: 2
+        route_map: 'ingress'
+    log_adjacency_changes: 'detail'
+    max_metric:
+      router_lsa:
+        administrative: true
+        on_shutdown: 10
+        on_startup: 10
+    mpls_te:
+      enabled: true
+      router_address: '192.0.22.22'
+    neighbor:
+      - neighbor_id: '192.0.11.12'
+        poll_interval: 10
+        priority: 2
+    parameters:
+      abr_type: 'cisco'
+      opaque_lsa: true
+      rfc1583_compatibility: true
+      router_id: '192.0.1.1'
+    passive_interface:
+      - 'eth1'
+    redistribute:
+      - metric: 10
+        metric_type: 2
+        route_type: 'bgp'
+rendered:
+  commands:
+    - set protocols ospf mpls-te enable
+    - set protocols ospf mpls-te router-address '192.0.11.11'
+    - set protocols ospf redistribute bgp
+    - set protocols ospf redistribute bgp metric-type 2
+    - set protocols ospf redistribute bgp metric 10
+    - set protocols ospf default-information originate metric-type 2
+    - set protocols ospf default-information originate always
+    - set protocols ospf default-information originate metric 10
+    - set protocols ospf default-information originate route-map ingress
+    - set protocols ospf auto-cost reference-bandwidth '2'
+    - set protocols ospf parameters router-id '192.0.1.1'
+    - set protocols ospf parameters opaque-lsa
+    - set protocols ospf parameters abr-type 'cisco'
+    - set protocols ospf parameters rfc1583-compatibility
+    - set protocols ospf passive-interface eth1
+    - set protocols ospf passive-interface eth2
+    - set protocols ospf max-metric router-lsa on-shutdown 10
+    - set protocols ospf max-metric router-lsa administrative
+    - set protocols ospf max-metric router-lsa on-startup 10
+    - set protocols ospf log-adjacency-changes 'detail'
+    - set protocols ospf neighbor 192.0.11.12 priority 2
+    - set protocols ospf neighbor 192.0.11.12 poll-interval 10
+    - set protocols ospf neighbor 192.0.11.12
+    - set protocols ospf area '2'
+    - set protocols ospf area 2 authentication plaintext-password
+    - set protocols ospf area 2 shortcut enable
+    - set protocols ospf area 2 area-type normal
+    - set protocols ospf area '3'
+    - set protocols ospf area 3 area-type nssa
+    - set protocols ospf area 4 range 192.0.3.0/24 cost 10
+    - set protocols ospf area 4 range 192.0.3.0/24
+    - set protocols ospf area 4 range 192.0.4.0/24 cost 12
+    - set protocols ospf area 4 range 192.0.4.0/24
+    - set protocols ospf area 4 area-type stub default-cost 20
+    - set protocols ospf area '4'
+    - set protocols ospf area 4 network 192.0.2.0/24
+parsed:
+  after:
+    areas:
+      - area_id: '2'
+        area_type:
+          normal: true
+        authentication: "plaintext-password"
+        shortcut: 'enable'
+      - area_id: '3'
+        area_type:
+          nssa:
+            set: true
+      - area_id: '4'
+        area_type:
+          stub:
+            default_cost: 20
+            set: true
+        network:
+          - address: '192.0.2.0/24'
+        range:
+          - address: '192.0.3.0/24'
+            cost: 10
+          - address: '192.0.4.0/24'
+            cost: 12
+    auto_cost:
+      reference_bandwidth: 2
+    default_information:
+      originate:
+        always: true
+        metric: 10
+        metric_type: 2
+        route_map: 'ingress'
+    log_adjacency_changes: 'detail'
+    max_metric:
+      router_lsa:
+        administrative: true
+        on_shutdown: 10
+        on_startup: 10
+    mpls_te:
+      enabled: true
+      router_address: '192.0.11.11'
+    neighbor:
+      - neighbor_id: '192.0.11.12'
+        poll_interval: 10
+        priority: 2
+    parameters:
+      abr_type: 'cisco'
+      opaque_lsa: true
+      rfc1583_compatibility: true
+      router_id: '192.0.1.1'
+    passive_interface:
+      - 'eth1'
+      - 'eth2'
+    redistribute:
+      - metric: 10
+        metric_type: 2
+        route_type: 'bgp'
+deleted:
+  commands:
+    - 'delete protocols ospf'
+  after: {}
+round_trip:
+  after:
+    areas:
+      - area_id: '2'
+        area_type:
+          normal: true
+        authentication: "plaintext-password"
+        shortcut: 'enable'
+      - area_id: '4'
+        area_type:
+          stub:
+            default_cost: 20
+            set: true
+        network:
+          - address: '192.0.12.0/24'
+          - address: '192.0.2.0/24'
+          - address: '192.0.22.0/24'
+          - address: '192.0.32.0/24'
+        range:
+          - address: '1.1.2.0/24'
+            cost: 10
+    auto_cost:
+      reference_bandwidth: 2
+    default_information:
+      originate:
+        always: true
+        metric: 10
+        metric_type: 2
+        route_map: 'ingress'
+    log_adjacency_changes: 'detail'
+    max_metric:
+      router_lsa:
+        administrative: true
+        on_shutdown: 10
+        on_startup: 10
+    mpls_te:
+      enabled: true
+      router_address: '192.0.22.22'
+    neighbor:
+      - neighbor_id: '192.0.11.12'
+        poll_interval: 10
+        priority: 2
+    parameters:
+      abr_type: 'cisco'
+      opaque_lsa: true
+      rfc1583_compatibility: true
+      router_id: '192.0.1.1'
+    passive_interface:
+      - 'eth1'
+    redistribute:
+      - metric: 10
+        metric_type: 2
+        route_type: 'bgp'

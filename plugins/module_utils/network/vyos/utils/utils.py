@@ -113,7 +113,7 @@ def get_lst_same_for_dicts(want, have, lst):
 
 
 def list_diff_have_only(want_list, have_list):
-    """ -
+    """
     This function generated the list containing values
     that are only in have list.
     :param want_list:

@@ -1,0 +1,76 @@
+---
+- debug:
+    msg: START vyos_ospfv2 rendered integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+
+    - name: Structure provided configuration into device specific commands
+      register: result
+      vyos.vyos.vyos_ospfv2:
+        config:
+          log_adjacency_changes: 'detail'
+          max_metric:
+            router_lsa:
+              administrative: true
+              on_shutdown: 10
+              on_startup: 10
+          default_information:
+            originate:
+              always: true
+              metric: 10
+              metric_type: 2
+              route_map: 'ingress'
+          mpls_te:
+            enabled: true
+            router_address: '192.0.11.11'
+          auto_cost:
+            reference_bandwidth: 2
+          neighbor:
+            - neighbor_id: '192.0.11.12'
+              poll_interval: 10
+              priority: 2
+          redistribute:
+            - route_type: 'bgp'
+              metric: 10
+              metric_type: 2
+          passive_interface:
+            - 'eth1'
+            - 'eth2'
+          parameters:
+            router_id: '192.0.1.1'
+            opaque_lsa: true
+            rfc1583_compatibility: true
+            abr_type: 'cisco'
+          areas:
+            - area_id: '2'
+              area_type:
+                normal: true
+              authentication: "plaintext-password"
+              shortcut: 'enable'
+            - area_id: '3'
+              area_type:
+                nssa:
+                  set: true
+            - area_id: '4'
+              area_type:
+                stub:
+                  default_cost: 20
+              network:
+                - address: '192.0.2.0/24'
+              range:
+                - address: '192.0.3.0/24'
+                  cost: 10
+                - address: '192.0.4.0/24'
+                  cost: 12
+        state: rendered
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ rendered['commands'] | symmetric_difference(result['rendered'])\
+            \ |length == 0 }}"
+- debug:
+    msg: END vyos_ospfv2 rendered integration tests on connection={{ ansible_connection }}

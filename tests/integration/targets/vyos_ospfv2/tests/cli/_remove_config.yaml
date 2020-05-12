@@ -1,0 +1,6 @@
+---
+- name: Remove Config
+  vars:
+    lines: "delete protocols ospf\n"
+  ansible.netcommon.cli_config:
+    config: '{{ lines }}'
