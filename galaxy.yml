@@ -6,6 +6,6 @@ dependencies:
 license_file: LICENSE
 name: vyos
 namespace: vyos
-readme: README.rst
+readme: README.md
 repository: https://github.com/ansible-collections/vyos.vyos
 tags: [vyos, networking]
