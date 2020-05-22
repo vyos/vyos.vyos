@@ -35,7 +35,6 @@ ANSIBLE_METADATA = {"metadata_version": "1.1", "supported_by": "Ansible"}
 DOCUMENTATION = """
 ---
 module: vyos_ospfv2
-version_added: 2.10
 short_description: OSPFV2 resource module
 description: This resource module configures and manages attributes of OSPFv2 routes on VyOS network devices.
 version_added: "1.0.0"
