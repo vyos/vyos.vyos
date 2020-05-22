@@ -30,16 +30,13 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "network",
-}
 
-DOCUMENTATION = """module: vyos_firewall_global
-short_description: Manage global policies or configurations for firewall on VyOS devices.
+DOCUMENTATION = """
+module: vyos_firewall_global
+short_description: FIREWALL resource module
 description: This module manage global policies or configurations for firewall on
   VyOS devices.
+version_added: 1.0.0
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
@@ -259,6 +256,7 @@ options:
     - rendered
     - parsed
     default: merged
+
 """
 EXAMPLES = """
 # Using merged
@@ -270,41 +268,41 @@ EXAMPLES = """
 #
 #
 - name: Merge the provided configuration with the exisiting running configuration
-  vyos_firewall_global:
+  vyos.vyos.vyos_firewall_global:
     config:
       validation: strict
-      config_trap: True
-      log_martians: True
-      syn_cookies: True
-      twa_hazards_protection: True
+      config_trap: true
+      log_martians: true
+      syn_cookies: true
+      twa_hazards_protection: true
       ping:
-        all: True
-        broadcast: True
+        all: true
+        broadcast: true
       state_policy:
-        - connection_type: 'established'
-          action: 'accept'
-          log: True
-        - connection_type: 'invalid'
-          action: 'reject'
+      - connection_type: established
+        action: accept
+        log: true
+      - connection_type: invalid
+        action: reject
       route_redirects:
-        - afi: 'ipv4'
-          ip_src_route: True
-          icmp_redirects:
-            send: True
-            receive: False
+      - afi: ipv4
+        ip_src_route: true
+        icmp_redirects:
+          send: true
+          receive: false
       group:
         address_group:
-          - name: 'MGMT-HOSTS'
-            description: 'This group has the Management hosts address list'
-            members:
-              - address: 192.0.1.1
-              - address: 192.0.1.3
-              - address: 192.0.1.5
+        - name: MGMT-HOSTS
+          description: This group has the Management hosts address list
+          members:
+          - address: 192.0.1.1
+          - address: 192.0.1.3
+          - address: 192.0.1.5
         network_group:
-          - name: 'MGMT'
-            description: 'This group has the Management network addresses'
-            members:
-              - address: 192.0.1.0/24
+        - name: MGMT
+          description: This group has the Management network addresses
+          members:
+          - address: 192.0.1.0/24
     state: merged
 #
 #
@@ -430,30 +428,22 @@ EXAMPLES = """
 #
 #
 - name: Render the commands for provided  configuration
-  vyos_firewall_global:
-    running_config:
-      "set firewall all-ping 'enable'
-  set firewall broadcast-ping 'enable'
-  set firewall config-trap 'enable'
-  set firewall group address-group ENG-HOSTS address '192.0.3.1'
-  set firewall group address-group ENG-HOSTS address '192.0.3.2'
-  set firewall group address-group ENG-HOSTS description 'Sales office hosts address list'
-  set firewall group address-group SALES-HOSTS address '192.0.2.1'
-  set firewall group address-group SALES-HOSTS address '192.0.2.2'
-  set firewall group address-group SALES-HOSTS address '192.0.2.3'
-  set firewall group address-group SALES-HOSTS description 'Sales office hosts address list'
-  set firewall group network-group MGMT description 'This group has the Management network addresses'
-  set firewall group network-group MGMT network '192.0.1.0/24'
-  set firewall ip-src-route 'enable'
-  set firewall log-martians 'enable'
-  set firewall receive-redirects 'disable'
-  set firewall send-redirects 'enable'
-  set firewall source-validation 'strict'
-  set firewall state-policy established action 'accept'
-  set firewall state-policy established log 'enable'
-  set firewall state-policy invalid action 'reject'
-  set firewall syn-cookies 'enable'
-  set firewall twa-hazards-protection 'enable'"
+  vyos.vyos.vyos_firewall_global:
+    running_config: set firewall all-ping 'enable' set firewall broadcast-ping 'enable'
+      set firewall config-trap 'enable' set firewall group address-group ENG-HOSTS
+      address '192.0.3.1' set firewall group address-group ENG-HOSTS address '192.0.3.2'
+      set firewall group address-group ENG-HOSTS description 'Sales office hosts address
+      list' set firewall group address-group SALES-HOSTS address '192.0.2.1' set firewall
+      group address-group SALES-HOSTS address '192.0.2.2' set firewall group address-group
+      SALES-HOSTS address '192.0.2.3' set firewall group address-group SALES-HOSTS
+      description 'Sales office hosts address list' set firewall group network-group
+      MGMT description 'This group has the Management network addresses' set firewall
+      group network-group MGMT network '192.0.1.0/24' set firewall ip-src-route 'enable'
+      set firewall log-martians 'enable' set firewall receive-redirects 'disable'
+      set firewall send-redirects 'enable' set firewall source-validation 'strict'
+      set firewall state-policy established action 'accept' set firewall state-policy
+      established log 'enable' set firewall state-policy invalid action 'reject' set
+      firewall syn-cookies 'enable' set firewall twa-hazards-protection 'enable'
     state: parsed
 #
 #
@@ -565,7 +555,7 @@ EXAMPLES = """
 # set firewall syn-cookies 'enable'
 # set firewall twa-hazards-protection 'enable'
 - name: Delete attributes of firewall.
-  vyos_firewall_global:
+  vyos.vyos.vyos_firewall_global:
     config:
       state_policy:
       config_trap:
@@ -693,46 +683,46 @@ EXAMPLES = """
 # set firewall twa-hazards-protection 'enable'
 #
 - name: Replace firewall global attributes configuration.
-  vyos_firewall_global:
+  vyos.vyos.vyos_firewall_global:
     config:
       validation: strict
-      config_trap: True
-      log_martians: True
-      syn_cookies: True
-      twa_hazards_protection: True
+      config_trap: true
+      log_martians: true
+      syn_cookies: true
+      twa_hazards_protection: true
       ping:
-      all: True
-      broadcast: True
+      all: true
+      broadcast: true
       state_policy:
-        - connection_type: 'established'
-          action: 'accept'
-          log: True
-        - connection_type: 'invalid'
-          action: 'reject'
+      - connection_type: established
+        action: accept
+        log: true
+      - connection_type: invalid
+        action: reject
       route_redirects:
-        - afi: 'ipv4'
-          ip_src_route: True
-          icmp_redirects:
-            send: True
-            receive: False
+      - afi: ipv4
+        ip_src_route: true
+        icmp_redirects:
+          send: true
+          receive: false
       group:
         address_group:
-          - name: 'SALES-HOSTS'
-            description: 'Sales office hosts address list'
-            members:
-              - address: 192.0.2.1
-              - address: 192.0.2.2
-              - address: 192.0.2.3
-          - name: 'ENG-HOSTS'
-            description: 'Sales office hosts address list'
-            members:
-              - address: 192.0.3.1
-              - address: 192.0.3.2
+        - name: SALES-HOSTS
+          description: Sales office hosts address list
+          members:
+          - address: 192.0.2.1
+          - address: 192.0.2.2
+          - address: 192.0.2.3
+        - name: ENG-HOSTS
+          description: Sales office hosts address list
+          members:
+          - address: 192.0.3.1
+          - address: 192.0.3.2
         network_group:
-          - name: 'MGMT'
-            description: 'This group has the Management network addresses'
-            members:
-              - address: 192.0.1.0/24
+        - name: MGMT
+          description: This group has the Management network addresses
+          members:
+          - address: 192.0.1.0/24
     state: replaced
 #
 #
@@ -949,7 +939,7 @@ EXAMPLES = """
 # set firewall twa-hazards-protection 'enable'
 #
 - name: Gather firewall global config with provided configurations
-  vyos_firewall_global:
+  vyos.vyos.vyos_firewall_global:
     config:
     state: gathered
 #
@@ -1066,46 +1056,46 @@ EXAMPLES = """
 #
 #
 - name: Render the commands for provided  configuration
-  vyos_firewall_global:
+  vyos.vyos.vyos_firewall_global:
     config:
       validation: strict
-      config_trap: True
-      log_martians: True
-      syn_cookies: True
-      twa_hazards_protection: True
+      config_trap: true
+      log_martians: true
+      syn_cookies: true
+      twa_hazards_protection: true
       ping:
-      all: True
-      broadcast: True
+      all: true
+      broadcast: true
       state_policy:
-        - connection_type: 'established'
-          action: 'accept'
-          log: True
-        - connection_type: 'invalid'
-          action: 'reject'
+      - connection_type: established
+        action: accept
+        log: true
+      - connection_type: invalid
+        action: reject
       route_redirects:
-        - afi: 'ipv4'
-          ip_src_route: True
-          icmp_redirects:
-          send: True
-          receive: False
+      - afi: ipv4
+        ip_src_route: true
+        icmp_redirects:
+        send: true
+        receive: false
       group:
         address_group:
-          - name: 'SALES-HOSTS'
-            description: 'Sales office hosts address list'
-            members:
-              - address: 192.0.2.1
-              - address: 192.0.2.2
-              - address: 192.0.2.3
-          - name: 'ENG-HOSTS'
-            description: 'Sales office hosts address list'
-            members:
-              - address: 192.0.3.1
-              - address: 192.0.3.2
+        - name: SALES-HOSTS
+          description: Sales office hosts address list
+          members:
+          - address: 192.0.2.1
+          - address: 192.0.2.2
+          - address: 192.0.2.3
+        - name: ENG-HOSTS
+          description: Sales office hosts address list
+          members:
+          - address: 192.0.3.1
+          - address: 192.0.3.2
         network_group:
-          - name: 'MGMT'
-            description: 'This group has the Management network addresses'
-            members:
-             - address: 192.0.1.0/24
+        - name: MGMT
+          description: This group has the Management network addresses
+          members:
+          - address: 192.0.1.0/24
     state: rendered
 #
 #

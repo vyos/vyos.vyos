@@ -30,13 +30,13 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-ANSIBLE_METADATA = {"metadata_version": "1.1", "supported_by": "Ansible"}
 
-DOCUMENTATION = """module: vyos_lldp_global
-short_description: LLDP global resource module
+DOCUMENTATION = """
+module: vyos_lldp_global
+short_description: LLDP resource module
 description: This module manages link layer discovery protocol (LLDP) attributes on
   VyOS devices.
-version_added: "1.0.0"
+version_added: 1.0.0
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
@@ -70,12 +70,12 @@ options:
         - sonmp
   running_config:
     description:
-      - This option is used only with state I(parsed).
-      - The value of this option should be the output received from the VyOS device by executing
-        the command B(show configuration commands | grep lldp).
-      - The state I(parsed) reads the configuration from C(running_config) option and transforms
-        it into Ansible structured data as per the resource module's argspec and the value is then
-        returned in the I(parsed) key within the result.
+    - This option is used only with state I(parsed).
+    - The value of this option should be the output received from the VyOS device
+      by executing the command B(show configuration commands | grep lldp).
+    - The state I(parsed) reads the configuration from C(running_config) option and
+      transforms it into Ansible structured data as per the resource module's argspec
+      and the value is then returned in the I(parsed) key within the result.
     type: str
   state:
     description:
@@ -89,6 +89,7 @@ options:
     - rendered
     - parsed
     default: merged
+
 """
 EXAMPLES = """
 # Using merged
@@ -102,9 +103,9 @@ EXAMPLES = """
   vyos.vyos.vyos_lldp_global:
     config:
       legacy_protocols:
-        - 'fdp'
-        - 'cdp'
-      snmp: 'enable'
+      - fdp
+      - cdp
+      snmp: enable
       address: 192.0.2.11
     state: merged
 #
@@ -164,9 +165,9 @@ EXAMPLES = """
   vyos.vyos.vyos_lldp_global:
     config:
       legacy_protocols:
-        - 'edp'
-        - 'sonmp'
-        - 'cdp'
+      - edp
+      - sonmp
+      - cdp
       address: 192.0.2.14
     state: replaced
 #
@@ -237,7 +238,8 @@ EXAMPLES = """
 # set service lldp legacy-protocols sonmp
 # set service lldp management-address '192.0.2.14'
 #
-- name: Delete attributes of given lldp service (This won't delete the LLDP service itself)
+- name: Delete attributes of given lldp service (This won't delete the LLDP service
+    itself)
   vyos.vyos.vyos_lldp_global:
     config:
     state: deleted
@@ -392,7 +394,7 @@ EXAMPLES = """
       address: 192.0.2.17
       enable: true
       legacy_protocols:
-        - cdp
+      - cdp
     state: rendered
 #
 #
@@ -414,10 +416,8 @@ EXAMPLES = """
 #
 - name: Parse the provided commands to provide structured configuration
   vyos.vyos.vyos_lldp_global:
-    running_config:
-      "set service lldp legacy-protocols 'cdp'
- set service lldp legacy-protocols 'fdp'
- set service lldp management-address '192.0.2.11'"
+    running_config: set service lldp legacy-protocols 'cdp' set service lldp legacy-protocols
+      'fdp' set service lldp management-address '192.0.2.11'
     state: parsed
 #
 #

@@ -9,17 +9,13 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "network",
-}
-
-DOCUMENTATION = """module: vyos_vlan
+DOCUMENTATION = """
+module: vyos_vlan
 author: Trishna Guha (@trishnaguha)
 short_description: Manage VLANs on VyOS network devices
 description:
 - This module provides declarative management of VLANs on VyOS network devices.
+version_added: 1.0.0
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
@@ -68,41 +64,41 @@ extends_documentation_fragment:
 
 EXAMPLES = """
 - name: Create vlan
-  vyos_vlan:
+  vyos.vyos.vyos_vlan:
     vlan_id: 100
     name: vlan-100
     interfaces: eth1
     state: present
 
 - name: Add interfaces to VLAN
-  vyos_vlan:
+  vyos.vyos.vyos_vlan:
     vlan_id: 100
     interfaces:
-      - eth1
-      - eth2
+    - eth1
+    - eth2
 
 - name: Configure virtual interface address
-  vyos_vlan:
+  vyos.vyos.vyos_vlan:
     vlan_id: 100
     interfaces: eth1
     address: 172.26.100.37/24
 
 - name: vlan interface config + intent
-  vyos_vlan:
+  vyos.vyos.vyos_vlan:
     vlan_id: 100
     interfaces: eth0
     associated_interfaces:
     - eth0
 
 - name: vlan intent check
-  vyos_vlan:
+  vyos.vyos.vyos_vlan:
     vlan_id: 100
     associated_interfaces:
     - eth3
     - eth4
 
 - name: Delete vlan
-  vyos_vlan:
+  vyos.vyos.vyos_vlan:
     vlan_id: 100
     interfaces: eth1
     state: absent

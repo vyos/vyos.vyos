@@ -19,18 +19,15 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "network",
-}
 
-DOCUMENTATION = """module: vyos_banner
+DOCUMENTATION = """
+module: vyos_banner
 author: Trishna Guha (@trishnaguha)
 short_description: Manage multiline banners on VyOS devices
 description:
 - This will configure both pre-login and post-login banners on remote devices running
   VyOS. It allows playbooks to add or remote banner text from the active running configuration.
+version_added: 1.0.0
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
@@ -60,7 +57,7 @@ extends_documentation_fragment:
 
 EXAMPLES = """
 - name: configure the pre-login banner
-  vyos_banner:
+  vyos.vyos.vyos_banner:
     banner: pre-login
     text: |
       this is my pre-login banner
@@ -68,7 +65,7 @@ EXAMPLES = """
       string
     state: present
 - name: remove the post-login banner
-  vyos_banner:
+  vyos.vyos.vyos_banner:
     banner: post-login
     state: absent
 """

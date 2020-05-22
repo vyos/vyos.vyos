@@ -30,15 +30,12 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "network",
-}
 
-DOCUMENTATION = """module: vyos_l3_interfaces
+DOCUMENTATION = """
+module: vyos_l3_interfaces
 short_description: L3 interfaces resource module
 description: This module manages the L3 interface attributes on VyOS network devices.
+version_added: 1.0.0
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
@@ -108,14 +105,13 @@ options:
                 type: str
   running_config:
     description:
-      - This option is used only with state I(parsed).
-      - The value of this option should be the output received from the VyOS device by executing
-        the command B(show configuration commands | grep -e eth[2,3]).
-      - The state I(parsed) reads the configuration from C(running_config) option and transforms
-        it into Ansible structured data as per the resource module's argspec and the value is then
-        returned in the I(parsed) key within the result.
+    - This option is used only with state I(parsed).
+    - The value of this option should be the output received from the VyOS device
+      by executing the command B(show configuration commands | grep -e eth[2,3]).
+    - The state I(parsed) reads the configuration from C(running_config) option and
+      transforms it into Ansible structured data as per the resource module's argspec
+      and the value is then returned in the I(parsed) key within the result.
     type: str
-    version_added: "1.0.0"
   state:
     description:
     - The state of the configuration after module completion.
@@ -145,26 +141,26 @@ EXAMPLES = """
 - name: Merge provided configuration with device configuration
   vyos.vyos.vyos_l3_interfaces:
     config:
-      - name: eth2
-        ipv4:
-          - address: 192.0.2.10/28
-          - address: 198.51.100.40/27
-        ipv6:
-          - address: 2001:db8:100::2/32
-          - address: 2001:db8:400::10/32
+    - name: eth2
+      ipv4:
+      - address: 192.0.2.10/28
+      - address: 198.51.100.40/27
+      ipv6:
+      - address: 2001:db8:100::2/32
+      - address: 2001:db8:400::10/32
 
-      - name: eth3
+    - name: eth3
+      ipv4:
+      - address: 203.0.113.65/26
+      vifs:
+      - vlan_id: 101
         ipv4:
-          - address: 203.0.113.65/26
-        vifs:
-          - vlan_id: 101
-            ipv4:
-              - address: 192.0.2.71/28
-              - address: 198.51.100.131/25
-          - vlan_id: 102
-            ipv6:
-              - address: 2001:db8:1000::5/38
-              - address: 2001:db8:1400::3/38
+        - address: 192.0.2.71/28
+        - address: 198.51.100.131/25
+      - vlan_id: 102
+        ipv6:
+        - address: 2001:db8:1000::5/38
+        - address: 2001:db8:1400::3/38
     state: merged
 
 # After state:
@@ -213,13 +209,13 @@ EXAMPLES = """
 - name: Replace device configurations of listed interfaces with provided configurations
   vyos.vyos.vyos_l3_interfaces:
     config:
-      - name: eth2
-        ipv4:
-          - address: 192.0.2.10/24
+    - name: eth2
+      ipv4:
+      - address: 192.0.2.10/24
 
-      - name: eth3
-        ipv6:
-          - address: 2001:db8::11/32
+    - name: eth3
+      ipv6:
+      - address: 2001:db8::11/32
     state: replaced
 
 # After state:
@@ -269,11 +265,11 @@ EXAMPLES = """
 - name: Overrides all device configuration with provided configuration
   vyos.vyos.vyos_l3_interfaces:
     config:
-      - name: eth0
-        ipv4:
-          - address: dhcp
-        ipv6:
-          - address: dhcpv6
+    - name: eth0
+      ipv4:
+      - address: dhcp
+      ipv6:
+      - address: dhcpv6
     state: overridden
 
 # After state
@@ -317,12 +313,13 @@ EXAMPLES = """
 # set interfaces ethernet eth3 vif 102 address '2001:db8:4000::3/34'
 # set interfaces ethernet eth3 vif 102 address '2001:db8:4000::2/34'
 
-- name: Delete L3 attributes of given interfaces (Note - This won't delete the interface itself)
+- name: Delete L3 attributes of given interfaces (Note - This won't delete the interface
+    itself)
   vyos.vyos.vyos_l3_interfaces:
     config:
-      - name: eth1
-      - name: eth2
-      - name: eth3
+    - name: eth1
+    - name: eth2
+    - name: eth3
     state: deleted
 
 # After state
@@ -429,16 +426,16 @@ EXAMPLES = """
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_l3_interfaces:
     config:
-      - name: eth1
-        ipv4:
-          - address: 192.0.2.14/24
-      - name: eth2
-        ipv4:
-          - address: 192.0.2.10/24
-          - address: 192.0.2.11/24
-        ipv6:
-          - address: 2001:db8::10/32
-          - address: 2001:db8::12/32
+    - name: eth1
+      ipv4:
+      - address: 192.0.2.14/24
+    - name: eth2
+      ipv4:
+      - address: 192.0.2.10/24
+      - address: 192.0.2.11/24
+      ipv6:
+      - address: 2001:db8::10/32
+      - address: 2001:db8::12/32
     state: rendered
 #
 #
@@ -461,13 +458,10 @@ EXAMPLES = """
 #
 - name: parse the provided running configuration
   vyos.vyos.vyos_l3_interfaces:
-    running_config:
-      "set interfaces ethernet eth0 address 'dhcp'
- set interfaces ethernet eth1 address '192.0.2.14/24'
- set interfaces ethernet eth2 address '192.0.2.10/24'
- set interfaces ethernet eth2 address '192.0.2.11/24'
- set interfaces ethernet eth2 address '2001:db8::10/32'
- set interfaces ethernet eth2 address '2001:db8::12/32'"
+    running_config: set interfaces ethernet eth0 address 'dhcp' set interfaces ethernet
+      eth1 address '192.0.2.14/24' set interfaces ethernet eth2 address '192.0.2.10/24'
+      set interfaces ethernet eth2 address '192.0.2.11/24' set interfaces ethernet
+      eth2 address '2001:db8::10/32' set interfaces ethernet eth2 address '2001:db8::12/32'
     state: parsed
 #
 #

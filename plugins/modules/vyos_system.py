@@ -17,19 +17,15 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "network",
-}
 
-
-DOCUMENTATION = """module: vyos_system
+DOCUMENTATION = """
+module: vyos_system
 author: Nathaniel Case (@Qalthos)
 short_description: Run `set system` commands on VyOS devices
 description:
 - Runs one or more commands on remote devices running VyOS. This module can also be
   introspected to validate key parameters before returning successfully.
+version_added: 1.0.0
 extends_documentation_fragment:
 - vyos.vyos.vyos
 notes:
@@ -71,25 +67,21 @@ commands:
 
 EXAMPLES = """
 - name: configure hostname and domain-name
-  vyos_system:
+  vyos.vyos.vyos_system:
     host_name: vyos01
     domain_name: test.example.com
 
 - name: remove all configuration
-  vyos_system:
+  vyos.vyos.vyos_system:
     state: absent
 
 - name: configure name servers
-  vyos_system:
-    name_servers
-      - 8.8.8.8
-      - 8.8.4.4
-
+  vyos.vyos.vyos_system: name_servers - 8.8.8.8 - 8.8.4.4
 - name: configure domain search suffixes
-  vyos_system:
+  vyos.vyos.vyos_system:
     domain_search:
-      - sub1.example.com
-      - sub2.example.com
+    - sub1.example.com
+    - sub2.example.com
 """
 
 from ansible.module_utils.basic import AnsibleModule

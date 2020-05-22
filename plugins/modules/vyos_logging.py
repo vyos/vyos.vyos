@@ -19,17 +19,14 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "network",
-}
 
-DOCUMENTATION = """module: vyos_logging
+DOCUMENTATION = """
+module: vyos_logging
 author: Trishna Guha (@trishnaguha)
 short_description: Manage logging on network devices
 description:
 - This module provides declarative management of logging on Vyatta Vyos devices.
+version_added: 1.0.0
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
@@ -68,36 +65,36 @@ extends_documentation_fragment:
 
 EXAMPLES = """
 - name: configure console logging
-  vyos_logging:
+  vyos.vyos.vyos_logging:
     dest: console
     facility: all
     level: crit
 
 - name: remove console logging configuration
-  vyos_logging:
+  vyos.vyos.vyos_logging:
     dest: console
     state: absent
 
 - name: configure file logging
-  vyos_logging:
+  vyos.vyos.vyos_logging:
     dest: file
     name: test
     facility: local3
     level: err
 
 - name: Add logging aggregate
-  vyos_logging:
+  vyos.vyos.vyos_logging:
     aggregate:
-      - { dest: file, name: test1, facility: all, level: info }
-      - { dest: file, name: test2, facility: news, level: debug }
+    - {dest: file, name: test1, facility: all, level: info}
+    - {dest: file, name: test2, facility: news, level: debug}
     state: present
 
 - name: Remove logging aggregate
-  vyos_logging:
+  vyos.vyos.vyos_logging:
     aggregate:
-      - { dest: console, facility: all, level: info }
-      - { dest: console, facility: daemon, level: warning }
-      - { dest: file, name: test2, facility: news, level: debug }
+    - {dest: console, facility: all, level: info}
+    - {dest: console, facility: daemon, level: warning}
+    - {dest: file, name: test2, facility: news, level: debug}
     state: absent
 """
 

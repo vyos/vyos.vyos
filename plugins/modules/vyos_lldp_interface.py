@@ -20,19 +20,15 @@
 #
 
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["deprecated"],
-    "supported_by": "network",
-}
-
-
-DOCUMENTATION = """module: vyos_lldp_interface
+DOCUMENTATION = """
+module: vyos_lldp_interface
 author: Ricardo Carrillo Cruz (@rcarrillocruz)
-short_description: Manage LLDP interfaces configuration on VyOS network devices
+short_description: (deprecated) Manage LLDP interfaces configuration on VyOS network
+  devices
 description:
 - This module provides declarative management of LLDP interfaces configuration on
   VyOS network devices.
+version_added: 1.0.0
 deprecated:
   removed_in: '2.13'
   alternative: vyos_lldp_interfaces
@@ -59,6 +55,7 @@ options:
     type: str
 extends_documentation_fragment:
 - vyos.vyos.vyos
+
 """
 
 EXAMPLES = """
@@ -69,8 +66,8 @@ EXAMPLES = """
 - name: Enable LLDP on specific interfaces
   net_lldp_interface:
     interfaces:
-      - eth1
-      - eth2
+    - eth1
+    - eth2
     state: present
 
 - name: Disable LLDP globally
@@ -78,14 +75,14 @@ EXAMPLES = """
     state: disabled
 
 - name: Create aggregate of LLDP interface configurations
-  vyos_lldp_interface:
+  vyos.vyos.vyos_lldp_interface:
     aggregate:
     - name: eth1
     - name: eth2
     state: present
 
 - name: Delete aggregate of LLDP interface configurations
-  vyos_lldp_interface:
+  vyos.vyos.vyos_lldp_interface:
     aggregate:
     - name: eth1
     - name: eth2

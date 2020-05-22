@@ -19,18 +19,14 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["deprecated"],
-    "supported_by": "network",
-}
 
-
-DOCUMENTATION = """module: vyos_l3_interface
+DOCUMENTATION = """
+module: vyos_l3_interface
 author: Ricardo Carrillo Cruz (@rcarrillocruz)
-short_description: Manage L3 interfaces on VyOS network devices
+short_description: (deprecated) Manage L3 interfaces on VyOS network devices
 description:
 - This module provides declarative management of L3 interfaces on VyOS network devices.
+version_added: 1.0.0
 deprecated:
   removed_in: '2.13'
   alternative: vyos_l3_interfaces
@@ -58,30 +54,31 @@ options:
     - absent
 extends_documentation_fragment:
 - vyos.vyos.vyos
+
 """
 
 EXAMPLES = """
 - name: Set eth0 IPv4 address
-  vyos_l3_interface:
+  vyos.vyos.vyos_l3_interface:
     name: eth0
     ipv4: 192.168.0.1/24
 
 - name: Remove eth0 IPv4 address
-  vyos_l3_interface:
+  vyos.vyos.vyos_l3_interface:
     name: eth0
     state: absent
 
 - name: Set IP addresses on aggregate
-  vyos_l3_interface:
+  vyos.vyos.vyos_l3_interface:
     aggregate:
-      - { name: eth1, ipv4: 192.168.2.10/24 }
-      - { name: eth2, ipv4: 192.168.3.10/24, ipv6: "fd5d:12c9:2201:1::1/64" }
+    - {name: eth1, ipv4: 192.168.2.10/24}
+    - {name: eth2, ipv4: 192.168.3.10/24, ipv6: fd5d:12c9:2201:1::1/64}
 
 - name: Remove IP addresses on aggregate
-  vyos_l3_interface:
+  vyos.vyos.vyos_l3_interface:
     aggregate:
-      - { name: eth1, ipv4: 192.168.2.10/24 }
-      - { name: eth2, ipv4: 192.168.3.10/24, ipv6: "fd5d:12c9:2201:1::1/64" }
+    - {name: eth1, ipv4: 192.168.2.10/24}
+    - {name: eth2, ipv4: 192.168.3.10/24, ipv6: fd5d:12c9:2201:1::1/64}
     state: absent
 """
 

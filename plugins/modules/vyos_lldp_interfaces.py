@@ -30,15 +30,15 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-ANSIBLE_METADATA = {"metadata_version": "1.1", "supported_by": "Ansible"}
 
-DOCUMENTATION = """module: vyos_lldp_interfaces
+DOCUMENTATION = """
+module: vyos_lldp_interfaces
 short_description: LLDP interfaces resource module
 description: This module manages attributes of lldp interfaces on VyOS network devices.
+version_added: 1.0.0
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
-version_added: "1.0.0"
 author:
 - Rohit Thakur (@rohitthakur2590)
 options:
@@ -110,12 +110,12 @@ options:
             type: str
   running_config:
     description:
-      - This option is used only with state I(parsed).
-      - The value of this option should be the output received from the VyOS device by executing
-        the command B(show configuration commands | grep lldp).
-      - The state I(parsed) reads the configuration from C(running_config) option and transforms
-        it into Ansible structured data as per the resource module's argspec and the value is then
-        returned in the I(parsed) key within the result.
+    - This option is used only with state I(parsed).
+    - The value of this option should be the output received from the VyOS device
+      by executing the command B(show configuration commands | grep lldp).
+    - The state I(parsed) reads the configuration from C(running_config) option and
+      transforms it into Ansible structured data as per the resource module's argspec
+      and the value is then returned in the I(parsed) key within the result.
     type: str
   state:
     description:
@@ -142,21 +142,21 @@ EXAMPLES = """
 - name: Merge provided configuration with device configuration
   vyos.vyos.vyos_lldp_interfaces:
     config:
-      - name: 'eth1'
-        location:
-          civic_based:
-            country_code: 'US'
-            ca_info:
-              - ca_type: 0
-                ca_value: 'ENGLISH'
+    - name: eth1
+      location:
+        civic_based:
+          country_code: US
+          ca_info:
+          - ca_type: 0
+            ca_value: ENGLISH
 
-      - name: 'eth2'
-        location:
-          coordinate_based:
-           altitude: 2200
-           datum: 'WGS84'
-           longitude: '222.267255W'
-           latitude: '33.524449N'
+    - name: eth2
+      location:
+        coordinate_based:
+          altitude: 2200
+          datum: WGS84
+          longitude: 222.267255W
+          latitude: 33.524449N
     state: merged
 #
 #
@@ -236,21 +236,21 @@ EXAMPLES = """
 - name: Replace device configurations of listed LLDP interfaces with provided configurations
   vyos.vyos.vyos_lldp_interfaces:
     config:
-      - name: 'eth2'
-        location:
-          civic_based:
-            country_code: 'US'
-            ca_info:
-              - ca_type: 0
-                ca_value: 'ENGLISH'
+    - name: eth2
+      location:
+        civic_based:
+          country_code: US
+          ca_info:
+          - ca_type: 0
+            ca_value: ENGLISH
 
-      - name: 'eth1'
-        location:
-          coordinate_based:
-           altitude: 2200
-           datum: 'WGS84'
-           longitude: '222.267255W'
-           latitude: '33.524449N'
+    - name: eth1
+      location:
+        coordinate_based:
+          altitude: 2200
+          datum: WGS84
+          longitude: 222.267255W
+          latitude: 33.524449N
     state: replaced
 #
 #
@@ -359,9 +359,9 @@ EXAMPLES = """
 - name: Overrides all device configuration with provided configuration
   vyos.vyos.vyos_lldp_interfaces:
     config:
-     - name: 'eth2'
-       location:
-         elin: 0000000911
+    - name: eth2
+      location:
+        elin: 0000000911
 
     state: overridden
 #
@@ -434,7 +434,7 @@ EXAMPLES = """
 - name: Delete lldp  interface attributes of given interfaces.
   vyos.vyos.vyos_lldp_interfaces:
     config:
-     - name: 'eth2'
+    - name: eth2
     state: deleted
 #
 #
@@ -442,14 +442,7 @@ EXAMPLES = """
 # Module Execution Results
 # ------------------------
 #
-    "before": [
-        {
-            "location": {
-                "elin": 0000000911
-            },
-            "name": "eth2"
-        }
-    ]
+    before: [{location: {elin: 0000000911}, name: eth2}]
 # "commands": [
 #    "commands": [
 #        "delete service lldp interface eth2"
@@ -532,20 +525,20 @@ EXAMPLES = """
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_lldp_interfaces:
     config:
-          - name: eth1
-            location:
-              civic_based:
-                country_code: US
-                ca_info:
-                  - ca_type: 0
-                    ca_value: ENGLISH
-          - name: eth2
-            location:
-              coordinate_based:
-                altitude: 2200
-                datum: WGS84
-                longitude: 222.267255W
-                latitude: 33.524449N
+    - name: eth1
+      location:
+        civic_based:
+          country_code: US
+          ca_info:
+          - ca_type: 0
+            ca_value: ENGLISH
+    - name: eth2
+      location:
+        coordinate_based:
+          altitude: 2200
+          datum: WGS84
+          longitude: 222.267255W
+          latitude: 33.524449N
     state: rendered
 #
 #
@@ -571,13 +564,12 @@ EXAMPLES = """
 #
 - name: Parsed the commands to provide structured configuration.
   vyos.vyos.vyos_lldp_interfaces:
-    running_config:
-      "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
- set service lldp interface eth1 location civic-based country-code 'US'
- set service lldp interface eth2 location coordinate-based altitude '2200'
- set service lldp interface eth2 location coordinate-based datum 'WGS84'
- set service lldp interface eth2 location coordinate-based latitude '33.524449N'
- set service lldp interface eth2 location coordinate-based longitude '222.267255W'"
+    running_config: set service lldp interface eth1 location civic-based ca-type 0
+      ca-value 'ENGLISH' set service lldp interface eth1 location civic-based country-code
+      'US' set service lldp interface eth2 location coordinate-based altitude '2200'
+      set service lldp interface eth2 location coordinate-based datum 'WGS84' set
+      service lldp interface eth2 location coordinate-based latitude '33.524449N'
+      set service lldp interface eth2 location coordinate-based longitude '222.267255W'
     state: parsed
 #
 #

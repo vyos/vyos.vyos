@@ -19,13 +19,9 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "network",
-}
 
-DOCUMENTATION = """module: vyos_user
+DOCUMENTATION = """
+module: vyos_user
 author: Trishna Guha (@trishnaguha)
 short_description: Manage the collection of local users on VyOS device
 description:
@@ -33,6 +29,7 @@ description:
   network devices. It allows playbooks to manage either individual usernames or the
   collection of usernames in the current running config. It also supports purging
   usernames from the configuration that are not explicitly defined.
+version_added: 1.0.0
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
@@ -98,24 +95,24 @@ extends_documentation_fragment:
 
 EXAMPLES = """
 - name: create a new user
-  vyos_user:
+  vyos.vyos.vyos_user:
     name: ansible
     configured_password: password
     state: present
 - name: remove all users except admin
-  vyos_user:
+  vyos.vyos.vyos_user:
     purge: yes
 - name: set multiple users to level operator
-  vyos_user:
+  vyos.vyos.vyos_user:
     aggregate:
-      - name: netop
-      - name: netend
+    - name: netop
+    - name: netend
     level: operator
     state: present
 - name: Change Password for User netop
-  vyos_user:
+  vyos.vyos.vyos_user:
     name: netop
-    configured_password: "{{ new_password }}"
+    configured_password: '{{ new_password }}'
     update_password: always
     state: present
 """
