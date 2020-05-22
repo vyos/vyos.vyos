@@ -35,8 +35,8 @@ ANSIBLE_METADATA = {"metadata_version": "1.1", "supported_by": "Ansible"}
 DOCUMENTATION = """module: vyos_static_routes
 short_description: Static routes resource module
 description: This module manages attributes of static routes on VyOS network devices.
-notes:
 version_added: "1.0.0"
+notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
