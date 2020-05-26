@@ -1,0 +1,42 @@
+---
+- name: get host name
+  register: vyos_host
+  vyos.vyos.command:
+    commands:
+      - show host name
+
+- name: get version info
+  register: vyos_version
+  vyos.vyos.command:
+    commands:
+      - show version
+
+- name: collect all facts from the device
+  register: result
+  vyos.vyos.facts:
+    gather_subset: all
+
+- name: check that hostname is present
+  assert:
+    that:
+      - result.ansible_facts.ansible_net_hostname == vyos_host.stdout[0]
+
+- name: check that subsets are present
+  assert:
+    that:
+      - "'neighbors' in result.ansible_facts.ansible_net_gather_subset"
+      - "'default' in result.ansible_facts.ansible_net_gather_subset"
+      - "'config' in result.ansible_facts.ansible_net_gather_subset"
+
+- name: check that version info is present
+  assert:
+    that:
+      - result.ansible_facts.ansible_net_version in vyos_version.stdout_lines[0][0]
+      - result.ansible_facts.ansible_net_model in vyos_version.stdout_lines[0][9]
+      - result.ansible_facts.ansible_net_serialnum in vyos_version.stdout_lines[0][10]
+
+- name: check that config info is present
+  assert:
+    that:
+      - result.ansible_facts.ansible_net_commits is defined
+      - result.ansible_facts.ansible_net_config is defined
