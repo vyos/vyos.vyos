@@ -670,11 +670,15 @@ EXAMPLES = """
 #
 - name: Parsed the commands for provided  configuration
   vyos.vyos.vyos_l3_interfaces:
-    running_config: set interfaces bonding bond0 hash-policy 'layer2' set interfaces
-      bonding bond0 mode 'active-backup' set interfaces bonding bond0 primary 'eth1'
-      set interfaces bonding bond1 hash-policy 'layer2+3' set interfaces bonding bond1
-      mode 'active-backup' set interfaces bonding bond1 primary 'eth2' set interfaces
-      ethernet eth1 bond-group 'bond0' set interfaces ethernet eth2 bond-group 'bond1'
+    running_config:
+      "set interfaces bonding bond0 hash-policy 'layer2'
+       set interfaces bonding bond0 mode 'active-backup'
+       set interfaces bonding bond0 primary 'eth1'
+       set interfaces bonding bond1 hash-policy 'layer2+3'
+       set interfaces bonding bond1 mode 'active-backup'
+       set interfaces bonding bond1 primary 'eth2'
+       set interfaces ethernet eth1 bond-group 'bond0'
+       set interfaces ethernet eth2 bond-group 'bond1'"
     state: parsed
 #
 #

@@ -33,7 +33,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 module: vyos_firewall_global
-short_description: FIREWALL resource module
+short_description: FIREWALL global resource module
 description: This module manage global policies or configurations for firewall on
   VyOS devices.
 version_added: 1.0.0
@@ -109,7 +109,7 @@ options:
         - (strict) Enable Strict Reverse Path Forwarding as defined in RFC3704.
         type: str
         choices:
-        - strict
+        - stricu
         - loose
         - disable
       group:
@@ -429,21 +429,29 @@ EXAMPLES = """
 #
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_firewall_global:
-    running_config: set firewall all-ping 'enable' set firewall broadcast-ping 'enable'
-      set firewall config-trap 'enable' set firewall group address-group ENG-HOSTS
-      address '192.0.3.1' set firewall group address-group ENG-HOSTS address '192.0.3.2'
-      set firewall group address-group ENG-HOSTS description 'Sales office hosts address
-      list' set firewall group address-group SALES-HOSTS address '192.0.2.1' set firewall
-      group address-group SALES-HOSTS address '192.0.2.2' set firewall group address-group
-      SALES-HOSTS address '192.0.2.3' set firewall group address-group SALES-HOSTS
-      description 'Sales office hosts address list' set firewall group network-group
-      MGMT description 'This group has the Management network addresses' set firewall
-      group network-group MGMT network '192.0.1.0/24' set firewall ip-src-route 'enable'
-      set firewall log-martians 'enable' set firewall receive-redirects 'disable'
-      set firewall send-redirects 'enable' set firewall source-validation 'strict'
-      set firewall state-policy established action 'accept' set firewall state-policy
-      established log 'enable' set firewall state-policy invalid action 'reject' set
-      firewall syn-cookies 'enable' set firewall twa-hazards-protection 'enable'
+    running_config:
+      "set firewall all-ping 'enable'
+       set firewall broadcast-ping 'enable'
+       set firewall config-trap 'enable'
+       set firewall group address-group ENG-HOSTS address '192.0.3.1'
+       set firewall group address-group ENG-HOSTS address '192.0.3.2'
+       set firewall group address-group ENG-HOSTS description 'Sales office hosts address list'
+       set firewall group address-group SALES-HOSTS address '192.0.2.1'
+       set firewall group address-group SALES-HOSTS address '192.0.2.2'
+       set firewall group address-group SALES-HOSTS address '192.0.2.3'
+       set firewall group address-group SALES-HOSTS description 'Sales office hosts address list'
+       set firewall group network-group MGMT description 'This group has the Management network addresses'
+       set firewall group network-group MGMT network '192.0.1.0/24'
+       set firewall ip-src-route 'enable'
+       set firewall log-martians 'enable'
+       set firewall receive-redirects 'disable'
+       set firewall send-redirects 'enable'
+       set firewall source-validation 'strict'
+       set firewall state-policy established action 'accept'
+       set firewall state-policy established log 'enable'
+       set firewall state-policy invalid action 'reject'
+       set firewall syn-cookies 'enable'
+       set firewall twa-hazards-protection 'enable'"
     state: parsed
 #
 #

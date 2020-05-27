@@ -1004,16 +1004,22 @@ EXAMPLES = """
 #
 - name: Parse the configuration.
   vyos.vyos.vyos_interfaces:
-    running_config: set interfaces ethernet eth0 address 'dhcp' set interfaces ethernet
-      eth0 duplex 'auto' set interfaces ethernet eth0 hw-id '08:00:27:50:5e:19' set
-      interfaces ethernet eth0 smp_affinity 'auto' set interfaces ethernet eth0 speed
-      'auto' set interfaces ethernet eth1 description 'Configured by Ansible' set
-      interfaces ethernet eth1 duplex 'auto' set interfaces ethernet eth1 mtu '1500'
-      set interfaces ethernet eth1 speed 'auto' set interfaces ethernet eth1 vif 200
-      description 'VIF - 200' set interfaces ethernet eth2 description 'Configured
-      by Ansible' set interfaces ethernet eth2 duplex 'auto' set interfaces ethernet
-      eth2 mtu '1500' set interfaces ethernet eth2 speed 'auto' set interfaces ethernet
-      eth2 vif 200 description 'VIF - 200'
+    running_config:
+      "set interfaces ethernet eth0 address 'dhcp'
+       set interfaces ethernet eth0 duplex 'auto'
+       set interfaces ethernet eth0 hw-id '08:00:27:50:5e:19'
+       set interfaces ethernet eth0 smp_affinity 'auto'
+       set interfaces ethernet eth0 speed 'auto'
+       set interfaces ethernet eth1 description 'Configured by Ansible'
+       set interfaces ethernet eth1 duplex 'auto'
+       set interfaces ethernet eth1 mtu '1500'
+       set interfaces ethernet eth1 speed 'auto'
+       set interfaces ethernet eth1 vif 200 description 'VIF - 200'
+       set interfaces ethernet eth2 description 'Configured by Ansible'
+       set interfaces ethernet eth2 duplex 'auto'
+       set interfaces ethernet eth2 mtu '1500'
+       set interfaces ethernet eth2 speed 'auto'
+       set interfaces ethernet eth2 vif 200 description 'VIF - 200'"
     state: parsed
 #
 #

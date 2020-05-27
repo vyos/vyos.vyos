@@ -33,7 +33,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 module: vyos_lldp_global
-short_description: LLDP resource module
+short_description: LLDP global resource module
 description: This module manages link layer discovery protocol (LLDP) attributes on
   VyOS devices.
 version_added: 1.0.0
@@ -416,8 +416,10 @@ EXAMPLES = """
 #
 - name: Parse the provided commands to provide structured configuration
   vyos.vyos.vyos_lldp_global:
-    running_config: set service lldp legacy-protocols 'cdp' set service lldp legacy-protocols
-      'fdp' set service lldp management-address '192.0.2.11'
+    running_config:
+      "set service lldp legacy-protocols 'cdp'
+       set service lldp legacy-protocols 'fdp'
+       set service lldp management-address '192.0.2.11'"
     state: parsed
 #
 #

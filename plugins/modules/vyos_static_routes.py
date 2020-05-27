@@ -737,11 +737,13 @@ EXAMPLES = """
 #
 - name: Parse the provided running configuration
   vyos.vyos.vyos_static_routes:
-    running_config: set protocols static route 192.0.2.32/28 'blackhole' set protocols
-      static route 192.0.2.32/28 next-hop '192.0.2.6' set protocols static route 192.0.2.32/28
-      next-hop '192.0.2.7' set protocols static route6 2001:db8:1000::/36 blackhole
-      distance '2' set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::1'
-      set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'
+    running_config:
+      "set protocols static route 192.0.2.32/28 'blackhole'
+       set protocols static route 192.0.2.32/28 next-hop '192.0.2.6'
+       set protocols static route 192.0.2.32/28 next-hop '192.0.2.7'
+       set protocols static route6 2001:db8:1000::/36 blackhole distance '2'
+       set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::1'
+       set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'"
     state: parsed
 #
 #

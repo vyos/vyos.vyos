@@ -1013,12 +1013,15 @@ EXAMPLES = """
 #
 - name: Parse the provided  configuration
   vyos.vyos.vyos_firewall_interfaces:
-    running_config: set interfaces ethernet eth1 firewall in name 'INBOUND' set interfaces
-      ethernet eth1 firewall out name 'OUTBOUND' set interfaces ethernet eth1 firewall
-      local name 'LOCAL' set interfaces ethernet eth1 firewall local ipv6-name 'V6-LOCAL'
-      set interfaces ethernet eth2 firewall in name 'INBOUND' set interfaces ethernet
-      eth2 firewall out name 'OUTBOUND' set interfaces ethernet eth2 firewall local
-      name 'LOCAL' set interfaces ethernet eth2 firewall local ipv6-name 'V6-LOCAL'
+    running_config:
+      "set interfaces ethernet eth1 firewall in name 'INBOUND'
+       set interfaces ethernet eth1 firewall out name 'OUTBOUND'
+       set interfaces ethernet eth1 firewall local name 'LOCAL'
+       set interfaces ethernet eth1 firewall local ipv6-name 'V6-LOCAL'
+       set interfaces ethernet eth2 firewall in name 'INBOUND'
+       set interfaces ethernet eth2 firewall out name 'OUTBOUND'
+       set interfaces ethernet eth2 firewall local name 'LOCAL'
+       set interfaces ethernet eth2 firewall local ipv6-name 'V6-LOCAL'"
     state: parsed
 #
 #

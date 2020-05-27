@@ -458,10 +458,13 @@ EXAMPLES = """
 #
 - name: parse the provided running configuration
   vyos.vyos.vyos_l3_interfaces:
-    running_config: set interfaces ethernet eth0 address 'dhcp' set interfaces ethernet
-      eth1 address '192.0.2.14/24' set interfaces ethernet eth2 address '192.0.2.10/24'
-      set interfaces ethernet eth2 address '192.0.2.11/24' set interfaces ethernet
-      eth2 address '2001:db8::10/32' set interfaces ethernet eth2 address '2001:db8::12/32'
+    running_config:
+      "set interfaces ethernet eth0 address 'dhcp'
+       set interfaces ethernet eth1 address '192.0.2.14/24'
+       set interfaces ethernet eth2 address '192.0.2.10/24'
+       set interfaces ethernet eth2 address '192.0.2.11/24'
+       set interfaces ethernet eth2 address '2001:db8::10/32'
+       set interfaces ethernet eth2 address '2001:db8::12/32'"
     state: parsed
 #
 #

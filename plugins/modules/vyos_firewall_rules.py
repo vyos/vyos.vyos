@@ -1402,13 +1402,16 @@ EXAMPLES = """
 #
 - name: Parsed the provided input commands.
   vyos.vyos.vyos_firewall_rules:
-    running_config: set firewall group address-group 'inbound' set firewall name Downlink
-      default-action 'accept' set firewall name Downlink description 'IPv4 INBOUND
-      rule set' set firewall name Downlink rule 501 action 'accept' set firewall name
-      Downlink rule 501 description 'Rule 501 is configured by Ansible' set firewall
-      name Downlink rule 501 ipsec 'match-ipsec' set firewall name Downlink rule 502
-      action 'reject' set firewall name Downlink rule 502 description 'Rule 502 is
-      configured by Ansible' set firewall name Downlink rule 502 ipsec 'match-ipsec'
+    running_config:
+      "set firewall group address-group 'inbound'
+       set firewall name Downlink default-action 'accept'
+       set firewall name Downlink description 'IPv4 INBOUND rule set'
+       set firewall name Downlink rule 501 action 'accept'
+       set firewall name Downlink rule 501 description 'Rule 501 is configured by Ansible'
+       set firewall name Downlink rule 501 ipsec 'match-ipsec'
+       set firewall name Downlink rule 502 action 'reject'
+       set firewall name Downlink rule 502 description 'Rule 502 is configured by Ansible'
+       set firewall name Downlink rule 502 ipsec 'match-ipsec'"
     state: parsed
 #
 #
