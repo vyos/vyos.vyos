@@ -16,14 +16,9 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "network",
-}
 
-
-DOCUMENTATION = """module: vyos_command
+DOCUMENTATION = """
+module: vyos_command
 author: Nathaniel Case (@Qalthos)
 short_description: Run one or more commands on VyOS devices
 description:
@@ -34,6 +29,7 @@ description:
 - Certain C(show) commands in VyOS produce many lines of output and use a custom pager
   that can cause this module to hang.  If the value of the environment variable C(ANSIBLE_VYOS_TERMINAL_LENGTH)
   is not set, the default number of 10000 is used.
+version_added: 1.0.0
 extends_documentation_fragment:
 - vyos.vyos.vyos
 options:
@@ -84,29 +80,29 @@ notes:
 """
 
 EXAMPLES = """
-tasks:
-  - name: show configuration on ethernet devices eth0 and eth1
-    vyos_command:
-      commands:
-        - show interfaces ethernet {{ item }}
-    with_items:
-      - eth0
-      - eth1
+- name: show configuration on ethernet devices eth0 and eth1
+  vyos.vyos.vyos_command:
+    commands:
+    - show interfaces ethernet {{ item }}
+  with_items:
+  - eth0
+  - eth1
 
-  - name: run multiple commands and check if version output contains specific version string
-    vyos_command:
-      commands:
-        - show version
-        - show hardware cpu
-      wait_for:
-        - "result[0] contains 'VyOS 1.1.7'"
+- name: run multiple commands and check if version output contains specific version
+    string
+  vyos.vyos.vyos_command:
+    commands:
+    - show version
+    - show hardware cpu
+    wait_for:
+    - result[0] contains 'VyOS 1.1.7'
 
-  - name: run command that requires answering a prompt
-    vyos_command:
-      commands:
-        - command: 'rollback 1'
-          prompt: 'Proceed with reboot? [confirm][y]'
-          answer: y
+- name: run command that requires answering a prompt
+  vyos.vyos.vyos_command:
+    commands:
+    - command: rollback 1
+      prompt: Proceed with reboot? [confirm][y]
+      answer: y
 """
 
 RETURN = """

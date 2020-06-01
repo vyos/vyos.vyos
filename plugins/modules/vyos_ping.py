@@ -23,13 +23,9 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "community",
-}
 
-DOCUMENTATION = """module: vyos_ping
+DOCUMENTATION = """
+module: vyos_ping
 short_description: Tests reachability using ping from VyOS network devices
 description:
 - Tests reachability using ping from a VyOS device to a remote destination.
@@ -37,6 +33,7 @@ description:
 - For a general purpose network module, see the M(net_ping) module.
 - For Windows targets, use the M(win_ping) module instead.
 - For targets running Python, use the M(ping) module instead.
+version_added: 1.0.0
 author:
 - Nilashish Chakraborty (@NilashishC)
 options:
@@ -83,23 +80,23 @@ extends_documentation_fragment:
 
 EXAMPLES = """
 - name: Test reachability to 10.10.10.10
-  vyos_ping:
+  vyos.vyos.vyos_ping:
     dest: 10.10.10.10
 
 - name: Test reachability to 10.20.20.20 using source and ttl set
-  vyos_ping:
+  vyos.vyos.vyos_ping:
     dest: 10.20.20.20
     source: eth0
     ttl: 128
 
 - name: Test unreachability to 10.30.30.30 using interval
-  vyos_ping:
+  vyos.vyos.vyos_ping:
     dest: 10.30.30.30
     interval: 3
     state: absent
 
 - name: Test reachability to 10.40.40.40 setting count and source
-  vyos_ping:
+  vyos.vyos.vyos_ping:
     dest: 10.40.40.40
     source: eth1
     count: 20

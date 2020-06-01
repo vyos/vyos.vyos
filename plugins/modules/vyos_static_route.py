@@ -19,19 +19,15 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["deprecated"],
-    "supported_by": "network",
-}
 
-
-DOCUMENTATION = """module: vyos_static_route
+DOCUMENTATION = """
+module: vyos_static_route
 author: Trishna Guha (@trishnaguha)
-short_description: Manage static IP routes on Vyatta VyOS network devices
+short_description: (deprecated) Manage static IP routes on Vyatta VyOS network devices
 description:
 - This module provides declarative management of static IP routes on Vyatta VyOS network
   devices.
+version_added: 1.0.0
 deprecated:
   removed_in: '2.13'
   alternative: vyos_static_routes
@@ -70,39 +66,40 @@ options:
     type: str
 extends_documentation_fragment:
 - vyos.vyos.vyos
+
 """
 
 EXAMPLES = """
 - name: configure static route
-  vyos_static_route:
+  vyos.vyos.vyos_static_route:
     prefix: 192.168.2.0
     mask: 24
     next_hop: 10.0.0.1
 
 - name: configure static route prefix/mask
-  vyos_static_route:
+  vyos.vyos.vyos_static_route:
     prefix: 192.168.2.0/16
     next_hop: 10.0.0.1
 
 - name: remove configuration
-  vyos_static_route:
+  vyos.vyos.vyos_static_route:
     prefix: 192.168.2.0
     mask: 16
     next_hop: 10.0.0.1
     state: absent
 
 - name: configure aggregates of static routes
-  vyos_static_route:
+  vyos.vyos.vyos_static_route:
     aggregate:
-      - { prefix: 192.168.2.0, mask: 24, next_hop: 10.0.0.1 }
-      - { prefix: 192.168.3.0, mask: 16, next_hop: 10.0.2.1 }
-      - { prefix: 192.168.3.0/16, next_hop: 10.0.2.1 }
+    - {prefix: 192.168.2.0, mask: 24, next_hop: 10.0.0.1}
+    - {prefix: 192.168.3.0, mask: 16, next_hop: 10.0.2.1}
+    - {prefix: 192.168.3.0/16, next_hop: 10.0.2.1}
 
 - name: Remove static route collections
-  vyos_static_route:
+  vyos.vyos.vyos_static_route:
     aggregate:
-      - { prefix: 172.24.1.0/24, next_hop: 192.168.42.64 }
-      - { prefix: 172.24.3.0/24, next_hop: 192.168.42.64 }
+    - {prefix: 172.24.1.0/24, next_hop: 192.168.42.64}
+    - {prefix: 172.24.3.0/24, next_hop: 192.168.42.64}
     state: absent
 """
 

@@ -8,20 +8,15 @@ The module file for vyos_facts
 """
 
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": [u"preview"],
-    "supported_by": "network",
-}
-
-
-DOCUMENTATION = """module: vyos_facts
+DOCUMENTATION = """
+module: vyos_facts
 short_description: Get facts about vyos devices.
 description:
 - Collects facts from network devices running the vyos operating system. This module
   places the facts gathered in the fact tree keyed by the respective resource name.  The
   facts module will always collect a base set of facts from the device and can enable
   or disable collection of additional facts.
+version_added: 1.0.0
 author:
 - Nathaniel Case (@qalthos)
 - Nilashish Chakraborty (@Nilashishc)
@@ -54,33 +49,33 @@ options:
 
 EXAMPLES = """
 # Gather all facts
-- vyos_facts:
+- vyos.vyos.vyos_facts:
     gather_subset: all
     gather_network_resources: all
 
 # collect only the config and default facts
-- vyos_facts:
+- vyos.vyos.vyos_facts:
     gather_subset: config
 
 # collect everything exception the config
-- vyos_facts:
-    gather_subset: "!config"
+- vyos.vyos.vyos_facts:
+    gather_subset: '!config'
 
 # Collect only the interfaces facts
-- vyos_facts:
+- vyos.vyos.vyos_facts:
     gather_subset:
-      - '!all'
-      - '!min'
+    - '!all'
+    - '!min'
     gather_network_resources:
-      - interfaces
+    - interfaces
 
 # Do not collect interfaces facts
-- vyos_facts:
+- vyos.vyos.vyos_facts:
     gather_network_resources:
-      - "!interfaces"
+    - '!interfaces'
 
 # Collect interfaces and minimal default facts
-- vyos_facts:
+- vyos.vyos.vyos_facts:
     gather_subset: min
     gather_network_resources: interfaces
 """

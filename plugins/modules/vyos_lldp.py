@@ -24,18 +24,13 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["deprecated"],
-    "supported_by": "network",
-}
-
-
-DOCUMENTATION = """module: vyos_lldp
+DOCUMENTATION = """
+module: vyos_lldp
 author: Ricardo Carrillo Cruz (@rcarrillocruz)
-short_description: Manage LLDP configuration on VyOS network devices
+short_description: (deprecated) Manage LLDP configuration on VyOS network devices
 description:
 - This module provides declarative management of LLDP service on VyOS network devices.
+version_added: 1.0.0
 deprecated:
   removed_in: '2.13'
   alternative: vyos_lldp_global
@@ -59,15 +54,16 @@ options:
     type: str
 extends_documentation_fragment:
 - vyos.vyos.vyos
+
 """
 
 EXAMPLES = """
 - name: Enable LLDP service
-  vyos_lldp:
+  vyos.vyos.vyos_lldp:
     state: present
 
 - name: Disable LLDP service
-  vyos_lldp:
+  vyos.vyos.vyos_lldp:
     state: absent
 """
 

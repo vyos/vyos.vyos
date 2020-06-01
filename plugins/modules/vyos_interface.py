@@ -19,18 +19,14 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["deprecated"],
-    "supported_by": "network",
-}
 
-
-DOCUMENTATION = """module: vyos_interface
+DOCUMENTATION = """
+module: vyos_interface
 author: Ganesh Nalawade (@ganeshrn)
-short_description: Manage Interface on VyOS network devices
+short_description: (deprecated) Manage Interface on VyOS network devices
 description:
 - This module provides declarative management of Interfaces on VyOS network devices.
+version_added: 1.0.0
 deprecated:
   removed_in: '2.13'
   alternative: vyos_interfaces
@@ -94,31 +90,32 @@ options:
     - down
 extends_documentation_fragment:
 - vyos.vyos.vyos
+
 """
 
 EXAMPLES = """
 - name: configure interface
-  vyos_interface:
+  vyos.vyos.vyos_interface:
     name: eth0
     description: test-interface
 
 - name: remove interface
-  vyos_interface:
+  vyos.vyos.vyos_interface:
     name: eth0
     state: absent
 
 - name: make interface down
-  vyos_interface:
+  vyos.vyos.vyos_interface:
     name: eth0
-    enabled: False
+    enabled: false
 
 - name: make interface up
-  vyos_interface:
+  vyos.vyos.vyos_interface:
     name: eth0
-    enabled: True
+    enabled: true
 
 - name: Configure interface speed, mtu, duplex
-  vyos_interface:
+  vyos.vyos.vyos_interface:
     name: eth5
     state: present
     speed: 100
@@ -126,36 +123,36 @@ EXAMPLES = """
     duplex: full
 
 - name: Set interface using aggregate
-  vyos_interface:
+  vyos.vyos.vyos_interface:
     aggregate:
-      - { name: eth1, description: test-interface-1,  speed: 100, duplex: half, mtu: 512}
-      - { name: eth2, description: test-interface-2,  speed: 1000, duplex: full, mtu: 256}
+    - {name: eth1, description: test-interface-1, speed: 100, duplex: half, mtu: 512}
+    - {name: eth2, description: test-interface-2, speed: 1000, duplex: full, mtu: 256}
 
 - name: Disable interface on aggregate
   net_interface:
     aggregate:
-      - name: eth1
-      - name: eth2
-    enabled: False
+    - name: eth1
+    - name: eth2
+    enabled: false
 
 - name: Delete interface using aggregate
   net_interface:
     aggregate:
-      - name: eth1
-      - name: eth2
+    - name: eth1
+    - name: eth2
     state: absent
 
 - name: Check lldp neighbors intent arguments
-  vyos_interface:
+  vyos.vyos.vyos_interface:
     name: eth0
     neighbors:
     - port: eth0
       host: netdev
 
 - name: Config + intent
-  vyos_interface:
+  vyos.vyos.vyos_interface:
     name: eth1
-    enabled: False
+    enabled: false
     state: down
 """
 

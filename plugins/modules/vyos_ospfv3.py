@@ -30,17 +30,16 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-ANSIBLE_METADATA = {"metadata_version": "1.1", "supported_by": "Ansible"}
 
 DOCUMENTATION = """
----
 module: vyos_ospfv3
-short_description: OSPFV3 resource module.
-description: This resource module configures and manages attributes of OSPFv3 routes on VyOS network devices.
-version_added: "1.0.0"
+short_description: OSPFV3 resource module
+description: This resource module configures and manages attributes of OSPFv3 routes
+  on VyOS network devices.
+version_added: 1.0.0
 notes:
-  - Tested against VyOS 1.1.8 (helium).
-  - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- Tested against VyOS 1.1.8 (helium).
+- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Rohit Thakur (@rohitthakur2590)
 options:
@@ -80,9 +79,9 @@ options:
         descriptions: OSPFv3 specific parameters.
         type: dict
         suboptions:
-         router_id:
-           description: Override the default router identifier.
-           type: str
+          router_id:
+            description: Override the default router identifier.
+            type: str
       redistribute:
         description: Redistribute information from another routing protocol.
         type: list
@@ -91,22 +90,22 @@ options:
           route_type:
             description: Route type to redistribute.
             type: str
-            choices: ['bgp', 'connected', 'kernel', 'ripng', 'static']
+            choices: [bgp, connected, kernel, ripng, static]
           route_map:
             description: Route map references.
             type: str
   running_config:
     description:
-      - This option is used only with state I(parsed).
-      - The value of this option should be the output received from the VyOS device by executing
-        the command B(show configuration commands | grep ospfv3).
-      - The state I(parsed) reads the configuration from C(running_config) option and transforms
-        it into Ansible structured data as per the resource module's argspec and the value is then
-        returned in the I(parsed) key within the result.
+    - This option is used only with state I(parsed).
+    - The value of this option should be the output received from the VyOS device
+      by executing the command B(show configuration commands | grep ospfv3).
+    - The state I(parsed) reads the configuration from C(running_config) option and
+      transforms it into Ansible structured data as per the resource module's argspec
+      and the value is then returned in the I(parsed) key within the result.
     type: str
   state:
     description:
-      - The state the configuration should be left in.
+    - The state the configuration should be left in.
     type: str
     choices:
     - merged
@@ -116,6 +115,7 @@ options:
     - gathered
     - rendered
     default: merged
+
 """
 EXAMPLES = """
 # Using merged
@@ -130,20 +130,20 @@ EXAMPLES = """
   vyos.vyos.vyos_ospfv3:
     config:
       redistribute:
-        - route_type: 'bgp'
+      - route_type: bgp
       parameters:
-        router_id: '192.0.2.10'
+        router_id: 192.0.2.10
       areas:
-        - area_id: '2'
-          export_list: 'export1'
-          import_list: 'import1'
-          range:
-            - address: '2001:db10::/32'
-            - address: '2001:db20::/32'
-            - address: '2001:db30::/32'
-        - area_id: '3'
-          range:
-            - address: '2001:db40::/32'
+      - area_id: '2'
+        export_list: export1
+        import_list: import1
+        range:
+        - address: 2001:db10::/32
+        - address: 2001:db20::/32
+        - address: 2001:db30::/32
+      - area_id: '3'
+        range:
+        - address: 2001:db40::/32
     state: merged
 #
 #
@@ -236,20 +236,20 @@ EXAMPLES = """
   vyos.vyos.vyos_ospfv3:
     config:
       redistribute:
-        - route_type: 'bgp'
+      - route_type: bgp
       parameters:
-        router_id: '192.0.2.10'
+        router_id: 192.0.2.10
       areas:
-        - area_id: '2'
-          export_list: 'export1'
-          import_list: 'import1'
-          range:
-            - address: '2001:db10::/32'
-            - address: '2001:db30::/32'
-            - address: '2001:db50::/32'
-        - area_id: '4'
-          range:
-            - address: '2001:db60::/32'
+      - area_id: '2'
+        export_list: export1
+        import_list: import1
+        range:
+        - address: 2001:db10::/32
+        - address: 2001:db30::/32
+        - address: 2001:db50::/32
+      - area_id: '4'
+        range:
+        - address: 2001:db60::/32
     state: replaced
 #
 #
@@ -360,20 +360,20 @@ EXAMPLES = """
   vyos.vyos.vyos_ospfv3:
     config:
       redistribute:
-        - route_type: 'bgp'
+      - route_type: bgp
       parameters:
-        router_id: '192.0.2.10'
+        router_id: 192.0.2.10
       areas:
-        - area_id: '2'
-          export_list: 'export1'
-          import_list: 'import1'
-          range:
-            - address: '2001:db10::/32'
-            - address: '2001:db20::/32'
-            - address: '2001:db30::/32'
-        - area_id: '3'
-          range:
-            - address: '2001:db40::/32'
+      - area_id: '2'
+        export_list: export1
+        import_list: import1
+        range:
+        - address: 2001:db10::/32
+        - address: 2001:db20::/32
+        - address: 2001:db30::/32
+      - area_id: '3'
+        range:
+        - address: 2001:db40::/32
     state: rendered
 #
 #
@@ -404,13 +404,13 @@ EXAMPLES = """
   vyos.vyos.vyos_ospfv3:
     running_config:
       "set protocols ospfv3 area 2 export-list 'export1'
-set protocols ospfv3 area 2 import-list 'import1'
-set protocols ospfv3 area 2 range '2001:db10::/32'
-set protocols ospfv3 area 2 range '2001:db20::/32'
-set protocols ospfv3 area 2 range '2001:db30::/32'
-set protocols ospfv3 area 3 range '2001:db40::/32'
-set protocols ospfv3 parameters router-id '192.0.2.10'
-set protocols ospfv3 redistribute 'bgp'"
+       set protocols ospfv3 area 2 import-list 'import1'
+       set protocols ospfv3 area 2 range '2001:db10::/32'
+       set protocols ospfv3 area 2 range '2001:db20::/32'
+       set protocols ospfv3 area 2 range '2001:db30::/32'
+       set protocols ospfv3 area 3 range '2001:db40::/32'
+       set protocols ospfv3 parameters router-id '192.0.2.10'
+       set protocols ospfv3 redistribute 'bgp'"
     state: parsed
 #
 #
@@ -624,8 +624,9 @@ commands:
   description: The set of commands pushed to the remote device.
   returned: always
   type: list
-  sample: ['set protocols ospf parameters router-id 192.0.1.1',
-           'set protocols ospfv3 area 2 range '2001:db10::/32']
+  sample:
+    - "set protocols ospf parameters router-id 192.0.1.1"
+    - "set protocols ospfv3 area 2 range '2001:db10::/32'"
 """
 
 

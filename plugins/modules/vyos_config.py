@@ -16,14 +16,9 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["preview"],
-    "supported_by": "network",
-}
 
-
-DOCUMENTATION = """module: vyos_config
+DOCUMENTATION = """
+module: vyos_config
 author: Nathaniel Case (@Qalthos)
 short_description: Manage VyOS configuration on remote device
 description:
@@ -31,6 +26,7 @@ description:
   arguments for managing both the configuration file and state of the active configuration.
   All configuration statements are based on `set` and `delete` commands in the device
   configuration.
+version_added: 1.0.0
 extends_documentation_fragment:
 - vyos.vyos.vyos
 notes:
@@ -65,7 +61,7 @@ options:
       the playbook root directory or role root directory, if playbook is part of an
       ansible role. If the directory does not exist, it is created.
     type: bool
-    default: 'no'
+    default: no
   comment:
     description:
     - Allows a commit description to be specified to be included when the configuration
@@ -83,7 +79,7 @@ options:
       are saved to disk.  This is independent of committing the config.  When set
       to True, the active configuration is saved.
     type: bool
-    default: 'no'
+    default: no
   backup_options:
     description:
     - This is a dict object containing configurable options related to backup file
@@ -110,29 +106,29 @@ options:
 
 EXAMPLES = """
 - name: configure the remote device
-  vyos_config:
+  vyos.vyos.vyos_config:
     lines:
-      - set system host-name {{ inventory_hostname }}
-      - set service lldp
-      - delete service dhcp-server
+    - set system host-name {{ inventory_hostname }}
+    - set service lldp
+    - delete service dhcp-server
 
 - name: backup and load from file
-  vyos_config:
+  vyos.vyos.vyos_config:
     src: vyos.cfg
     backup: yes
 
 - name: render a Jinja2 template onto the VyOS router
-  vyos_config:
+  vyos.vyos.vyos_config:
     src: vyos_template.j2
 
 - name: for idempotency, use full-form commands
-  vyos_config:
+  vyos.vyos.vyos_config:
     lines:
       # - set int eth eth2 description 'OUTSIDE'
-      - set interface ethernet eth2 description 'OUTSIDE'
+    - set interface ethernet eth2 description 'OUTSIDE'
 
 - name: configurable backup path
-  vyos_config:
+  vyos.vyos.vyos_config:
     backup: yes
     backup_options:
       filename: backup.cfg

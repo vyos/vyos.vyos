@@ -19,19 +19,15 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-ANSIBLE_METADATA = {
-    "metadata_version": "1.1",
-    "status": ["deprecated"],
-    "supported_by": "network",
-}
 
-
-DOCUMENTATION = """module: vyos_linkagg
+DOCUMENTATION = """
+module: vyos_linkagg
 author: Ricardo Carrillo Cruz (@rcarrillocruz)
-short_description: Manage link aggregation groups on VyOS network devices
+short_description: (deprecated) Manage link aggregation groups on VyOS network devices
 description:
 - This module provides declarative management of link aggregation groups on VyOS network
   devices.
+version_added: 1.0.0
 deprecated:
   removed_in: '2.13'
   alternative: vyos_lag_interfaces
@@ -55,7 +51,7 @@ options:
     - transmit-load-balance
     - adaptive-load-balance
     - xor-hash
-    - 'on'
+    - on
     type: str
   members:
     description:
@@ -76,32 +72,33 @@ options:
     type: str
 extends_documentation_fragment:
 - vyos.vyos.vyos
+
 """
 
 EXAMPLES = """
 - name: configure link aggregation group
-  vyos_linkagg:
+  vyos.vyos.vyos_linkagg:
     name: bond0
     members:
-      - eth0
-      - eth1
+    - eth0
+    - eth1
 
 - name: remove configuration
-  vyos_linkagg:
+  vyos.vyos.vyos_linkagg:
     name: bond0
     state: absent
 
 - name: Create aggregate of linkagg definitions
-  vyos_linkagg:
+  vyos.vyos.vyos_linkagg:
     aggregate:
-        - { name: bond0, members: [eth1] }
-        - { name: bond1, members: [eth2] }
+    - {name: bond0, members: [eth1]}
+    - {name: bond1, members: [eth2]}
 
 - name: Remove aggregate of linkagg definitions
-  vyos_linkagg:
+  vyos.vyos.vyos_linkagg:
     aggregate:
-      - name: bond0
-      - name: bond1
+    - name: bond0
+    - name: bond1
     state: absent
 """
 
