@@ -19,6 +19,7 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+__metaclass__ = type
 
 DOCUMENTATION = """
 module: vyos_linkagg
