@@ -686,9 +686,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
     def test_vyos_firewall_v4_rule_sets_del_01(self):
         set_module_args(
             dict(
-                config=[
-                    dict(afi="ipv4", rule_sets=[dict(name="V4-INGRESS"),])
-                ],
+                config=[dict(afi="ipv4", rule_sets=[dict(name="V4-INGRESS")])],
                 state="deleted",
             )
         )
@@ -699,8 +697,8 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         set_module_args(
             dict(
                 config=[
-                    dict(afi="ipv4", rule_sets=[dict(name="V4-INGRESS"),]),
-                    dict(afi="ipv6", rule_sets=[dict(name="V6-INGRESS"),]),
+                    dict(afi="ipv4", rule_sets=[dict(name="V4-INGRESS")]),
+                    dict(afi="ipv6", rule_sets=[dict(name="V6-INGRESS")]),
                 ],
                 state="deleted",
             )
@@ -720,8 +718,8 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         set_module_args(
             dict(
                 config=[
-                    dict(afi="ipv4", rule_sets=[dict(name="V4-ING"),]),
-                    dict(afi="ipv6", rule_sets=[dict(name="V6-ING"),]),
+                    dict(afi="ipv4", rule_sets=[dict(name="V4-ING")]),
+                    dict(afi="ipv6", rule_sets=[dict(name="V6-ING")]),
                 ],
                 state="deleted",
             )

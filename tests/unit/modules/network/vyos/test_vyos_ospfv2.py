@@ -99,7 +99,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                         dict(
                             area_id="4",
                             area_type=dict(stub=dict(default_cost=10)),
-                            network=[dict(address="192.0.2.0/24"),],
+                            network=[dict(address="192.0.2.0/24")],
                             range=[
                                 dict(address="192.0.3.0/24", cost=10),
                                 dict(address="192.0.4.0/24", cost=12),
@@ -143,7 +143,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                         dict(
                             area_id="14",
                             area_type=dict(stub=dict(default_cost=20)),
-                            network=[dict(address="192.0.12.0/24"),],
+                            network=[dict(address="192.0.12.0/24")],
                             range=[
                                 dict(address="192.0.13.0/24", cost=10),
                                 dict(address="192.0.14.0/24", cost=12),
@@ -207,7 +207,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                         dict(
                             area_id="15",
                             area_type=dict(stub=dict(default_cost=10)),
-                            network=[dict(address="192.0.12.0/24"),],
+                            network=[dict(address="192.0.12.0/24")],
                             range=[
                                 dict(address="192.0.13.0/24", cost=10),
                                 dict(address="192.0.14.0/24", cost=12),
@@ -251,7 +251,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                         dict(
                             area_id="14",
                             area_type=dict(stub=dict(default_cost=20)),
-                            network=[dict(address="192.0.12.0/24"),],
+                            network=[dict(address="192.0.12.0/24")],
                             range=[
                                 dict(address="192.0.13.0/24", cost=10),
                                 dict(address="192.0.14.0/24", cost=12),
@@ -401,7 +401,7 @@ set protocols ospf redistribute bgp metric-type '2'"""
                         dict(
                             area_id="4",
                             area_type=dict(stub=dict(default_cost=10)),
-                            network=[dict(address="192.0.2.0/24"),],
+                            network=[dict(address="192.0.2.0/24")],
                             range=[
                                 dict(address="192.0.3.0/24", cost=10),
                                 dict(address="192.0.4.0/24", cost=12),
