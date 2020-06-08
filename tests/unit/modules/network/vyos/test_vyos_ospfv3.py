@@ -101,7 +101,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                         ),
                         dict(
                             area_id="3",
-                            range=[dict(address="2001:db40::/32"),],
+                            range=[dict(address="2001:db40::/32")],
                         ),
                     ],
                 ),
@@ -139,7 +139,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                         ),
                         dict(
                             area_id="13",
-                            range=[dict(address="2001:db44::/32"),],
+                            range=[dict(address="2001:db44::/32")],
                         ),
                     ],
                 ),
@@ -203,7 +203,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                         ),
                         dict(
                             area_id="14",
-                            range=[dict(address="2001:db40::/32"),],
+                            range=[dict(address="2001:db40::/32")],
                         ),
                     ],
                 ),
@@ -238,7 +238,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                         ),
                         dict(
                             area_id="13",
-                            range=[dict(address="2001:db44::/32"),],
+                            range=[dict(address="2001:db44::/32")],
                         ),
                     ],
                 ),
@@ -323,7 +323,7 @@ set protocols ospfv3 redistribute 'bgp'"""
                         ),
                         dict(
                             area_id="3",
-                            range=[dict(address="2001:db40::/32"),],
+                            range=[dict(address="2001:db40::/32")],
                         ),
                     ],
                 ),

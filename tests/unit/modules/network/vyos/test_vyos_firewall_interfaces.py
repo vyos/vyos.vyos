@@ -303,7 +303,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                         access_rules=[
                             dict(
                                 afi="ipv4",
-                                rules=[dict(name="INBOUND", direction="in"),],
+                                rules=[dict(name="INBOUND", direction="in")],
                             ),
                             dict(
                                 afi="ipv6",

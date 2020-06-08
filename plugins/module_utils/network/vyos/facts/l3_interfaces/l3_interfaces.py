@@ -10,12 +10,7 @@ for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
 
-from __future__ import (
-    absolute_import,
-    division,
-    print_function,
-    unicode_literals,
-)
+from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
@@ -26,8 +21,8 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common i
     utils,
 )
 from ansible.module_utils.six import iteritems
-from ansible_collections.ansible.netcommon.plugins.module_utils.compat import (
-    ipaddress,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
+    get_ip_address_version,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.l3_interfaces.l3_interfaces import (
     L3_interfacesArgs,
@@ -135,7 +130,7 @@ class L3_interfacesFacts(object):
             elif item == "dhcpv6":
                 config["ipv6"].append({"address": item})
             else:
-                ip_version = ipaddress.ip_address(item.split("/")[0]).version
+                ip_version = get_ip_address_version(item.split("/")[0])
                 if ip_version == 4:
                     config["ipv4"].append({"address": item})
                 else:
