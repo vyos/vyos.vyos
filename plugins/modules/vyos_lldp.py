@@ -27,14 +27,15 @@ __metaclass__ = type
 DOCUMENTATION = """
 module: vyos_lldp
 author: Ricardo Carrillo Cruz (@rcarrillocruz)
-short_description: (deprecated) Manage LLDP configuration on VyOS network devices
+short_description: (deprecated, removed after 2022-06-01) Manage LLDP configuration
+  on VyOS network devices
 description:
 - This module provides declarative management of LLDP service on VyOS network devices.
 version_added: 1.0.0
 deprecated:
-  removed_in: '2.13'
   alternative: vyos_lldp_global
   why: Updated modules released with more functionality.
+  removed_at_date: '2022-06-01'
 notes:
 - Tested against VYOS 1.1.7
 options:
@@ -54,6 +55,7 @@ options:
     type: str
 extends_documentation_fragment:
 - vyos.vyos.vyos
+
 
 """
 

@@ -21,14 +21,13 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 DOCUMENTATION = """
----
 author: Ansible Networking Team
 cliconf: vyos
 short_description: Use vyos cliconf to run command on VyOS platform
 description:
-  - This vyos plugin provides low level abstraction apis for
-    sending and receiving CLI commands from VyOS network devices.
-version_added: "2.4"
+- This vyos plugin provides low level abstraction apis for sending and receiving CLI
+  commands from VyOS network devices.
+version_added: 1.0.0
 """
 
 import re

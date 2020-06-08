@@ -23,15 +23,16 @@
 DOCUMENTATION = """
 module: vyos_static_route
 author: Trishna Guha (@trishnaguha)
-short_description: (deprecated) Manage static IP routes on Vyatta VyOS network devices
+short_description: (deprecated, removed after 2022-06-01) Manage static IP routes
+  on Vyatta VyOS network devices
 description:
 - This module provides declarative management of static IP routes on Vyatta VyOS network
   devices.
 version_added: 1.0.0
 deprecated:
-  removed_in: '2.13'
   alternative: vyos_static_routes
   why: Updated modules released with more functionality.
+  removed_at_date: '2022-06-01'
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
@@ -66,6 +67,7 @@ options:
     type: str
 extends_documentation_fragment:
 - vyos.vyos.vyos
+
 
 """
 
