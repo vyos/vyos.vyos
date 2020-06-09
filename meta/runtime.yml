@@ -124,24 +124,23 @@ plugin_routing:
     interface:
       redirect: vyos.vyos.vyos_interface
       deprecation:
-        warning_text: vyos.vyos.interface has been deprecated and will be removed
-          in a release after 2022-6-01. See the plugin documentation for more details
+        removal_date: '2022-06-01'
+        warning_text: See the plugin documentation for more details
     vyos_interface:
       deprecation:
-        warning_text: vyos.vyos.vyos_interface has been deprecated and will be removed
-          in a release after 2022-6-01. See the plugin documentation for more details
+        removal_date: '2022-06-01'
+        warning_text: See the plugin documentation for more details
     interfaces:
       redirect: vyos.vyos.vyos_interfaces
     l3_interface:
       redirect: vyos.vyos.vyos_l3_interface
       deprecation:
-        warning_text: vyos.vyos.l3_interface has been deprecated and will be removed
-          in a release after 2022-6-01. See the plugin documentation for more details
+        removal_date: '2022-06-01'
+        warning_text: See the plugin documentation for more details
     vyos_l3_interface:
       deprecation:
-        warning_text: vyos.vyos.vyos_l3_interface has been deprecated and will be
-          removed in a release after 2022-6-01. See the plugin documentation for more
-          details
+        removal_date: '2022-06-01'
+        warning_text: See the plugin documentation for more details
     l3_interfaces:
       redirect: vyos.vyos.vyos_l3_interfaces
     lag_interfaces:
@@ -149,33 +148,32 @@ plugin_routing:
     linkagg:
       redirect: vyos.vyos.vyos_linkagg
       deprecation:
-        warning_text: vyos.vyos.linkagg has been deprecated and will be removed in
-          a release after 2022-6-01. See the plugin documentation for more details
+        removal_date: '2022-06-01'
+        warning_text: See the plugin documentation for more details
     vyos_linkagg:
       deprecation:
-        warning_text: vyos.vyos.vyos_linkagg has been deprecated and will be removed
-          in a release after 2022-6-01. See the plugin documentation for more details
+        removal_date: '2022-06-01'
+        warning_text: See the plugin documentation for more details
     lldp:
       redirect: vyos.vyos.vyos_lldp
       deprecation:
-        warning_text: vyos.vyos.lldp has been deprecated and will be removed in a
-          release after 2022-6-01. See the plugin documentation for more details
+        removal_date: '2022-06-01'
+        warning_text: See the plugin documentation for more details
     vyos_lldp:
       deprecation:
-        warning_text: vyos.vyos.vyos_lldp has been deprecated and will be removed
-          in a release after 2022-6-01. See the plugin documentation for more details
+        removal_date: '2022-06-01'
+        warning_text: See the plugin documentation for more details
     lldp_global:
       redirect: vyos.vyos.vyos_lldp_global
     lldp_interface:
       redirect: vyos.vyos.vyos_lldp_interface
       deprecation:
-        warning_text: vyos.vyos.lldp_interface has been deprecated and will be removed
-          in a release after 2022-6-01. See the plugin documentation for more details
+        removal_date: '2022-06-01'
+        warning_text: See the plugin documentation for more details
     vyos_lldp_interface:
       deprecation:
-        warning_text: vyos.vyos.vyos_lldp_interface has been deprecated and will be
-          removed in a release after 2022-6-01. See the plugin documentation for more
-          details
+        removal_date: '2022-06-01'
+        warning_text: See the plugin documentation for more details
     lldp_interfaces:
       redirect: vyos.vyos.vyos_lldp_interfaces
     logging:
@@ -189,13 +187,12 @@ plugin_routing:
     static_route:
       redirect: vyos.vyos.vyos_static_route
       deprecation:
-        warning_text: vyos.vyos.static_route has been deprecated and will be removed
-          in a release after 2022-6-01. See the plugin documentation for more details
+        removal_date: '2022-06-01'
+        warning_text: See the plugin documentation for more details
     vyos_static_route:
       deprecation:
-        warning_text: vyos.vyos.vyos_static_route has been deprecated and will be
-          removed in a release after 2022-6-01. See the plugin documentation for more
-          details
+        removal_date: '2022-06-01'
+        warning_text: See the plugin documentation for more details
     static_routes:
       redirect: vyos.vyos.vyos_static_routes
     system:
