@@ -154,9 +154,6 @@ See [LICENSE](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.
 Name | Description
 --- | ---
 [vyos.vyos.vyos](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos.rst)|Use vyos cliconf to run command on VyOS platform
-## Terminal plugins
-Name | Description
---- | ---
 ## Modules
 Name | Description
 --- | ---
