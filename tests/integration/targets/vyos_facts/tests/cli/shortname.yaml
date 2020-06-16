@@ -41,4 +41,4 @@
       that:
         - result.ansible_facts.ansible_net_commits is defined
         - result.ansible_facts.ansible_net_config is defined
-  when: ansible_version.full is version_compare('2.9', '>')
+  when: ansible_version.full is version_compare('2.10', '>=')
