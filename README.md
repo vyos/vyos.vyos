@@ -7,6 +7,16 @@ The Ansible VyOS collection includes a variety of Ansible content to help automa
 
 This collection has been tested against VyOS 1.1.8 (helium).
 
+<!--start requires_ansible-->
+## Ansible version compatibility
+
+This collection has been tested against following Ansible versions: **>=2.9,<2.11**.
+
+Plugins and modules within a collection may be tested with only specific Ansible versions. 
+A collection may contain metadata that identifies these versions. 
+PEP440 is the schema used to describe the versions of Ansible.
+<!--end requires_ansible-->
+
 
 ### Supported connections
 The VyOS collection supports ``network_cli`` connections.
@@ -150,37 +160,37 @@ GNU General Public License v3.0 or later.
 See [LICENSE](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.
 
 <!--start collection content-->
-## Cliconf plugins
+### Cliconf plugins
 Name | Description
 --- | ---
-[vyos.vyos.vyos](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos.rst)|Use vyos cliconf to run command on VyOS platform
-## Modules
+[vyos.vyos.vyos](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_cliconf.rst)|Use vyos cliconf to run command on VyOS platform
+### Modules
 Name | Description
 --- | ---
-[vyos.vyos.vyos_banner](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_banner.rst)|Manage multiline banners on VyOS devices
-[vyos.vyos.vyos_command](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_command.rst)|Run one or more commands on VyOS devices
-[vyos.vyos.vyos_config](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_config.rst)|Manage VyOS configuration on remote device
-[vyos.vyos.vyos_facts](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_facts.rst)|Get facts about vyos devices.
-[vyos.vyos.vyos_firewall_global](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_firewall_global.rst)|FIREWALL global resource module
-[vyos.vyos.vyos_firewall_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_firewall_interfaces.rst)|FIREWALL interfaces resource module
-[vyos.vyos.vyos_firewall_rules](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_firewall_rules.rst)|FIREWALL rules resource module
-[vyos.vyos.vyos_interface](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_interface.rst)|(deprecated, removed after 2022-06-01) Manage Interface on VyOS network devices
-[vyos.vyos.vyos_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_interfaces.rst)|Interfaces resource module
-[vyos.vyos.vyos_l3_interface](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_l3_interface.rst)|(deprecated, removed after 2022-06-01) Manage L3 interfaces on VyOS network devices
-[vyos.vyos.vyos_l3_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_l3_interfaces.rst)|L3 interfaces resource module
-[vyos.vyos.vyos_lag_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_lag_interfaces.rst)|LAG interfaces resource module
-[vyos.vyos.vyos_linkagg](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_linkagg.rst)|(deprecated, removed after 2022-06-01) Manage link aggregation groups on VyOS network devices
-[vyos.vyos.vyos_lldp](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_lldp.rst)|(deprecated, removed after 2022-06-01) Manage LLDP configuration on VyOS network devices
-[vyos.vyos.vyos_lldp_global](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_lldp_global.rst)|LLDP global resource module
-[vyos.vyos.vyos_lldp_interface](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_lldp_interface.rst)|(deprecated, removed after 2022-06-01) Manage LLDP interfaces configuration on VyOS network devices
-[vyos.vyos.vyos_lldp_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_lldp_interfaces.rst)|LLDP interfaces resource module
-[vyos.vyos.vyos_logging](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_logging.rst)|Manage logging on network devices
-[vyos.vyos.vyos_ospfv2](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_ospfv2.rst)|OSPFv2 resource module
-[vyos.vyos.vyos_ospfv3](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_ospfv3.rst)|OSPFV3 resource module
-[vyos.vyos.vyos_ping](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_ping.rst)|Tests reachability using ping from VyOS network devices
-[vyos.vyos.vyos_static_route](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_static_route.rst)|(deprecated, removed after 2022-06-01) Manage static IP routes on Vyatta VyOS network devices
-[vyos.vyos.vyos_static_routes](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_static_routes.rst)|Static routes resource module
-[vyos.vyos.vyos_system](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_system.rst)|Run `set system` commands on VyOS devices
-[vyos.vyos.vyos_user](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_user.rst)|Manage the collection of local users on VyOS device
-[vyos.vyos.vyos_vlan](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_vlan.rst)|Manage VLANs on VyOS network devices
+[vyos.vyos.vyos_banner](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_banner_module.rst)|Manage multiline banners on VyOS devices
+[vyos.vyos.vyos_command](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_command_module.rst)|Run one or more commands on VyOS devices
+[vyos.vyos.vyos_config](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_config_module.rst)|Manage VyOS configuration on remote device
+[vyos.vyos.vyos_facts](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_facts_module.rst)|Get facts about vyos devices.
+[vyos.vyos.vyos_firewall_global](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_firewall_global_module.rst)|FIREWALL global resource module
+[vyos.vyos.vyos_firewall_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_firewall_interfaces_module.rst)|FIREWALL interfaces resource module
+[vyos.vyos.vyos_firewall_rules](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_firewall_rules_module.rst)|FIREWALL rules resource module
+[vyos.vyos.vyos_interface](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_interface_module.rst)|(deprecated, removed after 2022-06-01) Manage Interface on VyOS network devices
+[vyos.vyos.vyos_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_interfaces_module.rst)|Interfaces resource module
+[vyos.vyos.vyos_l3_interface](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_l3_interface_module.rst)|(deprecated, removed after 2022-06-01) Manage L3 interfaces on VyOS network devices
+[vyos.vyos.vyos_l3_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_l3_interfaces_module.rst)|L3 interfaces resource module
+[vyos.vyos.vyos_lag_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_lag_interfaces_module.rst)|LAG interfaces resource module
+[vyos.vyos.vyos_linkagg](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_linkagg_module.rst)|(deprecated, removed after 2022-06-01) Manage link aggregation groups on VyOS network devices
+[vyos.vyos.vyos_lldp](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_lldp_module.rst)|(deprecated, removed after 2022-06-01) Manage LLDP configuration on VyOS network devices
+[vyos.vyos.vyos_lldp_global](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_lldp_global_module.rst)|LLDP global resource module
+[vyos.vyos.vyos_lldp_interface](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_lldp_interface_module.rst)|(deprecated, removed after 2022-06-01) Manage LLDP interfaces configuration on VyOS network devices
+[vyos.vyos.vyos_lldp_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_lldp_interfaces_module.rst)|LLDP interfaces resource module
+[vyos.vyos.vyos_logging](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_logging_module.rst)|Manage logging on network devices
+[vyos.vyos.vyos_ospfv2](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_ospfv2_module.rst)|OSPFv2 resource module
+[vyos.vyos.vyos_ospfv3](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_ospfv3_module.rst)|OSPFV3 resource module
+[vyos.vyos.vyos_ping](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_ping_module.rst)|Tests reachability using ping from VyOS network devices
+[vyos.vyos.vyos_static_route](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_static_route_module.rst)|(deprecated, removed after 2022-06-01) Manage static IP routes on Vyatta VyOS network devices
+[vyos.vyos.vyos_static_routes](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_static_routes_module.rst)|Static routes resource module
+[vyos.vyos.vyos_system](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_system_module.rst)|Run `set system` commands on VyOS devices
+[vyos.vyos.vyos_user](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_user_module.rst)|Manage the collection of local users on VyOS device
+[vyos.vyos.vyos_vlan](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_vlan_module.rst)|Manage VLANs on VyOS network devices
 <!--end collection content-->

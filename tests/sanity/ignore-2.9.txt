@@ -7,7 +7,6 @@ plugins/modules/vyos_banner.py validate-modules:doc-default-does-not-match-spec
 plugins/modules/vyos_banner.py validate-modules:doc-missing-type
 plugins/modules/vyos_command.py future-import-boilerplate
 plugins/modules/vyos_command.py metaclass-boilerplate
-plugins/modules/vyos_command.py pylint:blacklisted-name
 plugins/modules/vyos_command.py validate-modules:doc-default-does-not-match-spec
 plugins/modules/vyos_command.py validate-modules:doc-missing-type
 plugins/modules/vyos_command.py validate-modules:parameter-type-not-in-doc
