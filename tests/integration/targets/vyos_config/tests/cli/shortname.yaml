@@ -55,6 +55,6 @@
       that:
         - '{{ result.filtered|length }} == 2'
 
-  when: ansible_version.full is version_compare('2.10', '>=')
+  when: ansible_version.full is version('2.10.0', '>=')
 
 - debug: msg="END cli/shortname.yaml on connection={{ ansible_connection }}"
