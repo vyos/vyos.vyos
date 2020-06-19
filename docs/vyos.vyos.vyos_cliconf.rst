@@ -1,4 +1,3 @@
-
 .. _vyos.vyos.vyos_cliconf:
 
 
