@@ -1,3 +1,4 @@
+---
 - name: collect all redirection cli test cases
   find:
     paths: '{{ role_path }}/tests/redirection/cli'
