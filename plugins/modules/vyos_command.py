@@ -15,7 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
-# pylint: skip-file
 
 
 DOCUMENTATION = """
@@ -189,7 +188,7 @@ def main():
     interval = module.params["interval"]
     match = module.params["match"]
 
-    for _ in range(retries):
+    for item in range(retries):
         responses = run_commands(module, commands)
 
         for item in list(conditionals):

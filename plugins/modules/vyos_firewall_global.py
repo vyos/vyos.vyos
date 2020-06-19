@@ -21,7 +21,6 @@
 #   builder template.
 #
 #############################################
-# pylint: skip-file
 
 """
 The module file for vyos_firewall_global
