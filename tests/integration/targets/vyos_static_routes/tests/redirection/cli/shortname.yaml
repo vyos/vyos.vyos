@@ -1,6 +1,6 @@
 ---
 - debug:
-    msg: START shortname integration tests on connection={{ ansible_connection
+    msg: START shortname merged integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
@@ -8,27 +8,36 @@
 - block:
     - name: Merge the provided configuration with the exisiting running configuration
       register: result
-      vyos.vyos.interfaces: &id001
+      vyos.vyos.static_routes: &id001
         config:
 
-          - name: eth1
-            description: Configured by Ansible - Interface 1
-            mtu: 1500
-            speed: auto
-            duplex: auto
-            vifs:
+          - address_families:
 
-              - vlan_id: 100
-                description: Eth1 - VIF 100
-                mtu: 400
+              - afi: ipv4
+                routes:
 
-              - vlan_id: 101
-                description: Eth1 - VIF 101
+                  - dest: 192.0.2.32/28
+                    blackhole_config:
+                      type: blackhole
+                    next_hops:
 
-          - name: eth2
-            description: Configured by Ansible - Interface 2 (ADMIN DOWN)
-            mtu: 600
-            enabled: false
+                      - forward_router_address: 192.0.2.10
+
+                      - forward_router_address: 192.0.2.9
+
+          - address_families:
+
+              - afi: ipv6
+                routes:
+
+                  - dest: 2001:db8:1000::/36
+                    blackhole_config:
+                      distance: 2
+                    next_hops:
+
+                      - forward_router_address: 2001:db8:2000:2::1
+
+                      - forward_router_address: 2001:db8:2000:2::2
         state: merged
 
     - name: Assert that before dicts were correctly generated
@@ -51,7 +60,7 @@
     - name: Merge the provided configuration with the existing running configuration
         (IDEMPOTENT)
       register: result
-      vyos.vyos.interfaces: *id001
+      vyos.vyos.static_routes: *id001
 
     - name: Assert that the previous task was idempotent
       assert:
@@ -63,6 +72,5 @@
         that:
           - "{{ merged['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
-  when: ansible_version.full is version('2.10.0', '>=')
   always:
     - include_tasks: _remove_config.yaml

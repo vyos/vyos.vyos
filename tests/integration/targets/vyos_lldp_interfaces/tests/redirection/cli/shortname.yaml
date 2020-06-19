@@ -50,6 +50,5 @@
         that:
           - "{{ overridden['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
-  when: ansible_version.full is version('2.10.0', '>=')
   always:
     - include_tasks: _remove_config.yaml
