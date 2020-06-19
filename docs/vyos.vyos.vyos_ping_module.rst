@@ -1,5 +1,3 @@
-:orphan:
-
 .. _vyos.vyos.vyos_ping_module:
 
 

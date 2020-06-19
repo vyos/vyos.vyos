@@ -10,10 +10,10 @@ This collection has been tested against VyOS 1.1.8 (helium).
 <!--start requires_ansible-->
 ## Ansible version compatibility
 
-This collection has been tested against following Ansible versions: **>=2.9,<2.11**.
+This collection has been tested against following Ansible versions: **>=2.9.10,<2.11**.
 
-Plugins and modules within a collection may be tested with only specific Ansible versions. 
-A collection may contain metadata that identifies these versions. 
+Plugins and modules within a collection may be tested with only specific Ansible versions.
+A collection may contain metadata that identifies these versions.
 PEP440 is the schema used to describe the versions of Ansible.
 <!--end requires_ansible-->
 
@@ -164,6 +164,7 @@ See [LICENSE](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.
 Name | Description
 --- | ---
 [vyos.vyos.vyos](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_cliconf.rst)|Use vyos cliconf to run command on VyOS platform
+
 ### Modules
 Name | Description
 --- | ---
@@ -193,4 +194,5 @@ Name | Description
 [vyos.vyos.vyos_system](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_system_module.rst)|Run `set system` commands on VyOS devices
 [vyos.vyos.vyos_user](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_user_module.rst)|Manage the collection of local users on VyOS device
 [vyos.vyos.vyos_vlan](https://github.com/ansible-collections/vyos.vyos/blob/master/docs/vyos.vyos.vyos_vlan_module.rst)|Manage VLANs on VyOS network devices
+
 <!--end collection content-->

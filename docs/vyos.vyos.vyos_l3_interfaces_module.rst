@@ -1,5 +1,3 @@
-:orphan:
-
 .. _vyos.vyos.vyos_l3_interfaces_module:
 
 

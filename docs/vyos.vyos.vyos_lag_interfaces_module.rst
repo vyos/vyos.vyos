@@ -1,5 +1,3 @@
-:orphan:
-
 .. _vyos.vyos.vyos_lag_interfaces_module:
 
 
