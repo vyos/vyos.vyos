@@ -261,7 +261,7 @@ options:
             description: Neighbor priority.
             type: int
       parameters:
-        descriptions: OSPFv2 specific parameters.
+        description: OSPFv2 specific parameters.
         type: dict
         suboptions:
           abr_type:
