@@ -209,6 +209,7 @@ Parameters
                                 <td>
                                                                                                                                                             </td>
                                                                 <td>
+                                            <div>OSPFv3 specific parameters.</div>
                                                         </td>
             </tr>
                                                             <tr>

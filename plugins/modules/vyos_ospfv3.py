@@ -76,7 +76,7 @@ options:
                 description: Don't advertise this range.
                 type: bool
       parameters:
-        descriptions: OSPFv3 specific parameters.
+        description: OSPFv3 specific parameters.
         type: dict
         suboptions:
           router_id:

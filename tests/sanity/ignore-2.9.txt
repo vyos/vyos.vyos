@@ -62,7 +62,6 @@ plugins/modules/vyos_logging.py validate-modules:doc-missing-type
 plugins/modules/vyos_logging.py validate-modules:missing-suboption-docs
 plugins/modules/vyos_logging.py validate-modules:parameter-type-not-in-doc
 plugins/modules/vyos_logging.py validate-modules:undocumented-parameter
-plugins/modules/vyos_ospfv3.py validate-modules:invalid-documentation
 plugins/modules/vyos_ping.py validate-modules:doc-default-does-not-match-spec
 plugins/modules/vyos_ping.py validate-modules:parameter-type-not-in-doc
 plugins/modules/vyos_static_route.py validate-modules:deprecation-mismatch
