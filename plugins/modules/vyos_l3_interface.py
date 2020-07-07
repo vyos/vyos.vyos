@@ -41,18 +41,45 @@ options:
   name:
     description:
     - Name of the L3 interface.
+    type: str
   ipv4:
     description:
     - IPv4 of the L3 interface.
+    type: str
   ipv6:
     description:
     - IPv6 of the L3 interface.
+    type: str
   aggregate:
     description: List of L3 interfaces definitions
+    type: list
+    elements: dict
+    suboptions:
+      name:
+        description:
+        - Name of the L3 interface.
+        type: str
+        required: True
+      ipv4:
+        description:
+        - IPv4 of the L3 interface.
+        type: str
+      ipv6:
+        description:
+        - IPv6 of the L3 interface.
+        type: str
+      state:
+        description:
+        - State of the L3 interface configuration.
+        type: str
+        choices:
+        - present
+        - absent
   state:
     description:
     - State of the L3 interface configuration.
     default: present
+    type: str
     choices:
     - present
     - absent

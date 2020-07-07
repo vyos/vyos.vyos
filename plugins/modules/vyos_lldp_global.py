@@ -63,6 +63,7 @@ options:
         description:
         - List of the supported legacy protocols.
         type: list
+        elements: str
         choices:
         - cdp
         - edp

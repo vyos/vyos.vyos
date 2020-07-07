@@ -45,6 +45,7 @@ options:
   config:
     description: A list of link aggregation group configurations.
     type: list
+    elements: dict
     suboptions:
       name:
         description:
@@ -67,6 +68,7 @@ options:
         description:
         - List of member interfaces for the LAG (bond).
         type: list
+        elements: dict
         suboptions:
           member:
             description:
@@ -97,6 +99,7 @@ options:
             description:
             - IP address to use for ARP monitoring.
             type: list
+            elements: str
   running_config:
     description:
     - This option is used only with state I(parsed).

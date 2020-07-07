@@ -43,12 +43,16 @@ options:
       argument is provided, the module is not returned until the condition is satisfied
       or the number of retries has been exceeded.
     required: true
+    type: list
+    elements: str
   wait_for:
     description:
     - Specifies what to evaluate from the output of the command and what conditionals
       to apply.  This argument will cause the task to wait for a particular conditional
       to be true before moving forward.  If the conditional is not true by the configured
       I(retries), the task fails. See examples.
+    type: list
+    elements: str
     aliases:
     - waitfor
   match:
@@ -58,6 +62,7 @@ options:
       set to C(all) then all conditionals in the wait_for must be satisfied.  If the
       value is set to C(any) then only one of the values must be satisfied.
     default: all
+    type: str
     choices:
     - any
     - all
@@ -67,12 +72,14 @@ options:
       failed. The command is run on the target device every retry and evaluated against
       the I(wait_for) conditionals.
     default: 10
+    type: int
   interval:
     description:
     - Configures the interval in seconds to wait between I(retries) of the command.
       If the command does not pass the specified conditions, the interval indicates
       how long to wait before trying the command again.
     default: 1
+    type: int
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - Running C(show system boot-messages all) will cause the module to hang since VyOS
@@ -166,8 +173,8 @@ def parse_commands(module, warnings):
 
 def main():
     spec = dict(
-        commands=dict(type="list", required=True),
-        wait_for=dict(type="list", aliases=["waitfor"]),
+        commands=dict(type="list", required=True, elements="str"),
+        wait_for=dict(type="list", aliases=["waitfor"], elements="str"),
         match=dict(default="all", choices=["all", "any"]),
         retries=dict(default=10, type="int"),
         interval=dict(default=1, type="int"),

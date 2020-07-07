@@ -41,24 +41,29 @@ options:
   name:
     description:
     - Name of the Interface.
-    required: true
+    type: str
   description:
     description:
     - Description of Interface.
+    type: str
   enabled:
     description:
     - Interface link status.
     type: bool
+    default: True
   speed:
     description:
     - Interface link speed.
+    type: str
   mtu:
     description:
     - Maximum size of transmit packet.
+    type: int
   duplex:
     description:
     - Interface link status.
     default: auto
+    type: str
     choices:
     - full
     - half
@@ -69,24 +74,93 @@ options:
       device. This wait is applicable for operational state argument which are I(state)
       with values C(up)/C(down) and I(neighbors).
     default: 10
+    type: int
   neighbors:
     description:
     - Check the operational state of given interface C(name) for LLDP neighbor.
     - The following suboptions are available.
+    type: list
+    elements: dict
     suboptions:
       host:
         description:
         - LLDP neighbor host for given interface C(name).
+        type: str
       port:
         description:
         - LLDP neighbor port to which given interface C(name) is connected.
+        type: str
   aggregate:
     description: List of Interfaces definitions.
+    type: list
+    elements: dict
+    suboptions:
+      name:
+        description:
+        - Name of the Interface.
+        required: true
+        type: str
+      description:
+        description:
+        - Description of Interface.
+        type: str
+      enabled:
+        description:
+        - Interface link status.
+        type: bool
+      speed:
+        description:
+        - Interface link speed.
+        type: str
+      mtu:
+        description:
+        - Maximum size of transmit packet.
+        type: int
+      duplex:
+        description:
+        - Interface link status.
+        type: str
+        choices:
+        - full
+        - half
+        - auto
+      delay:
+        description:
+        - Time in seconds to wait before checking for the operational state on remote
+          device. This wait is applicable for operational state argument which are I(state)
+          with values C(up)/C(down) and I(neighbors).
+        type: int
+      neighbors:
+        description:
+        - Check the operational state of given interface C(name) for LLDP neighbor.
+        - The following suboptions are available.
+        type: list
+        elements: dict
+        suboptions:
+          host:
+            description:
+            - LLDP neighbor host for given interface C(name).
+            type: str
+          port:
+            description:
+            - LLDP neighbor port to which given interface C(name) is connected.
+            type: str
+      state:
+        description:
+        - State of the Interface configuration, C(up) means present and operationally
+          up and C(down) means present and operationally C(down)
+        type: str
+        choices:
+        - present
+        - absent
+        - up
+        - down
   state:
     description:
     - State of the Interface configuration, C(up) means present and operationally
       up and C(down) means present and operationally C(down)
     default: present
+    type: str
     choices:
     - present
     - absent
@@ -406,7 +480,7 @@ def main():
         description=dict(),
         speed=dict(),
         mtu=dict(type="int"),
-        duplex=dict(choices=["full", "half", "auto"]),
+        duplex=dict(choices=["full", "half", "auto"], default="auto"),
         enabled=dict(default=True, type="bool"),
         neighbors=dict(type="list", elements="dict", options=neighbors_spec),
         delay=dict(default=10, type="int"),

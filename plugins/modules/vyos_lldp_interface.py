@@ -46,6 +46,22 @@ options:
   aggregate:
     description: List of interfaces LLDP should be configured on.
     type: list
+    elements: dict
+    suboptions:
+      name:
+        description:
+        - Name of the interface LLDP should be configured on.
+        required: True
+        type: str
+      state:
+        description:
+        - State of the LLDP configuration.
+        choices:
+        - present
+        - absent
+        - enabled
+        - disabled
+        type: str
   state:
     description:
     - State of the LLDP configuration.

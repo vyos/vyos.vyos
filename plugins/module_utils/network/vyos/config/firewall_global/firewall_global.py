@@ -275,7 +275,7 @@ class Firewall_global(ConfigBase):
                             )
                         )
                         continue
-                    elif (
+                    if (
                         key in l_set
                         and not (h and self._in_target(h, key))
                         and not self._is_del(l_set, h)
@@ -411,7 +411,7 @@ class Firewall_global(ConfigBase):
                             ):
                                 commands.append(cmd + " " + want["name"])
                                 continue
-                            elif not (
+                            if not (
                                 h and self._in_target(h, key)
                             ) and not self._is_grp_del(h, want, key):
                                 commands.append(
@@ -586,7 +586,7 @@ class Firewall_global(ConfigBase):
                                     )
                                 )
                                 continue
-                            elif not (
+                            if not (
                                 h and self._in_target(h, key)
                             ) and not self._is_del(l_set, h):
                                 commands.append(

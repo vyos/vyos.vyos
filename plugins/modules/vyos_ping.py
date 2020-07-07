@@ -41,6 +41,7 @@ options:
     description:
     - The IP Address or hostname (resolvable by the device) of the remote node.
     required: true
+    type: str
   count:
     description:
     - Number of packets to send to check reachability.
@@ -49,6 +50,7 @@ options:
   source:
     description:
     - The source interface or IP Address to use while sending the ping packet(s).
+    type: str
   ttl:
     description:
     - The time-to-live value for the ICMP packet(s).
@@ -64,6 +66,7 @@ options:
   state:
     description:
     - Determines if the expected result is success or fail.
+    type: str
     choices:
     - absent
     - present

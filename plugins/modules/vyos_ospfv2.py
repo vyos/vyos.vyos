@@ -280,9 +280,11 @@ options:
       passive_interface:
         description: Suppress routing updates on an interface.
         type: list
+        elements: str
       passive_interface_exclude:
         description: Interface to exclude when using passive-interface default.
         type: list
+        elements: str
       redistribute:
         description: Redistribute information from another routing protocol.
         type: list
@@ -304,6 +306,7 @@ options:
       route_map:
         description: Filter routes installed in local route map.
         type: list
+        elements: str
       timers:
         description: Adjust routing timers.
         type: dict
