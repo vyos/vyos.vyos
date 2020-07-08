@@ -14,7 +14,7 @@ class ModuleDocFragment(object):
   provider:
     description:
     - B(Deprecated)
-    - 'Starting with Ansible 2.5 we recommend using C(connection: network_cli).'
+    - 'Starting with Ansible 2.5 we recommend using C(connection: ansible.netcommon.network_cli).'
     - For more information please see the L(Network Guide, ../network/getting_started/network_differences.html#multiple-communication-protocols).
     - HORIZONTALLINE
     - A dict object containing connection details.

@@ -208,7 +208,7 @@ Parameters
                 </td>
                 <td>
                         <div><b>Deprecated</b></div>
-                        <div>Starting with Ansible 2.5 we recommend using <code>connection: network_cli</code>.</div>
+                        <div>Starting with Ansible 2.5 we recommend using <code>connection: ansible.netcommon.network_cli</code>.</div>
                         <div>For more information please see the <a href='../network/getting_started/network_differences.html#multiple-communication-protocols'>Network Guide</a>.</div>
                         <div><hr/></div>
                         <div>A dict object containing connection details.</div>
