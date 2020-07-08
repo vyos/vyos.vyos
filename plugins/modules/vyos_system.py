@@ -189,7 +189,9 @@ def main():
         host_name=dict(type="str"),
         domain_name=dict(type="str"),
         domain_search=dict(type="list", elements="str"),
-        name_server=dict(type="list", aliases=["name_servers"], elements="str"),
+        name_server=dict(
+            type="list", aliases=["name_servers"], elements="str"
+        ),
         state=dict(
             type="str", default="present", choices=["present", "absent"]
         ),

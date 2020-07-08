@@ -211,7 +211,10 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                     "type": "dict",
                 },
                 "passive_interface": {"type": "list", "elements": "str"},
-                "passive_interface_exclude": {"type": "list", "elements": "str"},
+                "passive_interface_exclude": {
+                    "type": "list",
+                    "elements": "str",
+                },
                 "redistribute": {
                     "elements": "dict",
                     "options": {
