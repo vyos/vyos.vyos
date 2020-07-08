@@ -331,6 +331,7 @@ def main():
     have = config_to_dict(module)
     commands = spec_to_commands(update_objects(want, have), module)
 
+
     if module.params["purge"]:
         want_users = [x["name"] for x in want]
         have_users = [x["name"] for x in have]
