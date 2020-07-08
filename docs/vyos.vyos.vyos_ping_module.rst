@@ -97,7 +97,7 @@ Parameters
                 </td>
                 <td>
                         <div><b>Deprecated</b></div>
-                        <div>Starting with Ansible 2.5 we recommend using <code>connection: network_cli</code>.</div>
+                        <div>Starting with Ansible 2.5 we recommend using <code>connection: ansible.netcommon.network_cli</code>.</div>
                         <div>For more information please see the <a href='../network/getting_started/network_differences.html#multiple-communication-protocols'>Network Guide</a>.</div>
                         <div><hr/></div>
                         <div>A dict object containing connection details.</div>
@@ -276,7 +276,7 @@ Notes
    - For a general purpose network module, see the :ref:`net_ping <net_ping_module>` module.
    - For Windows targets, use the :ref:`win_ping <win_ping_module>` module instead.
    - For targets running Python, use the :ref:`ping <ping_module>` module instead.
-   - This module works with connection ``network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
+   - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
    - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
 
 

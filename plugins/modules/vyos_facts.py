@@ -28,14 +28,14 @@ extends_documentation_fragment:
 - vyos.vyos.vyos
 notes:
 - Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 options:
   gather_subset:
     description:
     - When supplied, this argument will restrict the facts collected to a given subset.  Possible
       values for this argument include all, default, config, and neighbors. Can specify
       a list of values to include a larger subset. Values can also be used with an
-      initial C(M(!)) to specify that a specific subset should not be collected.
+      initial C(!) to specify that a specific subset should not be collected.
     required: false
     default: '!config'
     type: list
@@ -45,7 +45,7 @@ options:
     - When supplied, this argument will restrict the facts collected to a given subset.
       Possible values for this argument include all and the resources like interfaces.
       Can specify a list of values to include a larger subset. Values can also be
-      used with an initial C(M(!)) to specify that a specific subset should not be
+      used with an initial C(!) to specify that a specific subset should not be
       collected. Valid subsets are 'all', 'interfaces', 'l3_interfaces', 'lag_interfaces',
       'lldp_global', 'lldp_interfaces', 'static_routes', 'firewall_rules', 'firewall_global',
       'firewall_interfaces', 'ospfv3', 'ospfv2'.
