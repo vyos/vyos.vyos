@@ -480,7 +480,7 @@ def main():
         description=dict(),
         speed=dict(),
         mtu=dict(type="int"),
-        duplex=dict(choices=["full", "half", "auto"], default="auto"),
+        duplex=dict(choices=["full", "half", "auto"]),
         enabled=dict(default=True, type="bool"),
         neighbors=dict(type="list", elements="dict", options=neighbors_spec),
         delay=dict(default=10, type="int"),
@@ -494,6 +494,7 @@ def main():
 
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
+
 
     argument_spec = dict(
         aggregate=dict(type="list", elements="dict", options=aggregate_spec),
