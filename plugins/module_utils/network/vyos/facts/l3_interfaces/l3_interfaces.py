@@ -20,6 +20,9 @@ from copy import deepcopy
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
     utils,
 )
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    remove_unwanted_characters,
+)
 from ansible.module_utils.six import iteritems
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     get_ip_address_version,
@@ -95,6 +98,7 @@ class L3_interfacesFacts(object):
         :rtype: dictionary
         :returns: The generated config
         """
+        conf = remove_unwanted_characters(conf)
         vif_conf = "\n".join(filter(lambda x: ("vif" in x), conf))
         eth_conf = "\n".join(filter(lambda x: ("vif" not in x), conf))
         config = self.parse_attribs(eth_conf)
