@@ -40,6 +40,12 @@ class TerminalModule(TerminalBase):
         re.compile(br"\n\s+Set failed"),
     ]
 
+    ansi_re = [
+        re.compile(br'\x1b\[\?1h\x1b='),  # CSI ? 1 h ESC =
+        re.compile(br'\x08.'),            # [Backspace] .
+        re.compile(br"\x1b\[m"),          # ANSI reset code
+    ]
+
     try:
         terminal_length = os.getenv("ANSIBLE_VYOS_TERMINAL_LENGTH", 10000)
         terminal_length = int(terminal_length)
