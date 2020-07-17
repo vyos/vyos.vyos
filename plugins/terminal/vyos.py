@@ -41,9 +41,9 @@ class TerminalModule(TerminalBase):
     ]
 
     ansi_re = [
-        re.compile(br'\x1b\[\?1h\x1b='),  # CSI ? 1 h ESC =
-        re.compile(br'\x08.'),            # [Backspace] .
-        re.compile(br"\x1b\[m"),          # ANSI reset code
+        re.compile(br"\x1b\[\?1h\x1b="),  # CSI ? 1 h ESC =
+        re.compile(br"\x08."),  # [Backspace] .
+        re.compile(br"\x1b\[m"),  # ANSI reset code
     ]
 
     try:
