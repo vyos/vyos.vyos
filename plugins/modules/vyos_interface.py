@@ -62,7 +62,6 @@ options:
   duplex:
     description:
     - Interface link status.
-    default: auto
     type: str
     choices:
     - full
@@ -494,7 +493,6 @@ def main():
 
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
-
 
     argument_spec = dict(
         aggregate=dict(type="list", elements="dict", options=aggregate_spec),

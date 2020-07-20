@@ -43,13 +43,13 @@ options:
     description:
     - The new domain name to apply to the device.
     type: str
-  name_servers:
+  name_server:
     description:
     - A list of name servers to use with the device. Mutually exclusive with I(domain_search)
     type: list
     elements: str
     aliases:
-    - name_server
+    - name_servers
   domain_search:
     description:
     - A list of domain names to search. Mutually exclusive with I(name_server)
