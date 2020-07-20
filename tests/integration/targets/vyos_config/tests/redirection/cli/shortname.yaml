@@ -56,7 +56,7 @@
 
 - name: Remove interface description and delete temp user
   vyos.vyos.config: &cleanup
-    lines: 
+    lines:
       - "delete interfaces ethernet eth0 description TEST-INTF"
       - "delete system login user test_user"
 
