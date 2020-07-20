@@ -54,4 +54,46 @@
     that:
       - '{{ result.filtered|length }} == 2'
 
+- name: Remove interface description and delete temp user
+  vyos.vyos.config: &cleanup
+    lines: 
+      - "delete interfaces ethernet eth0 description TEST-INTF"
+      - "delete system login user test_user"
+
+- name: Use src with module alias
+  register: result
+  vyos.vyos.config:
+    src: config.j2
+
+- assert:
+    that:
+      - result.changed == true
+      - '"set interfaces ethernet eth0 description TEST-INTF" in result.commands'
+      - '"set system login user test_user" in result.commands'
+
+- name: "Restore hostname to {{ inventory_hostname }} and delete temp user"
+  vyos.vyos.config: *cleanup
+
+- name: use module alias to take configuration backup
+  register: result
+  vyos.vyos.config:
+    backup: true
+    backup_options:
+      filename: backup_with_alias.cfg
+      dir_path: '{{ role_path }}/backup_test_dir/{{ inventory_hostname_short }}'
+
+- assert:
+    that:
+      - result.changed == true
+
+- name: check if the backup file-4 exist
+  find:
+    paths: '{{ role_path }}/backup_test_dir/{{ inventory_hostname_short }}/backup_with_alias.cfg'
+  register: backup_file
+  connection: local
+
+- assert:
+    that:
+      - backup_file.files is defined
+
 - debug: msg="END cli/shortname.yaml on connection={{ ansible_connection }}"

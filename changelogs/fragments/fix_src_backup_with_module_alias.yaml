@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Make `src`, `backup` and `backup_options` in vyos_config work when module alias is used (https://github.com/ansible-collections/vyos.vyos/pull/67).
