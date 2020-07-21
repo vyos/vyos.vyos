@@ -36,12 +36,12 @@ class TestVyosStaticRouteModule(TestVyosModule):
         super(TestVyosStaticRouteModule, self).setUp()
 
         self.mock_get_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_static_route.get_config"
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_static_route.load_config"
         )
 
         self.load_config = self.mock_load_config.start()
@@ -53,6 +53,7 @@ class TestVyosStaticRouteModule(TestVyosModule):
         self.mock_load_config.stop()
 
     def load_fixtures(self, commands=None, transport="cli"):
+        self.get_config.return_value = ""
         self.load_config.return_value = dict(diff=None, session="session")
 
     def test_vyos_static_route_present(self):
