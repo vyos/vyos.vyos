@@ -1,0 +1,3 @@
+---
+bug_fix:
+  - Added workaround to avoid set_fact dynamically assigning value. This behavior seems to have been broken after ansible2.9.
