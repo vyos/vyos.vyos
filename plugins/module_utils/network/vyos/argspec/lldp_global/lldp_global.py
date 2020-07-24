@@ -42,6 +42,7 @@ class Lldp_globalArgs(object):  # pylint: disable=R0903
                 "legacy_protocols": {
                     "choices": ["cdp", "edp", "fdp", "sonmp"],
                     "type": "list",
+                    "elements": "str",
                 },
                 "snmp": {"type": "str"},
             },

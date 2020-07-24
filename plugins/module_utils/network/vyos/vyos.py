@@ -50,8 +50,11 @@ vyos_provider_spec = {
 }
 vyos_argument_spec = {
     "provider": dict(
-        type="dict", options=vyos_provider_spec, removed_in_version=2.14
-    ),
+        type="dict",
+        options=vyos_provider_spec,
+        removed_at_date="2022-06-01",
+        removed_from_collection="vyos.vyos",
+    )
 }
 
 

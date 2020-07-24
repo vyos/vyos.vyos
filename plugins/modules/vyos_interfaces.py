@@ -49,6 +49,7 @@ options:
   config:
     description: The provided interfaces configuration.
     type: list
+    elements: dict
     suboptions:
       name:
         description:
@@ -97,6 +98,7 @@ options:
         - Virtual sub-interfaces related configuration.
         - 802.1Q VLAN interfaces are represented as virtual sub-interfaces in VyOS.
         type: list
+        elements: dict
         suboptions:
           vlan_id:
             description:

@@ -37,6 +37,7 @@ options:
   dest:
     description:
     - Destination of the logs.
+    type: str
     choices:
     - console
     - file
@@ -47,17 +48,54 @@ options:
     description:
     - If value of C(dest) is I(file) it indicates file-name, for I(user) it indicates
       username and for I(host) indicates the host name to be notified.
+    type: str
   facility:
     description:
     - Set logging facility.
+    type: str
   level:
     description:
     - Set logging severity levels.
+    type: str
   aggregate:
     description: List of logging definitions.
+    type: list
+    elements: dict
+    suboptions:
+      dest:
+        description:
+        - Destination of the logs.
+        type: str
+        choices:
+        - console
+        - file
+        - global
+        - host
+        - user
+      name:
+        description:
+        - If value of C(dest) is I(file) it indicates file-name, for I(user) it indicates
+          username and for I(host) indicates the host name to be notified.
+        type: str
+      facility:
+        description:
+        - Set logging facility.
+        type: str
+      level:
+        description:
+        - Set logging severity levels.
+        type: str
+      state:
+        description:
+        - State of the logging configuration.
+        type: str
+        choices:
+        - present
+        - absent
   state:
     description:
     - State of the logging configuration.
+    type: str
     default: present
     choices:
     - present

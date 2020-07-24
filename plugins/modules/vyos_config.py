@@ -40,11 +40,14 @@ options:
     description:
     - The ordered set of configuration lines to be managed and compared with the existing
       configuration on the remote device.
+    type: list
+    elements: str
   src:
     description:
     - The C(src) argument specifies the path to the source config file to load.  The
       source config file can either be in bracket format or set format.  The source
       file can include Jinja2 template variables.
+    type: path
   match:
     description:
     - The C(match) argument controls the method used to match against the current
@@ -52,6 +55,7 @@ options:
       active config and the deltas are loaded.  If the C(match) argument is set to
       C(none) the active configuration is ignored and the configuration is always
       loaded.
+    type: str
     default: line
     choices:
     - line
@@ -71,11 +75,13 @@ options:
       is committed.  If the configuration is not changed or committed, this argument
       is ignored.
     default: configured by vyos_config
+    type: str
   config:
     description:
     - The C(config) argument specifies the base configuration to use to compare against
       the desired configuration.  If this value is not specified, the module will
       automatically retrieve the current active configuration from the remote device.
+    type: str
   save:
     description:
     - The C(save) argument controls whether or not changes made to the active configuration
@@ -94,6 +100,7 @@ options:
         - The filename to be used to store the backup configuration. If the filename
           is not given it will be generated based on the hostname, current time and
           date in format defined by <hostname>_config.<current-date>@<current-time>
+        type: str
       dir_path:
         description:
         - This option provides the path ending with directory name in which the backup
@@ -310,7 +317,7 @@ def main():
     backup_spec = dict(filename=dict(), dir_path=dict(type="path"))
     argument_spec = dict(
         src=dict(type="path"),
-        lines=dict(type="list"),
+        lines=dict(type="list", elements="str"),
         match=dict(default="line", choices=["line", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
         config=dict(),

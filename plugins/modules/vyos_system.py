@@ -38,21 +38,28 @@ options:
   host_name:
     description:
     - Configure the device hostname parameter. This option takes an ASCII string value.
+    type: str
   domain_name:
     description:
     - The new domain name to apply to the device.
-  name_servers:
+    type: str
+  name_server:
     description:
     - A list of name servers to use with the device. Mutually exclusive with I(domain_search)
+    type: list
+    elements: str
     aliases:
-    - name_server
+    - name_servers
   domain_search:
     description:
     - A list of domain names to search. Mutually exclusive with I(name_server)
+    type: list
+    elements: str
   state:
     description:
     - Whether to apply (C(present)) or remove (C(absent)) the settings.
     default: present
+    type: str
     choices:
     - present
     - absent
@@ -181,8 +188,10 @@ def main():
     argument_spec = dict(
         host_name=dict(type="str"),
         domain_name=dict(type="str"),
-        domain_search=dict(type="list"),
-        name_server=dict(type="list", aliases=["name_servers"]),
+        domain_search=dict(type="list", elements="str"),
+        name_server=dict(
+            type="list", aliases=["name_servers"], elements="str"
+        ),
         state=dict(
             type="str", default="present", choices=["present", "absent"]
         ),

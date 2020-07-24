@@ -41,7 +41,7 @@ class Lag_interfacesArgs(object):  # pylint: disable=R0903
                 "arp_monitor": {
                     "options": {
                         "interval": {"type": "int"},
-                        "target": {"type": "list"},
+                        "target": {"type": "list", "elements": "str"},
                     },
                     "type": "dict",
                 },
