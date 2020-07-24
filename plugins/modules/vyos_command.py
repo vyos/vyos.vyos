@@ -42,6 +42,9 @@ options:
       output from the command execution is returned to the playbook.  If the I(wait_for)
       argument is provided, the module is not returned until the condition is satisfied
       or the number of retries has been exceeded.
+    - If a command sent to the device requires answering a prompt, it is possible to pass
+      a dict containing command, answer and prompt. Common answers are 'y' or "\\r"
+      (carriage return, must be double quotes). Refer below examples.
     required: true
     type: list
     elements: raw
