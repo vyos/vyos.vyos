@@ -109,7 +109,7 @@ options:
         - (strict) Enable Strict Reverse Path Forwarding as defined in RFC3704.
         type: str
         choices:
-        - stricu
+        - strict
         - loose
         - disable
       group:

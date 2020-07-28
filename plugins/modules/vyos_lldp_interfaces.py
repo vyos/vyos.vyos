@@ -45,6 +45,7 @@ options:
   config:
     description: A list of lldp interfaces configurations.
     type: list
+    elements: dict
     suboptions:
       name:
         description:
@@ -69,15 +70,14 @@ options:
               ca_info:
                 description: LLDP-MED address info
                 type: list
+                elements: dict
                 suboptions:
                   ca_type:
                     description: LLDP-MED Civic Address type.
                     type: int
-                    required: true
                   ca_value:
                     description: LLDP-MED Civic Address value.
                     type: str
-                    required: true
               country_code:
                 description: Country Code
                 type: str

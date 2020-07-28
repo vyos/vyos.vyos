@@ -766,7 +766,7 @@ class Ospfv2(ConfigBase):
                             ):
                                 commands.append(cmd)
                                 continue
-                            elif key != "area_id" and not _in_target(
+                            if key != "area_id" and not _in_target(
                                 h_area, key
                             ):
                                 commands.append(cmd + val + " " + key)

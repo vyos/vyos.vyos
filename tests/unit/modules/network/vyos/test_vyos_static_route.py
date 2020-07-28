@@ -21,7 +21,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
-from ansible.modules.network.vyos import vyos_static_route
+from ansible_collections.vyos.vyos.plugins.modules import vyos_static_route
 from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
     set_module_args,
 )
@@ -36,13 +36,14 @@ class TestVyosStaticRouteModule(TestVyosModule):
         super(TestVyosStaticRouteModule, self).setUp()
 
         self.mock_get_config = patch(
-            "ansible.modules.network.vyos.vyos_static_route.get_config"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_static_route.get_config"
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible.modules.network.vyos.vyos_static_route.load_config"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_static_route.load_config"
         )
+
         self.load_config = self.mock_load_config.start()
 
     def tearDown(self):
@@ -52,6 +53,7 @@ class TestVyosStaticRouteModule(TestVyosModule):
         self.mock_load_config.stop()
 
     def load_fixtures(self, commands=None, transport="cli"):
+        self.get_config.return_value = ""
         self.load_config.return_value = dict(diff=None, session="session")
 
     def test_vyos_static_route_present(self):

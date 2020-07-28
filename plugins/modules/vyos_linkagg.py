@@ -42,11 +42,11 @@ options:
   name:
     description:
     - Name of the link aggregation group.
-    required: true
     type: str
   mode:
     description:
     - Mode of the link aggregation group.
+    default: "802.3ad"
     choices:
     - 802.3ad
     - active-backup
@@ -55,15 +55,50 @@ options:
     - transmit-load-balance
     - adaptive-load-balance
     - xor-hash
-    - on
+    - "on"
     type: str
   members:
     description:
     - List of members of the link aggregation group.
     type: list
+    elements: str
   aggregate:
     description: List of link aggregation definitions.
     type: list
+    elements: dict
+    suboptions:
+      name:
+        description:
+        - Name of the link aggregation group.
+        required: true
+        type: str
+      mode:
+        description:
+        - Mode of the link aggregation group.
+        choices:
+        - 802.3ad
+        - active-backup
+        - broadcast
+        - round-robin
+        - transmit-load-balance
+        - adaptive-load-balance
+        - xor-hash
+        - "on"
+        type: str
+      members:
+        description:
+        - List of members of the link aggregation group.
+        type: list
+        elements: str
+      state:
+        description:
+        - State of the link aggregation group.
+        choices:
+        - present
+        - absent
+        - up
+        - down
+        type: str
   state:
     description:
     - State of the link aggregation group.
@@ -276,7 +311,7 @@ def main():
             ],
             default="802.3ad",
         ),
-        members=dict(type="list"),
+        members=dict(type="list", elements="str"),
         state=dict(
             default="present", choices=["present", "absent", "up", "down"]
         ),

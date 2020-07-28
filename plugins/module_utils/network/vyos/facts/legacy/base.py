@@ -126,7 +126,7 @@ class Neighbors(LegacyFactsBase):
         for line in data.split("\n"):
             if not line:
                 continue
-            elif line[0] == " ":
+            if line[0] == " ":
                 values += "\n%s" % line
             elif line.startswith("Interface"):
                 if values:

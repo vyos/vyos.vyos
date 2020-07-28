@@ -210,8 +210,11 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                     },
                     "type": "dict",
                 },
-                "passive_interface": {"type": "list"},
-                "passive_interface_exclude": {"type": "list"},
+                "passive_interface": {"type": "list", "elements": "str"},
+                "passive_interface_exclude": {
+                    "type": "list",
+                    "elements": "str",
+                },
                 "redistribute": {
                     "elements": "dict",
                     "options": {
@@ -231,7 +234,7 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                     },
                     "type": "list",
                 },
-                "route_map": {"type": "list"},
+                "route_map": {"type": "list", "elements": "str"},
                 "timers": {
                     "options": {
                         "refresh": {

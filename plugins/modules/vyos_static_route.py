@@ -60,6 +60,33 @@ options:
   aggregate:
     description: List of static route definitions
     type: list
+    elements: dict
+    suboptions:
+      prefix:
+        description:
+        - Network prefix of the static route. C(mask) param should be ignored if C(prefix)
+          is provided with C(mask) value C(prefix/mask).
+        required: True
+        type: str
+      mask:
+        description:
+        - Network prefix mask of the static route.
+        type: str
+      next_hop:
+        description:
+        - Next hop IP of the static route.
+        type: str
+      admin_distance:
+        description:
+        - Admin distance of the static route.
+        type: int
+      state:
+        description:
+        - State of the static route configuration.
+        choices:
+        - present
+        - absent
+        type: str
   state:
     description:
     - State of the static route configuration.

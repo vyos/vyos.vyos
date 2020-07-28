@@ -43,6 +43,7 @@ options:
     description:
     - Name of the interfaces.
     type: list
+    elements: str
   state:
     description:
     - State of the link aggregation group.
@@ -100,7 +101,7 @@ def main():
     """ main entry point for module execution
     """
     argument_spec = dict(
-        interfaces=dict(type="list"),
+        interfaces=dict(type="list", elements="str"),
         state=dict(
             default="present",
             choices=["present", "absent", "enabled", "disabled"],

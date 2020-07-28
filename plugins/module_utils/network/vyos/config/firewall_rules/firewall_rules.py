@@ -376,7 +376,7 @@ class Firewall_rules(ConfigBase):
                                     )
                                 )
                                 continue
-                            elif (
+                            if (
                                 key == "disabled"
                                 and val
                                 and h

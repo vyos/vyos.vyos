@@ -45,20 +45,71 @@ options:
     aliases:
     - users
     - collection
+    type: list
+    elements: dict
+    suboptions:
+      name:
+        description:
+        - The username to be configured on the VyOS device. This argument accepts a string
+          value and is mutually exclusive with the C(aggregate) argument. Please note
+          that this option is not same as C(provider username).
+        required: True
+        type: str
+      full_name:
+        description:
+        - The C(full_name) argument provides the full name of the user account to be created
+          on the remote device. This argument accepts any text string value.
+        type: str
+      configured_password:
+        description:
+        - The password to be configured on the VyOS device. The password needs to be provided
+          in clear and it will be encrypted on the device. Please note that this option
+          is not same as C(provider password).
+        type: str
+      update_password:
+        description:
+        - Since passwords are encrypted in the device running config, this argument will
+          instruct the module when to change the password.  When set to C(always), the
+          password will always be updated in the device and when set to C(on_create) the
+          password will be updated only if the username is created.
+        type: str
+        choices:
+        - on_create
+        - always
+      level:
+        description:
+        - The C(level) argument configures the level of the user when logged into the
+          system. This argument accepts string values admin or operator.
+        type: str
+        aliases:
+        - role
+      state:
+        description:
+        - Configures the state of the username definition as it relates to the device
+          operational configuration. When set to I(present), the username(s) should be
+          configured in the device active configuration and when set to I(absent) the
+          username(s) should not be in the device active configuration
+        type: str
+        choices:
+        - present
+        - absent
   name:
     description:
     - The username to be configured on the VyOS device. This argument accepts a string
       value and is mutually exclusive with the C(aggregate) argument. Please note
       that this option is not same as C(provider username).
+    type: str
   full_name:
     description:
     - The C(full_name) argument provides the full name of the user account to be created
       on the remote device. This argument accepts any text string value.
+    type: str
   configured_password:
     description:
     - The password to be configured on the VyOS device. The password needs to be provided
       in clear and it will be encrypted on the device. Please note that this option
       is not same as C(provider password).
+    type: str
   update_password:
     description:
     - Since passwords are encrypted in the device running config, this argument will
@@ -66,6 +117,7 @@ options:
       password will always be updated in the device and when set to C(on_create) the
       password will be updated only if the username is created.
     default: always
+    type: str
     choices:
     - on_create
     - always
@@ -73,6 +125,7 @@ options:
     description:
     - The C(level) argument configures the level of the user when logged into the
       system. This argument accepts string values admin or operator.
+    type: str
     aliases:
     - role
   purge:
@@ -88,6 +141,7 @@ options:
       operational configuration. When set to I(present), the username(s) should be
       configured in the device active configuration and when set to I(absent) the
       username(s) should not be in the device active configuration
+    type: str
     default: present
     choices:
     - present

@@ -154,16 +154,16 @@ class Firewall_global(ConfigBase):
                 commands.extend(self._state_replaced(w, h))
         return commands
 
-    def _state_replaced(self, want, have):
+    def _state_replaced(self, w, h):
         """ The command generator when state is replaced
          :rtype: A list
          :returns: the commands necessary to migrate the current configuration
                    to the desired configuration
          """
         commands = []
-        if have:
-            commands.extend(self._state_deleted(have, want))
-        commands.extend(self._state_merged(want, have))
+        if h:
+            commands.extend(self._state_deleted(h, w))
+        commands.extend(self._state_merged(w, h))
         return commands
 
     def _state_merged(self, want, have):
@@ -275,7 +275,7 @@ class Firewall_global(ConfigBase):
                             )
                         )
                         continue
-                    elif (
+                    if (
                         key in l_set
                         and not (h and self._in_target(h, key))
                         and not self._is_del(l_set, h)
@@ -411,7 +411,7 @@ class Firewall_global(ConfigBase):
                             ):
                                 commands.append(cmd + " " + want["name"])
                                 continue
-                            elif not (
+                            if not (
                                 h and self._in_target(h, key)
                             ) and not self._is_grp_del(h, want, key):
                                 commands.append(
@@ -586,7 +586,7 @@ class Firewall_global(ConfigBase):
                                     )
                                 )
                                 continue
-                            elif not (
+                            if not (
                                 h and self._in_target(h, key)
                             ) and not self._is_del(l_set, h):
                                 commands.append(
