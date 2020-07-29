@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - vyos_config - fixed issue where config could be saved while in check mode (https://github.com/ansible-collections/vyos.vyos/pull/53)
