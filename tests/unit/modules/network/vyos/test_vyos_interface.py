@@ -33,7 +33,7 @@ class TestVyosInterfaceModule(TestVyosModule):
     module = vyos_interface
 
     def setUp(self):
-        super(TestVyosModule, self).setUp()
+        super(TestVyosInterfaceModule, self).setUp()
         self.mock_get_config = patch(
             "ansible_collections.vyos.vyos.plugins.modules.vyos_interface.get_config"
         )
