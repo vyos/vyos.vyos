@@ -400,10 +400,12 @@ def map_params_to_obj(module):
         obj.append(params)
     return obj
 
+
 def get_interfaces_data(module, name):
     command = "show interfaces ethernet %s" % name
     rc, out, err = exec_command(module, command)
     return [rc, out, err]
+
 
 def get_lldp_neighbor(module):
     command = "show lldp neighbors detail"
