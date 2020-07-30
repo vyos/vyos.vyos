@@ -122,10 +122,6 @@ class TestVyosInterfaceModule(TestVyosModule):
         set_module_args(
             dict(name="eth1", enabled=True, state="present", speed="100",)
         )
-        commands = [
-            "set interfaces ethernet eth1 speed 100",
-            "set interfaces ethernet eth1 duplex half",
-        ]
         result = self.execute_module(failed=True)
         self.assertIn(
             "parameters are required together: speed, duplex", result["msg"]
