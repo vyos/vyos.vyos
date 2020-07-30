@@ -28,7 +28,7 @@
 - name: Configure interface params
   when: "'virtio_net' not in lsmod_out.stdout[0]"
   register: result
-  vyos.vyos.vyos_interface: &id001
+  vyos.vyos.vyos_interface:
     name: eth1
     state: present
     description: test-interface-1
@@ -48,12 +48,18 @@
 - name: Configure interface params (idempotent)
   register: result
   when: "'virtio_net' not in lsmod_out.stdout[0]"
-  vyos.vyos.vyos_interface: *id001
+  vyos.vyos.vyos_interface:
+    name: eth1
+    state: present
+    description: test-interface-1
+    speed: 100
+    duplex: half
+    mtu: 256
 
 - assert:
     that:
       - result.changed == false
-  when: "'virtio_net' not in lsmod_out.stdout[0]"
+  when: "'virtio' not in lsmod_out.stdout[0]"
 
 - name: Change interface params
   register: result
@@ -127,7 +133,7 @@
 - name: Set interface on aggregate
   register: result
   when: "'virtio_net' not in lsmod_out.stdout[0]"
-  vyos.vyos.vyos_interface: &id002
+  vyos.vyos.vyos_interface:
     aggregate:
 
       - name: eth1
@@ -158,7 +164,20 @@
 - name: Set interface on aggregate (idempotent)
   register: result
   when: "'virtio_net' not in lsmod_out.stdout[0]"
-  vyos.vyos.vyos_interface: *id002
+  vyos.vyos.vyos_interface:
+    aggregate:
+
+      - name: eth1
+        description: test-interface-1
+        speed: 100
+        duplex: half
+        mtu: 512
+
+      - name: eth2
+        description: test-interface-2
+        speed: 1000
+        duplex: full
+        mtu: 256
 
 - assert:
     that:
@@ -173,6 +192,7 @@
       - name: eth1
 
       - name: eth2
+    description: test-interface
     enabled: false
 
 - assert:
@@ -199,7 +219,7 @@
 
 - name: Delete interface aggregate
   register: result
-  vyos.vyos.vyos_interface: &id003
+  vyos.vyos.vyos_interface:
     aggregate:
 
       - name: eth1
@@ -215,7 +235,13 @@
 
 - name: Delete interface aggregate (idempotent)
   register: result
-  vyos.vyos.vyos_interface: *id003
+  vyos.vyos.vyos_interface:
+    aggregate:
+
+      - name: eth1
+
+      - name: eth2
+    state: absent
 
 - assert:
     that:
