@@ -28,12 +28,12 @@ from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
 from .vyos_module import TestVyosModule, load_fixture
 
 
-class TestVyosFirewallRulesModule(TestVyosModule):
+class TestVyosOspfv2Module(TestVyosModule):
 
     module = vyos_ospfv2
 
     def setUp(self):
-        super(TestVyosFirewallRulesModule, self).setUp()
+        super(TestVyosOspfv2Module, self).setUp()
         self.mock_get_config = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config"
         )
@@ -65,7 +65,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         self.execute_show_command = self.mock_execute_show_command.start()
 
     def tearDown(self):
-        super(TestVyosFirewallRulesModule, self).tearDown()
+        super(TestVyosOspfv2Module, self).tearDown()
         self.mock_get_resource_connection_config.stop()
         self.mock_get_resource_connection_facts.stop()
         self.mock_get_config.stop()
