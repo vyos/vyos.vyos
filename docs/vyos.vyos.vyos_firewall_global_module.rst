@@ -704,7 +704,7 @@ Parameters
                                     </td>
                                 <td>
                                                                                                                             <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                                                                                                                                                <li>stricu</li>
+                                                                                                                                                                <li>strict</li>
                                                                                                                                                                                                 <li>loose</li>
                                                                                                                                                                                                 <li>disable</li>
                                                                                     </ul>
