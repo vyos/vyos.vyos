@@ -13,6 +13,9 @@ Release Summary
 
 - Rereleasing 1.0.2 with updated changelog.
 
+v1.0.2
+======
+
 Minor Changes
 -------------
 

@@ -99,7 +99,7 @@ releases:
     fragments:
     - 51-doc-plugin-fixes.yaml
     release_date: '2020-06-23'
-  1.0.3:
+  1.0.2:
     changes:
       bugfixes:
       - Added workaround to avoid set_fact dynamically assigning value. This behavior
@@ -114,10 +114,7 @@ releases:
       - Updated docs.
       - terminal plugin - Added additional escape sequence to be removed from terminal
         output.
-      release_summary:
-      - Rereleasing 1.0.2 with updated changelog.
     fragments:
-    - 1.0.3.yaml
     - 52-add-change-log-1.0.0.yaml
     - 65-remove-unwanted-terminal-chars.yaml
     - 70-workaround-set_fact.yaml
@@ -125,4 +122,11 @@ releases:
     - 73-update-docs.yaml
     - fix_src_backup_with_module_alias.yaml
     - prevent-vyos_config-saving-in-check-mode.yaml
+    release_date: '2020-07-31'
+  1.0.3:
+    changes:
+      release_summary:
+      - Rereleasing 1.0.2 with updated changelog.
+    fragments:
+    - 1.0.3.yaml
     release_date: '2020-08-06'
