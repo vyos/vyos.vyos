@@ -1,3 +1,0 @@
----
-minor_change:
-  - Fixed the typo in the modulename of ospfv2 and ospfv3 unit tests.

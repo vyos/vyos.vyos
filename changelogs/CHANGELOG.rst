@@ -5,6 +5,29 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v1.0.3
+======
+
+Release Summary
+---------------
+
+- Rereleasing 1.0.2 with updated changelog.
+
+Minor Changes
+-------------
+
+- Add changelogs for previous release (https://github.com/ansible-collections/vyos.vyos/pull/52)
+- Fixed the typo in the modulename of ospfv2 and ospfv3 unit tests.
+- Updated docs.
+- terminal plugin - Added additional escape sequence to be removed from terminal output.
+
+Bugfixes
+--------
+
+- Added workaround to avoid set_fact dynamically assigning value. This behavior seems to have been broken after ansible2.9.
+- Make `src`, `backup` and `backup_options` in vyos_config work when module alias is used (https://github.com/ansible-collections/vyos.vyos/pull/67).
+- vyos_config - fixed issue where config could be saved while in check mode (https://github.com/ansible-collections/vyos.vyos/pull/53)
+
 v1.0.1
 ======
 
