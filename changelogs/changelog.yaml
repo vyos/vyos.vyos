@@ -109,13 +109,11 @@ releases:
       - vyos_config - fixed issue where config could be saved while in check mode
         (https://github.com/ansible-collections/vyos.vyos/pull/53)
       minor_changes:
-      - Add changelogs for previous release (https://github.com/ansible-collections/vyos.vyos/pull/52)
       - Fixed the typo in the modulename of ospfv2 and ospfv3 unit tests.
       - Updated docs.
       - terminal plugin - Added additional escape sequence to be removed from terminal
         output.
     fragments:
-    - 52-add-change-log-1.0.0.yaml
     - 65-remove-unwanted-terminal-chars.yaml
     - 70-workaround-set_fact.yaml
     - 72-modulename-typofix.yaml

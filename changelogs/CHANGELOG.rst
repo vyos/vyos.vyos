@@ -19,7 +19,6 @@ v1.0.2
 Minor Changes
 -------------
 
-- Add changelogs for previous release (https://github.com/ansible-collections/vyos.vyos/pull/52)
 - Fixed the typo in the modulename of ospfv2 and ospfv3 unit tests.
 - Updated docs.
 - terminal plugin - Added additional escape sequence to be removed from terminal output.
