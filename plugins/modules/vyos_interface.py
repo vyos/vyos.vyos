@@ -277,7 +277,6 @@ def search_obj_in_list(name, lst):
 def map_obj_to_commands(updates):
     commands = list()
     want, have = updates
-
     params = ("speed", "description", "duplex", "mtu")
     for w in want:
         name = w["name"]
@@ -402,6 +401,18 @@ def map_params_to_obj(module):
     return obj
 
 
+def get_interfaces_data(module, name):
+    command = "show interfaces ethernet %s" % name
+    rc, out, err = exec_command(module, command)
+    return [rc, out, err]
+
+
+def get_lldp_neighbor(module):
+    command = "show lldp neighbors detail"
+    rc, out, err = exec_command(module, command)
+    return [rc, out, err]
+
+
 def check_declarative_intent_params(module, want, result):
     failed_conditions = []
     have_neighbors = None
@@ -416,7 +427,7 @@ def check_declarative_intent_params(module, want, result):
             sleep(w["delay"])
 
         command = "show interfaces ethernet %s" % w["name"]
-        rc, out, err = exec_command(module, command)
+        rc, out, err = get_interfaces_data(w["name"], module)
         if rc != 0:
             module.fail_json(
                 msg=to_text(err, errors="surrogate_then_replace"),
@@ -438,9 +449,7 @@ def check_declarative_intent_params(module, want, result):
             have_host = []
             have_port = []
             if have_neighbors is None:
-                rc, have_neighbors, err = exec_command(
-                    module, "show lldp neighbors detail"
-                )
+                rc, have_neighbors, err = get_lldp_neighbor(module)
                 if rc != 0:
                     module.fail_json(
                         msg=to_text(err, errors="surrogate_then_replace"),
