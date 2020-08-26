@@ -128,3 +128,10 @@ releases:
     fragments:
     - 1.0.3.yaml
     release_date: '2020-08-06'
+  1.1.0:
+    changes:
+      minor_changes:
+      - Moved intent testcases from integration suite to unit tests.
+    fragments:
+    - 71-refactor-interface-test.yaml
+    release_date: '2020-08-26'

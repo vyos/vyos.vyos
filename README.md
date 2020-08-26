@@ -141,6 +141,10 @@ Please read and familiarize yourself with this document.
 ## Changelogs
 <!--Add a link to a changelog.md file or an external docsite to cover this information. -->
 
+## Release Notes
+
+Release notes are available [here](https://github.com/ansible-collections/vyos.vyos/blob/main/changelogs/CHANGELOG.rst).
+
 ## Roadmap
 
 <!-- Optional. Include the roadmap for this collection, and the proposed release/versioning strategy so users can anticipate the upgrade/update cycle. -->

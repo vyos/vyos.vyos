@@ -1,3 +1,0 @@
----
-minor_changes:
-  - Moved intent testcases from integration suite to unit tests.
