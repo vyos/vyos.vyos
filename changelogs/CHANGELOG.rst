@@ -5,13 +5,18 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
-v1.1.0
+v1.0.4
 ======
 
 Minor Changes
 -------------
 
 - Moved intent testcases from integration suite to unit tests.
+
+Bugfixes
+--------
+
+- Added error pattern to the terminal plugin to handle change mode error seen in lag interfaces config.
 
 v1.0.3
 ======
