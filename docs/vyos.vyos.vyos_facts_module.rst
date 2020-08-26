@@ -31,156 +31,158 @@ Parameters
         <tr>
             <th colspan="2">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
-                        <th width="100%">Comments</th>
+            <th width="100%">Comments</th>
         </tr>
-                    <tr>
-                                                                <td colspan="2">
+            <tr>
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>gather_network_resources</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">list</span>
-                         / <span style="color: purple">elements=string</span>                                            </div>
-                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                            <div>When supplied, this argument will restrict the facts collected to a given subset. Possible values for this argument include all and the resources like interfaces. Can specify a list of values to include a larger subset. Values can also be used with an initial <code><span class='module'>!</span></code> to specify that a specific subset should not be collected. Valid subsets are &#x27;all&#x27;, &#x27;interfaces&#x27;, &#x27;l3_interfaces&#x27;, &#x27;lag_interfaces&#x27;, &#x27;lldp_global&#x27;, &#x27;lldp_interfaces&#x27;, &#x27;static_routes&#x27;, &#x27;firewall_rules&#x27;, &#x27;firewall_global&#x27;, &#x27;firewall_interfaces&#x27;, &#x27;ospfv3&#x27;, &#x27;ospfv2&#x27;.</div>
-                                                        </td>
+                         / <span style="color: purple">elements=string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>When supplied, this argument will restrict the facts collected to a given subset. Possible values for this argument include all and the resources like interfaces. Can specify a list of values to include a larger subset. Values can also be used with an initial <code><span class='module'>!</span></code> to specify that a specific subset should not be collected. Valid subsets are &#x27;all&#x27;, &#x27;interfaces&#x27;, &#x27;l3_interfaces&#x27;, &#x27;lag_interfaces&#x27;, &#x27;lldp_global&#x27;, &#x27;lldp_interfaces&#x27;, &#x27;static_routes&#x27;, &#x27;firewall_rules&#x27;, &#x27;firewall_global&#x27;, &#x27;firewall_interfaces&#x27;, &#x27;ospfv3&#x27;, &#x27;ospfv2&#x27;.</div>
+                </td>
             </tr>
-                                <tr>
-                                                                <td colspan="2">
+            <tr>
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>gather_subset</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">list</span>
-                         / <span style="color: purple">elements=string</span>                                            </div>
-                                    </td>
-                                <td>
-                                                                                                                                                                    <b>Default:</b><br/><div style="color: blue">"!config"</div>
-                                    </td>
-                                                                <td>
-                                            <div>When supplied, this argument will restrict the facts collected to a given subset.  Possible values for this argument include all, default, config, and neighbors. Can specify a list of values to include a larger subset. Values can also be used with an initial <code><span class='module'>!</span></code> to specify that a specific subset should not be collected.</div>
-                                                        </td>
+                         / <span style="color: purple">elements=string</span>
+                    </div>
+                </td>
+                <td>
+                        <b>Default:</b><br/><div style="color: blue">"!config"</div>
+                </td>
+                <td>
+                        <div>When supplied, this argument will restrict the facts collected to a given subset.  Possible values for this argument include all, default, config, and neighbors. Can specify a list of values to include a larger subset. Values can also be used with an initial <code><span class='module'>!</span></code> to specify that a specific subset should not be collected.</div>
+                </td>
             </tr>
-                                <tr>
-                                                                <td colspan="2">
+            <tr>
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>provider</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">dictionary</span>
-                                                                    </div>
-                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                            <div><b>Deprecated</b></div>
-                                            <div>Starting with Ansible 2.5 we recommend using <code>connection: network_cli</code>.</div>
-                                            <div>For more information please see the <a href='../network/getting_started/network_differences.html#multiple-communication-protocols'>Network Guide</a>.</div>
-                                            <div><hr/></div>
-                                            <div>A dict object containing connection details.</div>
-                                                        </td>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div><b>Deprecated</b></div>
+                        <div>Starting with Ansible 2.5 we recommend using <code>connection: network_cli</code>.</div>
+                        <div>For more information please see the <a href='../network/getting_started/network_differences.html#multiple-communication-protocols'>Network Guide</a>.</div>
+                        <div><hr/></div>
+                        <div>A dict object containing connection details.</div>
+                </td>
             </tr>
-                                                            <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>host</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                                                                    </div>
-                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                            <div>Specifies the DNS host name or address for connecting to the remote device over the specified transport.  The value of host is used as the destination address for the transport.</div>
-                                                        </td>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Specifies the DNS host name or address for connecting to the remote device over the specified transport.  The value of host is used as the destination address for the transport.</div>
+                </td>
             </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>password</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                                                                    </div>
-                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                            <div>Specifies the password to use to authenticate the connection to the remote device.   This value is used to authenticate the SSH session. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_PASSWORD</code> will be used instead.</div>
-                                                        </td>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Specifies the password to use to authenticate the connection to the remote device.   This value is used to authenticate the SSH session. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_PASSWORD</code> will be used instead.</div>
+                </td>
             </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>port</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">integer</span>
-                                                                    </div>
-                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                            <div>Specifies the port to use when building the connection to the remote device.</div>
-                                                        </td>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Specifies the port to use when building the connection to the remote device.</div>
+                </td>
             </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>ssh_keyfile</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">path</span>
-                                                                    </div>
-                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                            <div>Specifies the SSH key to use to authenticate the connection to the remote device.   This value is the path to the key used to authenticate the SSH session. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
-                                                        </td>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Specifies the SSH key to use to authenticate the connection to the remote device.   This value is the path to the key used to authenticate the SSH session. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_SSH_KEYFILE</code> will be used instead.</div>
+                </td>
             </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>timeout</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">integer</span>
-                                                                    </div>
-                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                            <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
-                                                        </td>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Specifies the timeout in seconds for communicating with the network device for either connecting or sending commands.  If the timeout is exceeded before the operation is completed, the module will error.</div>
+                </td>
             </tr>
-                                <tr>
-                                                    <td class="elbow-placeholder"></td>
-                                                <td colspan="1">
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>username</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
-                                                                    </div>
-                                    </td>
-                                <td>
-                                                                                                                                                            </td>
-                                                                <td>
-                                            <div>Configures the username to use to authenticate the connection to the remote device.  This value is used to authenticate the SSH session. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_USERNAME</code> will be used instead.</div>
-                                                        </td>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Configures the username to use to authenticate the connection to the remote device.  This value is used to authenticate the SSH session. If the value is not specified in the task, the value of environment variable <code>ANSIBLE_NET_USERNAME</code> will be used instead.</div>
+                </td>
             </tr>
-                    
-                                        </table>
+
+    </table>
     <br/>
 
 
@@ -199,7 +201,6 @@ Examples
 
 .. code-block:: yaml+jinja
 
-    
     # Gather all facts
     - vyos.vyos.vyos_facts:
         gather_subset: all
@@ -233,7 +234,6 @@ Examples
 
 
 
-
 Return Values
 -------------
 Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html#common-return-values>`_, the following are the fields unique to this module:
@@ -246,172 +246,172 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
             <th>Returned</th>
             <th width="100%">Description</th>
         </tr>
-                    <tr>
-                                <td colspan="1">
+            <tr>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="return-"></div>
                     <b>ansible_net_api</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
                       <span style="color: purple">string</span>
-                                          </div>
-                                    </td>
+                    </div>
+                </td>
                 <td>always</td>
                 <td>
-                                                                        <div>The name of the transport</div>
-                                                                <br/>
-                                    </td>
+                            <div>The name of the transport</div>
+                    <br/>
+                </td>
             </tr>
-                                <tr>
-                                <td colspan="1">
+            <tr>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="return-"></div>
                     <b>ansible_net_commits</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
                       <span style="color: purple">list</span>
-                                          </div>
-                                    </td>
+                    </div>
+                </td>
                 <td>when present</td>
                 <td>
-                                                                        <div>The set of available configuration revisions</div>
-                                                                <br/>
-                                    </td>
+                            <div>The set of available configuration revisions</div>
+                    <br/>
+                </td>
             </tr>
-                                <tr>
-                                <td colspan="1">
+            <tr>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="return-"></div>
                     <b>ansible_net_config</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
                       <span style="color: purple">string</span>
-                                          </div>
-                                    </td>
+                    </div>
+                </td>
                 <td>when config is configured</td>
                 <td>
-                                                                        <div>The running-config from the device</div>
-                                                                <br/>
-                                    </td>
+                            <div>The running-config from the device</div>
+                    <br/>
+                </td>
             </tr>
-                                <tr>
-                                <td colspan="1">
+            <tr>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="return-"></div>
                     <b>ansible_net_gather_network_resources</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
                       <span style="color: purple">list</span>
-                                          </div>
-                                    </td>
+                    </div>
+                </td>
                 <td>always</td>
                 <td>
-                                                                        <div>The list of fact resource subsets collected from the device</div>
-                                                                <br/>
-                                    </td>
+                            <div>The list of fact resource subsets collected from the device</div>
+                    <br/>
+                </td>
             </tr>
-                                <tr>
-                                <td colspan="1">
+            <tr>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="return-"></div>
                     <b>ansible_net_gather_subset</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
                       <span style="color: purple">list</span>
-                                          </div>
-                                    </td>
+                    </div>
+                </td>
                 <td>always</td>
                 <td>
-                                                                        <div>The list of subsets gathered by the module</div>
-                                                                <br/>
-                                    </td>
+                            <div>The list of subsets gathered by the module</div>
+                    <br/>
+                </td>
             </tr>
-                                <tr>
-                                <td colspan="1">
+            <tr>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="return-"></div>
                     <b>ansible_net_hostname</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
                       <span style="color: purple">string</span>
-                                          </div>
-                                    </td>
+                    </div>
+                </td>
                 <td>always</td>
                 <td>
-                                                                        <div>The configured system hostname</div>
-                                                                <br/>
-                                    </td>
+                            <div>The configured system hostname</div>
+                    <br/>
+                </td>
             </tr>
-                                <tr>
-                                <td colspan="1">
+            <tr>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="return-"></div>
                     <b>ansible_net_model</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
                       <span style="color: purple">string</span>
-                                          </div>
-                                    </td>
+                    </div>
+                </td>
                 <td>always</td>
                 <td>
-                                                                        <div>The device model string</div>
-                                                                <br/>
-                                    </td>
+                            <div>The device model string</div>
+                    <br/>
+                </td>
             </tr>
-                                <tr>
-                                <td colspan="1">
+            <tr>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="return-"></div>
                     <b>ansible_net_neighbors</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
                       <span style="color: purple">list</span>
-                                          </div>
-                                    </td>
+                    </div>
+                </td>
                 <td>when interface is configured</td>
                 <td>
-                                                                        <div>The set of LLDP neighbors</div>
-                                                                <br/>
-                                    </td>
+                            <div>The set of LLDP neighbors</div>
+                    <br/>
+                </td>
             </tr>
-                                <tr>
-                                <td colspan="1">
+            <tr>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="return-"></div>
                     <b>ansible_net_python_version</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
                       <span style="color: purple">string</span>
-                                          </div>
-                                    </td>
+                    </div>
+                </td>
                 <td>always</td>
                 <td>
-                                                                        <div>The Python version Ansible controller is using</div>
-                                                                <br/>
-                                    </td>
+                            <div>The Python version Ansible controller is using</div>
+                    <br/>
+                </td>
             </tr>
-                                <tr>
-                                <td colspan="1">
+            <tr>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="return-"></div>
                     <b>ansible_net_serialnum</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
                       <span style="color: purple">string</span>
-                                          </div>
-                                    </td>
+                    </div>
+                </td>
                 <td>always</td>
                 <td>
-                                                                        <div>The serial number of the device</div>
-                                                                <br/>
-                                    </td>
+                            <div>The serial number of the device</div>
+                    <br/>
+                </td>
             </tr>
-                                <tr>
-                                <td colspan="1">
+            <tr>
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="return-"></div>
                     <b>ansible_net_version</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
                       <span style="color: purple">string</span>
-                                          </div>
-                                    </td>
+                    </div>
+                </td>
                 <td>always</td>
                 <td>
-                                                                        <div>The version of the software running</div>
-                                                                <br/>
-                                    </td>
+                            <div>The version of the software running</div>
+                    <br/>
+                </td>
             </tr>
-                        </table>
+    </table>
     <br/><br/>
 
 
@@ -425,5 +425,3 @@ Authors
 - Nathaniel Case (@qalthos)
 - Nilashish Chakraborty (@Nilashishc)
 - Rohit Thakur (@rohitthakur2590)
-
-
