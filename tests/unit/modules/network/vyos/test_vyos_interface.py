@@ -120,7 +120,12 @@ class TestVyosInterfaceModule(TestVyosModule):
 
     def test_vyos_setup_required_params(self):
         set_module_args(
-            dict(name="eth1", enabled=True, state="present", speed="100",)
+            dict(
+                name="eth1",
+                enabled=True,
+                state="present",
+                speed="100",
+            )
         )
         result = self.execute_module(failed=True)
         self.assertIn(
@@ -128,11 +133,22 @@ class TestVyosInterfaceModule(TestVyosModule):
         )
 
     def test_vyos_setup_int_idempotent(self):
-        set_module_args(dict(name="eth1", enabled=True, state="present",))
+        set_module_args(
+            dict(
+                name="eth1",
+                enabled=True,
+                state="present",
+            )
+        )
         self.execute_module(changed=False, commands=[])
 
     def test_vyos_disable_int(self):
-        set_module_args(dict(name="eth1", state="absent",))
+        set_module_args(
+            dict(
+                name="eth1",
+                state="absent",
+            )
+        )
         commands = ["delete interfaces ethernet eth1"]
         self.execute_module(changed=True, commands=commands)
 
@@ -173,8 +189,14 @@ class TestVyosInterfaceModule(TestVyosModule):
         set_module_args(
             dict(
                 aggregate=[
-                    dict(name="eth1", state="absent",),
-                    dict(name="eth2", state="absent",),
+                    dict(
+                        name="eth1",
+                        state="absent",
+                    ),
+                    dict(
+                        name="eth2",
+                        state="absent",
+                    ),
                 ]
             )
         )
@@ -188,8 +210,14 @@ class TestVyosInterfaceModule(TestVyosModule):
         set_module_args(
             dict(
                 aggregate=[
-                    dict(name="eth1", enabled=False,),
-                    dict(name="eth2", enabled=False,),
+                    dict(
+                        name="eth1",
+                        enabled=False,
+                    ),
+                    dict(
+                        name="eth2",
+                        enabled=False,
+                    ),
                 ]
             )
         )
@@ -213,7 +241,16 @@ class TestVyosInterfaceModule(TestVyosModule):
         )
 
     def test_vyos_intent_neighbor_fail(self):
-        set_module_args(dict(name="eth0", neighbors=[dict(port="eth0",)]))
+        set_module_args(
+            dict(
+                name="eth0",
+                neighbors=[
+                    dict(
+                        port="eth0",
+                    )
+                ],
+            )
+        )
         result = self.execute_module(failed=True)
         self.assertIn(
             "One or more conditional statements have not been satisfied",
@@ -221,11 +258,31 @@ class TestVyosInterfaceModule(TestVyosModule):
         )
 
     def test_vyos_intent_neighbor(self):
-        set_module_args(dict(name="eth1", neighbors=[dict(port="eth0",)]))
+        set_module_args(
+            dict(
+                name="eth1",
+                neighbors=[
+                    dict(
+                        port="eth0",
+                    )
+                ],
+            )
+        )
         self.execute_module(failed=False)
 
     def test_vyos_intent_neighbor_aggregate(self):
         set_module_args(
-            dict(aggregate=[dict(name="eth1", neighbors=[dict(port="eth0",)])])
+            dict(
+                aggregate=[
+                    dict(
+                        name="eth1",
+                        neighbors=[
+                            dict(
+                                port="eth0",
+                            )
+                        ],
+                    )
+                ]
+            )
         )
         self.execute_module(failed=False)

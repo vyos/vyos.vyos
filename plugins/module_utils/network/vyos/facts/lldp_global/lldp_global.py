@@ -25,8 +25,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.lld
 
 
 class Lldp_globalFacts(object):
-    """ The vyos lldp_global fact class
-    """
+    """The vyos lldp_global fact class"""
 
     def __init__(self, module, subspec="config", options="options"):
         self._module = module
@@ -43,7 +42,7 @@ class Lldp_globalFacts(object):
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def populate_facts(self, connection, ansible_facts, data=None):
-        """ Populate the facts for lldp_global
+        """Populate the facts for lldp_global
         :param connection: the device connection
         :param ansible_facts: Facts dictionary
         :param data: previously collected conf
@@ -78,13 +77,13 @@ class Lldp_globalFacts(object):
 
     def render_config(self, conf):
         """
-         Render config as dictionary structure and delete keys
-           from spec for null values
-         :param spec: The facts tree, generated from the argspec
-         :param conf: The configuration
-         :rtype: dictionary
-         :returns: The generated config
-         """
+        Render config as dictionary structure and delete keys
+          from spec for null values
+        :param spec: The facts tree, generated from the argspec
+        :param conf: The configuration
+        :rtype: dictionary
+        :returns: The generated config
+        """
         protocol_conf = "\n".join(
             filter(lambda x: ("legacy-protocols" in x), conf)
         )

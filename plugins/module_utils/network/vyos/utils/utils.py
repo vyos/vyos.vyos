@@ -22,8 +22,7 @@ def search_obj_in_list(name, lst, key="name"):
 
 
 def get_interface_type(interface):
-    """Gets the type of interface
-    """
+    """Gets the type of interface"""
     if interface.startswith("eth"):
         return "ethernet"
     elif interface.startswith("bond"):

@@ -824,8 +824,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                     dict(
                         afi="ipv6",
                         rule_sets=[
-                            dict(name="V6-INGRESS", default_action="accept",),
-                            dict(name="V6-EGRESS", default_action="reject",),
+                            dict(
+                                name="V6-INGRESS",
+                                default_action="accept",
+                            ),
+                            dict(
+                                name="V6-EGRESS",
+                                default_action="reject",
+                            ),
                         ],
                     ),
                 ],
@@ -862,14 +868,23 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                     )
                                 ],
                             ),
-                            dict(name="V4-EGRESS", default_action="reject",),
+                            dict(
+                                name="V4-EGRESS",
+                                default_action="reject",
+                            ),
                         ],
                     ),
                     dict(
                         afi="ipv6",
                         rule_sets=[
-                            dict(name="V6-INGRESS", default_action="accept",),
-                            dict(name="V6-EGRESS", default_action="reject",),
+                            dict(
+                                name="V6-INGRESS",
+                                default_action="accept",
+                            ),
+                            dict(
+                                name="V6-EGRESS",
+                                default_action="reject",
+                            ),
                         ],
                     ),
                 ],
@@ -902,14 +917,23 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                     )
                                 ],
                             ),
-                            dict(name="V4-EGRESS", default_action="reject",),
+                            dict(
+                                name="V4-EGRESS",
+                                default_action="reject",
+                            ),
                         ],
                     ),
                     dict(
                         afi="ipv6",
                         rule_sets=[
-                            dict(name="V6-INGRESS", default_action="accept",),
-                            dict(name="V6-EGRESS", default_action="reject",),
+                            dict(
+                                name="V6-INGRESS",
+                                default_action="accept",
+                            ),
+                            dict(
+                                name="V6-EGRESS",
+                                default_action="reject",
+                            ),
                         ],
                     ),
                 ],
@@ -1020,14 +1044,23 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                     )
                                 ],
                             ),
-                            dict(name="V4-EGRESS", default_action="reject",),
+                            dict(
+                                name="V4-EGRESS",
+                                default_action="reject",
+                            ),
                         ],
                     ),
                     dict(
                         afi="ipv6",
                         rule_sets=[
-                            dict(name="V6-INGRESS", default_action="accept",),
-                            dict(name="V6-EGRESS", default_action="reject",),
+                            dict(
+                                name="V6-INGRESS",
+                                default_action="accept",
+                            ),
+                            dict(
+                                name="V6-EGRESS",
+                                default_action="reject",
+                            ),
                         ],
                     ),
                 ],
