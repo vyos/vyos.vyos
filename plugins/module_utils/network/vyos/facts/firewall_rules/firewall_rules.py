@@ -24,8 +24,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.fir
 
 
 class Firewall_rulesFacts(object):
-    """ The vyos firewall_rules fact class
-    """
+    """The vyos firewall_rules fact class"""
 
     def __init__(self, module, subspec="config", options="options"):
         self._module = module
@@ -45,7 +44,7 @@ class Firewall_rulesFacts(object):
         return connection.get_config()
 
     def populate_facts(self, connection, ansible_facts, data=None):
-        """ Populate the facts for firewall_rules
+        """Populate the facts for firewall_rules
         :param connection: the device connection
         :param ansible_facts: Facts dictionary
         :param data: previously collected conf

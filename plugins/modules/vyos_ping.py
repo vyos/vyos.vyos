@@ -145,8 +145,7 @@ import re
 
 
 def main():
-    """ main entry point for module execution
-    """
+    """main entry point for module execution"""
     argument_spec = dict(
         count=dict(type="int", default=5),
         dest=dict(type="str", required=True),

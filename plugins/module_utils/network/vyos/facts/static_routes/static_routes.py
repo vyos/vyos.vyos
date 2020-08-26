@@ -27,8 +27,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils
 
 
 class Static_routesFacts(object):
-    """ The vyos static_routes fact class
-    """
+    """The vyos static_routes fact class"""
 
     def __init__(self, module, subspec="config", options="options"):
         self._module = module
@@ -48,7 +47,7 @@ class Static_routesFacts(object):
         return connection.get_config()
 
     def populate_facts(self, connection, ansible_facts, data=None):
-        """ Populate the facts for static_routes
+        """Populate the facts for static_routes
         :param connection: the device connection
         :param ansible_facts: Facts dictionary
         :param data: previously collected conf

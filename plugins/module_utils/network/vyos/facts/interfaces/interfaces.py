@@ -26,8 +26,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.int
 
 
 class InterfacesFacts(object):
-    """ The vyos interfaces fact class
-    """
+    """The vyos interfaces fact class"""
 
     def __init__(self, module, subspec="config", options="options"):
         self._module = module
@@ -44,7 +43,7 @@ class InterfacesFacts(object):
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def populate_facts(self, connection, ansible_facts, data=None):
-        """ Populate the facts for interfaces
+        """Populate the facts for interfaces
         :param connection: the device connection
         :param ansible_facts: Facts dictionary
         :param data: previously collected conf

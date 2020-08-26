@@ -24,8 +24,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.osp
 
 
 class Ospfv3Facts(object):
-    """ The vyos ospfv3 fact class
-    """
+    """The vyos ospfv3 fact class"""
 
     def __init__(self, module, subspec="config", options="options"):
         self._module = module
@@ -45,7 +44,7 @@ class Ospfv3Facts(object):
         return connection.get_config()
 
     def populate_facts(self, connection, ansible_facts, data=None):
-        """ Populate the facts for ospfv3
+        """Populate the facts for ospfv3
         :param connection: the device connection
         :param ansible_facts: Facts dictionary
         :param data: previously collected conf

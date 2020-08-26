@@ -29,8 +29,7 @@ __metaclass__ = type
 
 
 class InterfacesArgs(object):  # pylint: disable=R0903
-    """The arg spec for the vyos_interfaces module
-    """
+    """The arg spec for the vyos_interfaces module"""
 
     def __init__(self, **kwargs):
         pass

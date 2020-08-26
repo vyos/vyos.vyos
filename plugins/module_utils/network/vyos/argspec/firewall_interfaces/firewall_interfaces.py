@@ -31,8 +31,7 @@ __metaclass__ = type
 
 
 class Firewall_interfacesArgs(object):  # pylint: disable=R0903
-    """The arg spec for the vyos_firewall_interfaces module
-    """
+    """The arg spec for the vyos_firewall_interfaces module"""
 
     def __init__(self, **kwargs):
         pass
