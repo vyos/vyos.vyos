@@ -128,3 +128,12 @@ releases:
     fragments:
     - 1.0.3.yaml
     release_date: '2020-08-06'
+  1.0.4:
+    changes:
+      minor_changes:
+      - Moved intent testcases from integration suite to unit tests.
+      - Reformatted files with latest version of Black (20.8b1).
+    fragments:
+    - 71-refactor-interface-test.yaml
+    - 80-reformat-files.yaml
+    release_date: '2020-08-27'

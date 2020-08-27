@@ -5,6 +5,15 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v1.0.4
+======
+
+Minor Changes
+-------------
+
+- Moved intent testcases from integration suite to unit tests.
+- Reformatted files with latest version of Black (20.8b1).
+
 v1.0.3
 ======
 
