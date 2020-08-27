@@ -12,6 +12,7 @@ Minor Changes
 -------------
 
 - Moved intent testcases from integration suite to unit tests.
+- Reformatted files with latest version of Black (20.8b1).
 
 Bugfixes
 --------

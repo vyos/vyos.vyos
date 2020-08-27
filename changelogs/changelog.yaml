@@ -135,7 +135,9 @@ releases:
         in lag interfaces config.
       minor_changes:
       - Moved intent testcases from integration suite to unit tests.
+      - Reformatted files with latest version of Black (20.8b1).
     fragments:
     - 71-refactor-interface-test.yaml
+    - 80-reformat-files.yaml
     - 96-changemode-terminalerror.yaml
     release_date: '2020-08-26'
