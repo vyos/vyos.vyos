@@ -137,3 +137,5 @@ releases:
     - 71-refactor-interface-test.yaml
     - 80-reformat-files.yaml
     release_date: '2020-08-27'
+  1.0.5:
+    release_date: '2020-09-30'

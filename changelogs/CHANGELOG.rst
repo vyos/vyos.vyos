@@ -5,6 +5,9 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v1.0.5
+======
+
 v1.0.4
 ======
 
