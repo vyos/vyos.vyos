@@ -42,6 +42,11 @@ class InterfacesFacts(object):
 
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
+    def get_device_data(self, connection):
+
+        data = connection.get_config(flags=["| grep interfaces"])
+        return data
+
     def populate_facts(self, connection, ansible_facts, data=None):
         """Populate the facts for interfaces
         :param connection: the device connection
@@ -51,11 +56,11 @@ class InterfacesFacts(object):
         :returns: facts
         """
         if not data:
-            data = connection.get_config(flags=["| grep interfaces"])
+            data = self.get_device_data(connection)
 
         objs = []
         interface_names = findall(
-            r"^set interfaces (?:ethernet|bonding|vti|loopback|vxlan) (?:\'*)(\S+)(?:\'*)",
+            r"^set interfaces (?:ethernet|bonding|vti|loopback|vxlan|openvpn) (?:\'*)(\S+)(?:\'*)",
             data,
             M,
         )
