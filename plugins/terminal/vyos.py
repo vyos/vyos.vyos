@@ -50,7 +50,7 @@ class TerminalModule(TerminalBase):
         # Xterm change keypad (ESC [=|>])
         re.compile(br"\x1b(=|>)"),
         # Xterm window title string (OSC <title string> BEL)
-        re.compile(br"\x1b]0;.*\x07"),
+        re.compile(br"\x1b]0;[^\x07]*\x07"),
     ]
 
     try:
