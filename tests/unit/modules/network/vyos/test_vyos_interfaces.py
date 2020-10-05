@@ -84,26 +84,17 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         set_module_args(
             dict(
                 config=[
-                    dict(
-                        name="bond1",
-                        description="Bond - 1",
-                        enabled=True
-                    ),
-                    dict(
-                        name="vtun1",
-                        description="vtun - 1",
-                        enabled=True
-                    ),
+                    dict(name="bond1", description="Bond - 1", enabled=True),
+                    dict(name="vtun1", description="vtun - 1", enabled=True),
                 ],
                 state="merged",
             )
         )
-        
+
         commands = [
             "set interfaces bonding bond1 description 'Bond - 1'",
-            "delete interfaces bonding bond1 disable", 
+            "delete interfaces bonding bond1 disable",
             "set interfaces openvpn vtun1 description 'vtun - 1'",
             "delete interfaces openvpn vtun1 disable",
-
         ]
         self.execute_module(changed=True, commands=commands)
