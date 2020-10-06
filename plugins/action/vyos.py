@@ -99,6 +99,7 @@ class ActionModule(ActionNetworkModule):
                 direct={"persistent_command_timeout": command_timeout}
             )
 
+            pc.timeout = command_timeout
             socket_path = connection.run()
             display.vvvv("socket_path: %s" % socket_path, pc.remote_addr)
             if not socket_path:
