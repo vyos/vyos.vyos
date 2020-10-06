@@ -40,10 +40,17 @@ class TerminalModule(TerminalBase):
         re.compile(br"\n\s+Set failed"),
     ]
 
-    ansi_re = [
-        re.compile(br"\x1b\[\?1h\x1b="),  # CSI ? 1 h ESC =
-        re.compile(br"\x08."),  # [Backspace] .
-        re.compile(br"\x1b\[m"),  # ANSI reset code
+    ansi_re = TerminalBase.ansi_re + [
+        # Color codes
+        re.compile(br"\x1b\[(\d+(;\d+)*)?m"),
+        # Clear line (CSI K)
+        re.compile(br"\x1b\[K"),
+        # Xterm change cursor mode (CSI ? 1 [h|l])
+        re.compile(br"\x1b\[\?1(h|l)"),
+        # Xterm change keypad (ESC [=|>])
+        re.compile(br"\x1b(=|>)"),
+        # Xterm window title string (OSC <title string> BEL)
+        re.compile(br"\x1b]0;[^\x07]*\x07"),
     ]
 
     try:
