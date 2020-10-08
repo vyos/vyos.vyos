@@ -31,6 +31,8 @@ def get_interface_type(interface):
         return "vti"
     elif interface.startswith("lo"):
         return "loopback"
+    elif interface.startswith("vtun"):
+        return "openvpn"
 
 
 def dict_delete(base, comparable):
