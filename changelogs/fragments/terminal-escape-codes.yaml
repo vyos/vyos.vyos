@@ -1,3 +1,0 @@
----
-bugfixes:
-  - terminal plugin - Overhaul ansi_re to remove more escape sequences

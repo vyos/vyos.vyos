@@ -5,6 +5,16 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v1.0.5
+======
+
+Bugfixes
+--------
+
+- Added openvpn vtu interface support.
+- Update network integration auth timeout for connection local.
+- terminal plugin - Overhaul ansi_re to remove more escape sequences
+
 v1.0.4
 ======
 
