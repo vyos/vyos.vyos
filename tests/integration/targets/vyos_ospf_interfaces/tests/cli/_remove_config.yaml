@@ -1,0 +1,15 @@
+---
+- name: Remove pre-existing OSPF processes
+  vyos.vyos.vyos_config:
+    lines:
+      - delete interfaces ethernet eth0 ip ospf
+      - delete interfaces ethernet eth0 ipv6 ospfv3
+      - delete interfaces ethernet eth1 ip ospf
+      - delete interfaces ethernet eth1 ipv6 ospfv3
+      - delete interfaces bonding bond1 ip ospf
+      - delete interfaces bonding bond1 ipv6 ospfv3
+      - delete interfaces bonding bond2 ip ospf
+      - delete interfaces bonding bond2 ipv6 ospfv3
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

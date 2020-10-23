@@ -82,6 +82,10 @@ plugin_routing:
       redirect: vyos.vyos.vyos
     ospfv3:
       redirect: vyos.vyos.vyos
+    vyos_ospf_interfaces:
+      redirect: vyos.vyos.vyos
+    ospf_interfaces:
+      redirect: vyos.vyos.vyos
     vyos_ping:
       redirect: vyos.vyos.vyos
     ping:
@@ -182,6 +186,8 @@ plugin_routing:
       redirect: vyos.vyos.vyos_ospfv2
     ospfv3:
       redirect: vyos.vyos.vyos_ospfv3
+    ospf_interfaces:
+      redirect: vyos.vyos.vyos_ospf_interfaces
     ping:
       redirect: vyos.vyos.vyos_ping
     static_route:
