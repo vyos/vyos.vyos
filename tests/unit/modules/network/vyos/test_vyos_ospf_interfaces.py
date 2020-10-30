@@ -61,6 +61,11 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
 
         self.execute_show_command.side_effect = load_from_file
 
+    def sort_address_family(self, entry_list):
+        for entry in entry_list:
+            if entry.get("address_family"):
+                entry["address_family"].sort(key=lambda i: i.get("afi"))
+
     def test_vyos_ospf_interfaces_merged_new_config(self):
         set_module_args(
             dict(
@@ -426,8 +431,11 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                 "name": "eth1",
             },
         ]
+        result_list = self.sort_address_family(result["parsed"])
+        given_list = self.sort_address_family(parsed_list)
+            
 
-        self.assertEqual(parsed_list, result["parsed"])
+        self.assertEqual(result_list, given_list)
 
     def test_vyos_ospf_interfaces_gathered(self):
         set_module_args(dict(state="gathered"))
@@ -449,4 +457,9 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                 "name": "eth1",
             },
         ]
-        self.assertEqual(gathered_list, result["gathered"])
+
+        result_list = self.sort_address_family(result["gathered"])
+        given_list = self.sort_address_family(gathered_list)
+
+
+        self.assertEqual(result_list, given_list)
