@@ -433,8 +433,6 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
         ]
         result_list = self.sort_address_family(result["parsed"])
         given_list = self.sort_address_family(parsed_list)
-            
-
         self.assertEqual(result_list, given_list)
 
     def test_vyos_ospf_interfaces_gathered(self):
@@ -460,6 +458,4 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
 
         result_list = self.sort_address_family(result["gathered"])
         given_list = self.sort_address_family(gathered_list)
-
-
         self.assertEqual(result_list, given_list)
