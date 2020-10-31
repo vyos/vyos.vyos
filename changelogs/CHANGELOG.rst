@@ -5,6 +5,20 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v1.1.0
+======
+
+Minor Changes
+-------------
+
+- Added ospf_interfaces resource module.
+
+New Modules
+-----------
+
+- vyos_ospf_interfaces - OSPF Interfaces Resource Module
+
+
 v1.0.5
 ======
 

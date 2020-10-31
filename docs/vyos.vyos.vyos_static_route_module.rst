@@ -354,7 +354,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml+jinja
+.. code-block:: yaml
 
     - name: configure static route
       vyos.vyos.vyos_static_route:
