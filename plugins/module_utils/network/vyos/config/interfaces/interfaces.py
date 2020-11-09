@@ -161,10 +161,10 @@ class Interfaces(ConfigBase):
         else:
             for item in want:
                 name = item["name"]
+                enable_state = item["enabled"]
                 obj_in_have = search_obj_in_list(name, have)
-
                 if not obj_in_have:
-                    obj_in_have = {"name": name}
+                    obj_in_have = {"name": name, "enabled": enable_state}
 
                 if self.state in ("merged", "rendered"):
                     commands.extend(self._state_merged(item, obj_in_have))
@@ -207,6 +207,11 @@ class Interfaces(ConfigBase):
 
         for intf in want:
             intf_in_have = search_obj_in_list(intf["name"], have)
+            if not intf_in_have:
+                intf_in_have = {
+                    "name": intf["name"],
+                    "enabled": intf["enabled"],
+                }
             commands.extend(self._state_replaced(intf, intf_in_have))
 
         return commands
@@ -271,7 +276,6 @@ class Interfaces(ConfigBase):
 
         want_copy = deepcopy(remove_empties(want))
         have_copy = deepcopy(have)
-
         want_vifs = want_copy.pop("vifs", [])
         have_vifs = have_copy.pop("vifs", [])
 
@@ -321,7 +325,6 @@ class Interfaces(ConfigBase):
                             vif=want_vif["vlan_id"],
                         )
                     )
-
         return commands
 
     def _compute_commands(

@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - Enable configuring an interface which is not present in the running config.
