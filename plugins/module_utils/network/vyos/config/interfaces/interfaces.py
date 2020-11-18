@@ -13,6 +13,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+import q
 from copy import deepcopy
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
@@ -231,6 +232,7 @@ class Interfaces(ConfigBase):
         have_vifs = have_copy.pop("vifs", [])
 
         updates = dict_diff(have_copy, want_copy)
+        q(want_vifs, have_vifs, updates)
 
         if updates:
             for key, value in iteritems(updates):
@@ -252,6 +254,7 @@ class Interfaces(ConfigBase):
                     }
 
                 vif_updates = dict_diff(have_vif, want_vif)
+                q(vif_updates)
                 if vif_updates:
                     for key, value in iteritems(vif_updates):
                         commands.append(
@@ -330,6 +333,8 @@ class Interfaces(ConfigBase):
     def _compute_commands(
         self, interface, key, vif=None, value=None, remove=False
     ):
+        import q
+        q(key, value)
         intf_context = "interfaces {0} {1}".format(
             get_interface_type(interface), interface
         )
@@ -345,6 +350,7 @@ class Interfaces(ConfigBase):
                 command = "{0} disable".format(set_cmd)
             else:
                 command = "{0} disable".format(del_cmd)
+            q(command)
         else:
             if not remove:
                 command = "{0} {1} '{2}'".format(set_cmd, key, value)

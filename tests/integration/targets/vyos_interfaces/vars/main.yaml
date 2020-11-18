@@ -157,9 +157,7 @@ rendered:
   commands:
     - set interfaces ethernet eth0 duplex 'auto'
     - set interfaces ethernet eth0 speed 'auto'
-    - delete interfaces ethernet eth0 disable
     - set interfaces ethernet eth1 duplex 'auto'
-    - delete interfaces ethernet eth1 disable
     - set interfaces ethernet eth1 speed 'auto'
     - set interfaces ethernet eth1 description 'Configured by Ansible - Interface 1'
     - set interfaces ethernet eth1 mtu '1500'
