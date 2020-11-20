@@ -164,7 +164,6 @@ rendered:
     - set interfaces ethernet eth1 vif 100 description 'Eth1 - VIF 100'
     - set interfaces ethernet eth1 vif 100 mtu '400'
     - set interfaces ethernet eth1 vif 101 description 'Eth1 - VIF 101'
-    - set interfaces ethernet eth2 disable
     - set interfaces ethernet eth2 description 'Configured by Ansible - Interface 2 (ADMIN DOWN)'
     - set interfaces ethernet eth2 mtu '600'
 
