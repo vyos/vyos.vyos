@@ -93,8 +93,82 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
 
         commands = [
             "set interfaces bonding bond1 description 'Bond - 1'",
-            "delete interfaces bonding bond1 disable",
             "set interfaces openvpn vtun1 description 'vtun - 1'",
-            "delete interfaces openvpn vtun1 disable",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_merged_newinterface(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth4",
+                        description="Ethernet 4",
+                        enabled=True,
+                        speed="auto",
+                        duplex="auto",
+                    ),
+                    dict(name="eth1", description="Configured by Ansible"),
+                ],
+                state="merged",
+            )
+        )
+
+        commands = [
+            "set interfaces ethernet eth1 description 'Configured by Ansible'",
+            "set interfaces ethernet eth4 description 'Ethernet 4'",
+            "set interfaces ethernet eth4 duplex 'auto'",
+            "set interfaces ethernet eth4 speed 'auto'",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_replaced_newinterface(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth4",
+                        description="Ethernet 4",
+                        enabled=True,
+                        speed="auto",
+                        duplex="auto",
+                    ),
+                    dict(name="eth1", description="Configured by Ansible"),
+                ],
+                state="replaced",
+            )
+        )
+
+        commands = [
+            "set interfaces ethernet eth1 description 'Configured by Ansible'",
+            "set interfaces ethernet eth4 description 'Ethernet 4'",
+            "set interfaces ethernet eth4 duplex 'auto'",
+            "set interfaces ethernet eth4 speed 'auto'",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_overridden_newinterface(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth4",
+                        description="Ethernet 4",
+                        enabled=True,
+                        speed="auto",
+                        duplex="auto",
+                    ),
+                    dict(name="eth1", description="Configured by Ansible"),
+                ],
+                state="overridden",
+            )
+        )
+
+        commands = [
+            "set interfaces ethernet eth1 description 'Configured by Ansible'",
+            "set interfaces ethernet eth4 description 'Ethernet 4'",
+            "set interfaces ethernet eth4 duplex 'auto'",
+            "set interfaces ethernet eth4 speed 'auto'",
+            "delete interfaces ethernet eth3 description",
         ]
         self.execute_module(changed=True, commands=commands)
