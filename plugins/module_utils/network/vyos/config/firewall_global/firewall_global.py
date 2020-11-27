@@ -349,7 +349,7 @@ class Firewall_global(ConfigBase):
                 h_grp = h.get("group") or {}
             if w:
                 commands.extend(
-                    self._render_grp_mem("port-group", w["group"], h_grp, opr)
+                    self._render_grp_mem("port_group", w["group"], h_grp, opr)
                 )
                 commands.extend(
                     self._render_grp_mem(
