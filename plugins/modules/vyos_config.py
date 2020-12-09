@@ -209,7 +209,11 @@ def get_candidate(module):
     contents = module.params["src"] or module.params["lines"]
 
     if module.params["src"]:
-        contents = format_commands(contents.splitlines())
+        contents = contents.splitlines()
+        if len(contents) > 0:
+            line = contents[0].split()
+            if len(line) > 0 and line[0] in ("set", "delete"):
+                contents = format_commands(contents)
 
     contents = "\n".join(contents)
     return contents

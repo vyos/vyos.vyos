@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - vyos_config - Only process src files as commands when they actually contain commands. This fixes an issue were the whitespace preceding a configuration key named 'set' was stripped, tripping up the parser.
