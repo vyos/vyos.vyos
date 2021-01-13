@@ -1,0 +1,9 @@
+---
+- job:
+    name: vyos-vyos-unit-tests
+    parent: ansible-buildset-registry-consumer
+    dependencies:
+      - network-ee-build-container-image
+    run: playbooks/vyos-vyos-unit-tests/run.yaml
+    requires:
+      - network-ee-unit-tests-container-image

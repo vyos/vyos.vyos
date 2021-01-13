@@ -1,0 +1,7 @@
+---
+- project:
+    check:
+      jobs:
+        - ansible-buildset-registry
+        - network-ee-build-container-image
+        - vyos-vyos-unit-tests

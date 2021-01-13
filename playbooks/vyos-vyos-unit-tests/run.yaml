@@ -1,0 +1,5 @@
+---
+- hosts: all
+  tasks:
+    - name: Run podman
+      shell: podman run -w /usr/share/ansible/collections/ansible_collections/vyos/vyos quay.io/ansible/network-ee-sanity-tests:latest
