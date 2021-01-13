@@ -1,0 +1,14 @@
+---
+- job:
+    name: vyos-vyos-unit-tests
+    parent: network-ee-unit-tests
+    vars:
+      collection_namespace: vyos
+      collection_name: vyos
+
+- job:
+    name: vyos-vyos-sanity-tests
+    parent: network-ee-sanity-tests
+    vars:
+      collection_namespace: vyos
+      collection_name: vyos
