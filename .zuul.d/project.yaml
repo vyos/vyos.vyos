@@ -1,0 +1,6 @@
+---
+- project:
+    check:
+      jobs:
+        - network-ee-build-container-image
+        - vyos-vyos-unit-tests
