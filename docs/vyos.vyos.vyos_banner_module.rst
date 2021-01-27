@@ -220,7 +220,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml
+.. code-block:: yaml+jinja
 
     - name: configure the pre-login banner
       vyos.vyos.vyos_banner:

@@ -322,7 +322,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml
+.. code-block:: yaml+jinja
 
     - name: Set eth0 IPv4 address
       vyos.vyos.vyos_l3_interface:

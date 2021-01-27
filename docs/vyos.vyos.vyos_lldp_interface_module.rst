@@ -264,7 +264,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml
+.. code-block:: yaml+jinja
 
     - name: Enable LLDP on eth1
       net_lldp_interface:
