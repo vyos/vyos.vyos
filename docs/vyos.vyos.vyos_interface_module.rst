@@ -572,7 +572,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml
+.. code-block:: yaml+jinja
 
     - name: configure interface
       vyos.vyos.vyos_interface:

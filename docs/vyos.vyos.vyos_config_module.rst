@@ -333,7 +333,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml
+.. code-block:: yaml+jinja
 
     - name: configure the remote device
       vyos.vyos.vyos_config:

@@ -152,10 +152,23 @@ releases:
     changes:
       minor_changes:
       - Added ospf_interfaces resource module.
-    modules:
-      - description: OSPF Interfaces resource module
-        name: vyos_ospf_interfaces
-        namespace: ''
     fragments:
     - vyos_ospf_interfaces_rm.yaml
+    modules:
+    - description: OSPF Interfaces resource module
+      name: vyos_ospf_interfaces
+      namespace: ''
     release_date: '2020-10-30'
+  1.1.1:
+    changes:
+      bugfixes:
+      - Add version key to galaxy.yaml to work around ansible-galaxy bug
+      - Enable configuring an interface which is not present in the running config.
+      - vyos_config - Only process src files as commands when they actually contain
+        commands. This fixes an issue were the whitespace preceding a configuration
+        key named 'set' was stripped, tripping up the parser.
+    fragments:
+    - 91-new-interface.yaml
+    - config-processed-as-command.yaml
+    - galaxy-version.yaml
+    release_date: '2021-01-27'

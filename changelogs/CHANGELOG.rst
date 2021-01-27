@@ -5,6 +5,16 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v1.1.1
+======
+
+Bugfixes
+--------
+
+- Add version key to galaxy.yaml to work around ansible-galaxy bug
+- Enable configuring an interface which is not present in the running config.
+- vyos_config - Only process src files as commands when they actually contain commands. This fixes an issue were the whitespace preceding a configuration key named 'set' was stripped, tripping up the parser.
+
 v1.1.0
 ======
 
@@ -16,8 +26,7 @@ Minor Changes
 New Modules
 -----------
 
-- vyos_ospf_interfaces - OSPF Interfaces Resource Module
-
+- vyos_ospf_interfaces - OSPF Interfaces resource module
 
 v1.0.5
 ======
