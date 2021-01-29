@@ -317,6 +317,7 @@ def map_params_to_obj(module):
     for item in users:
         get_value = partial(get_param_value, item=item, module=module)
         item["configured_password"] = get_value("configured_password")
+
         item["full_name"] = get_value("full_name")
         item["level"] = get_value("level")
         item["state"] = get_value("state")
