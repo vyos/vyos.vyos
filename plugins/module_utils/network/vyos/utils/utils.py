@@ -8,9 +8,14 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 from ansible.module_utils.six import iteritems
-from ansible_collections.ansible.netcommon.plugins.module_utils.compat import (
-    ipaddress,
-)
+from ansible.module_utils.basic import missing_required_lib
+
+try:
+    import ipaddress
+
+    HAS_IPADDRESS = True
+except ImportError:
+    HAS_IPADDRESS = False
 
 
 def search_obj_in_list(name, lst, key="name"):
@@ -212,6 +217,9 @@ def get_ip_address_version(address):
     :param address: IP address
     :return:
     """
+    if not HAS_IPADDRESS:
+        raise Exception(missing_required_lib("ipaddress"))
+
     try:
         address = unicode(address)
     except NameError:
