@@ -284,7 +284,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml+jinja
+.. code-block:: yaml
 
     - name: Test reachability to 10.10.10.10
       vyos.vyos.vyos_ping:
@@ -405,7 +405,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The round trip time (RTT) stats.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">AnsibleMapping([(&#x27;avg&#x27;, 2), (&#x27;max&#x27;, 8), (&#x27;min&#x27;, 1), (&#x27;mdev&#x27;, 24)])</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">{&#x27;avg&#x27;: 2, &#x27;max&#x27;: 8, &#x27;min&#x27;: 1, &#x27;mdev&#x27;: 24}</div>
                 </td>
             </tr>
     </table>

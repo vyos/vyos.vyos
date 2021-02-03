@@ -348,7 +348,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml+jinja
+.. code-block:: yaml
 
     - name: configure link aggregation group
       vyos.vyos.vyos_linkagg:

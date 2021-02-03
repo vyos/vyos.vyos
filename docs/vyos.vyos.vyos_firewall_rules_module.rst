@@ -1327,7 +1327,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml+jinja
+.. code-block:: yaml
 
     # Using deleted to delete firewall rules based on rule-set name
     #
