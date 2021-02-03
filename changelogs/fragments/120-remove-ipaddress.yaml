@@ -1,0 +1,3 @@
+---
+major_changes:
+  - ipaddress is no longer in ansible.netcommon. For Python versions without ipaddress (< 3.0), the ipaddress package is now required.
