@@ -28,6 +28,18 @@ description:
 - This vyos plugin provides low level abstraction apis for sending and receiving CLI
   commands from VyOS network devices.
 version_added: 1.0.0
+options:
+  config_commands:
+    description:
+    - Specifies a list of commands that can make configuration changes
+      to the target device.
+    - When `ansible_network_single_user_mode` is enabled, if a command sent
+      to the device is present in this list, the existing cache is invalidated.
+    version_added: 2.0.0
+    type: list
+    default: []
+    vars:
+    - name: ansible_vyos_config_commands
 """
 
 import re
@@ -46,27 +58,34 @@ from ansible.plugins.cliconf import CliconfBase
 
 
 class Cliconf(CliconfBase):
+    def __init__(self, *args, **kwargs):
+        super(Cliconf, self).__init__(*args, **kwargs)
+        self._device_info = {}
+
     def get_device_info(self):
-        device_info = {}
+        if not self._device_info:
+            device_info = {}
 
-        device_info["network_os"] = "vyos"
-        reply = self.get("show version")
-        data = to_text(reply, errors="surrogate_or_strict").strip()
+            device_info["network_os"] = "vyos"
+            reply = self.get("show version")
+            data = to_text(reply, errors="surrogate_or_strict").strip()
 
-        match = re.search(r"Version:\s*(.*)", data)
-        if match:
-            device_info["network_os_version"] = match.group(1)
+            match = re.search(r"Version:\s*(.*)", data)
+            if match:
+                device_info["network_os_version"] = match.group(1)
 
-        match = re.search(r"HW model:\s*(\S+)", data)
-        if match:
-            device_info["network_os_model"] = match.group(1)
+            match = re.search(r"HW model:\s*(\S+)", data)
+            if match:
+                device_info["network_os_model"] = match.group(1)
 
-        reply = self.get("show host name")
-        device_info["network_os_hostname"] = to_text(
-            reply, errors="surrogate_or_strict"
-        ).strip()
+            reply = self.get("show host name")
+            device_info["network_os_hostname"] = to_text(
+                reply, errors="surrogate_or_strict"
+            ).strip()
 
-        return device_info
+            self._device_info = device_info
+
+        return self._device_info
 
     def get_config(self, flags=None, format=None):
         if format:
