@@ -49,6 +49,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces import (
     Ospf_interfacesFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global import (
+    Bgp_globalFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
     Default,
     Neighbors,
@@ -70,6 +73,7 @@ FACT_RESOURCE_SUBSETS = dict(
     ospfv3=Ospfv3Facts,
     ospfv2=Ospfv2Facts,
     ospf_interfaces=Ospf_interfacesFacts,
+    bgp_global=Bgp_globalFacts,
 )
 
 
