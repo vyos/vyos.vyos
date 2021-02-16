@@ -1,0 +1,3 @@
+---
+trivial:
+  - Fix failures in test-sanity-docker.(PR: https://github.com/ansible-collections/arista.eos/pull/172).
