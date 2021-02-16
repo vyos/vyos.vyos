@@ -76,8 +76,12 @@ class Ospf_interfaces(ResourceModule):
         """Generate configuration commands to send based on
         want, have and desired state.
         """
-        wantd = {entry["name"]: entry for entry in self.want}
-        haved = {entry["name"]: entry for entry in self.have}
+        wanted = {}
+        haved = {}
+        for entry in self.want:
+            wantd.update({entry["name"]: entry})
+        for entry in self.have:
+            haved.update({entry["name"]: entry})
 
         # turn all lists of dicts into dicts prior to merge
         for entry in wantd, haved:
