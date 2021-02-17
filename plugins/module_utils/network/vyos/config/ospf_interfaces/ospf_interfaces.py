@@ -96,7 +96,7 @@ class Ospf_interfaces(ResourceModule):
             for k, v in iteritems(haved):
                 if k in wantd or not wantd:
                     h_del.update({k: v})
-            haved = h_del 
+            haved = h_del
             have_int = []
             for k, have in iteritems(haved):
                 if k in wantd:
