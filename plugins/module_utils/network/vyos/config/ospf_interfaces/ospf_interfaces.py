@@ -76,7 +76,7 @@ class Ospf_interfaces(ResourceModule):
         """Generate configuration commands to send based on
         want, have and desired state.
         """
-        wanted = {}
+        wantd = {}
         haved = {}
         for entry in self.want:
             wantd.update({entry["name"]: entry})
