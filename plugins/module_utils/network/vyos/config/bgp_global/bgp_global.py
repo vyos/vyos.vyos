@@ -103,6 +103,7 @@ class Bgp_global(ResourceModule):
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
+        q(self.commands)
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
@@ -117,6 +118,7 @@ class Bgp_global(ResourceModule):
         self._compare_neighbor(want, have)
         self._compare_lists(want, have)
         self._compare_bgp_params(want, have)
+        q("before", have)
         for name, entry in iteritems(want):
             if name != "as_number":
                 self.compare(
@@ -124,11 +126,22 @@ class Bgp_global(ResourceModule):
                     want={"as_number": want["as_number"], name: entry},
                     have={"as_number": want["as_number"], name: have.pop(name, {})},
                 )
+        q("after", have)
         for name, entry in iteritems(have):
             if name != "as_number":
                 self.compare(
-                    parsers=self.parsers, want={}, have={"as_number": have["as_number"], name: have.get(name)}
+                    parsers=parsers, want={}, have={"as_number": have["as_number"], name: entry}
                 )
+        # Do the negation first
+        command_set = []
+        for cmd in self.commands:
+            if "delete" in cmd:
+                command_set.insert(0, cmd)
+            else:
+                command_set.append(cmd)
+        self.commands = command_set
+            
+            
                 
     def _compare_neighbor(self, want, have):
 
@@ -191,7 +204,7 @@ class Bgp_global(ResourceModule):
                 )
         for name, entry in iteritems(hneigh):
             if name not in wneigh.keys():
-                self.commands.append("no neighbor " + name)
+                self.commands.append("delete protocols bgp " + have["as_number"] + " neighbor " + name)
                 continue
             for k, v in entry.items():
                 peer = entry["address"]
@@ -241,8 +254,10 @@ class Bgp_global(ResourceModule):
         for name, entry in iteritems(hbgp):
             if name == "confederation":
                 self.addcmd({"as_number": have["as_number"], "bgp_params": {name: entry}}, "bgp_params.confederation", True)
-                hbgp.pop(name)
-            self.compare(parsers=parsers, want={}, have={"as_number": have["as_number"], "bgp_params": {name: entry}})
+            elif name == "bestpath" and name not in wbgp.keys():
+                self.commands.append("delete protocols bgp " + have["as_number"] + " parameters bestpath")
+            else:
+                self.compare(parsers=parsers, want={}, have={"as_number": have["as_number"], "bgp_params": {name: entry}})
 
     def _compare_lists(self, want, have):
         parsers = [

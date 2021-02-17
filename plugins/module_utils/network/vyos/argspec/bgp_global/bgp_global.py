@@ -179,7 +179,7 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                             "type": "str",
                             "choices": ["extended", "standard"],
                         },
-                        "unsupress_map": {"type": "str"},
+                        "unsuppress_map": {"type": "str"},
                         "override_capability": {"type": "bool"},
                         "filter_list": {
                             "elements": "dict",
@@ -221,29 +221,24 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                         "distance": {
                             "type": "dict",
                             "options": {
-                                "global": {
-                                    "type": "dict",
-                                    "options": {
-                                        "prefix": {"type": "int"},
-                                        "type": {
-                                            "type": "str",
-                                            "choices": [
-                                                "external",
-                                                "internal",
-                                                "local",
-                                            ],
-                                        },
-                                        "value": {"type": "int"},
-                                    },
-                                }
+                                "prefix": {"type": "int"},
+                                "type": {
+                                    "type": "str",
+                                    "choices": [
+                                        "external",
+                                        "internal",
+                                        "local",
+                                    ],
+                                },
+                                "value": {"type": "int"},
                             },
                         },
                         "dampening": {
                             "type": "dict",
                             "options": {
                                 "half_life": {"type": "int"},
-                                "start_supress_time": {"type": "int"},
-                                "max_supress_time": {"type": "int"},
+                                "start_suppress_time": {"type": "int"},
+                                "max_suppress_time": {"type": "int"},
                                 "re_use": {"type": "int"},
                             },
                         },

@@ -44,6 +44,15 @@ def _tmplt_bgp_maximum_paths(config_data):
         )
     return command
 
+def _tmplt_delete_bgp_maximum_paths(config_data):
+    command = []
+    for list_el in config_data['maximum_paths']:
+         command.append(
+            "protocols bgp {as_number} maximum-paths ".format(**config_data)
+            + list_el['path']
+        )
+    return command
+
 def _tmplt_bgp_neighbor_timers(config_data):
     command = []
     for k, v in iteritems(config_data['neighbor']['timers']):
@@ -163,6 +172,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} aggregate-address {{ aggregate_address.address }}{{ (' as-set') if aggregate_address.as_set is defined }}{{ (' summary-only') if aggregate_address.summary_only is defined }}",
+            "remval": "protocols bgp {{ as_number }} aggregate-address {{ aggregate_address.address }}"
             "compval": "aggregate_address",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -190,6 +200,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_maximum_paths,
+            "remval": _tmplt_delete_bgp_maximum_paths,
             "compval": "maximum_paths",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -217,6 +228,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} advertisement-interval {{ neighbor.adverisement_interval }}",
+            "remval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} advertisement-interval"
             "compval": "neighbor.advertisement_interval",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -380,7 +392,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+capability
-                \s+(?P<dynamic>\'dynamic\')
+                \s+(?P<dynamic>dynamic)
                 *$""",
                 re.VERBOSE,
             ),
@@ -1272,6 +1284,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} network {{ network.address }} backdoor",
+            "remval": "protocols bgp {{ as_number }} network {{ network.address }}"
             "compval": "network.backdoor",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1326,6 +1339,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }} metric {{ redistribute.metric }}",
+            "remval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }}"
             "compval": "redistribute",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1353,6 +1367,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }} route-map {{ redistribute.route_map }}",
+            "remval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }}"
             "compval": "redistribute",
             "result": {
                 "as_number": "{{ as_num }}",
