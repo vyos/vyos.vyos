@@ -82,14 +82,16 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                     },
                 },
                 "maximum_paths": {
-                    "type": "dict",
+                    "type": "list",
+                    "elements": "dict",
                     "options": {
+                        "path": {"type": "str"},
                         "count": {"type": "int"},
-                        "path_type": {"type": "str", "choices": ["ebgp", "ibgp"]},
                     },
                 },
                 "aggregate_address": {
-                    "type": "dict",
+                    "elements": "dict",
+                    "type": "list",
                     "options": {
                         "summary_only": {"type": "bool"},
                         "as_set": {"type": "bool"},
@@ -163,8 +165,12 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                         "local_as": {"type": "int"},
                         "route_server_client": {"type": "bool"},
                         "attribute_unchanged": {
-                            "type": "str",
-                            "choices": ["as_path", "med", "next_hop"],
+                            "type": "dict",
+                            "options": {
+                                "as_path": {"type": "bool"},
+                                "med": {"type": "bool"},
+                                "next_hop": {"type": "bool"}
+                            }
                         },
                         "disable_connected_check": {"type": "bool"},
                         "address": {"type": "str"},
@@ -256,7 +262,7 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                                     "type": "str",
                                     "choices": ["confed", "ignore"],
                                 },
-                                "comapre_routerid": {"type": "bool"},
+                                "compare_routerid": {"type": "bool"},
                             },
                         },
                         "enforce_first_as": {"type": "bool"},
@@ -273,8 +279,8 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                         "log_neighbor_changes": {"type": "bool"},
                         "disable_network_import_check": {"type": "bool"},
                         "confederation": {
-                            "elements": "dict",
                             "type": "list",
+                            "elements": "dict",
                             "options": {
                                 "peers": {"type": "int"},
                                 "identifier": {"type": "int"},
@@ -282,7 +288,7 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                         },
                     },
                 },
-                "as_number": {"required": True, "type": "int"},
+                "as_number": {"type": "int"},
             },
         },
     }  # pylint: disable=C0301

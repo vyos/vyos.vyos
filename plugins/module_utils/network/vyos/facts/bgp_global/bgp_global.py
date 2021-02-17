@@ -25,6 +25,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_template
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.bgp_global.bgp_global import (
     Bgp_globalArgs,
 )
+import re
 import q
 
 class Bgp_globalFacts(object):
@@ -50,24 +51,6 @@ class Bgp_globalFacts(object):
             'show configuration commands |  match "set protocols bgp"'
         )
 
-    def get_config_set(self, data):
-        """ To classify the configurations beased on interface """
-        interface_list = []
-        config_set = []
-        int_string = ""
-        for config_line in data.splitlines():
-            ospf_int = re.search(r"set interfaces \S+ (\S+) .*", config_line)
-            if ospf_int:
-                if ospf_int.group(1) not in interface_list:
-                    if int_string:
-                        config_set.append(int_string)
-                    interface_list.append(ospf_int.group(1))
-                    int_string = ""
-                int_string = int_string + config_line + "\n"
-        if int_string:
-            config_set.append(int_string)
-        return config_set
-
     def populate_facts(self, connection, ansible_facts, data=None):
         """ Populate the facts for Bgp_global network resource
 
@@ -79,26 +62,21 @@ class Bgp_globalFacts(object):
         :returns: facts
         """
         facts = {}
-        objs = []
+        objs = {}
+        config_lines = []
 
         if not data:
             data = self.get_device_data(connection)
     
-        q(data)
-
-        # parse native config using the Ospf_interfaces template
-        bgp_global_facts = []
         for resource in data.splitlines():
-            q(resource)
-            bgp_global_parser = Bgp_globalTemplate(
-                lines=resource.split("\n")
-            )
-            objs = bgp_global_parser.parse()
-            q(objs)
-            for key, sortv in [("neighbor", "address")]:
-                if key in objs and objs[key]:
-                    objs[key] = list(objs[key].values())
-            #bgp_global_facts.append(objs)
+            if "address-family" not in resource:
+                config_lines.append(re.sub('\'', '', resource))
+
+        bgp_global_parser = Bgp_globalTemplate(lines=config_lines)
+        objs = bgp_global_parser.parse()
+        for key, sortv in [("neighbor", "address")]:
+            if key in objs and objs[key]:
+                objs[key] = list(objs[key].values())
 
         ansible_facts["ansible_network_resources"].pop("bgp_global", None)
 
