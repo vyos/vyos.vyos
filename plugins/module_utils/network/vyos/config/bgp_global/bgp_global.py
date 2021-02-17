@@ -6,6 +6,7 @@
 #
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 """
@@ -15,8 +16,7 @@ is compared to the provided configuration (as dict) and the command set
 necessary to bring the current configuration to its desired end-state is
 created.
 """
-import q
-from copy import deepcopy
+import re
 
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
@@ -46,11 +46,10 @@ class Bgp_global(ResourceModule):
             resource="bgp_global",
             tmplt=Bgp_globalTemplate(),
         )
-        self.parsers = [
-        ]
+        self.parsers = []
 
     def execute_module(self):
-        """ Execute the module
+        """Execute the module
 
         :rtype: A dictionary
         :returns: The result from module execution
@@ -61,8 +60,8 @@ class Bgp_global(ResourceModule):
         return self.result
 
     def generate_commands(self):
-        """ Generate configuration commands to send based on
-            want, have and desired state.
+        """Generate configuration commands to send based on
+        want, have and desired state.
         """
         wantd = {}
         haved = {}
@@ -89,48 +88,49 @@ class Bgp_global(ResourceModule):
             wantd = dict_merge(haved, wantd)
 
         # if state is deleted, empty out wantd and set haved to wantd
-        if self.state == "deleted":
-            haved = {
-                k: v for k, v in iteritems(haved) if k in wantd or not wantd
-            }
+        if self.state == "purged":
+            h_del = {}
+            for k, v in iteritems(haved):
+                if k in wantd or not wantd:
+                    h_del.update({k: v})
+            for num, entry in iteritems(h_del):
+                self.commands.append(
+                    self._tmplt.render({"as_number": num}, "router", True)
+                )
             wantd = {}
 
-        # remove superfluous config for overridden and deleted
-        if self.state in ["overridden", "deleted"]:
-            for k, have in iteritems(haved):
-                if k not in wantd:
-                    self._compare(want={}, have=have)
+        if self.state == "deleted":
+            self._compare(want={}, have=self.have)
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
-        q(self.commands)
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
-           populates the list of commands to be run by comparing
-           the `want` and `have` data with the `parsers` defined
-           for the Bgp_global network resource.
+        populates the list of commands to be run by comparing
+        the `want` and `have` data with the `parsers` defined
+        for the Bgp_global network resource.
         """
-        parsers = [
-            "maximum_paths",
-            "timers"
-        ]
+        parsers = ["maximum_paths", "timers"]
         self._compare_neighbor(want, have)
         self._compare_lists(want, have)
         self._compare_bgp_params(want, have)
-        q("before", have)
         for name, entry in iteritems(want):
             if name != "as_number":
                 self.compare(
                     parsers=parsers,
                     want={"as_number": want["as_number"], name: entry},
-                    have={"as_number": want["as_number"], name: have.pop(name, {})},
+                    have={
+                        "as_number": want["as_number"],
+                        name: have.pop(name, {}),
+                    },
                 )
-        q("after", have)
         for name, entry in iteritems(have):
             if name != "as_number":
                 self.compare(
-                    parsers=parsers, want={}, have={"as_number": have["as_number"], name: entry}
+                    parsers=parsers,
+                    want={},
+                    have={"as_number": have["as_number"], name: entry},
                 )
         # Do the negation first
         command_set = []
@@ -140,9 +140,7 @@ class Bgp_global(ResourceModule):
             else:
                 command_set.append(cmd)
         self.commands = command_set
-            
-            
-                
+
     def _compare_neighbor(self, want, have):
 
         parsers = [
@@ -185,7 +183,7 @@ class Bgp_global(ResourceModule):
             "neighbor.ttl_security",
             "neighbor.timers",
             "network.backdoor",
-            "network.route_map"
+            "network.route_map",
         ]
         wneigh = want.pop("neighbor", {})
         hneigh = have.pop("neighbor", {})
@@ -199,19 +197,37 @@ class Bgp_global(ResourceModule):
                     h = {}
                 self.compare(
                     parsers=parsers,
-                    want={"as_number": want["as_number"], "neighbor": {"address": peer, k: v}},
+                    want={
+                        "as_number": want["as_number"],
+                        "neighbor": {"address": peer, k: v},
+                    },
                     have={"as_number": want["as_number"], "neighbor": h},
                 )
         for name, entry in iteritems(hneigh):
             if name not in wneigh.keys():
-                self.commands.append("delete protocols bgp " + have["as_number"] + " neighbor " + name)
-                continue
+                if self._check_af(name):
+                    self._module.fail_json(
+                        msg="Use the _bgp_address_family module to delete the address_family under neighbor {0}, before replacing/deleting the neighbor.".format(
+                            name
+                        )
+                    )
+                else:
+                    self.commands.append(
+                        "delete protocols bgp "
+                        + str(have["as_number"])
+                        + " neighbor "
+                        + name
+                    )
+                    continue
             for k, v in entry.items():
                 peer = entry["address"]
                 self.compare(
                     parsers=parsers,
                     want={},
-                    have={"as_number": have["as_number"], "neighbor": {"address": peer, k: v}},
+                    have={
+                        "as_number": have["as_number"],
+                        "neighbor": {"address": peer, k: v},
+                    },
                 )
 
     def _compare_bgp_params(self, want, have):
@@ -229,35 +245,93 @@ class Bgp_global(ResourceModule):
             "bgp_params.default",
             "bgp_params.deterministic_med",
             "bgp_params.disbale_network_import_check",
-            "bgp_params.distance.prefix",
-            "bgp_params.distance.global",
             "bgp_params.enforce_first_as",
             "bgp_params.graceful_restart",
             "bgp_params.log_neighbor_changes",
             "bgp_params.no_client_to_client_reflection",
             "bgp_params.no_fast_external_failover",
             "bgp_params.routerid",
-            "bgp_params.scan_time"
+            "bgp_params.scan_time",
         ]
         wbgp = want.pop("bgp_params", {})
         hbgp = have.pop("bgp_params", {})
         for name, entry in iteritems(wbgp):
             if name == "confederation":
                 if entry != hbgp.pop(name, {}):
-                    self.addcmd({"as_number": want["as_number"], "bgp_params": {name: entry}}, "bgp_params.confederation", False) 
+                    self.addcmd(
+                        {
+                            "as_number": want["as_number"],
+                            "bgp_params": {name: entry},
+                        },
+                        "bgp_params.confederation",
+                        False,
+                    )
+            elif name == "distance":
+                if entry != hbgp.pop(name, {}):
+                    distance_parsers = [
+                        "bgp_params.distance.global",
+                        "bgp_params.distance.prefix",
+                    ]
+                    for distance_type in entry:
+                        self.compare(
+                            parsers=distance_parsers,
+                            want={
+                                "as_number": want["as_number"],
+                                "bgp_params": {name: distance_type},
+                            },
+                            have={
+                                "as_number": want["as_number"],
+                                "bgp_params": {name: hbgp.pop(name, {})},
+                            },
+                        )
             else:
                 self.compare(
                     parsers=parsers,
-                    want={"as_number": want["as_number"], "bgp_params": {name: entry}},
-                    have={"as_number": want["as_number"], "bgp_params": {name: hbgp.pop(name, {})}},
+                    want={
+                        "as_number": want["as_number"],
+                        "bgp_params": {name: entry},
+                    },
+                    have={
+                        "as_number": want["as_number"],
+                        "bgp_params": {name: hbgp.pop(name, {})},
+                    },
                 )
+        if not wbgp and hbgp:
+            self.commands.append(
+                "delete protocols bgp "
+                + str(have["as_number"])
+                + " parameters"
+            )
+            hbgp = {}
         for name, entry in iteritems(hbgp):
             if name == "confederation":
-                self.addcmd({"as_number": have["as_number"], "bgp_params": {name: entry}}, "bgp_params.confederation", True)
-            elif name == "bestpath" and name not in wbgp.keys():
-                self.commands.append("delete protocols bgp " + have["as_number"] + " parameters bestpath")
+                self.commands.append(
+                    "delete protocols bgp "
+                    + str(have["as_number"])
+                    + " parameters confederation"
+                )
+            elif name == "distance":
+                distance_parsers = [
+                    "bgp_params.distance.global",
+                    "bgp_params.distance.prefix",
+                ]
+                self.compare(
+                    parsers=distance_parsers,
+                    want={},
+                    have={
+                        "as_number": have["as_number"],
+                        "bgp_params": {name: entry[0]},
+                    },
+                )
             else:
-                self.compare(parsers=parsers, want={}, have={"as_number": have["as_number"], "bgp_params": {name: entry}})
+                self.compare(
+                    parsers=parsers,
+                    want={},
+                    have={
+                        "as_number": have["as_number"],
+                        "bgp_params": {name: entry},
+                    },
+                )
 
     def _compare_lists(self, want, have):
         parsers = [
@@ -265,28 +339,43 @@ class Bgp_global(ResourceModule):
             "network.route_map",
             "redistribute.metric",
             "redistribute.route_map",
-            "aggregate_address"
+            "aggregate_address",
         ]
         for attrib in ["redistribute", "network", "aggregate_address"]:
             wdict = want.pop(attrib, {})
             hdict = have.pop(attrib, {})
             for key, entry in iteritems(wdict):
-                q(key, entry, hdict.get(key, {}))
                 if entry != hdict.get(key, {}):
-                    self.compare(parsers=parsers, want={"as_number": want["as_number"], attrib: entry}, have=hdict.pop(key, {}))
+                    self.compare(
+                        parsers=parsers,
+                        want={"as_number": want["as_number"], attrib: entry},
+                        have=hdict.pop(key, {}),
+                    )
                 hdict.pop(key, {})
             # remove remaining items in have for replaced
+            if not wdict and hdict:
+                attrib = re.sub("_", "-", attrib)
+                self.commands.append(
+                    "delete protocols bgp "
+                    + str(have["as_number"])
+                    + " "
+                    + attrib
+                )
+                hdict = {}
             for key, entry in iteritems(hdict):
-                self.compare(parsers=parsers, want={}, have={"as_number": have["as_number"], attrib: entry})
+                self.compare(
+                    parsers=parsers,
+                    want={},
+                    have={"as_number": have["as_number"], attrib: entry},
+                )
 
     def _compare_neigh_lists(self, want, have):
-        parsers = [
-            "neighbor.distribute_list",
-            "neighbor.filter_list",
-            "neighbor.prefix_list",
-            "neighbor.route_map",
-        ]
-        for attrib in ["distribute_list", "filter_list", "prefix_list", "route_map"]:
+        for attrib in [
+            "distribute_list",
+            "filter_list",
+            "prefix_list",
+            "route_map",
+        ]:
             wdict = want.pop(attrib, {})
             hdict = have.pop(attrib, {})
             for key, entry in iteritems(wdict):
@@ -310,7 +399,6 @@ class Bgp_global(ResourceModule):
                     network_dict.update({entry["address"]: entry})
                 proc["network"] = network_dict
 
-
             if "aggregate_address" in proc:
                 agg_dict = {}
                 for entry in proc.get("aggregate_address", []):
@@ -323,3 +411,16 @@ class Bgp_global(ResourceModule):
                     redis_dict.update({entry["protocol"]: entry})
                 proc["redistribute"] = redis_dict
 
+    def _check_af(self, neighbor):
+        af_present = False
+        if self._connection:
+            config_lines = self._get_config(self._connection).splitlines()
+            for line in config_lines:
+                if neighbor in line:
+                    af_present = True
+        return af_present
+
+    def _get_config(self, connection):
+        return connection.get(
+            'show configuration commands |  match "set protocols bgp .* neighbor .* address-family"'
+        )

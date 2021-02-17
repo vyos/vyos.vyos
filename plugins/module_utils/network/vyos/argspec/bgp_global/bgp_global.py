@@ -4,6 +4,7 @@
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 #############################################
@@ -30,8 +31,7 @@ The arg spec for the vyos_bgp_global module
 
 
 class Bgp_globalArgs(object):  # pylint: disable=R0903
-    """The arg spec for the vyos_bgp_global module
-    """
+    """The arg spec for the vyos_bgp_global module"""
 
     def __init__(self, **kwargs):
         pass
@@ -169,8 +169,8 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                             "options": {
                                 "as_path": {"type": "bool"},
                                 "med": {"type": "bool"},
-                                "next_hop": {"type": "bool"}
-                            }
+                                "next_hop": {"type": "bool"},
+                            },
                         },
                         "disable_connected_check": {"type": "bool"},
                         "address": {"type": "str"},
@@ -219,7 +219,8 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                     "options": {
                         "router_id": {"type": "str"},
                         "distance": {
-                            "type": "dict",
+                            "elements": "dict",
+                            "type": "list",
                             "options": {
                                 "prefix": {"type": "int"},
                                 "type": {

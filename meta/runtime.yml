@@ -6,6 +6,10 @@ plugin_routing:
       redirect: vyos.vyos.vyos
     banner:
       redirect: vyos.vyos.vyos
+    vyos_bgp_global:
+      redirect: vyos.vyos.vyos
+    bgp_global:
+      redirect: vyos.vyos.vyos
     vyos_command:
       redirect: vyos.vyos.vyos
     command:
@@ -113,6 +117,8 @@ plugin_routing:
   modules:
     banner:
       redirect: vyos.vyos.vyos_banner
+    bgp_global:
+      redirect: vyos.vyos.vyos_bgp_global
     command:
       redirect: vyos.vyos.vyos_command
     config:

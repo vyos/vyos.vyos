@@ -4,6 +4,7 @@
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 """
@@ -13,9 +14,6 @@ for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
 
-from copy import deepcopy
-
-from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
     utils,
 )
@@ -26,25 +24,14 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.bgp
     Bgp_globalArgs,
 )
 import re
-import q
+
 
 class Bgp_globalFacts(object):
-    """ The vyos bgp_global facts class
-    """
+    """The vyos bgp_global facts class"""
 
-    def __init__(self, module, subspec='config', options='options'):
+    def __init__(self, module, subspec="config", options="options"):
         self._module = module
         self.argument_spec = Bgp_globalArgs.argument_spec
-        spec = deepcopy(self.argument_spec)
-        if subspec:
-            if options:
-                facts_argument_spec = spec[subspec][options]
-            else:
-                facts_argument_spec = spec[subspec]
-        else:
-            facts_argument_spec = spec
-
-        self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def get_device_data(self, connection):
         return connection.get(
@@ -52,7 +39,7 @@ class Bgp_globalFacts(object):
         )
 
     def populate_facts(self, connection, ansible_facts, data=None):
-        """ Populate the facts for Bgp_global network resource
+        """Populate the facts for Bgp_global network resource
 
         :param connection: the device connection
         :param ansible_facts: Facts dictionary
@@ -67,10 +54,10 @@ class Bgp_globalFacts(object):
 
         if not data:
             data = self.get_device_data(connection)
-    
+
         for resource in data.splitlines():
             if "address-family" not in resource:
-                config_lines.append(re.sub('\'', '', resource))
+                config_lines.append(re.sub("'", "", resource))
 
         bgp_global_parser = Bgp_globalTemplate(lines=config_lines)
         objs = bgp_global_parser.parse()
@@ -86,6 +73,5 @@ class Bgp_globalFacts(object):
 
         facts["bgp_global"] = params.get("config", [])
         ansible_facts["ansible_network_resources"].update(facts)
-
 
         return ansible_facts

@@ -27,13 +27,14 @@ The module file for vyos_bgp_global
 """
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 DOCUMENTATION = """
 module: vyos_bgp_global
 version_added: 1.3.0
 short_description: BGP Global Resource Module.
-description: 
+description:
 - This module manages BGP global configuration of interfaces on devices running VYOS.
 author: Gomathi Selvi Srinivasan (@GomathiselviS)
 options:
@@ -330,7 +331,7 @@ options:
                 description: Maximum duration to suppress a stable route
                 type: int
               re_use:
-                description: Time to start reusing a route 
+                description: Time to start reusing a route
                 type: int
               start_supress_time:
                 description: When to start suppressing a route
@@ -390,27 +391,1016 @@ options:
           scan_time:
             description: BGP route scanner interval
             type: int
-  running_config:
-    description:
-    - This option is used only with state I(parsed).
-    - The value of this option should be the output received from the IOS device by
-      executing the command B(sh running-config | section ^interface).
-    - The state I(parsed) reads the configuration from C(running_config) option and
-      transforms it into Ansible structured data as per the resource module's argspec
-      and the value is then returned in the I(parsed) key within the result.
-  state:
-    description:
+    running_config:
+      description:
+      - This option is used only with state I(parsed).
+      - The value of this option should be the output received from the EOS device by
+        executing the command B(show running-config | section bgp).
+      - The state I(parsed) reads the configuration from C(running_config) option and
+        transforms it into Ansible structured data as per the resource module's argspec
+        and the value is then returned in the I(parsed) key within the result.
+      type: str
+    state:
+      description:
       - The state the configuration should be left in.
-    type: str
-    choices:
-    - merged
-    - replaced
-    - deleted
-    - gathered
-    - parsed
-    - rendered
-    - purged
-    default: merged
+      - State I(purged) removes all the BGP configurations from the
+        target device. Use caution with this state.('no router bgp <x>')
+      - State I(deleted) only removes BGP attributes that this modules
+        manages and does not negate the BGP process completely. Thereby, preserving
+        address-family related configurations under BGP context.
+      - Running states I(deleted) and I(replaced) will result in an error if there
+        are address-family configuration lines present under vrf context that is
+        is to be removed. Please use the  M(arista.eos.eos_bgp_address_family)
+        module for prior cleanup.
+      - Refer to examples for more details.
+      type: str
+      choices: [deleted, merged, purged, replaced, gathered, rendered, parsed]
+      default: merged
+
+"""
+EXAMPLES = """
+# Using merged
+# Before state
+
+# vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
+# vyos@vyos:~$
+
+  - name: Merge provided configuration with device configuration
+    vyos.vyos.vyos_bgp_global:
+      config:
+        as_number: "65536"
+        aggregate_address:
+          - address: "203.0.113.0/24"
+            as_set: true
+          - address: "192.0.2.0/24"
+            summary_only: true
+        network:
+          - address: "192.1.13.0/24"
+            backdoor: true
+        redistribute:
+          - protocol: "kernel"
+            metric: 45
+          - protocol: "connected"
+            route_map: "map01"
+        maximum_paths:
+          - path: "ebgp"
+            count: 20
+          - path: "ibgp"
+            count: 55
+        timers:
+          keepalive: 35
+        bgp_params:
+          bestpath:
+            as_path: "confed"
+            compare_routerid: true
+          default:
+            no_ipv4_unicast: true
+          router_id: "192.1.2.9"
+          confederation:
+            - peers: 20
+            - peers: 55
+            - identifier: 66
+        neighbor:
+          - address: "192.0.2.25"
+            disable_connected_check: true
+            timers:
+              holdtime: 30
+              keepalive: 10
+          - address: "203.0.113.5"
+            attribute_unchanged:
+              as_path: true
+              med: true
+            ebgp_multihop: 2
+            remote_as: 101
+            update_source: "192.0.2.25"
+          - address: "5001::64"
+            maximum_prefix: 34
+            distribute_list:
+              - acl: 20
+                action: "export"
+              - acl: 40
+                action: "import"
+
+      state: merged
+
+# After State
+# vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
+# set protocols bgp 65536 aggregate-address 192.0.2.0/24 'summary-only'
+# set protocols bgp 65536 aggregate-address 203.0.113.0/24 'as-set'
+# set protocols bgp 65536 maximum-paths ebgp '20'
+# set protocols bgp 65536 maximum-paths ibgp '55'
+# set protocols bgp 65536 neighbor 192.0.2.25 'disable-connected-check'
+# set protocols bgp 65536 neighbor 192.0.2.25 timers holdtime '30'
+# set protocols bgp 65536 neighbor 192.0.2.25 timers keepalive '10'
+# set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'as-path'
+# set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'med'
+# set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'next-hop'
+# set protocols bgp 65536 neighbor 203.0.113.5 ebgp-multihop '2'
+# set protocols bgp 65536 neighbor 203.0.113.5 remote-as '101'
+# set protocols bgp 65536 neighbor 203.0.113.5 update-source '192.0.2.25'
+# set protocols bgp 65536 neighbor 5001::64 distribute-list export '20'
+# set protocols bgp 65536 neighbor 5001::64 distribute-list import '40'
+# set protocols bgp 65536 neighbor 5001::64 maximum-prefix '34'
+# set protocols bgp 65536 network 192.1.13.0/24 'backdoor'
+# set protocols bgp 65536 parameters bestpath as-path 'confed'
+# set protocols bgp 65536 parameters bestpath 'compare-routerid'
+# set protocols bgp 65536 parameters confederation identifier '66'
+# set protocols bgp 65536 parameters confederation peers '20'
+# set protocols bgp 65536 parameters confederation peers '55'
+# set protocols bgp 65536 parameters default 'no-ipv4-unicast'
+# set protocols bgp 65536 parameters router-id '192.1.2.9'
+# set protocols bgp 65536 redistribute connected route-map 'map01'
+# set protocols bgp 65536 redistribute kernel metric '45'
+# set protocols bgp 65536 timers keepalive '35'
+# vyos@vyos:~$
+#
+# # Module Execution:
+#
+# "after": {
+#         "aggregate_address": [
+#             {
+#                 "address": "192.0.2.0/24",
+#                 "summary_only": true
+#             },
+#             {
+#                 "address": "203.0.113.0/24",
+#                 "as_set": true
+#             }
+#         ],
+#         "as_number": 65536,
+#         "bgp_params": {
+#             "bestpath": {
+#                 "as_path": "confed",
+#                 "compare_routerid": true
+#             },
+#             "confederation": [
+#                 {
+#                     "identifier": 66
+#                 },
+#                 {
+#                     "peers": 20
+#                 },
+#                 {
+#                     "peers": 55
+#                 }
+#             ],
+#             "default": {
+#                 "no_ipv4_unicast": true
+#             },
+#             "router_id": "192.1.2.9"
+#         },
+#         "maximum_paths": [
+#             {
+#                 "count": 20,
+#                 "path": "ebgp"
+#             },
+#             {
+#                 "count": 55,
+#                 "path": "ibgp"
+#             }
+#         ],
+#         "neighbor": [
+#             {
+#                 "address": "192.0.2.25",
+#                 "disable_connected_check": true,
+#                 "timers": {
+#                     "holdtime": 30,
+#                     "keepalive": 10
+#                 }
+#             },
+#             {
+#                 "address": "203.0.113.5",
+#                 "attribute_unchanged": {
+#                     "as_path": true,
+#                     "med": true,
+#                     "next_hop": true
+#                 },
+#                 "ebgp_multihop": 2,
+#                 "remote_as": 101,
+#                 "update_source": "192.0.2.25"
+#             },
+#             {
+#                 "address": "5001::64",
+#                 "distribute_list": [
+#                     {
+#                         "acl": 20,
+#                         "action": "export"
+#                     },
+#                     {
+#                         "acl": 40,
+#                         "action": "import"
+#                     }
+#                 ],
+#                 "maximum_prefix": 34
+#             }
+#         ],
+#         "network": [
+#             {
+#                 "address": "192.1.13.0/24",
+#                 "backdoor": true
+#             }
+#         ],
+#         "redistribute": [
+#             {
+#                 "protocol": "connected",
+#                 "route_map": "map01"
+#             },
+#             {
+#                 "metric": 45,
+#                 "protocol": "kernel"
+#             }
+#         ],
+#         "timers": {
+#             "keepalive": 35
+#         }
+#     },
+#     "before": {},
+#     "changed": true,
+#     "commands": [
+#         "set protocols bgp 65536 neighbor 192.0.2.25 disable-connected-check",
+#         "set protocols bgp 65536 neighbor 192.0.2.25 timers holdtime 30",
+#         "set protocols bgp 65536 neighbor 192.0.2.25 timers keepalive 10",
+#         "set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged as-path",
+#         "set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged med",
+#         "set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged next-hop",
+#         "set protocols bgp 65536 neighbor 203.0.113.5 ebgp-multihop 2",
+#         "set protocols bgp 65536 neighbor 203.0.113.5 remote-as 101",
+#         "set protocols bgp 65536 neighbor 203.0.113.5 update-source 192.0.2.25",
+#         "set protocols bgp 65536 neighbor 5001::64 maximum-prefix 34",
+#         "set protocols bgp 65536 neighbor 5001::64 distribute-list export 20",
+#         "set protocols bgp 65536 neighbor 5001::64 distribute-list import 40",
+#         "set protocols bgp 65536 redistribute kernel metric 45",
+#         "set protocols bgp 65536 redistribute connected route-map map01",
+#         "set protocols bgp 65536 network 192.1.13.0/24 backdoor",
+#         "set protocols bgp 65536 aggregate-address 203.0.113.0/24 as-set",
+#         "set protocols bgp 65536 aggregate-address 192.0.2.0/24 summary-only",
+#         "set protocols bgp 65536 parameters bestpath as-path confed",
+#         "set protocols bgp 65536 parameters bestpath compare-routerid",
+#         "set protocols bgp 65536 parameters default no-ipv4-unicast",
+#         "set protocols bgp 65536 parameters router-id 192.1.2.9",
+#         "set protocols bgp 65536 parameters confederation peers 20",
+#         "set protocols bgp 65536 parameters confederation peers 55",
+#         "set protocols bgp 65536 parameters confederation identifier 66",
+#         "set protocols bgp 65536 maximum-paths ebgp 20",
+#         "set protocols bgp 65536 maximum-paths ibgp 55",
+#         "set protocols bgp 65536 timers keepalive 35"
+#     ],
+
+# Using replaced:
+# --------------
+
+# Before state:
+
+# vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
+# set protocols bgp 65536 aggregate-address 192.0.2.0/24 'summary-only'
+# set protocols bgp 65536 aggregate-address 203.0.113.0/24 'as-set'
+# set protocols bgp 65536 maximum-paths ebgp '20'
+# set protocols bgp 65536 maximum-paths ibgp '55'
+# set protocols bgp 65536 neighbor 192.0.2.25 'disable-connected-check'
+# set protocols bgp 65536 neighbor 192.0.2.25 timers holdtime '30'
+# set protocols bgp 65536 neighbor 192.0.2.25 timers keepalive '10'
+# set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'as-path'
+# set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'med'
+# set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'next-hop'
+# set protocols bgp 65536 neighbor 203.0.113.5 ebgp-multihop '2'
+# set protocols bgp 65536 neighbor 203.0.113.5 remote-as '101'
+# set protocols bgp 65536 neighbor 203.0.113.5 update-source '192.0.2.25'
+# set protocols bgp 65536 neighbor 5001::64 distribute-list export '20'
+# set protocols bgp 65536 neighbor 5001::64 distribute-list import '40'
+# set protocols bgp 65536 neighbor 5001::64 maximum-prefix '34'
+# set protocols bgp 65536 network 192.1.13.0/24 'backdoor'
+# set protocols bgp 65536 parameters bestpath as-path 'confed'
+# set protocols bgp 65536 parameters bestpath 'compare-routerid'
+# set protocols bgp 65536 parameters confederation identifier '66'
+# set protocols bgp 65536 parameters confederation peers '20'
+# set protocols bgp 65536 parameters confederation peers '55'
+# set protocols bgp 65536 parameters default 'no-ipv4-unicast'
+# set protocols bgp 65536 parameters router-id '192.1.2.9'
+# set protocols bgp 65536 redistribute connected route-map 'map01'
+# set protocols bgp 65536 redistribute kernel metric '45'
+# set protocols bgp 65536 timers keepalive '35'
+# vyos@vyos:~$
+
+  - name: Replace
+    vyos.vyos.vyos_bgp_global:
+      config:
+        as_number: "65536"
+        network:
+          - address: "203.0.113.0/24"
+            route_map: map01
+        redistribute:
+          - protocol: "static"
+            route_map: "map01"
+        neighbor:
+          - address: "192.0.2.40"
+            advertisement_interval: 72
+            capability:
+              orf: "receive"
+        bgp_params:
+          bestpath:
+            as_path: "confed"
+
+      state: replaced
+# After state:
+
+# vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
+# set protocols bgp 65536 neighbor 192.0.2.40 advertisement-interval '72'
+# set protocols bgp 65536 neighbor 192.0.2.40 capability orf prefix-list 'receive'
+# set protocols bgp 65536 network 203.0.113.0/24 route-map 'map01'
+# set protocols bgp 65536 parameters bestpath as-path 'confed'
+# set protocols bgp 65536 redistribute static route-map 'map01'
+# vyos@vyos:~$
+#
+#
+# Module Execution:
+#
+# "after": {
+#         "as_number": 65536,
+#         "bgp_params": {
+#             "bestpath": {
+#                 "as_path": "confed"
+#             }
+#         },
+#         "neighbor": [
+#             {
+#                 "address": "192.0.2.40",
+#                 "advertisement_interval": 72,
+#                 "capability": {
+#                     "orf": "receive"
+#                 }
+#             }
+#         ],
+#         "network": [
+#             {
+#                 "address": "203.0.113.0/24",
+#                 "route_map": "map01"
+#             }
+#         ],
+#         "redistribute": [
+#             {
+#                 "protocol": "static",
+#                 "route_map": "map01"
+#             }
+#         ]
+#     },
+#     "before": {
+#         "aggregate_address": [
+#             {
+#                 "address": "192.0.2.0/24",
+#                 "summary_only": true
+#             },
+#             {
+#                 "address": "203.0.113.0/24",
+#                 "as_set": true
+#             }
+#         ],
+#         "as_number": 65536,
+#         "bgp_params": {
+#             "bestpath": {
+#                 "as_path": "confed",
+#                 "compare_routerid": true
+#             },
+#             "confederation": [
+#                 {
+#                     "identifier": 66
+#                 },
+#                 {
+#                     "peers": 20
+#                 },
+#                 {
+#                     "peers": 55
+#                 }
+#             ],
+#             "default": {
+#                 "no_ipv4_unicast": true
+#             },
+#             "router_id": "192.1.2.9"
+#         },
+#         "maximum_paths": [
+#             {
+#                 "count": 20,
+#                 "path": "ebgp"
+#             },
+#             {
+#                 "count": 55,
+#                 "path": "ibgp"
+#             }
+#         ],
+#         "neighbor": [
+#             {
+#                 "address": "192.0.2.25",
+#                 "disable_connected_check": true,
+#                 "timers": {
+#                     "holdtime": 30,
+#                     "keepalive": 10
+#                 }
+#             },
+#             {
+#                 "address": "203.0.113.5",
+#                 "attribute_unchanged": {
+#                     "as_path": true,
+#                     "med": true,
+#                     "next_hop": true
+#                 },
+#                 "ebgp_multihop": 2,
+#                 "remote_as": 101,
+#                 "update_source": "192.0.2.25"
+#             },
+#             {
+#                 "address": "5001::64",
+#                 "distribute_list": [
+#                     {
+#                         "acl": 20,
+#                         "action": "export"
+#                     },
+#                     {
+#                         "acl": 40,
+#                         "action": "import"
+#                     }
+#                 ],
+#                 "maximum_prefix": 34
+#             }
+#         ],
+#         "network": [
+#             {
+#                 "address": "192.1.13.0/24",
+#                 "backdoor": true
+#             }
+#         ],
+#         "redistribute": [
+#             {
+#                 "protocol": "connected",
+#                 "route_map": "map01"
+#             },
+#             {
+#                 "metric": 45,
+#                 "protocol": "kernel"
+#             }
+#         ],
+#         "timers": {
+#             "keepalive": 35
+#         }
+#     },
+#     "changed": true,
+#     "commands": [
+#         "delete protocols bgp 65536 timers",
+#         "delete protocols bgp 65536 maximum-paths ",
+#         "delete protocols bgp 65536 maximum-paths ",
+#         "delete protocols bgp 65536 parameters router-id 192.1.2.9",
+#         "delete protocols bgp 65536 parameters default",
+#         "delete protocols bgp 65536 parameters confederation",
+#         "delete protocols bgp 65536 parameters bestpath compare-routerid",
+#         "delete protocols bgp 65536 aggregate-address",
+#         "delete protocols bgp 65536 network 192.1.13.0/24",
+#         "delete protocols bgp 65536 redistribute kernel",
+#         "delete protocols bgp 65536 redistribute kernel",
+#         "delete protocols bgp 65536 redistribute connected",
+#         "delete protocols bgp 65536 redistribute connected",
+#         "delete protocols bgp 65536 neighbor 5001::64",
+#         "delete protocols bgp 65536 neighbor 203.0.113.5",
+#         "delete protocols bgp 65536 neighbor 192.0.2.25",
+#         "set protocols bgp 65536 neighbor 192.0.2.40 advertisement-interval 72",
+#         "set protocols bgp 65536 neighbor 192.0.2.40 capability orf prefix-list receive",
+#         "set protocols bgp 65536 redistribute static route-map map01",
+#         "set protocols bgp 65536 network 203.0.113.0/24 route-map map01"
+#     ],
+
+# Using deleted:
+# -------------
+
+# Before state:
+
+# vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
+# set protocols bgp 65536 neighbor 192.0.2.40 advertisement-interval '72'
+# set protocols bgp 65536 neighbor 192.0.2.40 capability orf prefix-list 'receive'
+# set protocols bgp 65536 network 203.0.113.0/24 route-map 'map01'
+# set protocols bgp 65536 parameters bestpath as-path 'confed'
+# set protocols bgp 65536 redistribute static route-map 'map01'
+# vyos@vyos:~$
+
+  - name: Delete configuration
+    vyos.vyos.vyos_bgp_global:
+      config:
+        as_number: "65536"
+      state: deleted
+
+# After state:
+
+# vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
+# set protocols bgp '65536'
+# vyos@vyos:~$
+#
+#
+# Module Execution:
+#
+# "after": {
+#         "as_number": 65536
+#     },
+#     "before": {
+#         "as_number": 65536,
+#         "bgp_params": {
+#             "bestpath": {
+#                 "as_path": "confed"
+#             }
+#         },
+#         "neighbor": [
+#             {
+#                 "address": "192.0.2.40",
+#                 "advertisement_interval": 72,
+#                 "capability": {
+#                     "orf": "receive"
+#                 }
+#             }
+#         ],
+#         "network": [
+#             {
+#                 "address": "203.0.113.0/24",
+#                 "route_map": "map01"
+#             }
+#         ],
+#         "redistribute": [
+#             {
+#                 "protocol": "static",
+#                 "route_map": "map01"
+#             }
+#         ]
+#     },
+#     "changed": true,
+#     "commands": [
+#         "delete protocols bgp 65536 neighbor 192.0.2.40",
+#         "delete protocols bgp 65536 redistribute",
+#         "delete protocols bgp 65536 network",
+#         "delete protocols bgp 65536 parameters"
+#     ],
+
+# Using purged:
+
+# Before state:
+
+# vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
+# set protocols bgp 65536 aggregate-address 192.0.2.0/24 'summary-only'
+# set protocols bgp 65536 aggregate-address 203.0.113.0/24 'as-set'
+# set protocols bgp 65536 maximum-paths ebgp '20'
+# set protocols bgp 65536 maximum-paths ibgp '55'
+# set protocols bgp 65536 neighbor 192.0.2.25 'disable-connected-check'
+# set protocols bgp 65536 neighbor 192.0.2.25 timers holdtime '30'
+# set protocols bgp 65536 neighbor 192.0.2.25 timers keepalive '10'
+# set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'as-path'
+# set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'med'
+# set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'next-hop'
+# set protocols bgp 65536 neighbor 203.0.113.5 ebgp-multihop '2'
+# set protocols bgp 65536 neighbor 203.0.113.5 remote-as '101'
+# set protocols bgp 65536 neighbor 203.0.113.5 update-source '192.0.2.25'
+# set protocols bgp 65536 neighbor 5001::64 distribute-list export '20'
+# set protocols bgp 65536 neighbor 5001::64 distribute-list import '40'
+# set protocols bgp 65536 neighbor 5001::64 maximum-prefix '34'
+# set protocols bgp 65536 network 192.1.13.0/24 'backdoor'
+# set protocols bgp 65536 parameters bestpath as-path 'confed'
+# set protocols bgp 65536 parameters bestpath 'compare-routerid'
+# set protocols bgp 65536 parameters confederation identifier '66'
+# set protocols bgp 65536 parameters confederation peers '20'
+# set protocols bgp 65536 parameters confederation peers '55'
+# set protocols bgp 65536 parameters default 'no-ipv4-unicast'
+# set protocols bgp 65536 parameters router-id '192.1.2.9'
+# set protocols bgp 65536 redistribute connected route-map 'map01'
+# set protocols bgp 65536 redistribute kernel metric '45'
+# set protocols bgp 65536 timers keepalive '35'
+# vyos@vyos:~$
+
+
+  - name: Purge configuration
+    vyos.vyos.vyos_bgp_global:
+      config:
+        as_number: "65536"
+      state: purged
+
+# After state:
+
+# vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
+# vyos@vyos:~$
+#
+# Module Execution:
+#
+#     "after": {},
+#     "before": {
+#         "aggregate_address": [
+#             {
+#                 "address": "192.0.2.0/24",
+#                 "summary_only": true
+#             },
+#             {
+#                 "address": "203.0.113.0/24",
+#                 "as_set": true
+#             }
+#         ],
+#         "as_number": 65536,
+#         "bgp_params": {
+#             "bestpath": {
+#                 "as_path": "confed",
+#                 "compare_routerid": true
+#             },
+#             "confederation": [
+#                 {
+#                     "identifier": 66
+#                 },
+#                 {
+#                     "peers": 20
+#                 },
+#                 {
+#                     "peers": 55
+#                 }
+#             ],
+#             "default": {
+#                 "no_ipv4_unicast": true
+#             },
+#             "router_id": "192.1.2.9"
+#         },
+#         "maximum_paths": [
+#             {
+#                 "count": 20,
+#                 "path": "ebgp"
+#             },
+#             {
+#                 "count": 55,
+#                 "path": "ibgp"
+#             }
+#         ],
+#         "neighbor": [
+#             {
+#                 "address": "192.0.2.25",
+#                 "disable_connected_check": true,
+#                 "timers": {
+#                     "holdtime": 30,
+#                     "keepalive": 10
+#                 }
+#             },
+#             {
+#                 "address": "203.0.113.5",
+#                 "attribute_unchanged": {
+#                     "as_path": true,
+#                     "med": true,
+#                     "next_hop": true
+#                 },
+#                 "ebgp_multihop": 2,
+#                 "remote_as": 101,
+#                 "update_source": "192.0.2.25"
+#             },
+#             {
+#                 "address": "5001::64",
+#                 "distribute_list": [
+#                     {
+#                         "acl": 20,
+#                         "action": "export"
+#                     },
+#                     {
+#                         "acl": 40,
+#                         "action": "import"
+#                     }
+#                 ],
+#                 "maximum_prefix": 34
+#             }
+#         ],
+#         "network": [
+#             {
+#                 "address": "192.1.13.0/24",
+#                 "backdoor": true
+#             }
+#         ],
+#         "redistribute": [
+#             {
+#                 "protocol": "connected",
+#                 "route_map": "map01"
+#             },
+#             {
+#                 "metric": 45,
+#                 "protocol": "kernel"
+#             }
+#         ],
+#         "timers": {
+#             "keepalive": 35
+#         }
+#     },
+#     "changed": true,
+#     "commands": [
+#         "delete protocols bgp 65536"
+#     ],
+
+
+# Deleted in presence of address family under neighbors:
+
+# Before state:
+# vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
+# set protocols bgp 65536 neighbor 192.0.2.43 advertisement-interval '72'
+# set protocols bgp 65536 neighbor 192.0.2.43 capability 'dynamic'
+# set protocols bgp 65536 neighbor 192.0.2.43 'disable-connected-check'
+# set protocols bgp 65536 neighbor 192.0.2.43 timers holdtime '30'
+# set protocols bgp 65536 neighbor 192.0.2.43 timers keepalive '10'
+# set protocols bgp 65536 neighbor 203.0.113.0 address-family 'ipv6-unicast'
+# set protocols bgp 65536 neighbor 203.0.113.0 capability orf prefix-list 'receive'
+# set protocols bgp 65536 network 203.0.113.0/24 route-map 'map01'
+# set protocols bgp 65536 parameters 'always-compare-med'
+# set protocols bgp 65536 parameters bestpath as-path 'confed'
+# set protocols bgp 65536 parameters bestpath 'compare-routerid'
+# set protocols bgp 65536 parameters dampening half-life '33'
+# set protocols bgp 65536 parameters dampening max-suppress-time '20'
+# set protocols bgp 65536 parameters dampening re-use '60'
+# set protocols bgp 65536 parameters dampening start-suppress-time '5'
+# set protocols bgp 65536 parameters default 'no-ipv4-unicast'
+# set protocols bgp 65536 parameters distance global external '66'
+# set protocols bgp 65536 parameters distance global internal '20'
+# set protocols bgp 65536 parameters distance global local '10'
+# set protocols bgp 65536 redistribute static route-map 'map01'
+# vyos@vyos:~$ ^C
+# vyos@vyos:~$
+
+
+  - name: Delete configuration
+    vyos.vyos.vyos_bgp_global:
+      config:
+        as_number: "65536"
+      state: deleted
+
+# Module Execution:
+#
+# "changed": false,
+#     "invocation": {
+#         "module_args": {
+#             "config": {
+#                 "aggregate_address": null,
+#                 "as_number": 65536,
+#                 "bgp_params": null,
+#                 "maximum_paths": null,
+#                 "neighbor": null,
+#                 "network": null,
+#                 "redistribute": null,
+#                 "timers": null
+#             },
+#             "running_config": null,
+#             "state": "deleted"
+#         }
+#     },
+#     "msg": "Use the _bgp_address_family module to delete the address_family under neighbor 203.0.113.0, before replacing/deleting the neighbor."
+# }
+
+# using gathered:
+# --------------
+
+# Before state:
+# vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
+# set protocols bgp 65536 neighbor 192.0.2.43 advertisement-interval '72'
+# set protocols bgp 65536 neighbor 192.0.2.43 capability 'dynamic'
+# set protocols bgp 65536 neighbor 192.0.2.43 'disable-connected-check'
+# set protocols bgp 65536 neighbor 192.0.2.43 timers holdtime '30'
+# set protocols bgp 65536 neighbor 192.0.2.43 timers keepalive '10'
+# set protocols bgp 65536 neighbor 203.0.113.0 address-family 'ipv6-unicast'
+# set protocols bgp 65536 neighbor 203.0.113.0 capability orf prefix-list 'receive'
+# set protocols bgp 65536 network 203.0.113.0/24 route-map 'map01'
+# set protocols bgp 65536 parameters 'always-compare-med'
+# set protocols bgp 65536 parameters bestpath as-path 'confed'
+# set protocols bgp 65536 parameters bestpath 'compare-routerid'
+# set protocols bgp 65536 parameters dampening half-life '33'
+# set protocols bgp 65536 parameters dampening max-suppress-time '20'
+# set protocols bgp 65536 parameters dampening re-use '60'
+# set protocols bgp 65536 parameters dampening start-suppress-time '5'
+# set protocols bgp 65536 parameters default 'no-ipv4-unicast'
+# set protocols bgp 65536 parameters distance global external '66'
+# set protocols bgp 65536 parameters distance global internal '20'
+# set protocols bgp 65536 parameters distance global local '10'
+# set protocols bgp 65536 redistribute static route-map 'map01'
+# vyos@vyos:~$ ^C
+
+  - name: gather configs
+    vyos.vyos.vyos_bgp_global:
+      state: gathered
+
+# Module Execution:
+# "gathered": {
+#         "as_number": 65536,
+#         "bgp_params": {
+#             "always_compare_med": true,
+#             "bestpath": {
+#                 "as_path": "confed",
+#                 "compare_routerid": true
+#             },
+#             "default": {
+#                 "no_ipv4_unicast": true
+#             },
+#             "distance": [
+#                 {
+#                     "type": "external",
+#                     "value": 66
+#                 },
+#                 {
+#                     "type": "internal",
+#                     "value": 20
+#                 },
+#                 {
+#                     "type": "local",
+#                     "value": 10
+#                 }
+#             ]
+#         },
+#         "neighbor": [
+#             {
+#                 "address": "192.0.2.43",
+#                 "advertisement_interval": 72,
+#                 "capability": {
+#                     "dynamic": true
+#                 },
+#                 "disable_connected_check": true,
+#                 "timers": {
+#                     "holdtime": 30,
+#                     "keepalive": 10
+#                 }
+#             },
+#             {
+#                 "address": "203.0.113.0",
+#                 "capability": {
+#                     "orf": "receive"
+#                 }
+#             }
+#         ],
+#         "network": [
+#             {
+#                 "address": "203.0.113.0/24",
+#                 "route_map": "map01"
+#             }
+#         ],
+#         "redistribute": [
+#             {
+#                 "protocol": "static",
+#                 "route_map": "map01"
+#             }
+#         ]
+#     },
+#
+
+# Using parsed:
+# ------------
+
+# parsed.cfg
+
+# set protocols bgp 65536 neighbor 192.0.2.43 advertisement-interval '72'
+# set protocols bgp 65536 neighbor 192.0.2.43 capability 'dynamic'
+# set protocols bgp 65536 neighbor 192.0.2.43 'disable-connected-check'
+# set protocols bgp 65536 neighbor 192.0.2.43 timers holdtime '30'
+# set protocols bgp 65536 neighbor 192.0.2.43 timers keepalive '10'
+# set protocols bgp 65536 neighbor 203.0.113.0 address-family 'ipv6-unicast'
+# set protocols bgp 65536 neighbor 203.0.113.0 capability orf prefix-list 'receive'
+# set protocols bgp 65536 network 203.0.113.0/24 route-map 'map01'
+# set protocols bgp 65536 parameters 'always-compare-med'
+# set protocols bgp 65536 parameters bestpath as-path 'confed'
+# set protocols bgp 65536 parameters bestpath 'compare-routerid'
+# set protocols bgp 65536 parameters dampening half-life '33'
+# set protocols bgp 65536 parameters dampening max-suppress-time '20'
+# set protocols bgp 65536 parameters dampening re-use '60'
+# set protocols bgp 65536 parameters dampening start-suppress-time '5'
+# set protocols bgp 65536 parameters default 'no-ipv4-unicast'
+# set protocols bgp 65536 parameters distance global external '66'
+# set protocols bgp 65536 parameters distance global internal '20'
+# set protocols bgp 65536 parameters distance global local '10'
+# set protocols bgp 65536 redistribute static route-map 'map01'
+
+  - name: parse configs
+    vyos.vyos.vyos_bgp_global:
+      running_config: "{{ lookup('file', './parsed.cfg') }}"
+      state: parsed
+    tags:
+      - parsed
+
+# Module execution:
+# "parsed": {
+#         "as_number": 65536,
+#         "bgp_params": {
+#             "always_compare_med": true,
+#             "bestpath": {
+#                 "as_path": "confed",
+#                 "compare_routerid": true
+#             },
+#             "default": {
+#                 "no_ipv4_unicast": true
+#             },
+#             "distance": [
+#                 {
+#                     "type": "external",
+#                     "value": 66
+#                 },
+#                 {
+#                     "type": "internal",
+#                     "value": 20
+#                 },
+#                 {
+#                     "type": "local",
+#                     "value": 10
+#                 }
+#             ]
+#         },
+#         "neighbor": [
+#             {
+#                 "address": "192.0.2.43",
+#                 "advertisement_interval": 72,
+#                 "capability": {
+#                     "dynamic": true
+#                 },
+#                 "disable_connected_check": true,
+#                 "timers": {
+#                     "holdtime": 30,
+#                     "keepalive": 10
+#                 }
+#             },
+#             {
+#                 "address": "203.0.113.0",
+#                 "capability": {
+#                     "orf": "receive"
+#                 }
+#             }
+#         ],
+#         "network": [
+#             {
+#                 "address": "203.0.113.0/24",
+#                 "route_map": "map01"
+#             }
+#         ],
+#         "redistribute": [
+#             {
+#                 "protocol": "static",
+#                 "route_map": "map01"
+#             }
+#         ]
+#     }
+#
+
+# Using rendered:
+# --------------
+
+  - name: Render
+    vyos.vyos.vyos_bgp_global:
+      config:
+        as_number: "65536"
+        network:
+          - address: "203.0.113.0/24"
+            route_map: map01
+        redistribute:
+          - protocol: "static"
+            route_map: "map01"
+        bgp_params:
+          always_compare_med: true
+          dampening:
+            start_suppress_time: 5
+            max_suppress_time: 20
+            half_life: 33
+            re_use: 60
+          distance:
+            - type: "internal"
+              value: 20
+            - type: "local"
+              value: 10
+            - type: "external"
+              value: 66
+          bestpath:
+            as_path: "confed"
+            compare_routerid: true
+          default:
+            no_ipv4_unicast: true
+        neighbor:
+          - address: "192.0.2.43"
+            disable_connected_check: true
+            advertisement_interval: 72
+            capability:
+              dynamic: true
+            timers:
+              holdtime: 30
+              keepalive: 10
+          - address: "203.0.113.0"
+            capability:
+              orf: "receive"
+
+      state: rendered
+
+# Module Execution:
+# "rendered": [
+#         "set protocols bgp 65536 neighbor 192.0.2.43 disable-connected-check",
+#         "set protocols bgp 65536 neighbor 192.0.2.43 advertisement-interval 72",
+#         "set protocols bgp 65536 neighbor 192.0.2.43 capability dynamic",
+#         "set protocols bgp 65536 neighbor 192.0.2.43 timers holdtime 30",
+#         "set protocols bgp 65536 neighbor 192.0.2.43 timers keepalive 10",
+#         "set protocols bgp 65536 neighbor 203.0.113.0 capability orf prefix-list receive",
+#         "set protocols bgp 65536 redistribute static route-map map01",
+#         "set protocols bgp 65536 network 203.0.113.0/24 route-map map01",
+#         "set protocols bgp 65536 parameters always-compare-med",
+#         "set protocols bgp 65536 parameters dampening half-life 33",
+#         "set protocols bgp 65536 parameters dampening max-suppress-time 20",
+#         "set protocols bgp 65536 parameters dampening re-use 60",
+#         "set protocols bgp 65536 parameters dampening start-suppress-time 5",
+#         "set protocols bgp 65536 parameters distance global internal 20",
+#         "set protocols bgp 65536 parameters distance global local 10",
+#         "set protocols bgp 65536 parameters distance global external 66",
+#         "set protocols bgp 65536 parameters bestpath as-path confed",
+#         "set protocols bgp 65536 parameters bestpath compare-routerid",
+#         "set protocols bgp 65536 parameters default no-ipv4-unicast"
+#     ]
+
+
 """
 
 from ansible.module_utils.basic import AnsibleModule
@@ -432,12 +1422,12 @@ def main():
         argument_spec=Bgp_globalArgs.argument_spec,
         mutually_exclusive=[],
         required_if=[],
-        supports_check_mode=False
+        supports_check_mode=False,
     )
 
     result = Bgp_global(module).execute_module()
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

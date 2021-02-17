@@ -4,12 +4,13 @@
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 """
-The Bgp_global parser templates file. This contains 
-a list of parser definitions and associated functions that 
-facilitates both facts gathering and native command generation for 
+The Bgp_global parser templates file. This contains
+a list of parser definitions and associated functions that
+facilitates both facts gathering and native command generation for
 the given network resource.
 """
 
@@ -20,12 +21,15 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.n
     NetworkTemplate,
 )
 
+
 def _tmplt_bgp_params_confederation(config_data):
     command = []
-    for list_el in config_data['bgp_params']['confederation']:
+    for list_el in config_data["bgp_params"]["confederation"]:
         for k, v in iteritems(list_el):
             command.append(
-                "protocols bgp {as_number} parameters confederation ".format(**config_data)
+                "protocols bgp {as_number} parameters confederation ".format(
+                    **config_data
+                )
                 + k
                 + " "
                 + str(v)
@@ -33,32 +37,34 @@ def _tmplt_bgp_params_confederation(config_data):
 
     return command
 
+
 def _tmplt_bgp_maximum_paths(config_data):
     command = []
-    for list_el in config_data['maximum_paths']:
-         command.append(
+    for list_el in config_data["maximum_paths"]:
+        command.append(
             "protocols bgp {as_number} maximum-paths ".format(**config_data)
-            + list_el['path']
+            + list_el["path"]
             + " "
-            + str(list_el['count'])
+            + str(list_el["count"])
         )
     return command
+
 
 def _tmplt_delete_bgp_maximum_paths(config_data):
     command = []
-    for list_el in config_data['maximum_paths']:
-         command.append(
+    for list_el in config_data["maximum_paths"]:
+        command.append(
             "protocols bgp {as_number} maximum-paths ".format(**config_data)
-            + list_el['path']
         )
     return command
 
+
 def _tmplt_bgp_neighbor_timers(config_data):
     command = []
-    for k, v in iteritems(config_data['neighbor']['timers']):
+    for k, v in iteritems(config_data["neighbor"]["timers"]):
         command.append(
             "protocols bgp {as_number} neighbor ".format(**config_data)
-            + config_data['neighbor']['address']
+            + config_data["neighbor"]["address"]
             + " timers "
             + k
             + " "
@@ -67,96 +73,145 @@ def _tmplt_bgp_neighbor_timers(config_data):
 
     return command
 
+
 def _tmplt_bgp_timers(config_data):
     command = []
-    for k, v in iteritems(config_data['timers']):
+    for k, v in iteritems(config_data["timers"]):
         command.append(
             "protocols bgp {as_number} ".format(**config_data)
             + "timers "
             + k
             + " "
-            + str(v) 
+            + str(v)
         )
 
     return command
 
-def _tmplt_bgp_neighbor_attribute_unchanged_as_path (config_data):
-    command = (
-        "protocols bgp {as_number} ".format(**config_data)
-        + "neighbor {address} attribute-unchanged as-path".format(**config_data['neighbor'])    
+
+def _tmplt_bgp_neighbor_attribute_unchanged_as_path(config_data):
+    command = "protocols bgp {as_number} ".format(
+        **config_data
+    ) + "neighbor {address} attribute-unchanged as-path".format(
+        **config_data["neighbor"]
     )
     return command
 
 
-def _tmplt_bgp_neighbor_attribute_unchanged_med (config_data):
-    command = (
-        "protocols bgp {as_number} ".format(**config_data)
-        + "neighbor {address} attribute-unchanged med".format(**config_data['neighbor'])    
+def _tmplt_bgp_neighbor_attribute_unchanged_med(config_data):
+    command = "protocols bgp {as_number} ".format(
+        **config_data
+    ) + "neighbor {address} attribute-unchanged med".format(
+        **config_data["neighbor"]
     )
     return command
 
-def _tmplt_bgp_neighbor_attribute_unchanged_next_hop (config_data):
-    command = (
-        "protocols bgp {as_number} ".format(**config_data)
-        + "neighbor {address} attribute-unchanged next-hop".format(**config_data['neighbor'])    
+
+def _tmplt_bgp_neighbor_attribute_unchanged_next_hop(config_data):
+    command = "protocols bgp {as_number} ".format(
+        **config_data
+    ) + "neighbor {address} attribute-unchanged next-hop".format(
+        **config_data["neighbor"]
     )
     return command
+
 
 def _tmplt_bgp_neighbor_distribute_list(config_data):
     command = []
-    for list_el in config_data['neighbor']['distribute_list']:
+    for list_el in config_data["neighbor"]["distribute_list"]:
         command.append(
             "protocols bgp {as_number} ".format(**config_data)
-            + "neighbor {address} distribute-list ".format(**config_data['neighbor'])
+            + "neighbor {address} distribute-list ".format(
+                **config_data["neighbor"]
+            )
             + list_el["action"]
             + " "
-            + str(list_el["acl"]) 
+            + str(list_el["acl"])
         )
     return command
+
 
 def _tmplt_bgp_neighbor_route_map(config_data):
     command = []
-    for list_el in config_data['neighbor']['route_map']:
+    for list_el in config_data["neighbor"]["route_map"]:
         command.append(
             "protocols bgp {as_number} ".format(**config_data)
-            + "neighbor {address} route-map ".format(**config_data['neighbor'])
+            + "neighbor {address} route-map ".format(**config_data["neighbor"])
             + list_el["action"]
             + " "
-            + str(list_el["route_map"]) 
+            + str(list_el["route_map"])
         )
     return command
+
 
 def _tmplt_bgp_neighbor_prefix_list(config_data):
     command = []
-    for list_el in config_data['neighbor']['prefix_list']:
+    for list_el in config_data["neighbor"]["prefix_list"]:
         command.append(
             "protocols bgp {as_number} ".format(**config_data)
-            + "neighbor {address} prefix-list ".format(**config_data['neighbor'])
+            + "neighbor {address} prefix-list ".format(
+                **config_data["neighbor"]
+            )
             + list_el["action"]
             + " "
-            + str(list_el["prefix_list"]) 
+            + str(list_el["prefix_list"])
         )
     return command
+
 
 def _tmplt_bgp_neighbor_filter_list(config_data):
     command = []
-    for list_el in config_data['neighbor']['filter_list']:
+    for list_el in config_data["neighbor"]["filter_list"]:
         command.append(
             "protocols bgp {as_number} ".format(**config_data)
-            + "neighbor {address} filter-list ".format(**config_data['neighbor'])
+            + "neighbor {address} filter-list ".format(
+                **config_data["neighbor"]
+            )
             + list_el["action"]
             + " "
-            + str(list_el["path_list"]) 
+            + str(list_el["path_list"])
         )
     return command
+
+
+def _tmplt_bgp_params_distance(config_data):
+    command = (
+        "protocols bgp {as_number} parameters distance global ".format(
+            **config_data
+        )
+        + config_data["bgp_params"]["distance"]["type"]
+        + " "
+        + str(config_data["bgp_params"]["distance"]["value"])
+    )
+    return command
+
+
 class Bgp_globalTemplate(NetworkTemplate):
     def __init__(self, lines=None):
         prefix = {"set": "set", "remove": "delete"}
-        super(Bgp_globalTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix)
+        super(Bgp_globalTemplate, self).__init__(
+            lines=lines, tmplt=self, prefix=prefix
+        )
 
     # fmt: off
     PARSERS = [
-         {
+        {
+            "name": "router",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+(?P<as_num>\d+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "setval": "protocols bgp {{ as_number }}",
+            "compval": "as_number",
+            "result": {
+                "as_number": "{{ as_num }}",
+            }
+        },
+        {
             "name": "aggregate_address",
             "getval": re.compile(
                 r"""
@@ -172,7 +227,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} aggregate-address {{ aggregate_address.address }}{{ (' as-set') if aggregate_address.as_set is defined }}{{ (' summary-only') if aggregate_address.summary_only is defined }}",
-            "remval": "protocols bgp {{ as_number }} aggregate-address {{ aggregate_address.address }}"
+            "remval": "protocols bgp {{ as_number }} aggregate-address {{ aggregate_address.address }}",
             "compval": "aggregate_address",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -227,8 +282,8 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} advertisement-interval {{ neighbor.adverisement_interval }}",
-            "remval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} advertisement-interval"
+            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} advertisement-interval {{ neighbor.advertisement_interval }}",
+            "remval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} advertisement-interval",
             "compval": "neighbor.advertisement_interval",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -238,7 +293,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "advertisement_interval": "{{ interval }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.allowas_in",
@@ -266,7 +321,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "allowas_in": "{{ count }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.as_override",
@@ -292,7 +347,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "as_override": "{{ True }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.attribute_unchanged.as_path",
@@ -321,7 +376,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         }
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.attribute_unchanged.med",
@@ -350,7 +405,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         }
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.attribute_unchanged.next_hop",
@@ -379,7 +434,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         }
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.capability_dynamic",
@@ -397,18 +452,18 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} capability dynamic",
-            "compval": "neighbor.capability",
+            "compval": "neighbor.capability.dynamic",
             "result": {
                 "as_number": "{{ as_num }}",
                 "neighbor": {
                     "{{ address }}": {
                         "address": "{{ address }}",
                         "capability": {
-                            "dynamic": "{{ True }}"
+                            "dynamic": "{{ True if dynamic is defined}}"
                         }
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.capability_orf",
@@ -428,7 +483,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} capability orf prefix-list {{ neighbor.capability.orf }}",
-            "compval": "neighbor.capability",
+            "compval": "neighbor.capability.orf",
             "result": {
                 "as_number": "{{ as_num }}",
                 "neighbor": {
@@ -439,7 +494,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         }
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.default_originate",
@@ -467,7 +522,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "default_originate": "{{ map }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.description",
@@ -494,7 +549,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "description": "{{ desc }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.disable_capability_negotiation",
@@ -520,7 +575,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "disable_capability_negotiation": "{{ True }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.disable_connected_check",
@@ -546,7 +601,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "disable_connected_check": "{{ True }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.disable_send_community",
@@ -573,7 +628,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "disable_send_community": "{{ comm }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.distribute_list",
@@ -606,7 +661,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         ]
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.ebgp_multihop",
@@ -633,7 +688,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "ebgp_multihop": "{{ hop|int }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.filter_list",
@@ -666,7 +721,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         ]
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.local_as",
@@ -694,7 +749,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "local_as": "{{ as }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.maximum_prefix",
@@ -721,7 +776,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "maximum_prefix": "{{ num }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.nexthop_self",
@@ -747,7 +802,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "nexthop_self": "{{ True }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.override_capability",
@@ -773,7 +828,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "override_capability": "{{ True }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.passive",
@@ -799,7 +854,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "passive": "{{ True }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.password",
@@ -826,7 +881,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "password": "{{ pwd }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.peer_group_name",
@@ -853,7 +908,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "peer_group_name": "{{ name }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.port",
@@ -880,7 +935,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "port": "{{ num|int }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.prefix_list",
@@ -913,7 +968,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         ]
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.remote_as",
@@ -940,7 +995,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "remote_as": "{{ num|int }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.remove_private_as",
@@ -966,7 +1021,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "remove_private_as": "{{ True }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.route_map",
@@ -999,7 +1054,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         ]
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.route_reflector_client",
@@ -1025,7 +1080,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "route_reflector_client": "{{ True }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.route_server_client",
@@ -1051,7 +1106,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "route_server_client": "{{ True }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.shutdown",
@@ -1077,7 +1132,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "shutdown": "{{ True }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.soft_reconfiguration",
@@ -1103,7 +1158,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "soft_reconfiguration": "{{ True }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.strict_capability_match",
@@ -1129,7 +1184,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "strict_capability_match": "{{ True }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.unsuppress_map",
@@ -1156,7 +1211,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "unsuppress_map": "{{ map }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.update_source",
@@ -1183,7 +1238,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "update_source": "{{ src }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.weight",
@@ -1210,7 +1265,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "weight": "{{ num }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.ttl_security",
@@ -1237,7 +1292,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "ttl_security": "{{ ttl|int }}"
                     }
                 }
-            } 
+            }
         },
         {
             "name": "neighbor.timers",
@@ -1256,6 +1311,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_neighbor_timers,
+            "remval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} timers",
             "compval": "neighbor.timers",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1267,7 +1323,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         }
                     }
                 }
-            } 
+            }
         },
         {
             "name": "network.backdoor",
@@ -1284,7 +1340,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} network {{ network.address }} backdoor",
-            "remval": "protocols bgp {{ as_number }} network {{ network.address }}"
+            "remval": "protocols bgp {{ as_number }} network {{ network.address }}",
             "compval": "network.backdoor",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1294,7 +1350,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "backdoor": "{{ True }}"
                     }
                 ]
-            } 
+            }
         },
         {
             "name": "network.route_map",
@@ -1312,6 +1368,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} network {{ network.address }} route-map {{ network.route_map }}",
+            "remval": "protocols bgp {{ as_number }} network {{ network.address }}",
             "compval": "network.route_map",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1321,7 +1378,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "route_map": "{{ map }}"
                     }
                 ]
-            } 
+            }
         },
         {
             "name": "redistribute.metric",
@@ -1339,7 +1396,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }} metric {{ redistribute.metric }}",
-            "remval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }}"
+            "remval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }}",
             "compval": "redistribute",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1349,7 +1406,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "metric": "{{ val|int }}"
                     }
                 ]
-            } 
+            }
         },
         {
             "name": "redistribute.route_map",
@@ -1367,7 +1424,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }} route-map {{ redistribute.route_map }}",
-            "remval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }}"
+            "remval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }}",
             "compval": "redistribute",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1377,7 +1434,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                         "route_map": "{{ val }}"
                     }
                 ]
-            } 
+            }
         },
         {
             "name": "timers",
@@ -1394,13 +1451,14 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_timers,
+            "remval": "protocols bgp {{ as_number }} timers",
             "compval": "timers",
             "result": {
                 "as_number": "{{ as_num }}",
                 "timers": {
                     "{{ type }}": "{{ val }}",
                 }
-            } 
+            }
         },
         {
             "name": "bgp_params.always_compare_med",
@@ -1439,7 +1497,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters bestpath as-path {{ bgp_params.as_path }}",
+            "setval": "protocols bgp {{ as_number }} parameters bestpath as-path {{ bgp_params.bestpath.as_path }}",
             "compval": "bgp_params.bestpath.as_path",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1673,6 +1731,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} parameters default{{ (' no-ipv4-unicast') if bgp_params.default.no_ipv4_unicast is defined }}{{ (' local-pref ' + bgp_params.default.local_pred) if bgp_params.default.local_pref is defined }}",
+            "remval": "protocols bgp {{ as_number }} parameters default",
             "compval": "bgp_params.default",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1746,13 +1805,16 @@ class Bgp_globalTemplate(NetworkTemplate):
             ),
             "setval": "protocols bgp {{ as_number }} parameters distance prefix {{ bgp_params.distance.prefix }} distance {{ bgp_params.distance.value }}",
             "compval": "bgp_params.distance.prefix",
+            "remval": "protocols bgp {{ as_number }} parameters distance prefix",
             "result": {
                 "as_number": "{{ as_num }}",
                 "bgp_params": {
-                    "distance": {
-                        "prefix": "{{ prefix }}",
-                        "value": "{{ val }}"
-                    }
+                    "distance": [
+                        {
+                            "prefix": "{{ prefix }}",
+                            "value": "{{ val }}"
+                        }
+                    ]
                 }
             }
         },
@@ -1771,15 +1833,18 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters distance global {{ bgp_params.distance.type }} {{ bgp_params.distance.value }}",
+            "setval": _tmplt_bgp_params_distance,
+            "remval": "protocols bgp {{ as_number }} parameters distance global",
             "compval": "bgp_params.distance",
             "result": {
                 "as_number": "{{ as_num }}",
                 "bgp_params": {
-                    "distance": {
-                        "type": "{{ type }}",
-                        "value": "{{ val }}"
-                    }
+                    "distance": [
+                        {
+                            "type": "{{ type }}",
+                            "value": "{{ val }}"
+                        }
+                    ]
                 }
             }
         },
@@ -1927,7 +1992,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+scan-time
-                \s+(?P<sec>\d+) 
+                \s+(?P<sec>\d+)
                 *$""",
                 re.VERBOSE,
             ),
