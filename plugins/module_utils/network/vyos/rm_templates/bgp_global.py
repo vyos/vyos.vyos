@@ -1145,6 +1145,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+soft-reconfiguration
+                \s+inbound
                 *$""",
                 re.VERBOSE,
             ),
