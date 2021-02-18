@@ -76,8 +76,12 @@ class Ospf_interfaces(ResourceModule):
         """Generate configuration commands to send based on
         want, have and desired state.
         """
-        wantd = {entry["name"]: entry for entry in self.want}
-        haved = {entry["name"]: entry for entry in self.have}
+        wantd = {}
+        haved = {}
+        for entry in self.want:
+            wantd.update({entry["name"]: entry})
+        for entry in self.have:
+            haved.update({entry["name"]: entry})
 
         # turn all lists of dicts into dicts prior to merge
         for entry in wantd, haved:
@@ -88,9 +92,11 @@ class Ospf_interfaces(ResourceModule):
 
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
-            haved = {
-                k: v for k, v in iteritems(haved) if k in wantd or not wantd
-            }
+            h_del = {}
+            for k, v in iteritems(haved):
+                if k in wantd or not wantd:
+                    h_del.update({k: v})
+            haved = h_del
             have_int = []
             for k, have in iteritems(haved):
                 if k in wantd:
@@ -157,8 +163,8 @@ class Ospf_interfaces(ResourceModule):
     def _ospf_int_list_to_dict(self, entry):
         for name, family in iteritems(entry):
             if "address_family" in family:
-                family["address_family"] = {
-                    entry["afi"]: entry
-                    for entry in family.get("address_family", [])
-                }
+                addr_dict = {}
+                for entry in family.get("address_family", []):
+                    addr_dict.update({entry["afi"]: entry})
+                family["address_family"] = addr_dict
                 self._ospf_int_list_to_dict(family["address_family"])
