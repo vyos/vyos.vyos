@@ -62,7 +62,11 @@ class TestVyosModule(ModuleTestCase):
         defaults=False,
         filename=None,
     ):
-        self.load_fixtures(commands)
+
+        if filename is None:
+            self.load_fixtures(commands)
+        else:
+            self.load_fixtures(commands, filename=filename)
 
         if failed:
             result = self.failed()
@@ -101,5 +105,5 @@ class TestVyosModule(ModuleTestCase):
         self.assertEqual(result["changed"], changed, result)
         return result
 
-    def load_fixtures(self, commands=None):
+    def load_fixtures(self, commands=None, filename=None):
         pass

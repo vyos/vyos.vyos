@@ -42,15 +42,15 @@ options:
     description: A dict of BGP global configuration for interfaces.
     type: dict
     suboptions:
-      as_num:
+      as_number:
         description:
-        - AS number.
+            - AS number.
         type: int
-        required: True
       aggregate_address:
         description:
           - BGP aggregate network.
-        type: dict
+        type: list
+        elements: dict
         suboptions:
           address:
             description: BGP aggregate network.
@@ -63,18 +63,19 @@ options:
             type: bool
       maximum_paths:
         description: BGP multipaths
-        type: dict
+        type: list
+        elements: dict
         suboptions:
-          path_type:
+          path:
             description: BGP multipaths
             type: str
-            choices: ['ebgp', 'ibgp']
           count:
             description: No. of paths.
             type: int
       neighbor:
         description: BGP neighbor
-        type: dict
+        type: list
+        elements: dict
         suboptions:
           address:
             description: BGP neighbor address (v4/v6).
@@ -90,8 +91,17 @@ options:
             type: bool
           attribute_unchanged:
             description: BGP attributes are sent unchanged.
-            type: str
-            choices: ['as_path', 'med', 'next_hop']
+            type: dict
+            suboptions:
+              as_path:
+                description: as_path
+                type: bool
+              med:
+                description: med
+                type: bool
+              next_hop:
+                description: next_hop
+                type: bool
           capability:
             description: Advertise capabilities to this neighbor.
             type: dict
@@ -103,7 +113,7 @@ options:
                 description: Advertise ORF capability to this neighbor.
                 type: str
                 choices: ['send', 'receive']
-          default_originiate:
+          default_originate:
             description: Send default route to this neighbor
             type: str
           description:
@@ -154,7 +164,7 @@ options:
             description:  Maximum number of prefixes to accept from this neighbor
                nexthop-self Nexthop for routes sent to this neighbor to be the local router.
             type: int
-          nexthop-self:
+          nexthop_self:
             description:  Nexthop for routes sent to this neighbor to be the local router.
             type: bool
           override_capability:
@@ -220,7 +230,7 @@ options:
           strict_capability_match:
             description: Enable strict capability negotiation
             type: bool
-          unsupress_map:
+          unsuppress_map:
             description:  Route-map to selectively unsuppress suppressed routes
             type: str
           update_source:
@@ -299,7 +309,7 @@ options:
                 description: AS-path attribute comparison parameters
                 type: str
                 choices: ['confed', 'ignore']
-              comapre_routerid:
+              compare_routerid:
                 description: Compare the router-id for identical EBGP paths
                 type: bool
               med:
@@ -327,13 +337,13 @@ options:
               half_life:
                 description: Half-life penalty in seconds
                 type: int
-              max_supress_time:
+              max_suppress_time:
                 description: Maximum duration to suppress a stable route
                 type: int
               re_use:
                 description: Time to start reusing a route
                 type: int
-              start_supress_time:
+              start_suppress_time:
                 description: When to start suppressing a route
                 type: int
           default:
@@ -354,22 +364,19 @@ options:
             type: bool
           distance:
             description: Administratives distances for BGP routes
-            type: dict
+            type: list
+            elements: dict
             suboptions:
-              global:
-                description: Global administratives distances for BGP routes
-                type: dict
-                suboptions:
-                  type:
-                    description: Type of route
-                    type: str
-                    choices: ['external', 'internal', 'local']
-                  value:
-                    description: distance
-                    type: int
-                  prefix:
-                    description: Administrative distance for a specific BGP prefix
-                    type: int
+              type:
+                description: Type of route
+                type: str
+                choices: ['external', 'internal', 'local']
+              value:
+                description: distance
+                type: int
+              prefix:
+                description: Administrative distance for a specific BGP prefix
+                type: int
           enforce_first_as:
             description: Require first AS in the path to match peer's AS
             type: bool
@@ -391,31 +398,31 @@ options:
           scan_time:
             description: BGP route scanner interval
             type: int
-    running_config:
-      description:
-      - This option is used only with state I(parsed).
-      - The value of this option should be the output received from the EOS device by
-        executing the command B(show running-config | section bgp).
-      - The state I(parsed) reads the configuration from C(running_config) option and
-        transforms it into Ansible structured data as per the resource module's argspec
-        and the value is then returned in the I(parsed) key within the result.
-      type: str
     state:
       description:
-      - The state the configuration should be left in.
-      - State I(purged) removes all the BGP configurations from the
-        target device. Use caution with this state.('no router bgp <x>')
-      - State I(deleted) only removes BGP attributes that this modules
-        manages and does not negate the BGP process completely. Thereby, preserving
-        address-family related configurations under BGP context.
-      - Running states I(deleted) and I(replaced) will result in an error if there
-        are address-family configuration lines present under vrf context that is
-        is to be removed. Please use the  M(arista.eos.eos_bgp_address_family)
-        module for prior cleanup.
-      - Refer to examples for more details.
+          - The state the configuration should be left in.
+          - State I(purged) removes all the BGP configurations from the
+            target device. Use caution with this state.('delete protocols bgp <x>')
+          - State I(deleted) only removes BGP attributes that this modules
+            manages and does not negate the BGP process completely. Thereby, preserving
+            address-family related configurations under BGP context.
+          - Running states I(deleted) and I(replaced) will result in an error if there
+            are address-family configuration lines present under vrf context that is
+            is to be removed. Please use the  M(vyos.vyos.vyos_bgp_address_family)
+            module for prior cleanup.
+          - Refer to examples for more details.
       type: str
       choices: [deleted, merged, purged, replaced, gathered, rendered, parsed]
       default: merged
+    running_config:
+      description:
+          - This option is used only with state I(parsed).
+          - The value of this option should be the output received from the EOS device by
+            executing the command B(show running-config | section bgp).
+          - The state I(parsed) reads the configuration from C(running_config) option and
+            transforms it into Ansible structured data as per the resource module's argspec
+            and the value is then returned in the I(parsed) key within the result.
+      type: str
 
 """
 EXAMPLES = """

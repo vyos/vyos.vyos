@@ -37,7 +37,7 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
         pass
 
     argument_spec = {
-        "running_config": {},
+        "running_config": {"type": "str"},
         "state": {
             "default": "merged",
             "type": "str",
@@ -111,7 +111,7 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                     "options": {
                         "shutdown": {"type": "bool"},
                         "weight": {"type": "int"},
-                        "default_originiate": {"type": "str"},
+                        "default_originate": {"type": "str"},
                         "peer_group_name": {"type": "str"},
                         "route_reflector_client": {"type": "bool"},
                         "strict_capability_match": {"type": "bool"},
@@ -119,7 +119,7 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                         "as_override": {"type": "bool"},
                         "port": {"type": "int"},
                         "soft_reconfiguration": {"type": "bool"},
-                        "nexthop-self": {"type": "bool"},
+                        "nexthop_self": {"type": "bool"},
                         "remote_as": {"type": "int"},
                         "ebgp_multihop": {"type": "int"},
                         "route_map": {

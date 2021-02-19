@@ -61,9 +61,18 @@ class Bgp_globalFacts(object):
 
         bgp_global_parser = Bgp_globalTemplate(lines=config_lines)
         objs = bgp_global_parser.parse()
-        for key, sortv in [("neighbor", "address")]:
-            if key in objs and objs[key]:
-                objs[key] = list(objs[key].values())
+
+        if "neighbor" in objs:
+            objs["neighbor"] = list(objs["neighbor"].values())
+
+        if "network" in objs:
+            objs["network"] = sorted(
+                objs["network"], key=lambda k: k["address"]
+            )
+        if "aggregate_address" in objs:
+            objs["aggregate_address"] = sorted(
+                objs["aggregate_address"], key=lambda k: k["address"]
+            )
 
         ansible_facts["ansible_network_resources"].pop("bgp_global", None)
 

@@ -51,11 +51,15 @@ def _tmplt_bgp_maximum_paths(config_data):
 
 
 def _tmplt_delete_bgp_maximum_paths(config_data):
-    command = []
-    for list_el in config_data["maximum_paths"]:
-        command.append(
-            "protocols bgp {as_number} maximum-paths ".format(**config_data)
-        )
+    command = "protocols bgp {as_number} maximum-paths".format(**config_data)
+    return command
+
+
+def _tmplt_bgp_delete_redistribute(config_data):
+    command = (
+        "protocols bgp {as_number} redistribute ".format(**config_data)
+        + config_data["redistribute"]["protocol"]
+    )
     return command
 
 
@@ -1397,7 +1401,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }} metric {{ redistribute.metric }}",
-            "remval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }}",
+            "remval": _tmplt_bgp_delete_redistribute,
             "compval": "redistribute",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1425,7 +1429,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }} route-map {{ redistribute.route_map }}",
-            "remval": "protocols bgp {{ as_number }} redistribute {{ redistribute.protocol }}",
+            "remval": _tmplt_bgp_delete_redistribute,
             "compval": "redistribute",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1623,7 +1627,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 \s+parameters
                 \s+dampening
                 \s+half-life
-                \s+(?P<val>/S+)
+                \s+(?P<val>\S+)
                 *$""",
                 re.VERBOSE,
             ),
@@ -1649,7 +1653,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 \s+parameters
                 \s+dampening
                 \s+max-suppress-time
-                \s+(?P<val>/S+)
+                \s+(?P<val>\S+)
                 *$""",
                 re.VERBOSE,
             ),
@@ -1675,7 +1679,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 \s+parameters
                 \s+dampening
                 \s+re-use
-                \s+(?P<val>/S+)
+                \s+(?P<val>\S+)
                 *$""",
                 re.VERBOSE,
             ),
@@ -1701,7 +1705,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 \s+parameters
                 \s+dampening
                 \s+start-suppress-time
-                \s+(?P<val>/S+)
+                \s+(?P<val>\S+)
                 *$""",
                 re.VERBOSE,
             ),

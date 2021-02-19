@@ -17,7 +17,6 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 import re
-
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     dict_merge,
@@ -101,6 +100,7 @@ class Bgp_global(ResourceModule):
 
         if self.state == "deleted":
             self._compare(want={}, have=self.have)
+            wantd = {}
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
@@ -135,10 +135,11 @@ class Bgp_global(ResourceModule):
         # Do the negation first
         command_set = []
         for cmd in self.commands:
-            if "delete" in cmd:
-                command_set.insert(0, cmd)
-            else:
-                command_set.append(cmd)
+            if cmd not in command_set:
+                if "delete" in cmd:
+                    command_set.insert(0, cmd)
+                else:
+                    command_set.append(cmd)
         self.commands = command_set
 
     def _compare_neighbor(self, want, have):
@@ -187,19 +188,20 @@ class Bgp_global(ResourceModule):
         ]
         wneigh = want.pop("neighbor", {})
         hneigh = have.pop("neighbor", {})
-        self._compare_neigh_lists(want, have)
+        self._compare_neigh_lists(wneigh, hneigh)
         for name, entry in iteritems(wneigh):
             for k, v in entry.items():
-                peer = entry["address"]
+                if k == "address":
+                    continue
                 if hneigh.get(name):
-                    h = {"address": peer, k: hneigh[name].pop(k, {})}
+                    h = {"address": name, k: hneigh[name].pop(k, {})}
                 else:
                     h = {}
                 self.compare(
                     parsers=parsers,
                     want={
                         "as_number": want["as_number"],
-                        "neighbor": {"address": peer, k: v},
+                        "neighbor": {"address": name, k: v},
                     },
                     have={"as_number": want["as_number"], "neighbor": h},
                 )
@@ -220,13 +222,12 @@ class Bgp_global(ResourceModule):
                     )
                     continue
             for k, v in entry.items():
-                peer = entry["address"]
                 self.compare(
                     parsers=parsers,
                     want={},
                     have={
                         "as_number": have["as_number"],
-                        "neighbor": {"address": peer, k: v},
+                        "neighbor": {"address": name, k: v},
                     },
                 )
 
@@ -416,11 +417,11 @@ class Bgp_global(ResourceModule):
         if self._connection:
             config_lines = self._get_config(self._connection).splitlines()
             for line in config_lines:
-                if neighbor in line:
+                if "address-family" in line:
                     af_present = True
         return af_present
 
     def _get_config(self, connection):
         return connection.get(
-            'show configuration commands |  match "set protocols bgp .* neighbor .* address-family"'
+            'show configuration commands |  match "set protocols bgp .* neighbor"'
         )
