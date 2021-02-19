@@ -53,6 +53,8 @@ class TerminalModule(TerminalBase):
         re.compile(br"\x1b]0;[^\x07]*\x07"),
     ]
 
+    terminal_config_prompt = re.compile(r"^.+#$")
+
     try:
         terminal_length = os.getenv("ANSIBLE_VYOS_TERMINAL_LENGTH", 10000)
         terminal_length = int(terminal_length)

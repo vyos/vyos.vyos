@@ -1,0 +1,85 @@
+---
+- block:
+  - debug: msg="START connection={{ ansible_connection }} cli/caching.yaml"
+
+  - set_fact:
+      interface_cmds:
+        - set interfaces ethernet eth1 description 'Configured by Ansible - Interface 1'
+        - set interfaces ethernet eth1 mtu '1500'
+        - set interfaces ethernet eth1 duplex 'auto'
+        - set interfaces ethernet eth1 speed 'auto'
+        - set interfaces ethernet eth1 vif 101 description 'Eth1 - VIF 101'
+        - set interfaces ethernet eth2 description 'Configured by Ansible - Interface 2 (ADMIN DOWN)'
+        - set interfaces ethernet eth2 mtu '600'
+      l3_interface_cmds:
+        - set interfaces ethernet eth1 address '192.0.2.10/24'
+        - set interfaces ethernet eth1 address '2001:db8::10/32'
+        - set interfaces ethernet eth2 address '198.51.100.10/24'
+
+  - name: Remove interfaces from config before actual testing
+    ignore_errors: true
+    vyos.vyos.vyos_config: &rem
+      lines:
+        - delete interfaces ethernet eth1
+        - delete interfaces ethernet eth2
+      match: none
+
+  - name: Merge base interfaces configuration
+    register: result
+    vyos.vyos.vyos_interfaces: &merged
+      config:
+        - name: eth1
+          description: Configured by Ansible - Interface 1
+          mtu: 1500
+          speed: auto
+          duplex: auto
+          vifs:
+            - vlan_id: 101
+              description: Eth1 - VIF 101
+
+        - name: eth2
+          description: Configured by Ansible - Interface 2 (ADMIN DOWN)
+          mtu: 600
+      state: merged
+
+  - assert:
+      that:
+        - "{{ interface_cmds | symmetric_difference(result['commands']) |length == 0 }}"
+
+  - name: Merge base interfaces configuration (IDEMPOTENT)
+    register: result
+    vyos.vyos.vyos_interfaces: *merged
+
+  - assert:
+      that:
+        - result.changed == False
+
+  - name: Merge L3 interfaces configuration
+    register: result
+    vyos.vyos.vyos_l3_interfaces: &mergedl3
+      config:
+        - name: eth1
+          ipv4:
+            - address: 192.0.2.10/24
+          ipv6:
+            - address: 2001:db8::10/32
+        - name: eth2
+          ipv4:
+            - address: 198.51.100.10/24
+      state: merged
+
+  - assert:
+      that:
+        - "{{ l3_interface_cmds | symmetric_difference(result['commands']) |length == 0 }}"
+
+  - name: Merge L3 interfaces configuration (IDEMPOTENT)
+    register: result
+    vyos.vyos.vyos_l3_interfaces: *mergedl3
+
+  - assert:
+      that:
+        - result.changed == False
+  always:
+    - name: cleanup
+      vyos.vyos.vyos_config: *rem
+  when: ansible_connection == "network_cli" and ansible_network_single_user_mode|d(False)
