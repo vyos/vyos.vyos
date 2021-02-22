@@ -358,13 +358,6 @@ def main():
         result["__backup__"] = get_config(module=module)
 
     if any((module.params["src"], module.params["lines"])):
-        msg = (
-            "To ensure idempotency and correct diff the input configuration lines should be"
-            " similar to how they appear if present in the running configuration on device"
-        )
-        if module.params["src"]:
-            msg += " including the indentation"
-        warnings.append(msg)
         run(module, result)
 
     if module.params["save"]:
@@ -375,6 +368,16 @@ def main():
             result["changed"] = True
         run_commands(module, commands=["exit"])
 
+    if result.get("changed") and any(
+        (module.params["src"], module.params["lines"])
+    ):
+        msg = (
+            "To ensure idempotency and correct diff the input configuration lines should be"
+            " similar to how they appear if present in the running configuration on device"
+        )
+        if module.params["src"]:
+            msg += " including the indentation"
+        warnings.append(msg)
     module.exit_json(**result)
 
 
