@@ -1,0 +1,56 @@
+---
+- debug:
+    msg: START vyos_bgp_global replaced integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_af.yaml
+
+- block:
+
+    - name: Replace the existing af configuration with the provided running configuration
+      register: result
+      ignore_errors: true
+      vyos.vyos.vyos_bgp_global: &id001
+        config:
+          as_number: "65536"
+          network:
+            - address: "203.0.113.0/24"
+              route_map: map01
+          redistribute:
+            - protocol: "static"
+              route_map: "map01"
+          bgp_params:
+            always_compare_med: true
+            dampening:
+              start_suppress_time: 5
+              max_suppress_time: 20
+              half_life: 33
+              re_use: 60
+            bestpath:
+              as_path: "confed"
+              compare_routerid: true
+            default:
+              no_ipv4_unicast: true
+          neighbor:
+            - address: "192.0.2.43"
+              disable_connected_check: true
+              advertisement_interval: 72
+              capability:
+                dynamic: true
+              timers:
+                holdtime: 30
+                keepalive: 10
+            - address: "203.0.113.0"
+              capability:
+                orf: "receive"
+        state: replaced
+
+    - assert:
+        that:
+          - result.msg == 'Use the _bgp_address_family module to delete the address_family under neighbor 5001::64, before replacing/deleting the neighbor.'
+
+  always:
+
+    - include_tasks: _remove_config.yaml
