@@ -50,8 +50,36 @@ def _tmplt_bgp_maximum_paths(config_data):
     return command
 
 
+def _tmplt_bgp_aggregate_address(config_data):
+    command = "protocols bgp {as_number} aggregate-address".format(
+        **config_data
+    )
+    if config_data["aggregate_address"].get("as_set"):
+        command += " {prefix} as-set".format(
+            **config_data["aggregate_address"]
+        )
+    if config_data["aggregate_address"].get("summary_only"):
+        command += " {prefix} summary-only".format(
+            **config_data["aggregate_address"]
+        )
+    return command
+
+
 def _tmplt_delete_bgp_maximum_paths(config_data):
     command = "protocols bgp {as_number} maximum-paths".format(**config_data)
+    return command
+
+
+def _tmplt_bgp_params_default(config_data):
+    command = "protocols bgp {as_number} parameters default".format(
+        **config_data
+    )
+    if config_data["bgp_params"]["default"].get("no_ipv4_unicast"):
+        command += " no-ipv4-unicast"
+    if config_data["bgp_params"]["default"].get("local_pref"):
+        command += " local-pref {local_pref}".format(
+            **config_data["bgp_params"]["default"]
+        )
     return command
 
 
@@ -230,14 +258,14 @@ class Bgp_globalTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} aggregate-address {{ aggregate_address.address }}{{ (' as-set') if aggregate_address.as_set is defined }}{{ (' summary-only') if aggregate_address.summary_only is defined }}",
-            "remval": "protocols bgp {{ as_number }} aggregate-address {{ aggregate_address.address }}",
+            "setval": _tmplt_bgp_aggregate_address,
+            "remval": "protocols bgp {{ as_number }} aggregate-address {{ aggregate_address.prefix }}",
             "compval": "aggregate_address",
             "result": {
                 "as_number": "{{ as_num }}",
                 "aggregate_address": [
                     {
-                        "address": "{{ address }}",
+                        "prefix": "{{ address }}",
                         "as_set": "{{ True if as_set is defined }}",
                         "summary_only": "{{ True if summary_only is defined }}"
                     }
@@ -1735,7 +1763,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters default{{ (' no-ipv4-unicast') if bgp_params.default.no_ipv4_unicast is defined }}{{ (' local-pref ' + bgp_params.default.local_pred) if bgp_params.default.local_pref is defined }}",
+            "setval": _tmplt_bgp_params_default,
             "remval": "protocols bgp {{ as_number }} parameters default",
             "compval": "bgp_params.default",
             "result": {

@@ -95,7 +95,7 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                     "options": {
                         "summary_only": {"type": "bool"},
                         "as_set": {"type": "bool"},
-                        "address": {"type": "str"},
+                        "prefix": {"type": "str"},
                     },
                 },
                 "timers": {

@@ -32,7 +32,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 module: vyos_bgp_global
-version_added: 1.3.0
+version_added: 2.0.0
 short_description: BGP Global Resource Module.
 description:
 - This module manages BGP global configuration of interfaces on devices running VYOS.
@@ -52,7 +52,7 @@ options:
         type: list
         elements: dict
         suboptions:
-          address:
+          prefix:
             description: BGP aggregate network.
             type: str
           as_set:
@@ -398,31 +398,31 @@ options:
           scan_time:
             description: BGP route scanner interval
             type: int
-    state:
-      description:
-          - The state the configuration should be left in.
-          - State I(purged) removes all the BGP configurations from the
-            target device. Use caution with this state.('delete protocols bgp <x>')
-          - State I(deleted) only removes BGP attributes that this modules
-            manages and does not negate the BGP process completely. Thereby, preserving
-            address-family related configurations under BGP context.
-          - Running states I(deleted) and I(replaced) will result in an error if there
-            are address-family configuration lines present under vrf context that is
-            is to be removed. Please use the  M(vyos.vyos.vyos_bgp_address_family)
-            module for prior cleanup.
-          - Refer to examples for more details.
-      type: str
-      choices: [deleted, merged, purged, replaced, gathered, rendered, parsed]
-      default: merged
-    running_config:
-      description:
-          - This option is used only with state I(parsed).
-          - The value of this option should be the output received from the EOS device by
-            executing the command B(show running-config | section bgp).
-          - The state I(parsed) reads the configuration from C(running_config) option and
-            transforms it into Ansible structured data as per the resource module's argspec
-            and the value is then returned in the I(parsed) key within the result.
-      type: str
+  state:
+    description:
+        - The state the configuration should be left in.
+        - State I(purged) removes all the BGP configurations from the
+          target device. Use caution with this state.('delete protocols bgp <x>')
+        - State I(deleted) only removes BGP attributes that this modules
+          manages and does not negate the BGP process completely. Thereby, preserving
+          address-family related configurations under BGP context.
+        - Running states I(deleted) and I(replaced) will result in an error if there
+          are address-family configuration lines present under vrf context that is
+          is to be removed. Please use the  M(vyos.vyos.vyos_bgp_address_family)
+          module for prior cleanup.
+        - Refer to examples for more details.
+    type: str
+    choices: [deleted, merged, purged, replaced, gathered, rendered, parsed]
+    default: merged
+  running_config:
+    description:
+      - This option is used only with state I(parsed).
+      - The value of this option should be the output received from the EOS device by
+        executing the command B(show running-config | section bgp).
+      - The state I(parsed) reads the configuration from C(running_config) option and
+        transforms it into Ansible structured data as per the resource module's argspec
+        and the value is then returned in the I(parsed) key within the result.
+    type: str
 
 """
 EXAMPLES = """
@@ -437,9 +437,9 @@ EXAMPLES = """
       config:
         as_number: "65536"
         aggregate_address:
-          - address: "203.0.113.0/24"
+          - prefix: "203.0.113.0/24"
             as_set: true
-          - address: "192.0.2.0/24"
+          - prefix: "192.0.2.0/24"
             summary_only: true
         network:
           - address: "192.1.13.0/24"
@@ -526,11 +526,11 @@ EXAMPLES = """
 # "after": {
 #         "aggregate_address": [
 #             {
-#                 "address": "192.0.2.0/24",
+#                 "prefix": "192.0.2.0/24",
 #                 "summary_only": true
 #             },
 #             {
-#                 "address": "203.0.113.0/24",
+#                 "prefix": "203.0.113.0/24",
 #                 "as_set": true
 #             }
 #         ],
@@ -753,11 +753,11 @@ EXAMPLES = """
 #     "before": {
 #         "aggregate_address": [
 #             {
-#                 "address": "192.0.2.0/24",
+#                 "prefix": "192.0.2.0/24",
 #                 "summary_only": true
 #             },
 #             {
-#                 "address": "203.0.113.0/24",
+#                 "prefix": "203.0.113.0/24",
 #                 "as_set": true
 #             }
 #         ],
@@ -992,11 +992,11 @@ EXAMPLES = """
 #     "before": {
 #         "aggregate_address": [
 #             {
-#                 "address": "192.0.2.0/24",
+#                 "prefix": "192.0.2.0/24",
 #                 "summary_only": true
 #             },
 #             {
-#                 "address": "203.0.113.0/24",
+#                 "prefix": "203.0.113.0/24",
 #                 "as_set": true
 #             }
 #         ],

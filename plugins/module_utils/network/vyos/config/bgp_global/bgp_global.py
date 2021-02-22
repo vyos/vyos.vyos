@@ -208,11 +208,10 @@ class Bgp_global(ResourceModule):
         for name, entry in iteritems(hneigh):
             if name not in wneigh.keys():
                 if self._check_af(name):
-                    self._module.fail_json(
-                        msg="Use the _bgp_address_family module to delete the address_family under neighbor {0}, before replacing/deleting the neighbor.".format(
-                            name
-                        )
+                    msg = "Use the _bgp_address_family module to delete the address_family under neighbor {0}, before replacing/deleting the neighbor.".format(
+                        name
                     )
+                    self._module.fail_json(msg=msg)
                 else:
                     self.commands.append(
                         "delete protocols bgp "
@@ -403,7 +402,7 @@ class Bgp_global(ResourceModule):
             if "aggregate_address" in proc:
                 agg_dict = {}
                 for entry in proc.get("aggregate_address", []):
-                    agg_dict.update({entry["address"]: entry})
+                    agg_dict.update({entry["prefix"]: entry})
                 proc["aggregate_address"] = agg_dict
 
             if "redistribute" in proc:
