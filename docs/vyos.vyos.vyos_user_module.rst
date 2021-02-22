@@ -408,7 +408,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml+jinja
+.. code-block:: yaml
 
     - name: create a new user
       vyos.vyos.vyos_user:

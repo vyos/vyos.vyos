@@ -255,7 +255,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml+jinja
+.. code-block:: yaml
 
     - name: show configuration on ethernet devices eth0 and eth1
       vyos.vyos.vyos_command:

@@ -434,7 +434,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml+jinja
+.. code-block:: yaml
 
     - name: Create vlan
       vyos.vyos.vyos_vlan:
