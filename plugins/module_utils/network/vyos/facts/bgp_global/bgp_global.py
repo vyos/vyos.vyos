@@ -64,7 +64,9 @@ class Bgp_globalFacts(object):
 
         if "neighbor" in objs:
             objs["neighbor"] = list(objs["neighbor"].values())
-
+            objs["neighbor"] = sorted(
+                objs["neighbor"], key=lambda k: k["address"]
+            )
         if "network" in objs:
             objs["network"] = sorted(
                 objs["network"], key=lambda k: k["address"]
