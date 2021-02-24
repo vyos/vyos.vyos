@@ -1,0 +1,11 @@
+---
+- name: Remove pre-existing bgp processes
+  vyos.vyos.vyos_config:
+    lines:
+      - delete protocols bgp 65536
+      - delete policy access-list 20
+      - delete policy access-list 40
+      - delete policy route-map map01
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

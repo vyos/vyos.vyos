@@ -1,0 +1,150 @@
+---
+merged:
+  commands:
+    - set protocols bgp 65536 redistribute kernel metric 45
+    - set protocols bgp 65536 redistribute connected route-map map01
+    - set protocols bgp 65536 network 192.1.13.0/24 backdoor
+    - set protocols bgp 65536 aggregate-address 203.0.113.0/24 as-set
+    - set protocols bgp 65536 aggregate-address 192.0.2.0/24 summary-only
+    - set protocols bgp 65536 parameters bestpath as-path confed
+    - set protocols bgp 65536 parameters bestpath compare-routerid
+    - set protocols bgp 65536 parameters default no-ipv4-unicast
+    - set protocols bgp 65536 parameters router-id 192.1.2.9
+    - set protocols bgp 65536 maximum-paths ebgp 20
+    - set protocols bgp 65536 maximum-paths ibgp 55
+    - set protocols bgp 65536 timers keepalive 35
+  after:
+    aggregate_address:
+      - prefix: "192.0.2.0/24"
+        summary_only: true
+      - prefix: "203.0.113.0/24"
+        as_set: true
+    as_number: 65536
+    bgp_params:
+      bestpath:
+        as_path: "confed"
+        compare_routerid: true
+      default:
+        no_ipv4_unicast: true
+      router_id: "192.1.2.9"
+    maximum_paths:
+      - count: 20
+        path: "ebgp"
+      - count: 55
+        path: "ibgp"
+    network:
+      - address: "192.1.13.0/24"
+        backdoor: true
+    redistribute:
+      - protocol: "connected"
+        route_map: "map01"
+      - metric: 45
+        protocol: "kernel"
+    timers:
+      keepalive: 35
+
+replaced:
+  commands:
+    - delete protocols bgp 65536 timers
+    - delete protocols bgp 65536 maximum-paths
+    - delete protocols bgp 65536 parameters router-id 192.1.2.9
+    - delete protocols bgp 65536 parameters confederation
+    - delete protocols bgp 65536 aggregate-address
+    - delete protocols bgp 65536 network 192.1.13.0/24
+    - delete protocols bgp 65536 redistribute kernel
+    - delete protocols bgp 65536 redistribute connected
+    - delete protocols bgp 65536 neighbor 5001::64
+    - delete protocols bgp 65536 neighbor 203.0.113.5
+    - delete protocols bgp 65536 neighbor 192.0.2.25
+    - set protocols bgp 65536 neighbor 192.0.2.43 disable-connected-check
+    - set protocols bgp 65536 neighbor 192.0.2.43 advertisement-interval 72
+    - set protocols bgp 65536 neighbor 192.0.2.43 capability dynamic
+    - set protocols bgp 65536 neighbor 192.0.2.43 timers holdtime 30
+    - set protocols bgp 65536 neighbor 192.0.2.43 timers keepalive 10
+    - set protocols bgp 65536 neighbor 203.0.113.0 capability orf prefix-list receive
+    - set protocols bgp 65536 redistribute static route-map map01
+    - set protocols bgp 65536 network 203.0.113.0/24 route-map map01
+    - set protocols bgp 65536 parameters always-compare-med
+    - set protocols bgp 65536 parameters dampening half-life 33
+    - set protocols bgp 65536 parameters dampening max-suppress-time 20
+    - set protocols bgp 65536 parameters dampening re-use 60
+    - set protocols bgp 65536 parameters dampening start-suppress-time 5
+
+deleted:
+  commands:
+    - delete protocols bgp 65536 timers
+    - delete protocols bgp 65536 maximum-paths
+    - delete protocols bgp 65536 parameters
+    - delete protocols bgp 65536 aggregate-address
+    - delete protocols bgp 65536 network
+    - delete protocols bgp 65536 redistribute
+    - delete protocols bgp 65536 neighbor 5001::64
+    - delete protocols bgp 65536 neighbor 203.0.113.5
+    - delete protocols bgp 65536 neighbor 192.0.2.25
+
+rendered:
+  commands:
+    - set interfaces ethernet eth1 firewall in name 'INBOUND'
+    - set interfaces ethernet eth1 firewall out name 'OUTBOUND'
+    - set interfaces ethernet eth1 firewall local name 'LOCAL'
+    - set interfaces ethernet eth1 firewall local ipv6-name 'V6-LOCAL'
+    - set interfaces ethernet eth2 firewall in name 'INBOUND'
+    - set interfaces ethernet eth2 firewall out name 'OUTBOUND'
+    - set interfaces ethernet eth2 firewall local name 'LOCAL'
+    - set interfaces ethernet eth2 firewall local ipv6-name 'V6-LOCAL'
+
+populate:
+  global:
+    aggregate_address:
+      - prefix: "192.0.2.0/24"
+        summary_only: true
+      - prefix: "203.0.113.0/24"
+        as_set: true
+    as_number: 65536
+    bgp_params:
+      bestpath:
+        as_path: "confed"
+        compare_routerid: true
+      confederation:
+        - identifier: 66
+        - peers: 20
+        - peers: 55
+      default:
+        no_ipv4_unicast: true
+      router_id: "192.1.2.9"
+    maximum_paths:
+      - count: 20
+        path: "ebgp"
+      - count: 55
+        path: "ibgp"
+    neighbor:
+      - address: "192.0.2.25"
+        disable_connected_check: true
+        timers:
+          holdtime: 30
+          keepalive: 10
+      - address: "203.0.113.5"
+        attribute_unchanged:
+          as_path: true
+          med: true
+          next_hop: true
+        ebgp_multihop: 2
+        remote_as: 101
+        update_source: "192.0.2.25"
+      - address: "5001::64"
+        distribute_list:
+          - acl: 20
+            action: "export"
+          - acl: 40
+            action: "import"
+        maximum_prefix: 34
+    network:
+      - address: "192.1.13.0/24"
+        backdoor: true
+    redistribute:
+      - protocol: "connected"
+        route_map: "map01"
+      - metric: 45
+        protocol: "kernel"
+    timers:
+      keepalive: 35
