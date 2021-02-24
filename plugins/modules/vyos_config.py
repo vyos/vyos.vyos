@@ -35,18 +35,25 @@ extends_documentation_fragment:
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- To ensure idempotency and correct diff the configuration lines in the relevant module options should be similar to how they
+  appear if present in the running configuration on device including the indentation.
 options:
   lines:
     description:
-    - The ordered set of configuration lines to be managed and compared with the existing
-      configuration on the remote device.
+    - The ordered set of commands that should be configured in the section. The commands
+      must be the exact same commands as found in the device running-config as found in the
+      device running-config to ensure idempotency and correct diff. Be sure
+      to note the configuration command syntax as some commands are automatically
+      modified by the device config parser.
     type: list
     elements: str
   src:
     description:
     - The C(src) argument specifies the path to the source config file to load.  The
       source config file can either be in bracket format or set format.  The source
-      file can include Jinja2 template variables.
+      file can include Jinja2 template variables. The configuration lines in the source
+      file should be similar to how it will appear if present in the running-configuration
+      of the device including indentation to ensure idempotency and correct diff.
     type: path
   match:
     description:
@@ -81,6 +88,9 @@ options:
     - The C(config) argument specifies the base configuration to use to compare against
       the desired configuration.  If this value is not specified, the module will
       automatically retrieve the current active configuration from the remote device.
+      The configuration lines in the option value should be similar to how it
+      will appear if present in the running-configuration of the device including indentation
+      to ensure idempotency and correct diff.
     type: str
   save:
     description:
@@ -357,6 +367,21 @@ def main():
                 run_commands(module, commands=["save"])
             result["changed"] = True
         run_commands(module, commands=["exit"])
+
+    if result.get("changed") and any(
+        (module.params["src"], module.params["lines"])
+    ):
+        msg = (
+            "To ensure idempotency and correct diff the input configuration lines should be"
+            " similar to how they appear if present in"
+            " the running configuration on device"
+        )
+        if module.params["src"]:
+            msg += " including the indentation"
+        if "warnings" in result:
+            result["warnings"].append(msg)
+        else:
+            result["warnings"] = msg
 
     module.exit_json(**result)
 
