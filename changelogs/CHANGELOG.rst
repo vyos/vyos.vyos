@@ -32,7 +32,7 @@ New Modules
 -----------
 
 ansible.collections.ansible_collections.vyos.vyos.plugins.modules
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - vyos_bgp_global - BGP Global Resource Module.
 
