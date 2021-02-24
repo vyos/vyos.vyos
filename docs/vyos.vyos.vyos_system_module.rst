@@ -248,7 +248,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml
+.. code-block:: yaml+jinja
 
     - name: configure hostname and domain-name
       vyos.vyos.vyos_system:

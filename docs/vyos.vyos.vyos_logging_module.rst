@@ -360,7 +360,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml
+.. code-block:: yaml+jinja
 
     - name: configure console logging
       vyos.vyos.vyos_logging:

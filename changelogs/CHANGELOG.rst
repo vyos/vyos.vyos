@@ -5,6 +5,37 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.0.0
+======
+
+Major Changes
+-------------
+
+- Please refer to ansible.netcommon `changelog <https://github.com/ansible-collections/ansible.netcommon/blob/main/changelogs/CHANGELOG.rst#ansible-netcommon-collection-release-notes>`_ for more details.
+- Requires ansible.netcommon v2.0.0+ to support `ansible_network_single_user_mode` and `ansible_network_import_modules`
+- ipaddress is no longer in ansible.netcommon. For Python versions without ipaddress (< 3.0), the ipaddress package is now required.
+
+Minor Changes
+-------------
+
+- Add support for configuration caching (single_user_mode).
+- Add vyos BGP global resource module.(https://github.com/ansible-collections/vyos.vyos/pull/125).
+- Re-use device_info dictionary in cliconf.
+
+Bugfixes
+--------
+
+- Update docs to clarify the idemptonecy releated caveat and add it in the output warnings (https://github.com/ansible-collections/ansible.netcommon/pull/189)
+- cliconf plugin - Prevent `get_capabilities()` from getting larger every time it is called
+
+New Modules
+-----------
+
+ansible.collections.ansible_collections.vyos.vyos.plugins.modules
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+- vyos_bgp_global - BGP Global Resource Module.
+
 v1.1.1
 ======
 
@@ -49,11 +80,6 @@ Minor Changes
 
 v1.0.3
 ======
-
-Release Summary
----------------
-
-- Rereleasing 1.0.2 with updated changelog.
 
 v1.0.2
 ======

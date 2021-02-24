@@ -1,3 +1,0 @@
----
-minor_changes:
-  - Add vyos BGP global resource module.(https://github.com/ansible-collections/vyos.vyos/pull/125).
