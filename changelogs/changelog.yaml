@@ -122,6 +122,9 @@ releases:
     - prevent-vyos_config-saving-in-check-mode.yaml
     release_date: '2020-07-31'
   1.0.3:
+    changes:
+      release_summary:
+       - Rereleasing 1.0.2 with updated changelog.
     fragments:
     - 1.0.3.yaml
     release_date: '2020-08-06'

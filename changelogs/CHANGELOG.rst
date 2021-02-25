@@ -81,6 +81,11 @@ Minor Changes
 v1.0.3
 ======
 
+Release Summary
+---------------
+
+- Rereleasing 1.0.2 with updated changelog.
+
 v1.0.2
 ======
 

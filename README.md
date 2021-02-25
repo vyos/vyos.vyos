@@ -65,9 +65,6 @@ Name | Description
 [vyos.vyos.vyos_user](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_user_module.rst)|Manage the collection of local users on VyOS device
 [vyos.vyos.vyos_vlan](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vlan_module.rst)|Manage VLANs on VyOS network devices
 
-### Inventory plugins
-Name | Description
---- | ---
 
 <!--end collection content-->
 
