@@ -128,7 +128,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>The <code>config</code> argument specifies the base configuration to use to compare against the desired configuration.  If this value is not specified, the module will automatically retrieve the current active configuration from the remote device.</div>
+                        <div>The <code>config</code> argument specifies the base configuration to use to compare against the desired configuration.  If this value is not specified, the module will automatically retrieve the current active configuration from the remote device. The configuration lines in the option value should be similar to how it will appear if present in the running-configuration of the device including indentation to ensure idempotency and correct diff.</div>
                 </td>
             </tr>
             <tr>
@@ -144,7 +144,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>The ordered set of configuration lines to be managed and compared with the existing configuration on the remote device.</div>
+                        <div>The ordered set of commands that should be configured in the section. The commands must be the exact same commands as found in the device running-config as found in the device running-config to ensure idempotency and correct diff. Be sure to note the configuration command syntax as some commands are automatically modified by the device config parser.</div>
                 </td>
             </tr>
             <tr>
@@ -313,7 +313,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>The <code>src</code> argument specifies the path to the source config file to load.  The source config file can either be in bracket format or set format.  The source file can include Jinja2 template variables.</div>
+                        <div>The <code>src</code> argument specifies the path to the source config file to load.  The source config file can either be in bracket format or set format.  The source file can include Jinja2 template variables. The configuration lines in the source file should be similar to how it will appear if present in the running-configuration of the device including indentation to ensure idempotency and correct diff.</div>
                 </td>
             </tr>
     </table>
@@ -326,6 +326,7 @@ Notes
 .. note::
    - Tested against VyOS 1.1.8 (helium).
    - This module works with connection ``network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
+   - To ensure idempotency and correct diff the configuration lines in the relevant module options should be similar to how they appear if present in the running configuration on device including the indentation.
    - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
 
 
@@ -333,7 +334,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml
+.. code-block:: yaml+jinja
 
     - name: configure the remote device
       vyos.vyos.vyos_config:

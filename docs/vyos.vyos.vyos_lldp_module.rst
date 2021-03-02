@@ -209,7 +209,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml
+.. code-block:: yaml+jinja
 
     - name: Enable LLDP service
       vyos.vyos.vyos_lldp:

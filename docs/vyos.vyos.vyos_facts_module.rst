@@ -199,7 +199,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml
+.. code-block:: yaml+jinja
 
     # Gather all facts
     - vyos.vyos.vyos_facts:
