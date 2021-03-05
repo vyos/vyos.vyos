@@ -4,6 +4,7 @@
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 #############################################
@@ -30,8 +31,7 @@ The arg spec for the vyos_bgp_address_family module
 
 
 class Bgp_address_familyArgs(object):  # pylint: disable=R0903
-    """The arg spec for the vyos_bgp_address_family module
-    """
+    """The arg spec for the vyos_bgp_address_family module"""
 
     def __init__(self, **kwargs):
         pass
@@ -56,7 +56,8 @@ class Bgp_address_familyArgs(object):  # pylint: disable=R0903
             "type": "dict",
             "options": {
                 "neighbors": {
-                    "type": "dict",
+                    "elements": "dict",
+                    "type": "list",
                     "options": {
                         "address_family": {
                             "elements": "dict",
@@ -78,7 +79,7 @@ class Bgp_address_familyArgs(object):  # pylint: disable=R0903
                                         "prefix_list": {"type": "str"},
                                     },
                                 },
-                                "default_originiate": {"type": "str"},
+                                "default_originate": {"type": "str"},
                                 "distribute_list": {
                                     "elements": "dict",
                                     "type": "list",
@@ -104,8 +105,12 @@ class Bgp_address_familyArgs(object):  # pylint: disable=R0903
                                 },
                                 "route_server_client": {"type": "bool"},
                                 "attribute_unchanged": {
-                                    "type": "str",
-                                    "choices": ["as_path", "med", "next_hop"],
+                                    "type": "dict",
+                                    "options": {
+                                        "as_path": {"type": "bool"},
+                                        "med": {"type": "bool"},
+                                        "next_hop": {"type": "bool"},
+                                    },
                                 },
                                 "peer_group": {"type": "str"},
                                 "maximum_prefix": {"type": "int"},

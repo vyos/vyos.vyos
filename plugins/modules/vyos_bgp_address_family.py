@@ -27,13 +27,14 @@ The module file for vyos_bgp_address_family
 """
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 DOCUMENTATION = """
 module: vyos_bgp_address_family
 version_added: 2.1.0
 short_description: BGP Address Family Resource Module.
-description: 
+description:
 - This module manages BGP address family configuration of interfaces on devices running VYOS.
 author: Gomathi Selvi Srinivasan (@GomathiselviS)
 options:
@@ -266,12 +267,12 @@ def main():
         argument_spec=Bgp_address_familyArgs.argument_spec,
         mutually_exclusive=[],
         required_if=[],
-        supports_check_mode=False
+        supports_check_mode=False,
     )
 
     result = Bgp_address_family(module).execute_module()
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

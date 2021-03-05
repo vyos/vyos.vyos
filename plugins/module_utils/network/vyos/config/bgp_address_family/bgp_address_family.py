@@ -6,6 +6,7 @@
 #
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 """
@@ -16,7 +17,7 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
-from copy import deepcopy
+import re
 
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
@@ -46,11 +47,10 @@ class Bgp_address_family(ResourceModule):
             resource="bgp_address_family",
             tmplt=Bgp_address_familyTemplate(),
         )
-        self.parsers = [
-        ]
+        self.parsers = []
 
     def execute_module(self):
-        """ Execute the module
+        """Execute the module
 
         :rtype: A dictionary
         :returns: The result from module execution
@@ -61,11 +61,28 @@ class Bgp_address_family(ResourceModule):
         return self.result
 
     def generate_commands(self):
-        """ Generate configuration commands to send based on
-            want, have and desired state.
+        """Generate configuration commands to send based on
+        want, have and desired state.
         """
         wantd = {}
         haved = {}
+
+        if (
+            self.want.get("as_number") == self.have.get("as_number")
+            or not self.have
+        ):
+            if self.want:
+                wantd = {self.want["as_number"]: self.want}
+            if self.have:
+                haved = {self.have["as_number"]: self.have}
+        else:
+            self._module.fail_json(
+                msg="Only one bgp instance is allowed per device"
+            )
+
+        # turn all lists of dicts into dicts prior to merge
+        for entry in wantd, haved:
+            self._bgp_af_list_to_dict(entry)
 
         # if state is merged, merge want onto have and then compare
         if self.state == "merged":
@@ -73,13 +90,11 @@ class Bgp_address_family(ResourceModule):
 
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
-            haved = {
-                k: v for k, v in iteritems(haved) if k in wantd or not wantd
-            }
+            for k, have in iteritems(haved):
+                self._delete_af(wantd, have)
             wantd = {}
 
-        # remove superfluous config for overridden and deleted
-        if self.state in ["overridden", "deleted"]:
+        if self.state == "overridden":
             for k, have in iteritems(haved):
                 if k not in wantd:
                     self._compare(want={}, have=have)
@@ -89,8 +104,262 @@ class Bgp_address_family(ResourceModule):
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
-           populates the list of commands to be run by comparing
-           the `want` and `have` data with the `parsers` defined
-           for the Bgp_address_family network resource.
+        populates the list of commands to be run by comparing
+        the `want` and `have` data with the `parsers` defined
+        for the Bgp_address_family network resource.
         """
-        self.compare(parsers=self.parsers, want=want, have=have)
+        self._compare_af(want, have)
+        self._compare_neighbors(want, have)
+        # Do the negation first
+        command_set = []
+        for cmd in self.commands:
+            if cmd not in command_set:
+                if "delete" in cmd:
+                    command_set.insert(0, cmd)
+                else:
+                    command_set.append(cmd)
+        self.commands = command_set
+
+    def _compare_af(self, want, have):
+        waf = want.get("address_family", {})
+        haf = have.get("address_family", {})
+        for name, entry in iteritems(waf):
+            self._compare_lists(
+                entry,
+                have=haf.get(name, {}),
+                as_number=want["as_number"],
+                afi=name,
+            )
+        for name, entry in iteritems(haf):
+            if name not in waf.keys() and self.state == "replaced":
+                continue
+            self._compare_lists(
+                {}, entry, as_number=have["as_number"], afi=name
+            )
+
+    def _delete_af(self, want, have):
+        for as_num, entry in iteritems(want):
+            for afi, af_entry in iteritems(entry.get("address_family", {})):
+                if have.get("address_family"):
+                    for hafi, hentry in iteritems(have["address_family"]):
+                        if hafi == afi:
+                            self.commands.append(
+                                self._tmplt.render(
+                                    {
+                                        "as_number": as_num,
+                                        "address_family": {"afi": afi},
+                                    },
+                                    "address_family",
+                                    True,
+                                )
+                            )
+            for neigh, neigh_entry in iteritems(entry.get("neighbors", {})):
+                if have.get("neighbors"):
+                    for hneigh, hnentry in iteritems(have["neighbors"]):
+                        if hneigh == neigh:
+                            if not neigh_entry.get("address_family"):
+                                self.commands.append(
+                                    self._tmplt.render(
+                                        {
+                                            "as_number": as_num,
+                                            "neighbors": {
+                                                "neighbor_address": neigh
+                                            },
+                                        },
+                                        "neighbors",
+                                        True,
+                                    )
+                                )
+                            else:
+                                for k in neigh_entry["address_family"].keys():
+                                    if k in hnentry["address_family"].keys():
+                                        self.commands.append(
+                                            self._tmplt.render(
+                                                {
+                                                    "as_number": as_num,
+                                                    "neighbors": {
+                                                        "neighbor_address": neigh,
+                                                        "address_family": {
+                                                            "afi": k
+                                                        },
+                                                    },
+                                                },
+                                                "neighbors.address_family",
+                                                True,
+                                            )
+                                        )
+
+    def _compare_neighbors(self, want, have):
+        parsers = [
+            "neighbors.allowas_in",
+            "neighbors.as_override",
+            "neighbors.attribute_unchanged.as_path",
+            "neighbors.attribute_unchanged.med",
+            "neighbors.attribute_unchanged.next_hop",
+            "neighbors.capability_dynamic",
+            "neighbors.capability_orf",
+            "neighbors.default_originate",
+            "neighbors.distribute_list",
+            "neighbors.prefix_list",
+            "neighbors.filter_list",
+            "neighbors.maximum_prefix",
+            "neighbors.nexthop_local",
+            "neighbors.nexthop_self",
+            "neighbors.peer_group",
+            "neighbors.remove_private_as",
+            "neighbors.route_map",
+            "neighbors.route_reflector_client",
+            "neighbors.route_server_client",
+            "neighbors.soft_reconfiguration",
+            "neighbors.unsuppress_map",
+            "neighbors.weight",
+        ]
+        wneigh = want.get("neighbors", {})
+        hneigh = have.get("neighbors", {})
+        for name, entry in iteritems(wneigh):
+            for afi, af_entry in iteritems(entry.get("address_family")):
+                for k, val in iteritems(af_entry):
+                    w = {
+                        "as_number": want["as_number"],
+                        "neighbors": {
+                            "neighbor_address": name,
+                            "address_family": {"afi": afi, k: val},
+                        },
+                    }
+                    h = {}
+                    if hneigh.get(name):
+                        if hneigh[name]["address_family"].get(afi):
+                            if hneigh[name]["address_family"][afi].get(k):
+                                h = {
+                                    "as_number": want["as_number"],
+                                    "neighbors": {
+                                        "neighbor_address": name,
+                                        "address_family": {
+                                            "afi": afi,
+                                            k: hneigh[name]["address_family"][
+                                                afi
+                                            ].pop(k, {}),
+                                        },
+                                    },
+                                }
+                    self.compare(
+                        parsers=parsers,
+                        want=w,
+                        have=h,
+                    )
+        for name, entry in iteritems(hneigh):
+            if name not in wneigh.keys():
+                # remove surplus config for overridden and replaced
+                if self.state != "replaced":
+                    self.commands.append(
+                        self._tmplt.render(
+                            {
+                                "as_number": have["as_number"],
+                                "neighbors": {"neighbor_address": name},
+                            },
+                            "neighbors",
+                            True,
+                        )
+                    )
+                continue
+
+            for hafi, haf_entry in iteritems(entry.get("address_family")):
+                # remove surplus configs for given neighbor - replace and overridden
+                for k, val in iteritems(haf_entry):
+                    h = {
+                        "as_number": have["as_number"],
+                        "neighbors": {
+                            "neighbor_address": name,
+                            "address_family": {"afi": hafi, k: val},
+                        },
+                    }
+                    self.compare(parsers=parsers, want={}, have=h)
+
+    def _compare_lists(self, want, have, as_number, afi):
+        parsers = [
+            "aggregate_address",
+            "network.backdoor",
+            "network.path_limit",
+            "network.route_map",
+            "redistribute.metric",
+            "redistribute.route_map",
+            "redistribute.table",
+        ]
+        for attrib in ["redistribute", "networks", "aggregate_address"]:
+            wdict = want.pop(attrib, {})
+            hdict = have.pop(attrib, {})
+            for key, entry in iteritems(wdict):
+                if entry != hdict.get(key, {}):
+                    self.compare(
+                        parsers=parsers,
+                        want={
+                            "as_number": as_number,
+                            "address_family": {"afi": afi, attrib: entry},
+                        },
+                        have={
+                            "as_number": as_number,
+                            "address_family": {
+                                "afi": afi,
+                                attrib: hdict.pop(key, {}),
+                            },
+                        },
+                    )
+                hdict.pop(key, {})
+            # remove remaining items in have for replaced
+            if not wdict and hdict:
+                attrib = re.sub("_", "-", attrib)
+                attrib = re.sub("networks", "network", attrib)
+                self.commands.append(
+                    "delete protocols bgp "
+                    + str(as_number)
+                    + " "
+                    + "address-family "
+                    + afi
+                    + " "
+                    + attrib
+                )
+                hdict = {}
+            for key, entry in iteritems(hdict):
+                self.compare(
+                    parsers=parsers,
+                    want={},
+                    have={
+                        "as_number": as_number,
+                        "address_family": {"afi": afi, attrib: entry},
+                    },
+                )
+
+    def _bgp_af_list_to_dict(self, entry):
+        for name, proc in iteritems(entry):
+            if "address_family" in proc:
+                af_dict = {}
+                for entry in proc.get("address_family"):
+                    if "networks" in entry:
+                        network_dict = {}
+                        for n_entry in entry.get("networks", []):
+                            network_dict.update({n_entry["prefix"]: n_entry})
+                        entry["networks"] = network_dict
+
+                    if "aggregate_address" in entry:
+                        agg_dict = {}
+                        for a_entry in entry.get("aggregate_address", []):
+                            agg_dict.update({a_entry["prefix"]: a_entry})
+                        entry["aggregate_address"] = agg_dict
+
+                    if "redistribute" in entry:
+                        redis_dict = {}
+                        for r_entry in entry.get("redistribute", []):
+                            proto_key = r_entry.get("protocol", "table")
+                            redis_dict.update({proto_key: r_entry})
+                        entry["redistribute"] = redis_dict
+
+                for af in proc.get("address_family"):
+                    af_dict.update({af["afi"]: af})
+                proc["address_family"] = af_dict
+
+            if "neighbors" in proc:
+                neigh_dict = {}
+                for entry in proc.get("neighbors", []):
+                    neigh_dict.update({entry["neighbor_address"]: entry})
+                proc["neighbors"] = neigh_dict
+                self._bgp_af_list_to_dict(proc["neighbors"])

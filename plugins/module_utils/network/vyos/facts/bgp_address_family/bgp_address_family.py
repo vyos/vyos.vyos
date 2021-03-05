@@ -4,6 +4,7 @@
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 __metaclass__ = type
 
 """
@@ -13,9 +14,7 @@ for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
 
-from copy import deepcopy
-
-from ansible.module_utils.six import iteritems
+import re
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
     utils,
 )
@@ -26,26 +25,21 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.bgp
     Bgp_address_familyArgs,
 )
 
-class Bgp_address_familyFacts(object):
-    """ The vyos bgp_address_family facts class
-    """
 
-    def __init__(self, module, subspec='config', options='options'):
+class Bgp_address_familyFacts(object):
+    """The vyos bgp_address_family facts class"""
+
+    def __init__(self, module, subspec="config", options="options"):
         self._module = module
         self.argument_spec = Bgp_address_familyArgs.argument_spec
-        spec = deepcopy(self.argument_spec)
-        if subspec:
-            if options:
-                facts_argument_spec = spec[subspec][options]
-            else:
-                facts_argument_spec = spec[subspec]
-        else:
-            facts_argument_spec = spec
 
-        self.generated_spec = utils.generate_dict(facts_argument_spec)
+    def get_device_data(self, connection):
+        return connection.get(
+            'show configuration commands |  match "set protocols bgp"'
+        )
 
     def populate_facts(self, connection, ansible_facts, data=None):
-        """ Populate the facts for Bgp_address_family network resource
+        """Populate the facts for Bgp_address_family network resource
 
         :param connection: the device connection
         :param ansible_facts: Facts dictionary
@@ -56,21 +50,52 @@ class Bgp_address_familyFacts(object):
         """
         facts = {}
         objs = []
+        config_lines = []
 
         if not data:
-            data = connection.get()
+            data = self.get_device_data(connection)
+
+        for resource in data.splitlines():
+            if "address-family" in resource:
+                config_lines.append(re.sub("'", "", resource))
 
         # parse native config using the Bgp_address_family template
-        bgp_address_family_parser = Bgp_address_familyTemplate(lines=data.splitlines())
+        bgp_address_family_parser = Bgp_address_familyTemplate(
+            lines=config_lines
+        )
         objs = bgp_address_family_parser.parse()
+        if objs:
+            if "address_family" in objs:
+                objs["address_family"] = list(objs["address_family"].values())
+                for af in objs["address_family"]:
+                    if "networks" in af:
+                        af["networks"] = sorted(
+                            af["networks"], key=lambda k: k["prefix"]
+                        )
+                    if "aggregate_address" in af:
+                        af["aggregate_address"] = sorted(
+                            af["aggregate_address"], key=lambda k: k["prefix"]
+                        )
+            if "neighbors" in objs:
+                objs["neighbors"] = list(objs["neighbors"].values())
+                objs["neighbors"] = sorted(
+                    objs["neighbors"], key=lambda k: k["neighbor_address"]
+                )
+                for neigh in objs["neighbors"]:
+                    if "address_family" in neigh:
+                        neigh["address_family"] = list(
+                            neigh["address_family"].values()
+                        )
 
-        ansible_facts['ansible_network_resources'].pop('bgp_address_family', None)
+        ansible_facts["ansible_network_resources"].pop(
+            "bgp_address_family", None
+        )
 
         params = utils.remove_empties(
             utils.validate_config(self.argument_spec, {"config": objs})
         )
 
-        facts['bgp_address_family'] = params['config']
-        ansible_facts['ansible_network_resources'].update(facts)
+        facts["bgp_address_family"] = params.get("config", [])
+        ansible_facts["ansible_network_resources"].update(facts)
 
         return ansible_facts
