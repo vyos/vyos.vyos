@@ -1,0 +1,16 @@
+---
+- debug:
+    msg: START vyos_bgp_address_family parsed integration tests on connection={{ ansible_connection
+      }}
+
+- name: Provide the running configuration for parsing (config to be parsed)
+  become: true
+  register: result
+  vyos.vyos.vyos_bgp_address_family:
+    running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
+    state: parsed
+
+- assert:
+    that:
+      - result.changed == false
+      - result.parsed == populate.config

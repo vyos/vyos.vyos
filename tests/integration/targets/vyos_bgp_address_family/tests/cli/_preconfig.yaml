@@ -1,0 +1,10 @@
+---
+- name: setup
+  vyos.vyos.vyos_config:
+    lines:
+      - set policy access-list 20 description 'acl20'
+      - set policy access-list 40 description 'acl40'
+      - set policy route-map map01 description 'map01'
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

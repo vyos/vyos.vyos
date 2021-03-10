@@ -107,7 +107,8 @@ options:
                 type: int
       neighbors:
         description: BGP neighbor
-        type: dict
+        type: list
+        elements: dict
         suboptions:
           neighbor_address:
             description: BGP neighbor address (v4/v6).
@@ -129,8 +130,17 @@ options:
                 type: bool
               attribute_unchanged:
                 description: BGP attributes are sent unchanged.
-                type: str
-                choices: ['as_path', 'med', 'next_hop']
+                type: dict
+                suboptions:
+                    as_path:
+                      description: as_path attribute
+                      type: bool
+                    med:
+                      description: med attribute
+                      type: bool
+                    next_hop:
+                      description: next_hop attribute
+                      type: bool
               capability:
                 description: Advertise capabilities to this neighbor.
                 type: dict
@@ -142,7 +152,7 @@ options:
                     description: Advertise ORF capability to this neighbor.
                     type: str
                     choices: ['send', 'receive']
-              default_originiate:
+              default_originate:
                 description: Send default route to this neighbor
                 type: str
               distribute_list:
@@ -225,6 +235,7 @@ options:
                 description: Default weight for routes from this neighbor
                 type: int
   running_config:
+    type: str
     description:
     - This option is used only with state I(parsed).
     - The value of this option should be the output received from the IOS device by
@@ -246,6 +257,909 @@ options:
     - purged
     - overridden
     default: merged
+"""
+EXAMPLES = """
+# Using merged
+# Before state
+# vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
+# vyos@vyos:~$
+
+  - name: Merge provided configuration with device configuration
+    vyos.vyos.vyos_bgp_address_family:
+      config:
+        as_number: "100"
+        address_family:
+          - afi: "ipv4"
+            redistribute:
+              - protocol: "static"
+                metric: 50
+        neighbors:
+          - neighbor_address: "20.33.1.1/24"
+            address_family:
+              - afi: "ipv4"
+                allowas_in: 4
+                as_override: True
+                attribute_unchanged:
+                  med: True
+              - afi: "ipv6"
+                default_originate: "map01"
+                distribute_list:
+                  - action: "export"
+                    acl: 10
+          - neighbor_address: "100.11.34.12"
+            address_family:
+              - afi: "ipv4"
+                maximum_prefix: 45
+                nexthop_self: True
+                route_map:
+                  - action: "export"
+                    route_map: "map01"
+                  - action: "import"
+                    route_map: "map01"
+                weight: 50
+
+# After State:
+# vyos@vyos:~$ show configuration commands | match "set protocols bgp"
+# set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map 'map01'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export '10'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix '45'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map export 'map01'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map import 'map01'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast weight '50'
+# vyos@vyos:~$
+#
+# Module Execution:
+#
+# "after": {
+#         "address_family": [
+#             {
+#                 "afi": "ipv4",
+#                 "redistribute": [
+#                     {
+#                         "metric": 50,
+#                         "protocol": "static"
+#                     }
+#                 ]
+#             }
+#         ],
+#         "as_number": 100,
+#         "neighbors": [
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4",
+#                         "maximum_prefix": 45,
+#                         "nexthop_self": true,
+#                         "route_map": [
+#                             {
+#                                 "action": "export",
+#                                 "route_map": "map01"
+#                             },
+#                             {
+#                                 "action": "import",
+#                                 "route_map": "map01"
+#                             }
+#                         ],
+#                         "weight": 50
+#                     }
+#                 ],
+#                 "neighbor_address": "100.11.34.12"
+#             },
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4",
+#                         "allowas_in": 4,
+#                         "as_override": true,
+#                         "attribute_unchanged": {
+#                             "med": true
+#                         }
+#                     },
+#                     {
+#                         "afi": "ipv6",
+#                         "default_originate": "map01",
+#                         "distribute_list": [
+#                             {
+#                                 "acl": 10,
+#                                 "action": "export"
+#                             }
+#                         ]
+#                     }
+#                 ],
+#                 "neighbor_address": "20.33.1.1/24"
+#             }
+#         ]
+#     },
+#     "before": {},
+#     "changed": true,
+#     "commands": [
+#         "set protocols bgp 100 address-family ipv4-unicast redistribute static metric 50",
+#         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number 4",
+#         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast as-override",
+#         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med",
+#         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map map01",
+#         "set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export 10",
+#         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix 45",
+#         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self",
+#         "set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map export map01",
+#         "set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map import map01",
+#         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast weight 50"
+#     ],
+#
+
+# Using replaced:
+
+# Before state:
+
+# vyos@vyos:~$ show configuration commands | match "set protocols bgp"
+# set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map 'map01'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export '10'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix '45'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map export 'map01'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map import 'map01'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast weight '50'
+# vyos@vyos:~$
+
+  - name: Replace provided configuration with device configuration
+    vyos.vyos.vyos_bgp_address_family:
+      config:
+        as_number: "100"
+        neighbors:
+          - neighbor_address: "100.11.34.12"
+            address_family:
+              - afi: "ipv4"
+                allowas_in: 4
+                as_override: True
+                attribute_unchanged:
+                  med: True
+              - afi: "ipv6"
+                default_originate: "map01"
+                distribute_list:
+                  - action: "export"
+                    acl: 10
+          - neighbor_address: "20.33.1.1/24"
+            address_family:
+              - afi: "ipv6"
+                maximum_prefix: 45
+                nexthop_self: True
+
+      state: replaced
+
+# After State:
+
+# vyos@vyos:~$ show configuration commands | match "set protocols bgp"
+# set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast maximum-prefix '45'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast nexthop-self
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast allowas-in number '4'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast as-override
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast attribute-unchanged med
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast default-originate route-map 'map01'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast distribute-list export '10'
+# vyos@vyos:~$
+#
+#
+# # Module Execution:
+# "after": {
+#         "address_family": [
+#             {
+#                 "afi": "ipv4",
+#                 "redistribute": [
+#                     {
+#                         "metric": 50,
+#                         "protocol": "static"
+#                     }
+#                 ]
+#             }
+#         ],
+#         "as_number": 100,
+#         "neighbors": [
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4",
+#                         "allowas_in": 4,
+#                         "as_override": true,
+#                         "attribute_unchanged": {
+#                             "med": true
+#                         }
+#                     },
+#                     {
+#                         "afi": "ipv6",
+#                         "default_originate": "map01",
+#                         "distribute_list": [
+#                             {
+#                                 "acl": 10,
+#                                 "action": "export"
+#                             }
+#                         ]
+#                     }
+#                 ],
+#                 "neighbor_address": "100.11.34.12"
+#             },
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4"
+#                     },
+#                     {
+#                         "afi": "ipv6",
+#                         "maximum_prefix": 45,
+#                         "nexthop_self": true
+#                     }
+#                 ],
+#                 "neighbor_address": "20.33.1.1/24"
+#             }
+#         ]
+#     },
+#     "before": {
+#         "address_family": [
+#             {
+#                 "afi": "ipv4",
+#                 "redistribute": [
+#                     {
+#                         "metric": 50,
+#                         "protocol": "static"
+#                     }
+#                 ]
+#             }
+#         ],
+#         "as_number": 100,
+#         "neighbors": [
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4",
+#                         "maximum_prefix": 45,
+#                         "nexthop_self": true,
+#                         "route_map": [
+#                             {
+#                                 "action": "export",
+#                                 "route_map": "map01"
+#                             },
+#                             {
+#                                 "action": "import",
+#                                 "route_map": "map01"
+#                             }
+#                         ],
+#                         "weight": 50
+#                     }
+#                 ],
+#                 "neighbor_address": "100.11.34.12"
+#             },
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4",
+#                         "allowas_in": 4,
+#                         "as_override": true,
+#                         "attribute_unchanged": {
+#                             "med": true
+#                         }
+#                     },
+#                     {
+#                         "afi": "ipv6",
+#                         "default_originate": "map01",
+#                         "distribute_list": [
+#                             {
+#                                 "acl": 10,
+#                                 "action": "export"
+#                             }
+#                         ]
+#                     }
+#                 ],
+#                 "neighbor_address": "20.33.1.1/24"
+#             }
+#         ]
+#     },
+#     "changed": true,
+#     "commands": [
+#         "delete protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list",
+#         "delete protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate",
+#         "delete protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged",
+#         "delete protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast as-override",
+#         "delete protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in",
+#         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast weight",
+#         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast route-map",
+#         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self",
+#         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix",
+#         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast allowas-in number 4",
+#         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast as-override",
+#         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast attribute-unchanged med",
+#         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv6-unicast default-originate route-map map01",
+#         "set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast distribute-list export 10",
+#         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv6-unicast maximum-prefix 45",
+#         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv6-unicast nexthop-self"
+#     ],
+
+
+# Using overridden
+# vyos@vyos:~$ show configuration commands | match "set protocols bgp"
+# set protocols bgp 100 address-family ipv4-unicast network 35.1.1.0/24 backdoor
+# set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
+# set protocols bgp 100 address-family ipv6-unicast aggregate-address 6601:1:1:1::/64 summary-only
+# set protocols bgp 100 address-family ipv6-unicast network 5001:1:1:1::/64 route-map 'map01'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast maximum-prefix '45'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast nexthop-self
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast allowas-in number '4'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast as-override
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast attribute-unchanged med
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast default-originate route-map 'map01'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast distribute-list export '10'
+# vyos@vyos:~$
+
+  - name: Override
+    vyos.vyos.vyos_bgp_address_family:
+      config:
+        as_number: "100"
+        neighbors:
+          - neighbor_address: "100.11.34.12"
+            address_family:
+              - afi: "ipv6"
+                maximum_prefix: 45
+                nexthop_self: True
+                route_map:
+                  - action: "import"
+                    route_map: "map01"
+        address_family:
+          - afi: "ipv4"
+            aggregate_address:
+              - prefix: "60.9.2.0/24"
+                summary_only: True
+          - afi: "ipv6"
+            redistribute:
+              - protocol: "static"
+                metric: 50
+      state: overridden
+
+# Aft=validate-moduleser State
+
+# vyos@vyos:~$ show configuration commands | match "set protocols bgp"
+# set protocols bgp 100 address-family ipv4-unicast aggregate-address 60.9.2.0/24 summary-only
+# set protocols bgp 100 address-family ipv6-unicast redistribute static metric '50'
+# set protocols bgp 100 neighbor 20.33.1.1/24
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast maximum-prefix '45'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast nexthop-self
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast route-map import 'map01'
+# vyos@vyos:~$
+
+
+# Module Execution:
+
+# "after": {
+#         "address_family": [
+#             {
+#                 "afi": "ipv4",
+#                 "aggregate_address": [
+#                     {
+#                         "prefix": "60.9.2.0/24",
+#                         "summary_only": true
+#                     }
+#                 ]
+#             },
+#             {
+#                 "afi": "ipv6",
+#                 "redistribute": [
+#                     {
+#                         "metric": 50,
+#                         "protocol": "static"
+#                     }
+#                 ]
+#             }
+#         ],
+#         "as_number": 100,
+#         "neighbors": [
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4"
+#                     },
+#                     {
+#                         "afi": "ipv6",
+#                         "maximum_prefix": 45,
+#                         "nexthop_self": true,
+#                         "route_map": [
+#                             {
+#                                 "action": "import",
+#                                 "route_map": "map01"
+#                             }
+#                         ]
+#                     }
+#                 ],
+#                 "neighbor_address": "100.11.34.12"
+#             }
+#         ]
+#     },
+#     "before": {
+#         "address_family": [
+#             {
+#                 "afi": "ipv4",
+#                 "networks": [
+#                     {
+#                         "backdoor": true,
+#                         "prefix": "35.1.1.0/24"
+#                     }
+#                 ],
+#                 "redistribute": [
+#                     {
+#                         "metric": 50,
+#                         "protocol": "static"
+#                     }
+#                 ]
+#             },
+#             {
+#                 "afi": "ipv6",
+#                 "aggregate_address": [
+#                     {
+#                         "prefix": "6601:1:1:1::/64",
+#                         "summary_only": true
+#                     }
+#                 ],
+#                 "networks": [
+#                     {
+#                         "prefix": "5001:1:1:1::/64",
+#                         "route_map": "map01"
+#                     }
+#                 ]
+#             }
+#         ],
+#         "as_number": 100,
+#         "neighbors": [
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4",
+#                         "allowas_in": 4,
+#                         "as_override": true,
+#                         "attribute_unchanged": {
+#                             "med": true
+#                         }
+#                     },
+#                     {
+#                         "afi": "ipv6",
+#                         "default_originate": "map01",
+#                         "distribute_list": [
+#                             {
+#                                 "acl": 10,
+#                                 "action": "export"
+#                             }
+#                         ]
+#                     }
+#                 ],
+#                 "neighbor_address": "100.11.34.12"
+#             },
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4"
+#                     },
+#                     {
+#                         "afi": "ipv6",
+#                         "maximum_prefix": 45,
+#                         "nexthop_self": true
+#                     }
+#                 ],
+#                 "neighbor_address": "20.33.1.1/24"
+#             }
+#         ]
+#     },
+#     "changed": true,
+#     "commands": [
+#         "delete protocols bgp 100 neighbor 20.33.1.1/24 address-family",
+#         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv6-unicast distribute-list",
+#         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv6-unicast default-originate",
+#         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast attribute-unchanged",
+#         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast as-override",
+#         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast allowas-in",
+#         "delete protocols bgp 100 address-family ipv6 aggregate-address",
+#         "delete protocols bgp 100 address-family ipv6 network",
+#         "delete protocols bgp 100 address-family ipv4 network",
+#         "delete protocols bgp 100 address-family ipv4 redistribute",
+#         "set protocols bgp 100 address-family ipv4-unicast aggregate-address 60.9.2.0/24 summary-only",
+#         "set protocols bgp 100 address-family ipv6-unicast redistribute static metric 50",
+#         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv6-unicast maximum-prefix 45",
+#         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv6-unicast nexthop-self",
+#         "set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast route-map import map01"
+#     ],
+#
+
+# Using deleted:
+
+# Before State:
+
+# vyos@vyos:~$ show configuration commands | match "set protocols bgp"
+# set protocols bgp 100 address-family ipv4-unicast aggregate-address 60.9.2.0/24 summary-only
+# set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
+# set protocols bgp 100 address-family ipv6-unicast redistribute static metric '50'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map 'map01'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export '10'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix '45'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map export 'map01'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map import 'map01'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast weight '50'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast maximum-prefix '45'
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast nexthop-self
+# set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast route-map import 'map01'
+# vyos@vyos:~$
+
+  - name: Delete
+    vyos.vyos.vyos_bgp_address_family:
+      config:
+        as_number: "100"
+        neighbors:
+          - neighbor_address: "20.33.1.1/24"
+            address_family:
+              - afi: "ipv6"
+          - neighbor_address: "100.11.34.12"
+        address_family:
+          - afi: "ipv4"
+      state: deleted
+
+
+# After State:
+
+# vyos@vyos:~$ show configuration commands | match "set protocols bgp"
+# set protocols bgp 100 address-family ipv6-unicast redistribute static metric '50'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
+# set protocols bgp 100 neighbor 100.11.34.12
+# vyos@vyos:~$
+#
+#
+# Module Execution:
+#
+# "after": {
+#         "address_family": [
+#             {
+#                 "afi": "ipv6",
+#                 "redistribute": [
+#                     {
+#                         "metric": 50,
+#                         "protocol": "static"
+#                     }
+#                 ]
+#             }
+#         ],
+#         "as_number": 100,
+#         "neighbors": [
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4",
+#                         "allowas_in": 4,
+#                         "as_override": true,
+#                         "attribute_unchanged": {
+#                             "med": true
+#                         }
+#                     }
+#                 ],
+#                 "neighbor_address": "20.33.1.1/24"
+#             }
+#         ]
+#     },
+#     "before": {
+#         "address_family": [
+#             {
+#                 "afi": "ipv4",
+#                 "aggregate_address": [
+#                     {
+#                         "prefix": "60.9.2.0/24",
+#                         "summary_only": true
+#                     }
+#                 ],
+#                 "redistribute": [
+#                     {
+#                         "metric": 50,
+#                         "protocol": "static"
+#                     }
+#                 ]
+#             },
+#             {
+#                 "afi": "ipv6",
+#                 "redistribute": [
+#                     {
+#                         "metric": 50,
+#                         "protocol": "static"
+#                     }
+#                 ]
+#             }
+#         ],
+#         "as_number": 100,
+#         "neighbors": [
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4",
+#                         "maximum_prefix": 45,
+#                         "nexthop_self": true,
+#                         "route_map": [
+#                             {
+#                                 "action": "export",
+#                                 "route_map": "map01"
+#                             },
+#                             {
+#                                 "action": "import",
+#                                 "route_map": "map01"
+#                             }
+#                         ],
+#                         "weight": 50
+#                     },
+#                     {
+#                         "afi": "ipv6",
+#                         "maximum_prefix": 45,
+#                         "nexthop_self": true,
+#                         "route_map": [
+#                             {
+#                                 "action": "import",
+#                                 "route_map": "map01"
+#                             }
+#                         ]
+#                     }
+#                 ],
+#                 "neighbor_address": "100.11.34.12"
+#             },
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4",
+#                         "allowas_in": 4,
+#                         "as_override": true,
+#                         "attribute_unchanged": {
+#                             "med": true
+#                         }
+#                     },
+#                     {
+#                         "afi": "ipv6",
+#                         "default_originate": "map01",
+#                         "distribute_list": [
+#                             {
+#                                 "acl": 10,
+#                                 "action": "export"
+#                             }
+#                         ]
+#                     }
+#                 ],
+#                 "neighbor_address": "20.33.1.1/24"
+#             }
+#         ]
+#     },
+#     "changed": true,
+#     "commands": [
+#         "delete protocols bgp 100 address-family ipv4-unicast",
+#         "delete protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast",
+#         "delete protocols bgp 100 neighbor 100.11.34.12 address-family"
+#     ],
+#
+
+# using parsed:
+
+# parsed.cfg
+# set protocols bgp 65536 address-family ipv4-unicast aggregate-address 192.0.2.0/24 as-set
+# set protocols bgp 65536 address-family ipv4-unicast network 192.1.13.0/24 route-map 'map01'
+# set protocols bgp 65536 address-family ipv4-unicast network 192.2.13.0/24 backdoor
+# set protocols bgp 65536 address-family ipv6-unicast redistribute ripng metric '20'
+# set protocols bgp 65536 neighbor 192.0.2.25 address-family ipv4-unicast route-map export 'map01'
+# set protocols bgp 65536 neighbor 192.0.2.25 address-family ipv4-unicast soft-reconfiguration inbound
+# set protocols bgp 65536 neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged next-hop
+
+
+  - name: parse configs
+    vyos.vyos.vyos_bgp_address_family:
+      running_config: "{{ lookup('file', './parsed.cfg') }}"
+      state: parsed
+
+# Module Execution:
+# "parsed": {
+#         "address_family": [
+#             {
+#                 "afi": "ipv4",
+#                 "aggregate_address": [
+#                     {
+#                         "as_set": true,
+#                         "prefix": "192.0.2.0/24"
+#                     }
+#                 ],
+#                 "networks": [
+#                     {
+#                         "prefix": "192.1.13.0/24",
+#                         "route_map": "map01"
+#                     },
+#                     {
+#                         "backdoor": true,
+#                         "prefix": "192.2.13.0/24"
+#                     }
+#                 ]
+#             },
+#             {
+#                 "afi": "ipv6",
+#                 "redistribute": [
+#                     {
+#                         "metric": 20,
+#                         "protocol": "ripng"
+#                     }
+#                 ]
+#             }
+#         ],
+#         "as_number": 65536,
+#         "neighbors": [
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4",
+#                         "route_map": [
+#                             {
+#                                 "action": "export",
+#                                 "route_map": "map01"
+#                             }
+#                         ],
+#                         "soft_reconfiguration": true
+#                     }
+#                 ],
+#                 "neighbor_address": "192.0.2.25"
+#             },
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv6",
+#                         "attribute_unchanged": {
+#                             "next_hop": true
+#                         }
+#                     }
+#                 ],
+#                 "neighbor_address": "203.0.113.5"
+#             }
+#         ]
+#
+
+# Using gathered:
+
+# Native config:
+
+# vyos@vyos:~$ show configuration commands | match "set protocols bgp"
+# set protocols bgp 100 address-family ipv4-unicast network 35.1.1.0/24 backdoor
+# set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
+# set protocols bgp 100 address-family ipv6-unicast aggregate-address 6601:1:1:1::/64 summary-only
+# set protocols bgp 100 address-family ipv6-unicast network 5001:1:1:1::/64 route-map 'map01'
+# set protocols bgp 100 address-family ipv6-unicast redistribute static metric '50'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
+# set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
+# set protocols bgp 100 neighbor 100.11.34.12
+
+  - name: gather configs
+    vyos.vyos.vyos_bgp_address_family:
+      state: gathered
+
+# Module Execution:
+
+# "gathered": {
+#         "address_family": [
+#             {
+#                 "afi": "ipv4",
+#                 "networks": [
+#                     {
+#                         "backdoor": true,
+#                         "prefix": "35.1.1.0/24"
+#                     }
+#                 ],
+#                 "redistribute": [
+#                     {
+#                         "metric": 50,
+#                         "protocol": "static"
+#                     }
+#                 ]
+#             },
+#             {
+#                 "afi": "ipv6",
+#                 "aggregate_address": [
+#                     {
+#                         "prefix": "6601:1:1:1::/64",
+#                         "summary_only": true
+#                     }
+#                 ],
+#                 "networks": [
+#                     {
+#                         "prefix": "5001:1:1:1::/64",
+#                         "route_map": "map01"
+#                     }
+#                 ],
+#                 "redistribute": [
+#                     {
+#                         "metric": 50,
+#                         "protocol": "static"
+#                     }
+#                 ]
+#             }
+#         ],
+#         "as_number": 100,
+#         "neighbors": [
+#             {
+#                 "address_family": [
+#                     {
+#                         "afi": "ipv4",
+#                         "allowas_in": 4,
+#                         "as_override": true,
+#                         "attribute_unchanged": {
+#                             "med": true
+#                         }
+#                     }
+#                 ],
+#                 "neighbor_address": "20.33.1.1/24"
+#             }
+#         ]
+
+# Using rendered:
+
+  - name: Render
+    vyos.vyos.vyos_bgp_address_family:
+      config:
+        as_number: "100"
+        address_family:
+          - afi: "ipv4"
+            redistribute:
+              - protocol: "static"
+                metric: 50
+        neighbors:
+          - neighbor_address: "20.33.1.1/24"
+            address_family:
+              - afi: "ipv4"
+                allowas_in: 4
+                as_override: True
+                attribute_unchanged:
+                  med: True
+              - afi: "ipv6"
+                default_originate: "map01"
+                distribute_list:
+                  - action: "export"
+                    acl: 10
+          - neighbor_address: "100.11.34.12"
+            address_family:
+              - afi: "ipv4"
+                maximum_prefix: 45
+                nexthop_self: True
+                route_map:
+                  - action: "export"
+                    route_map: "map01"
+                  - action: "import"
+                    route_map: "map01"
+                weight: 50
+      state: rendered
+
+# Module Execution:
+
+# "rendered": [
+#         "set protocols bgp 100 address-family ipv4-unicast redistribute static metric 50",
+#         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number 4",
+#         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast as-override",
+#         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med",
+#         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map map01",
+#         "set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export 10",
+#         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix 45",
+#         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self",
+#         "set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map export map01",
+#         "set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map import map01",
+#         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast weight 50"
+#     ]
+
+
 """
 
 from ansible.module_utils.basic import AnsibleModule

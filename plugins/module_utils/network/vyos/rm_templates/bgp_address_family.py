@@ -182,9 +182,9 @@ def _tmplt_bgp_af_neighbor_delete(config_data):
     elif config_data.get("as_override"):
         command += " as-override"
     elif config_data.get("attribute_unchanged"):
-        command += " attribute-unchanged "
+        command += " attribute-unchanged"
     elif config_data.get("capability"):
-        command += " capability "
+        command += " capability"
     elif config_data.get("default_originate"):
         command += " default-originate"
     elif config_data.get("maximum_prefix"):

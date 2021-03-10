@@ -172,7 +172,7 @@ class Bgp_address_family(ResourceModule):
                                 )
                             else:
                                 for k in neigh_entry["address_family"].keys():
-                                    if k in hnentry["address_family"].keys():
+                                    if hnentry.get("address_family") and k in hnentry["address_family"].keys():
                                         self.commands.append(
                                             self._tmplt.render(
                                                 {
