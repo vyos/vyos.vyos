@@ -174,9 +174,9 @@ class TestVyosBgpafModule(TestVyosModule):
             "set protocols bgp 65536 address-family ipv4-unicast aggregate-address 192.0.2.0/24 as-setipv4-unicast aggregate-address 192.0.2.0/24 summary-only",
             "set protocols bgp 65536 address-family ipv6-unicast redistribute ospfv3 metric 20",
             "set protocols bgp 65536 neighbor 203.0.113.5 address-family ipv4-unicast filter-list export list01",
-            "set protocols bgp 65536  neighbor 203.0.113.5 address-family ipv4-unicast capability  prefix-list send",
+            "set protocols bgp 65536 neighbor 203.0.113.5 address-family ipv4-unicast capability  prefix-list send",
             "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv6-unicast distribute-list export 10",
-            "set protocols bgp 65536  neighbor 192.10.21.25 address-family ipv6-unicast route-server-client",
+            "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv6-unicast route-server-client",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -310,17 +310,17 @@ class TestVyosBgpafModule(TestVyosModule):
             )
         )
         commands = [
-            "delete protocols bgp 65536  neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged",
-            "delete protocols bgp 65536  neighbor 192.0.2.25 address-family ipv4-unicast soft-reconfiguration",
+            "delete protocols bgp 65536 neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged",
+            "delete protocols bgp 65536 neighbor 192.0.2.25 address-family ipv4-unicast soft-reconfiguration",
             "delete protocols bgp 65536 address-family ipv6-unicast redistribute ripng",
             "delete protocols bgp 65536 address-family ipv4-unicast network 192.2.13.0/24",
             "set protocols bgp 65536 address-family ipv4-unicast aggregate-address 192.0.2.0/24 summary-only",
             "set protocols bgp 65536 address-family ipv6-unicast redistribute ospfv3 metric 20",
             "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv4-unicast route-map import map01",
             "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv6-unicast distribute-list export 10",
-            "set protocols bgp 65536  neighbor 192.10.21.25 address-family ipv6-unicast route-server-client",
+            "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv6-unicast route-server-client",
             "set protocols bgp 65536 neighbor 203.0.113.5 address-family ipv4-unicast filter-list export list01",
-            "set protocols bgp 65536  neighbor 203.0.113.5 address-family ipv4-unicast capability  prefix-list send",
+            "set protocols bgp 65536 neighbor 203.0.113.5 address-family ipv4-unicast capability  prefix-list send",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -432,7 +432,7 @@ class TestVyosBgpafModule(TestVyosModule):
             "set protocols bgp 65536 address-family ipv6-unicast redistribute ospfv3 metric 20",
             "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv4-unicast route-map import map01",
             "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv6-unicast distribute-list export 10",
-            "set protocols bgp 65536  neighbor 192.10.21.25 address-family ipv6-unicast route-server-client",
+            "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv6-unicast route-server-client",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -580,8 +580,8 @@ class TestVyosBgpafModule(TestVyosModule):
             "set protocols bgp 65536 address-family ipv4-unicast aggregate-address 192.0.2.0/24 as-set",
             "set protocols bgp 65536 address-family ipv6-unicast redistribute ripng metric 20",
             "set protocols bgp 65536 neighbor 192.0.2.25 address-family ipv4-unicast route-map export map01",
-            "set protocols bgp 65536  neighbor 192.0.2.25 address-family ipv4-unicast soft-reconfiguration inbound",
-            "set protocols bgp 65536  neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged next-hop",
+            "set protocols bgp 65536 neighbor 192.0.2.25 address-family ipv4-unicast soft-reconfiguration inbound",
+            "set protocols bgp 65536 neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged next-hop",
         ]
         result = self.execute_module(changed=False)
         self.assertEqual(
@@ -597,8 +597,8 @@ class TestVyosBgpafModule(TestVyosModule):
             "set protocols bgp 65536 address-family ipv4-unicast aggregate-address 192.0.2.0/24 as-set",
             "set protocols bgp 65536 address-family ipv6-unicast redistribute ripng metric 20",
             "set protocols bgp 65536 neighbor 192.0.2.25 address-family ipv4-unicast route-map export map01",
-            "set protocols bgp 65536  neighbor 192.0.2.25 address-family ipv4-unicast soft-reconfiguration inbound",
-            "set protocols bgp 65536  neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged next-hop",
+            "set protocols bgp 65536 neighbor 192.0.2.25 address-family ipv4-unicast soft-reconfiguration inbound",
+            "set protocols bgp 65536 neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged next-hop",
         ]
 
         parsed_str = "\n".join(commands)
