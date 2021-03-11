@@ -310,7 +310,7 @@ class TestVyosBgpafModule(TestVyosModule):
             )
         )
         commands = [
-            "delete protocols bgp 65536  neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged ",
+            "delete protocols bgp 65536  neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged",
             "delete protocols bgp 65536  neighbor 192.0.2.25 address-family ipv4-unicast soft-reconfiguration",
             "delete protocols bgp 65536 address-family ipv6-unicast redistribute ripng",
             "delete protocols bgp 65536 address-family ipv4-unicast network 192.2.13.0/24",

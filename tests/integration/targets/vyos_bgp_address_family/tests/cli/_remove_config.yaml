@@ -5,6 +5,7 @@
       - delete protocols bgp 65536
       - delete policy access-list 20
       - delete policy access-list 40
+      - delete policy access-list6 10
       - delete policy route-map map01
   ignore_errors: true
   vars:

@@ -167,11 +167,27 @@ def _tmplt_bgp_af_neighbor_filter_list(config_data):
     return command
 
 
+def _tmplt_bgp_af_neighbor_attribute(config_data):
+    command = []
+    afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
+    cmd = "protocols bgp {as_number} neighbor ".format(**config_data)
+    cmd += "{neighbor_address} address-family ".format(
+        **config_data["neighbors"]
+    )
+    config_data = config_data["neighbors"]["address_family"]
+    for k in config_data["attribute_unchanged"].keys():
+        if config_data["attribute_unchanged"][k]:
+            k = re.sub("_", "-", k)
+            c = cmd + afi + " attribute-unchanged " + k
+            command.append(c)
+    return command
+
+
 def _tmplt_bgp_af_neighbor_delete(config_data):
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
     command = "protocols bgp {as_number} ".format(**config_data)
     command += (
-        " neighbor {neighbor_address} address-family ".format(
+        "neighbor {neighbor_address} address-family ".format(
             **config_data["neighbors"]
         )
         + afi
@@ -222,7 +238,7 @@ def _tmplt_bgp_af_neighbor(config_data):
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
     command = "protocols bgp {as_number} ".format(**config_data)
     command += (
-        " neighbor {neighbor_address} address-family ".format(
+        "neighbor {neighbor_address} address-family ".format(
             **config_data["neighbors"]
         )
         + afi
@@ -232,14 +248,6 @@ def _tmplt_bgp_af_neighbor(config_data):
         command += " allowas-in number {allowas_in}".format(**config_data)
     elif config_data.get("as_override"):
         command += " as-override"
-    elif config_data.get("attribute_unchanged"):
-        command += " attribute-unchanged "
-        if config_data["attribute_unchanged"].get("as_path"):
-            command += "as-path"
-        if config_data["attribute_unchanged"].get("med"):
-            command += "med"
-        if config_data["attribute_unchanged"].get("next_hop"):
-            command += "next-hop"
     elif config_data.get("capability"):
         command += " capability "
         if config_data["capability"].get("dynamic"):
@@ -695,7 +703,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": _tmplt_bgp_af_neighbor,
+            "setval": _tmplt_bgp_af_neighbor_attribute,
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.attribute_unchanged.as_path",
             "result": {
@@ -732,7 +740,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": _tmplt_bgp_af_neighbor,
+            "setval": _tmplt_bgp_af_neighbor_attribute,
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.attribute_unchanged.med",
             "result": {
@@ -769,7 +777,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": _tmplt_bgp_af_neighbor,
+            "setval": _tmplt_bgp_af_neighbor_attribute,
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.attribute_unchanged.next_hop",
             "result": {
