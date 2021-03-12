@@ -81,6 +81,7 @@ options:
                     description:
                     - md5 key.
                     type: str
+                    no_log: True
           bandwidth:
             description:
             -  Bandwidth of interface (kilobits/sec)
