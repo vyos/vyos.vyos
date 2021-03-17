@@ -86,6 +86,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                 config=[
                     dict(name="bond1", description="Bond - 1", enabled=True),
                     dict(name="vtun1", description="vtun - 1", enabled=True),
+                    dict(name="wg01", description="wg - 1", enabled=True),
                 ],
                 state="merged",
             )
@@ -94,6 +95,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         commands = [
             "set interfaces bonding bond1 description 'Bond - 1'",
             "set interfaces openvpn vtun1 description 'vtun - 1'",
+            "set interfaces wireguard wg01 description 'wg - 1'",
         ]
         self.execute_module(changed=True, commands=commands)
 
