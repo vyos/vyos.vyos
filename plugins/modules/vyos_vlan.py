@@ -167,7 +167,9 @@ import time
 
 from copy import deepcopy
 
+from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.common.validation import check_required_one_of
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     remove_default_spec,
 )
@@ -258,7 +260,10 @@ def map_params_to_obj(module):
                 module.fail_json(msg="vlan_id is required")
 
             d["vlan_id"] = str(d["vlan_id"])
-            module._check_required_one_of(module.required_one_of, item)
+            try:
+                check_required_one_of(module.required_one_of, item)
+            except TypeError as exc:
+                module.fail_json(to_text(exc))
 
             obj.append(d)
     else:
