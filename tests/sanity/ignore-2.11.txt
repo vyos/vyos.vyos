@@ -4,4 +4,3 @@ plugins/module_utils/network/vyos/config/ospf_interfaces/ospf_interfaces.py impo
 plugins/modules/vyos_bgp_global.py validate-modules:no-log-needed # temporary workaround for no-log
 plugins/modules/vyos_ospf_interfaces.py validate-modules:no-log-needed # temporary workaround for no-log
 plugins/modules/vyos_ospfv2.py validate-modules:no-log-needed # temporary workaround for no-log
-
