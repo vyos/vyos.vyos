@@ -174,7 +174,7 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                         },
                         "disable_connected_check": {"type": "bool"},
                         "address": {"type": "str"},
-                        "password": {"type": "str", "no_log": True},
+                        "password": {"type": "str"},
                         "disable_send_community": {
                             "type": "str",
                             "choices": ["extended", "standard"],

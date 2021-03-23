@@ -176,7 +176,6 @@ options:
           password:
             description: BGP MD5 password
             type: str
-            no_log: True
           peer_group_name:
             description:  IPv4 peer group for this peer
             type: str

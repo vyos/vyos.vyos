@@ -76,7 +76,7 @@ class Ospf_interfacesArgs(object):  # pylint: disable=R0903
                                     "type": "dict",
                                     "options": {
                                         "key_id": {"type": "int"},
-                                        "key": {"type": "str", "no_log": True},
+                                        "key": {"type": "str"},
                                     },
                                 },
                             },
