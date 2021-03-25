@@ -2,6 +2,7 @@
 - debug: msg="START cli/basic.yaml on connection={{ ansible_connection }}"
 
 - name: setup
+  ignore_errors: true
   vyos.vyos.vyos_config:
     lines:
       - delete system name-server 192.0.2.1
