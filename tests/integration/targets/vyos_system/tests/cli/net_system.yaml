@@ -3,6 +3,7 @@
     }}"
 
 - name: setup
+  ignore_errors: true
   vyos.vyos.vyos_config:
     lines:
       - delete system name-server 192.0.2.1
@@ -20,6 +21,7 @@
       - result.commands[0]  is search("set system name-server '192.0.2.1'")
 
 - name: setup
+  ignore_errors: true
   vyos.vyos.vyos_config:
     lines:
       - delete system name-server 192.0.2.1
