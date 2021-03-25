@@ -45,6 +45,11 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                         "address_group": {
                             "elements": "dict",
                             "options": {
+                                "afi": {
+                                    "choices": ["ipv4", "ipv6"],
+                                    "default": "ipv4",
+                                    "type": "str",
+                                },
                                 "description": {"type": "str"},
                                 "members": {
                                     "elements": "dict",
@@ -58,6 +63,11 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                         "network_group": {
                             "elements": "dict",
                             "options": {
+                                "afi": {
+                                    "choices": ["ipv4", "ipv6"],
+                                    "default": "ipv4",
+                                    "type": "str",
+                                },
                                 "description": {"type": "str"},
                                 "members": {
                                     "elements": "dict",

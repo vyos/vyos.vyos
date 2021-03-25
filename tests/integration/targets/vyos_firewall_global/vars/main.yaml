@@ -35,11 +35,13 @@ merged:
             - address: 192.0.1.5
           description: This group has the Management hosts address list
           name: MGMT-HOSTS
+          afi: ipv4
       network_group:
         - members:
             - address: 192.0.1.0/24
           description: This group has the Management network addresses
           name: MGMT
+          afi: ipv4
     log_martians: true
     ping:
       all: true
@@ -88,11 +90,13 @@ populate:
           - address: 192.0.1.1
           - address: 192.0.1.3
           - address: 192.0.1.5
+        afi: ipv4
     network_group:
       - name: MGMT
         description: This group has the Management network addresses
         members:
           - address: 192.0.1.0/24
+        afi: ipv4
 replaced:
   commands:
     - delete firewall group address-group MGMT-HOSTS
@@ -116,17 +120,20 @@ replaced:
             - address: 192.0.3.2
           description: Sales office hosts address list
           name: ENG-HOSTS
+          afi: ipv4
         - members:
             - address: 192.0.2.1
             - address: 192.0.2.2
             - address: 192.0.2.3
           description: Sales office hosts address list
           name: SALES-HOSTS
+          afi: ipv4
       network_group:
         - members:
             - address: 192.0.1.0/24
           description: This group has the Management network addresses
           name: MGMT
+          afi: ipv4
     log_martians: true
     ping:
       all: true
@@ -210,8 +217,10 @@ round_trip:
             - address: 192.0.1.1
             - address: 192.0.1.3
             - address: 192.0.1.5
+          afi: ipv4
       network_group:
         - name: MGMT
           description: This group has the Management network addresses
           members:
             - address: 192.0.1.0/24
+          afi: ipv4

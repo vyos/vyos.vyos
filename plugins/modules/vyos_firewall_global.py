@@ -123,6 +123,15 @@ options:
             type: list
             elements: dict
             suboptions:
+              afi:
+                description:
+                - Specifies IP address type
+                type: str
+                default: ipv4
+                choices:
+                - ipv4
+                - ipv6
+                required: false
               name:
                 description:
                 - Name of the firewall address group.
@@ -149,6 +158,15 @@ options:
             type: list
             elements: dict
             suboptions:
+              afi:
+                description:
+                - Specifies network address type
+                type: str
+                default: ipv4
+                choices:
+                - ipv4
+                - ipv6
+                required: false
               name:
                 description:
                 - Name of the firewall network group.
