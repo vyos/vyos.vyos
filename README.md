@@ -29,10 +29,6 @@ Name | Description
 --- | ---
 [vyos.vyos.vyos](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_cliconf.rst)|Use vyos cliconf to run command on VyOS platform
 
-### Filter plugins
-Name | Description
---- | ---
-
 ### Modules
 Name | Description
 --- | ---
