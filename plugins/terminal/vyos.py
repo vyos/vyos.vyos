@@ -38,6 +38,7 @@ class TerminalModule(TerminalBase):
         re.compile(br"\n\s*Invalid command:"),
         re.compile(br"\nCommit failed"),
         re.compile(br"\n\s+Set failed"),
+        re.compile(br"\n\s+Delete failed"),
     ]
 
     ansi_re = TerminalBase.ansi_re + [
