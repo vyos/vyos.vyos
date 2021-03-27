@@ -10,6 +10,10 @@ plugin_routing:
       redirect: vyos.vyos.vyos
     bgp_global:
       redirect: vyos.vyos.vyos
+    vyos_bgp_address_family:
+      redirect: vyos.vyos.vyos
+    bgp_address_family:
+      redirect: vyos.vyos.vyos
     vyos_command:
       redirect: vyos.vyos.vyos
     command:
@@ -119,6 +123,8 @@ plugin_routing:
       redirect: vyos.vyos.vyos_banner
     bgp_global:
       redirect: vyos.vyos.vyos_bgp_global
+    bgp_address_family:
+      redirect: vyos.vyos.vyos_bgp_address_family
     command:
       redirect: vyos.vyos.vyos_command
     config:

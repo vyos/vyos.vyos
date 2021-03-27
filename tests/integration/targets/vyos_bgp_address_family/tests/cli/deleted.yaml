@@ -1,0 +1,49 @@
+---
+- debug:
+    msg: START vyos_bgp_address_family deleted integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+
+    - name: Delete the provided configuration
+      register: result
+      vyos.vyos.vyos_bgp_address_family: &id001
+        config:
+          as_number: "65536"
+          address_family:
+            - afi: "ipv6"
+          neighbors:
+            - neighbor_address: "203.0.113.5"
+            - neighbor_address: "192.0.2.25"
+              address_family:
+                - afi: "ipv6"
+        state: deleted
+
+    - become: true
+      vyos.vyos.vyos_facts:
+        gather_network_resources: bgp_address_family
+
+    - assert:
+        that:
+          - result.commands|length == 3
+          - result.changed == true
+          - result.commands|symmetric_difference(deleted.commands) == []
+          - result.after == ansible_facts['network_resources']['bgp_address_family']
+
+    - name: Delete the existing configuration with the provided running configuration
+        (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_bgp_address_family: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+
+    - include_tasks: _remove_config.yaml

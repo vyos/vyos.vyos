@@ -1,0 +1,24 @@
+---
+- debug:
+    msg: START vyos_bgp_address_family gathered integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+
+    - name: Gather config from the device in structured format.
+      register: result
+      vyos.vyos.vyos_bgp_address_family:
+        state: gathered
+
+    - become: true
+      vyos.vyos.vyos_facts:
+        gather_network_resources: bgp_address_family
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.gathered == ansible_facts['network_resources']['bgp_address_family']

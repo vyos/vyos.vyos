@@ -1,0 +1,17 @@
+---
+- name: setup
+  vyos.vyos.vyos_config:
+    lines:
+      - set policy access-list 20 description 'acl20'
+      - set policy access-list 40 description 'acl40'
+      - set policy access-list6 10 description 'acl10'
+      - set policy route-map map01 description 'map01'
+      - set protocols bgp 65536 address-family ipv6-unicast aggregate-address 5000:1:1::/64 summary-only
+      - set protocols bgp 65536 address-family ipv6-unicast network 21e0:1:1::/64 route-map 'map01'
+      - set protocols bgp 65536 address-family ipv6-unicast redistribute ripng metric '20'
+      - set protocols bgp 65536 neighbor 192.0.2.25 address-family ipv6-unicast route-map export 'map01'
+      - set protocols bgp 65536 neighbor 192.0.2.25 address-family ipv6-unicast soft-reconfiguration inbound
+      - set protocols bgp 65536 neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged next-hop
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
