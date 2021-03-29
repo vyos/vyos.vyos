@@ -60,7 +60,7 @@ class InterfacesFacts(object):
 
         objs = []
         interface_names = findall(
-            r"^set interfaces (?:ethernet|bonding|vti|loopback|vxlan|openvpn) (?:\'*)(\S+)(?:\'*)",
+            r"^set interfaces (?:ethernet|bonding|vti|loopback|vxlan|openvpn|wireguard) (?:\'*)(\S+)(?:\'*)",
             data,
             M,
         )

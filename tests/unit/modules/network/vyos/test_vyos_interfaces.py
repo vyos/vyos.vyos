@@ -99,6 +99,18 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+    def test_vyos_interfaces_merged_idempotent(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(name="wg02", description="wire guard int 2", enabled=True),
+                ],
+                state="merged",
+            )
+        )
+
+        self.execute_module(changed=False, commands=[])
+
     def test_vyos_interfaces_merged_newinterface(self):
         set_module_args(
             dict(
@@ -171,6 +183,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
             "set interfaces ethernet eth4 description 'Ethernet 4'",
             "set interfaces ethernet eth4 duplex 'auto'",
             "set interfaces ethernet eth4 speed 'auto'",
+            "delete interfaces wireguard wg02 description",
             "delete interfaces ethernet eth3 description",
         ]
         self.execute_module(changed=True, commands=commands)
