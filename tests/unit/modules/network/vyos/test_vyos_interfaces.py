@@ -103,7 +103,11 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         set_module_args(
             dict(
                 config=[
-                    dict(name="wg02", description="wire guard int 2", enabled=True),
+                    dict(
+                        name="wg02",
+                        description="wire guard int 2",
+                        enabled=True,
+                    ),
                 ],
                 state="merged",
             )
