@@ -1,3 +1,0 @@
----
-minor_changes:
-  - Add regex for delete failures to terminal_stderr_re

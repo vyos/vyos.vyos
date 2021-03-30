@@ -284,7 +284,7 @@ Notes
 Examples
 --------
 
-.. code-block:: yaml+jinja
+.. code-block:: yaml
 
     - name: Test reachability to 10.10.10.10
       vyos.vyos.vyos_ping:
