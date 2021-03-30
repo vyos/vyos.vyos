@@ -86,6 +86,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                 config=[
                     dict(name="bond1", description="Bond - 1", enabled=True),
                     dict(name="vtun1", description="vtun - 1", enabled=True),
+                    dict(name="wg01", description="wg - 1", enabled=True),
                 ],
                 state="merged",
             )
@@ -94,8 +95,25 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         commands = [
             "set interfaces bonding bond1 description 'Bond - 1'",
             "set interfaces openvpn vtun1 description 'vtun - 1'",
+            "set interfaces wireguard wg01 description 'wg - 1'",
         ]
         self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_merged_idempotent(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="wg02",
+                        description="wire guard int 2",
+                        enabled=True,
+                    ),
+                ],
+                state="merged",
+            )
+        )
+
+        self.execute_module(changed=False, commands=[])
 
     def test_vyos_interfaces_merged_newinterface(self):
         set_module_args(
@@ -169,6 +187,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
             "set interfaces ethernet eth4 description 'Ethernet 4'",
             "set interfaces ethernet eth4 duplex 'auto'",
             "set interfaces ethernet eth4 speed 'auto'",
+            "delete interfaces wireguard wg02 description",
             "delete interfaces ethernet eth3 description",
         ]
         self.execute_module(changed=True, commands=commands)

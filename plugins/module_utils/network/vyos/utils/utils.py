@@ -38,6 +38,8 @@ def get_interface_type(interface):
         return "loopback"
     elif interface.startswith("vtun"):
         return "openvpn"
+    elif interface.startswith("wg"):
+        return "wireguard"
 
 
 def dict_delete(base, comparable):
