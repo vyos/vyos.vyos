@@ -5,14 +5,29 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.1.0
+======
+
+Minor Changes
+-------------
+
+- Add regex for delete failures to terminal_stderr_re
+- Add vyos BGP address_family resource module (https://github.com/ansible-collections/vyos.vyos/pull/132).
+- Enabled addition and parsing of wireguard interface.
+
+New Modules
+-----------
+
+- vyos_bgp_address_family - BGP Address Family Resource Module.
+
 v2.0.0
 ======
 
 Major Changes
 -------------
 
-- Requires ansible.netcommon v2.0.0+ to support `ansible_network_single_user_mode` and `ansible_network_import_modules`
 - Please refer to ansible.netcommon `changelog <https://github.com/ansible-collections/ansible.netcommon/blob/main/changelogs/CHANGELOG.rst#ansible-netcommon-collection-release-notes>`_ for more details.
+- Requires ansible.netcommon v2.0.0+ to support `ansible_network_single_user_mode` and `ansible_network_import_modules`
 - ipaddress is no longer in ansible.netcommon. For Python versions without ipaddress (< 3.0), the ipaddress package is now required.
 
 Minor Changes
@@ -32,7 +47,7 @@ New Modules
 -----------
 
 ansible.collections.ansible_collections.vyos.vyos.plugins.modules
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - vyos_bgp_global - BGP Global Resource Module.
 
@@ -81,11 +96,6 @@ Minor Changes
 v1.0.3
 ======
 
-Release Summary
----------------
-
-- Rereleasing 1.0.2 with updated changelog.
-
 v1.0.2
 ======
 
@@ -118,7 +128,7 @@ New Plugins
 -----------
 
 Cliconf
-~~~~~~~
+^^^^^^^
 
 - vyos - Use vyos cliconf to run command on VyOS platform
 
