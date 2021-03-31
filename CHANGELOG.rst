@@ -128,7 +128,7 @@ New Plugins
 -----------
 
 Cliconf
-~~~~~~~
+^^^^^^^
 
 - vyos - Use vyos cliconf to run command on VyOS platform
 
