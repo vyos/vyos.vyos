@@ -1,0 +1,3 @@
+plugins/action/vyos.py action-plugin-docs # base class for deprecated network platform modules using `connection: local`
+plugins/module_utils/network/vyos/config/ospf_interfaces/ospf_interfaces.py compile-2.6!skip
+plugins/module_utils/network/vyos/config/ospf_interfaces/ospf_interfaces.py import-2.6!skip
