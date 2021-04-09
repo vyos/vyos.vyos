@@ -5,7 +5,7 @@
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 """
-The module file for vyos_route_map
+The module file for vyos_route_maps
 """
 
 from __future__ import absolute_import, division, print_function
@@ -13,7 +13,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 DOCUMENTATION = """
-module: vyos_route_map
+module: vyos_route_maps
 version_added: 2.0.2
 short_description: Route Map Resource Module.
 description:
@@ -292,11 +292,11 @@ EXAMPLES = """
 """
 
 from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.route_map.route_map import (
-    Route_mapArgs,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.route_maps.route_maps import (
+    Route_mapsArgs,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.route_map.route_map import (
-    Route_map,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.route_maps.route_maps import (
+    Route_maps,
 )
 
 
@@ -307,7 +307,7 @@ def main():
     :returns: the result form module invocation
     """
     module = AnsibleModule(
-        argument_spec=Route_mapArgs.argument_spec,
+        argument_spec=Route_mapsArgs.argument_spec,
         mutually_exclusive=[["config", "running_config"]],
         required_if=[
             ["state", "merged", ["config"]],
@@ -319,7 +319,7 @@ def main():
         supports_check_mode=True,
     )
 
-    result = Route_map(module).execute_module()
+    result = Route_maps(module).execute_module()
     module.exit_json(**result)
 
 

@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The Route_map parser templates file. This contains 
+The Route_maps parser templates file. This contains 
 a list of parser definitions and associated functions that 
 facilitates both facts gathering and native command generation for 
 the given network resource.
@@ -19,9 +19,9 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.n
     NetworkTemplate,
 )
 
-class Route_mapTemplate(NetworkTemplate):
+class Route_mapsTemplate(NetworkTemplate):
     def __init__(self, lines=None):
-        super(Route_mapTemplate, self).__init__(lines=lines, tmplt=self)
+        super(Route_mapsTemplate, self).__init__(lines=lines, tmplt=self)
 
     # fmt: off
     PARSERS = [

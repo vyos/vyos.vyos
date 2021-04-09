@@ -10,7 +10,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The vyos_route_map config file.
+The vyos_route_maps config file.
 It is in this file where the current configuration (as dict)
 is compared to the provided configuration (as dict) and the command set
 necessary to bring the current configuration to its desired end-state is
@@ -29,23 +29,23 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
     Facts,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.route_map import (
-    Route_mapTemplate,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.route_maps import (
+    Route_mapsTemplate,
 )
 
 
-class Route_map(ResourceModule):
+class Route_maps(ResourceModule):
     """
-    The vyos_route_map config class
+    The vyos_route_maps config class
     """
 
     def __init__(self, module):
-        super(Route_map, self).__init__(
+        super(Route_maps, self).__init__(
             empty_fact_val={},
             facts_module=Facts(module),
             module=module,
-            resource="route_map",
-            tmplt=Route_mapTemplate(),
+            resource="route_maps",
+            tmplt=Route_mapsTemplate(),
         )
         self.parsers = [
         ]
@@ -92,6 +92,6 @@ class Route_map(ResourceModule):
         """Leverages the base class `compare()` method and
            populates the list of commands to be run by comparing
            the `want` and `have` data with the `parsers` defined
-           for the Route_map network resource.
+           for the Route_maps network resource.
         """
         self.compare(parsers=self.parsers, want=want, have=have)

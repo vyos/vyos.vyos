@@ -8,7 +8,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The vyos route_map fact class
+The vyos route_maps fact class
 It is in this file the configuration is collected from the device
 for a given resource, parsed, and the facts tree is populated
 based on the configuration.
@@ -20,20 +20,20 @@ from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
     utils,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.route_map import (
-    Route_mapTemplate,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.route_maps import (
+    Route_mapsTemplate,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.route_map.route_map import (
-    Route_mapArgs,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.route_maps.route_maps import (
+    Route_mapsArgs,
 )
 
-class Route_mapFacts(object):
-    """ The vyos route_map facts class
+class Route_mapsFacts(object):
+    """ The vyos route_maps facts class
     """
 
     def __init__(self, module, subspec='config', options='options'):
         self._module = module
-        self.argument_spec = Route_mapArgs.argument_spec
+        self.argument_spec = Route_mapsArgs.argument_spec
         spec = deepcopy(self.argument_spec)
         if subspec:
             if options:
@@ -46,7 +46,7 @@ class Route_mapFacts(object):
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def populate_facts(self, connection, ansible_facts, data=None):
-        """ Populate the facts for Route_map network resource
+        """ Populate the facts for Route_maps network resource
 
         :param connection: the device connection
         :param ansible_facts: Facts dictionary
@@ -61,17 +61,17 @@ class Route_mapFacts(object):
         if not data:
             data = connection.get()
 
-        # parse native config using the Route_map template
-        route_map_parser = Route_mapTemplate(lines=data.splitlines())
-        objs = list(route_map_parser.parse().values())
+        # parse native config using the Route_maps template
+        route_maps_parser = Route_mapsTemplate(lines=data.splitlines())
+        objs = list(route_maps_parser.parse().values())
 
-        ansible_facts['ansible_network_resources'].pop('route_map', None)
+        ansible_facts['ansible_network_resources'].pop('route_maps', None)
 
         params = utils.remove_empties(
             utils.validate_config(self.argument_spec, {"config": objs})
         )
 
-        facts['route_map'] = params['config']
+        facts['route_maps'] = params['config']
         ansible_facts['ansible_network_resources'].update(facts)
 
         return ansible_facts
