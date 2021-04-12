@@ -39,9 +39,9 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
             "type": "list",
             "elements": "dict",
             "options": {
-                "route_map_name": {"type": "str"},
-                "description": {"type": "str"},
-                "rules": {
+                "route_map": {"type": "str"},
+                "entries": {
+                    "aliases": "rules",
                     "type": "list",
                     "elements": "dict",
                     "options": {
@@ -102,6 +102,86 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
                                 "src": {"type": "str"},
                                 "tag": {"type": "str"},
                                 "weight": {"type": "str"},
+                            },
+                        },
+                        "match": {
+                            "type": "dict",
+                            "options": {
+                                "as_path": {"type": "str"},
+                                "community": {
+                                    "type": "dict",
+                                    "options": {
+                                        "community_list": {"type": "str"},
+                                        "exact_match": {"type": "bool"},
+                                    },
+                                },
+                                "extcommunity": {"type": "str"},
+                                "interface": {"type": "str"},
+                                "ip": {
+                                    "type": "dict",
+                                    "options": {
+                                        "address": {
+                                            "type": "dict",
+                                            "options": {
+                                                "access_list": {"type": "int"},
+                                                "prefix_list": {"type": "str"},
+                                            },
+                                        },
+                                        "next_hop": {
+                                            "type": "dict",
+                                            "options": {
+                                                "access_list": {"type": "int"},
+                                                "prefix_list": {"type": "str"},
+                                            },
+                                        },
+                                        "route_source": {
+                                            "type": "dict",
+                                            "options": {
+                                                "access_list": {"type": "int"},
+                                                "prefix_list": {"type": "str"},
+                                            },
+                                        },
+                                    },
+                                },
+                                "ipv6": {
+                                    "type": "dict",
+                                    "options": {
+                                        "address": {
+                                            "type": "dict",
+                                            "options": {
+                                                "access_list": {"type": "str"},
+                                                "prefix_list": {"type": "str"},
+                                            },
+                                        },
+                                        "next_hop": {"type": "str"},
+                                    },
+                                },
+                                "large_community_large_community_list": {
+                                    "type": "str"
+                                },
+                                "metric": {"type": "int"},
+                                "origin": {
+                                    "type": "str",
+                                    "choices": ["ebgp", "ibgp", "incomplete"],
+                                },
+                                "peer": {"type": "str"},
+                                "rpki": {
+                                    "type": "dict",
+                                    "options": {
+                                        "rpki_validation": {"type": "str"},
+                                        "valid": {"type": "bool"},
+                                        "invalid": {"type": "bool"},
+                                        "notfound": {"type": "bool"},
+                                        "tag": {"type": "int"},
+                                    },
+                                },
+                            },
+                        },
+                        "on_match": {
+                            "type": "dict",
+                            "options": {
+                                "next": {"type": "bool"},
+                                "goto": {"type": "int"},
                             },
                         },
                     },

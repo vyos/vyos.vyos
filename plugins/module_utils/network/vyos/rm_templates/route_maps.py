@@ -21,29 +21,108 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.n
 
 class Route_mapsTemplate(NetworkTemplate):
     def __init__(self, lines=None):
-        super(Route_mapsTemplate, self).__init__(lines=lines, tmplt=self)
+        prefix = {"set": "set", "remove": "delete"}
+        super(Route_mapsTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix)
 
     # fmt: off
     PARSERS = [
         {
-            "name": "key_a",
+            "name": "route_map",
             "getval": re.compile(
                 r"""
-                ^key_a\s(?P<key_a>\S+)
-                $""", re.VERBOSE),
-            "setval": "",
+                ^set
+                \s+policy
+                \s+route-map
+                \s+(?P<route_map>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "setval": "policy route-map {{route_map_name}}",
+            "compval": "route_map_name",
             "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map_name": "{{route_map}}"
+                    },
+                },
             },
             "shared": True
         },
         {
-            "name": "key_b",
+            "name": "route_map_description",
             "getval": re.compile(
                 r"""
-                \s+key_b\s(?P<key_b>\S+)
-                $""", re.VERBOSE),
-            "setval": "",
+                ^set
+                \s+policy
+                \s+route-map
+                \s+(?P<route_map>\S+)
+                \s+description
+                \s(?P<description>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "setval": "policy route-map {{route_map_name}} description {{description}}",
+            "compval": "description",
             "result": {
+                "route_maps": {
+                    "{{ route_map}}": {
+                        "description": "{{description}}"
+                    },
+                },
+            },
+        },
+        {
+            "name": "rule_number",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+policy
+                \s+route-map
+                \s+(?P<route_map>\S+)
+                \s+rule
+                \s+(?P<rule_number>\d+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "setval": "policy route-map {{route_map_name}} rule {{rule_number}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map}}": {
+                        "rules": {
+                            "{{rule_number}}": {
+                                "rule_number": "{{rule_number}}"
+                            }
+
+                        }
+                    },
+                },
+            },
+        },
+        {
+            "name": "rule_number",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+policy
+                \s+route-map
+                \s+(?P<route_map>\S+)
+                \s+rule
+                \s+(?P<rule_number>\d+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "setval": "policy route-map {{route_map_name}} rule {{rule_number}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map}}": {
+                        "rules": {
+                            "{{rule_number}}": {
+                                "rule_number": "{{rule_number}}"
+                            }
+
+                        }
+                    },
+                },
             },
         },
     ]

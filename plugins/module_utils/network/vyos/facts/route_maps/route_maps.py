@@ -45,6 +45,11 @@ class Route_mapsFacts(object):
 
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
+    def get_config(self, connection):
+        return connection.get(
+            'show configuration commands |  grep route-map'
+        )
+
     def populate_facts(self, connection, ansible_facts, data=None):
         """ Populate the facts for Route_maps network resource
 
@@ -59,7 +64,7 @@ class Route_mapsFacts(object):
         objs = []
 
         if not data:
-            data = connection.get()
+            data = self.get_config(connection)
 
         # parse native config using the Route_maps template
         route_maps_parser = Route_mapsTemplate(lines=data.splitlines())

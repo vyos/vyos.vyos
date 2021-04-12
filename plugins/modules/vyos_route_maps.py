@@ -24,18 +24,16 @@ notes:
 - This module works with connection C(network_cli).
 options:
     config:
-      description: A list of route-map options
+      description: A list of route-map configuration.
       type: list
       elements: dict
       suboptions:
-        route_map_name:
+        route_map:
           description: Route map name.
           type: str
-        description:
-          description: Description for the route map.
-          type: str
-        rules:
+        entries:
           description: Route Map rules.
+          aliases: rules
           type: list
           elements: dict
           suboptions:
@@ -157,7 +155,7 @@ options:
                 weight:
                   type: str
                   description: Border Gateway Protocol (BGP) weight attribute.
-          match:
+            match:
               description: Route parameters to match.
               type: dict
               suboptions:
@@ -255,16 +253,16 @@ options:
                     tag:
                       type: int
                       description: Route tag <1-65535>
-          on_match:
-            type: dict
-            description: Exit policy on matches.
-            suboptions:
-              next:
-                type: bool
-                description: Next sequence number to goto on match.
-              goto:
-                type: int
-                description: Rule number to goto on match <1-65535>.
+            on_match:
+              type: dict
+              description: Exit policy on matches.
+              suboptions:
+                next:
+                  type: bool
+                  description: Next sequence number to goto on match.
+                goto:
+                  type: int
+                  description: Rule number to goto on match <1-65535>.
     running_config:
       description:
       - This option is used only with state I(parsed).
