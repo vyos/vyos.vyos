@@ -41,7 +41,7 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
             "options": {
                 "route_map": {"type": "str"},
                 "entries": {
-                    "aliases": "rules",
+                    "aliases": ["rules"],
                     "type": "list",
                     "elements": "dict",
                     "options": {

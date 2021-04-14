@@ -47,7 +47,7 @@ class Route_mapsFacts(object):
 
     def get_config(self, connection):
         return connection.get(
-            'show configuration commands |  grep route-map'
+            'show configuration commands | grep route-map'
         )
 
     def populate_facts(self, connection, ansible_facts, data=None):
@@ -68,7 +68,9 @@ class Route_mapsFacts(object):
 
         # parse native config using the Route_maps template
         route_maps_parser = Route_mapsTemplate(lines=data.splitlines())
+
         objs = list(route_maps_parser.parse().values())
+        #import epdb;epdb.serve()
 
         ansible_facts['ansible_network_resources'].pop('route_maps', None)
 

@@ -33,7 +33,8 @@ options:
           type: str
         entries:
           description: Route Map rules.
-          aliases: rules
+          aliases:
+          - rules
           type: list
           elements: dict
           suboptions:
