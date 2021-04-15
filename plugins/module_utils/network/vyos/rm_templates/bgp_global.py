@@ -218,10 +218,10 @@ def _tmplt_bgp_params_distance(config_data):
 
 
 class Bgp_globalTemplate(NetworkTemplate):
-    def __init__(self, lines=None):
+    def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
         super(Bgp_globalTemplate, self).__init__(
-            lines=lines, tmplt=self, prefix=prefix
+            lines=lines, tmplt=self, prefix=prefix, module=module
         )
 
     # fmt: off

@@ -282,10 +282,10 @@ def _tmplt_bgp_af_neighbor(config_data):
 
 
 class Bgp_address_familyTemplate(NetworkTemplate):
-    def __init__(self, lines=None):
+    def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
         super(Bgp_address_familyTemplate, self).__init__(
-            lines=lines, tmplt=self, prefix=prefix
+            lines=lines, tmplt=self, prefix=prefix, module=module
         )
 
     # fmt: off
