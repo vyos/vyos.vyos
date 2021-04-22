@@ -59,7 +59,9 @@ class Bgp_globalFacts(object):
             if "address-family" not in resource:
                 config_lines.append(re.sub("'", "", resource))
 
-        bgp_global_parser = Bgp_globalTemplate(lines=config_lines)
+        bgp_global_parser = Bgp_globalTemplate(
+            lines=config_lines, module=self._module
+        )
         objs = bgp_global_parser.parse()
 
         if "neighbor" in objs:
@@ -79,7 +81,9 @@ class Bgp_globalFacts(object):
         ansible_facts["ansible_network_resources"].pop("bgp_global", None)
 
         params = utils.remove_empties(
-            utils.validate_config(self.argument_spec, {"config": objs})
+            bgp_global_parser.validate_config(
+                self.argument_spec, {"config": objs}, redact=True
+            )
         )
 
         facts["bgp_global"] = params.get("config", [])

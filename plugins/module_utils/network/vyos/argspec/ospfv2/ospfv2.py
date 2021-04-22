@@ -174,11 +174,17 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                                             "elements": "dict",
                                             "options": {
                                                 "key_id": {"type": "int"},
-                                                "md5_key": {"type": "str"},
+                                                "md5_key": {
+                                                    "type": "str",
+                                                    "no_log": True,
+                                                },
                                             },
                                             "type": "list",
                                         },
-                                        "plaintext_password": {"type": "str"},
+                                        "plaintext_password": {
+                                            "type": "str",
+                                            "no_log": True,
+                                        },
                                     },
                                     "type": "dict",
                                 },

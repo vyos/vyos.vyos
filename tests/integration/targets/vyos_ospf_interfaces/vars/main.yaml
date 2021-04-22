@@ -32,7 +32,7 @@ replaced:
     - delete interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
     - delete interfaces ethernet eth0 ipv6 ospfv3 mtu-ignore
     - set interfaces bonding bond2 ip ospf bandwidth 70
-    - set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key 1111111111232345
+    - set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key ********
 
   after:
     - address_family:

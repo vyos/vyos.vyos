@@ -302,10 +302,10 @@ def _tmplt_ospf_int_passive(config_data):
 
 
 class Ospf_interfacesTemplate(NetworkTemplate):
-    def __init__(self, lines=None):
+    def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
         super(Ospf_interfacesTemplate, self).__init__(
-            lines=lines, tmplt=self, prefix=prefix
+            lines=lines, tmplt=self, prefix=prefix, module=module
         )
 
     # fmt: off
