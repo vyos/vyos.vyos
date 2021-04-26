@@ -1,0 +1,3 @@
+---
+trivial:
+  - Reformat files wiht latest black as in CI.
