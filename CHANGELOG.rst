@@ -5,6 +5,14 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.1.1
+======
+
+Security Fixes
+--------------
+
+- Mask values of sensitive keys in module result.
+
 v2.1.0
 ======
 
@@ -128,7 +136,7 @@ New Plugins
 -----------
 
 Cliconf
-^^^^^^^
+~~~~~~~
 
 - vyos - Use vyos cliconf to run command on VyOS platform
 

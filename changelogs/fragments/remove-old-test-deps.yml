@@ -1,3 +1,0 @@
----
-trivial:
-  - Removed old, unused dependencies from `tests/unit/requirements.txt`
