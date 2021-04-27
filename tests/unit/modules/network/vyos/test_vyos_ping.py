@@ -56,22 +56,22 @@ class TestVyosPingModule(TestVyosModule):
         self.run_commands.side_effect = load_from_file
 
     def test_vyos_ping_expected_success(self):
-        """ Test for successful pings when destination should be reachable """
+        """Test for successful pings when destination should be reachable"""
         set_module_args(dict(count=2, dest="10.10.10.10"))
         self.execute_module()
 
     def test_vyos_ping_expected_failure(self):
-        """ Test for unsuccessful pings when destination should not be reachable """
+        """Test for unsuccessful pings when destination should not be reachable"""
         set_module_args(dict(count=4, dest="10.10.10.20", state="absent"))
         self.execute_module()
 
     def test_vyos_ping_unexpected_success(self):
-        """ Test for successful pings when destination should not be reachable - FAIL. """
+        """Test for successful pings when destination should not be reachable - FAIL."""
         set_module_args(dict(count=2, dest="10.10.10.10", state="absent"))
         self.execute_module(failed=True)
 
     def test_vyos_ping_unexpected_failure(self):
-        """ Test for unsuccessful pings when destination should be reachable - FAIL. """
+        """Test for unsuccessful pings when destination should be reachable - FAIL."""
         set_module_args(dict(count=4, dest="10.10.10.20"))
         self.execute_module(failed=True)
 

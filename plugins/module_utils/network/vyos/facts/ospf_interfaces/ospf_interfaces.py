@@ -40,7 +40,7 @@ class Ospf_interfacesFacts(object):
         )
 
     def get_config_set(self, data):
-        """ To classify the configurations beased on interface """
+        """To classify the configurations beased on interface"""
         interface_list = []
         config_set = []
         int_string = ""
