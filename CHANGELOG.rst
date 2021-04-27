@@ -8,9 +8,6 @@ Vyos Collection Release Notes
 v2.2.0
 ======
 
-v2.1.1
-======
-
 Security Fixes
 --------------
 
