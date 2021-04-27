@@ -228,5 +228,3 @@ releases:
     - no_log_mask.yaml
     - remove-old-test-deps.yml
     release_date: '2021-04-27'
-  2.2.0:
-    release_date: '2021-04-27'
