@@ -40,3 +40,16 @@
     that:
       - result.ansible_facts.ansible_net_commits is defined
       - result.ansible_facts.ansible_net_config is defined
+
+- name: Get list of avaliable network resources for VyOS
+  register: result
+  vyos.vyos.vyos_facts:
+    available_network_resources: true
+    gather_network_resources: all
+
+- name: Assert that correct available_resources_list returned
+  assert:
+    that:
+      - result.changed == false
+      - "{{ result['ansible_facts']['available_network_resources'] | symmetric_difference(result['ansible_facts']['ansible_net_gather_network_resources']) |length\
+          \ == 0 }}"
