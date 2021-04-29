@@ -122,6 +122,13 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 members=[dict(address="192.0.1.0/24")],
                             )
                         ],
+                        port_group=[
+                            dict(
+                                name="TELNET",
+                                description="This group has the telnet ports",
+                                members=[dict(port="23")],
+                            )
+                        ],
                     ),
                 ),
                 state="merged",
@@ -136,6 +143,9 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall group network-group MGMT network 192.0.1.0/24",
             "set firewall group network-group MGMT description 'This group has the Management network addresses'",
             "set firewall group network-group MGMT",
+            "set firewall group port-group TELNET port 23",
+            "set firewall group port-group TELNET description 'This group has the telnet ports'",
+            "set firewall group port-group TELNET",
             "set firewall ip-src-route 'enable'",
             "set firewall receive-redirects 'disable'",
             "set firewall send-redirects 'enable'",
@@ -175,6 +185,13 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 members=[dict(address="192.0.2.0/24")],
                             )
                         ],
+                        port_group=[
+                            dict(
+                                name="SSH",
+                                description="This group has the ssh ports",
+                                members=[dict(port="22")],
+                            )
+                        ],
                     )
                 ),
                 state="merged",
@@ -205,6 +222,13 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 members=[dict(address="192.0.2.0/24")],
                             )
                         ],
+                        port_group=[
+                            dict(
+                                name="SSH",
+                                description="This group has the ssh ports",
+                                members=[dict(port="2222")],
+                            )
+                        ],
                     )
                 ),
                 state="replaced",
@@ -215,6 +239,8 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "delete firewall group address-group RND-HOSTS address 192.0.2.5",
             "set firewall group address-group RND-HOSTS address 192.0.2.7",
             "set firewall group address-group RND-HOSTS address 192.0.2.9",
+            "delete firewall group port-group SSH port 22",
+            "set firewall group port-group SSH port 2222",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -239,6 +265,13 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 name="RND",
                                 description="This group has the Management network addresses",
                                 members=[dict(address="192.0.2.0/24")],
+                            )
+                        ],
+                        port_group=[
+                            dict(
+                                name="SSH",
+                                description="This group has the ssh ports",
+                                members=[dict(port="22")],
                             )
                         ],
                     )
