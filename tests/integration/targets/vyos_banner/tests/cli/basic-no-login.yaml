@@ -19,7 +19,7 @@
 
 - assert:
     that:
-      - result.changed == true
+      - result.changed == false
       - "'delete system login banner pre-login' in result.commands"
 
 - name: remove pre-login (idempotent)
