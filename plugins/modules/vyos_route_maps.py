@@ -33,8 +33,7 @@ options:
           type: str
         entries:
           description: Route Map rules.
-          aliases:
-          - rules
+          aliases: rules
           type: list
           elements: dict
           suboptions:
@@ -96,46 +95,36 @@ options:
                   suboptions:
                     value:
                       type: str
-                      description: Community in 4 octet AS:value format.
-                    local_AS:
-                      type: bool
-                      description: Advertise communities in local AS only (NO_EXPORT_SUBCONFED).
-                    no_advertise:
-                      type: bool
-                      description: Don't advertise this route to any peer (NO_ADVERTISE)
-                    no_expert:
-                      type: bool
-                      description: Don't advertise outside of this AS of confederation boundry (NO_EXPORT)
-                    internet:
-                      type: bool
-                      description: Symbolic Internet community 0.
-                    additive:
-                      type: bool
-                      description: Add the community instead of replacing existing communities.
-                    none:
-                      type: bool
-                      description: none
+                      description: Community in 4 octet AS:value format or it can be from local-AS, no-advertise,no-expert,internet,additive,none.
                 extcommunity_rt:
                   type: str
-                  description: Set route target value.
+                  description: Set route target value.ASN:nn_or_IP_address:nn VPN extended community.
                 extcommunity_soo:
                   type: str
-                  description: Set Site of Origin value.
+                  description: Set Site of Origin value. ASN:nn_or_IP_address:nn VPN extended community
                 ip_next_hop:
                   type: str
                   description: IP address.
                 ipv6_next_hop:
-                  type: str
+                  type: dict
                   description: Nexthop IPv6 address.
+                  suboptions:
+                    ip_type:
+                      description: Global or Local
+                      type: str
+                      choices: ["global", "local"]
+                    value:
+                      description: ipv6 address
+                      type: str
                 large_community:
                   type: str
                   description: Set BGP large community value.
                 local_preference:
                   type: str
-                  description: Border Gateway Protocol (BGP) local preference attribute.
+                  description: Border Gateway Protocol (BGP) local preference attribute.Example <0-4294967295>.
                 metric:
                   type: str
-                  description: Destination routing protocol metric.
+                  description: Destination routing protocol metric. Example <0-4294967295>.
                 metric_type:
                   type: str
                   choices: ['type-1', 'type-2']
@@ -143,19 +132,19 @@ options:
                 origin:
                   description: Set bgp origin.
                   type: str
-                  choices: [ "ebgp", "ibgp", "incomplete" ]
+                  choices: [ "egp", "igp", "incomplete" ]
                 originator_id:
                   type: str
-                  description: Border Gateway Protocol (BGP) originator ID attribute.
+                  description: Border Gateway Protocol (BGP) originator ID attribute. Orignator IP address.
                 src:
                   type: str
-                  description: Source address for route.
+                  description: Source address for route. Example <x.x.x.x> IP address.
                 tag:
                   type: str
-                  description: Tag value for routing protocol
+                  description: Tag value for routing protocol. Example <1-65535>
                 weight:
                   type: str
-                  description: Border Gateway Protocol (BGP) weight attribute.
+                  description: Border Gateway Protocol (BGP) weight attribute. Example <0-4294967295>
             match:
               description: Route parameters to match.
               type: dict
@@ -187,24 +176,25 @@ options:
                       description: IP address of route to match.
                       type: dict
                       suboptions:
-                        access_list: &access_list
-                          description: IP access-list to match.
-                          type: int
-                        prefix_list: &prefix_list
-                          description: IP prefix-list to match
+                        list_type: &list_type
+                          description: type of list
                           type: str
+                          choices: ['access-list', 'prefix-list']
+                        value: &value
+                          type: str
+                          description: value of access-list and prefix list
                     next_hop:
                       description: next hop prefix list.
                       type: dict
                       suboptions:
-                        access_list: *access_list
-                        prefix_list: *prefix_list
+                        list_type: *list_type
+                        value: *value
                     route_source:
                       description: IP route-source to match
                       type: dict
                       suboptions:
-                        access_list: *access_list
-                        prefix_list: *prefix_list
+                        list_type: *list_type
+                        value: *value
                 ipv6:
                   description: IPv6 prefix parameters to match.
                   type: dict
@@ -213,12 +203,8 @@ options:
                       description: IPv6 address of route to match.
                       type: dict
                       suboptions:
-                        access_list:
-                          description: IPv6 access-list to match.
-                          type: str
-                        prefix_list:
-                          description: IPv6 prefix-list to match
-                          type: str
+                        list_type: *list_type
+                        value: *value
                     next_hop:
                       description: next-hop ipv6 address IPv6 <h:h:h:h:h:h:h:h>.
                       type: str
@@ -236,24 +222,9 @@ options:
                   type: str
                   description: Peer IP address <x.x.x.x>.
                 rpki:
-                  type: dict
-                  description: Match RPKI validation result.
-                  suboptions:
-                    rpki_validation:
-                      type: str
-                      description: Match RPKI validation result.
-                    valid:
-                      type: bool
-                      description: valid rpki.
-                    invalid:
-                      type: bool
-                      description: invalid rpki.
-                    notfound:
-                      type: bool
-                      description: notfound rpki.
-                    tag:
-                      type: int
-                      description: Route tag <1-65535>
+                  type: str
+                  description: RPKI validation value.
+                  choices: [ "notfound", "invalid", "valid" ]
             on_match:
               type: dict
               description: Exit policy on matches.

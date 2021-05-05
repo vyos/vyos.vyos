@@ -19,6 +19,8 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.n
     NetworkTemplate,
 )
 
+
+
 class Route_mapsTemplate(NetworkTemplate):
     def __init__(self, lines=None):
         prefix = {"set": "set", "remove": "delete"}
@@ -55,7 +57,6 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "rule_number",
             "setval": "policy route-map {{route_map}} rule {{rule_number}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -78,9 +79,7 @@ class Route_mapsTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "compval": "rule_number",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} call {{call}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} call {{call}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -104,9 +103,7 @@ class Route_mapsTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "compval": "rule_number",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} description {{description}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} description {{description}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -130,9 +127,7 @@ class Route_mapsTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "compval": "rule_number",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} action {{action}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} action {{action}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -156,9 +151,7 @@ class Route_mapsTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "compval": "rule_number",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} continue {{continue}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} continue {{continue}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -184,7 +177,6 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "on_match.next",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} on-match next",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} on-match next",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -210,9 +202,8 @@ class Route_mapsTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "compval": "on_match.next",
+            "compval": "on_match.goto",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} on-match goto {{on_match.goto}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} on-match next {{on_match.goto}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -238,9 +229,8 @@ class Route_mapsTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "compval": "set.aggregator",
-            "setval": "policy route-map {{route_map}} rule {{rule_number}} set aggregator ip {{aggregator.ip}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} set aggregator ip {{aggregator.ip}}",
+            "compval": "set.aggregator.ip",
+            "setval": "policy route-map {{route_map}} rule {{rule_number}} set aggregator ip {{set.aggregator.ip}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -268,9 +258,8 @@ class Route_mapsTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "compval": "set.aggregator",
-            "setval": "policy route-map {{route_map}} rule {{rule_number}} set aggregator as {{aggregator.as}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} set aggregator as {{aggregator.as}}",
+            "compval": "set.aggregator.as",
+            "setval": "policy route-map {{route_map}} rule {{rule_number}} set aggregator as {{set.aggregator.as}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -299,8 +288,7 @@ class Route_mapsTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "compval": "set.as_path_exclude",
-            "setval": "policy route-map {{route_map}} rule {{rule_number}} set as-path-exclude {{as_path_exclude}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} set as-path-exclude {{as_path_exclude}}",
+            "setval": "policy route-map {{route_map}} rule {{rule_number}} set as-path-exclude {{set.as_path_exclude}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -327,8 +315,7 @@ class Route_mapsTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "compval": "set.as_path_prepend",
-            "setval": "policy route-map {{route_map}} rule {{rule_number}} set as-path-prepend {{as_path_prepend}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} set as-path-prepend {{as_path_exclude}}",
+            "setval": "policy route-map {{route_map}} rule {{rule_number}} set as-path-prepend {{set.as_path_prepend}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -354,9 +341,7 @@ class Route_mapsTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "compval": "set.atomic-aggregate",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} set atomic-aggregate",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} set atomic-aggregate",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -384,9 +369,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.bgp_extcommunity_rt",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set bgp-extcommunity-rt {{bgp_extcommunity_rt}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set bgp-extcommunity-rt {{bgp_extcommunity_rt}}",
+                      "set bgp-extcommunity-rt {{set.bgp_extcommunity_rt}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -414,9 +397,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.comm_list.comm_list",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set comm-list comm-list {{comm_list}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set comm-list comm-list {{comm_list}}",
+                      "set comm-list comm-list {{set.comm_list.comm_list}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -445,8 +426,6 @@ class Route_mapsTemplate(NetworkTemplate):
             "compval": "set.comm_list.comm_list",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
                       "set comm-list delete",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set comm-list delete",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -474,9 +453,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.extcommunity_rt",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set extcommunity-rt {{extcommunity_rt}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set extcommunity-rt {{extcommunity_rt}}",
+                      "set extcommunity-rt {{set.extcommunity_rt}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -504,9 +481,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.extcommunity_soo",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set extcommunity-soo {{extcommunity_soo}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set extcommunity-soo {{extcommunity_soo}}",
+                      "set extcommunity-soo {{set.extcommunity_soo}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -516,7 +491,7 @@ class Route_mapsTemplate(NetworkTemplate):
                                 {
                                     "rule_number": "{{rule_number}}",
                                     "set": {
-                                        "extcommunity_soo": "{{extcommunity_soo}}"
+                                        "extcommunity_soo": "{{set.extcommunity_soo}}"
                                     }
                                 }
                         }
@@ -534,9 +509,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.ip_next_hop",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set ip-next-hop {{ip_next_hop}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set ip-next-hop {{ip_next_hop}}",
+                      "set ip-next-hop {{set.ip_next_hop}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -558,15 +531,15 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_ipv6_next_hop",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\sset\sipv6-next-hop\s(?P<ipv6_next_hop>\S+)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\sset\sipv6-next-hop
+                \s(?P<type>global|local)
+                \s(?P<value>\S+)
                 *$""",
                 re.VERBOSE,
             ),
             "compval": "set.ipv6_next_hop",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set ipv6-next-hop {{ipv6_next_hop}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set ipv6-next-hop {{ipv6_next_hop}}",
+                      "set ipv6-next-hop {{set.ipv6_next_hop.ip_type}} {{set.ipv6_next_hop.value}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -576,7 +549,10 @@ class Route_mapsTemplate(NetworkTemplate):
                                 {
                                     "rule_number": "{{rule_number}}",
                                     "set": {
-                                        "ipv6_next_hop": "{{ipv6_next_hop}}"
+                                        "ipv6_next_hop": {
+                                            "ip_type": "{{type}}",
+                                            "value": "{{value}}"
+                                        }
                                     }
                                 }
                         }
@@ -594,9 +570,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.large_community",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set large-community {{large_community}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set large-community {{large_community}}",
+                      "set large-community {{set.large_community}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -624,9 +598,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.local_preference",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set local-preference {{local_preference}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set local_preference {{local_preference}}",
+                      "set local-preference {{set.local_preference}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -654,9 +626,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.metric",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set metric {{metric}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set metric {{metric}}",
+                      "set metric {{set.metric}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -678,15 +648,13 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_metric_type",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\sset\smetric_type\s(?P<metric_type>\S+)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\sset\smetric-type\s(?P<metric_type>\S+)
                 *$""",
                 re.VERBOSE,
             ),
             "compval": "set.metric_type",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set metric-type {{metric_type}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set metric-type {{metric_type}}",
+                      "set metric-type {{set.metric_type}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -714,9 +682,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.origin",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set origin {{origin}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set origin {{origin}}",
+                      "set origin {{set.origin}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -744,9 +710,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.originator_id",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set originator-id {{originator_id}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set originator-id {{originator_id}}",
+                      "set originator-id {{set.originator_id}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -774,9 +738,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.src",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set src {{src}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set src {{src}}",
+                      "set src {{set.src}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -804,9 +766,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.tag",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set tag {{tag}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set tag {{tag}}",
+                      "set tag {{set.tag}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -834,9 +794,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "set.weight",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set weight {{weight}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "set weight {{weight}}",
+                      "set weight {{set.weight}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -855,6 +813,36 @@ class Route_mapsTemplate(NetworkTemplate):
             }
         },
         {
+            "name": "set_community",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\sset\scommunity\s(?P<value>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "set.community.value",
+            "setval": "policy route-map {{route_map}} rule {{rule_number}} "
+                      "set community {{set.community.value}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{rule_number}}":
+                                {
+                                    "rule_number": "{{rule_number}}",
+                                    "set": {
+                                        "community": {
+                                            "value": "{{value}}",
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                }
+            }
+        },
+        {
             "name": "match_as_path",
             "getval": re.compile(
                 r"""
@@ -864,9 +852,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "match.as_path",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match as-path {{as_path}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match as-path {{as_path}}",
+                      "match as-path {{match.as_path}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -894,9 +880,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "match.community.community_list",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match community community-list {{community_list}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match community community-list {{community_list}}",
+                      "match community community-list {{match.community.community_list}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -918,14 +902,12 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "match_community_exact_match",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\smatch\scommunity\sexact_match(?P<exact_match>)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\smatch\scommunity\sexact-match(?P<exact_match>)
                 *$""",
                 re.VERBOSE,
             ),
             "compval": "match.community.exact_match",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match community exact-match",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
                       "match community exact-match",
             "result": {
                 "route_maps": {
@@ -954,9 +936,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "match.extcommunity",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match extcommunity {{extcommunity}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match extcommunity {{extcommunity}}",
+                      "match extcommunity {{match.extcommunity}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -984,9 +964,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "match.interface",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match interface {{interface}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match interface {{interface}}",
+                      "match interface {{match.interface}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -1014,9 +992,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "match.large_community_large_community_list",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match large-community large-community-list {{lc}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match large-community large-community-list {{lc}}",
+                      "match large-community large-community-list {{match.large_community_large_community_list}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -1026,7 +1002,7 @@ class Route_mapsTemplate(NetworkTemplate):
                                 {
                                     "rule_number": "{{rule_number}}",
                                     "match": {
-                                        "large_community_large_community_list": "{{large_community_large_community_list}}"
+                                        "large_community_large_community_list": "{{lc}}"
                                     }
                                 }
                         }
@@ -1044,9 +1020,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "match.metric",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match metric {{metric}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match metric {{metric}}",
+                      "match metric {{match.metric}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -1074,9 +1048,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "match.origin",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match origin {{origin}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match origin {{origin}}",
+                      "match origin {{match.origin}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -1104,9 +1076,7 @@ class Route_mapsTemplate(NetworkTemplate):
             ),
             "compval": "match.peer",
             "setval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match peer {{peer}}",
-            "remval": "policy route-map {{route_map}} rule {{rule_number}} "
-                      "match peer {{peer}}",
+                      "match peer {{match.peer}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -1119,6 +1089,200 @@ class Route_mapsTemplate(NetworkTemplate):
                                         "peer": "{{peer}}"
                                     }
                                 }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "match_ip_address",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\smatch\sip\saddress
+                \s(?P<list_type>access-list|prefix-list)
+                \s(?P<value>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "match.ip.address",
+            "setval": "policy route-map {{route_map}} rule {{rule_number}} "
+                      "match ip address {{match.ip.address.list_type}} {{match.ip.address.value}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{rule_number}}": {
+                                "rule_number": "{{rule_number}}",
+                                "match": {
+                                    "ip": {
+                                        "address": {
+                                            "list_type": "{{list_type}}",
+                                            "value": "{{value}}"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "match_ip_next_hop",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\smatch\sip\snexthop
+                \s(?P<list_type>access-list|prefix-list)
+                \s(?P<value>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "match.ip.next_hop",
+            "setval": "policy route-map {{route_map}} rule {{rule_number}} "
+                      "match ip nexthop {{match.ip.next_hop.list_type}} {{match.ip.next_hop.value}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{rule_number}}": {
+                                "rule_number": "{{rule_number}}",
+                                "match": {
+                                    "ip": {
+                                        "next_hop": {
+                                            "list_type": "{{list_type}}",
+                                            "value": "{{value}}"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "match_ip_route_source",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\smatch\sip\sroute-source
+                \s(?P<list_type>access-list|prefix-list)
+                \s(?P<value>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "match.ip.route_source",
+            "setval": "policy route-map {{route_map}} rule {{rule_number}} "
+                      "match ip route-source {{match.ip.route_source.list_type}} {{match.ip.route_source.value}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{rule_number}}": {
+                                "rule_number": "{{rule_number}}",
+                                "match": {
+                                    "ip": {
+                                        "route_source": {
+                                            "list_type": "{{list_type}}",
+                                            "value": "{{value}}"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "match_ipv6_address",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\smatch\sipv6\saddress
+                \s(?P<list_type>access-list|prefix-list)
+                \s(?P<value>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "match.ipv6.address",
+            "setval": "policy route-map {{route_map}} rule {{rule_number}} "
+                      "match ipv6 address {{match.ipv6.address.list_type}} {{match.ipv6.address.value}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{rule_number}}": {
+                                "rule_number": "{{rule_number}}",
+                                "match": {
+                                    "ipv6": {
+                                        "address": {
+                                            "list_type": "{{list_type}}",
+                                            "value": "{{value}}"
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "match_ipv6_nexthop",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\smatch\sipv6\snexthop
+                \s(?P<value>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "match.ipv6.next_hop",
+            "setval": "policy route-map {{route_map}} rule {{rule_number}} "
+                      "match ipv6 nexthop {{match.ipv6.next_hop}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{rule_number}}": {
+                                "rule_number": "{{rule_number}}",
+                                "match": {
+                                    "ipv6": {
+                                        "next_hop": "{{value}}"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "name": "match_rpki",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<rule_number>\d+)\smatch\srpki
+                \s(?P<value>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "match.rpki",
+            "setval": "policy route-map {{route_map}} rule {{rule_number}} "
+                      "match rpki {{match.rpki}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{rule_number}}": {
+                                "rule_number": "{{rule_number}}",
+                                "match": {
+                                    "rpki": "{{value}}"
+                                }
+                            }
                         }
                     }
                 }

@@ -17,7 +17,6 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
-from copy import deepcopy
 
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
@@ -48,6 +47,49 @@ class Route_maps(ResourceModule):
             tmplt=Route_mapsTemplate(),
         )
         self.parsers = [
+            "call",
+            "description",
+            "action",
+            "continue",
+            "set_aggregator_ip",
+            "set_aggregator_as",
+            "set_as_path_exclude",
+            "set_as_path_prepend",
+            "set_atomic_aggregate",
+            "set_bgp_extcommunity_rt",
+            "set_extcommunity_rt",
+            "set_extcommunity_soo",
+            "set_ip_next_hop",
+            "set_ipv6_next_hop",
+            "set_large_community",
+            "set_local_preference",
+            "set_metric",
+            "set_metric_type",
+            "set_origin",
+            "set_originator_id",
+            "set_src",
+            "set_tag",
+            "set_weight",
+            "set_comm_list",
+            "set_comm_list_delete",
+            "set_community",
+            "match_as_path",
+            "match_community_community_list",
+            "match_community_exact_match",
+            "match_extcommunity",
+            "match_interface",
+            "match_large_community_large_community_list",
+            "match_metric",
+            "match_origin",
+            "match_peer",
+            "match_ip_address",
+            "match_ip_next_hop",
+            "match_ip_route_source",
+            "on_match_goto",
+            "on_match_next",
+            "match_ipv6_address",
+            "match_ipv6_nexthop",
+            "match_rpki"
         ]
 
     def execute_module(self):
@@ -65,8 +107,8 @@ class Route_maps(ResourceModule):
         """ Generate configuration commands to send based on
             want, have and desired state.
         """
-        wantd = {entry['name']: entry for entry in self.want}
-        haved = {entry['name']: entry for entry in self.have}
+        wantd = self._route_maps_list_to_dict(self.want)
+        haved = self._route_maps_list_to_dict(self.have)
 
         # if state is merged, merge want onto have and then compare
         if self.state == "merged":
@@ -81,12 +123,15 @@ class Route_maps(ResourceModule):
 
         # remove superfluous config for overridden and deleted
         if self.state in ["overridden", "deleted"]:
+            #import epdb;epdb.serve()
             for k, have in iteritems(haved):
                 if k not in wantd:
-                    self._compare(want={}, have=have)
+                    self.commands.append(
+                            self._tmplt.render({"route_map": k}, "route_map", True)
+                        )
 
-        for k, want in iteritems(wantd):
-            self._compare(want=want, have=haved.pop(k, {}))
+        for wk, want in iteritems(wantd):
+            self._compare(want=want, have=haved.pop(wk, {}))
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
@@ -94,4 +139,30 @@ class Route_maps(ResourceModule):
            the `want` and `have` data with the `parsers` defined
            for the Route_maps network resource.
         """
-        self.compare(parsers=self.parsers, want=want, have=have)
+        w_entries = want.get("entries", {})
+        h_entries = have.get("entries", {})
+        self._compare_entries(want=w_entries, have=h_entries)
+
+    def _compare_entries(self, want, have):
+        for wk, wentry in iteritems(want):
+            hentry = have.pop(wk, {})
+            self.compare(parsers=self.parsers, want=wentry, have=hentry)
+
+        # remove superfluos entries from have
+        #for _hk, hentry in iteritems(have):
+        #   self.commands.append(self._tmplt.render(hentry, "route_map", True))
+
+
+    def _route_maps_list_to_dict(self, entry):
+        entry = {x["route_map"]: x for x in entry}
+        for rmap, data in iteritems(entry):
+            if "entries" in data:
+                for x in data["entries"]:
+                    x.update({"route_map": rmap})
+                data["entries"] = {
+                    (rmap, entry.get("rule_number")): entry
+                    for entry in data["entries"]
+                }
+        #import epdb;epdb.serve()
+        return entry
+

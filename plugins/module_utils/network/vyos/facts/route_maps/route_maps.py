@@ -62,23 +62,26 @@ class Route_mapsFacts(object):
         """
         facts = {}
         objs = []
-
         if not data:
             data = self.get_config(connection)
 
         # parse native config using the Route_maps template
         route_maps_parser = Route_mapsTemplate(lines=data.splitlines())
-
-        objs = list(route_maps_parser.parse().values())
-        #import epdb;epdb.serve()
+        if route_maps_parser.parse().get('route_maps'):
+            objs = list(route_maps_parser.parse().get('route_maps').values())
+        for item in objs:
+            if item.get("entries"):
+                item["entries"] = list(item["entries"].values())
 
         ansible_facts['ansible_network_resources'].pop('route_maps', None)
 
+        #import epdb;epdb.serve()
         params = utils.remove_empties(
             utils.validate_config(self.argument_spec, {"config": objs})
         )
 
-        facts['route_maps'] = params['config']
+        if params.get("config"):
+            facts['route_maps'] = params['config']
         ansible_facts['ansible_network_resources'].update(facts)
 
         return ansible_facts
