@@ -1,13 +1,13 @@
 ---
 - debug:
-    msg: START vyos_route_maps merged integration tests on connection={{
+    msg: START vyos_route_maps rendered integration tests on connection={{
       ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
 
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Structure provided configuration into device specific commands
       register: result
       vyos.vyos.vyos_route_maps: &id001
         config:
@@ -37,29 +37,9 @@
                   originator_id: 192.0.2.34
                   tag: 5
                   weight: 4
-        state: merged
-
-    - become: true
-      vyos.vyos.vyos_facts:
-        gather_network_resources: route_maps
+        state: rendered
 
     - assert:
         that:
-          - result.commands|length == 16
-          - result.changed == true
-          - result.commands|symmetric_difference(merged.commands) == []
-          - result.after|symmetric_difference(ansible_facts['network_resources']['route_maps']) == []
-
-    - name: Merge the provided configuration with the existing running configuration
-        (IDEMPOTENT)
-      register: result
-      vyos.vyos.vyos_route_maps: *id001
-
-    - name: Assert that the previous task was idempotent
-      assert:
-        that:
-          - result['changed'] == false
-
-  always:
-
-    - include_tasks: _remove_config.yaml
+          - result.changed == false
+          - result.rendered|symmetric_difference(merged.commands) == []
