@@ -163,7 +163,7 @@ EXAMPLES = """
 # set interfaces ethernet eth2 smp-affinity 'auto'
 # set interfaces ethernet eth3 hw-id '08:00:27:43:70:8c'
 # set interfaces loopback lo
-
+# Test
 - name: Merge provided configuration with device configuration
   vyos.vyos.vyos_interfaces:
     config:
