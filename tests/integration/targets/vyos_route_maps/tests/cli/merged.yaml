@@ -27,8 +27,6 @@
                   rpki: invalid
                   metric: 1
                   peer: 192.0.2.32
-                  ipv6:
-                    next_hop: fdda:5cc1:23:4::1f
                 set:
                   local_preference: 4
                   metric: 5
@@ -45,7 +43,7 @@
 
     - assert:
         that:
-          - result.commands|length == 16
+          - result.commands|length == 15
           - result.changed == true
           - result.commands|symmetric_difference(merged.commands) == []
           - result.after|symmetric_difference(ansible_facts['network_resources']['route_maps']) == []

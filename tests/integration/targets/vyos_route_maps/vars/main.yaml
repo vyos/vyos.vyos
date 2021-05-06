@@ -15,7 +15,6 @@ merged:
     - set policy route-map test3 rule 1 set weight 4
     - set policy route-map test3 rule 1 match metric 1
     - set policy route-map test3 rule 1 match peer 192.0.2.32
-    - set policy route-map test3 rule 1 match ipv6 nexthop fdda:5cc1:23:4::1f
     - set policy route-map test3 rule 1 match rpki invalid
 
   after:
@@ -27,8 +26,6 @@ merged:
             rpki: "invalid"
             metric: 1
             peer: "192.0.2.32"
-            ipv6:
-              next_hop: "fdda:5cc1:23:4::1f"
           set:
             local_preference: "4"
             metric: "5"
@@ -49,7 +46,6 @@ merged:
 replaced:
   commands:
     - delete policy route-map test3 rule 1 set ip-next-hop 192.0.2.33
-    - delete policy route-map test3 rule 1 set ipv6-next-hop global fdda:5cc1:23:4::1f
     - set policy route-map test3 rule 1 set local-preference 6
     - set policy route-map test3 rule 1 set metric 4
     - set policy route-map test3 rule 1 set tag 4
@@ -77,8 +73,6 @@ replaced:
             rpki: invalid
             metric: 3
             peer: 192.0.2.35
-            ipv6:
-              next_hop: fdda:5cc1:23:4::1f
           set:
             local_preference: 6
             metric: 4
@@ -93,7 +87,6 @@ overridden:
   commands:
       - delete policy route-map test2
       - delete policy route-map test3 rule 1 set ip-next-hop 192.0.2.33
-      - delete policy route-map test3 rule 1 set ipv6-next-hop global fdda:5cc1:23:4::1f
       - set policy route-map test3 rule 1 set local-preference 6
       - set policy route-map test3 rule 1 set metric 4
       - set policy route-map test3 rule 1 set tag 4
@@ -111,8 +104,6 @@ overridden:
             rpki: invalid
             metric: 3
             peer: 192.0.2.35
-            ipv6:
-              next_hop: fdda:5cc1:23:4::1f
           set:
             local_preference: 6
             metric: 4
@@ -128,23 +119,4 @@ deleted:
     - delete policy route-map test2
     - delete policy route-map test3
   after: []
-
-rendered:
-  commands:
-    - set policy route-map test1 rule 1 description test
-    - set policy route-map test1 rule 1 action permit
-    - set policy route-map test1 rule 1 continue 2
-    - set policy route-map test1 rule 1 on-match next
-    - set policy route-map test3 rule 1 action permit
-    - set policy route-map test3 rule 1 set local-preference 4
-    - set policy route-map test3 rule 1 set metric 5
-    - set policy route-map test3 rule 1 set metric-type type-1
-    - set policy route-map test3 rule 1 set origin egp
-    - set policy route-map test3 rule 1 set originator-id 192.0.2.34
-    - set policy route-map test3 rule 1 set tag 5
-    - set policy route-map test3 rule 1 set weight 4
-    - set policy route-map test3 rule 1 match metric 1
-    - set policy route-map test3 rule 1 match peer 192.0.2.32
-    - set policy route-map test3 rule 1 match ipv6 nexthop fdda:5cc1:23:4::1f
-    - set policy route-map test3 rule 1 match rpki invalid
 

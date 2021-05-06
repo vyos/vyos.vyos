@@ -33,7 +33,7 @@ options:
           type: str
         entries:
           description: Route Map rules.
-          aliases: rules
+          aliases: ["rules"]
           type: list
           elements: dict
           suboptions:
@@ -259,6 +259,662 @@ options:
       default: merged
 """
 EXAMPLES = """
+# Using merged
+# Before state
+
+# vyos@vyos:~$ show configuration commands |  match "set policy route-map"
+# vyos@vyos:~$
+    - name: Merge the provided configuration with the exisiting running configuration
+      register: result
+      vyos.vyos.vyos_route_maps: &id001
+        config:
+          - route_map: test1
+            entries:
+              - rule_number: 1
+                description: "test"
+                action: permit
+                continue: 2
+                on_match:
+                  next: True
+          - route_map: test3
+            entries:
+              - rule_number: 1
+                action: permit
+                match:
+                  rpki: invalid
+                  metric: 1
+                  peer: 192.0.2.32
+                set:
+                  local_preference: 4
+                  metric: 5
+                  metric_type: "type-1"
+                  origin: egp
+                  originator_id: 192.0.2.34
+                  tag: 5
+                  weight: 4
+        state: merged
+# After State
+# vyos@vyos:~$ show configuration commands |  match "set policy route-maps"
+#   set policy route-map test1 rule 1 description test
+#   set policy route-map test1 rule 1 action permit
+#   set policy route-map test1 rule 1 continue 2
+#   set policy route-map test1 rule 1 on-match next
+#   set policy route-map test3 rule 1 action permit
+#   set policy route-map test3 rule 1 set local-preference 4
+#   set policy route-map test3 rule 1 set metric 5
+#   set policy route-map test3 rule 1 set metric-type type-1
+#   set policy route-map test3 rule 1 set origin egp
+#   set policy route-map test3 rule 1 set originator-id 192.0.2.34
+#   set policy route-map test3 rule 1 set tag 5
+#   set policy route-map test3 rule 1 set weight 4
+#   set policy route-map test3 rule 1 match metric 1
+#   set policy route-map test3 rule 1 match peer 192.0.2.32
+#   set policy route-map test3 rule 1 match rpki invalid
+
+# "after": [
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "continue": 2,
+#                     "description": "test",
+#                     "on_match": {
+#                         "next": true
+#                     },
+#                     "rule_number": 1
+#                 }
+#             ],
+#             "route_map": "test1"
+#         },
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "match": {
+#                         "metric": 1,
+#                         "peer": "192.0.2.32",
+#                         "rpki": "invalid"
+#                     },
+#                     "rule_number": 1,
+#                     "set": {
+#                         "local_preference": "4",
+#                         "metric": "5",
+#                         "metric_type": "type-1",
+#                         "origin": "egp",
+#                         "originator_id": "192.0.2.34",
+#                         "tag": "5",
+#                         "weight": "4"
+#                     }
+#                 }
+#             ],
+#             "route_map": "test3"
+#         }
+#     ],
+#     "before": {},
+#     "changed": true,
+#     "commands": [
+#         "set policy route-map test1 rule 1 description test",
+#         "set policy route-map test1 rule 1 action permit",
+#         "set policy route-map test1 rule 1 continue 2",
+#         "set policy route-map test1 rule 1 on-match next",
+#         "set policy route-map test3 rule 1 action permit",
+#         "set policy route-map test3 rule 1 set local-preference 4",
+#         "set policy route-map test3 rule 1 set metric 5",
+#         "set policy route-map test3 rule 1 set metric-type type-1",
+#         "set policy route-map test3 rule 1 set origin egp",
+#         "set policy route-map test3 rule 1 set originator-id 192.0.2.34",
+#         "set policy route-map test3 rule 1 set tag 5",
+#         "set policy route-map test3 rule 1 set weight 4",
+#         "set policy route-map test3 rule 1 match metric 1",
+#         "set policy route-map test3 rule 1 match peer 192.0.2.32",
+#         "set policy route-map test3 rule 1 match rpki invalid"
+#     ],
+
+# Using replaced:
+# --------------
+
+# Before state:
+# vyos@vyos:~$ show configuration commands |  match "set route-map policy"
+# set policy route-map test2 rule 1 action 'permit'
+# set policy route-map test2 rule 1 description 'test'
+# set policy route-map test2 rule 1 on-match next
+# set policy route-map test2 rule 2 action 'permit'
+# set policy route-map test2 rule 2 on-match goto '4'
+# set policy route-map test3 rule 1 action 'permit'
+# set policy route-map test3 rule 1 match metric '1'
+# set policy route-map test3 rule 1 match peer '192.0.2.32'
+# set policy route-map test3 rule 1 match rpki 'invalid'
+# set policy route-map test3 rule 1 set community 'internet'
+# set policy route-map test3 rule 1 set ip-next-hop '192.0.2.33'
+# set policy route-map test3 rule 1 set local-preference '4'
+# set policy route-map test3 rule 1 set metric '5'
+# set policy route-map test3 rule 1 set metric-type 'type-1'
+# set policy route-map test3 rule 1 set origin 'egp'
+# set policy route-map test3 rule 1 set originator-id '192.0.2.34'
+# set policy route-map test3 rule 1 set tag '5'
+# set policy route-map test3 rule 1 set weight '4'
+#
+#     - name: Replace  the provided configuration with the exisiting running configuration
+#       register: result
+#       vyos.vyos.vyos_route_maps: &id001
+#         config:
+#           - route_map: test3
+#             entries:
+#               - rule_number: 1
+#                 action: permit
+#                 match:
+#                   rpki: invalid
+#                   metric: 3
+#                   peer: 192.0.2.35
+#                 set:
+#                   local_preference: 6
+#                   metric: 4
+#                   metric_type: "type-1"
+#                   origin: egp
+#                   originator_id: 192.0.2.34
+#                   tag: 4
+#                   weight: 4
+#         state: replaced
+# After state:
+
+# vyos@vyos:~$ show configuration commands |  match "set policy route-map"
+# set policy route-map test3 rule 1 set local-preference 6
+# set policy route-map test3 rule 1 set metric 4
+# set policy route-map test3 rule 1 set tag 4
+# set policy route-map test3 rule 1 match metric 3
+# set policy route-map test3 rule 1 match peer 192.0.2.35
+# vyos@vyos:~$
+#
+#
+# Module Execution:
+#
+# "after": [
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "description": "test",
+#                     "on_match": {
+#                         "next": true
+#                     },
+#                     "rule_number": 1
+#                 },
+#                 {
+#                     "action": "permit",
+#                     "on_match": {
+#                         "goto": 4
+#                     },
+#                     "rule_number": 2
+#                 }
+#             ],
+#             "route_map": "test2"
+#         },
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "match": {
+#                         "metric": 3,
+#                         "peer": "192.0.2.35",
+#                         "rpki": "invalid"
+#                     },
+#                     "rule_number": 1,
+#                     "set": {
+#                         "local_preference": "6",
+#                         "metric": "4",
+#                         "metric_type": "type-1",
+#                         "origin": "egp",
+#                         "originator_id": "192.0.2.34",
+#                         "tag": "4",
+#                         "weight": "4"
+#                     }
+#                 }
+#             ],
+#             "route_map": "test3"
+#         }
+#     ],
+#     "before": [
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "description": "test",
+#                     "on_match": {
+#                         "next": true
+#                     },
+#                     "rule_number": 1
+#                 },
+#                 {
+#                     "action": "permit",
+#                     "on_match": {
+#                         "goto": 4
+#                     },
+#                     "rule_number": 2
+#                 }
+#             ],
+#             "route_map": "test2"
+#         },
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "match": {
+#                         "metric": 1,
+#                         "peer": "192.0.2.32",
+#                         "rpki": "invalid"
+#                     },
+#                     "rule_number": 1,
+#                     "set": {
+#                         "community": {
+#                             "value": "internet"
+#                         },
+#                         "ip_next_hop": "192.0.2.33",
+#                         "local_preference": "4",
+#                         "metric": "5",
+#                         "metric_type": "type-1",
+#                         "origin": "egp",
+#                         "originator_id": "192.0.2.34",
+#                         "tag": "5",
+#                         "weight": "4"
+#                     }
+#                 }
+#             ],
+#             "route_map": "test3"
+#         }
+#     ],
+#     "changed": true,
+#     "commands": [
+#         "delete policy route-map test3 rule 1 set ip-next-hop 192.0.2.33",
+#         "set policy route-map test3 rule 1 set local-preference 6",
+#         "set policy route-map test3 rule 1 set metric 4",
+#         "set policy route-map test3 rule 1 set tag 4",
+#         "delete policy route-map test3 rule 1 set community internet",
+#         "set policy route-map test3 rule 1 match metric 3",
+#         "set policy route-map test3 rule 1 match peer 192.0.2.35"
+#     ],
+#
+# Using deleted:
+# -------------
+
+# Before state:
+# vyos@vyos:~$ show configuration commands |  match "set policy route-map"
+# set policy route-map test3 rule 1 set local-preference 6
+# set policy route-map test3 rule 1 set metric 4
+# set policy route-map test3 rule 1 set tag 4
+# set policy route-map test3 rule 1 match metric 3
+# set policy route-map test3 rule 1 match peer 192.0.2.35
+# vyos@vyos:~$
+#
+# - name: Delete the provided configuration
+#   register: result
+#   vyos.vyos.vyos_route_maps:
+#     config:
+#     state: deleted
+# After state:
+
+# vyos@vyos:~$ show configuration commands |  match "set policy route-map"
+# vyos@vyos:~$
+#
+#
+# Module Execution:
+#
+# "after": {},
+#     "before": [
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "match": {
+#                         "metric": 3,
+#                         "peer": "192.0.2.35",
+#                     },
+#                     "rule_number": 1,
+#                     "set": {
+#                         "local_preference": "6",
+#                         "metric": "4",
+#                         "tag": "4",
+#                     }
+#                 }
+#             ],
+#             "route_map": "test3"
+#         }
+#     ],
+#     "changed": true,
+#     "commands": [
+#         "delete policy route-map test3"
+#     ],
+#
+# using gathered:
+# --------------
+#
+# Before state:
+# vyos@vyos:~$ show configuration commands |  match "set policy route-maps"
+#   set policy route-map test1 rule 1 description test
+#   set policy route-map test1 rule 1 action permit
+#   set policy route-map test1 rule 1 continue 2
+#   set policy route-map test1 rule 1 on-match next
+#   set policy route-map test3 rule 1 action permit
+#   set policy route-map test3 rule 1 set local-preference 4
+#   set policy route-map test3 rule 1 set metric 5
+#   set policy route-map test3 rule 1 set metric-type type-1
+#   set policy route-map test3 rule 1 set origin egp
+#   set policy route-map test3 rule 1 set originator-id 192.0.2.34
+#   set policy route-map test3 rule 1 set tag 5
+#   set policy route-map test3 rule 1 set weight 4
+#   set policy route-map test3 rule 1 match metric 1
+#   set policy route-map test3 rule 1 match peer 192.0.2.32
+#   set policy route-map test3 rule 1 match rpki invalid
+# 
+# - name: gather configs
+#     vyos.vyos.vyos_route_maps:
+#       state: gathered
+      
+# "gathered": [
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "continue": 2,
+#                     "description": "test",
+#                     "on_match": {
+#                         "next": true
+#                     },
+#                     "rule_number": 1
+#                 }
+#             ],
+#             "route_map": "test1"
+#         },
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "match": {
+#                         "metric": 1,
+#                         "peer": "192.0.2.32",
+#                         "rpki": "invalid"
+#                     },
+#                     "rule_number": 1,
+#                     "set": {
+#                         "local_preference": "4",
+#                         "metric": "5",
+#                         "metric_type": "type-1",
+#                         "origin": "egp",
+#                         "originator_id": "192.0.2.34",
+#                         "tag": "5",
+#                         "weight": "4"
+#                     }
+#                 }
+#             ],
+#             "route_map": "test3"
+#         }
+#     ]
+
+# Using parsed:
+# ------------
+
+# parsed.cfg
+# set policy route-map test1 rule 1 description test
+# set policy route-map test1 rule 1 action permit
+# set policy route-map test1 rule 1 continue 2
+# set policy route-map test1 rule 1 on-match next
+# set policy route-map test3 rule 1 action permit
+# set policy route-map test3 rule 1 set local-preference 4
+# set policy route-map test3 rule 1 set metric 5
+# set policy route-map test3 rule 1 set metric-type type-1
+# set policy route-map test3 rule 1 set origin egp
+# set policy route-map test3 rule 1 set originator-id 192.0.2.34
+# set policy route-map test3 rule 1 set tag 5
+# set policy route-map test3 rule 1 set weight 4
+# set policy route-map test3 rule 1 match metric 1
+# set policy route-map test3 rule 1 match peer 192.0.2.32
+# set policy route-map test3 rule 1 match rpki invalid
+#
+# - name: parse configs
+#   vyos.vyos.vyos_route_maps:
+#     running_config: "{{ lookup('file', './parsed.cfg') }}"
+#     state: parsed
+#   tags:
+#     - parsed
+# 
+# Module execution:
+# "parsed": [
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "continue": 2,
+#                     "description": "test",
+#                     "on_match": {
+#                         "next": true
+#                     },
+#                     "rule_number": 1
+#                 }
+#             ],
+#             "route_map": "test1"
+#         },
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "match": {
+#                         "metric": 1,
+#                         "peer": "192.0.2.32",
+#                         "rpki": "invalid"
+#                     },
+#                     "rule_number": 1,
+#                     "set": {
+#                         "local_preference": "4",
+#                         "metric": "5",
+#                         "metric_type": "type-1",
+#                         "origin": "egp",
+#                         "originator_id": "192.0.2.34",
+#                         "tag": "5",
+#                         "weight": "4"
+#                     }
+#                 }
+#             ],
+#             "route_map": "test3"
+#         }
+#     ]
+#
+#
+# Using rendered:
+# --------------
+# - name: Structure provided configuration into device specific commands
+#       register: result
+#       vyos.vyos.vyos_route_maps: &id001
+#         config:
+#           - route_map: test1
+#             entries:
+#               - rule_number: 1
+#                 description: "test"
+#                 action: permit
+#                 continue: 2
+#                 on_match:
+#                   next: True
+#           - route_map: test3
+#             entries:
+#               - rule_number: 1
+#                 action: permit
+#                 match:
+#                   rpki: invalid
+#                   metric: 1
+#                   peer: 192.0.2.32
+#                 set:
+#                   local_preference: 4
+#                   metric: 5
+#                   metric_type: "type-1"
+#                   origin: egp
+#                   originator_id: 192.0.2.34
+#                   tag: 5
+#                   weight: 4
+#         state: rendered
+# Module Execution:
+# "rendered": [
+#         "set policy route-map test1 rule 1 description test",
+#         "set policy route-map test1 rule 1 action permit",
+#         "set policy route-map test1 rule 1 continue 2",
+#         "set policy route-map test1 rule 1 on-match next",
+#         "set policy route-map test3 rule 1 action permit",
+#         "set policy route-map test3 rule 1 set local-preference 4",
+#         "set policy route-map test3 rule 1 set metric 5",
+#         "set policy route-map test3 rule 1 set metric-type type-1",
+#         "set policy route-map test3 rule 1 set origin egp",
+#         "set policy route-map test3 rule 1 set originator-id 192.0.2.34",
+#         "set policy route-map test3 rule 1 set tag 5",
+#         "set policy route-map test3 rule 1 set weight 4",
+#         "set policy route-map test3 rule 1 match metric 1",
+#         "set policy route-map test3 rule 1 match peer 192.0.2.32",
+#         "set policy route-map test3 rule 1 match rpki invalid"
+#     ]
+#
+#
+# Using overridden:
+# --------------
+# Before state:
+# vyos@vyos:~$ show configuration commands |  match "set policy route-map"
+# set policy route-map test2 rule 1 action 'permit'
+# set policy route-map test2 rule 1 description 'test'
+# set policy route-map test2 rule 1 on-match next
+# set policy route-map test2 rule 2 action 'permit'
+# set policy route-map test2 rule 2 on-match goto '4'
+# set policy route-map test3 rule 1 action 'permit'
+# set policy route-map test3 rule 1 match metric '1'
+# set policy route-map test3 rule 1 match peer '192.0.2.32'
+# set policy route-map test3 rule 1 match rpki 'invalid'
+# set policy route-map test3 rule 1 set community 'internet'
+# set policy route-map test3 rule 1 set ip-next-hop '192.0.2.33'
+# set policy route-map test3 rule 1 set local-preference '4'
+# set policy route-map test3 rule 1 set metric '5'
+# set policy route-map test3 rule 1 set metric-type 'type-1'
+# set policy route-map test3 rule 1 set origin 'egp'
+# set policy route-map test3 rule 1 set originator-id '192.0.2.34'
+# set policy route-map test3 rule 1 set tag '5'
+# set policy route-map test3 rule 1 set weight '4'
+# 
+#     - name: Override the existing configuration with the provided running configuration
+#       register: result
+#       vyos.vyos.vyos_route_maps: &id001
+#         config:
+#           - route_map: test3
+#             entries:
+#               - rule_number: 1
+#                 action: permit
+#                 match:
+#                   rpki: invalid
+#                   metric: 3
+#                   peer: 192.0.2.35
+#                 set:
+#                   local_preference: 6
+#                   metric: 4
+#                   metric_type: "type-1"
+#                   origin: egp
+#                   originator_id: 192.0.2.34
+#                   tag: 4
+#                   weight: 4
+#         state: overridden
+# After state:
+
+# vyos@vyos:~$ show configuration commands |  match "set policy route-map"
+# set policy route-map test3 rule 1 set metric-type 'type-1'
+# set policy route-map test3 rule 1 set origin 'egp'
+# set policy route-map test3 rule 1 set originator-id '192.0.2.34'
+# set policy route-map test3 rule 1 set weight '4'
+# set policy route-map test3 rule 1 set local-preference 6
+# set policy route-map test3 rule 1 set metric 4
+# set policy route-map test3 rule 1 set tag 4
+# set policy route-map test3 rule 1 match metric 3
+# set policy route-map test3 rule 1 match peer 192.0.2.35
+# set policy route-map test3 rule 1 match rpki 'invalid'
+
+# Module Execution:
+# "after": [
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "match": {
+#                         "metric": 3,
+#                         "peer": "192.0.2.35",
+#                         "rpki": "invalid"
+#                     },
+#                     "rule_number": 1,
+#                     "set": {
+#                         "local_preference": "6",
+#                         "metric": "4",
+#                         "metric_type": "type-1",
+#                         "origin": "egp",
+#                         "originator_id": "192.0.2.34",
+#                         "tag": "4",
+#                         "weight": "4"
+#                     }
+#                 }
+#             ],
+#             "route_map": "test3"
+#         }
+#     ],
+#     "before": [
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "description": "test",
+#                     "on_match": {
+#                         "next": true
+#                     },
+#                     "rule_number": 1
+#                 },
+#                 {
+#                     "action": "permit",
+#                     "on_match": {
+#                         "goto": 4
+#                     },
+#                     "rule_number": 2
+#                 }
+#             ],
+#             "route_map": "test2"
+#         },
+#         {
+#             "entries": [
+#                 {
+#                     "action": "permit",
+#                     "match": {
+#                         "metric": 1,
+#                         "peer": "192.0.2.32",
+#                         "rpki": "invalid"
+#                     },
+#                     "rule_number": 1,
+#                     "set": {
+#                         "community": {
+#                             "value": "internet"
+#                         },
+#                         "ip_next_hop": "192.0.2.33",
+#                         "local_preference": "4",
+#                         "metric": "5",
+#                         "metric_type": "type-1",
+#                         "origin": "egp",
+#                         "originator_id": "192.0.2.34",
+#                         "tag": "5",
+#                         "weight": "4"
+#                     }
+#                 }
+#             ],
+#             "route_map": "test3"
+#         }
+#     ],
+#     "changed": true,
+#     "commands": [
+#         "delete policy route-map test2",
+#         "delete policy route-map test3 rule 1 set ip-next-hop 192.0.2.33",
+#         "set policy route-map test3 rule 1 set local-preference 6",
+#         "set policy route-map test3 rule 1 set metric 4",
+#         "set policy route-map test3 rule 1 set tag 4",
+#         "delete policy route-map test3 rule 1 set community internet",
+#         "set policy route-map test3 rule 1 match metric 3",
+#         "set policy route-map test3 rule 1 match peer 192.0.2.35"
+#     ],
+#
+
 """
 
 from ansible.module_utils.basic import AnsibleModule
