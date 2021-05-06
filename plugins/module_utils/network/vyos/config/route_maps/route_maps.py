@@ -89,7 +89,7 @@ class Route_maps(ResourceModule):
             "on_match_next",
             "match_ipv6_address",
             "match_ipv6_nexthop",
-            "match_rpki"
+            "match_rpki",
         ]
 
     def execute_module(self):
@@ -123,12 +123,12 @@ class Route_maps(ResourceModule):
 
         # remove superfluous config for overridden and deleted
         if self.state in ["overridden", "deleted"]:
-            #import epdb;epdb.serve()
+            # import epdb;epdb.serve()
             for k, have in iteritems(haved):
                 if k not in wantd:
                     self.commands.append(
-                            self._tmplt.render({"route_map": k}, "route_map", True)
-                        )
+                        self._tmplt.render({"route_map": k}, "route_map", True)
+                    )
 
         for wk, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(wk, {}))
@@ -149,9 +149,8 @@ class Route_maps(ResourceModule):
             self.compare(parsers=self.parsers, want=wentry, have=hentry)
 
         # remove superfluos entries from have
-        #for _hk, hentry in iteritems(have):
+        # for _hk, hentry in iteritems(have):
         #   self.commands.append(self._tmplt.render(hentry, "route_map", True))
-
 
     def _route_maps_list_to_dict(self, entry):
         entry = {x["route_map"]: x for x in entry}
@@ -163,6 +162,5 @@ class Route_maps(ResourceModule):
                     (rmap, entry.get("rule_number")): entry
                     for entry in data["entries"]
                 }
-        #import epdb;epdb.serve()
+        # import epdb;epdb.serve()
         return entry
-

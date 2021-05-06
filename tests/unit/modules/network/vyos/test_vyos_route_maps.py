@@ -42,7 +42,6 @@ class TestVyosRouteMapsModule(TestVyosModule):
             self.mock_get_resource_connection_config.start()
         )
 
-
         self.mock_get_resource_connection_facts = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
         )
@@ -77,60 +76,56 @@ class TestVyosRouteMapsModule(TestVyosModule):
             dict(
                 config=[
                     dict(
-                    route_map="test3",
-                    entries=[
-                        dict(
-                            rule_number=1,
-                            action="permit",
-                            match=dict(
-                                rpki="invalid",
-                                interface="eth2",
-                                metric=1,
-                                peer="1.1.1.2",
-                                ipv6=dict(next_hop="fdda:5cc1:23:4::1f")
-                            ),
-                            set=dict(
-                                ipv6_next_hop=dict(
-                                    ip_type="global",
-                                    value="fdda:5cc1:23:4::1f"
+                        route_map="test3",
+                        entries=[
+                            dict(
+                                rule_number=1,
+                                action="permit",
+                                match=dict(
+                                    rpki="invalid",
+                                    interface="eth2",
+                                    metric=1,
+                                    peer="1.1.1.2",
+                                    ipv6=dict(next_hop="fdda:5cc1:23:4::1f"),
                                 ),
-                                community=dict(
-                                    value="internet"
+                                set=dict(
+                                    ipv6_next_hop=dict(
+                                        ip_type="global",
+                                        value="fdda:5cc1:23:4::1f",
+                                    ),
+                                    community=dict(value="internet"),
+                                    bgp_extcommunity_rt="22:11",
+                                    ip_next_hop="10.20.10.20",
+                                    local_preference=4,
+                                    metric=5,
+                                    metric_type="type-1",
+                                    origin="egp",
+                                    originator_id="10.0.2.3",
+                                    src="10.0.2.15",
+                                    tag=5,
+                                    weight=4,
                                 ),
-                                bgp_extcommunity_rt="22:11",
-                                ip_next_hop="10.20.10.20",
-                                local_preference=4,
-                                metric=5,
-                                metric_type="type-1",
-                                origin="egp",
-                                originator_id="10.0.2.3",
-                                src="10.0.2.15",
-                                tag=5,
-                                weight=4
+                            )
+                        ],
+                    ),
+                    dict(
+                        route_map="test1",
+                        entries=[
+                            dict(
+                                rule_number=1,
+                                action="permit",
+                                description="test",
+                                on_match=dict(next=True),
                             ),
-                        ),
-
-                    ],
-
-                ),
-                dict(
-                    route_map="test1",
-                    entries=[
-                        dict(
-                            rule_number=1,
-                            action="permit",
-                            description="test",
-                            on_match=dict(next=True),
-                        ),
-                        dict(
-                            rule_number=2,
-                            action="permit",
-                            on_match=dict(goto=4),
-                        )
-                    ],
-                )
-            ],
-            state="merged",
+                            dict(
+                                rule_number=2,
+                                action="permit",
+                                on_match=dict(goto=4),
+                            ),
+                        ],
+                    ),
+                ],
+                state="merged",
             )
         )
         self.execute_module(changed=False, commands=[])
@@ -150,16 +145,14 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     interface="eth2",
                                     metric=1,
                                     peer="1.1.1.3",
-                                    ipv6=dict(next_hop="fdda:5cc1:23:4::1f")
+                                    ipv6=dict(next_hop="fdda:5cc1:23:4::1f"),
                                 ),
                                 set=dict(
                                     ipv6_next_hop=dict(
                                         ip_type="global",
-                                        value="fdda:5cc1:23:4::1f"
+                                        value="fdda:5cc1:23:4::1f",
                                     ),
-                                    community=dict(
-                                        value="internet"
-                                    ),
+                                    community=dict(value="internet"),
                                     bgp_extcommunity_rt="22:11",
                                     ip_next_hop="10.20.10.22",
                                     large_community="10:20:21",
@@ -170,36 +163,36 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     originator_id="10.0.2.2",
                                     src="10.0.2.15",
                                     tag=4,
-                                    weight=4
+                                    weight=4,
                                 ),
-                            ),
-
+                            )
                         ],
-
                     )
                 ],
                 state="merged",
             )
         )
-        commands = ['set policy route-map test2 rule 1 action permit',
-                    'set policy route-map test2 rule 1 set bgp-extcommunity-rt 22:11',
-                    'set policy route-map test2 rule 1 set ip-next-hop 10.20.10.22',
-                    'set policy route-map test2 rule 1 set ipv6-next-hop global fdda:5cc1:23:4::1f',
-                    'set policy route-map test2 rule 1 set large-community 10:20:21',
-                    'set policy route-map test2 rule 1 set local-preference 4',
-                    'set policy route-map test2 rule 1 set metric 5',
-                    'set policy route-map test2 rule 1 set metric-type type-2',
-                    'set policy route-map test2 rule 1 set origin egp',
-                    'set policy route-map test2 rule 1 set originator-id 10.0.2.2',
-                    'set policy route-map test2 rule 1 set src 10.0.2.15',
-                    'set policy route-map test2 rule 1 set tag 4',
-                    'set policy route-map test2 rule 1 set weight 4',
-                    'set policy route-map test2 rule 1 set community internet',
-                    'set policy route-map test2 rule 1 match interface eth2',
-                    'set policy route-map test2 rule 1 match metric 1',
-                    'set policy route-map test2 rule 1 match peer 1.1.1.3',
-                    'set policy route-map test2 rule 1 match ipv6 nexthop fdda:5cc1:23:4::1f',
-                    'set policy route-map test2 rule 1 match rpki invalid']
+        commands = [
+            "set policy route-map test2 rule 1 action permit",
+            "set policy route-map test2 rule 1 set bgp-extcommunity-rt 22:11",
+            "set policy route-map test2 rule 1 set ip-next-hop 10.20.10.22",
+            "set policy route-map test2 rule 1 set ipv6-next-hop global fdda:5cc1:23:4::1f",
+            "set policy route-map test2 rule 1 set large-community 10:20:21",
+            "set policy route-map test2 rule 1 set local-preference 4",
+            "set policy route-map test2 rule 1 set metric 5",
+            "set policy route-map test2 rule 1 set metric-type type-2",
+            "set policy route-map test2 rule 1 set origin egp",
+            "set policy route-map test2 rule 1 set originator-id 10.0.2.2",
+            "set policy route-map test2 rule 1 set src 10.0.2.15",
+            "set policy route-map test2 rule 1 set tag 4",
+            "set policy route-map test2 rule 1 set weight 4",
+            "set policy route-map test2 rule 1 set community internet",
+            "set policy route-map test2 rule 1 match interface eth2",
+            "set policy route-map test2 rule 1 match metric 1",
+            "set policy route-map test2 rule 1 match peer 1.1.1.3",
+            "set policy route-map test2 rule 1 match ipv6 nexthop fdda:5cc1:23:4::1f",
+            "set policy route-map test2 rule 1 match rpki invalid",
+        ]
 
         self.execute_module(changed=True, commands=commands)
 
@@ -217,16 +210,14 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     rpki="invalid",
                                     metric=1,
                                     peer="1.1.1.3",
-                                    ipv6=dict(next_hop="fdda:5cc1:23:4::1f")
+                                    ipv6=dict(next_hop="fdda:5cc1:23:4::1f"),
                                 ),
                                 set=dict(
                                     ipv6_next_hop=dict(
                                         ip_type="global",
-                                        value="fdda:5cc1:23:4::1f"
+                                        value="fdda:5cc1:23:4::1f",
                                     ),
-                                    community=dict(
-                                        value="internet"
-                                    ),
+                                    community=dict(value="internet"),
                                     bgp_extcommunity_rt="22:11",
                                     ip_next_hop="10.20.10.22",
                                     large_community="10:20:21",
@@ -237,12 +228,10 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     originator_id="10.0.2.2",
                                     src="10.0.2.15",
                                     tag=4,
-                                    weight=4
+                                    weight=4,
                                 ),
-                            ),
-
+                            )
                         ],
-
                     ),
                     dict(
                         route_map="test1",
@@ -258,85 +247,83 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                 action="permit",
                                 description="test",
                                 on_match=dict(goto=4),
-                            )
+                            ),
                         ],
-                    )
+                    ),
                 ],
                 state="replaced",
             )
         )
-        commands = ['delete policy route-map test3 rule 1 match interface eth2',
-                    'set policy route-map test1 rule 2 description test',
-                    'set policy route-map test3 rule 1 set ip-next-hop 10.20.10.22',
-                    'set policy route-map test3 rule 1 set large-community 10:20:21',
-                    'set policy route-map test3 rule 1 set metric-type type-2',
-                    'set policy route-map test3 rule 1 set originator-id 10.0.2.2',
-                    'set policy route-map test3 rule 1 set tag 4',
-                    'set policy route-map test3 rule 1 match peer 1.1.1.3']
+        commands = [
+            "delete policy route-map test3 rule 1 match interface eth2",
+            "set policy route-map test1 rule 2 description test",
+            "set policy route-map test3 rule 1 set ip-next-hop 10.20.10.22",
+            "set policy route-map test3 rule 1 set large-community 10:20:21",
+            "set policy route-map test3 rule 1 set metric-type type-2",
+            "set policy route-map test3 rule 1 set originator-id 10.0.2.2",
+            "set policy route-map test3 rule 1 set tag 4",
+            "set policy route-map test3 rule 1 match peer 1.1.1.3",
+        ]
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_route_maps_replaced_idempotent(self):
-            set_module_args(
-                dict(
-                    config=[
-                        dict(
-                            route_map="test3",
-                            entries=[
-                                dict(
-                                    rule_number=1,
-                                    action="permit",
-                                    match=dict(
-                                        rpki="invalid",
-                                        interface="eth2",
-                                        metric=1,
-                                        peer="1.1.1.2",
-                                        ipv6=dict(next_hop="fdda:5cc1:23:4::1f")
-                                    ),
-                                    set=dict(
-                                        ipv6_next_hop=dict(
-                                            ip_type="global",
-                                            value="fdda:5cc1:23:4::1f"
-                                        ),
-                                        community=dict(
-                                            value="internet"
-                                        ),
-                                        bgp_extcommunity_rt="22:11",
-                                        ip_next_hop="10.20.10.20",
-                                        local_preference=4,
-                                        metric=5,
-                                        metric_type="type-1",
-                                        origin="egp",
-                                        originator_id="10.0.2.3",
-                                        src="10.0.2.15",
-                                        tag=5,
-                                        weight=4
-                                    ),
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        route_map="test3",
+                        entries=[
+                            dict(
+                                rule_number=1,
+                                action="permit",
+                                match=dict(
+                                    rpki="invalid",
+                                    interface="eth2",
+                                    metric=1,
+                                    peer="1.1.1.2",
+                                    ipv6=dict(next_hop="fdda:5cc1:23:4::1f"),
                                 ),
-
-                            ],
-
-                        ),
-                        dict(
-                            route_map="test1",
-                            entries=[
-                                dict(
-                                    rule_number=1,
-                                    action="permit",
-                                    description="test",
-                                    on_match=dict(next=True),
+                                set=dict(
+                                    ipv6_next_hop=dict(
+                                        ip_type="global",
+                                        value="fdda:5cc1:23:4::1f",
+                                    ),
+                                    community=dict(value="internet"),
+                                    bgp_extcommunity_rt="22:11",
+                                    ip_next_hop="10.20.10.20",
+                                    local_preference=4,
+                                    metric=5,
+                                    metric_type="type-1",
+                                    origin="egp",
+                                    originator_id="10.0.2.3",
+                                    src="10.0.2.15",
+                                    tag=5,
+                                    weight=4,
                                 ),
-                                dict(
-                                    rule_number=2,
-                                    action="permit",
-                                    on_match=dict(goto=4),
-                                )
-                            ],
-                        )
-                    ],
-                    state="replaced",
-                )
+                            )
+                        ],
+                    ),
+                    dict(
+                        route_map="test1",
+                        entries=[
+                            dict(
+                                rule_number=1,
+                                action="permit",
+                                description="test",
+                                on_match=dict(next=True),
+                            ),
+                            dict(
+                                rule_number=2,
+                                action="permit",
+                                on_match=dict(goto=4),
+                            ),
+                        ],
+                    ),
+                ],
+                state="replaced",
             )
-            self.execute_module(changed=False, commands=[])
+        )
+        self.execute_module(changed=False, commands=[])
 
     def test_route_maps_overridden(self):
         set_module_args(
@@ -348,18 +335,13 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             dict(
                                 rule_number=1,
                                 action="permit",
-                                match=dict(
-                                    rpki="invalid",
-                                    peer="1.1.1.3",
-                                ),
+                                match=dict(rpki="invalid", peer="1.1.1.3"),
                                 set=dict(
                                     ipv6_next_hop=dict(
                                         ip_type="global",
-                                        value="fdda:5cc1:23:4::1f"
+                                        value="fdda:5cc1:23:4::1f",
                                     ),
-                                    community=dict(
-                                        value="internet"
-                                    ),
+                                    community=dict(value="internet"),
                                     bgp_extcommunity_rt="22:11",
                                     ip_next_hop="10.20.10.22",
                                     large_community="10:20:21",
@@ -370,35 +352,35 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     originator_id="10.0.2.2",
                                     src="10.0.2.15",
                                     tag=4,
-                                    weight=4
+                                    weight=4,
                                 ),
-                            ),
-
+                            )
                         ],
-
-                    ),
+                    )
                 ],
                 state="overridden",
             )
         )
-        commands = ['delete policy route-map test1',
-                    'delete policy route-map test3',
-                    'set policy route-map test2 rule 1 action permit',
-                    'set policy route-map test2 rule 1 set bgp-extcommunity-rt 22:11',
-                    'set policy route-map test2 rule 1 set ip-next-hop 10.20.10.22',
-                    'set policy route-map test2 rule 1 set ipv6-next-hop global fdda:5cc1:23:4::1f',
-                    'set policy route-map test2 rule 1 set large-community 10:20:21',
-                    'set policy route-map test2 rule 1 set local-preference 4',
-                    'set policy route-map test2 rule 1 set metric 5',
-                    'set policy route-map test2 rule 1 set metric-type type-2',
-                    'set policy route-map test2 rule 1 set origin egp',
-                    'set policy route-map test2 rule 1 set originator-id 10.0.2.2',
-                    'set policy route-map test2 rule 1 set src 10.0.2.15',
-                    'set policy route-map test2 rule 1 set tag 4',
-                    'set policy route-map test2 rule 1 set weight 4',
-                    'set policy route-map test2 rule 1 set community internet',
-                    'set policy route-map test2 rule 1 match peer 1.1.1.3',
-                    'set policy route-map test2 rule 1 match rpki invalid']
+        commands = [
+            "delete policy route-map test1",
+            "delete policy route-map test3",
+            "set policy route-map test2 rule 1 action permit",
+            "set policy route-map test2 rule 1 set bgp-extcommunity-rt 22:11",
+            "set policy route-map test2 rule 1 set ip-next-hop 10.20.10.22",
+            "set policy route-map test2 rule 1 set ipv6-next-hop global fdda:5cc1:23:4::1f",
+            "set policy route-map test2 rule 1 set large-community 10:20:21",
+            "set policy route-map test2 rule 1 set local-preference 4",
+            "set policy route-map test2 rule 1 set metric 5",
+            "set policy route-map test2 rule 1 set metric-type type-2",
+            "set policy route-map test2 rule 1 set origin egp",
+            "set policy route-map test2 rule 1 set originator-id 10.0.2.2",
+            "set policy route-map test2 rule 1 set src 10.0.2.15",
+            "set policy route-map test2 rule 1 set tag 4",
+            "set policy route-map test2 rule 1 set weight 4",
+            "set policy route-map test2 rule 1 set community internet",
+            "set policy route-map test2 rule 1 match peer 1.1.1.3",
+            "set policy route-map test2 rule 1 match rpki invalid",
+        ]
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_route_maps_rendered(self):
@@ -416,16 +398,14 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     interface="eth2",
                                     metric=1,
                                     peer="1.1.1.2",
-                                    ipv6=dict(next_hop="fdda:5cc1:23:4::1f")
+                                    ipv6=dict(next_hop="fdda:5cc1:23:4::1f"),
                                 ),
                                 set=dict(
                                     ipv6_next_hop=dict(
                                         ip_type="global",
-                                        value="fdda:5cc1:23:4::1f"
+                                        value="fdda:5cc1:23:4::1f",
                                     ),
-                                    community=dict(
-                                        value="internet"
-                                    ),
+                                    community=dict(value="internet"),
                                     bgp_extcommunity_rt="22:11",
                                     ip_next_hop="10.20.10.20",
                                     local_preference=4,
@@ -435,12 +415,10 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     originator_id="10.0.2.3",
                                     src="10.0.2.15",
                                     tag=5,
-                                    weight=4
+                                    weight=4,
                                 ),
-                            ),
-
+                            )
                         ],
-
                     ),
                     dict(
                         route_map="test1",
@@ -455,35 +433,38 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                 rule_number=2,
                                 action="permit",
                                 on_match=dict(goto=4),
-                            )
+                            ),
                         ],
-                    )
+                    ),
                 ],
                 state="rendered",
             )
         )
-        rendered_cmds=['set policy route-map test3 rule 1 action permit',
-                       'set policy route-map test3 rule 1 set bgp-extcommunity-rt 22:11',
-                       'set policy route-map test3 rule 1 set ip-next-hop 10.20.10.20',
-                       'set policy route-map test3 rule 1 set ipv6-next-hop global fdda:5cc1:23:4::1f',
-                       'set policy route-map test3 rule 1 set local-preference 4',
-                       'set policy route-map test3 rule 1 set metric 5',
-                       'set policy route-map test3 rule 1 set metric-type type-1',
-                       'set policy route-map test3 rule 1 set origin egp',
-                       'set policy route-map test3 rule 1 set originator-id 10.0.2.3',
-                       'set policy route-map test3 rule 1 set src 10.0.2.15',
-                       'set policy route-map test3 rule 1 set tag 5', 'set policy route-map test3 rule 1 set weight 4',
-                       'set policy route-map test3 rule 1 set community internet',
-                       'set policy route-map test3 rule 1 match interface eth2',
-                       'set policy route-map test3 rule 1 match metric 1',
-                       'set policy route-map test3 rule 1 match peer 1.1.1.2',
-                       'set policy route-map test3 rule 1 match ipv6 nexthop fdda:5cc1:23:4::1f',
-                       'set policy route-map test3 rule 1 match rpki invalid',
-                       'set policy route-map test1 rule 1 description test',
-                       'set policy route-map test1 rule 1 action permit',
-                       'set policy route-map test1 rule 1 on-match next',
-                       'set policy route-map test1 rule 2 action permit',
-                       'set policy route-map test1 rule 2 on-match goto 4']
+        rendered_cmds = [
+            "set policy route-map test3 rule 1 action permit",
+            "set policy route-map test3 rule 1 set bgp-extcommunity-rt 22:11",
+            "set policy route-map test3 rule 1 set ip-next-hop 10.20.10.20",
+            "set policy route-map test3 rule 1 set ipv6-next-hop global fdda:5cc1:23:4::1f",
+            "set policy route-map test3 rule 1 set local-preference 4",
+            "set policy route-map test3 rule 1 set metric 5",
+            "set policy route-map test3 rule 1 set metric-type type-1",
+            "set policy route-map test3 rule 1 set origin egp",
+            "set policy route-map test3 rule 1 set originator-id 10.0.2.3",
+            "set policy route-map test3 rule 1 set src 10.0.2.15",
+            "set policy route-map test3 rule 1 set tag 5",
+            "set policy route-map test3 rule 1 set weight 4",
+            "set policy route-map test3 rule 1 set community internet",
+            "set policy route-map test3 rule 1 match interface eth2",
+            "set policy route-map test3 rule 1 match metric 1",
+            "set policy route-map test3 rule 1 match peer 1.1.1.2",
+            "set policy route-map test3 rule 1 match ipv6 nexthop fdda:5cc1:23:4::1f",
+            "set policy route-map test3 rule 1 match rpki invalid",
+            "set policy route-map test1 rule 1 description test",
+            "set policy route-map test1 rule 1 action permit",
+            "set policy route-map test1 rule 1 on-match next",
+            "set policy route-map test1 rule 2 action permit",
+            "set policy route-map test1 rule 2 on-match goto 4",
+        ]
         result = self.execute_module(changed=False)
         self.assertEqual(
             sorted(result["rendered"]),
@@ -493,18 +474,20 @@ class TestVyosRouteMapsModule(TestVyosModule):
 
     def test_vyos_bgp_global_parsed(self):
 
-        parsed_str = "set policy route-map test1 rule 1 action 'permit'\nset policy route-map test1 rule 1 description " \
-                     "'test'\nset policy route-map test1 rule 1 on-match next\nset policy route-map test1 rule 2 action " \
-                     "'permit'\nset policy route-map test1 rule 2 on-match goto '4'\nset policy route-map test3 rule 1 action 'permit'" \
-                     "\nset policy route-map test3 rule 1 match interface 'eth2'\nset policy route-map test3 rule 1 match ipv6 nexthop" \
-                     " 'fdda:5cc1:23:4::1f'\nset policy route-map test3 rule 1 match metric '1'\nset policy route-map test3 rule 1 match peer " \
-                     "'1.1.1.2'\nset policy route-map test3 rule 1 match rpki 'invalid'\nset policy route-map test3 rule 1 set bgp-extcommunity-rt " \
-                     "'22:11'\nset policy route-map test3 rule 1 set community 'internet'\nset policy route-map test3 rule 1 set ipv6-next-hop global" \
-                     " 'fdda:5cc1:23:4::1f'\nset policy route-map test3 rule 1 set ip-next-hop '10.20.10.20'\nset policy route-map " \
-                     "test3 rule 1 set local-preference '4'\nset policy route-map test3 rule 1 set metric '5'\nset policy route-map test3 " \
-                     "rule 1 set metric-type 'type-1'\nset policy route-map test3 rule 1 set origin 'egp'\nset policy route-map test3 rule 1 set originator-id " \
-                     "'10.0.2.3'\nset policy route-map test3 rule 1 set src '10.0.2.15'" \
-                     "\nset policy route-map test3 rule 1 set tag '5'\nset policy route-map test3 rule 1 set weight '4'"
+        parsed_str = (
+            "set policy route-map test1 rule 1 action 'permit'\nset policy route-map test1 rule 1 description "
+            "'test'\nset policy route-map test1 rule 1 on-match next\nset policy route-map test1 rule 2 action "
+            "'permit'\nset policy route-map test1 rule 2 on-match goto '4'\nset policy route-map test3 rule 1 action 'permit'"
+            "\nset policy route-map test3 rule 1 match interface 'eth2'\nset policy route-map test3 rule 1 match ipv6 nexthop"
+            " 'fdda:5cc1:23:4::1f'\nset policy route-map test3 rule 1 match metric '1'\nset policy route-map test3 rule 1 match peer "
+            "'1.1.1.2'\nset policy route-map test3 rule 1 match rpki 'invalid'\nset policy route-map test3 rule 1 set bgp-extcommunity-rt "
+            "'22:11'\nset policy route-map test3 rule 1 set community 'internet'\nset policy route-map test3 rule 1 set ipv6-next-hop global"
+            " 'fdda:5cc1:23:4::1f'\nset policy route-map test3 rule 1 set ip-next-hop '10.20.10.20'\nset policy route-map "
+            "test3 rule 1 set local-preference '4'\nset policy route-map test3 rule 1 set metric '5'\nset policy route-map test3 "
+            "rule 1 set metric-type 'type-1'\nset policy route-map test3 rule 1 set origin 'egp'\nset policy route-map test3 rule 1 set originator-id "
+            "'10.0.2.3'\nset policy route-map test3 rule 1 set src '10.0.2.15'"
+            "\nset policy route-map test3 rule 1 set tag '5'\nset policy route-map test3 rule 1 set weight '4'"
+        )
         set_module_args(dict(running_config=parsed_str, state="parsed"))
         result = self.execute_module(changed=False)
         parsed_list = [
@@ -513,20 +496,16 @@ class TestVyosRouteMapsModule(TestVyosModule):
                     {
                         "action": "permit",
                         "description": "test",
-                        "on_match": {
-                            "next": True
-                        },
-                        "rule_number": 1
+                        "on_match": {"next": True},
+                        "rule_number": 1,
                     },
                     {
                         "action": "permit",
-                        "on_match": {
-                            "goto": 4
-                        },
-                        "rule_number": 2
-                    }
+                        "on_match": {"goto": 4},
+                        "rule_number": 2,
+                    },
                 ],
-                "route_map": "test1"
+                "route_map": "test1",
             },
             {
                 "entries": [
@@ -534,23 +513,19 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         "action": "permit",
                         "match": {
                             "interface": "eth2",
-                            "ipv6": {
-                                "next_hop": "fdda:5cc1:23:4::1f"
-                            },
+                            "ipv6": {"next_hop": "fdda:5cc1:23:4::1f"},
                             "metric": 1,
                             "peer": "1.1.1.2",
-                            "rpki": "invalid"
+                            "rpki": "invalid",
                         },
                         "rule_number": 1,
                         "set": {
                             "bgp_extcommunity_rt": "22:11",
-                            "community": {
-                                "value": "internet"
-                            },
+                            "community": {"value": "internet"},
                             "ip_next_hop": "10.20.10.20",
                             "ipv6_next_hop": {
                                 "ip_type": "global",
-                                "value": "fdda:5cc1:23:4::1f"
+                                "value": "fdda:5cc1:23:4::1f",
                             },
                             "local_preference": "4",
                             "metric": "5",
@@ -559,15 +534,14 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             "originator_id": "10.0.2.3",
                             "src": "10.0.2.15",
                             "tag": "5",
-                            "weight": "4"
-                        }
+                            "weight": "4",
+                        },
                     }
                 ],
-                "route_map": "test3"
-            }
+                "route_map": "test3",
+            },
         ]
         self.assertEqual(parsed_list, result["parsed"])
-
 
     def test_vyos_bgp_global_gathered(self):
         set_module_args(dict(state="gathered"))
@@ -578,20 +552,16 @@ class TestVyosRouteMapsModule(TestVyosModule):
                     {
                         "action": "permit",
                         "description": "test",
-                        "on_match": {
-                            "next": True
-                        },
-                        "rule_number": 1
+                        "on_match": {"next": True},
+                        "rule_number": 1,
                     },
                     {
                         "action": "permit",
-                        "on_match": {
-                            "goto": 4
-                        },
-                        "rule_number": 2
-                    }
+                        "on_match": {"goto": 4},
+                        "rule_number": 2,
+                    },
                 ],
-                "route_map": "test1"
+                "route_map": "test1",
             },
             {
                 "entries": [
@@ -599,23 +569,19 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         "action": "permit",
                         "match": {
                             "interface": "eth2",
-                            "ipv6": {
-                                "next_hop": "fdda:5cc1:23:4::1f"
-                            },
+                            "ipv6": {"next_hop": "fdda:5cc1:23:4::1f"},
                             "metric": 1,
                             "peer": "1.1.1.2",
-                            "rpki": "invalid"
+                            "rpki": "invalid",
                         },
                         "rule_number": 1,
                         "set": {
                             "bgp_extcommunity_rt": "22:11",
-                            "community": {
-                                "value": "internet"
-                            },
+                            "community": {"value": "internet"},
                             "ip_next_hop": "10.20.10.20",
                             "ipv6_next_hop": {
                                 "ip_type": "global",
-                                "value": "fdda:5cc1:23:4::1f"
+                                "value": "fdda:5cc1:23:4::1f",
                             },
                             "local_preference": "4",
                             "metric": "5",
@@ -624,11 +590,11 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             "originator_id": "10.0.2.3",
                             "src": "10.0.2.15",
                             "tag": "5",
-                            "weight": "4"
-                        }
+                            "weight": "4",
+                        },
                     }
                 ],
-                "route_map": "test3"
-            }
+                "route_map": "test3",
+            },
         ]
         self.assertEqual(gathered_list, result["gathered"])

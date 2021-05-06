@@ -20,11 +20,12 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.n
 )
 
 
-
 class Route_mapsTemplate(NetworkTemplate):
     def __init__(self, lines=None):
         prefix = {"set": "set", "remove": "delete"}
-        super(Route_mapsTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix)
+        super(Route_mapsTemplate, self).__init__(
+            lines=lines, tmplt=self, prefix=prefix
+        )
 
     # fmt: off
     PARSERS = [

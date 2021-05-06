@@ -27,11 +27,12 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.rou
     Route_mapsArgs,
 )
 
+
 class Route_mapsFacts(object):
     """ The vyos route_maps facts class
     """
 
-    def __init__(self, module, subspec='config', options='options'):
+    def __init__(self, module, subspec="config", options="options"):
         self._module = module
         self.argument_spec = Route_mapsArgs.argument_spec
         spec = deepcopy(self.argument_spec)
@@ -46,9 +47,7 @@ class Route_mapsFacts(object):
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def get_config(self, connection):
-        return connection.get(
-            'show configuration commands | grep route-map'
-        )
+        return connection.get("show configuration commands | grep route-map")
 
     def populate_facts(self, connection, ansible_facts, data=None):
         """ Populate the facts for Route_maps network resource
@@ -67,21 +66,21 @@ class Route_mapsFacts(object):
 
         # parse native config using the Route_maps template
         route_maps_parser = Route_mapsTemplate(lines=data.splitlines())
-        if route_maps_parser.parse().get('route_maps'):
-            objs = list(route_maps_parser.parse().get('route_maps').values())
+        if route_maps_parser.parse().get("route_maps"):
+            objs = list(route_maps_parser.parse().get("route_maps").values())
         for item in objs:
             if item.get("entries"):
                 item["entries"] = list(item["entries"].values())
 
-        ansible_facts['ansible_network_resources'].pop('route_maps', None)
+        ansible_facts["ansible_network_resources"].pop("route_maps", None)
 
-        #import epdb;epdb.serve()
+        # import epdb;epdb.serve()
         params = utils.remove_empties(
             utils.validate_config(self.argument_spec, {"config": objs})
         )
 
         if params.get("config"):
-            facts['route_maps'] = params['config']
-        ansible_facts['ansible_network_resources'].update(facts)
+            facts["route_maps"] = params["config"]
+        ansible_facts["ansible_network_resources"].update(facts)
 
         return ansible_facts
