@@ -146,7 +146,7 @@ Please read and familiarize yourself with this document.
 
 ## Release notes
 
-Release notes are available [here](https://github.com/ansible-collections/vyos.vyos/blob/main/changelogs/CHANGELOG.rst).
+Release notes are available [here](https://github.com/ansible-collections/vyos.vyos/blob/main/CHANGELOG.rst).
 
 ## Roadmap
 
