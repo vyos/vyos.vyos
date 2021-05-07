@@ -123,7 +123,6 @@ class Route_maps(ResourceModule):
 
         # remove superfluous config for overridden and deleted
         if self.state in ["overridden", "deleted"]:
-            # import epdb;epdb.serve()
             for k, have in iteritems(haved):
                 if k not in wantd:
                     self.commands.append(
@@ -148,10 +147,6 @@ class Route_maps(ResourceModule):
             hentry = have.pop(wk, {})
             self.compare(parsers=self.parsers, want=wentry, have=hentry)
 
-        # remove superfluos entries from have
-        # for _hk, hentry in iteritems(have):
-        #   self.commands.append(self._tmplt.render(hentry, "route_map", True))
-
     def _route_maps_list_to_dict(self, entry):
         entry = {x["route_map"]: x for x in entry}
         for rmap, data in iteritems(entry):
@@ -162,5 +157,4 @@ class Route_maps(ResourceModule):
                     (rmap, entry.get("sequence")): entry
                     for entry in data["entries"]
                 }
-        # import epdb;epdb.serve()
         return entry
