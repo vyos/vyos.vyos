@@ -50,7 +50,7 @@ class Route_maps(ResourceModule):
             "call",
             "description",
             "action",
-            "continue",
+            "continue_sequence",
             "set_aggregator_ip",
             "set_aggregator_as",
             "set_as_path_exclude",
@@ -159,7 +159,7 @@ class Route_maps(ResourceModule):
                 for x in data["entries"]:
                     x.update({"route_map": rmap})
                 data["entries"] = {
-                    (rmap, entry.get("rule_number")): entry
+                    (rmap, entry.get("sequence")): entry
                     for entry in data["entries"]
                 }
         # import epdb;epdb.serve()

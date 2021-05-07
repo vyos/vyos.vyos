@@ -13,15 +13,15 @@
         config:
           - route_map: test1
             entries:
-              - rule_number: 1
+              - sequence: 1
                 description: "test"
                 action: permit
-                continue: 2
+                continue_sequence: 2
                 on_match:
                   next: True
           - route_map: test3
             entries:
-              - rule_number: 1
+              - sequence: 1
                 action: permit
                 match:
                   rpki: invalid

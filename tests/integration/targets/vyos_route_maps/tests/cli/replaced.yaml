@@ -15,7 +15,7 @@
         config:
           - route_map: test3
             entries:
-              - rule_number: 1
+              - sequence: 1
                 action: permit
                 match:
                   rpki: invalid

@@ -79,7 +79,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         route_map="test3",
                         entries=[
                             dict(
-                                rule_number=1,
+                                sequence=1,
                                 action="permit",
                                 match=dict(
                                     rpki="invalid",
@@ -112,13 +112,13 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         route_map="test1",
                         entries=[
                             dict(
-                                rule_number=1,
+                                sequence=1,
                                 action="permit",
                                 description="test",
                                 on_match=dict(next=True),
                             ),
                             dict(
-                                rule_number=2,
+                                sequence=2,
                                 action="permit",
                                 on_match=dict(goto=4),
                             ),
@@ -138,7 +138,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         route_map="test2",
                         entries=[
                             dict(
-                                rule_number=1,
+                                sequence=1,
                                 action="permit",
                                 match=dict(
                                     rpki="invalid",
@@ -204,7 +204,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         route_map="test3",
                         entries=[
                             dict(
-                                rule_number=1,
+                                sequence=1,
                                 action="permit",
                                 match=dict(
                                     rpki="invalid",
@@ -237,13 +237,13 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         route_map="test1",
                         entries=[
                             dict(
-                                rule_number=1,
+                                sequence=1,
                                 action="permit",
                                 description="test",
                                 on_match=dict(next=True),
                             ),
                             dict(
-                                rule_number=2,
+                                sequence=2,
                                 action="permit",
                                 description="test",
                                 on_match=dict(goto=4),
@@ -274,7 +274,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         route_map="test3",
                         entries=[
                             dict(
-                                rule_number=1,
+                                sequence=1,
                                 action="permit",
                                 match=dict(
                                     rpki="invalid",
@@ -307,13 +307,13 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         route_map="test1",
                         entries=[
                             dict(
-                                rule_number=1,
+                                sequence=1,
                                 action="permit",
                                 description="test",
                                 on_match=dict(next=True),
                             ),
                             dict(
-                                rule_number=2,
+                                sequence=2,
                                 action="permit",
                                 on_match=dict(goto=4),
                             ),
@@ -333,7 +333,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         route_map="test2",
                         entries=[
                             dict(
-                                rule_number=1,
+                                sequence=1,
                                 action="permit",
                                 match=dict(rpki="invalid", peer="1.1.1.3"),
                                 set=dict(
@@ -391,7 +391,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         route_map="test3",
                         entries=[
                             dict(
-                                rule_number=1,
+                                sequence=1,
                                 action="permit",
                                 match=dict(
                                     rpki="invalid",
@@ -424,13 +424,13 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         route_map="test1",
                         entries=[
                             dict(
-                                rule_number=1,
+                                sequence=1,
                                 action="permit",
                                 description="test",
                                 on_match=dict(next=True),
                             ),
                             dict(
-                                rule_number=2,
+                                sequence=2,
                                 action="permit",
                                 on_match=dict(goto=4),
                             ),
@@ -497,12 +497,12 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         "action": "permit",
                         "description": "test",
                         "on_match": {"next": True},
-                        "rule_number": 1,
+                        "sequence": 1,
                     },
                     {
                         "action": "permit",
                         "on_match": {"goto": 4},
-                        "rule_number": 2,
+                        "sequence": 2,
                     },
                 ],
                 "route_map": "test1",
@@ -518,7 +518,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             "peer": "1.1.1.2",
                             "rpki": "invalid",
                         },
-                        "rule_number": 1,
+                        "sequence": 1,
                         "set": {
                             "bgp_extcommunity_rt": "22:11",
                             "community": {"value": "internet"},
@@ -553,12 +553,12 @@ class TestVyosRouteMapsModule(TestVyosModule):
                         "action": "permit",
                         "description": "test",
                         "on_match": {"next": True},
-                        "rule_number": 1,
+                        "sequence": 1,
                     },
                     {
                         "action": "permit",
                         "on_match": {"goto": 4},
-                        "rule_number": 2,
+                        "sequence": 2,
                     },
                 ],
                 "route_map": "test1",
@@ -574,7 +574,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             "peer": "1.1.1.2",
                             "rpki": "invalid",
                         },
-                        "rule_number": 1,
+                        "sequence": 1,
                         "set": {
                             "bgp_extcommunity_rt": "22:11",
                             "community": {"value": "internet"},

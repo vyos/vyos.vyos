@@ -33,13 +33,13 @@ options:
           type: str
         entries:
           description: Route Map rules.
-          aliases: ["rules"]
+          aliases: rules
           type: list
           elements: dict
           suboptions:
-            rule_number:
+            sequence:
               type: int
-              description: Route-map rule number
+              description: Route map rule number <1-65535>.
             call:
               description: Route map name
               type: str
@@ -50,8 +50,8 @@ options:
               description: Action for matching routes
               type: str
               choices: ["deny", "permit"]
-            continue:
-              description: Route map rule number <1-65535>.
+            continue_sequence:
+              description: Continue on a different entry within the route-map.
               type: int
             set:
               description: Route parameters.
@@ -270,7 +270,7 @@ EXAMPLES = """
         config:
           - route_map: test1
             entries:
-              - rule_number: 1
+              - sequence: 1
                 description: "test"
                 action: permit
                 continue: 2
@@ -278,7 +278,7 @@ EXAMPLES = """
                   next: True
           - route_map: test3
             entries:
-              - rule_number: 1
+              - sequence: 1
                 action: permit
                 match:
                   rpki: invalid
@@ -316,12 +316,12 @@ EXAMPLES = """
 #             "entries": [
 #                 {
 #                     "action": "permit",
-#                     "continue": 2,
+#                     "continue_sequence": 2,
 #                     "description": "test",
 #                     "on_match": {
 #                         "next": true
 #                     },
-#                     "rule_number": 1
+#                     "sequence": 1
 #                 }
 #             ],
 #             "route_map": "test1"
@@ -335,7 +335,7 @@ EXAMPLES = """
 #                         "peer": "192.0.2.32",
 #                         "rpki": "invalid"
 #                     },
-#                     "rule_number": 1,
+#                     "sequence": 1,
 #                     "set": {
 #                         "local_preference": "4",
 #                         "metric": "5",
@@ -400,7 +400,7 @@ EXAMPLES = """
 #         config:
 #           - route_map: test3
 #             entries:
-#               - rule_number: 1
+#               - sequence: 1
 #                 action: permit
 #                 match:
 #                   rpki: invalid
@@ -437,14 +437,14 @@ EXAMPLES = """
 #                     "on_match": {
 #                         "next": true
 #                     },
-#                     "rule_number": 1
+#                     "sequence": 1
 #                 },
 #                 {
 #                     "action": "permit",
 #                     "on_match": {
 #                         "goto": 4
 #                     },
-#                     "rule_number": 2
+#                     "sequence": 2
 #                 }
 #             ],
 #             "route_map": "test2"
@@ -458,7 +458,7 @@ EXAMPLES = """
 #                         "peer": "192.0.2.35",
 #                         "rpki": "invalid"
 #                     },
-#                     "rule_number": 1,
+#                     "sequence": 1,
 #                     "set": {
 #                         "local_preference": "6",
 #                         "metric": "4",
@@ -482,14 +482,14 @@ EXAMPLES = """
 #                     "on_match": {
 #                         "next": true
 #                     },
-#                     "rule_number": 1
+#                     "sequence": 1
 #                 },
 #                 {
 #                     "action": "permit",
 #                     "on_match": {
 #                         "goto": 4
 #                     },
-#                     "rule_number": 2
+#                     "sequence": 2
 #                 }
 #             ],
 #             "route_map": "test2"
@@ -503,7 +503,7 @@ EXAMPLES = """
 #                         "peer": "192.0.2.32",
 #                         "rpki": "invalid"
 #                     },
-#                     "rule_number": 1,
+#                     "sequence": 1,
 #                     "set": {
 #                         "community": {
 #                             "value": "internet"
@@ -568,7 +568,7 @@ EXAMPLES = """
 #                         "metric": 3,
 #                         "peer": "192.0.2.35",
 #                     },
-#                     "rule_number": 1,
+#                     "sequence": 1,
 #                     "set": {
 #                         "local_preference": "6",
 #                         "metric": "4",
@@ -608,18 +608,18 @@ EXAMPLES = """
 # - name: gather configs
 #     vyos.vyos.vyos_route_maps:
 #       state: gathered
-      
+
 # "gathered": [
 #         {
 #             "entries": [
 #                 {
 #                     "action": "permit",
-#                     "continue": 2,
+#                     "continue_sequence": 2,
 #                     "description": "test",
 #                     "on_match": {
 #                         "next": true
 #                     },
-#                     "rule_number": 1
+#                     "sequence": 1
 #                 }
 #             ],
 #             "route_map": "test1"
@@ -633,7 +633,7 @@ EXAMPLES = """
 #                         "peer": "192.0.2.32",
 #                         "rpki": "invalid"
 #                     },
-#                     "rule_number": 1,
+#                     "sequence": 1,
 #                     "set": {
 #                         "local_preference": "4",
 #                         "metric": "5",
@@ -682,12 +682,12 @@ EXAMPLES = """
 #             "entries": [
 #                 {
 #                     "action": "permit",
-#                     "continue": 2,
+#                     "continue_sequence": 2,
 #                     "description": "test",
 #                     "on_match": {
 #                         "next": true
 #                     },
-#                     "rule_number": 1
+#                     "sequence": 1
 #                 }
 #             ],
 #             "route_map": "test1"
@@ -701,7 +701,7 @@ EXAMPLES = """
 #                         "peer": "192.0.2.32",
 #                         "rpki": "invalid"
 #                     },
-#                     "rule_number": 1,
+#                     "sequence": 1,
 #                     "set": {
 #                         "local_preference": "4",
 #                         "metric": "5",
@@ -726,15 +726,15 @@ EXAMPLES = """
 #         config:
 #           - route_map: test1
 #             entries:
-#               - rule_number: 1
+#               - sequence: 1
 #                 description: "test"
 #                 action: permit
-#                 continue: 2
+#                 continue_sequence: 2
 #                 on_match:
 #                   next: True
 #           - route_map: test3
 #             entries:
-#               - rule_number: 1
+#               - sequence: 1
 #                 action: permit
 #                 match:
 #                   rpki: invalid
@@ -798,7 +798,7 @@ EXAMPLES = """
 #         config:
 #           - route_map: test3
 #             entries:
-#               - rule_number: 1
+#               - sequence: 1
 #                 action: permit
 #                 match:
 #                   rpki: invalid
@@ -838,7 +838,7 @@ EXAMPLES = """
 #                         "peer": "192.0.2.35",
 #                         "rpki": "invalid"
 #                     },
-#                     "rule_number": 1,
+#                     "sequence": 1,
 #                     "set": {
 #                         "local_preference": "6",
 #                         "metric": "4",
@@ -862,14 +862,14 @@ EXAMPLES = """
 #                     "on_match": {
 #                         "next": true
 #                     },
-#                     "rule_number": 1
+#                     "sequence": 1
 #                 },
 #                 {
 #                     "action": "permit",
 #                     "on_match": {
 #                         "goto": 4
 #                     },
-#                     "rule_number": 2
+#                     "sequence": 2
 #                 }
 #             ],
 #             "route_map": "test2"
@@ -883,7 +883,7 @@ EXAMPLES = """
 #                         "peer": "192.0.2.32",
 #                         "rpki": "invalid"
 #                     },
-#                     "rule_number": 1,
+#                     "sequence": 1,
 #                     "set": {
 #                         "community": {
 #                             "value": "internet"
