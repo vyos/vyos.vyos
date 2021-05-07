@@ -47,7 +47,10 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
                         "sequence": {"type": "int"},
                         "call": {"type": "str"},
                         "description": {"type": "str"},
-                        "action": {"type": "str", "choices": ["deny", "permit"]},
+                        "action": {
+                            "type": "str",
+                            "choices": ["deny", "permit"],
+                        },
                         "continue_sequence": {"type": "int"},
                         "set": {
                             "type": "dict",
@@ -191,7 +194,11 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
                                 "peer": {"type": "str"},
                                 "rpki": {
                                     "type": "str",
-                                    "choices": ["notfound", "invalid", "valid"],
+                                    "choices": [
+                                        "notfound",
+                                        "invalid",
+                                        "valid",
+                                    ],
                                 },
                             },
                         },
