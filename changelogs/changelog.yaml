@@ -219,3 +219,12 @@ releases:
       name: vyos_bgp_address_family
       namespace: ''
     release_date: '2021-03-30'
+  2.2.0:
+    changes:
+      security_fixes:
+      - Mask values of sensitive keys in module result.
+    fragments:
+    - 147-add_ignore_txt.yml
+    - no_log_mask.yaml
+    - remove-old-test-deps.yml
+    release_date: '2021-04-27'

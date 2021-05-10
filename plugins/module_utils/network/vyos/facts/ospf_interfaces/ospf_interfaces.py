@@ -40,7 +40,7 @@ class Ospf_interfacesFacts(object):
         )
 
     def get_config_set(self, data):
-        """ To classify the configurations beased on interface """
+        """To classify the configurations beased on interface"""
         interface_list = []
         config_set = []
         int_string = ""
@@ -69,6 +69,9 @@ class Ospf_interfacesFacts(object):
         """
         facts = {}
         objs = []
+        ospf_interfaces_parser = Ospf_interfacesTemplate(
+            lines=[], module=self._module
+        )
 
         if not data:
             data = self.get_device_data(connection)
@@ -78,7 +81,7 @@ class Ospf_interfacesFacts(object):
         resources = self.get_config_set(data)
         for resource in resources:
             ospf_interfaces_parser = Ospf_interfacesTemplate(
-                lines=resource.split("\n")
+                lines=resource.split("\n"), module=self._module
             )
             objs = ospf_interfaces_parser.parse()
             for key, sortv in [("address_family", "afi")]:
@@ -89,8 +92,10 @@ class Ospf_interfacesFacts(object):
         ansible_facts["ansible_network_resources"].pop("ospf_interfaces", None)
         facts = {"ospf_interfaces": []}
         params = utils.remove_empties(
-            utils.validate_config(
-                self.argument_spec, {"config": ospf_interfaces_facts}
+            ospf_interfaces_parser.validate_config(
+                self.argument_spec,
+                {"config": ospf_interfaces_facts},
+                redact=True,
             )
         )
         if params.get("config"):

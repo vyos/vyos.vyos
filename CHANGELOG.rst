@@ -5,6 +5,14 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.2.0
+======
+
+Security Fixes
+--------------
+
+- Mask values of sensitive keys in module result.
+
 v2.1.0
 ======
 
@@ -47,7 +55,7 @@ New Modules
 -----------
 
 ansible.collections.ansible_collections.vyos.vyos.plugins.modules
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - vyos_bgp_global - BGP Global Resource Module.
 
@@ -128,7 +136,7 @@ New Plugins
 -----------
 
 Cliconf
-^^^^^^^
+~~~~~~~
 
 - vyos - Use vyos cliconf to run command on VyOS platform
 
