@@ -3,3 +3,4 @@ plugins/modules/vyos_ospf_interfaces.py validate-modules:no-log-needed # tempora
 plugins/modules/vyos_ospfv2.py validate-modules:no-log-needed # temporary workaround for no-log
 plugins/module_utils/network/vyos/config/route_maps/route_maps.py compile-2.6!skip
 plugins/module_utils/network/vyos/config/route_maps/route_maps.py import-2.6!skip
+plugins/modules/vyos_route_maps.py import-2.6!skip
