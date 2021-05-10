@@ -15,7 +15,6 @@ merged:
     - set policy route-map test3 rule 1 set weight 4
     - set policy route-map test3 rule 1 match metric 1
     - set policy route-map test3 rule 1 match peer 192.0.2.32
-    - set policy route-map test3 rule 1 match rpki invalid
 
   after:
     - route_map: "test3"
@@ -23,7 +22,6 @@ merged:
         - sequence: 1
           action: "permit"
           match:
-            rpki: "invalid"
             metric: 1
             peer: "192.0.2.32"
           set:
@@ -70,7 +68,6 @@ replaced:
         - sequence: 1
           action: permit
           match:
-            rpki: invalid
             metric: 3
             peer: 192.0.2.35
           set:
@@ -101,7 +98,6 @@ overridden:
         - sequence: 1
           action: permit
           match:
-            rpki: invalid
             metric: 3
             peer: 192.0.2.35
           set:
@@ -113,10 +109,8 @@ overridden:
             tag: 4
             weight: 4
 
-
 deleted:
   commands:
     - delete policy route-map test2
     - delete policy route-map test3
   after: []
-

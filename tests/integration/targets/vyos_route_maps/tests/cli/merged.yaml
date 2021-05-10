@@ -24,7 +24,6 @@
               - sequence: 1
                 action: permit
                 match:
-                  rpki: invalid
                   metric: 1
                   peer: 192.0.2.32
                 set:

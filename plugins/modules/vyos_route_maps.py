@@ -33,7 +33,7 @@ options:
           type: str
         entries:
           description: Route Map rules.
-          aliases: rules
+          aliases: ["rules"]
           type: list
           elements: dict
           suboptions:
@@ -604,7 +604,7 @@ EXAMPLES = """
 #   set policy route-map test3 rule 1 match metric 1
 #   set policy route-map test3 rule 1 match peer 192.0.2.32
 #   set policy route-map test3 rule 1 match rpki invalid
-# 
+#
 # - name: gather configs
 #     vyos.vyos.vyos_route_maps:
 #       state: gathered
@@ -675,7 +675,7 @@ EXAMPLES = """
 #     state: parsed
 #   tags:
 #     - parsed
-# 
+#
 # Module execution:
 # "parsed": [
 #         {
@@ -791,7 +791,7 @@ EXAMPLES = """
 # set policy route-map test3 rule 1 set originator-id '192.0.2.34'
 # set policy route-map test3 rule 1 set tag '5'
 # set policy route-map test3 rule 1 set weight '4'
-# 
+#
 #     - name: Override the existing configuration with the provided running configuration
 #       register: result
 #       vyos.vyos.vyos_route_maps: &id001
