@@ -1,0 +1,15 @@
+[vyos]	
+127.0.0.1
+
+[vyos:vars]	
+ansible_network_os=vyos.vyos.vyos
+ansible_ssh_port=2222
+ansible_user=vyos
+ansible_ssh_pass=vyos
+ansible_connection=ansible.netcommon.network_cli
+ansible_become=true
+#ansible_ssh_private_key_file=/Users/amhatre/.ssh/id_rsa
+ansible_become_method=ansible.netcommon.enable	
+cli={'transport': 'cli'}
+netconf={'transport': 'netconf'}
+

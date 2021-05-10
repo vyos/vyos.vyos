@@ -107,23 +107,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                 ),
                             )
                         ],
-                    ),
-                    dict(
-                        route_map="test1",
-                        entries=[
-                            dict(
-                                sequence=1,
-                                action="permit",
-                                description="test",
-                                on_match=dict(next=True),
-                            ),
-                            dict(
-                                sequence=2,
-                                action="permit",
-                                on_match=dict(goto=4),
-                            ),
-                        ],
-                    ),
+                    )
                 ],
                 state="merged",
             )
@@ -233,30 +217,12 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             )
                         ],
                     ),
-                    dict(
-                        route_map="test1",
-                        entries=[
-                            dict(
-                                sequence=1,
-                                action="permit",
-                                description="test",
-                                on_match=dict(next=True),
-                            ),
-                            dict(
-                                sequence=2,
-                                action="permit",
-                                description="test",
-                                on_match=dict(goto=4),
-                            ),
-                        ],
-                    ),
                 ],
                 state="replaced",
             )
         )
         commands = [
             "delete policy route-map test3 rule 1 match interface eth2",
-            "set policy route-map test1 rule 2 description test",
             "set policy route-map test3 rule 1 set ip-next-hop 10.20.10.22",
             "set policy route-map test3 rule 1 set large-community 10:20:21",
             "set policy route-map test3 rule 1 set metric-type type-2",
@@ -303,22 +269,6 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             )
                         ],
                     ),
-                    dict(
-                        route_map="test1",
-                        entries=[
-                            dict(
-                                sequence=1,
-                                action="permit",
-                                description="test",
-                                on_match=dict(next=True),
-                            ),
-                            dict(
-                                sequence=2,
-                                action="permit",
-                                on_match=dict(goto=4),
-                            ),
-                        ],
-                    ),
                 ],
                 state="replaced",
             )
@@ -362,7 +312,6 @@ class TestVyosRouteMapsModule(TestVyosModule):
             )
         )
         commands = [
-            "delete policy route-map test1",
             "delete policy route-map test3",
             "set policy route-map test2 rule 1 action permit",
             "set policy route-map test2 rule 1 set bgp-extcommunity-rt 22:11",
@@ -533,22 +482,6 @@ class TestVyosRouteMapsModule(TestVyosModule):
                 "entries": [
                     {
                         "action": "permit",
-                        "description": "test",
-                        "on_match": {"next": True},
-                        "sequence": 1,
-                    },
-                    {
-                        "action": "permit",
-                        "on_match": {"goto": 4},
-                        "sequence": 2,
-                    },
-                ],
-                "route_map": "test1",
-            },
-            {
-                "entries": [
-                    {
-                        "action": "permit",
                         "match": {
                             "interface": "eth2",
                             "ipv6": {"next_hop": "fdda:5cc1:23:4::1f"},
@@ -580,3 +513,34 @@ class TestVyosRouteMapsModule(TestVyosModule):
             },
         ]
         self.assertEqual(gathered_list, result["gathered"])
+
+    def test_vyos_route_maps_deleted(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        route_map="test3",
+                        entries=[
+                            dict(
+                                sequence=1,
+                                action="permit",
+                                match=dict(
+                                    rpki="invalid",
+                                    interface="eth2",
+                                ),
+                                set=dict(
+                                    origin="egp",
+                                    originator_id="10.0.2.3",
+                                    src="10.0.2.15",
+                                    tag=5,
+                                    weight=4,
+                                ),
+                            )
+                        ],
+                    ),
+                ],
+                state="deleted",
+            )
+        )
+        commands = ["delete policy route-map test3"]
+        self.execute_module(changed=True, commands=commands)
