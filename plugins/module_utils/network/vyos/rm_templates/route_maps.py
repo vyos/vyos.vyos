@@ -171,7 +171,7 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "on_match_next",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\son-match\snext(?P<next>)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\son-match\s(?P<next>next)
                 *$""",
                 re.VERBOSE,
             ),

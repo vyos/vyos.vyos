@@ -4,7 +4,6 @@ merged:
     - set policy route-map test1 rule 1 description test
     - set policy route-map test1 rule 1 action permit
     - set policy route-map test1 rule 1 continue 2
-    - set policy route-map test1 rule 1 on-match next
     - set policy route-map test3 rule 1 action permit
     - set policy route-map test3 rule 1 set local-preference 4
     - set policy route-map test3 rule 1 set metric 5
@@ -38,8 +37,6 @@ merged:
           description: "test"
           action: "permit"
           continue_sequence: 2
-          on_match:
-            next: true
 
 replaced:
   commands:
@@ -57,8 +54,6 @@ replaced:
         - sequence: 1
           description: "test"
           action: permit
-          on_match:
-            next: True
         - sequence: 1
           action: permit
           on_match:

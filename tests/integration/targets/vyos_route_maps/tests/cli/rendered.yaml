@@ -17,8 +17,6 @@
                 description: "test"
                 action: permit
                 continue_sequence: 2
-                on_match:
-                  next: True
           - route_map: test3
             entries:
               - sequence: 1
