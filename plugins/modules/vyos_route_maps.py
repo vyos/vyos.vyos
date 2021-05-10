@@ -14,7 +14,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 module: vyos_route_maps
-version_added: 2.0.2
+version_added: 2.3.0
 short_description: Route Map Resource Module.
 description:
 - This module manages route map configurations on devices running VYOS.

@@ -28,7 +28,8 @@ The arg spec for the vyos_route_maps module
 
 
 class Route_mapsArgs(object):  # pylint: disable=R0903
-    """The arg spec for the vyos_route_maps module"""
+    """The arg spec for the vyos_route_maps module
+    """
 
     def __init__(self, **kwargs):
         pass
@@ -47,10 +48,7 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
                         "sequence": {"type": "int"},
                         "call": {"type": "str"},
                         "description": {"type": "str"},
-                        "action": {
-                            "type": "str",
-                            "choices": ["deny", "permit"],
-                        },
+                        "action": {"type": "str", "choices": ["deny", "permit"]},
                         "continue_sequence": {"type": "int"},
                         "set": {
                             "type": "dict",
@@ -194,11 +192,7 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
                                 "peer": {"type": "str"},
                                 "rpki": {
                                     "type": "str",
-                                    "choices": [
-                                        "notfound",
-                                        "invalid",
-                                        "valid",
-                                    ],
+                                    "choices": ["notfound", "invalid", "valid"],
                                 },
                             },
                         },

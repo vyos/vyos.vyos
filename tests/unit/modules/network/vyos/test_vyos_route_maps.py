@@ -472,12 +472,10 @@ class TestVyosRouteMapsModule(TestVyosModule):
             result["rendered"],
         )
 
-    def test_vyos_bgp_global_parsed(self):
+    def test_yos_route_maps_parsed(self):
 
         parsed_str = (
-            "set policy route-map test1 rule 1 action 'permit'\nset policy route-map test1 rule 1 description "
-            "'test'\nset policy route-map test1 rule 1 on-match next\nset policy route-map test1 rule 2 action "
-            "'permit'\nset policy route-map test1 rule 2 on-match goto '4'\nset policy route-map test3 rule 1 action 'permit'"
+            "set policy route-map test3 rule 1 action 'permit'"
             "\nset policy route-map test3 rule 1 match interface 'eth2'\nset policy route-map test3 rule 1 match ipv6 nexthop"
             " 'fdda:5cc1:23:4::1f'\nset policy route-map test3 rule 1 match metric '1'\nset policy route-map test3 rule 1 match peer "
             "'1.1.1.2'\nset policy route-map test3 rule 1 match rpki 'invalid'\nset policy route-map test3 rule 1 set bgp-extcommunity-rt "
@@ -491,22 +489,6 @@ class TestVyosRouteMapsModule(TestVyosModule):
         set_module_args(dict(running_config=parsed_str, state="parsed"))
         result = self.execute_module(changed=False)
         parsed_list = [
-            {
-                "entries": [
-                    {
-                        "action": "permit",
-                        "description": "test",
-                        "on_match": {"next": True},
-                        "sequence": 1,
-                    },
-                    {
-                        "action": "permit",
-                        "on_match": {"goto": 4},
-                        "sequence": 2,
-                    },
-                ],
-                "route_map": "test1",
-            },
             {
                 "entries": [
                     {
@@ -543,7 +525,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
         ]
         self.assertEqual(parsed_list, result["parsed"])
 
-    def test_vyos_bgp_global_gathered(self):
+    def test_vyos_route_maps_gathered(self):
         set_module_args(dict(state="gathered"))
         result = self.execute_module(changed=False)
         gathered_list = [
