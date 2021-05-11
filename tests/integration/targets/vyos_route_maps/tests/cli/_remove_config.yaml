@@ -1,0 +1,10 @@
+---
+- name: Remove pre-existing route-maps
+  vyos.vyos.vyos_config:
+    lines:
+      - delete policy route-map test1
+      - delete policy route-map test2
+      - delete policy route-map test3
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

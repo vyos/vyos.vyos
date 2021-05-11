@@ -1,0 +1,109 @@
+---
+merged:
+  commands:
+    - set policy route-map test1 rule 1 description test
+    - set policy route-map test1 rule 1 action permit
+    - set policy route-map test1 rule 1 continue 2
+    - set policy route-map test3 rule 1 action permit
+    - set policy route-map test3 rule 1 set local-preference 4
+    - set policy route-map test3 rule 1 set metric 5
+    - set policy route-map test3 rule 1 set metric-type type-1
+    - set policy route-map test3 rule 1 set origin egp
+    - set policy route-map test3 rule 1 set originator-id 192.0.2.34
+    - set policy route-map test3 rule 1 set tag 5
+    - set policy route-map test3 rule 1 set weight 4
+    - set policy route-map test3 rule 1 match metric 1
+    - set policy route-map test3 rule 1 match peer 192.0.2.32
+
+  after:
+    - route_map: "test3"
+      entries:
+        - sequence: 1
+          action: "permit"
+          match:
+            metric: 1
+            peer: "192.0.2.32"
+          set:
+            local_preference: "4"
+            metric: "5"
+            metric_type: "type-1"
+            origin: egp
+            originator_id: "192.0.2.34"
+            tag: "5"
+            weight: "4"
+    - route_map: "test1"
+      entries:
+        - sequence: 1
+          description: "test"
+          action: "permit"
+          continue_sequence: 2
+
+replaced:
+  commands:
+    - delete policy route-map test3 rule 1 set ip-next-hop 192.0.2.33
+    - set policy route-map test3 rule 1 set local-preference 6
+    - set policy route-map test3 rule 1 set metric 4
+    - set policy route-map test3 rule 1 set tag 4
+    - delete policy route-map test3 rule 1 set community internet
+    - set policy route-map test3 rule 1 match metric 3
+    - set policy route-map test3 rule 1 match peer 192.0.2.35
+
+  after:
+    - route_map: test2
+      entries:
+        - sequence: 1
+          description: "test"
+          action: permit
+        - sequence: 1
+          action: permit
+          on_match:
+            goto: 4
+    - route_map: test3
+      entries:
+        - sequence: 1
+          action: permit
+          match:
+            metric: 3
+            peer: 192.0.2.35
+          set:
+            local_preference: 6
+            metric: 4
+            metric_type: "type-1"
+            origin: egp
+            originator_id: 192.0.2.34
+            tag: 4
+            weight: 4
+
+overridden:
+  commands:
+    - delete policy route-map test2
+    - delete policy route-map test3 rule 1 set ip-next-hop 192.0.2.33
+    - set policy route-map test3 rule 1 set local-preference 6
+    - set policy route-map test3 rule 1 set metric 4
+    - set policy route-map test3 rule 1 set tag 4
+    - delete policy route-map test3 rule 1 set community internet
+    - set policy route-map test3 rule 1 match metric 3
+    - set policy route-map test3 rule 1 match peer 192.0.2.35
+
+  after:
+    - route_map: test3
+      entries:
+        - sequence: 1
+          action: permit
+          match:
+            metric: 3
+            peer: 192.0.2.35
+          set:
+            local_preference: 6
+            metric: 4
+            metric_type: "type-1"
+            origin: egp
+            originator_id: 192.0.2.34
+            tag: 4
+            weight: 4
+
+deleted:
+  commands:
+    - delete policy route-map test2
+    - delete policy route-map test3
+  after: []
