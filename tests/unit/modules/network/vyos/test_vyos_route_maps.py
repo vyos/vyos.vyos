@@ -332,6 +332,49 @@ class TestVyosRouteMapsModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+    def test_vyos_route_maps_overridden_idempotent(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        route_map="test3",
+                        entries=[
+                            dict(
+                                sequence=1,
+                                action="permit",
+                                match=dict(
+                                    rpki="invalid",
+                                    interface="eth2",
+                                    metric=1,
+                                    peer="1.1.1.2",
+                                    ipv6=dict(next_hop="fdda:5cc1:23:4::1f"),
+                                ),
+                                set=dict(
+                                    ipv6_next_hop=dict(
+                                        ip_type="global",
+                                        value="fdda:5cc1:23:4::1f",
+                                    ),
+                                    community=dict(value="internet"),
+                                    bgp_extcommunity_rt="22:11",
+                                    ip_next_hop="10.20.10.20",
+                                    local_preference=4,
+                                    metric=5,
+                                    metric_type="type-1",
+                                    origin="egp",
+                                    originator_id="10.0.2.3",
+                                    src="10.0.2.15",
+                                    tag=5,
+                                    weight=4,
+                                ),
+                            )
+                        ],
+                    ),
+                ],
+                state="overridden",
+            )
+        )
+        self.execute_module(changed=False, commands=[])
+
     def test_vyos_route_maps_rendered(self):
         set_module_args(
             dict(
