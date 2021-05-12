@@ -40,14 +40,9 @@ class Static_routes(ConfigBase):
     The vyos_static_routes class
     """
 
-    gather_subset = [
-        "!all",
-        "!min",
-    ]
+    gather_subset = ["!all", "!min"]
 
-    gather_network_resources = [
-        "static_routes",
-    ]
+    gather_network_resources = ["static_routes"]
 
     def __init__(self, module):
         super(Static_routes, self).__init__(module)
@@ -368,7 +363,7 @@ class Static_routes(ConfigBase):
                                 key="next-hop",
                                 attrib=hop["forward_router_address"]
                                 + " "
-                                + element,
+                                + "distance",
                                 value=str(hop[element]),
                                 opr=opr,
                             )
@@ -475,7 +470,7 @@ class Static_routes(ConfigBase):
                                 key="next-hop",
                                 attrib=hop["forward_router_address"]
                                 + " "
-                                + element,
+                                + "distance",
                                 value=str(hop[element]),
                                 remove=True,
                             )
