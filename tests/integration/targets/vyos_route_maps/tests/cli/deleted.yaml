@@ -24,7 +24,7 @@
     - name: Delete the existing configuration with the provided running configuration
         (IDEMPOTENT)
       register: result
-      vyos.vyos.vyos_ospf_interfaces: *id001
+      vyos.vyos.vyos_route_maps: *id001
 
     - name: Assert that the previous task was idempotent
       assert:
