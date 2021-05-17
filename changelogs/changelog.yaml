@@ -228,3 +228,20 @@ releases:
     - no_log_mask.yaml
     - remove-old-test-deps.yml
     release_date: '2021-04-27'
+  2.2.1:
+    changes:
+      bugfixes:
+      - change admin_distance to distance while generating static_routes nexthop command.
+      - firewall_global - port-groups were not added (https://github.com/ansible-collections/vyos.vyos/issues/107)
+      minor_changes:
+      - Add support for available_network_resources key, which allows to fetch the
+        available resources for a platform (https://github.com/ansible-collections/vyos.vyos/issues/138).
+      - Add vyos_route_maps resource module (https://github.com/ansible-collections/vyos.vyos/pull/156.).
+    fragments:
+    - 160_available_network_resources.yaml
+    - changelog_doc_path_update.yaml
+    - fix_delete_route_maps.yaml
+    - fix_port_groups.yaml
+    - fix_static_routes_distance.yaml
+    - vyos-route-maps.yaml
+    release_date: '2021-05-17'
