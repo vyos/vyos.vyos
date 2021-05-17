@@ -90,7 +90,8 @@ class TestVyosStaticRoutesModule(TestVyosModule):
                                         dest="192.0.2.48/28",
                                         next_hops=[
                                             dict(
-                                                forward_router_address="192.0.2.9"
+                                                forward_router_address="192.0.2.9",
+                                                admin_distance=10,
                                             ),
                                             dict(
                                                 forward_router_address="192.0.2.10"
@@ -108,6 +109,7 @@ class TestVyosStaticRoutesModule(TestVyosModule):
         commands = [
             "set protocols static route 192.0.2.48/28",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.9'",
+            "set protocols static route 192.0.2.48/28 next-hop 192.0.2.9 distance '10'",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.10'",
         ]
         self.execute_module(changed=True, commands=commands)
@@ -158,7 +160,8 @@ class TestVyosStaticRoutesModule(TestVyosModule):
                                                 forward_router_address="192.0.2.9"
                                             ),
                                             dict(
-                                                forward_router_address="192.0.2.10"
+                                                forward_router_address="192.0.2.10",
+                                                admin_distance=10,
                                             ),
                                         ],
                                     )
@@ -174,6 +177,7 @@ class TestVyosStaticRoutesModule(TestVyosModule):
             "set protocols static route 192.0.2.48/28",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.9'",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.10'",
+            "set protocols static route 192.0.2.48/28 next-hop 192.0.2.10 distance '10'",
         ]
         self.execute_module(changed=True, commands=commands)
 
