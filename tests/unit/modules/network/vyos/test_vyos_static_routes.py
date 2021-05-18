@@ -178,7 +178,7 @@ class TestVyosStaticRoutesModule(TestVyosModule):
         commands = [
             "set protocols static route 192.0.2.48/28",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.9'",
-            "set protocols static route 192.0.2.48/28 next-hop 192.0.2.10 next-hop-distance 'eth0'",
+            "set protocols static route 192.0.2.48/28 next-hop 192.0.2.10 next-hop-interface 'eth0'",
             "set protocols static route 192.0.2.48/28 next-hop 192.0.2.10 distance '10'",
         ]
         self.execute_module(changed=True, commands=commands)
