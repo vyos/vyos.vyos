@@ -5,6 +5,26 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.3.0
+======
+
+Minor Changes
+-------------
+
+- Add support for available_network_resources key, which allows to fetch the available resources for a platform (https://github.com/ansible-collections/vyos.vyos/issues/138).
+- Add vyos_route_maps resource module (https://github.com/ansible-collections/vyos.vyos/pull/156.).
+
+Bugfixes
+--------
+
+- change admin_distance to distance while generating static_routes nexthop command.
+- firewall_global - port-groups were not added (https://github.com/ansible-collections/vyos.vyos/issues/107)
+
+New Modules
+-----------
+
+- vyos_route_maps - Route Map Resource Module.
+
 v2.2.0
 ======
 
