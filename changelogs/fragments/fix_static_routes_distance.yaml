@@ -1,3 +1,0 @@
----
-bugfixes:
-      - change admin_distance to distance while generating static_routes nexthop command.
