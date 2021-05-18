@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - firewall_global - port-groups were not added (https://github.com/ansible-collections/vyos.vyos/issues/107)
