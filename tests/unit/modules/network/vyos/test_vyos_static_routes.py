@@ -111,6 +111,7 @@ class TestVyosStaticRoutesModule(TestVyosModule):
             "set protocols static route 192.0.2.48/28",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.9'",
             "set protocols static route 192.0.2.48/28 next-hop 192.0.2.9 distance '10'",
+            "set protocols static route 192.0.2.48/28 next-hop '192.0.2.10'",
             "set protocols static route 192.0.2.48/28 next-hop 192.0.2.10 next-hop-interface 'eth0'",
         ]
         self.execute_module(changed=True, commands=commands)
@@ -179,6 +180,7 @@ class TestVyosStaticRoutesModule(TestVyosModule):
             "set protocols static route 192.0.2.48/28",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.9'",
             "set protocols static route 192.0.2.48/28 next-hop 192.0.2.9 next-hop-interface 'eth0'",
+            "set protocols static route 192.0.2.48/28 next-hop '192.0.2.10'",
             "set protocols static route 192.0.2.48/28 next-hop 192.0.2.10 distance '10'",
         ]
         self.execute_module(changed=True, commands=commands)
