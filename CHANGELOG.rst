@@ -11,7 +11,6 @@ v2.3.0
 Minor Changes
 -------------
 
-- Add support for available_network_resources key, which allows to fetch the available resources for a platform (https://github.com/ansible-collections/vyos.vyos/issues/138).
 - Add vyos_route_maps resource module (https://github.com/ansible-collections/vyos.vyos/pull/156.).
 
 Bugfixes
@@ -32,6 +31,11 @@ Security Fixes
 --------------
 
 - Mask values of sensitive keys in module result.
+
+Minor Changes
+-------------
+
+- Add support for available_network_resources key, which allows to fetch the available resources for a platform (https://github.com/ansible-collections/vyos.vyos/issues/138).
 
 v2.1.0
 ======
