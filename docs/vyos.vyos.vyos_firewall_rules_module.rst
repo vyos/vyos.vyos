@@ -182,7 +182,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>A ditionary that specifies the rule-set configurations.</div>
+                        <div>A dictionary that specifies the rule-set configurations.</div>
                 </td>
             </tr>
                                 <tr>
