@@ -1574,7 +1574,7 @@ Examples
     # vyos@vyos# run show  configuration commands | grep firewall
     # set firewall group address-group 'inbound'
     #
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       vyos.vyos.vyos_firewall_rules:
         config:
         - afi: ipv6

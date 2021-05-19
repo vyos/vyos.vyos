@@ -1,41 +1,34 @@
 ---
 - debug:
-    msg: START vyos_static_routes merged integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_static_routes merged integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
-
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_static_routes: &id001
         config:
-
           - address_families:
-
               - afi: ipv4
                 routes:
-
                   - dest: 192.0.2.32/28
                     blackhole_config:
                       type: blackhole
                     next_hops:
-
                       - forward_router_address: 192.0.2.10
 
                       - forward_router_address: 192.0.2.9
 
           - address_families:
-
               - afi: ipv6
                 routes:
-
                   - dest: 2001:db8:1000::/36
                     blackhole_config:
                       distance: 2
                     next_hops:
-
                       - forward_router_address: 2001:db8:2000:2::1
 
                       - forward_router_address: 2001:db8:2000:2::2
@@ -43,7 +36,8 @@
 
     - name: Assert that before dicts were correctly generated
       assert:
-        that: "{{ merged['before'] | symmetric_difference(result['before']) |length\
+        that:
+          "{{ merged['before'] | symmetric_difference(result['before']) |length\
           \ == 0 }}"
 
     - name: Assert that correct set of commands were generated
@@ -58,7 +52,8 @@
           - "{{ merged['after'] | symmetric_difference(result['after']) |length\
             \ == 0 }}"
 
-    - name: Merge the provided configuration with the existing running configuration
+    - name:
+        Merge the provided configuration with the existing running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_static_routes: *id001
@@ -74,5 +69,4 @@
           - "{{ merged['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

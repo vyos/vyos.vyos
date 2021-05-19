@@ -6,8 +6,7 @@
 - include_tasks: _remove_config.yaml
 
 - block:
-
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.firewall_global: &id001
         config:
@@ -20,7 +19,6 @@
             all: true
             broadcast: true
           state_policy:
-
             - connection_type: established
               action: accept
               log: true
@@ -28,7 +26,6 @@
             - connection_type: invalid
               action: reject
           route_redirects:
-
             - afi: ipv4
               ip_src_route: true
               icmp_redirects:
@@ -36,22 +33,18 @@
                 receive: false
           group:
             address_group:
-
               - name: MGMT-HOSTS
                 description: This group has the Management hosts address list
                 members:
-
                   - address: 192.0.1.1
 
                   - address: 192.0.1.3
 
                   - address: 192.0.1.5
             network_group:
-
               - name: MGMT
                 description: This group has the Management network addresses
                 members:
-
                   - address: 192.0.1.0/24
         state: merged
 
@@ -70,7 +63,8 @@
         that:
           - "{{ merged['after'] == result['after'] }}"
 
-    - name: Merge the provided configuration with the existing running configuration
+    - name:
+        Merge the provided configuration with the existing running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.firewall_global: *id001
@@ -85,5 +79,4 @@
         that:
           - "{{ merged['after'] == result['before'] }}"
   always:
-
     - include_tasks: _remove_config.yaml

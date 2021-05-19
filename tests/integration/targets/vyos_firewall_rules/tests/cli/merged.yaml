@@ -1,6 +1,7 @@
 ---
 - debug:
-    msg: START vyos_firewall_rules merged integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_firewall_rules merged integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _populate.yaml
@@ -8,20 +9,16 @@
 - include_tasks: _remove_config.yaml
 
 - block:
-
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_firewall_rules: &id001
         config:
-
           - afi: ipv6
             rule_sets:
-
               - name: UPLINK
                 description: This is ipv6 specific rule-set
                 default_action: accept
                 rules:
-
                   - number: 1
                     action: accept
                     description: Fwipv6-Rule 1 is configured by Ansible
@@ -34,12 +31,10 @@
 
           - afi: ipv4
             rule_sets:
-
               - name: INBOUND
                 description: IPv4 INBOUND rule set
                 default_action: accept
                 rules:
-
                   - number: 101
                     action: accept
                     description: Rule 101 is configured by Ansible
@@ -67,7 +62,8 @@
 
     - name: Assert that before dicts were correctly generated
       assert:
-        that: "{{ merged['before'] | symmetric_difference(result['before']) |length\
+        that:
+          "{{ merged['before'] | symmetric_difference(result['before']) |length\
           \ == 0 }}"
 
     - name: Assert that correct set of commands were generated
@@ -82,7 +78,8 @@
           - "{{ merged['after'] | symmetric_difference(result['after']) |length\
             \ == 0 }}"
 
-    - name: Merge the provided configuration with the existing running configuration
+    - name:
+        Merge the provided configuration with the existing running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_firewall_rules: *id001
@@ -98,5 +95,4 @@
           - "{{ merged['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

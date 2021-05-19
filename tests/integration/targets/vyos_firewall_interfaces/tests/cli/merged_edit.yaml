@@ -1,6 +1,7 @@
 ---
 - debug:
-    msg: START vyos_firewall_interfaces merged integration tests on connection={{
+    msg:
+      START vyos_firewall_interfaces merged integration tests on connection={{
       ansible_connection }}
 
 - include_tasks: _remove_config.yaml
@@ -12,18 +13,14 @@
 - include_tasks: _populate.yaml
 
 - block:
-
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_firewall_interfaces: &id001
         config:
-
           - name: eth1
             access_rules:
-
               - afi: ipv4
                 rules:
-
                   - direction: in
                     name: OUTBOUND
 
@@ -33,7 +30,8 @@
 
     - name: Assert that before dicts were correctly generated
       assert:
-        that: "{{ populate | symmetric_difference(result['before']) |length == 0\
+        that:
+          "{{ populate | symmetric_difference(result['before']) |length == 0\
           \ }}"
 
     - name: Assert that correct set of commands were generated
@@ -48,7 +46,8 @@
           - "{{ merged_edit['after'] | symmetric_difference(result['after']) |length\
             \ == 0 }}"
 
-    - name: Merge the provided configuration with the existing running configuration
+    - name:
+        Merge the provided configuration with the existing running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_firewall_interfaces: *id001
@@ -64,7 +63,6 @@
           - "{{ merged_edit['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml
 
     - include_tasks: _remove_firewall_config.yaml

@@ -352,7 +352,7 @@ Examples
     #
     # vyos@vyos:~$ show configuration  commands | grep static
     #
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       vyos.vyos.vyos_static_routes:
         config:
         - address_families:

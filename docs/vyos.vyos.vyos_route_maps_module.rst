@@ -1378,7 +1378,7 @@ Examples
 
     # vyos@vyos:~$ show configuration commands |  match "set policy route-map"
     # vyos@vyos:~$
-        - name: Merge the provided configuration with the exisiting running configuration
+        - name: Merge the provided configuration with the existing running configuration
           register: result
           vyos.vyos.vyos_route_maps: &id001
             config:
@@ -1508,7 +1508,7 @@ Examples
     # set policy route-map test3 rule 1 set tag '5'
     # set policy route-map test3 rule 1 set weight '4'
     #
-    #     - name: Replace  the provided configuration with the exisiting running configuration
+    #     - name: Replace  the provided configuration with the existing running configuration
     #       register: result
     #       vyos.vyos.vyos_route_maps: &id001
     #         config:

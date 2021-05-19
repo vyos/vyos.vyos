@@ -358,7 +358,7 @@ Examples
     # vyos@vyos# run show  configuration commands | grep ospfv3
     #
     #
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       vyos.vyos.vyos_ospfv3:
         config:
           redistribute:

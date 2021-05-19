@@ -165,7 +165,7 @@ options:
                     type: str
                     choices: ['export', 'import']
                   acl:
-                    description: Acess-list number.
+                    description: Access-list number.
                     type: int
               filter_list:
                 description: As-path-list to filter route updates to/from this neighbor.

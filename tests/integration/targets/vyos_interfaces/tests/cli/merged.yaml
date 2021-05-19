@@ -1,24 +1,22 @@
 ---
 - debug:
-    msg: START vyos_interfaces merged integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_interfaces merged integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
-
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_interfaces: &id001
         config:
-
           - name: eth1
             description: Configured by Ansible - Interface 1
             mtu: 1500
             speed: auto
             duplex: auto
             vifs:
-
               - vlan_id: 100
                 description: Eth1 - VIF 100
                 mtu: 400
@@ -34,7 +32,8 @@
 
     - name: Assert that before dicts were correctly generated
       assert:
-        that: "{{ merged['before'] | symmetric_difference(result['before']) |length\
+        that:
+          "{{ merged['before'] | symmetric_difference(result['before']) |length\
           \ == 0 }}"
 
     - name: Assert that correct set of commands were generated
@@ -49,7 +48,8 @@
           - "{{ merged['after'] | symmetric_difference(result['after']) |length\
             \ == 0 }}"
 
-    - name: Merge the provided configuration with the existing running configuration
+    - name:
+        Merge the provided configuration with the existing running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_interfaces: *id001
@@ -65,5 +65,4 @@
           - "{{ merged['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

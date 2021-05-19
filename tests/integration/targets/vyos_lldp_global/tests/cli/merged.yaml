@@ -1,6 +1,7 @@
 ---
 - debug:
-    msg: START vyos_lldp_global merged integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_lldp_global merged integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
@@ -8,8 +9,7 @@
 - include_tasks: _populate.yaml
 
 - block:
-
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_lldp_global: &id001
         config:
@@ -34,7 +34,8 @@
         that:
           - "{{ merged['after'] == result['after'] }}"
 
-    - name: Merge the provided configuration with the existing running configuration
+    - name:
+        Merge the provided configuration with the existing running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_lldp_global: *id001
@@ -49,5 +50,4 @@
         that:
           - "{{ merged['after'] == result['before'] }}"
   always:
-
     - include_tasks: _remove_config.yaml

@@ -8,8 +8,7 @@
 - include_tasks: _populate.yaml
 
 - block:
-
-    - name: Gather the provided configuration with the exisiting running configuration
+    - name: Gather the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_lldp_global:
         config:
@@ -21,5 +20,4 @@
           - "{{ populate  == result['gathered'] }}"
 
   always:
-
     - include_tasks: _remove_config.yaml

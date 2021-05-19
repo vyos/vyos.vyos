@@ -1,6 +1,7 @@
 ---
 - debug:
-    msg: START vyos_ospfv2 merged integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_ospfv2 merged integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
@@ -8,32 +9,31 @@
 - include_tasks: _populate.yaml
 
 - block:
-
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_ospfv2: &id001
         config:
-          log_adjacency_changes: 'detail'
+          log_adjacency_changes: "detail"
           max_metric:
             router_lsa:
               administrative: true
               on_shutdown: 10
               on_startup: 10
           passive_interface:
-            - 'eth1'
+            - "eth1"
           areas:
-            - area_id: '3'
+            - area_id: "3"
               area_type:
                 nssa:
                   set: true
-            - area_id: '4'
+            - area_id: "4"
               area_type:
                 stub:
                   set: false
               network:
-                - address: '192.0.2.0/24'
-                - address: '192.0.22.0/24'
-                - address: '192.0.32.0/24'
+                - address: "192.0.2.0/24"
+                - address: "192.0.22.0/24"
+                - address: "192.0.32.0/24"
         state: merged
 
     - name: Assert that before dicts were correctly generated
@@ -51,7 +51,8 @@
         that:
           - "{{ merged_update['after'] == result['after'] }}"
 
-    - name: Merge the provided configuration with the existing running configuration
+    - name:
+        Merge the provided configuration with the existing running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_ospfv2: *id001
@@ -66,5 +67,4 @@
         that:
           - "{{ merged_update['after'] == result['before'] }}"
   always:
-
     - include_tasks: _remove_config.yaml
