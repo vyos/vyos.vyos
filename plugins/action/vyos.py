@@ -23,6 +23,7 @@ __metaclass__ = type
 import sys
 import copy
 
+
 from ansible_collections.ansible.netcommon.plugins.action.network import (
     ActionModule as ActionNetworkModule,
 )
