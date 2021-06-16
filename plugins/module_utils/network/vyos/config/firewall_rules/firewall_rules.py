@@ -779,8 +779,9 @@ class Firewall_rules(ConfigBase):
             key = "group"
             group = w[attr].get(key) or {}
             if group:
-                if h and key in h[attr].keys():
-                    h_group = h[attr].get(key) or {}
+                h_group = {}
+                if h and h.get(attr) and key in h[attr].keys():
+                    h_group = h[attr].get(key)
                 for item, val in iteritems(group):
                     if val:
                         if (
