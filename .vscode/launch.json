@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Attach",
+      "type": "python",
+      "request": "attach",
+      "port": 3000,
+      "host": "127.0.0.1",
+      "justMyCode": false
+    }
+  ]
+}
