@@ -58,10 +58,13 @@ class Prefix_listsFacts(object):
         #     objs = list(prefix_lists_parser.parse().get("ipv4").values())
 
         objs = prefix_lists_parser.parse()
+        objs = list(objs.values())
 
-        objs = [value for value in objs.values()]
         for item in objs:
-            item['prefix_lists'] = [value for value in item['prefix_lists'].values()]
+            item["prefix_lists"] = sorted(list(item["prefix_lists"].values()), key=lambda k: k["name"])
+            for pl in item["prefix_lists"]:
+                if "rules" in pl:
+                    pl["rules"] = sorted(list(pl["rules"].values()), key=lambda k: k["id"])
 
         ansible_facts['ansible_network_resources'].pop('prefix_lists', None)
 
