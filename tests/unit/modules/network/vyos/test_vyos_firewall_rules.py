@@ -963,6 +963,13 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         protocol="tcp",
                                         fragment="match-frag",
                                         disabled=False,
+                                        source=dict(
+                                            group=dict(
+                                                address_group="IN-ADDR-GROUP",
+                                                network_group="IN-NET-GROUP",
+                                                port_group="IN-PORT-GROUP",
+                                            )
+                                        ),
                                     ),
                                     dict(
                                         number="2",
@@ -1005,6 +1012,9 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall name V4-IN rule 1 protocol 'tcp'",
             "set firewall name V4-IN rule 1 description 'Rule 1 is configured by Ansible RM'",
             "set firewall name V4-IN rule 1 fragment 'match-frag'",
+            "set firewall name V4-IN rule 1 source group address-group IN-ADDR-GROUP",
+            "set firewall name V4-IN rule 1 source group network-group IN-NET-GROUP",
+            "set firewall name V4-IN rule 1 source group port-group IN-PORT-GROUP",
             "set firewall name V4-IN rule 1",
             "set firewall name V4-IN rule 1 action 'reject'",
             "set firewall name V4-IN rule 1 ipsec 'match-ipsec'",
