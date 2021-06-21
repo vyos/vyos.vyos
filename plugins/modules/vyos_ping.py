@@ -153,7 +153,9 @@ def main():
         ttl=dict(type="int"),
         size=dict(type="int"),
         interval=dict(type="int"),
-        state=dict(type="str", choices=["absent", "present"], default="present"),
+        state=dict(
+            type="str", choices=["absent", "present"], default="present"
+        ),
     )
 
     argument_spec.update(vyos_argument_spec)
@@ -173,7 +175,9 @@ def main():
     if warnings:
         results["warnings"] = warnings
 
-    results["commands"] = [build_ping(dest, count, size, interval, source, ttl)]
+    results["commands"] = [
+        build_ping(dest, count, size, interval, source, ttl)
+    ]
 
     ping_results = run_commands(module, commands=results["commands"])
     ping_results_list = ping_results[0].split("\n")

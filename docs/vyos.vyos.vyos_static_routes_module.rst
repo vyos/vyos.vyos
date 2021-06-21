@@ -103,7 +103,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>A ditionary that specify the static route configurations.</div>
+                        <div>A dictionary that specify the static route configurations.</div>
                 </td>
             </tr>
                                 <tr>

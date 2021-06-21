@@ -682,7 +682,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Acess-list number.</div>
+                        <div>Access-list number.</div>
                 </td>
             </tr>
             <tr>

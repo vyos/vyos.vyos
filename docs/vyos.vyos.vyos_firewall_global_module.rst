@@ -701,7 +701,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>RFC1337 TCP TIME-WAIT assasination hazards protection.</div>
+                        <div>RFC1337 TCP TIME-WAIT assassination hazards protection.</div>
                 </td>
             </tr>
             <tr>

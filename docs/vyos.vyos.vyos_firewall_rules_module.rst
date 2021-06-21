@@ -550,7 +550,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>Inboud ip sec packets.</div>
+                        <div>Inbound ip sec packets.</div>
                 </td>
             </tr>
             <tr>

@@ -986,7 +986,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Border Gateway Protocl (BGP) community attribute.</div>
+                        <div>Border Gateway Protocol (BGP) community attribute.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1238,7 +1238,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Border Gateway Protocol (BGP) originator ID attribute. Orignator IP address.</div>
+                        <div>Border Gateway Protocol (BGP) originator ID attribute. Originator IP address.</div>
                 </td>
             </tr>
             <tr>
