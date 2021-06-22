@@ -1,3 +1,0 @@
----
-bugfixes:
-  - Fix KeyError 'source' - vyos_firewall_rules
