@@ -91,7 +91,7 @@ options:
                       description: Delete BGP communities matching the community-list.
                 community:
                   type: dict
-                  description: Border Gateway Protocl (BGP) community attribute.
+                  description: Border Gateway Protocol (BGP) community attribute.
                   suboptions:
                     value:
                       type: str
@@ -135,7 +135,7 @@ options:
                   choices: [ "egp", "igp", "incomplete" ]
                 originator_id:
                   type: str
-                  description: Border Gateway Protocol (BGP) originator ID attribute. Orignator IP address.
+                  description: Border Gateway Protocol (BGP) originator ID attribute. Originator IP address.
                 src:
                   type: str
                   description: Source address for route. Example <x.x.x.x> IP address.
@@ -264,7 +264,7 @@ EXAMPLES = """
 
 # vyos@vyos:~$ show configuration commands |  match "set policy route-map"
 # vyos@vyos:~$
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_route_maps: &id001
         config:
@@ -394,7 +394,7 @@ EXAMPLES = """
 # set policy route-map test3 rule 1 set tag '5'
 # set policy route-map test3 rule 1 set weight '4'
 #
-#     - name: Replace  the provided configuration with the exisiting running configuration
+#     - name: Replace  the provided configuration with the existing running configuration
 #       register: result
 #       vyos.vyos.vyos_route_maps: &id001
 #         config:

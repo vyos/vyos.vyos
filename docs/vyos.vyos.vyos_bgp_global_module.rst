@@ -539,7 +539,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Administratives distances for BGP routes</div>
+                        <div>Administrative distances for BGP routes</div>
                 </td>
             </tr>
                                 <tr>
@@ -700,7 +700,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>Disable immediate sesison reset if peer&#x27;s connected link goes down</div>
+                        <div>Disable immediate session reset if peer&#x27;s connected link goes down</div>
                 </td>
             </tr>
             <tr>
@@ -1155,7 +1155,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Acess-list number.</div>
+                        <div>Access-list number.</div>
                 </td>
             </tr>
             <tr>
@@ -1389,7 +1389,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>True if all the configs unde this neighbor key is for peer group template.</div>
+                        <div>True if all the configs under this neighbor key is for peer group template.</div>
                 </td>
             </tr>
             <tr>

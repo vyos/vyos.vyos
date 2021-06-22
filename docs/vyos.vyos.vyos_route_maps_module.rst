@@ -986,7 +986,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Border Gateway Protocl (BGP) community attribute.</div>
+                        <div>Border Gateway Protocol (BGP) community attribute.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1238,7 +1238,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Border Gateway Protocol (BGP) originator ID attribute. Orignator IP address.</div>
+                        <div>Border Gateway Protocol (BGP) originator ID attribute. Originator IP address.</div>
                 </td>
             </tr>
             <tr>
@@ -1378,7 +1378,7 @@ Examples
 
     # vyos@vyos:~$ show configuration commands |  match "set policy route-map"
     # vyos@vyos:~$
-        - name: Merge the provided configuration with the exisiting running configuration
+        - name: Merge the provided configuration with the existing running configuration
           register: result
           vyos.vyos.vyos_route_maps: &id001
             config:
@@ -1508,7 +1508,7 @@ Examples
     # set policy route-map test3 rule 1 set tag '5'
     # set policy route-map test3 rule 1 set weight '4'
     #
-    #     - name: Replace  the provided configuration with the exisiting running configuration
+    #     - name: Replace  the provided configuration with the existing running configuration
     #       register: result
     #       vyos.vyos.vyos_route_maps: &id001
     #         config:

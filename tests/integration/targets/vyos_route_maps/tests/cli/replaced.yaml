@@ -8,8 +8,7 @@
 - include_tasks: _populate.yaml
 
 - block:
-
-    - name: Replace  the provided configuration with the exisiting running configuration
+    - name: Replace  the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_route_maps: &id001
         config:
@@ -41,7 +40,8 @@
           - result.commands|symmetric_difference(replaced.commands) == []
           - result.after|symmetric_difference(ansible_facts['network_resources']['route_maps']) == []
 
-    - name: Replace the provided configuration with the existing running configuration
+    - name:
+        Replace the provided configuration with the existing running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_route_maps: *id001
@@ -52,5 +52,4 @@
           - result['changed'] == false
 
   always:
-
     - include_tasks: _remove_config.yaml

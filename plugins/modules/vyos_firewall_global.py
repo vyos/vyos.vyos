@@ -207,7 +207,7 @@ options:
         type: bool
       twa_hazards_protection:
         description:
-        - RFC1337 TCP TIME-WAIT assasination hazards protection.
+        - RFC1337 TCP TIME-WAIT assassination hazards protection.
         type: bool
       state_policy:
         description:
@@ -267,7 +267,7 @@ EXAMPLES = """
 # vyos@vyos# run show  configuration commands | grep firewall
 #
 #
-- name: Merge the provided configuration with the exisiting running configuration
+- name: Merge the provided configuration with the existing running configuration
   vyos.vyos.vyos_firewall_global:
     config:
       validation: strict

@@ -701,7 +701,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>RFC1337 TCP TIME-WAIT assasination hazards protection.</div>
+                        <div>RFC1337 TCP TIME-WAIT assassination hazards protection.</div>
                 </td>
             </tr>
             <tr>
@@ -793,7 +793,7 @@ Examples
     # vyos@vyos# run show  configuration commands | grep firewall
     #
     #
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       vyos.vyos.vyos_firewall_global:
         config:
           validation: strict

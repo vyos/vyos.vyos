@@ -62,7 +62,7 @@ options:
             - ipv6
             required: true
           routes:
-            description: A ditionary that specify the static route configurations.
+            description: A dictionary that specify the static route configurations.
             type: list
             elements: dict
             suboptions:
@@ -140,7 +140,7 @@ EXAMPLES = """
 #
 # vyos@vyos:~$ show configuration  commands | grep static
 #
-- name: Merge the provided configuration with the exisiting running configuration
+- name: Merge the provided configuration with the existing running configuration
   vyos.vyos.vyos_static_routes:
     config:
     - address_families:

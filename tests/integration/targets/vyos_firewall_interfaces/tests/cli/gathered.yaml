@@ -1,6 +1,7 @@
 ---
 - debug:
-    msg: START vyos_firewall_interfaces gathered integration tests on connection={{
+    msg:
+      START vyos_firewall_interfaces gathered integration tests on connection={{
       ansible_connection }}
 
 - include_tasks: _remove_config.yaml
@@ -12,8 +13,7 @@
 - include_tasks: _populate.yaml
 
 - block:
-
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_firewall_interfaces: &id001
         config:
@@ -34,7 +34,6 @@
         that:
           - result['changed'] == false
   always:
-
     - include_tasks: _remove_config.yaml
 
     - include_tasks: _remove_firewall_config.yaml

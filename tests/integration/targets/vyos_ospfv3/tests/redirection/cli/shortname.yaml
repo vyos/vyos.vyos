@@ -6,25 +6,25 @@
 - include_tasks: _remove_config.yaml
 
 - block:
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.ospfv3: &id001
         config:
           areas:
-            - area_id: '2'
-              export_list: 'export1'
-              import_list: 'import1'
+            - area_id: "2"
+              export_list: "export1"
+              import_list: "import1"
               range:
-                - address: '2001:db10::/32'
-                - address: '2001:db20::/32'
-                - address: '2001:db30::/32'
-            - area_id: '3'
+                - address: "2001:db10::/32"
+                - address: "2001:db20::/32"
+                - address: "2001:db30::/32"
+            - area_id: "3"
               range:
-                - address: '2001:db40::/32'
+                - address: "2001:db40::/32"
           parameters:
-            router_id: '192.0.2.10'
+            router_id: "192.0.2.10"
           redistribute:
-            - route_type: 'bgp'
+            - route_type: "bgp"
         state: merged
 
     - name: Assert that before dicts were correctly generated
@@ -42,7 +42,8 @@
         that:
           - "{{ merged['after'] == result['after'] }}"
 
-    - name: Merge the provided configuration with the existing running configuration
+    - name:
+        Merge the provided configuration with the existing running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.ospfv3: *id001
