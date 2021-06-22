@@ -5,6 +5,16 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.3.1
+======
+
+Bugfixes
+--------
+
+- Fix KeyError 'source' - vyos_firewall_rules
+- Updated docs resolving spelling typos
+- change interface to next-hop-interface while generating static_routes nexthop command.
+
 v2.3.0
 ======
 
@@ -27,15 +37,15 @@ New Modules
 v2.2.0
 ======
 
-Security Fixes
---------------
-
-- Mask values of sensitive keys in module result.
-
 Minor Changes
 -------------
 
 - Add support for available_network_resources key, which allows to fetch the available resources for a platform (https://github.com/ansible-collections/vyos.vyos/issues/138).
+
+Security Fixes
+--------------
+
+- Mask values of sensitive keys in module result.
 
 v2.1.0
 ======
@@ -79,7 +89,7 @@ New Modules
 -----------
 
 ansible.collections.ansible_collections.vyos.vyos.plugins.modules
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - vyos_bgp_global - BGP Global Resource Module.
 

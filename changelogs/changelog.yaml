@@ -221,11 +221,11 @@ releases:
     release_date: '2021-03-30'
   2.2.0:
     changes:
-      security_fixes:
-      - Mask values of sensitive keys in module result.
       minor_changes:
       - Add support for available_network_resources key, which allows to fetch the
         available resources for a platform (https://github.com/ansible-collections/vyos.vyos/issues/138).
+      security_fixes:
+      - Mask values of sensitive keys in module result.
     fragments:
     - 147-add_ignore_txt.yml
     - 160_available_network_resources.yaml
@@ -250,3 +250,16 @@ releases:
       name: vyos_route_maps
       namespace: ''
     release_date: '2021-05-18'
+  2.3.1:
+    changes:
+      bugfixes:
+      - Fix KeyError 'source' - vyos_firewall_rules
+      - Updated docs resolving spelling typos
+      - change interface to next-hop-interface while generating static_routes nexthop
+        command.
+    fragments:
+    - 172-fix-source-keyerror-firewallrules.yml
+    - docs_common_error_correction.yaml
+    - fix_static_routes_next_hop_interface.yaml
+    - update_readme_freenode_to_liberachat.yml
+    release_date: '2021-06-22'
