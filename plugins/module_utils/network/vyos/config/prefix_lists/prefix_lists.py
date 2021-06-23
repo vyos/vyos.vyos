@@ -65,8 +65,11 @@ class Prefix_lists(ResourceModule):
         """ Generate configuration commands to send based on
             want, have and desired state.
         """
-        wantd = {entry['name']: entry for entry in self.want}
-        haved = {entry['name']: entry for entry in self.have}
+        wantd = {entry['afi']: entry for entry in self.want}
+        haved = {entry['afi']: entry for entry in self.have}
+
+        self._prefix_list_list_to_dict(wantd)
+        self._prefix_list_list_to_dict(haved)
 
         # if state is merged, merge want onto have and then compare
         if self.state == "merged":
@@ -95,3 +98,14 @@ class Prefix_lists(ResourceModule):
            for the Prefix_lists network resource.
         """
         self.compare(parsers=self.parsers, want=want, have=have)
+
+    def _prefix_list_list_to_dict(self, entry):
+        for afi, value in iteritems(entry):
+            if "prefix_lists" in value:
+                for pl in value["prefix_lists"]:
+                    pl.update({"afi": afi})
+                    if "rules" in pl:
+                        for rule in pl["rules"]:
+                            rule.update({"afi": afi, "name": pl["name"]})
+                        pl["rules"] = {x["id"]: x for x in pl["rules"]}
+                value["prefix_lists"] = {entry["name"]: entry for entry in value["prefix_lists"]}
