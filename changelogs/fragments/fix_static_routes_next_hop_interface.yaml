@@ -1,3 +1,0 @@
----
-bugfixes:
-      - change interface to next-hop-interface while generating static_routes nexthop command.
