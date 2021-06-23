@@ -82,14 +82,11 @@ Minor Changes
 Bugfixes
 --------
 
-- Update docs to clarify the idemptonecy releated caveat and add it in the output warnings (https://github.com/ansible-collections/ansible.netcommon/pull/189)
+- Update docs to clarify the idemptonecy related caveat and add it in the output warnings (https://github.com/ansible-collections/ansible.netcommon/pull/189)
 - cliconf plugin - Prevent `get_capabilities()` from getting larger every time it is called
 
 New Modules
 -----------
-
-ansible.collections.ansible_collections.vyos.vyos.plugins.modules
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - vyos_bgp_global - BGP Global Resource Module.
 

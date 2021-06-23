@@ -172,7 +172,7 @@ releases:
   2.0.0:
     changes:
       bugfixes:
-      - Update docs to clarify the idemptonecy releated caveat and add it in the output
+      - Update docs to clarify the idemptonecy related caveat and add it in the output
         warnings (https://github.com/ansible-collections/ansible.netcommon/pull/189)
       - cliconf plugin - Prevent `get_capabilities()` from getting larger every time
         it is called
@@ -199,7 +199,7 @@ releases:
     modules:
     - description: BGP Global Resource Module.
       name: vyos_bgp_global
-      namespace: .ansible.collections.ansible_collections.vyos.vyos.plugins.modules
+      namespace: ''
     release_date: '2021-02-24'
   2.1.0:
     changes:
