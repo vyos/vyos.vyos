@@ -47,8 +47,7 @@ class Prefix_lists(ResourceModule):
             resource="prefix_lists",
             tmplt=Prefix_listsTemplate(),
         )
-        self.parsers = [
-        ]
+        self.parsers = ['name', 'description', 'rules', 'action', 'rule_description', 'ge', 'le', 'prefix']
 
     def execute_module(self):
         """ Execute the module
