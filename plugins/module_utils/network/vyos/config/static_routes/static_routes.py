@@ -375,7 +375,7 @@ class Static_routes(ConfigBase):
                                 key="next-hop",
                                 attrib=hop["forward_router_address"]
                                 + " "
-                                + element,
+                                + "next-hop-interface",
                                 value=hop[element],
                                 opr=opr,
                             )
@@ -482,7 +482,7 @@ class Static_routes(ConfigBase):
                                 key="next-hop",
                                 attrib=hop["forward_router_address"]
                                 + " "
-                                + element,
+                                + "next-hop-interface",
                                 value=hop[element],
                                 remove=True,
                             )

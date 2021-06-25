@@ -86,7 +86,7 @@ options:
             type: bool
           rules:
             description:
-            - A ditionary that specifies the rule-set configurations.
+            - A dictionary that specifies the rule-set configurations.
             type: list
             elements: dict
             suboptions:
@@ -215,7 +215,7 @@ options:
                     type: int
               ipsec:
                 description:
-                - Inboud ip sec packets.
+                - Inbound ip sec packets.
                 type: str
                 choices:
                 - match-ipsec
@@ -662,7 +662,7 @@ EXAMPLES = """
 # vyos@vyos# run show  configuration commands | grep firewall
 # set firewall group address-group 'inbound'
 #
-- name: Merge the provided configuration with the exisiting running configuration
+- name: Merge the provided configuration with the existing running configuration
   vyos.vyos.vyos_firewall_rules:
     config:
     - afi: ipv6

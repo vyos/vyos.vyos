@@ -92,7 +92,7 @@ EXAMPLES = """
     source: eth0
     ttl: 128
 
-- name: Test unreachability to 10.30.30.30 using interval
+- name: Test reachability to 10.30.30.30 using interval
   vyos.vyos.vyos_ping:
     dest: 10.30.30.30
     interval: 3

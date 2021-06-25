@@ -6,8 +6,7 @@
 - include_tasks: _remove_config.yaml
 
 - block:
-
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: baseconfig
       vyos.vyos.vyos_route_maps:
         config:
@@ -77,5 +76,4 @@
         that: baseconfig.after == revert.after
 
   always:
-
     - include_tasks: _remove_config.yaml

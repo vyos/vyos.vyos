@@ -139,7 +139,7 @@ options:
                 type: str
                 choices: ['export', 'import']
               acl:
-                description: Acess-list number.
+                description: Access-list number.
                 type: int
           ebgp_multihop:
             description: Allow this EBGP neighbor to not be on a directly connected network. Specify
@@ -180,7 +180,7 @@ options:
             description:  IPv4 peer group for this peer
             type: str
           peer_group:
-            description: True if all the configs unde this neighbor key is for peer group template.
+            description: True if all the configs under this neighbor key is for peer group template.
             type: bool
           port:
             description: Neighbor's BGP port
@@ -363,7 +363,7 @@ options:
             description:  Disable IGP route check for network statements
             type: bool
           distance:
-            description: Administratives distances for BGP routes
+            description: Administrative distances for BGP routes
             type: list
             elements: dict
             suboptions:
@@ -390,7 +390,7 @@ options:
             description: Disable client to client route reflection
             type: bool
           no_fast_external_failover:
-            description: Disable immediate sesison reset if peer's connected link goes down
+            description: Disable immediate session reset if peer's connected link goes down
             type: bool
           router_id:
             description: BGP router-id

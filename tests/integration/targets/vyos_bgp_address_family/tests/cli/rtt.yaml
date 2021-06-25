@@ -8,8 +8,7 @@
 - include_tasks: _preconfig.yaml
 
 - block:
-
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: baseconfig
       vyos.vyos.vyos_bgp_address_family:
         config:
@@ -84,7 +83,5 @@
       assert:
         that: baseconfig.after == revert.after
 
-
   always:
-
     - include_tasks: _remove_config.yaml

@@ -1,6 +1,7 @@
 ---
 - debug:
-    msg: START vyos_lldp_interfaces gathered integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_lldp_interfaces gathered integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
@@ -8,8 +9,7 @@
 - include_tasks: _populate.yaml
 
 - block:
-
-    - name: Gather the provided configuration with the exisiting running configuration
+    - name: Gather the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_lldp_interfaces:
         config:
@@ -21,5 +21,4 @@
           - "{{ populate | symmetric_difference(result['gathered']) |length == 0\
             \ }}"
   always:
-
     - include_tasks: _remove_config.yaml

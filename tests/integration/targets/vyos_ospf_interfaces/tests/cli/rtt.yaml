@@ -5,10 +5,8 @@
 
 - include_tasks: _remove_config.yaml
 
-
 - block:
-
-    - name: Merge the provided configuration with the exisiting running configuration
+    - name: Merge the provided configuration with the existing running configuration
       register: baseconfig
       vyos.vyos.vyos_ospf_interfaces: &id001
         config:
@@ -53,7 +51,6 @@
               - afi: "ipv6"
                 dead_interval: 39
 
-
     - name: Revert back to base config using facts round trip
       become: true
       register: revert
@@ -66,5 +63,4 @@
         that: baseconfig.after == revert.after
 
   always:
-
     - include_tasks: _remove_config.yaml
