@@ -21,7 +21,8 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 
 class Prefix_listsTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
-        super(Prefix_listsTemplate, self).__init__(lines=lines, tmplt=self, module=module)
+        prefix = {"set": "set", "remove": "delete"}
+        super(Prefix_listsTemplate, self).__init__(lines=lines, tmplt=self, module=module, prefix=prefix)
 
         # set policy prefix-list pl1 rule 3 action 'permit'
         # set policy prefix-list pl1 rule 3 description 'Test policy'
