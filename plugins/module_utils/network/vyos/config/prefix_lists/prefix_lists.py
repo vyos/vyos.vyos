@@ -47,7 +47,7 @@ class Prefix_lists(ResourceModule):
             resource="prefix_lists",
             tmplt=Prefix_listsTemplate(),
         )
-        self.parsers = ['name', 'description', 'rules', 'action', 'rule_description', 'ge', 'le', 'prefix']
+        self.parsers = ['name', 'description', 'id', 'action', 'rule_description', 'ge', 'le', 'prefix']
 
     def execute_module(self):
         """ Execute the module
@@ -96,7 +96,27 @@ class Prefix_lists(ResourceModule):
            the `want` and `have` data with the `parsers` defined
            for the Prefix_lists network resource.
         """
-        self.compare(parsers=self.parsers, want=want, have=have)
+        # self.compare(parsers=self.parsers, want=want, have=have)
+        wplists = want.get("prefix_lists", {})
+        hplists = have.get("prefix_lists", {})
+
+        # self.compare(parsers=self.parsers, want=wplists, have=hplists)
+        self._compare_plists(want=wplists, have=hplists)
+
+    def _compare_plists(self, want, have):
+        for wk, wentry in iteritems(want):
+            hentry = have.pop(wk, {})
+            # self.compare(parsers=self.parsers, want=wentry, have=hentry)
+
+            wplrules = wentry.get("rules", {})
+            hplrules = hentry.get("rules", {})
+
+            self._compare_rules(want=wplrules, have=hplrules)
+
+    def _compare_rules(self, want, have):
+        for wr, wrule in iteritems(want):
+            hrule = have.pop(wr, {})
+            self.compare(parsers=self.parsers, want=wrule, have=hrule)
 
     def _prefix_list_list_to_dict(self, entry):
         for afi, value in iteritems(entry):
