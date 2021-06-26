@@ -169,7 +169,7 @@ class Prefix_listsTemplate(NetworkTemplate):
                                 "{{ id }}": {
                                     "id": "{{ id }}",
                                     "action": "{{ action }}",
-                                    "description": "{{ rule_description }}"
+                                    "rule_description": "{{ rule_description }}"
                                 }
                             }
                         }

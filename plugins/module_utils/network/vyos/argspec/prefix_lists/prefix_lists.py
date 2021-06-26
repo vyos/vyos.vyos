@@ -52,7 +52,7 @@ class Prefix_listsArgs(object):  # pylint: disable=R0903
                             "elements": "dict",
                             "options": {
                                 "id": {"type": "int", "required": True},
-                                "description": {"type": "str"},
+                                "rule_description": {"type": "str"},
                                 "action": {
                                     "type": "str",
                                     "choices": ["permit", "deny"],

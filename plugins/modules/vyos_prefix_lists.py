@@ -54,7 +54,7 @@ options:
                 description: A numeric identifier for the rule
                 type: int
                 required: true
-              description:
+              rule_description:
                 description: A brief text description for the prefix list rule
                 type: str
               action:
@@ -105,9 +105,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.pref
     Prefix_lists,
 )
 
-# import debugpy
-# debugpy.listen(3000)
-# debugpy.wait_for_client()
 
 def main():
     """
