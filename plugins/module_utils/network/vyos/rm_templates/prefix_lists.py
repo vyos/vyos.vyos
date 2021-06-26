@@ -66,9 +66,9 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \spolicy
                 \sprefix-(?P<afi>\S+)
                 \s(?P<name>\S+)
-                \sdescription\s(?P<description>.+)
+                \sdescription\s'(?P<description>.+)'
                 $""", re.VERBOSE),
-            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} description {{ description }}",
+            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} description '{{ description }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
                     "afi": "{{ 'ipv4' if afi == 'list' else 'ipv6' }}",
@@ -84,16 +84,16 @@ class Prefix_listsTemplate(NetworkTemplate):
 
         # policy prefix-list <list-name> rule <rule-num>
         {
-            "name": "rules",
+            "name": "id",
             "getval": re.compile(
                 r"""
                 ^set
                 \spolicy
                 \sprefix-(?P<afi>\S+)
                 \s(?P<name>\S+)
-                \srule\s(?P<rule>\d+)
+                \srule\s(?P<id>\d+)
                 $""", re.VERBOSE),
-            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} description {{ description }} rule {{ rule }}",
+            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ id }}",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
                     "afi": "{{ 'ipv4' if afi == 'list' else 'ipv6' }}",
@@ -102,8 +102,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                             "name": "{{ name }}",
                             "description": "{{ description }}",
                             "rules": {
-                                "{{ rule }}": {
-                                    "id": "{{ rule }}"
+                                "{{ id }}": {
+                                    "id": "{{ id }}"
                                 }
                             }
                         }
@@ -121,10 +121,10 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \spolicy
                 \sprefix-(?P<afi>\S+)
                 \s(?P<name>\S+)
-                \srule\s(?P<rule>\d+)
-                \saction\s(?P<action>'?permit'?|'?deny'?)
+                \srule\s(?P<id>\d+)
+                \saction\s'(?P<action>permit|deny)'
                 $""", re.VERBOSE),
-            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} description {{ description }} rule {{ rule }} action {{ action }}",
+            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ id }} action '{{ action }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
                     "afi": "{{ 'ipv4' if afi == 'list' else 'ipv6' }}",
@@ -133,8 +133,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                             "name": "{{ name }}",
                             "description": "{{ description }}",
                             "rules": {
-                                "{{ rule }}": {
-                                    "id": "{{ rule }}",
+                                "{{ id }}": {
+                                    "id": "{{ id }}",
                                     "action": "{{ action }}"
                                 }
                             }
@@ -153,10 +153,11 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \spolicy
                 \sprefix-(?P<afi>\S+)
                 \s(?P<name>\S+)
-                \srule\s(?P<rule>\d+)
-                \sdescription\s(?P<rule_description>.+)
+                \srule\s(?P<id>\d+)
+                \sdescription\s'(?P<rule_description>.+)'
                 $""", re.VERBOSE),
-            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} description {{ description }} rule {{ rule }} description {{ rule_description }}",
+            # "compval": "description",
+            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ id }} description '{{ rule_description }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
                     "afi": "{{ 'ipv4' if afi == 'list' else 'ipv6' }}",
@@ -165,8 +166,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                             "name": "{{ name }}",
                             "description": "{{ description }}",
                             "rules": {
-                                "{{ rule }}": {
-                                    "id": "{{ rule }}",
+                                "{{ id }}": {
+                                    "id": "{{ id }}",
                                     "action": "{{ action }}",
                                     "description": "{{ rule_description }}"
                                 }
@@ -186,10 +187,10 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \spolicy
                 \sprefix-(?P<afi>\S+)
                 \s(?P<name>\S+)
-                \srule\s(?P<rule>\d+)
-                \sge\s(?P<ge>\d+)
+                \srule\s(?P<id>\d+)
+                \sge\s'(?P<ge>\d+)'
                 $""", re.VERBOSE),
-            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} description {{ description }} rule {{ rule }} ge {{ ge }}",
+            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ id }} ge '{{ ge }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
                     "afi": "{{ 'ipv4' if afi == 'list' else 'ipv6' }}",
@@ -198,8 +199,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                             "name": "{{ name }}",
                             "description": "{{ description }}",
                             "rules": {
-                                "{{ rule }}": {
-                                    "id": "{{ rule }}",
+                                "{{ id }}": {
+                                    "id": "{{ id }}",
                                     "action": "{{ action }}",
                                     "description": "{{ rule_description }}",
                                     "ge": "{{ ge }}"
@@ -220,10 +221,10 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \spolicy
                 \sprefix-(?P<afi>\S+)
                 \s(?P<name>\S+)
-                \srule\s(?P<rule>\d+)
-                \sle\s(?P<le>\d+)
+                \srule\s(?P<id>\d+)
+                \sle\s'(?P<le>\d+)'
                 $""", re.VERBOSE),
-            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} description {{ description }} rule {{ rule }} le {{ le }}",
+            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ id }} le '{{ le }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
                     "afi": "{{ 'ipv4' if afi == 'list' else 'ipv6' }}",
@@ -232,8 +233,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                             "name": "{{ name }}",
                             "description": "{{ description }}",
                             "rules": {
-                                "{{ rule }}": {
-                                    "id": "{{ rule }}",
+                                "{{ id }}": {
+                                    "id": "{{ id }}",
                                     "action": "{{ action }}",
                                     "description": "{{ rule_description }}",
                                     "ge": "{{ ge }}",
@@ -255,10 +256,10 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \spolicy
                 \sprefix-(?P<afi>\S+)
                 \s(?P<name>\S+)
-                \srule\s(?P<rule>\d+)
-                \sprefix\s(?P<prefix>\S+)
+                \srule\s(?P<id>\d+)
+                \sprefix\s'(?P<prefix>\S+)'
                 $""", re.VERBOSE),
-            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} description {{ description }} rule {{ rule }} prefix {{ prefix }}",
+            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ id }} prefix '{{ prefix }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
                     "afi": "{{ 'ipv4' if afi == 'list' else 'ipv6' }}",
@@ -267,8 +268,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                             "name": "{{ name }}",
                             "description": "{{ description }}",
                             "rules": {
-                                "{{ rule }}": {
-                                    "id": "{{ rule }}",
+                                "{{ id }}": {
+                                    "id": "{{ id }}",
                                     "action": "{{ action }}",
                                     "description": "{{ rule_description }}",
                                     "ge": "{{ ge }}",
