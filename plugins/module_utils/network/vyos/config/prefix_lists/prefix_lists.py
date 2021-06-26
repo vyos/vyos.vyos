@@ -106,7 +106,9 @@ class Prefix_lists(ResourceModule):
     def _compare_plists(self, want, have):
         for wk, wentry in iteritems(want):
             hentry = have.pop(wk, {})
-            # self.compare(parsers=self.parsers, want=wentry, have=hentry)
+
+            # parser list for name and descriptions
+            self.compare(parsers=self.parsers[:self.parsers.index("id")], want=wentry, have=hentry)
 
             wplrules = wentry.get("rules", {})
             hplrules = hentry.get("rules", {})
@@ -116,7 +118,9 @@ class Prefix_lists(ResourceModule):
     def _compare_rules(self, want, have):
         for wr, wrule in iteritems(want):
             hrule = have.pop(wr, {})
-            self.compare(parsers=self.parsers, want=wrule, have=hrule)
+
+            # parser list for rules
+            self.compare(parsers=self.parsers[self.parsers.index("id"):], want=wrule, have=hrule)
 
     def _prefix_list_list_to_dict(self, entry):
         for afi, value in iteritems(entry):
