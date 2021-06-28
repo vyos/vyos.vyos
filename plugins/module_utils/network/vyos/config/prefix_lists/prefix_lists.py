@@ -79,13 +79,24 @@ class Prefix_lists(ResourceModule):
             haved = {
                 k: v for k, v in iteritems(haved) if k in wantd or not wantd
             }
-            wantd = {}
+            # wantd = {}
+            for key, hvalue in iteritems(haved):
+                wvalue = wantd.pop(key, {})
+                if wvalue:
+                    wplists = wvalue.get("prefix_lists", {})
+                    hplists = hvalue.get("prefix_lists", {})
+                    hvalue["prefix_lists"] = {
+                        k: v
+                        for k, v in iteritems(hplists)
+                        if k in wplists or not wplists
+                    }
 
         # remove superfluous config for overridden and deleted
         if self.state in ["overridden", "deleted"]:
             for k, have in iteritems(haved):
                 if k not in wantd:
                     self._compare(want={}, have=have)
+
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
@@ -103,9 +114,23 @@ class Prefix_lists(ResourceModule):
         # self.compare(parsers=self.parsers, want=wplists, have=hplists)
         self._compare_plists(want=wplists, have=hplists)
 
+        if self.state in ["overridden", "deleted"]:
+            # remove remaining prefix lists
+            for h in hplists.values():
+                self.commands.append(
+                    "delete policy prefix-{0} {1}".format(
+                        "list" if h["afi"] == "ipv4" else "list6" , h["name"]
+                    )
+                )
+
     def _compare_plists(self, want, have):
         for wk, wentry in iteritems(want):
             hentry = have.pop(wk, {})
+
+            # if state 'deleted' or 'overridden'
+            # self.commands.append(self._tmplt.render({"prefix_lists": k}, "name", True))
+            if self.state in ['overridden', 'deleted']:
+                self.addcmd(hentry, "name", True)
 
             # parser list for name and descriptions
             self.compare(parsers=self.parsers[:self.parsers.index("id")], want=wentry, have=hentry)
