@@ -146,7 +146,7 @@ class Prefix_listsTemplate(NetworkTemplate):
 
         # policy prefix-list <list-name> rule <rule-num> description <desc>
         {
-            "name": "description",
+            "name": "rule_description",
             "getval": re.compile(
                 r"""
                 ^set
