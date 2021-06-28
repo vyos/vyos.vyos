@@ -79,7 +79,6 @@ class Prefix_lists(ResourceModule):
             haved = {
                 k: v for k, v in iteritems(haved) if k in wantd or not wantd
             }
-            # wantd = {}
             for key, hvalue in iteritems(haved):
                 wvalue = wantd.pop(key, {})
                 if wvalue:
@@ -129,8 +128,8 @@ class Prefix_lists(ResourceModule):
 
             # if state 'deleted' or 'overridden'
             # self.commands.append(self._tmplt.render({"prefix_lists": k}, "name", True))
-            if self.state in ['overridden', 'deleted']:
-                self.addcmd(hentry, "name", True)
+            # if self.state in ['overridden', 'deleted']:
+            #     self.addcmd(hentry, "name", True)
 
             # parser list for name and descriptions
             self.compare(parsers=self.parsers[:self.parsers.index("id")], want=wentry, have=hentry)
