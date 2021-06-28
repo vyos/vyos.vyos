@@ -87,10 +87,10 @@ options:
             suboptions:
               file_num:
                 description: Number of saved files (default is 5)
-                type: int
+                type: str
               size:
                 description: Size of log files (in kilobytes, default is 256)
-                type: int
+                type: str
           params: &params
             description: List of supported params
             type: list
@@ -106,7 +106,7 @@ options:
           params: *params
           marker_interval:
             description: time interval how often a mark message is being sent in seconds (default is 1200)
-            type: int
+            type: str
           preserve_fqdn:
             description: uses FQDN for logging
             type: bool
@@ -115,14 +115,14 @@ options:
         type: list
         elements: dict
         suboptions:
+          port:
+            description: Destination port (1-65535)
+            type: str
           params:
             description: List of supported params
             type: list
             elements: dict
             suboptions:
-              port:
-                description: Destination port (1-65535)
-                type: int
               facility: *facility
               level: *level
               protocol:

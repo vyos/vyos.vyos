@@ -91,8 +91,8 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                         "archive": {
                             "type": "dict",
                             "options": {
-                                "file_num": {"type": "int"},
-                                "size": {"type": "int"},
+                                "file_num": {"type": "str"},
+                                "size": {"type": "str"},
                             },
                         },
                         "params": {
@@ -151,8 +151,8 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                         "archive": {
                             "type": "dict",
                             "options": {
-                                "file_num": {"type": "int"},
-                                "size": {"type": "int"},
+                                "file_num": {"type": "str"},
+                                "size": {"type": "str"},
                             },
                         },
                         "params": {
@@ -203,7 +203,7 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                                 },
                             },
                         },
-                        "marker_interval": {"type": "int"},
+                        "marker_interval": {"type": "str"},
                         "preserve_fqdn": {"type": "bool"},
                     },
                 },
@@ -211,11 +211,11 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                     "type": "list",
                     "elements": "dict",
                     "options": {
+                        "port": {"type": "str"},
                         "params": {
                             "type": "list",
                             "elements": "dict",
                             "options": {
-                                "port": {"type": "int"},
                                 "facility": {
                                     "type": "str",
                                     "choices": [
@@ -258,10 +258,7 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                                         "all",
                                     ],
                                 },
-                                "protocol": {
-                                    "type": "str",
-                                    "choices": ["udp", "tcp"],
-                                },
+                                "protocol": {"type": "str", "choices": ["udp", "tcp"]},
                             },
                         },
                         "hostname": {"type": "str"},

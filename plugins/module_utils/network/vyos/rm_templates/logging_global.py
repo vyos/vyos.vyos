@@ -48,7 +48,7 @@ class Logging_globalTemplate(NetworkTemplate):
     # set system syslog global preserve-fqdn
     # fmt: off
     PARSERS = [
-        {
+        { #console parsers
             "name": "console",
             "getval": re.compile(
                 r"""
@@ -66,7 +66,7 @@ class Logging_globalTemplate(NetworkTemplate):
                 }
             },
         },
-        {
+        { #file parsers
             "name": "files_archive_size",
             "getval": re.compile(
                 r"""
@@ -128,7 +128,7 @@ class Logging_globalTemplate(NetworkTemplate):
                 }
             },
         },
-        {
+        { #global_param parsers
             "name": "global_params_archive_file",
             "getval": re.compile(
                 r"""
@@ -211,12 +211,12 @@ class Logging_globalTemplate(NetworkTemplate):
                         "params": [{
                             "facility": "{{ facility }}",
                             "level": "{{ level }}",
-                        },]
+                        },],
                     }
                 }
             },
         },
-        {
+        { #host parsers
             "name": "hosts_port",
             "getval": re.compile(
                 r"""
@@ -229,10 +229,8 @@ class Logging_globalTemplate(NetworkTemplate):
                 "config": {
                     "hosts": [{
                         "hostname": "{{ hostname }}",
-                        "params":[{
-                            "port": "{{ port }}",
-                        },]
-                    }]
+                        "port": "{{ port }}",
+                    },]
                 }
             },
         },
@@ -254,7 +252,7 @@ class Logging_globalTemplate(NetworkTemplate):
                             "facility": "{{ facility }}",
                             "level": "{{ level }}",
                         },]
-                    }]
+                    },]
                 }
             },
         },
@@ -276,11 +274,11 @@ class Logging_globalTemplate(NetworkTemplate):
                             "protocol": "{{ protocol }}",
                             "facility": "{{ facility }}",
                         },]
-                    }]
+                    },]
                 }
             },
         },
-        {
+        { #user parsers
             "name": "users",
             "getval": re.compile(
                 r"""

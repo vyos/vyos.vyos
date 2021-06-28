@@ -51,7 +51,7 @@ class Logging_globalFacts(object):
         """
         facts = {}
         objs = []
-
+        data = "set system syslog console facility all\nset system syslog console facility local7 level 'err'\nset system syslog console facility news level 'debug'\nset system syslog file abc archive size '125'\nset system syslog file def archive file '2'\nset system syslog file def facility local7 level 'emerg'\nset system syslog global archive file '3'\nset system syslog global archive size '111'\nset system syslog global facility local7 level 'debug'\nset system syslog global marker interval '111'\nset system syslog global preserve-fqdn\nset system syslog host 10.0.2.12 facility all protocol 'udp'\nset system syslog host 10.0.2.15 facility all level 'all'\nset system syslog host 10.0.2.15 facility all protocol 'udp'\nset system syslog host 10.0.2.15 port '223'\nset system syslog user paul facility local7 level 'err'\nset system syslog user vyos facility local6 level 'alert'\nset system syslog user vyos facility local7 level 'debug'"
         if not data:
             data = self.get_logging_data(connection)
 
@@ -65,7 +65,7 @@ class Logging_globalFacts(object):
 
         params = utils.remove_empties(
             logging_global_parser.validate_config(
-                self.argument_spec, {"config": objs}, redact=True
+                self.argument_spec, {"config": objs[0]}, redact=True
             )
         )
 
