@@ -58,6 +58,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_a
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.route_maps.route_maps import (
     Route_mapsFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.logging_global.logging_global import (
+    Logging_globalFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
     Default,
     Neighbors,
@@ -82,6 +85,7 @@ FACT_RESOURCE_SUBSETS = dict(
     bgp_global=Bgp_globalFacts,
     bgp_address_family=Bgp_address_familyFacts,
     route_maps=Route_mapsFacts,
+    logging_global=Logging_globalFacts,
 )
 
 
