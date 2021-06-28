@@ -126,11 +126,6 @@ class Prefix_lists(ResourceModule):
         for wk, wentry in iteritems(want):
             hentry = have.pop(wk, {})
 
-            # if state 'deleted' or 'overridden'
-            # self.commands.append(self._tmplt.render({"prefix_lists": k}, "name", True))
-            # if self.state in ['overridden', 'deleted']:
-            #     self.addcmd(hentry, "name", True)
-
             # parser list for name and descriptions
             self.compare(parsers=self.parsers[:self.parsers.index("id")], want=wentry, have=hentry)
 
