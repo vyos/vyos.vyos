@@ -60,11 +60,12 @@ class Prefix_listsFacts(object):
         objs = prefix_lists_parser.parse()
         objs = list(objs.values())
 
-        for item in objs:
-            item["prefix_lists"] = sorted(list(item["prefix_lists"].values()), key=lambda k: k["name"])
-            for pl in item["prefix_lists"]:
-                if "rules" in pl:
-                    pl["rules"] = sorted(list(pl["rules"].values()), key=lambda k: k["id"])
+        if objs:
+            for item in objs:
+                item["prefix_lists"] = sorted(list(item["prefix_lists"].values()), key=lambda k: k["name"])
+                for pl in item["prefix_lists"]:
+                    if "rules" in pl:
+                        pl["rules"] = sorted(list(pl["rules"].values()), key=lambda k: k["id"])
 
         ansible_facts['ansible_network_resources'].pop('prefix_lists', None)
 
@@ -72,7 +73,8 @@ class Prefix_listsFacts(object):
             prefix_lists_parser.validate_config(self.argument_spec, {"config": objs}, redact=True)
         )
 
-        facts['prefix_lists'] = params['config']
+        if params.get("config"):
+            facts['prefix_lists'] = params['config']
         ansible_facts['ansible_network_resources'].update(facts)
 
         return ansible_facts
