@@ -147,6 +147,14 @@ class Prefix_lists(ResourceModule):
             # parser list for rules
             self.compare(parsers=self.parsers[self.parsers.index("id"):], want=wrule, have=hrule)
 
+        # remove remaining rules
+        for hr in have.values():
+            self.commands.append(
+                "delete policy prefix-{0} {1} rule {2}".format(
+                    "list" if hr["afi"] == "ipv4" else "list6" , hr["name"], hr["id"]
+                )
+            )
+
     def _prefix_list_list_to_dict(self, entry):
         for afi, value in iteritems(entry):
             if "prefix_lists" in value:
