@@ -54,7 +54,7 @@ options:
                 description: A numeric identifier for the rule
                 type: int
                 required: true
-              rule_description:
+              description:
                 description: A brief text description for the prefix list rule
                 type: str
               action:

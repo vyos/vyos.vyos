@@ -75,6 +75,8 @@ class Prefix_listsFacts(object):
 
         if params.get("config"):
             facts['prefix_lists'] = params['config']
+        else:
+            facts['prefix_lists'] = []
         ansible_facts['ansible_network_resources'].update(facts)
 
         return ansible_facts

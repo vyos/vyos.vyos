@@ -146,7 +146,7 @@ class Prefix_listsTemplate(NetworkTemplate):
 
         # policy prefix-list <list-name> rule <rule-num> description <desc>
         {
-            "name": "rule_description",
+            "name": "description",
             "getval": re.compile(
                 r"""
                 ^set
@@ -156,7 +156,7 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \srule\s(?P<id>\d+)
                 \sdescription\s'(?P<rule_description>.+)'
                 $""", re.VERBOSE),
-            # "compval": "description",
+            "compval": "rule_description",
             "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ id }} description '{{ rule_description }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
