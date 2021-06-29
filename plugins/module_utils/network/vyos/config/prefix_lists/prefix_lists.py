@@ -106,11 +106,9 @@ class Prefix_lists(ResourceModule):
            the `want` and `have` data with the `parsers` defined
            for the Prefix_lists network resource.
         """
-        # self.compare(parsers=self.parsers, want=want, have=have)
         wplists = want.get("prefix_lists", {})
         hplists = have.get("prefix_lists", {})
 
-        # self.compare(parsers=self.parsers, want=wplists, have=hplists)
         self._compare_plists(want=wplists, have=hplists)
 
         if self.state in ["overridden", "deleted"]:

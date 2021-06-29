@@ -24,13 +24,6 @@ class Prefix_listsTemplate(NetworkTemplate):
         prefix = {"set": "set", "remove": "delete"}
         super(Prefix_listsTemplate, self).__init__(lines=lines, tmplt=self, module=module, prefix=prefix)
 
-        # set policy prefix-list pl1 rule 3 action 'permit'
-        # set policy prefix-list pl1 rule 3 description 'Test policy'
-        # set policy prefix-list pl1 rule 3 prefix '10.0.0.0/24'
-        # set policy prefix-list6 pl61 rule 3 action 'permit'
-        # set policy prefix-list6 pl61 rule 3 prefix '2:A::4:78/62'
-
-
     # fmt: off
     PARSERS = [
         # policy prefix-list <list-name>
@@ -54,7 +47,6 @@ class Prefix_listsTemplate(NetworkTemplate):
                     }
                 }
             },
-            # "shared": True
         },
 
         # policy prefix-list <list-name> description <desc>
@@ -156,7 +148,7 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \srule\s(?P<id>\d+)
                 \sdescription\s'(?P<rule_description>.+)'
                 $""", re.VERBOSE),
-            "compval": "rule_description",
+            "compval": "description",
             "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ id }} description '{{ rule_description }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
@@ -169,7 +161,7 @@ class Prefix_listsTemplate(NetworkTemplate):
                                 "{{ id }}": {
                                     "id": "{{ id }}",
                                     "action": "{{ action }}",
-                                    "rule_description": "{{ rule_description }}"
+                                    "description": "{{ rule_description }}"
                                 }
                             }
                         }

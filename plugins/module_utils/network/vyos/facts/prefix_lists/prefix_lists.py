@@ -53,9 +53,6 @@ class Prefix_listsFacts(object):
 
         # parse native config using the Prefix_lists template
         prefix_lists_parser = Prefix_listsTemplate(lines=data.splitlines(), module=self._module)
-        
-        # if prefix_lists_parser.parse().get("ipv4"):
-        #     objs = list(prefix_lists_parser.parse().get("ipv4").values())
 
         objs = prefix_lists_parser.parse()
         objs = list(objs.values())
