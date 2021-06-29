@@ -92,7 +92,6 @@ class Prefix_listsTemplate(NetworkTemplate):
                     "prefix_lists": {
                         "{{ name }}": {
                             "name": "{{ name }}",
-                            "description": "{{ description }}",
                             "rules": {
                                 "{{ id }}": {
                                     "id": "{{ id }}"
@@ -123,7 +122,6 @@ class Prefix_listsTemplate(NetworkTemplate):
                     "prefix_lists": {
                         "{{ name }}": {
                             "name": "{{ name }}",
-                            "description": "{{ description }}",
                             "rules": {
                                 "{{ id }}": {
                                     "id": "{{ id }}",
@@ -149,18 +147,16 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \sdescription\s'(?P<rule_description>.+)'
                 $""", re.VERBOSE),
             "compval": "description",
-            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ id }} description '{{ rule_description }}'",
+            "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ id }} description '{{ description }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
                     "afi": "{{ 'ipv4' if afi == 'list' else 'ipv6' }}",
                     "prefix_lists": {
                         "{{ name }}": {
                             "name": "{{ name }}",
-                            "description": "{{ description }}",
                             "rules": {
                                 "{{ id }}": {
                                     "id": "{{ id }}",
-                                    "action": "{{ action }}",
                                     "description": "{{ rule_description }}"
                                 }
                             }
@@ -189,12 +185,9 @@ class Prefix_listsTemplate(NetworkTemplate):
                     "prefix_lists": {
                         "{{ name }}": {
                             "name": "{{ name }}",
-                            "description": "{{ description }}",
                             "rules": {
                                 "{{ id }}": {
                                     "id": "{{ id }}",
-                                    "action": "{{ action }}",
-                                    "description": "{{ rule_description }}",
                                     "ge": "{{ ge }}"
                                 }
                             }
@@ -223,13 +216,9 @@ class Prefix_listsTemplate(NetworkTemplate):
                     "prefix_lists": {
                         "{{ name }}": {
                             "name": "{{ name }}",
-                            "description": "{{ description }}",
                             "rules": {
                                 "{{ id }}": {
                                     "id": "{{ id }}",
-                                    "action": "{{ action }}",
-                                    "description": "{{ rule_description }}",
-                                    "ge": "{{ ge }}",
                                     "le": "{{ le }}"
                                 }
                             }
@@ -258,14 +247,9 @@ class Prefix_listsTemplate(NetworkTemplate):
                     "prefix_lists": {
                         "{{ name }}": {
                             "name": "{{ name }}",
-                            "description": "{{ description }}",
                             "rules": {
                                 "{{ id }}": {
                                     "id": "{{ id }}",
-                                    "action": "{{ action }}",
-                                    "description": "{{ rule_description }}",
-                                    "ge": "{{ ge }}",
-                                    "le": "{{ le }}",
                                     "prefix": "{{ prefix }}"
                                 }
                             }
