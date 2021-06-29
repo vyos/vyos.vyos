@@ -20,31 +20,83 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 )
 
 class NtpTemplate(NetworkTemplate):
-    def __init__(self, lines=None, module=None):
-        super(NtpTemplate, self).__init__(lines=lines, tmplt=self, module=module)
+    def __init__(self, lines=None):
+        prefix = {"set": "set", "remove": "delete"}
+        super(NtpTemplate, self).__init__(
+                lines=lines, tmplt=self, prefix=prefix
+                )
 
     # fmt: off
     PARSERS = [
         {
-            "name": "key_a",
+            "name": "allow_clients_address",
             "getval": re.compile(
                 r"""
-                ^key_a\s(?P<key_a>\S+)
-                $""", re.VERBOSE),
-            "setval": "",
-            "result": {
-            },
-            "shared": True
+                ^set\ssystem\sntp\sallow-clients\saddress   (\s(?P<address>\S+))?
+                $""",
+                re.VERBOSE),
+            "setval": "ntp allow_clients address {{address}}",
+            "compval": "address",
+            "result": {         
+                 "allow_clients": {
+                "{{address}}": {
+                    "address": "{{address}}"
+                }
+            }
+            }
+            
         },
         {
-            "name": "key_b",
+            "name": "listen_address_address",
             "getval": re.compile(
                 r"""
-                \s+key_b\s(?P<key_b>\S+)
-                $""", re.VERBOSE),
-            "setval": "",
-            "result": {
-            },
+                ^set\ssystem\sntp\slisten-address (\s(?P<address>\S+))? 
+                $""",
+                re.VERBOSE),
+            "setval": "ntp listen_address {{address}}",
+            "compval": "address",
+            "result": {            
+                 "listen_address": {
+                    "{{address}}": {
+                        "address": "{{address}}"
+                    }
+                }
+            }
         },
+        {
+            "name": "server_name",
+            "getval": re.compile(
+                r"""
+                ^set\ssystem\sntp\sserver (\s(?P<name>\S+))? 
+                $""",
+                re.VERBOSE),
+            "setval": "ntp server {{name}}",
+            "compval": "name",
+            "result": {
+                "server": {
+                    "{{name}}": {                    
+                        "name": "{{name}}"
+                    }
+                }
+            }
+        },
+        {
+            "name": "server_options",
+            "getval": re.compile(
+                r"""
+                ^set\ssystem\sntp\sserver (\s(?P<name>\S+))?  (\s(?P<options>noselect|pool|preempt|prefer))? 
+                $""",
+                re.VERBOSE),
+            "setval": "ntp server {{name}} {{options}}",
+            "compval": "options",
+            "result": {
+                "server": {
+                    "{{name}}": {
+                        "name": "{{name}}",
+                        "options": "{{options}}"
+                    }
+                }
+            }
+        }
     ]
     # fmt: on

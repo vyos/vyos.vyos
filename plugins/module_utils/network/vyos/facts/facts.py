@@ -63,6 +63,8 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.prefi
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.logging_global.logging_global import (
     Logging_globalFacts,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ntp.ntp import (
+    NtpFacts,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
     Default,
@@ -90,6 +92,7 @@ FACT_RESOURCE_SUBSETS = dict(
     route_maps=Route_mapsFacts,
     prefix_lists=Prefix_listsFacts,
     logging_global=Logging_globalFacts,
+    ntp=NtpFacts
 )
 
 
