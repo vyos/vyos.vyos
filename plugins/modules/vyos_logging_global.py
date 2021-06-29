@@ -87,10 +87,10 @@ options:
             suboptions:
               file_num:
                 description: Number of saved files (default is 5)
-                type: str
+                type: int
               size:
                 description: Size of log files (in kilobytes, default is 256)
-                type: str
+                type: int
           params: &params
             description: List of supported params
             type: list
@@ -100,13 +100,13 @@ options:
               level: *level
       global_params:
         description: logging to serial console
-        elements: dict
+        type: dict
         suboptions:
           archive: *archive
           params: *params
           marker_interval:
             description: time interval how often a mark message is being sent in seconds (default is 1200)
-            type: str
+            type: int
           preserve_fqdn:
             description: uses FQDN for logging
             type: bool
@@ -117,7 +117,7 @@ options:
         suboptions:
           port:
             description: Destination port (1-65535)
-            type: str
+            type: int
           params:
             description: List of supported params
             type: list
@@ -186,11 +186,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.log
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.logging_global.logging_global import (
     Logging_global,
 )
-
-# import debugpy
-
-# debugpy.listen(3001)
-# debugpy.wait_for_client()
 
 
 def main():

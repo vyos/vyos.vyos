@@ -78,12 +78,12 @@ class Logging_globalTemplate(NetworkTemplate):
             "setval": "",
             "result": {
                 "config": {
-                    "files": [{
+                    "files": {"{{ path }}": {
                         "path": "{{ path }}",
                         "archive": {
                             "size": "{{ size }}",
                         },
-                    }]
+                    },}
                 }
             },
         },
@@ -98,12 +98,12 @@ class Logging_globalTemplate(NetworkTemplate):
             "setval": "",
             "result": {
                 "config": {
-                    "files": [{
+                    "files": {"{{ path }}":{
                         "path": "{{ path }}",
                         "archive": {
                             "file_num": "{{ file_num }}",
                         },
-                    }]
+                    },}
                 }
             },
         },
@@ -119,13 +119,13 @@ class Logging_globalTemplate(NetworkTemplate):
             "setval": "",
             "result": {
                 "config": {
-                    "files": [{
+                    "files": {"{{ path }}":{
                         "path": "{{ path }}",
                         "params":[{
                             "facility": "{{ facility }}",
                             "level": "{{ level }}",
                         },]
-                    }]
+                    },}
                 }
             },
         },
@@ -228,10 +228,10 @@ class Logging_globalTemplate(NetworkTemplate):
             "setval": "",
             "result": {
                 "config": {
-                    "hosts": [{
+                    "hosts": {"{{ hostname }}":{
                         "hostname": "{{ hostname }}",
                         "port": "{{ port }}",
-                    },]
+                    },}
                 }
             },
         },
@@ -247,13 +247,13 @@ class Logging_globalTemplate(NetworkTemplate):
             "setval": "",
             "result": {
                 "config": {
-                    "hosts": [{
+                    "hosts": {"{{ hostname }}":{
                         "hostname": "{{ hostname }}",
                         "params":[{
                             "facility": "{{ facility }}",
                             "level": "{{ level }}",
                         },]
-                    },]
+                    },}
                 }
             },
         },
@@ -269,13 +269,13 @@ class Logging_globalTemplate(NetworkTemplate):
             "setval": "",
             "result": {
                 "config": {
-                    "hosts": [{
+                    "hosts": {"{{ hostname }}":{
                         "hostname": "{{ hostname }}",
                         "params":[{
                             "protocol": "{{ protocol }}",
                             "facility": "{{ facility }}",
                         },]
-                    },]
+                    },}
                 }
             },
         },
@@ -291,13 +291,14 @@ class Logging_globalTemplate(NetworkTemplate):
             "setval": "",
             "result": {
                 "config": {
-                    "users": [{
+                    "users": {
+                        "{{ username }}":{
                         "username": "{{ username }}",
                         "params":[{
                             "facility": "{{ facility }}",
                             "level": "{{ level }}",
                         },]
-                    }]
+                    }}
                 }
             },
             # "shared": True

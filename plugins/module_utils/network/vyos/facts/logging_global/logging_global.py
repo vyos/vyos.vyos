@@ -39,6 +39,38 @@ class Logging_globalFacts(object):
     def get_logging_data(self, connection):
         return connection.get("show configuration commands | grep syslog")
 
+    def process_facts(self, objs):
+        objFinal = objs[0] if len(objs) >= 1 else {}
+        if objFinal:
+            for ke, vl in iteritems(objFinal):
+                if ke == "files":
+                    _files = []
+                    for k, v in vl.items():
+                        _files.append(v)
+                    objFinal[ke] = _files
+                    objFinal[ke] = sorted(objFinal[ke], key=lambda item: item["path"])
+                elif ke == "hosts":
+                    _hosts = []
+                    for k, v in vl.items():
+                        _hosts.append(v)
+                    objFinal[ke] = _hosts
+                    objFinal[ke] = sorted(
+                        objFinal[ke], key=lambda item: item["hostname"]
+                    )
+                elif ke == "users":
+                    _users = []
+                    for k, v in vl.items():
+                        _users.append(v)
+                    objFinal[ke] = _users
+                    objFinal[ke] = sorted(
+                        objFinal[ke], key=lambda item: item["username"]
+                    )
+                elif ke == "console_params":
+                    objFinal[ke] = sorted(
+                        objFinal[ke], key=lambda item: item["facility"]
+                    )
+        return objFinal
+
     def populate_facts(self, connection, ansible_facts, data=None):
         """ Populate the facts for Logging_global network resource
 
@@ -62,10 +94,11 @@ class Logging_globalFacts(object):
         objs = list(logging_global_parser.parse().values())
 
         ansible_facts["ansible_network_resources"].pop("logging_global", None)
+        objs = self.process_facts(objs)
 
         params = utils.remove_empties(
             logging_global_parser.validate_config(
-                self.argument_spec, {"config": objs[0]}, redact=True
+                self.argument_spec, {"config": objs}, redact=True
             )
         )
 
