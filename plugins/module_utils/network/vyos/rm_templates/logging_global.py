@@ -22,8 +22,9 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 
 class Logging_globalTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
+        prefix = {"set": "set", "remove": "delete"}
         super(Logging_globalTemplate, self).__init__(
-            lines=lines, tmplt=self, module=module
+            lines=lines, tmplt=self, prefix=prefix, module=module
         )
 
     # vyos@vyos:~$ show configuration commands | grep syslog
