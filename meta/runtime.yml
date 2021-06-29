@@ -1,5 +1,5 @@
 ---
-requires_ansible: '>=2.9.10'
+requires_ansible: ">=2.9.10"
 plugin_routing:
   action:
     vyos_banner:
@@ -98,6 +98,10 @@ plugin_routing:
       redirect: vyos.vyos.vyos
     ping:
       redirect: vyos.vyos.vyos
+    vyos_prefix_lists:
+      redirect: vyos.vyos.vyos
+    prefix_lists:
+      redirect: vyos.vyos.vyos
     vyos_static_route:
       redirect: vyos.vyos.vyos
     static_route:
@@ -140,22 +144,22 @@ plugin_routing:
     interface:
       redirect: vyos.vyos.vyos_interface
       deprecation:
-        removal_date: '2022-06-01'
+        removal_date: "2022-06-01"
         warning_text: See the plugin documentation for more details
     vyos_interface:
       deprecation:
-        removal_date: '2022-06-01'
+        removal_date: "2022-06-01"
         warning_text: See the plugin documentation for more details
     interfaces:
       redirect: vyos.vyos.vyos_interfaces
     l3_interface:
       redirect: vyos.vyos.vyos_l3_interface
       deprecation:
-        removal_date: '2022-06-01'
+        removal_date: "2022-06-01"
         warning_text: See the plugin documentation for more details
     vyos_l3_interface:
       deprecation:
-        removal_date: '2022-06-01'
+        removal_date: "2022-06-01"
         warning_text: See the plugin documentation for more details
     l3_interfaces:
       redirect: vyos.vyos.vyos_l3_interfaces
@@ -164,31 +168,31 @@ plugin_routing:
     linkagg:
       redirect: vyos.vyos.vyos_linkagg
       deprecation:
-        removal_date: '2022-06-01'
+        removal_date: "2022-06-01"
         warning_text: See the plugin documentation for more details
     vyos_linkagg:
       deprecation:
-        removal_date: '2022-06-01'
+        removal_date: "2022-06-01"
         warning_text: See the plugin documentation for more details
     lldp:
       redirect: vyos.vyos.vyos_lldp
       deprecation:
-        removal_date: '2022-06-01'
+        removal_date: "2022-06-01"
         warning_text: See the plugin documentation for more details
     vyos_lldp:
       deprecation:
-        removal_date: '2022-06-01'
+        removal_date: "2022-06-01"
         warning_text: See the plugin documentation for more details
     lldp_global:
       redirect: vyos.vyos.vyos_lldp_global
     lldp_interface:
       redirect: vyos.vyos.vyos_lldp_interface
       deprecation:
-        removal_date: '2022-06-01'
+        removal_date: "2022-06-01"
         warning_text: See the plugin documentation for more details
     vyos_lldp_interface:
       deprecation:
-        removal_date: '2022-06-01'
+        removal_date: "2022-06-01"
         warning_text: See the plugin documentation for more details
     lldp_interfaces:
       redirect: vyos.vyos.vyos_lldp_interfaces
@@ -205,11 +209,11 @@ plugin_routing:
     static_route:
       redirect: vyos.vyos.vyos_static_route
       deprecation:
-        removal_date: '2022-06-01'
+        removal_date: "2022-06-01"
         warning_text: See the plugin documentation for more details
     vyos_static_route:
       deprecation:
-        removal_date: '2022-06-01'
+        removal_date: "2022-06-01"
         warning_text: See the plugin documentation for more details
     static_routes:
       redirect: vyos.vyos.vyos_static_routes
