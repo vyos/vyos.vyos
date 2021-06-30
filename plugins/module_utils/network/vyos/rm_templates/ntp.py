@@ -28,6 +28,8 @@ class NtpTemplate(NetworkTemplate):
 
     # fmt: off
     PARSERS = [
+
+        #set system ntp allow_clients address <address>        
         {
             "name": "allow_clients_hostname",
             "getval": re.compile(
@@ -45,6 +47,8 @@ class NtpTemplate(NetworkTemplate):
             }
             
         },
+
+        #set system ntp listen_address <address>
         {
             "name": "listen_address_hostname",
             "getval": re.compile(
@@ -59,6 +63,8 @@ class NtpTemplate(NetworkTemplate):
             
             }
         },
+
+        #set system ntp server <name>
         {
             "name": "server_name",
             "getval": re.compile(
@@ -77,6 +83,8 @@ class NtpTemplate(NetworkTemplate):
             
             }
         },
+
+        #set system ntp server <name> <options>
         {
             "name": "server_options",
             "getval": re.compile(
