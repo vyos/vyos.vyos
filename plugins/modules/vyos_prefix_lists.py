@@ -205,7 +205,7 @@ EXAMPLES = r"""
             ]
         }
     ],
-    "before": {},
+    "before": [],
     "changed": true,
     "commands": [
         "set policy prefix-list AnsibleIPv4PrefixList",
@@ -636,7 +636,7 @@ After state:
 
 # Task output:
 # -------------
-    "after": {},
+    "after": [],
     "before": [
         {
             "afi": "ipv4",
