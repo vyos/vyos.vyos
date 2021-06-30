@@ -1228,6 +1228,55 @@ set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
 
 """
 
+RETURN = """
+
+before:
+  description: The configuration prior to the module invocation.
+  returned: when state is I(merged), I(replaced), I(overridden) or I(deleted)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+after:
+  description: The resulting configuration after the module invocation.
+  returned: when changed
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+commands:
+  description: The set of commands pushed to the remote device for the required configurations to take place.
+  returned: when state is I(merged), I(replaced), I(overridden) or I(deleted)
+  type: list
+  sample:
+    - set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
+    - set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
+rendered:
+  description: The provided configuration in the task rendered in device-native format (offline).
+  returned: when state is I(rendered)
+  type: list
+  sample:
+    - set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
+    - set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
+gathered:
+  description: Facts about the network resource gathered from the remote device as structured data.
+  returned: when state is I(gathered)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+parsed:
+  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
+  returned: when state is I(parsed)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+
+"""
+
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.prefix_lists.prefix_lists import (
     Prefix_listsArgs,
