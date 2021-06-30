@@ -186,6 +186,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.log
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.logging_global.logging_global import (
     Logging_global,
 )
+import debugpy
+
+debugpy.listen(3001)
+debugpy.wait_for_client()
 
 
 def main():
