@@ -72,9 +72,7 @@ class NtpFacts(object):
         # parse native config using the Ntp template
         ntp_parser = NtpTemplate(lines=data.splitlines())       
 
-        ## if ntp_parser.parse():
         objs = ntp_parser.parse()
-        #objs = list(objs.values())
         q(objs)
         q(objs["servers"])
 
@@ -84,11 +82,6 @@ class NtpFacts(object):
                 objs["servers"] = sorted(
                     objs["servers"], key=lambda k: k["name"]
                 )
-                """  for sr in objs["servers"]:
-                    #q(sr["serveroptions"])
-                    if "serveroptions" in sr:
-                        sr["serveroptions"] = list(sr["serveroptions"].values())
-                        #q(sr["serveroptions"]) """
                             
         ansible_facts['ansible_network_resources'].pop('ntp', None)
 
@@ -98,7 +91,6 @@ class NtpFacts(object):
 
         if params.get("config"):
             facts["ntp"] = params["config"]
-        #facts["ntp"] = params.get("config", [])
         ansible_facts['ansible_network_resources'].update(facts)
 
         return ansible_facts
