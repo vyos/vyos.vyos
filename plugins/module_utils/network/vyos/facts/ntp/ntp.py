@@ -4,7 +4,7 @@
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
-import q   
+ 
 
 __metaclass__ = type
 
@@ -15,9 +15,11 @@ for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
 
+import q  
+
 from copy import deepcopy
 
-#from ansible.module_utils.six import iteritems
+from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
     utils,
 )
@@ -61,25 +63,33 @@ class NtpFacts(object):
         :returns: facts
         """
         facts = {}
-        objs = {}
+        objs = []
 
         if not data:
             data = self.get_config(connection)
            
 
         # parse native config using the Ntp template
-        ntp_parser = NtpTemplate(lines=data.splitlines())
+        ntp_parser = NtpTemplate(lines=data.splitlines())       
 
-        q(ntp_parser.parse())
-
-        if ntp_parser.parse():
-            objs = ntp_parser.parse()
+        ## if ntp_parser.parse():
+        objs = ntp_parser.parse()
+        #objs = list(objs.values())
         q(objs)
-        
-       # for item in objs:
-        #    if item.get("server"):
-         #       item["server"] = list(item["server"].values())
+        q(objs["servers"])
 
+        if objs:
+            if "servers" in objs:
+                objs["servers"] = list(objs["servers"].values())
+                objs["servers"] = sorted(
+                    objs["servers"], key=lambda k: k["name"]
+                )
+                """  for sr in objs["servers"]:
+                    #q(sr["serveroptions"])
+                    if "serveroptions" in sr:
+                        sr["serveroptions"] = list(sr["serveroptions"].values())
+                        #q(sr["serveroptions"]) """
+                            
         ansible_facts['ansible_network_resources'].pop('ntp', None)
 
         params = utils.remove_empties(
@@ -88,6 +98,7 @@ class NtpFacts(object):
 
         if params.get("config"):
             facts["ntp"] = params["config"]
+        #facts["ntp"] = params.get("config", [])
         ansible_facts['ansible_network_resources'].update(facts)
 
         return ansible_facts

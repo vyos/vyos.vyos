@@ -29,7 +29,7 @@ class NtpTemplate(NetworkTemplate):
     # fmt: off
     PARSERS = [
         {
-            "name": "allow_clients_address",
+            "name": "allow_clients_hostname",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\sntp\sallow-clients\saddress   (\s(?P<address>\S+))?
@@ -37,17 +37,16 @@ class NtpTemplate(NetworkTemplate):
                 re.VERBOSE),
             "setval": "ntp allow_clients address {{address}}",
             "compval": "address",
-            "result": {         
-                 "allow_clients": {
-                "{{address}}": {
-                    "address": "{{address}}"
-                }
-            }
+            "result": {  
+                       
+                 "allow_clients": ["{{address}}"]
+                     
+                
             }
             
         },
         {
-            "name": "listen_address_address",
+            "name": "listen_address_hostname",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\sntp\slisten-address (\s(?P<address>\S+))? 
@@ -56,11 +55,8 @@ class NtpTemplate(NetworkTemplate):
             "setval": "ntp listen_address {{address}}",
             "compval": "address",
             "result": {            
-                 "listen_address": {
-                    "{{address}}": {
-                        "address": "{{address}}"
-                    }
-                }
+                 "listen_addresses": ["{{address}}"]
+            
             }
         },
         {
@@ -73,11 +69,12 @@ class NtpTemplate(NetworkTemplate):
             "setval": "ntp server {{name}}",
             "compval": "name",
             "result": {
-                "server": {
+                "servers": {
                     "{{name}}": {                    
                         "name": "{{name}}"
                     }
                 }
+            
             }
         },
         {
@@ -90,11 +87,12 @@ class NtpTemplate(NetworkTemplate):
             "setval": "ntp server {{name}} {{options}}",
             "compval": "options",
             "result": {
-                "server": {
+                "servers": {
                     "{{name}}": {
                         "name": "{{name}}",
-                        "options": "{{options}}"
-                    }
+                        "options": "{{options}}"                   
+
+                    }  
                 }
             }
         }
