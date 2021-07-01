@@ -34,14 +34,14 @@ class NtpTemplate(NetworkTemplate):
             "name": "allow_clients",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\sallow-clients\saddress   (\s(?P<address>\S+))?
+                ^set\ssystem\sntp\sallow-clients\saddress   (\s(?P<ipaddress>\S+))?
                 $""",
                 re.VERBOSE),
-            "setval": "system ntp allow_clients address {{address}}",
-            "compval": "address",
+            "setval": "system ntp allow_clients address {{ipaddress}}",
+            #"compval": "address",
             "result": {  
                        
-                 "allow_clients": ["{{address}}"]
+                 "allow_clients": ["{{ipaddress}}"]
                      
                 
             }
@@ -53,13 +53,13 @@ class NtpTemplate(NetworkTemplate):
             "name": "listen_addresses",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\slisten-address (\s(?P<address>\S+))? 
+                ^set\ssystem\sntp\slisten-address (\s(?P<ip_address>\S+))? 
                 $""",
                 re.VERBOSE),
-            "setval": "system ntp listen_address {{address}}",
-            "compval": "address",
+            "setval": "system ntp listen_address {{ip_address}}",
+            #"compval": "address",
             "result": {            
-                 "listen_addresses": ["{{address}}"]
+                 "listen_addresses": ["{{ip_address}}"]
             
             }
         },
@@ -73,7 +73,7 @@ class NtpTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE),
             "setval": "system ntp server {{name}}",
-            "compval": "name",
+            #"compval": "name",
             "result": {
                 "servers": {
                     "{{name}}": {                    
@@ -93,7 +93,7 @@ class NtpTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE),
             "setval": "system ntp server {{name}} {{options}}",
-            "compval": "options",
+            #"compval": "options",
             "result": {
                 "servers": {
                     "{{name}}": {
