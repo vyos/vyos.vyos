@@ -31,13 +31,13 @@ class NtpTemplate(NetworkTemplate):
 
         #set system ntp allow_clients address <address>        
         {
-            "name": "allow_clients_hostname",
+            "name": "allow_clients",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\sntp\sallow-clients\saddress   (\s(?P<address>\S+))?
                 $""",
                 re.VERBOSE),
-            "setval": "ntp allow_clients address {{address}}",
+            "setval": "system ntp allow_clients address {{address}}",
             "compval": "address",
             "result": {  
                        
@@ -50,13 +50,13 @@ class NtpTemplate(NetworkTemplate):
 
         #set system ntp listen_address <address>
         {
-            "name": "listen_address_hostname",
+            "name": "listen_addresses",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\sntp\slisten-address (\s(?P<address>\S+))? 
                 $""",
                 re.VERBOSE),
-            "setval": "ntp listen_address {{address}}",
+            "setval": "system ntp listen_address {{address}}",
             "compval": "address",
             "result": {            
                  "listen_addresses": ["{{address}}"]
@@ -72,7 +72,7 @@ class NtpTemplate(NetworkTemplate):
                 ^set\ssystem\sntp\sserver (\s(?P<name>\S+))? 
                 $""",
                 re.VERBOSE),
-            "setval": "ntp server {{name}}",
+            "setval": "system ntp server {{name}}",
             "compval": "name",
             "result": {
                 "servers": {
@@ -92,7 +92,7 @@ class NtpTemplate(NetworkTemplate):
                 ^set\ssystem\sntp\sserver (\s(?P<name>\S+))?  (\s(?P<options>noselect|pool|preempt|prefer))? 
                 $""",
                 re.VERBOSE),
-            "setval": "ntp server {{name}} {{options}}",
+            "setval": "system ntp server {{name}} {{options}}",
             "compval": "options",
             "result": {
                 "servers": {
