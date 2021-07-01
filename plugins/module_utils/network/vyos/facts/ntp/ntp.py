@@ -15,7 +15,6 @@ for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
 
-import q  
 
 from copy import deepcopy
 
@@ -73,8 +72,6 @@ class NtpFacts(object):
         ntp_parser = NtpTemplate(lines=data.splitlines())       
 
         objs = ntp_parser.parse()
-        q(objs)
-        q(objs["servers"])
 
         if objs:
             if "servers" in objs:
