@@ -135,6 +135,15 @@ class Prefix_lists(ResourceModule):
         for wr, wrule in iteritems(want):
             hrule = have.pop(wr, {})
 
+            if hrule and (hrule != wrule):
+                if self.state == "merged":
+                    self._module.fail_json(
+                            msg="Cannot update existing rule {0} of prefix list {1} with state merged."
+                            " Please use state replaced or overridden.".format(
+                                hrule["id"], hrule["name"]
+                            )
+                        )
+
             # parser list for rules
             self.compare(parsers=self.parsers[self.parsers.index("id"):], want=wrule, have=hrule)
 
