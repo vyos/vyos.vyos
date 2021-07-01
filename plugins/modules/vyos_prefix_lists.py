@@ -448,11 +448,15 @@ After state:
 # Before state:
 # -------------
   vyos@vyos:~$ show configuration commands | grep prefix-list
-  set policy prefix-list AnsibleIPv4PrefixList description 'Configuration replaced by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'permit'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3 replaced by ansible'
+  set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
+  set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
+  set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
+  set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
+  set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
+  set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
+  set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
   set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '82.168.2.0/24'
+  set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
   set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
   set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
   set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
@@ -472,9 +476,9 @@ After state:
           - afi: "ipv4"
             prefix_lists:
               - name: "AnsibleIPv4PrefixList"
-                description: Rule 3 overridden by ansible
+                description: Rule 2 overridden by ansible
                 rules:
-                  - id: 3
+                  - id: 2
                     action: "deny"
                     ge: 26
                     prefix: "82.168.2.0/24"
@@ -495,13 +499,13 @@ After state:
             "afi": "ipv4",
             "prefix_lists": [
                 {
-                    "description": "Rule 3 overridden by ansible",
+                    "description": "Rule 2 overridden by ansible",
                     "name": "AnsibleIPv4PrefixList",
                     "rules": [
                         {
                             "action": "deny",
                             "ge": 26,
-                            "id": 3,
+                            "id": 2,
                             "prefix": "82.168.2.0/24"
                         }
                     ]
@@ -526,15 +530,22 @@ After state:
             "afi": "ipv4",
             "prefix_lists": [
                 {
-                    "description": "Configuration replaced by ansible",
+                    "description": "PL configured by ansible",
                     "name": "AnsibleIPv4PrefixList",
                     "rules": [
                         {
                             "action": "permit",
-                            "description": "Rule 3 replaced by ansible",
+                            "description": "Rule 2 given by ansible",
+                            "id": 2,
+                            "le": 32,
+                            "prefix": "92.168.10.0/26"
+                        },
+                        {
+                            "action": "deny",
+                            "description": "Rule 3",
                             "ge": 26,
                             "id": 3,
-                            "prefix": "82.168.2.0/24"
+                            "prefix": "72.168.2.0/24"
                         }
                     ]
                 }
@@ -575,9 +586,13 @@ After state:
     "commands": [
         "delete policy prefix-list6 AllowIPv6Prefix",
         "delete policy prefix-list6 DenyIPv6Prefix",
-        "set policy prefix-list AnsibleIPv4PrefixList description 'Rule 3 overridden by ansible'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'",
-        "delete policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3 replaced by ansible'",
+        "set policy prefix-list AnsibleIPv4PrefixList description 'Rule 2 overridden by ansible'",
+        "set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'deny'",
+        "delete policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'",
+        "set policy prefix-list AnsibleIPv4PrefixList rule 2 ge '26'",
+        "delete policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'",
+        "set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '82.168.2.0/24'",
+        "delete policy prefix-list AnsibleIPv4PrefixList rule 3",
         "set policy prefix-list OverriddenPrefixList",
         "set policy prefix-list OverriddenPrefixList description 'Configuration overridden by ansible'",
         "set policy prefix-list OverriddenPrefixList rule 10",
@@ -589,10 +604,10 @@ After state:
 # After state:
 # -------------
   vyos@vyos:~$ show configuration commands | grep prefix-list
-  set policy prefix-list AnsibleIPv4PrefixList description 'Rule 3 overridden by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '82.168.2.0/24'
+  set policy prefix-list AnsibleIPv4PrefixList description 'Rule 2 overridden by ansible'
+  set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'deny'
+  set policy prefix-list AnsibleIPv4PrefixList rule 2 ge '26'
+  set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '82.168.2.0/24'
   set policy prefix-list OverriddenPrefixList description 'Configuration overridden by ansible'
   set policy prefix-list OverriddenPrefixList rule 10 action 'permit'
   set policy prefix-list OverriddenPrefixList rule 10 le '32'
