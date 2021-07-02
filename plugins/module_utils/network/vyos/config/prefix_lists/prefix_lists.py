@@ -149,7 +149,7 @@ class Prefix_lists(ResourceModule):
 
             # parser list for entries
             self.compare(
-                parsers=self.parsers[self.parsers.index("sequence") :],
+                parsers=self.parsers[self.parsers.index("sequence"):],
                 want=wrule,
                 have=hrule,
             )
