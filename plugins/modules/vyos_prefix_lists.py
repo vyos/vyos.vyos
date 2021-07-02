@@ -45,12 +45,12 @@ options:
           description:
             description: A brief text description for the prefix-list
             type: str
-          rules:
+          entries:
             description: Rule configurations for the prefix-list
             type: list
             elements: dict
             suboptions:
-              id:
+              sequence:
                 description: A numeric identifier for the rule
                 type: int
                 required: true
@@ -93,8 +93,8 @@ options:
       - parsed
     default: merged
 """
-EXAMPLES = r"""
 
+EXAMPLES = r"""
 # -------------------
 # 1. Using merged
 # -------------------
@@ -113,14 +113,14 @@ EXAMPLES = r"""
             prefix_lists:
               - name: "AnsibleIPv4PrefixList"
                 description: "PL configured by ansible"
-                rules:
-                  - id: 2
+                entries:
+                  - sequence: 2
                     description: "Rule 2 given by ansible"
                     action: "permit"
                     prefix: "92.168.10.0/26"
                     le: 32
 
-                  - id: 3
+                  - sequence: 3
                     description: "Rule 3"
                     action: "deny"
                     prefix: "72.168.2.0/24"
@@ -130,8 +130,8 @@ EXAMPLES = r"""
             prefix_lists:
               - name: "AllowIPv6Prefix"
                 description: "Configured by ansible for allowing IPv6 networks"
-                rules:
-                  - id: 5
+                entries:
+                  - sequence: 5
                     description: "Permit rule"
                     action: "permit"
                     prefix: "2001:db8:8000::/35"
@@ -139,8 +139,8 @@ EXAMPLES = r"""
 
               - name: DenyIPv6Prefix
                 description: "Configured by ansible for disallowing IPv6 networks"
-                rules:
-                  - id: 8
+                entries:
+                  - sequence: 8
                     action: deny
                     prefix: "2001:db8:2000::/35"
                     le: 37
@@ -155,11 +155,11 @@ EXAMPLES = r"""
                 {
                     "description": "PL configured by ansible",
                     "name": "AnsibleIPv4PrefixList",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Rule 2 given by ansible",
-                            "id": 2,
+                            "sequence": 2,
                             "le": 32,
                             "prefix": "92.168.10.0/26"
                         },
@@ -167,7 +167,7 @@ EXAMPLES = r"""
                             "action": "deny",
                             "description": "Rule 3",
                             "ge": 26,
-                            "id": 3,
+                            "sequence": 3,
                             "prefix": "72.168.2.0/24"
                         }
                     ]
@@ -180,11 +180,11 @@ EXAMPLES = r"""
                 {
                     "description": "Configured by ansible for allowing IPv6 networks",
                     "name": "AllowIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Permit rule",
-                            "id": 5,
+                            "sequence": 5,
                             "le": 37,
                             "prefix": "2001:db8:8000::/35"
                         }
@@ -193,10 +193,10 @@ EXAMPLES = r"""
                 {
                     "description": "Configured by ansible for disallowing IPv6 networks",
                     "name": "DenyIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "deny",
-                            "id": 8,
+                            "sequence": 8,
                             "le": 37,
                             "prefix": "2001:db8:2000::/35"
                         }
@@ -295,8 +295,8 @@ After state:
             prefix_lists:
               - name: "AnsibleIPv4PrefixList"
                 description: "Configuration replaced by ansible"
-                rules:
-                  - id: 3
+                entries:
+                  - sequence: 3
                     description: "Rule 3 replaced by ansible"
                     action: "permit"
                     prefix: "82.168.2.0/24"
@@ -312,12 +312,12 @@ After state:
                 {
                     "description": "Configuration replaced by ansible",
                     "name": "AnsibleIPv4PrefixList",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Rule 3 replaced by ansible",
                             "ge": 26,
-                            "id": 3,
+                            "sequence": 3,
                             "prefix": "82.168.2.0/24"
                         }
                     ]
@@ -330,11 +330,11 @@ After state:
                 {
                     "description": "Configured by ansible for allowing IPv6 networks",
                     "name": "AllowIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Permit rule",
-                            "id": 5,
+                            "sequence": 5,
                             "le": 37,
                             "prefix": "2001:db8:8000::/35"
                         }
@@ -343,10 +343,10 @@ After state:
                 {
                     "description": "Configured by ansible for disallowing IPv6 networks",
                     "name": "DenyIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "deny",
-                            "id": 8,
+                            "sequence": 8,
                             "le": 37,
                             "prefix": "2001:db8:2000::/35"
                         }
@@ -362,11 +362,11 @@ After state:
                 {
                     "description": "PL configured by ansible",
                     "name": "AnsibleIPv4PrefixList",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Rule 2 given by ansible",
-                            "id": 2,
+                            "sequence": 2,
                             "le": 32,
                             "prefix": "92.168.10.0/26"
                         },
@@ -374,7 +374,7 @@ After state:
                             "action": "deny",
                             "description": "Rule 3",
                             "ge": 26,
-                            "id": 3,
+                            "sequence": 3,
                             "prefix": "72.168.2.0/24"
                         }
                     ]
@@ -387,11 +387,11 @@ After state:
                 {
                     "description": "Configured by ansible for allowing IPv6 networks",
                     "name": "AllowIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Permit rule",
-                            "id": 5,
+                            "sequence": 5,
                             "le": 37,
                             "prefix": "2001:db8:8000::/35"
                         }
@@ -400,10 +400,10 @@ After state:
                 {
                     "description": "Configured by ansible for disallowing IPv6 networks",
                     "name": "DenyIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "deny",
-                            "id": 8,
+                            "sequence": 8,
                             "le": 37,
                             "prefix": "2001:db8:2000::/35"
                         }
@@ -477,16 +477,16 @@ After state:
             prefix_lists:
               - name: "AnsibleIPv4PrefixList"
                 description: Rule 2 overridden by ansible
-                rules:
-                  - id: 2
+                entries:
+                  - sequence: 2
                     action: "deny"
                     ge: 26
                     prefix: "82.168.2.0/24"
 
               - name: "OverriddenPrefixList"
                 description: Configuration overridden by ansible
-                rules:
-                  - id: 10
+                entries:
+                  - sequence: 10
                     action: permit
                     prefix: "203.0.113.96/27"
                     le: 32
@@ -501,11 +501,11 @@ After state:
                 {
                     "description": "Rule 2 overridden by ansible",
                     "name": "AnsibleIPv4PrefixList",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "deny",
                             "ge": 26,
-                            "id": 2,
+                            "sequence": 2,
                             "prefix": "82.168.2.0/24"
                         }
                     ]
@@ -513,10 +513,10 @@ After state:
                 {
                     "description": "Configuration overridden by ansible",
                     "name": "OverriddenPrefixList",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
-                            "id": 10,
+                            "sequence": 10,
                             "le": 32,
                             "prefix": "203.0.113.96/27"
                         }
@@ -532,11 +532,11 @@ After state:
                 {
                     "description": "PL configured by ansible",
                     "name": "AnsibleIPv4PrefixList",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Rule 2 given by ansible",
-                            "id": 2,
+                            "sequence": 2,
                             "le": 32,
                             "prefix": "92.168.10.0/26"
                         },
@@ -544,7 +544,7 @@ After state:
                             "action": "deny",
                             "description": "Rule 3",
                             "ge": 26,
-                            "id": 3,
+                            "sequence": 3,
                             "prefix": "72.168.2.0/24"
                         }
                     ]
@@ -557,11 +557,11 @@ After state:
                 {
                     "description": "Configured by ansible for allowing IPv6 networks",
                     "name": "AllowIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Permit rule",
-                            "id": 5,
+                            "sequence": 5,
                             "le": 37,
                             "prefix": "2001:db8:8000::/35"
                         }
@@ -570,10 +570,10 @@ After state:
                 {
                     "description": "Configured by ansible for disallowing IPv6 networks",
                     "name": "DenyIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "deny",
-                            "id": 8,
+                            "sequence": 8,
                             "le": 37,
                             "prefix": "2001:db8:2000::/35"
                         }
@@ -659,11 +659,11 @@ After state:
                 {
                     "description": "PL configured by ansible",
                     "name": "AnsibleIPv4PrefixList",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Rule 2 given by ansible",
-                            "id": 2,
+                            "sequence": 2,
                             "le": 32,
                             "prefix": "92.168.10.0/26"
                         },
@@ -671,7 +671,7 @@ After state:
                             "action": "deny",
                             "description": "Rule 3",
                             "ge": 26,
-                            "id": 3,
+                            "sequence": 3,
                             "prefix": "72.168.2.0/24"
                         }
                     ]
@@ -684,11 +684,11 @@ After state:
                 {
                     "description": "Configured by ansible for allowing IPv6 networks",
                     "name": "AllowIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Permit rule",
-                            "id": 5,
+                            "sequence": 5,
                             "le": 37,
                             "prefix": "2001:db8:8000::/35"
                         }
@@ -697,10 +697,10 @@ After state:
                 {
                     "description": "Configured by ansible for disallowing IPv6 networks",
                     "name": "DenyIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "deny",
-                            "id": 8,
+                            "sequence": 8,
                             "le": 37,
                             "prefix": "2001:db8:2000::/35"
                         }
@@ -766,11 +766,11 @@ After state:
                 {
                     "description": "PL configured by ansible",
                     "name": "AnsibleIPv4PrefixList",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Rule 2 given by ansible",
-                            "id": 2,
+                            "sequence": 2,
                             "le": 32,
                             "prefix": "92.168.10.0/26"
                         },
@@ -778,7 +778,7 @@ After state:
                             "action": "deny",
                             "description": "Rule 3",
                             "ge": 26,
-                            "id": 3,
+                            "sequence": 3,
                             "prefix": "72.168.2.0/24"
                         }
                     ]
@@ -793,11 +793,11 @@ After state:
                 {
                     "description": "PL configured by ansible",
                     "name": "AnsibleIPv4PrefixList",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Rule 2 given by ansible",
-                            "id": 2,
+                            "sequence": 2,
                             "le": 32,
                             "prefix": "92.168.10.0/26"
                         },
@@ -805,7 +805,7 @@ After state:
                             "action": "deny",
                             "description": "Rule 3",
                             "ge": 26,
-                            "id": 3,
+                            "sequence": 3,
                             "prefix": "72.168.2.0/24"
                         }
                     ]
@@ -818,11 +818,11 @@ After state:
                 {
                     "description": "Configured by ansible for allowing IPv6 networks",
                     "name": "AllowIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Permit rule",
-                            "id": 5,
+                            "sequence": 5,
                             "le": 37,
                             "prefix": "2001:db8:8000::/35"
                         }
@@ -831,10 +831,10 @@ After state:
                 {
                     "description": "Configured by ansible for disallowing IPv6 networks",
                     "name": "DenyIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "deny",
-                            "id": 8,
+                            "sequence": 8,
                             "le": 37,
                             "prefix": "2001:db8:2000::/35"
                         }
@@ -913,11 +913,11 @@ After state:
                 {
                     "description": "Configured by ansible for allowing IPv6 networks",
                     "name": "AllowIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Permit rule",
-                            "id": 5,
+                            "sequence": 5,
                             "le": 37,
                             "prefix": "2001:db8:8000::/35"
                         }
@@ -933,11 +933,11 @@ After state:
                 {
                     "description": "PL configured by ansible",
                     "name": "AnsibleIPv4PrefixList",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Rule 2 given by ansible",
-                            "id": 2,
+                            "sequence": 2,
                             "le": 32,
                             "prefix": "92.168.10.0/26"
                         },
@@ -945,7 +945,7 @@ After state:
                             "action": "deny",
                             "description": "Rule 3",
                             "ge": 26,
-                            "id": 3,
+                            "sequence": 3,
                             "prefix": "72.168.2.0/24"
                         }
                     ]
@@ -958,11 +958,11 @@ After state:
                 {
                     "description": "Configured by ansible for allowing IPv6 networks",
                     "name": "AllowIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Permit rule",
-                            "id": 5,
+                            "sequence": 5,
                             "le": 37,
                             "prefix": "2001:db8:8000::/35"
                         }
@@ -971,10 +971,10 @@ After state:
                 {
                     "description": "Configured by ansible for disallowing IPv6 networks",
                     "name": "DenyIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "deny",
-                            "id": 8,
+                            "sequence": 8,
                             "le": 37,
                             "prefix": "2001:db8:2000::/35"
                         }
@@ -1020,11 +1020,11 @@ After state:
                 {
                     "description": "PL configured by ansible",
                     "name": "AnsibleIPv4PrefixList",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Rule 2 given by ansible",
-                            "id": 2,
+                            "sequence": 2,
                             "le": 32,
                             "prefix": "92.168.10.0/26"
                         },
@@ -1032,7 +1032,7 @@ After state:
                             "action": "deny",
                             "description": "Rule 3",
                             "ge": 26,
-                            "id": 3,
+                            "sequence": 3,
                             "prefix": "72.168.2.0/24"
                         }
                     ]
@@ -1045,11 +1045,11 @@ After state:
                 {
                     "description": "Configured by ansible for allowing IPv6 networks",
                     "name": "AllowIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Permit rule",
-                            "id": 5,
+                            "sequence": 5,
                             "le": 37,
                             "prefix": "2001:db8:8000::/35"
                         }
@@ -1058,10 +1058,10 @@ After state:
                 {
                     "description": "Configured by ansible for disallowing IPv6 networks",
                     "name": "DenyIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "deny",
-                            "id": 8,
+                            "sequence": 8,
                             "le": 37,
                             "prefix": "2001:db8:2000::/35"
                         }
@@ -1085,14 +1085,14 @@ After state:
             prefix_lists:
               - name: "AnsibleIPv4PrefixList"
                 description: "PL configured by ansible"
-                rules:
-                  - id: 2
+                entries:
+                  - sequence: 2
                     description: "Rule 2 given by ansible"
                     action: "permit"
                     prefix: "92.168.10.0/26"
                     le: 32
 
-                  - id: 3
+                  - sequence: 3
                     description: "Rule 3"
                     action: "deny"
                     prefix: "72.168.2.0/24"
@@ -1102,8 +1102,8 @@ After state:
             prefix_lists:
               - name: "AllowIPv6Prefix"
                 description: "Configured by ansible for allowing IPv6 networks"
-                rules:
-                  - id: 5
+                entries:
+                  - sequence: 5
                     description: "Permit rule"
                     action: "permit"
                     prefix: "2001:db8:8000::/35"
@@ -1111,8 +1111,8 @@ After state:
 
               - name: DenyIPv6Prefix
                 description: "Configured by ansible for disallowing IPv6 networks"
-                rules:
-                  - id: 8
+                entries:
+                  - sequence: 8
                     action: deny
                     prefix: "2001:db8:2000::/35"
                     le: 37
@@ -1190,11 +1190,11 @@ set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
                 {
                     "description": "PL configured by ansible",
                     "name": "AnsibleIPv4PrefixList",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Rule 2 given by ansible",
-                            "id": 2,
+                            "sequence": 2,
                             "le": 32,
                             "prefix": "92.168.10.0/26"
                         },
@@ -1202,7 +1202,7 @@ set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
                             "action": "deny",
                             "description": "Rule 3",
                             "ge": 26,
-                            "id": 3,
+                            "sequence": 3,
                             "prefix": "72.168.2.0/24"
                         }
                     ]
@@ -1215,11 +1215,11 @@ set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
                 {
                     "description": "Configured by ansible for allowing IPv6 networks",
                     "name": "AllowIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "permit",
                             "description": "Permit rule",
-                            "id": 5,
+                            "sequence": 5,
                             "le": 37,
                             "prefix": "2001:db8:8000::/35"
                         }
@@ -1228,10 +1228,10 @@ set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
                 {
                     "description": "Configured by ansible for disallowing IPv6 networks",
                     "name": "DenyIPv6Prefix",
-                    "rules": [
+                    "entries": [
                         {
                             "action": "deny",
-                            "id": 8,
+                            "sequence": 8,
                             "le": 37,
                             "prefix": "2001:db8:2000::/35"
                         }
@@ -1291,6 +1291,7 @@ parsed:
     module argspec.
 
 """
+
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.prefix_lists.prefix_lists import (
