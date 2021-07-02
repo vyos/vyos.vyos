@@ -8,9 +8,9 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The Prefix_lists parser templates file. This contains 
-a list of parser definitions and associated functions that 
-facilitates both facts gathering and native command generation for 
+The Prefix_lists parser templates file. This contains
+a list of parser definitions and associated functions that
+facilitates both facts gathering and native command generation for
 the given network resource.
 """
 
@@ -19,10 +19,13 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
     NetworkTemplate,
 )
 
+
 class Prefix_listsTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
-        super(Prefix_listsTemplate, self).__init__(lines=lines, tmplt=self, module=module, prefix=prefix)
+        super(Prefix_listsTemplate, self).__init__(
+            lines=lines, tmplt=self, module=module, prefix=prefix
+        )
 
     # fmt: off
     PARSERS = [

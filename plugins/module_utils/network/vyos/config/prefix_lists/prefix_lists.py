@@ -46,10 +46,19 @@ class Prefix_lists(ResourceModule):
             resource="prefix_lists",
             tmplt=Prefix_listsTemplate(),
         )
-        self.parsers = ['name', 'description', 'sequence', 'action', 'rule_description', 'ge', 'le', 'prefix']
+        self.parsers = [
+            "name",
+            "description",
+            "sequence",
+            "action",
+            "rule_description",
+            "ge",
+            "le",
+            "prefix",
+        ]
 
     def execute_module(self):
-        """ Execute the module
+        """Execute the module
 
         :rtype: A dictionary
         :returns: The result from module execution
@@ -60,11 +69,11 @@ class Prefix_lists(ResourceModule):
         return self.result
 
     def generate_commands(self):
-        """ Generate configuration commands to send based on
-            want, have and desired state.
+        """Generate configuration commands to send based on
+        want, have and desired state.
         """
-        wantd = {entry['afi']: entry for entry in self.want}
-        haved = {entry['afi']: entry for entry in self.have}
+        wantd = {entry["afi"]: entry for entry in self.want}
+        haved = {entry["afi"]: entry for entry in self.have}
 
         self._prefix_list_list_to_dict(wantd)
         self._prefix_list_list_to_dict(haved)
@@ -95,15 +104,14 @@ class Prefix_lists(ResourceModule):
                 if k not in wantd:
                     self._compare(want={}, have=have)
 
-
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
-           populates the list of commands to be run by comparing
-           the `want` and `have` data with the `parsers` defined
-           for the Prefix_lists network resource.
+        populates the list of commands to be run by comparing
+        the `want` and `have` data with the `parsers` defined
+        for the Prefix_lists network resource.
         """
         wplists = want.get("prefix_lists", {})
         hplists = have.get("prefix_lists", {})
@@ -115,7 +123,7 @@ class Prefix_lists(ResourceModule):
             for h in hplists.values():
                 self.commands.append(
                     "delete policy prefix-{0} {1}".format(
-                        "list" if h["afi"] == "ipv4" else "list6" , h["name"]
+                        "list" if h["afi"] == "ipv4" else "list6", h["name"]
                     )
                 )
 
@@ -124,7 +132,11 @@ class Prefix_lists(ResourceModule):
             hentry = have.pop(wk, {})
 
             # parser list for name and descriptions
-            self.compare(parsers=self.parsers[:self.parsers.index("sequence")], want=wentry, have=hentry)
+            self.compare(
+                parsers=self.parsers[: self.parsers.index("sequence")],
+                want=wentry,
+                have=hentry,
+            )
 
             wplrules = wentry.get("entries", {})
             hplrules = hentry.get("entries", {})
@@ -136,13 +148,19 @@ class Prefix_lists(ResourceModule):
             hrule = have.pop(wr, {})
 
             # parser list for entries
-            self.compare(parsers=self.parsers[self.parsers.index("sequence"):], want=wrule, have=hrule)
+            self.compare(
+                parsers=self.parsers[self.parsers.index("sequence") :],
+                want=wrule,
+                have=hrule,
+            )
 
         # remove remaining entries
         for hr in have.values():
             self.commands.append(
                 "delete policy prefix-{0} {1} rule {2}".format(
-                    "list" if hr["afi"] == "ipv4" else "list6" , hr["name"], hr["sequence"]
+                    "list" if hr["afi"] == "ipv4" else "list6",
+                    hr["name"],
+                    hr["sequence"],
                 )
             )
 
@@ -154,5 +172,9 @@ class Prefix_lists(ResourceModule):
                     if "entries" in pl:
                         for entry in pl["entries"]:
                             entry.update({"afi": afi, "name": pl["name"]})
-                        pl["entries"] = {x["sequence"]: x for x in pl["entries"]}
-                value["prefix_lists"] = {entry["name"]: entry for entry in value["prefix_lists"]}
+                        pl["entries"] = {
+                            x["sequence"]: x for x in pl["entries"]
+                        }
+                value["prefix_lists"] = {
+                    entry["name"]: entry for entry in value["prefix_lists"]
+                }

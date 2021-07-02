@@ -17,7 +17,7 @@ module: vyos_prefix_lists
 short_description: Prefix-Lists resource module for VyOS
 description:
   - This module manages prefix-lists configuration on devices running VyOS
-version_added: 2.3.1
+version_added: 2.4.0
 author: Priyam Sahoo (@priyamsahoo)
 notes:
   - Tested against VyOS 1.1.8 (helium)
@@ -94,1152 +94,1152 @@ options:
     default: merged
 """
 
-EXAMPLES = r"""
-# -------------------
-# 1. Using merged
-# -------------------
+EXAMPLES = """
+# # -------------------
+# # 1. Using merged
+# # -------------------
 
-# Before state:
-# -------------
-  vyos@vyos:~$ show configuration commands | grep prefix-list
-  vyos@vyos:~$ 
+# # Before state:
+# # -------------
+#   vyos@vyos:~$ show configuration commands | grep prefix-list
+#   vyos@vyos:~$
 
-# Task
-# -------------
-- name: Merge the provided configuration with the existing running configuration
-      vyos.vyos.vyos_prefix_lists:
-        config:
-          - afi: "ipv4"
-            prefix_lists:
-              - name: "AnsibleIPv4PrefixList"
-                description: "PL configured by ansible"
-                entries:
-                  - sequence: 2
-                    description: "Rule 2 given by ansible"
-                    action: "permit"
-                    prefix: "92.168.10.0/26"
-                    le: 32
+# # Task
+# # -------------
+#     - name: Merge the provided configuration with the existing running configuration
+#         vyos.vyos.vyos_prefix_lists:
+#             config:
+#             - afi: "ipv4"
+#                 prefix_lists:
+#                 - name: "AnsibleIPv4PrefixList"
+#                     description: "PL configured by ansible"
+#                     entries:
+#                     - sequence: 2
+#                         description: "Rule 2 given by ansible"
+#                         action: "permit"
+#                         prefix: "92.168.10.0/26"
+#                         le: 32
 
-                  - sequence: 3
-                    description: "Rule 3"
-                    action: "deny"
-                    prefix: "72.168.2.0/24"
-                    ge: 26
+#                     - sequence: 3
+#                         description: "Rule 3"
+#                         action: "deny"
+#                         prefix: "72.168.2.0/24"
+#                         ge: 26
 
-          - afi: "ipv6"
-            prefix_lists:
-              - name: "AllowIPv6Prefix"
-                description: "Configured by ansible for allowing IPv6 networks"
-                entries:
-                  - sequence: 5
-                    description: "Permit rule"
-                    action: "permit"
-                    prefix: "2001:db8:8000::/35"
-                    le: 37
+#             - afi: "ipv6"
+#                 prefix_lists:
+#                 - name: "AllowIPv6Prefix"
+#                     description: "Configured by ansible for allowing IPv6 networks"
+#                     entries:
+#                     - sequence: 5
+#                         description: "Permit rule"
+#                         action: "permit"
+#                         prefix: "2001:db8:8000::/35"
+#                         le: 37
 
-              - name: DenyIPv6Prefix
-                description: "Configured by ansible for disallowing IPv6 networks"
-                entries:
-                  - sequence: 8
-                    action: deny
-                    prefix: "2001:db8:2000::/35"
-                    le: 37
-        state: merged
+#                 - name: DenyIPv6Prefix
+#                     description: "Configured by ansible for disallowing IPv6 networks"
+#                     entries:
+#                     - sequence: 8
+#                         action: deny
+#                         prefix: "2001:db8:2000::/35"
+#                         le: 37
+#             state: merged
 
-# Task output:
-# -------------
-    "after": [
-        {
-            "afi": "ipv4",
-            "prefix_lists": [
-                {
-                    "description": "PL configured by ansible",
-                    "name": "AnsibleIPv4PrefixList",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Rule 2 given by ansible",
-                            "sequence": 2,
-                            "le": 32,
-                            "prefix": "92.168.10.0/26"
-                        },
-                        {
-                            "action": "deny",
-                            "description": "Rule 3",
-                            "ge": 26,
-                            "sequence": 3,
-                            "prefix": "72.168.2.0/24"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "afi": "ipv6",
-            "prefix_lists": [
-                {
-                    "description": "Configured by ansible for allowing IPv6 networks",
-                    "name": "AllowIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Permit rule",
-                            "sequence": 5,
-                            "le": 37,
-                            "prefix": "2001:db8:8000::/35"
-                        }
-                    ]
-                },
-                {
-                    "description": "Configured by ansible for disallowing IPv6 networks",
-                    "name": "DenyIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "deny",
-                            "sequence": 8,
-                            "le": 37,
-                            "prefix": "2001:db8:2000::/35"
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "before": [],
-    "changed": true,
-    "commands": [
-        "set policy prefix-list AnsibleIPv4PrefixList",
-        "set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'",
-        "set policy prefix-list6 AllowIPv6Prefix",
-        "set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'",
-        "set policy prefix-list6 AllowIPv6Prefix rule 5",
-        "set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'",
-        "set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'",
-        "set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'",
-        "set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'",
-        "set policy prefix-list6 DenyIPv6Prefix",
-        "set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'",
-        "set policy prefix-list6 DenyIPv6Prefix rule 8",
-        "set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'",
-        "set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'",
-        "set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'"
-    ]
-
-After state:
-# -------------
-  vyos@vyos:~$ show configuration commands | grep prefix-list
-  set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
-  set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
-  set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
-  vyos@vyos:~$ 
-
-
-# -------------------
-# 2. Using replaced
-# -------------------
-
-# Before state:
-# -------------
-  vyos@vyos:~$ show configuration commands | grep prefix-list
-  set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
-  set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
-  set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
-  vyos@vyos:~$ 
-
-# Task:
-# -------------
-    - name: Replace prefix-lists configurations of listed prefix-lists with provided configurations
-      vyos.vyos.vyos_prefix_lists:
-        config:
-          - afi: "ipv4"
-            prefix_lists:
-              - name: "AnsibleIPv4PrefixList"
-                description: "Configuration replaced by ansible"
-                entries:
-                  - sequence: 3
-                    description: "Rule 3 replaced by ansible"
-                    action: "permit"
-                    prefix: "82.168.2.0/24"
-                    ge: 26
-        state: replaced
-
-# Task output:
-# -------------
-    "after": [
-        {
-            "afi": "ipv4",
-            "prefix_lists": [
-                {
-                    "description": "Configuration replaced by ansible",
-                    "name": "AnsibleIPv4PrefixList",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Rule 3 replaced by ansible",
-                            "ge": 26,
-                            "sequence": 3,
-                            "prefix": "82.168.2.0/24"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "afi": "ipv6",
-            "prefix_lists": [
-                {
-                    "description": "Configured by ansible for allowing IPv6 networks",
-                    "name": "AllowIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Permit rule",
-                            "sequence": 5,
-                            "le": 37,
-                            "prefix": "2001:db8:8000::/35"
-                        }
-                    ]
-                },
-                {
-                    "description": "Configured by ansible for disallowing IPv6 networks",
-                    "name": "DenyIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "deny",
-                            "sequence": 8,
-                            "le": 37,
-                            "prefix": "2001:db8:2000::/35"
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "before": [
-        {
-            "afi": "ipv4",
-            "prefix_lists": [
-                {
-                    "description": "PL configured by ansible",
-                    "name": "AnsibleIPv4PrefixList",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Rule 2 given by ansible",
-                            "sequence": 2,
-                            "le": 32,
-                            "prefix": "92.168.10.0/26"
-                        },
-                        {
-                            "action": "deny",
-                            "description": "Rule 3",
-                            "ge": 26,
-                            "sequence": 3,
-                            "prefix": "72.168.2.0/24"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "afi": "ipv6",
-            "prefix_lists": [
-                {
-                    "description": "Configured by ansible for allowing IPv6 networks",
-                    "name": "AllowIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Permit rule",
-                            "sequence": 5,
-                            "le": 37,
-                            "prefix": "2001:db8:8000::/35"
-                        }
-                    ]
-                },
-                {
-                    "description": "Configured by ansible for disallowing IPv6 networks",
-                    "name": "DenyIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "deny",
-                            "sequence": 8,
-                            "le": 37,
-                            "prefix": "2001:db8:2000::/35"
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "changed": true,
-    "commands": [
-        "set policy prefix-list AnsibleIPv4PrefixList description 'Configuration replaced by ansible'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'permit'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3 replaced by ansible'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '82.168.2.0/24'",
-        "delete policy prefix-list AnsibleIPv4PrefixList rule 2"
-    ]
+# # Task output:
+# # -------------
+#     "after": [
+#         {
+#             "afi": "ipv4",
+#             "prefix_lists": [
+#                 {
+#                     "description": "PL configured by ansible",
+#                     "name": "AnsibleIPv4PrefixList",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Rule 2 given by ansible",
+#                             "sequence": 2,
+#                             "le": 32,
+#                             "prefix": "92.168.10.0/26"
+#                         },
+#                         {
+#                             "action": "deny",
+#                             "description": "Rule 3",
+#                             "ge": 26,
+#                             "sequence": 3,
+#                             "prefix": "72.168.2.0/24"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         },
+#         {
+#             "afi": "ipv6",
+#             "prefix_lists": [
+#                 {
+#                     "description": "Configured by ansible for allowing IPv6 networks",
+#                     "name": "AllowIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Permit rule",
+#                             "sequence": 5,
+#                             "le": 37,
+#                             "prefix": "2001:db8:8000::/35"
+#                         }
+#                     ]
+#                 },
+#                 {
+#                     "description": "Configured by ansible for disallowing IPv6 networks",
+#                     "name": "DenyIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "deny",
+#                             "sequence": 8,
+#                             "le": 37,
+#                             "prefix": "2001:db8:2000::/35"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         }
+#     ],
+#     "before": [],
+#     "changed": true,
+#     "commands": [
+#         "set policy prefix-list AnsibleIPv4PrefixList",
+#         "set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'",
+#         "set policy prefix-list6 AllowIPv6Prefix",
+#         "set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'",
+#         "set policy prefix-list6 AllowIPv6Prefix rule 5",
+#         "set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'",
+#         "set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'",
+#         "set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'",
+#         "set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'",
+#         "set policy prefix-list6 DenyIPv6Prefix",
+#         "set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'",
+#         "set policy prefix-list6 DenyIPv6Prefix rule 8",
+#         "set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'",
+#         "set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'",
+#         "set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'"
+#     ]
 
 # After state:
-# -------------
-  vyos@vyos:~$ show configuration commands | grep prefix-list
-  set policy prefix-list AnsibleIPv4PrefixList description 'Configuration replaced by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'permit'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3 replaced by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '82.168.2.0/24'
-  set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
-  set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
-  vyos@vyos:~$ 
+# # -------------
+#   vyos@vyos:~$ show configuration commands | grep prefix-list
+#   set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
+#   set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
+#   set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
+#   vyos@vyos:~$
 
 
-# -------------------
-# 3. Using overridden
-# -------------------
+# # -------------------
+# # 2. Using replaced
+# # -------------------
 
-# Before state:
-# -------------
-  vyos@vyos:~$ show configuration commands | grep prefix-list
-  set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
-  set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
-  set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
-  vyos@vyos:~$
+# # Before state:
+# # -------------
+#   vyos@vyos:~$ show configuration commands | grep prefix-list
+#   set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
+#   set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
+#   set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
+#   vyos@vyos:~$
 
-# Task:
-# -------------
-    - name: Override all prefix-lists configuration with provided configuration
-      vyos.vyos.vyos_prefix_lists:
-        config:
-          - afi: "ipv4"
-            prefix_lists:
-              - name: "AnsibleIPv4PrefixList"
-                description: Rule 2 overridden by ansible
-                entries:
-                  - sequence: 2
-                    action: "deny"
-                    ge: 26
-                    prefix: "82.168.2.0/24"
+# # Task:
+# # -------------
+#     - name: Replace prefix-lists configurations of listed prefix-lists with provided configurations
+#       vyos.vyos.vyos_prefix_lists:
+#         config:
+#           - afi: "ipv4"
+#             prefix_lists:
+#               - name: "AnsibleIPv4PrefixList"
+#                 description: "Configuration replaced by ansible"
+#                 entries:
+#                   - sequence: 3
+#                     description: "Rule 3 replaced by ansible"
+#                     action: "permit"
+#                     prefix: "82.168.2.0/24"
+#                     ge: 26
+#         state: replaced
 
-              - name: "OverriddenPrefixList"
-                description: Configuration overridden by ansible
-                entries:
-                  - sequence: 10
-                    action: permit
-                    prefix: "203.0.113.96/27"
-                    le: 32
-        state: overridden
+# # Task output:
+# # -------------
+#     "after": [
+#         {
+#             "afi": "ipv4",
+#             "prefix_lists": [
+#                 {
+#                     "description": "Configuration replaced by ansible",
+#                     "name": "AnsibleIPv4PrefixList",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Rule 3 replaced by ansible",
+#                             "ge": 26,
+#                             "sequence": 3,
+#                             "prefix": "82.168.2.0/24"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         },
+#         {
+#             "afi": "ipv6",
+#             "prefix_lists": [
+#                 {
+#                     "description": "Configured by ansible for allowing IPv6 networks",
+#                     "name": "AllowIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Permit rule",
+#                             "sequence": 5,
+#                             "le": 37,
+#                             "prefix": "2001:db8:8000::/35"
+#                         }
+#                     ]
+#                 },
+#                 {
+#                     "description": "Configured by ansible for disallowing IPv6 networks",
+#                     "name": "DenyIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "deny",
+#                             "sequence": 8,
+#                             "le": 37,
+#                             "prefix": "2001:db8:2000::/35"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         }
+#     ],
+#     "before": [
+#         {
+#             "afi": "ipv4",
+#             "prefix_lists": [
+#                 {
+#                     "description": "PL configured by ansible",
+#                     "name": "AnsibleIPv4PrefixList",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Rule 2 given by ansible",
+#                             "sequence": 2,
+#                             "le": 32,
+#                             "prefix": "92.168.10.0/26"
+#                         },
+#                         {
+#                             "action": "deny",
+#                             "description": "Rule 3",
+#                             "ge": 26,
+#                             "sequence": 3,
+#                             "prefix": "72.168.2.0/24"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         },
+#         {
+#             "afi": "ipv6",
+#             "prefix_lists": [
+#                 {
+#                     "description": "Configured by ansible for allowing IPv6 networks",
+#                     "name": "AllowIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Permit rule",
+#                             "sequence": 5,
+#                             "le": 37,
+#                             "prefix": "2001:db8:8000::/35"
+#                         }
+#                     ]
+#                 },
+#                 {
+#                     "description": "Configured by ansible for disallowing IPv6 networks",
+#                     "name": "DenyIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "deny",
+#                             "sequence": 8,
+#                             "le": 37,
+#                             "prefix": "2001:db8:2000::/35"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         }
+#     ],
+#     "changed": true,
+#     "commands": [
+#         "set policy prefix-list AnsibleIPv4PrefixList description 'Configuration replaced by ansible'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'permit'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3 replaced by ansible'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '82.168.2.0/24'",
+#         "delete policy prefix-list AnsibleIPv4PrefixList rule 2"
+#     ]
 
-# Task output:
-# -------------
-    "after": [
-        {
-            "afi": "ipv4",
-            "prefix_lists": [
-                {
-                    "description": "Rule 2 overridden by ansible",
-                    "name": "AnsibleIPv4PrefixList",
-                    "entries": [
-                        {
-                            "action": "deny",
-                            "ge": 26,
-                            "sequence": 2,
-                            "prefix": "82.168.2.0/24"
-                        }
-                    ]
-                },
-                {
-                    "description": "Configuration overridden by ansible",
-                    "name": "OverriddenPrefixList",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "sequence": 10,
-                            "le": 32,
-                            "prefix": "203.0.113.96/27"
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "before": [
-        {
-            "afi": "ipv4",
-            "prefix_lists": [
-                {
-                    "description": "PL configured by ansible",
-                    "name": "AnsibleIPv4PrefixList",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Rule 2 given by ansible",
-                            "sequence": 2,
-                            "le": 32,
-                            "prefix": "92.168.10.0/26"
-                        },
-                        {
-                            "action": "deny",
-                            "description": "Rule 3",
-                            "ge": 26,
-                            "sequence": 3,
-                            "prefix": "72.168.2.0/24"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "afi": "ipv6",
-            "prefix_lists": [
-                {
-                    "description": "Configured by ansible for allowing IPv6 networks",
-                    "name": "AllowIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Permit rule",
-                            "sequence": 5,
-                            "le": 37,
-                            "prefix": "2001:db8:8000::/35"
-                        }
-                    ]
-                },
-                {
-                    "description": "Configured by ansible for disallowing IPv6 networks",
-                    "name": "DenyIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "deny",
-                            "sequence": 8,
-                            "le": 37,
-                            "prefix": "2001:db8:2000::/35"
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "changed": true,
-    "commands": [
-        "delete policy prefix-list6 AllowIPv6Prefix",
-        "delete policy prefix-list6 DenyIPv6Prefix",
-        "set policy prefix-list AnsibleIPv4PrefixList description 'Rule 2 overridden by ansible'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'deny'",
-        "delete policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2 ge '26'",
-        "delete policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '82.168.2.0/24'",
-        "delete policy prefix-list AnsibleIPv4PrefixList rule 3",
-        "set policy prefix-list OverriddenPrefixList",
-        "set policy prefix-list OverriddenPrefixList description 'Configuration overridden by ansible'",
-        "set policy prefix-list OverriddenPrefixList rule 10",
-        "set policy prefix-list OverriddenPrefixList rule 10 action 'permit'",
-        "set policy prefix-list OverriddenPrefixList rule 10 le '32'",
-        "set policy prefix-list OverriddenPrefixList rule 10 prefix '203.0.113.96/27'"
-    ]
-
-# After state:
-# -------------
-  vyos@vyos:~$ show configuration commands | grep prefix-list
-  set policy prefix-list AnsibleIPv4PrefixList description 'Rule 2 overridden by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'deny'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 ge '26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '82.168.2.0/24'
-  set policy prefix-list OverriddenPrefixList description 'Configuration overridden by ansible'
-  set policy prefix-list OverriddenPrefixList rule 10 action 'permit'
-  set policy prefix-list OverriddenPrefixList rule 10 le '32'
-  set policy prefix-list OverriddenPrefixList rule 10 prefix '203.0.113.96/27'
-  vyos@vyos:~$
-
-
-# -------------------
-# 4(i). Using deleted (to delete all prefix lists from the device)
-# -------------------
-
-# Before state:
-# -------------
-  vyos@vyos:~$ show configuration commands | grep prefix-list
-  set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
-  set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
-  set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
-  vyos@vyos:~$
-
-# Task:
-# -------------
-    - name: Delete all prefix-lists
-      vyos.vyos.vyos_prefix_lists:
-        config:
-        state: deleted
-
-# Task output:
-# -------------
-    "after": [],
-    "before": [
-        {
-            "afi": "ipv4",
-            "prefix_lists": [
-                {
-                    "description": "PL configured by ansible",
-                    "name": "AnsibleIPv4PrefixList",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Rule 2 given by ansible",
-                            "sequence": 2,
-                            "le": 32,
-                            "prefix": "92.168.10.0/26"
-                        },
-                        {
-                            "action": "deny",
-                            "description": "Rule 3",
-                            "ge": 26,
-                            "sequence": 3,
-                            "prefix": "72.168.2.0/24"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "afi": "ipv6",
-            "prefix_lists": [
-                {
-                    "description": "Configured by ansible for allowing IPv6 networks",
-                    "name": "AllowIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Permit rule",
-                            "sequence": 5,
-                            "le": 37,
-                            "prefix": "2001:db8:8000::/35"
-                        }
-                    ]
-                },
-                {
-                    "description": "Configured by ansible for disallowing IPv6 networks",
-                    "name": "DenyIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "deny",
-                            "sequence": 8,
-                            "le": 37,
-                            "prefix": "2001:db8:2000::/35"
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "changed": true,
-    "commands": [
-        "delete policy prefix-list AnsibleIPv4PrefixList",
-        "delete policy prefix-list6 AllowIPv6Prefix",
-        "delete policy prefix-list6 DenyIPv6Prefix"
-    ]
-
-# After state:
-# -------------
-  vyos@vyos:~$ show configuration commands | grep prefix-list
-  vyos@vyos:~$
+# # After state:
+# # -------------
+#   vyos@vyos:~$ show configuration commands | grep prefix-list
+#   set policy prefix-list AnsibleIPv4PrefixList description 'Configuration replaced by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'permit'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3 replaced by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '82.168.2.0/24'
+#   set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
+#   set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
+#   vyos@vyos:~$
 
 
-# -------------------
-# 4(ii). Using deleted (to delete all prefix lists for an AFI)
-# -------------------
+# # -------------------
+# # 3. Using overridden
+# # -------------------
 
-# Before state:
-# -------------
-  vyos@vyos:~$ show configuration commands | grep prefix-list
-  set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
-  set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
-  set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
-  vyos@vyos:~$
+# # Before state:
+# # -------------
+#   vyos@vyos:~$ show configuration commands | grep prefix-list
+#   set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
+#   set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
+#   set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
+#   vyos@vyos:~$
 
-# Task:
-# -------------
-    - name: Delete all prefix-lists for IPv6 AFI
-      vyos.vyos.vyos_prefix_lists:
-        config:
-          - afi: "ipv6"
-        state: deleted
+# # Task:
+# # -------------
+#     - name: Override all prefix-lists configuration with provided configuration
+#       vyos.vyos.vyos_prefix_lists:
+#         config:
+#           - afi: "ipv4"
+#             prefix_lists:
+#               - name: "AnsibleIPv4PrefixList"
+#                 description: Rule 2 overridden by ansible
+#                 entries:
+#                   - sequence: 2
+#                     action: "deny"
+#                     ge: 26
+#                     prefix: "82.168.2.0/24"
 
-# Task output:
-# -------------
-    "after": [
-        {
-            "afi": "ipv4",
-            "prefix_lists": [
-                {
-                    "description": "PL configured by ansible",
-                    "name": "AnsibleIPv4PrefixList",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Rule 2 given by ansible",
-                            "sequence": 2,
-                            "le": 32,
-                            "prefix": "92.168.10.0/26"
-                        },
-                        {
-                            "action": "deny",
-                            "description": "Rule 3",
-                            "ge": 26,
-                            "sequence": 3,
-                            "prefix": "72.168.2.0/24"
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "before": [
-        {
-            "afi": "ipv4",
-            "prefix_lists": [
-                {
-                    "description": "PL configured by ansible",
-                    "name": "AnsibleIPv4PrefixList",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Rule 2 given by ansible",
-                            "sequence": 2,
-                            "le": 32,
-                            "prefix": "92.168.10.0/26"
-                        },
-                        {
-                            "action": "deny",
-                            "description": "Rule 3",
-                            "ge": 26,
-                            "sequence": 3,
-                            "prefix": "72.168.2.0/24"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "afi": "ipv6",
-            "prefix_lists": [
-                {
-                    "description": "Configured by ansible for allowing IPv6 networks",
-                    "name": "AllowIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Permit rule",
-                            "sequence": 5,
-                            "le": 37,
-                            "prefix": "2001:db8:8000::/35"
-                        }
-                    ]
-                },
-                {
-                    "description": "Configured by ansible for disallowing IPv6 networks",
-                    "name": "DenyIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "deny",
-                            "sequence": 8,
-                            "le": 37,
-                            "prefix": "2001:db8:2000::/35"
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "changed": true,
-    "commands": [
-        "delete policy prefix-list6 AllowIPv6Prefix",
-        "delete policy prefix-list6 DenyIPv6Prefix"
-    ]
+#               - name: "OverriddenPrefixList"
+#                 description: Configuration overridden by ansible
+#                 entries:
+#                   - sequence: 10
+#                     action: permit
+#                     prefix: "203.0.113.96/27"
+#                     le: 32
+#         state: overridden
 
-# After state:
-# -------------
-  vyos@vyos:~$ show configuration commands | grep prefix-list
-  set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
-  vyos@vyos:~$
+# # Task output:
+# # -------------
+#     "after": [
+#         {
+#             "afi": "ipv4",
+#             "prefix_lists": [
+#                 {
+#                     "description": "Rule 2 overridden by ansible",
+#                     "name": "AnsibleIPv4PrefixList",
+#                     "entries": [
+#                         {
+#                             "action": "deny",
+#                             "ge": 26,
+#                             "sequence": 2,
+#                             "prefix": "82.168.2.0/24"
+#                         }
+#                     ]
+#                 },
+#                 {
+#                     "description": "Configuration overridden by ansible",
+#                     "name": "OverriddenPrefixList",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "sequence": 10,
+#                             "le": 32,
+#                             "prefix": "203.0.113.96/27"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         }
+#     ],
+#     "before": [
+#         {
+#             "afi": "ipv4",
+#             "prefix_lists": [
+#                 {
+#                     "description": "PL configured by ansible",
+#                     "name": "AnsibleIPv4PrefixList",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Rule 2 given by ansible",
+#                             "sequence": 2,
+#                             "le": 32,
+#                             "prefix": "92.168.10.0/26"
+#                         },
+#                         {
+#                             "action": "deny",
+#                             "description": "Rule 3",
+#                             "ge": 26,
+#                             "sequence": 3,
+#                             "prefix": "72.168.2.0/24"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         },
+#         {
+#             "afi": "ipv6",
+#             "prefix_lists": [
+#                 {
+#                     "description": "Configured by ansible for allowing IPv6 networks",
+#                     "name": "AllowIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Permit rule",
+#                             "sequence": 5,
+#                             "le": 37,
+#                             "prefix": "2001:db8:8000::/35"
+#                         }
+#                     ]
+#                 },
+#                 {
+#                     "description": "Configured by ansible for disallowing IPv6 networks",
+#                     "name": "DenyIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "deny",
+#                             "sequence": 8,
+#                             "le": 37,
+#                             "prefix": "2001:db8:2000::/35"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         }
+#     ],
+#     "changed": true,
+#     "commands": [
+#         "delete policy prefix-list6 AllowIPv6Prefix",
+#         "delete policy prefix-list6 DenyIPv6Prefix",
+#         "set policy prefix-list AnsibleIPv4PrefixList description 'Rule 2 overridden by ansible'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'deny'",
+#         "delete policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2 ge '26'",
+#         "delete policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '82.168.2.0/24'",
+#         "delete policy prefix-list AnsibleIPv4PrefixList rule 3",
+#         "set policy prefix-list OverriddenPrefixList",
+#         "set policy prefix-list OverriddenPrefixList description 'Configuration overridden by ansible'",
+#         "set policy prefix-list OverriddenPrefixList rule 10",
+#         "set policy prefix-list OverriddenPrefixList rule 10 action 'permit'",
+#         "set policy prefix-list OverriddenPrefixList rule 10 le '32'",
+#         "set policy prefix-list OverriddenPrefixList rule 10 prefix '203.0.113.96/27'"
+#     ]
 
-
-# -------------------
-# 4(iii). Using deleted (to delete single prefix list by name in different AFIs)
-# -------------------
-
-# Before state:
-# -------------
-  vyos@vyos:~$ show configuration commands | grep prefix-list
-  set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
-  set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
-  set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
-  set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
-  set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
-  set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
-  vyos@vyos:~$
-
-# Task:
-# -------------
-    - name: Delete a single prefix-list from different AFIs
-      vyos.vyos.vyos_prefix_lists:
-        config:
-          - afi: "ipv4"
-            prefix_lists:
-              - name: "AnsibleIPv4PrefixList"
-          - afi: "ipv6"
-            prefix_lists:
-              - name: "DenyIPv6Prefix"
-        state: deleted
-
-# Task output:
-# -------------
-    "after": [
-        {
-            "afi": "ipv6",
-            "prefix_lists": [
-                {
-                    "description": "Configured by ansible for allowing IPv6 networks",
-                    "name": "AllowIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Permit rule",
-                            "sequence": 5,
-                            "le": 37,
-                            "prefix": "2001:db8:8000::/35"
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "before": [
-        {
-            "afi": "ipv4",
-            "prefix_lists": [
-                {
-                    "description": "PL configured by ansible",
-                    "name": "AnsibleIPv4PrefixList",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Rule 2 given by ansible",
-                            "sequence": 2,
-                            "le": 32,
-                            "prefix": "92.168.10.0/26"
-                        },
-                        {
-                            "action": "deny",
-                            "description": "Rule 3",
-                            "ge": 26,
-                            "sequence": 3,
-                            "prefix": "72.168.2.0/24"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "afi": "ipv6",
-            "prefix_lists": [
-                {
-                    "description": "Configured by ansible for allowing IPv6 networks",
-                    "name": "AllowIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Permit rule",
-                            "sequence": 5,
-                            "le": 37,
-                            "prefix": "2001:db8:8000::/35"
-                        }
-                    ]
-                },
-                {
-                    "description": "Configured by ansible for disallowing IPv6 networks",
-                    "name": "DenyIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "deny",
-                            "sequence": 8,
-                            "le": 37,
-                            "prefix": "2001:db8:2000::/35"
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
-    "changed": true,
-    "commands": [
-        "delete policy prefix-list AnsibleIPv4PrefixList",
-        "delete policy prefix-list6 DenyIPv6Prefix"
-    ]
-
-# After state:
-# -------------
-  vyos@vyos:~$ show configuration commands | grep prefix-list
-  set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
-  set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
-  vyos@vyos:~$
+# # After state:
+# # -------------
+#   vyos@vyos:~$ show configuration commands | grep prefix-list
+#   set policy prefix-list AnsibleIPv4PrefixList description 'Rule 2 overridden by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'deny'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 ge '26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '82.168.2.0/24'
+#   set policy prefix-list OverriddenPrefixList description 'Configuration overridden by ansible'
+#   set policy prefix-list OverriddenPrefixList rule 10 action 'permit'
+#   set policy prefix-list OverriddenPrefixList rule 10 le '32'
+#   set policy prefix-list OverriddenPrefixList rule 10 prefix '203.0.113.96/27'
+#   vyos@vyos:~$
 
 
-# -------------------
-# 5. Using gathered
-# -------------------
+# # -------------------
+# # 4(i). Using deleted (to delete all prefix lists from the device)
+# # -------------------
 
-# Task:
-# -------------
-    - name: Gather prefix-lists configurations
-      vyos.vyos.vyos_prefix_lists:
-        config:
-        state: gathered
+# # Before state:
+# # -------------
+#   vyos@vyos:~$ show configuration commands | grep prefix-list
+#   set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
+#   set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
+#   set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
+#   vyos@vyos:~$
 
-# Task output:
-# -------------
-    "gathered": [
-        {
-            "afi": "ipv4",
-            "prefix_lists": [
-                {
-                    "description": "PL configured by ansible",
-                    "name": "AnsibleIPv4PrefixList",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Rule 2 given by ansible",
-                            "sequence": 2,
-                            "le": 32,
-                            "prefix": "92.168.10.0/26"
-                        },
-                        {
-                            "action": "deny",
-                            "description": "Rule 3",
-                            "ge": 26,
-                            "sequence": 3,
-                            "prefix": "72.168.2.0/24"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "afi": "ipv6",
-            "prefix_lists": [
-                {
-                    "description": "Configured by ansible for allowing IPv6 networks",
-                    "name": "AllowIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Permit rule",
-                            "sequence": 5,
-                            "le": 37,
-                            "prefix": "2001:db8:8000::/35"
-                        }
-                    ]
-                },
-                {
-                    "description": "Configured by ansible for disallowing IPv6 networks",
-                    "name": "DenyIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "deny",
-                            "sequence": 8,
-                            "le": 37,
-                            "prefix": "2001:db8:2000::/35"
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
+# # Task:
+# # -------------
+#     - name: Delete all prefix-lists
+#       vyos.vyos.vyos_prefix_lists:
+#         config:
+#         state: deleted
 
+# # Task output:
+# # -------------
+#     "after": [],
+#     "before": [
+#         {
+#             "afi": "ipv4",
+#             "prefix_lists": [
+#                 {
+#                     "description": "PL configured by ansible",
+#                     "name": "AnsibleIPv4PrefixList",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Rule 2 given by ansible",
+#                             "sequence": 2,
+#                             "le": 32,
+#                             "prefix": "92.168.10.0/26"
+#                         },
+#                         {
+#                             "action": "deny",
+#                             "description": "Rule 3",
+#                             "ge": 26,
+#                             "sequence": 3,
+#                             "prefix": "72.168.2.0/24"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         },
+#         {
+#             "afi": "ipv6",
+#             "prefix_lists": [
+#                 {
+#                     "description": "Configured by ansible for allowing IPv6 networks",
+#                     "name": "AllowIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Permit rule",
+#                             "sequence": 5,
+#                             "le": 37,
+#                             "prefix": "2001:db8:8000::/35"
+#                         }
+#                     ]
+#                 },
+#                 {
+#                     "description": "Configured by ansible for disallowing IPv6 networks",
+#                     "name": "DenyIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "deny",
+#                             "sequence": 8,
+#                             "le": 37,
+#                             "prefix": "2001:db8:2000::/35"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         }
+#     ],
+#     "changed": true,
+#     "commands": [
+#         "delete policy prefix-list AnsibleIPv4PrefixList",
+#         "delete policy prefix-list6 AllowIPv6Prefix",
+#         "delete policy prefix-list6 DenyIPv6Prefix"
+#     ]
 
-# -------------------
-# 6. Using rendered
-# -------------------
-
-# Task:
-# -------------
-    - name: Render commands externally for the described prefix-list configurations
-      vyos.vyos.vyos_prefix_lists:
-        config:
-          - afi: "ipv4"
-            prefix_lists:
-              - name: "AnsibleIPv4PrefixList"
-                description: "PL configured by ansible"
-                entries:
-                  - sequence: 2
-                    description: "Rule 2 given by ansible"
-                    action: "permit"
-                    prefix: "92.168.10.0/26"
-                    le: 32
-
-                  - sequence: 3
-                    description: "Rule 3"
-                    action: "deny"
-                    prefix: "72.168.2.0/24"
-                    ge: 26
-
-          - afi: "ipv6"
-            prefix_lists:
-              - name: "AllowIPv6Prefix"
-                description: "Configured by ansible for allowing IPv6 networks"
-                entries:
-                  - sequence: 5
-                    description: "Permit rule"
-                    action: "permit"
-                    prefix: "2001:db8:8000::/35"
-                    le: 37
-
-              - name: DenyIPv6Prefix
-                description: "Configured by ansible for disallowing IPv6 networks"
-                entries:
-                  - sequence: 8
-                    action: deny
-                    prefix: "2001:db8:2000::/35"
-                    le: 37
-        state: rendered
-
-# Task output:
-# -------------
-    "rendered": [
-        "set policy prefix-list AnsibleIPv4PrefixList",
-        "set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'",
-        "set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'",
-        "set policy prefix-list6 AllowIPv6Prefix",
-        "set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'",
-        "set policy prefix-list6 AllowIPv6Prefix rule 5",
-        "set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'",
-        "set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'",
-        "set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'",
-        "set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'",
-        "set policy prefix-list6 DenyIPv6Prefix",
-        "set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'",
-        "set policy prefix-list6 DenyIPv6Prefix rule 8",
-        "set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'",
-        "set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'",
-        "set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'"
-    ]
+# # After state:
+# # -------------
+#   vyos@vyos:~$ show configuration commands | grep prefix-list
+#   vyos@vyos:~$
 
 
-# -------------------
-# 7. Using parsed
-# -------------------
+# # -------------------
+# # 4(ii). Using deleted (to delete all prefix lists for an AFI)
+# # -------------------
 
-# sample_config.cfg:
-# -------------
-set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
-set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
-set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
-set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
-set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
-set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
-set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
-set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
-set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
-set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
-set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
-set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
-set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
-set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
-set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
-set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
-set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
-set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
+# # Before state:
+# # -------------
+#   vyos@vyos:~$ show configuration commands | grep prefix-list
+#   set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
+#   set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
+#   set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
+#   vyos@vyos:~$
 
-# Task:
-# -------------
-    - name: Parse externally provided prefix-lists configuration
-      vyos.vyos.vyos_prefix_lists:
-        running_config: "{{ lookup('file', './sample_config.cfg') }}"
-        state: parsed
+# # Task:
+# # -------------
+#     - name: Delete all prefix-lists for IPv6 AFI
+#       vyos.vyos.vyos_prefix_lists:
+#         config:
+#           - afi: "ipv6"
+#         state: deleted
 
-# Task output:
-# -------------
-    "parsed": [
-        {
-            "afi": "ipv4",
-            "prefix_lists": [
-                {
-                    "description": "PL configured by ansible",
-                    "name": "AnsibleIPv4PrefixList",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Rule 2 given by ansible",
-                            "sequence": 2,
-                            "le": 32,
-                            "prefix": "92.168.10.0/26"
-                        },
-                        {
-                            "action": "deny",
-                            "description": "Rule 3",
-                            "ge": 26,
-                            "sequence": 3,
-                            "prefix": "72.168.2.0/24"
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "afi": "ipv6",
-            "prefix_lists": [
-                {
-                    "description": "Configured by ansible for allowing IPv6 networks",
-                    "name": "AllowIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "permit",
-                            "description": "Permit rule",
-                            "sequence": 5,
-                            "le": 37,
-                            "prefix": "2001:db8:8000::/35"
-                        }
-                    ]
-                },
-                {
-                    "description": "Configured by ansible for disallowing IPv6 networks",
-                    "name": "DenyIPv6Prefix",
-                    "entries": [
-                        {
-                            "action": "deny",
-                            "sequence": 8,
-                            "le": 37,
-                            "prefix": "2001:db8:2000::/35"
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
+# # Task output:
+# # -------------
+#     "after": [
+#         {
+#             "afi": "ipv4",
+#             "prefix_lists": [
+#                 {
+#                     "description": "PL configured by ansible",
+#                     "name": "AnsibleIPv4PrefixList",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Rule 2 given by ansible",
+#                             "sequence": 2,
+#                             "le": 32,
+#                             "prefix": "92.168.10.0/26"
+#                         },
+#                         {
+#                             "action": "deny",
+#                             "description": "Rule 3",
+#                             "ge": 26,
+#                             "sequence": 3,
+#                             "prefix": "72.168.2.0/24"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         }
+#     ],
+#     "before": [
+#         {
+#             "afi": "ipv4",
+#             "prefix_lists": [
+#                 {
+#                     "description": "PL configured by ansible",
+#                     "name": "AnsibleIPv4PrefixList",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Rule 2 given by ansible",
+#                             "sequence": 2,
+#                             "le": 32,
+#                             "prefix": "92.168.10.0/26"
+#                         },
+#                         {
+#                             "action": "deny",
+#                             "description": "Rule 3",
+#                             "ge": 26,
+#                             "sequence": 3,
+#                             "prefix": "72.168.2.0/24"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         },
+#         {
+#             "afi": "ipv6",
+#             "prefix_lists": [
+#                 {
+#                     "description": "Configured by ansible for allowing IPv6 networks",
+#                     "name": "AllowIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Permit rule",
+#                             "sequence": 5,
+#                             "le": 37,
+#                             "prefix": "2001:db8:8000::/35"
+#                         }
+#                     ]
+#                 },
+#                 {
+#                     "description": "Configured by ansible for disallowing IPv6 networks",
+#                     "name": "DenyIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "deny",
+#                             "sequence": 8,
+#                             "le": 37,
+#                             "prefix": "2001:db8:2000::/35"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         }
+#     ],
+#     "changed": true,
+#     "commands": [
+#         "delete policy prefix-list6 AllowIPv6Prefix",
+#         "delete policy prefix-list6 DenyIPv6Prefix"
+#     ]
+
+# # After state:
+# # -------------
+#   vyos@vyos:~$ show configuration commands | grep prefix-list
+#   set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
+#   vyos@vyos:~$
+
+
+# # -------------------
+# # 4(iii). Using deleted (to delete single prefix list by name in different AFIs)
+# # -------------------
+
+# # Before state:
+# # -------------
+#   vyos@vyos:~$ show configuration commands | grep prefix-list
+#   set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
+#   set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
+#   set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
+#   set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
+#   set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
+#   vyos@vyos:~$
+
+# # Task:
+# # -------------
+#     - name: Delete a single prefix-list from different AFIs
+#       vyos.vyos.vyos_prefix_lists:
+#         config:
+#           - afi: "ipv4"
+#             prefix_lists:
+#               - name: "AnsibleIPv4PrefixList"
+#           - afi: "ipv6"
+#             prefix_lists:
+#               - name: "DenyIPv6Prefix"
+#         state: deleted
+
+# # Task output:
+# # -------------
+#     "after": [
+#         {
+#             "afi": "ipv6",
+#             "prefix_lists": [
+#                 {
+#                     "description": "Configured by ansible for allowing IPv6 networks",
+#                     "name": "AllowIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Permit rule",
+#                             "sequence": 5,
+#                             "le": 37,
+#                             "prefix": "2001:db8:8000::/35"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         }
+#     ],
+#     "before": [
+#         {
+#             "afi": "ipv4",
+#             "prefix_lists": [
+#                 {
+#                     "description": "PL configured by ansible",
+#                     "name": "AnsibleIPv4PrefixList",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Rule 2 given by ansible",
+#                             "sequence": 2,
+#                             "le": 32,
+#                             "prefix": "92.168.10.0/26"
+#                         },
+#                         {
+#                             "action": "deny",
+#                             "description": "Rule 3",
+#                             "ge": 26,
+#                             "sequence": 3,
+#                             "prefix": "72.168.2.0/24"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         },
+#         {
+#             "afi": "ipv6",
+#             "prefix_lists": [
+#                 {
+#                     "description": "Configured by ansible for allowing IPv6 networks",
+#                     "name": "AllowIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Permit rule",
+#                             "sequence": 5,
+#                             "le": 37,
+#                             "prefix": "2001:db8:8000::/35"
+#                         }
+#                     ]
+#                 },
+#                 {
+#                     "description": "Configured by ansible for disallowing IPv6 networks",
+#                     "name": "DenyIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "deny",
+#                             "sequence": 8,
+#                             "le": 37,
+#                             "prefix": "2001:db8:2000::/35"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         }
+#     ],
+#     "changed": true,
+#     "commands": [
+#         "delete policy prefix-list AnsibleIPv4PrefixList",
+#         "delete policy prefix-list6 DenyIPv6Prefix"
+#     ]
+
+# # After state:
+# # -------------
+#   vyos@vyos:~$ show configuration commands | grep prefix-list
+#   set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
+#   set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
+#   vyos@vyos:~$
+
+
+# # -------------------
+# # 5. Using gathered
+# # -------------------
+
+# # Task:
+# # -------------
+#     - name: Gather prefix-lists configurations
+#       vyos.vyos.vyos_prefix_lists:
+#         config:
+#         state: gathered
+
+# # Task output:
+# # -------------
+#     "gathered": [
+#         {
+#             "afi": "ipv4",
+#             "prefix_lists": [
+#                 {
+#                     "description": "PL configured by ansible",
+#                     "name": "AnsibleIPv4PrefixList",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Rule 2 given by ansible",
+#                             "sequence": 2,
+#                             "le": 32,
+#                             "prefix": "92.168.10.0/26"
+#                         },
+#                         {
+#                             "action": "deny",
+#                             "description": "Rule 3",
+#                             "ge": 26,
+#                             "sequence": 3,
+#                             "prefix": "72.168.2.0/24"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         },
+#         {
+#             "afi": "ipv6",
+#             "prefix_lists": [
+#                 {
+#                     "description": "Configured by ansible for allowing IPv6 networks",
+#                     "name": "AllowIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Permit rule",
+#                             "sequence": 5,
+#                             "le": 37,
+#                             "prefix": "2001:db8:8000::/35"
+#                         }
+#                     ]
+#                 },
+#                 {
+#                     "description": "Configured by ansible for disallowing IPv6 networks",
+#                     "name": "DenyIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "deny",
+#                             "sequence": 8,
+#                             "le": 37,
+#                             "prefix": "2001:db8:2000::/35"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         }
+#     ]
+
+
+# # -------------------
+# # 6. Using rendered
+# # -------------------
+
+# # Task:
+# # -------------
+#     - name: Render commands externally for the described prefix-list configurations
+#       vyos.vyos.vyos_prefix_lists:
+#         config:
+#           - afi: "ipv4"
+#             prefix_lists:
+#               - name: "AnsibleIPv4PrefixList"
+#                 description: "PL configured by ansible"
+#                 entries:
+#                   - sequence: 2
+#                     description: "Rule 2 given by ansible"
+#                     action: "permit"
+#                     prefix: "92.168.10.0/26"
+#                     le: 32
+
+#                   - sequence: 3
+#                     description: "Rule 3"
+#                     action: "deny"
+#                     prefix: "72.168.2.0/24"
+#                     ge: 26
+
+#           - afi: "ipv6"
+#             prefix_lists:
+#               - name: "AllowIPv6Prefix"
+#                 description: "Configured by ansible for allowing IPv6 networks"
+#                 entries:
+#                   - sequence: 5
+#                     description: "Permit rule"
+#                     action: "permit"
+#                     prefix: "2001:db8:8000::/35"
+#                     le: 37
+
+#               - name: DenyIPv6Prefix
+#                 description: "Configured by ansible for disallowing IPv6 networks"
+#                 entries:
+#                   - sequence: 8
+#                     action: deny
+#                     prefix: "2001:db8:2000::/35"
+#                     le: 37
+#         state: rendered
+
+# # Task output:
+# # -------------
+#     "rendered": [
+#         "set policy prefix-list AnsibleIPv4PrefixList",
+#         "set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'",
+#         "set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'",
+#         "set policy prefix-list6 AllowIPv6Prefix",
+#         "set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'",
+#         "set policy prefix-list6 AllowIPv6Prefix rule 5",
+#         "set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'",
+#         "set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'",
+#         "set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'",
+#         "set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'",
+#         "set policy prefix-list6 DenyIPv6Prefix",
+#         "set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'",
+#         "set policy prefix-list6 DenyIPv6Prefix rule 8",
+#         "set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'",
+#         "set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'",
+#         "set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'"
+#     ]
+
+
+# # -------------------
+# # 7. Using parsed
+# # -------------------
+
+# # sample_config.cfg:
+# # -------------
+# set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
+# set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
+# set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
+# set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
+# set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
+# set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
+# set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
+# set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
+# set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
+# set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
+# set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
+# set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
+# set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
+# set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
+# set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
+# set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
+# set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
+# set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
+
+# # Task:
+# # -------------
+#     - name: Parse externally provided prefix-lists configuration
+#       vyos.vyos.vyos_prefix_lists:
+#         running_config: "{{ lookup('file', './sample_config.cfg') }}"
+#         state: parsed
+
+# # Task output:
+# # -------------
+#     "parsed": [
+#         {
+#             "afi": "ipv4",
+#             "prefix_lists": [
+#                 {
+#                     "description": "PL configured by ansible",
+#                     "name": "AnsibleIPv4PrefixList",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Rule 2 given by ansible",
+#                             "sequence": 2,
+#                             "le": 32,
+#                             "prefix": "92.168.10.0/26"
+#                         },
+#                         {
+#                             "action": "deny",
+#                             "description": "Rule 3",
+#                             "ge": 26,
+#                             "sequence": 3,
+#                             "prefix": "72.168.2.0/24"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         },
+#         {
+#             "afi": "ipv6",
+#             "prefix_lists": [
+#                 {
+#                     "description": "Configured by ansible for allowing IPv6 networks",
+#                     "name": "AllowIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "permit",
+#                             "description": "Permit rule",
+#                             "sequence": 5,
+#                             "le": 37,
+#                             "prefix": "2001:db8:8000::/35"
+#                         }
+#                     ]
+#                 },
+#                 {
+#                     "description": "Configured by ansible for disallowing IPv6 networks",
+#                     "name": "DenyIPv6Prefix",
+#                     "entries": [
+#                         {
+#                             "action": "deny",
+#                             "sequence": 8,
+#                             "le": 37,
+#                             "prefix": "2001:db8:2000::/35"
+#                         }
+#                     ]
+#                 }
+#             ]
+#         }
+#     ]
 
 """
 
