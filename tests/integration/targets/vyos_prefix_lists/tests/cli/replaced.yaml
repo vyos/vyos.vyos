@@ -15,8 +15,8 @@
             prefix_lists:
               - name: "AnsibleIPv4PrefixList"
                 description: "Configuration replaced by ansible"
-                rules:
-                  - id: 3
+                entries:
+                  - sequence: 3
                     description: "Rule 3 replaced by ansible"
                     action: "permit"
                     prefix: "82.168.2.0/24"

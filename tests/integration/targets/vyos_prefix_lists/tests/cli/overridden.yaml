@@ -15,16 +15,16 @@
             prefix_lists:
               - name: "AnsibleIPv4PrefixList"
                 description: Rule 3 overridden by ansible
-                rules:
-                  - id: 2
+                entries:
+                  - sequence: 2
                     action: "deny"
                     ge: 26
                     prefix: "82.168.2.0/24"
 
               - name: "OverriddenPrefixList"
                 description: Configuration overridden by ansible
-                rules:
-                  - id: 10
+                entries:
+                  - sequence: 10
                     action: permit
                     prefix: "203.0.113.96/27"
                     le: 32
