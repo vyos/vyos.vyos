@@ -34,6 +34,9 @@ class Prefix_listsFacts(object):
         self._module = module
         self.argument_spec = Prefix_listsArgs.argument_spec
 
+    def get_config(self, connection):
+        return connection.get("show configuration commands | grep prefix-list")
+
     def populate_facts(self, connection, ansible_facts, data=None):
         """ Populate the facts for Prefix_lists network resource
 
@@ -48,7 +51,7 @@ class Prefix_listsFacts(object):
         objs = []
 
         if not data:
-            data = connection.get("show configuration commands | grep prefix-list")
+            data = self.get_config(connection)
 
         # parse native config using the Prefix_lists template
         prefix_lists_parser = Prefix_listsTemplate(lines=data.splitlines(), module=self._module)
