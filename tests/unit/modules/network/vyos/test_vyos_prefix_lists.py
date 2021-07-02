@@ -80,15 +80,15 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             dict(
                                 name="plist1",
                                 description="Test plist1",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=10,
+                                        sequence=10,
                                         action="permit",
                                         description="Test rule 10",
                                         prefix="92.168.10.0/26"
                                     ),
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="deny",
                                         description="Test rule 20",
                                         prefix="72.168.2.0/24"
@@ -97,15 +97,15 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             ),
                             dict(
                                 name="plist2",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="permit",
                                         prefix="82.168.10.0/26",
                                         le=32
                                     ),
                                     dict(
-                                        id=30,
+                                        sequence=30,
                                         action="deny",
                                         prefix="62.168.2.0/24",
                                         ge=25
@@ -120,16 +120,16 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             dict(
                                 name="plist3",
                                 description="Test plist3",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=10,
+                                        sequence=10,
                                         action="deny",
                                         description="Test rule 10",
                                         prefix="2001:db8:1000::/36",
                                         le=36
                                     ),
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="permit",
                                         description="Test rule 20",
                                         prefix="2001:db8:2000::/36"
@@ -138,14 +138,14 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             ),
                             dict(
                                 name="plist4",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="permit",
                                         prefix="2001:db8:3000::/36",
                                     ),
                                     dict(
-                                        id=50,
+                                        sequence=50,
                                         action="deny",
                                         prefix="2001:db8:4000::/36",
                                     )
@@ -251,15 +251,15 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             dict(
                                 name="plist1",
                                 description="Test plist1",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=10,
+                                        sequence=10,
                                         action="permit",
                                         description="Test rule 10",
                                         prefix="92.168.10.0/26"
                                     ),
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="deny",
                                         description="Test rule 20",
                                         prefix="72.168.2.0/24"
@@ -268,15 +268,15 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             ),
                             dict(
                                 name="plist2",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="permit",
                                         prefix="82.168.10.0/26",
                                         le=32
                                     ),
                                     dict(
-                                        id=30,
+                                        sequence=30,
                                         action="deny",
                                         prefix="62.168.2.0/24",
                                         ge=25
@@ -291,16 +291,16 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             dict(
                                 name="plist3",
                                 description="Test plist3",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=10,
+                                        sequence=10,
                                         action="deny",
                                         description="Test rule 10",
                                         prefix="2001:db8:1000::/36",
                                         le=36
                                     ),
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="permit",
                                         description="Test rule 20",
                                         prefix="2001:db8:2000::/36"
@@ -309,14 +309,14 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             ),
                             dict(
                                 name="plist4",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="permit",
                                         prefix="2001:db8:3000::/36",
                                     ),
                                     dict(
-                                        id=50,
+                                        sequence=50,
                                         action="deny",
                                         prefix="2001:db8:4000::/36",
                                     )
@@ -330,79 +330,6 @@ class TestVyosPrefixListsModule(TestVyosModule):
         )
         result = self.execute_module(changed=False)
         self.assertEqual(result["commands"], [])
-
-    # test existing sequence with merged (should fail)
-    def test_vyos_prefix_lists_merged_update(self):
-        self.get_config.return_value = dedent(
-            """\
-                set policy prefix-list plist1
-                set policy prefix-list plist1 description 'Test plist1'
-                set policy prefix-list plist1 rule 10
-                set policy prefix-list plist1 rule 10 action 'permit'
-                set policy prefix-list plist1 rule 10 description 'Test rule 10'
-                set policy prefix-list plist1 rule 10 prefix '92.168.10.0/26'
-                set policy prefix-list plist1 rule 20
-                set policy prefix-list plist1 rule 20 action 'deny'
-                set policy prefix-list plist1 rule 20 description 'Test rule 20'
-                set policy prefix-list plist1 rule 20 prefix '72.168.2.0/24'
-                set policy prefix-list plist2
-                set policy prefix-list plist2 rule 20
-                set policy prefix-list plist2 rule 20 action 'permit'
-                set policy prefix-list plist2 rule 20 le '32'
-                set policy prefix-list plist2 rule 20 prefix '82.168.10.0/26'
-                set policy prefix-list plist2 rule 30
-                set policy prefix-list plist2 rule 30 action 'deny'
-                set policy prefix-list plist2 rule 30 ge '25'
-                set policy prefix-list plist2 rule 30 prefix '62.168.2.0/24'
-                set policy prefix-list6 plist3
-                set policy prefix-list6 plist3 description 'Test plist3'
-                set policy prefix-list6 plist3 rule 10
-                set policy prefix-list6 plist3 rule 10 action 'deny'
-                set policy prefix-list6 plist3 rule 10 description 'Test rule 10'
-                set policy prefix-list6 plist3 rule 10 le '36'
-                set policy prefix-list6 plist3 rule 10 prefix '2001:db8:1000::/36'
-                set policy prefix-list6 plist3 rule 20
-                set policy prefix-list6 plist3 rule 20 action 'permit'
-                set policy prefix-list6 plist3 rule 20 description 'Test rule 20'
-                set policy prefix-list6 plist3 rule 20 prefix '2001:db8:2000::/36'
-                set policy prefix-list6 plist4
-                set policy prefix-list6 plist4 rule 20
-                set policy prefix-list6 plist4 rule 20 action 'permit'
-                set policy prefix-list6 plist4 rule 20 prefix '2001:db8:3000::/36'
-                set policy prefix-list6 plist4 rule 50
-                set policy prefix-list6 plist4 rule 50 action 'deny'
-                set policy prefix-list6 plist4 rule 50 prefix '2001:db8:4000::/36'
-            """
-        )
-        set_module_args(
-            dict(
-                config=[
-                    dict(
-                        afi="ipv4",
-                        prefix_lists=[
-                            dict(
-                                name="plist1",
-                                description="Test plist1",
-                                rules=[
-                                    dict(
-                                        id=10,
-                                        action="permit",
-                                        prefix="92.168.2.0/26"
-                                    )
-                                ]
-                            )
-                        ]
-                    )
-                ],
-                state="merged"
-            )
-        )
-        result = self.execute_module(failed=True)
-        self.assertEqual(
-            result["msg"],
-            "Cannot update existing rule 10 of prefix list plist1 with state merged."
-            " Please use state replaced or overridden.",
-        )
 
     # test existing rule with replaced
     def test_vyos_prefix_lists_replaced_update(self):
@@ -456,14 +383,14 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             dict(
                                 name="plist1",
                                 description="Test plist1",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=10,
+                                        sequence=10,
                                         action="permit",
                                         prefix="82.168.10.0/26",
                                     ),
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="deny",
                                         description="Test rule 20",
                                         prefix="72.168.2.0/24",
@@ -534,9 +461,9 @@ class TestVyosPrefixListsModule(TestVyosModule):
                         prefix_lists=[
                             dict(
                                 name="plist1",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=10,
+                                        sequence=10,
                                         action="permit",
                                         prefix="82.168.10.0/26",
                                     ),
@@ -609,9 +536,9 @@ class TestVyosPrefixListsModule(TestVyosModule):
                         prefix_lists=[
                             dict(
                                 name="plist1",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=10,
+                                        sequence=10,
                                         action="deny",
                                         prefix="102.168.10.0/26",
                                     )
@@ -687,9 +614,9 @@ class TestVyosPrefixListsModule(TestVyosModule):
                         prefix_lists=[
                             dict(
                                 name="plist5",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=50,
+                                        sequence=50,
                                         action="permit",
                                         prefix="102.168.10.0/26",
                                     )
@@ -1019,34 +946,34 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             {
                                 "description": "Test plist1",
                                 "name": "plist1",
-                                "rules": [
+                                "entries": [
                                     {
                                         "action": "permit",
                                         "description": "Test rule 10",
-                                        "id": 10,
+                                        "sequence": 10,
                                         "prefix": "92.168.10.0/26"
                                     },
                                     {
                                         "action": "deny",
                                         "description": "Test rule 20",
-                                        "id": 20,
+                                        "sequence": 20,
                                         "prefix": "72.168.2.0/24"
                                     }
                                 ]
                             },
                             {
                                 "name": "plist2",
-                                "rules": [
+                                "entries": [
                                     {
                                         "action": "permit",
-                                        "id": 20,
+                                        "sequence": 20,
                                         "le": 32,
                                         "prefix": "82.168.10.0/26"
                                     },
                                     {
                                         "action": "deny",
                                         "ge": 25,
-                                        "id": 30,
+                                        "sequence": 30,
                                         "prefix": "62.168.2.0/24"
                                     }
                                 ]
@@ -1059,33 +986,33 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             {
                                 "description": "Test plist3",
                                 "name": "plist3",
-                                "rules": [
+                                "entries": [
                                     {
                                         "action": "deny",
                                         "description": "Test rule 10",
-                                        "id": 10,
+                                        "sequence": 10,
                                         "le": 36,
                                         "prefix": "2001:db8:1000::/36"
                                     },
                                     {
                                         "action": "permit",
                                         "description": "Test rule 20",
-                                        "id": 20,
+                                        "sequence": 20,
                                         "prefix": "2001:db8:2000::/36"
                                     }
                                 ]
                             },
                             {
                                 "name": "plist4",
-                                "rules": [
+                                "entries": [
                                     {
                                         "action": "permit",
-                                        "id": 20,
+                                        "sequence": 20,
                                         "prefix": "2001:db8:3000::/36"
                                     },
                                     {
                                         "action": "deny",
-                                        "id": 50,
+                                        "sequence": 50,
                                         "prefix": "2001:db8:4000::/36"
                                     }
                                 ]
@@ -1107,15 +1034,15 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             dict(
                                 name="plist1",
                                 description="Test plist1",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=10,
+                                        sequence=10,
                                         action="permit",
                                         description="Test rule 10",
                                         prefix="92.168.10.0/26"
                                     ),
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="deny",
                                         description="Test rule 20",
                                         prefix="72.168.2.0/24"
@@ -1124,15 +1051,15 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             ),
                             dict(
                                 name="plist2",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="permit",
                                         prefix="82.168.10.0/26",
                                         le=32
                                     ),
                                     dict(
-                                        id=30,
+                                        sequence=30,
                                         action="deny",
                                         prefix="62.168.2.0/24",
                                         ge=25
@@ -1147,16 +1074,16 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             dict(
                                 name="plist3",
                                 description="Test plist3",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=10,
+                                        sequence=10,
                                         action="deny",
                                         description="Test rule 10",
                                         prefix="2001:db8:1000::/36",
                                         le=36
                                     ),
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="permit",
                                         description="Test rule 20",
                                         prefix="2001:db8:2000::/36"
@@ -1165,14 +1092,14 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             ),
                             dict(
                                 name="plist4",
-                                rules=[
+                                entries=[
                                     dict(
-                                        id=20,
+                                        sequence=20,
                                         action="permit",
                                         prefix="2001:db8:3000::/36",
                                     ),
                                     dict(
-                                        id=50,
+                                        sequence=50,
                                         action="deny",
                                         prefix="2001:db8:4000::/36",
                                     )
@@ -1279,34 +1206,34 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             {
                                 "description": "Test plist1",
                                 "name": "plist1",
-                                "rules": [
+                                "entries": [
                                     {
                                         "action": "permit",
                                         "description": "Test rule 10",
-                                        "id": 10,
+                                        "sequence": 10,
                                         "prefix": "92.168.10.0/26"
                                     },
                                     {
                                         "action": "deny",
                                         "description": "Test rule 20",
-                                        "id": 20,
+                                        "sequence": 20,
                                         "prefix": "72.168.2.0/24"
                                     }
                                 ]
                             },
                             {
                                 "name": "plist2",
-                                "rules": [
+                                "entries": [
                                     {
                                         "action": "permit",
-                                        "id": 20,
+                                        "sequence": 20,
                                         "le": 32,
                                         "prefix": "82.168.10.0/26"
                                     },
                                     {
                                         "action": "deny",
                                         "ge": 25,
-                                        "id": 30,
+                                        "sequence": 30,
                                         "prefix": "62.168.2.0/24"
                                     }
                                 ]
@@ -1319,33 +1246,33 @@ class TestVyosPrefixListsModule(TestVyosModule):
                             {
                                 "description": "Test plist3",
                                 "name": "plist3",
-                                "rules": [
+                                "entries": [
                                     {
                                         "action": "deny",
                                         "description": "Test rule 10",
-                                        "id": 10,
+                                        "sequence": 10,
                                         "le": 36,
                                         "prefix": "2001:db8:1000::/36"
                                     },
                                     {
                                         "action": "permit",
                                         "description": "Test rule 20",
-                                        "id": 20,
+                                        "sequence": 20,
                                         "prefix": "2001:db8:2000::/36"
                                     }
                                 ]
                             },
                             {
                                 "name": "plist4",
-                                "rules": [
+                                "entries": [
                                     {
                                         "action": "permit",
-                                        "id": 20,
+                                        "sequence": 20,
                                         "prefix": "2001:db8:3000::/36"
                                     },
                                     {
                                         "action": "deny",
-                                        "id": 50,
+                                        "sequence": 50,
                                         "prefix": "2001:db8:4000::/36"
                                     }
                                 ]
