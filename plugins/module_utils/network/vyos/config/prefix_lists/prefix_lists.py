@@ -46,7 +46,7 @@ class Prefix_lists(ResourceModule):
             resource="prefix_lists",
             tmplt=Prefix_listsTemplate(),
         )
-        self.parsers = ['name', 'description', 'id', 'action', 'rule_description', 'ge', 'le', 'prefix']
+        self.parsers = ['name', 'description', 'sequence', 'action', 'rule_description', 'ge', 'le', 'prefix']
 
     def execute_module(self):
         """ Execute the module
@@ -124,10 +124,10 @@ class Prefix_lists(ResourceModule):
             hentry = have.pop(wk, {})
 
             # parser list for name and descriptions
-            self.compare(parsers=self.parsers[:self.parsers.index("id")], want=wentry, have=hentry)
+            self.compare(parsers=self.parsers[:self.parsers.index("sequence")], want=wentry, have=hentry)
 
-            wplrules = wentry.get("rules", {})
-            hplrules = hentry.get("rules", {})
+            wplrules = wentry.get("entries", {})
+            hplrules = hentry.get("entries", {})
 
             self._compare_rules(want=wplrules, have=hplrules)
 
@@ -135,23 +135,14 @@ class Prefix_lists(ResourceModule):
         for wr, wrule in iteritems(want):
             hrule = have.pop(wr, {})
 
-            if hrule and (hrule != wrule):
-                if self.state == "merged":
-                    self._module.fail_json(
-                            msg="Cannot update existing rule {0} of prefix list {1} with state merged."
-                            " Please use state replaced or overridden.".format(
-                                hrule["id"], hrule["name"]
-                            )
-                        )
+            # parser list for entries
+            self.compare(parsers=self.parsers[self.parsers.index("sequence"):], want=wrule, have=hrule)
 
-            # parser list for rules
-            self.compare(parsers=self.parsers[self.parsers.index("id"):], want=wrule, have=hrule)
-
-        # remove remaining rules
+        # remove remaining entries
         for hr in have.values():
             self.commands.append(
                 "delete policy prefix-{0} {1} rule {2}".format(
-                    "list" if hr["afi"] == "ipv4" else "list6" , hr["name"], hr["id"]
+                    "list" if hr["afi"] == "ipv4" else "list6" , hr["name"], hr["sequence"]
                 )
             )
 
@@ -160,8 +151,8 @@ class Prefix_lists(ResourceModule):
             if "prefix_lists" in value:
                 for pl in value["prefix_lists"]:
                     pl.update({"afi": afi})
-                    if "rules" in pl:
-                        for rule in pl["rules"]:
-                            rule.update({"afi": afi, "name": pl["name"]})
-                        pl["rules"] = {x["id"]: x for x in pl["rules"]}
+                    if "entries" in pl:
+                        for entry in pl["entries"]:
+                            entry.update({"afi": afi, "name": pl["name"]})
+                        pl["entries"] = {x["sequence"]: x for x in pl["entries"]}
                 value["prefix_lists"] = {entry["name"]: entry for entry in value["prefix_lists"]}

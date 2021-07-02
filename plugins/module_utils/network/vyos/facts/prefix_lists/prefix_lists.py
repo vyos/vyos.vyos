@@ -63,8 +63,8 @@ class Prefix_listsFacts(object):
             for item in objs:
                 item["prefix_lists"] = sorted(list(item["prefix_lists"].values()), key=lambda k: k["name"])
                 for pl in item["prefix_lists"]:
-                    if "rules" in pl:
-                        pl["rules"] = sorted(list(pl["rules"].values()), key=lambda k: k["id"])
+                    if "entries" in pl:
+                        pl["entries"] = sorted(list(pl["entries"].values()), key=lambda k: k["sequence"])
 
         ansible_facts['ansible_network_resources'].pop('prefix_lists', None)
 
