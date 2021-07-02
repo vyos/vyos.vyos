@@ -154,7 +154,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                     ),
                 ],
                 state="merged",
-            ),
+            )
         )
         commands = [
             "set policy prefix-list plist1",
@@ -325,7 +325,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                     ),
                 ],
                 state="merged",
-            ),
+            )
         )
         result = self.execute_module(changed=False)
         self.assertEqual(result["commands"], [])
@@ -400,7 +400,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                     )
                 ],
                 state="replaced",
-            ),
+            )
         )
         commands = [
             "delete policy prefix-list plist1 rule 10 description 'Test rule 10'",
@@ -465,14 +465,14 @@ class TestVyosPrefixListsModule(TestVyosModule):
                                         sequence=10,
                                         action="permit",
                                         prefix="82.168.10.0/26",
-                                    ),
+                                    )
                                 ],
                             )
                         ],
                     )
                 ],
                 state="replaced",
-            ),
+            )
         )
         commands = [
             "delete policy prefix-list plist1 description 'Test plist1'",
@@ -546,7 +546,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                     )
                 ],
                 state="overridden",
-            ),
+            )
         )
         commands = [
             "delete policy prefix-list plist1 description 'Test plist1'",
@@ -624,7 +624,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                     )
                 ],
                 state="overridden",
-            ),
+            )
         )
         commands = [
             "set policy prefix-list plist5",
@@ -792,9 +792,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                 state="deleted",
             )
         )
-        commands = [
-            "delete policy prefix-list6 plist3",
-        ]
+        commands = ["delete policy prefix-list6 plist3"]
         result = self.execute_module(changed=True)
         self.assertEqual(set(result["commands"]), set(commands))
 
@@ -1071,7 +1069,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                     ),
                 ],
                 state="rendered",
-            ),
+            )
         )
         rendered = [
             "set policy prefix-list plist1",
