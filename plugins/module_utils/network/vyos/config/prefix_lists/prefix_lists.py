@@ -152,8 +152,8 @@ class Prefix_lists(ResourceModule):
                 parsers=self.parsers[self.parsers.index("sequence") :],
                 want=wrule,
                 have=hrule,
-            )
-
+            )  # noqa
+            
         # remove remaining entries
         for hr in have.values():
             self.commands.append(
