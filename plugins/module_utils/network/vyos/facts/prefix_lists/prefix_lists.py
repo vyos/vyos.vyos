@@ -58,7 +58,10 @@ class Prefix_listsFacts(object):
         )
 
         objs = prefix_lists_parser.parse()
-        objs = sorted(list(objs.values()), key=lambda k: k["afi"],)
+        objs = sorted(
+            list(objs.values()),
+            key=lambda k: k["afi"],
+        )
 
         if objs:
             for item in objs:
