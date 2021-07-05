@@ -149,10 +149,10 @@ class Prefix_lists(ResourceModule):
 
             # parser list for entries
             self.compare(
-                parsers=self.parsers[self.parsers.index("sequence") :],
+                parsers=self.parsers[self.parsers.index("sequence") :],  # noqa
                 want=wrule,
                 have=hrule,
-            )  # noqa
+            )  
 
         # remove remaining entries
         for hr in have.values():
