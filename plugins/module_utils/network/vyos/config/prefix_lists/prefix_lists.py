@@ -46,9 +46,11 @@ class Prefix_lists(ResourceModule):
             resource="prefix_lists",
             tmplt=Prefix_listsTemplate(),
         )
-        self.parsers = [
+        self.plist_parsers = [
             "name",
             "description",
+        ]
+        self.entries_parsers = [
             "sequence",
             "action",
             "rule_description",
@@ -133,7 +135,7 @@ class Prefix_lists(ResourceModule):
 
             # parser list for name and descriptions
             self.compare(
-                parsers=self.parsers[: self.parsers.index("sequence")],
+                parsers=self.plist_parsers,
                 want=wentry,
                 have=hentry,
             )
@@ -149,10 +151,10 @@ class Prefix_lists(ResourceModule):
 
             # parser list for entries
             self.compare(
-                parsers=self.parsers[self.parsers.index("sequence") :],
+                parsers=self.entries_parsers,
                 want=wrule,
                 have=hrule,
-            )  # noqa
+            )
 
         # remove remaining entries
         for hr in have.values():
