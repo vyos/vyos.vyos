@@ -1,0 +1,11 @@
+---
+- name: Remove pre-existing prefix-list configurations
+  vyos.vyos.vyos_config:
+    lines:
+      - delete policy prefix-list AnsibleIPv4PrefixList
+      - delete policy prefix-list OverriddenPrefixList
+      - delete policy prefix-list6 AllowIPv6Prefix
+      - delete policy prefix-list6 DenyIPv6Prefix
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

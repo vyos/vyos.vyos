@@ -16,3 +16,6 @@ plugins/module_utils/network/vyos/config/ospf_interfaces/ospf_interfaces.py impo
 plugins/module_utils/network/vyos/config/route_maps/route_maps.py compile-2.6!skip
 plugins/module_utils/network/vyos/config/route_maps/route_maps.py import-2.6!skip
 plugins/modules/vyos_route_maps.py import-2.6!skip
+plugins/modules/vyos_prefix_lists.py import-2.6!skip
+plugins/module_utils/network/vyos/config/prefix_lists/prefix_lists.py import-2.6!skip
+plugins/module_utils/network/vyos/config/prefix_lists/prefix_lists.py compile-2.6!skip

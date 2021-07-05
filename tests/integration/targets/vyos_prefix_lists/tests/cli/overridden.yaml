@@ -1,0 +1,61 @@
+---
+- debug:
+    msg: START vyos_prefix_lists overridden integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Override all prefix-lists configuration with provided configuration
+      register: result
+      vyos.vyos.vyos_prefix_lists: &id003
+        config:
+          - afi: "ipv4"
+            prefix_lists:
+              - name: "AnsibleIPv4PrefixList"
+                description: Rule 3 overridden by ansible
+                entries:
+                  - sequence: 2
+                    action: "deny"
+                    ge: 26
+                    prefix: "82.168.2.0/24"
+
+              - name: "OverriddenPrefixList"
+                description: Configuration overridden by ansible
+                entries:
+                  - sequence: 10
+                    action: permit
+                    prefix: "203.0.113.96/27"
+                    le: 32
+        state: overridden
+
+    - name: Assert that before dicts were correctly generated
+      assert:
+        that:
+          - "{{ result['before'][0] == merged['after'][0] }}"
+          - "{{ result['before'][1] == merged['after'][1] }}"
+          - "{{ result['before']|length == 2 }}"
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ overridden['commands'] | symmetric_difference(result['commands']) |length\
+            \ == 0 }}"
+
+    - name: Assert that after dicts were correctly generated
+      assert:
+        that:
+          - "{{ overridden['after'][0] == result['after'][0] }}"
+
+    - name: Override all prefix-lists configuration with provided configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_prefix_lists: *id003
+
+    - name: Assert that task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+          - result.commands|length == 0
+  always:
+    - include_tasks: _remove_config.yaml
