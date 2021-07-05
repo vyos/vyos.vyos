@@ -153,7 +153,7 @@ class Prefix_lists(ResourceModule):
                 want=wrule,
                 have=hrule,
             )  # noqa
-            
+
         # remove remaining entries
         for hr in have.values():
             self.commands.append(
