@@ -28,6 +28,7 @@
         that:
           - "{{ result['before'][0] == merged['after'][0] }}"
           - "{{ result['before'][1] == merged['after'][1] }}"
+          - "{{ result['before']|length == 2 }}"
 
     - name: Assert that correct set of commands were generated
       assert:
@@ -40,6 +41,7 @@
         that:
           - "{{ replaced['after'][0] == result['after'][0] }}"
           - "{{ replaced['after'][1] == result['after'][1] }}"
+          - "{{ result['after']|length == 2 }}"
 
     - name: Replace prefix-lists configurations of listed prefix-lists with provided configurations (IDEMPOTENT)
       register: result

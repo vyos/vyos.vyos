@@ -11,5 +11,6 @@
 - name: Assert that config was correctly parsed
   assert:
     that:
-      - "{{ merged['after'][0] == result['parsed'][0] }}"
-      - "{{ merged['after'][1] == result['parsed'][1] }}"
+      - "{{ result['parsed'][0] == merged['after'][0] }}"
+      - "{{ result['parsed'][1] == merged['after'][1] }}"
+      - "{{ result['parsed']|length == 2 }}"

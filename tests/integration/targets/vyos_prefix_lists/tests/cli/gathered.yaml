@@ -18,6 +18,7 @@
         that:
           - result["gathered"][0] == merged["after"][0]
           - result["gathered"][1] == merged["after"][1]
+          - result['gathered']|length == 2
 
   always:
     - include_tasks: _remove_config.yaml

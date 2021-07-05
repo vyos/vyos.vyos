@@ -35,6 +35,7 @@
         that:
           - "{{ result['before'][0] == merged['after'][0] }}"
           - "{{ result['before'][1] == merged['after'][1] }}"
+          - "{{ result['before']|length == 2 }}"
 
     - name: Assert that correct set of commands were generated
       assert:
