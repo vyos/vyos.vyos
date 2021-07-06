@@ -5,6 +5,19 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.4.0
+======
+
+Minor Changes
+-------------
+
+- Add vyos_prefix_lists Resource Module.
+
+New Modules
+-----------
+
+- vyos_prefix_lists - Prefix-Lists resource module for VyOS
+
 v2.3.1
 ======
 

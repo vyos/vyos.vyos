@@ -263,3 +263,14 @@ releases:
     - fix_static_routes_next_hop_interface.yaml
     - update_readme_freenode_to_liberachat.yml
     release_date: '2021-06-22'
+  2.4.0:
+    changes:
+      minor_changes:
+      - Add vyos_prefix_lists Resource Module.
+    fragments:
+    - vyos_prefix_lists.yml
+    modules:
+    - description: Prefix-Lists resource module for VyOS
+      name: vyos_prefix_lists
+      namespace: ''
+    release_date: '2021-07-06'
