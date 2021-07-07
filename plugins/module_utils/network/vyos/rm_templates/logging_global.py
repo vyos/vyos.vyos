@@ -91,25 +91,29 @@ class Logging_globalTemplate(NetworkTemplate):
 
     PARSERS = [
         { #console parsers
-            "name": "console_params",
+            "name": "console",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\ssyslog\sconsole
+                ^set\ssystem\ssyslog
+                (\s(?P<console>console))?
                 (\sfacility\s(?P<facility>all|auth|authpriv|cron|daemon|kern|lpr|mail|mark|news|protocols|security|syslog|user|uucp|local[0-7]))?
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
             "result": {
                 "config": {
-                    "console_params": [{
-                        "facility": "{{ facility }}",
-                        "level": "{{ level }}",
-                    }]
+                    "console": {
+                        "state": "{{ 'enabled' if console is defined else 'disabled' }}",
+                        "facilities": [{
+                            "facility": "{{ facility }}",
+                            "level": "{{ level }}",
+                        }]
+                    }
                 }
             },
         },
         { #file parsers
-            "name": "file_archive_size",
+            "name": "files.archive_size",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\sfile
@@ -129,7 +133,7 @@ class Logging_globalTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "files_archive_num",
+            "name": "files.archive_file_num",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\sfile
@@ -149,7 +153,7 @@ class Logging_globalTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "files_param",
+            "name": "files",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\sfile
@@ -162,7 +166,7 @@ class Logging_globalTemplate(NetworkTemplate):
                 "config": {
                     "files": {"{{ path }}":{
                         "path": "{{ path }}",
-                        "params":[{
+                        "facilities":[{
                             "facility": "{{ facility }}",
                             "level": "{{ level }}",
                         },]
@@ -171,16 +175,35 @@ class Logging_globalTemplate(NetworkTemplate):
             },
         },
         { #global_param parsers
-            "name": "global_archive_num",
+            "name": "global_params.state",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\ssyslog\sglobal
+                ^set\ssystem\ssyslog
+                (\s(?P<global>global))
                 (\sarchive\sfile\s(?P<file_num>'(\d+)'))?
                 $""", re.VERBOSE),
             "setval": "system syslog global archive file {{ global_archive_num.file_num }}",
             "result": {
                 "config": {
                     "global_params": {
+                        "state": "{{ 'enabled' if global is defined else 'disabled' }}",
+                    }
+                }
+            },
+        },
+        {
+            "name": "global_params.archive_file_num",
+            "getval": re.compile(
+                r"""
+                ^set\ssystem\ssyslog
+                (\s(?P<global>global))
+                (\sarchive\sfile\s(?P<file_num>'(\d+)'))?
+                $""", re.VERBOSE),
+            "setval": "system syslog global archive file {{ global_archive_num.file_num }}",
+            "result": {
+                "config": {
+                    "global_params": {
+                        "state": "{{ 'enabled' if global is defined else 'disabled' }}",
                         "archive": {
                             "file_num": "{{ file_num }}",
                         },
@@ -189,16 +212,18 @@ class Logging_globalTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "global_archive_size",
+            "name": "global_params.archive_size",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\ssyslog\sglobal
+                ^set\ssystem\ssyslog
+                (\s(?P<global>global))
                 (\sarchive\ssize\s(?P<size>'(\d+)'))?
                 $""", re.VERBOSE),
             "setval": "system syslog global archive size {{ global_archive_size.size }}",
             "result": {
                 "config": {
                     "global_params": {
+                        "state": "{{ 'enabled' if global is defined else 'disabled' }}",
                         "archive": {
                             "size": "{{ size }}",
                         },
@@ -207,32 +232,36 @@ class Logging_globalTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "global_marker_interval",
+            "name": "global_params.marker_interval",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\ssyslog\sglobal
+                ^set\ssystem\ssyslog
+                (\s(?P<global>global))
                 (\smarker\sinterval\s(?P<marker_interval>'(\d+)'))?
                 $""", re.VERBOSE),
             "setval": "system syslog global marker interval {{ global_marker_interval }}",
             "result": {
                 "config": {
                     "global_params": {
+                        "state": "{{ 'enabled' if global is defined else 'disabled' }}",
                         "marker_interval": "{{ marker_interval }}",
                     }
                 }
             },
         },
         {
-            "name": "global_preserve_fqdn",
+            "name": "global_params.preserve_fqdn",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\ssyslog\sglobal
+                ^set\ssystem\ssyslog
+                (\s(?P<global>global))
                 (\s(?P<preserve_fqdn>preserve-fqdn))?
                 $""", re.VERBOSE),
             "setval": "system syslog global preserve-fqdn {{ global_preserve_fqdn }}",
             "result": {
                 "config": {
                     "global_params": {
+                        "state": "{{ 'enabled' if global is defined else 'disabled' }}",
                         "preserve_fqdn": "{{ True if preserve_fqdn is defined }}",
                     }
                 }
@@ -242,7 +271,8 @@ class Logging_globalTemplate(NetworkTemplate):
             "name": "global_params",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\ssyslog\sglobal
+                ^set\ssystem\ssyslog
+                (\s(?P<global>global))
                 (\sfacility\s(?P<facility>all|auth|authpriv|cron|daemon|kern|lpr|mail|mark|news|protocols|security|syslog|user|uucp|local[0-7]))?
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
@@ -250,7 +280,8 @@ class Logging_globalTemplate(NetworkTemplate):
             "result": {
                 "config": {
                     "global_params": {
-                        "params": [{
+                        "state": "{{ 'enabled' if global is defined else 'disabled' }}",
+                        "facilities": [{
                             "facility": "{{ facility }}",
                             "level": "{{ level }}",
                         },],
@@ -259,7 +290,7 @@ class Logging_globalTemplate(NetworkTemplate):
             },
         },
         { #host parsers
-            "name": "hosts_port",
+            "name": "hosts.port",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\shost
@@ -277,7 +308,7 @@ class Logging_globalTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "hosts_params",
+            "name": "hosts.facilities.facility",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\shost
@@ -290,7 +321,7 @@ class Logging_globalTemplate(NetworkTemplate):
                 "config": {
                     "hosts": {"{{ hostname }}":{
                         "hostname": "{{ hostname }}",
-                        "params":[{
+                        "facilities":[{
                             "facility": "{{ facility }}",
                             "level": "{{ level }}",
                         },]
@@ -299,7 +330,7 @@ class Logging_globalTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "hosts_protocol",
+            "name": "hosts.facilities.protocol",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\shost
@@ -312,7 +343,7 @@ class Logging_globalTemplate(NetworkTemplate):
                 "config": {
                     "hosts": {"{{ hostname }}":{
                         "hostname": "{{ hostname }}",
-                        "params":[{
+                        "facilities":[{
                             "protocol": "{{ protocol }}",
                             "facility": "{{ facility }}",
                         },]
@@ -335,7 +366,7 @@ class Logging_globalTemplate(NetworkTemplate):
                     "users": {
                         "{{ username }}":{
                         "username": "{{ username }}",
-                        "params":[{
+                        "facilities":[{
                             "facility": "{{ facility }}",
                             "level": "{{ level }}",
                         },]

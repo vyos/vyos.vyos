@@ -15,7 +15,7 @@ __metaclass__ = type
 DOCUMENTATION = """
 module: vyos_logging_global
 version_added: 2.4.0
-short_description: Manages logging attributes of Vyos network devices
+short_description: Logging resource module
 description: This module manages the logging attributes of Vyos network devices
 author: Sagar Paul (@KB-perByte)
 notes:
@@ -28,51 +28,61 @@ options:
     description: A list containing dictionary of logging options
     type: dict
     suboptions:
-      console_params:
+      console:
         description: logging to serial console
-        type: list
-        elements: dict
+        type: dict
         suboptions:
-          facility: &facility
-            description: Facility for logging
+          state: &state_config
+            description: enable or disable the command
             type: str
             choices:
-              - all
-              - auth
-              - authpriv
-              - cron
-              - daemon
-              - kern
-              - lpr
-              - mail
-              - mark
-              - news
-              - protocols
-              - security
-              - syslog
-              - user
-              - uucp
-              - local0
-              - local1
-              - local2
-              - local3
-              - local4
-              - local5
-              - local6
-              - local7
-          level: &level
-            description: logging level
-            type: str
-            choices:
-              - emerg
-              - alert
-              - crit
-              - err
-              - warning
-              - notice
-              - info
-              - debug
-              - all
+              - enabled
+              - disabled
+          facilities:
+            description: facility configurations for console
+            type: list
+            elements: dict
+            suboptions:
+              facility: &facility
+                description: Facility for logging
+                type: str
+                choices:
+                  - all
+                  - auth
+                  - authpriv
+                  - cron
+                  - daemon
+                  - kern
+                  - lpr
+                  - mail
+                  - mark
+                  - news
+                  - protocols
+                  - security
+                  - syslog
+                  - user
+                  - uucp
+                  - local0
+                  - local1
+                  - local2
+                  - local3
+                  - local4
+                  - local5
+                  - local6
+                  - local7
+              level: &level
+                description: logging level
+                type: str
+                choices:
+                  - emerg
+                  - alert
+                  - crit
+                  - err
+                  - warning
+                  - notice
+                  - info
+                  - debug
+                  - all
       files:
         description: logging to file
         type: list
@@ -91,8 +101,8 @@ options:
               size:
                 description: Size of log files (in kilobytes, default is 256)
                 type: int
-          params: &params
-            description: List of supported params
+          facilities: &params
+            description: facility configurations
             type: list
             elements: dict
             suboptions:
@@ -102,8 +112,9 @@ options:
         description: logging to serial console
         type: dict
         suboptions:
+          state: *state_config
           archive: *archive
-          params: *params
+          facilities: *params
           marker_interval:
             description: time interval how often a mark message is being sent in seconds (default is 1200)
             type: int
@@ -118,8 +129,8 @@ options:
           port:
             description: Destination port (1-65535)
             type: int
-          params:
-            description: List of supported params
+          facilities:
+            description: facility configurations for host
             type: list
             elements: dict
             suboptions:
@@ -142,7 +153,7 @@ options:
           username:
             description: user login name
             type: str
-          params: *params
+          facilities: *params
   running_config:
     description:
       - This option is used only with state I(parsed).
@@ -165,15 +176,6 @@ options:
     description:
       - The state the configuration should be left in
     type: str
-required_if:
-  - ["state", "merged", ["config"]]
-  - ["state", "replaced", ["config"]]
-  - ["state", "overridden", ["config"]]
-  - ["state", "rendered", ["config"]]
-  - ["state", "parsed", ["running_config"]]
-mutually_exclusive:
-  - ["config", "running_config"]
-supports_check_mode: True
 """
 EXAMPLES = """
 

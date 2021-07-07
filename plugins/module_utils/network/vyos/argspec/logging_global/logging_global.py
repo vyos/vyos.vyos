@@ -35,51 +35,60 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
         "config": {
             "type": "dict",
             "options": {
-                "console_params": {
-                    "type": "list",
-                    "elements": "dict",
+                "console": {
+                    "type": "dict",
                     "options": {
-                        "facility": {
+                        "state": {
                             "type": "str",
-                            "choices": [
-                                "all",
-                                "auth",
-                                "authpriv",
-                                "cron",
-                                "daemon",
-                                "kern",
-                                "lpr",
-                                "mail",
-                                "mark",
-                                "news",
-                                "protocols",
-                                "security",
-                                "syslog",
-                                "user",
-                                "uucp",
-                                "local0",
-                                "local1",
-                                "local2",
-                                "local3",
-                                "local4",
-                                "local5",
-                                "local6",
-                                "local7",
-                            ],
+                            "choices": ["enabled", "disabled"],
                         },
-                        "level": {
-                            "type": "str",
-                            "choices": [
-                                "emerg",
-                                "alert",
-                                "crit",
-                                "err",
-                                "warning",
-                                "notice",
-                                "info",
-                                "debug",
-                                "all",
-                            ],
+                        "facilities": {
+                            "type": "list",
+                            "elements": "dict",
+                            "options": {
+                                "facility": {
+                                    "type": "str",
+                                    "choices": [
+                                        "all",
+                                        "auth",
+                                        "authpriv",
+                                        "cron",
+                                        "daemon",
+                                        "kern",
+                                        "lpr",
+                                        "mail",
+                                        "mark",
+                                        "news",
+                                        "protocols",
+                                        "security",
+                                        "syslog",
+                                        "user",
+                                        "uucp",
+                                        "local0",
+                                        "local1",
+                                        "local2",
+                                        "local3",
+                                        "local4",
+                                        "local5",
+                                        "local6",
+                                        "local7",
+                                    ],
+                                },
+                                "level": {
+                                    "type": "str",
+                                    "choices": [
+                                        "emerg",
+                                        "alert",
+                                        "crit",
+                                        "err",
+                                        "warning",
+                                        "notice",
+                                        "info",
+                                        "debug",
+                                        "all",
+                                    ],
+                                },
+                            },
                         },
                     },
                 },
@@ -95,7 +104,7 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                                 "size": {"type": "int"},
                             },
                         },
-                        "params": {
+                        "facilities": {
                             "type": "list",
                             "elements": "dict",
                             "options": {
@@ -148,6 +157,10 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                 "global_params": {
                     "type": "dict",
                     "options": {
+                        "state": {
+                            "type": "str",
+                            "choices": ["enabled", "disabled"],
+                        },
                         "archive": {
                             "type": "dict",
                             "options": {
@@ -155,7 +168,7 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                                 "size": {"type": "int"},
                             },
                         },
-                        "params": {
+                        "facilities": {
                             "type": "list",
                             "elements": "dict",
                             "options": {
@@ -212,7 +225,7 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                     "elements": "dict",
                     "options": {
                         "port": {"type": "int"},
-                        "params": {
+                        "facilities": {
                             "type": "list",
                             "elements": "dict",
                             "options": {
@@ -272,7 +285,7 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                     "elements": "dict",
                     "options": {
                         "username": {"type": "str"},
-                        "params": {
+                        "facilities": {
                             "type": "list",
                             "elements": "dict",
                             "options": {
