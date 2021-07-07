@@ -101,7 +101,8 @@ class Logging_globalFacts(object):
                 self.argument_spec, {"config": objs}, redact=True
             )
         )
-
+        if not objs:
+            params["config"] = {}
         facts["logging_global"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
 

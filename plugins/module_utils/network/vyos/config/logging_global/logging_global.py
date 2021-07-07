@@ -51,17 +51,21 @@ class Logging_global(ResourceModule):
             "console",
             "files.archive_size",
             "files.archive_file_num",
-            "files_param",
-            "global_params.state",
+            "files",
             "global_params.archive_file_num",
             "global_params.archive_size",
             "global_params.marker_interval",
             "global_params.preserve_fqdn",
             "global_params",
-            # "hosts_port",
-            # "hosts_params",
-            # "hosts_protocol",
+            "hosts.port",
+            "hosts.facility",
             "users",
+            # "hosts.protocol",
+            "console.state",
+            "users.tag",
+            "hosts.tag",
+            "files.tag",
+            "global_params.state",
         ]
 
     def execute_module(self):
@@ -153,7 +157,7 @@ class Logging_global(ResourceModule):
         tag = val.get(primary_k.get(element)) if primary_k.get(element) else ""
         if _dict_vals:
             for k, v in iteritems(_dict_vals):
-                linear_dict.update({element + k + tag: {element: v}})
+                linear_dict.update({element + k + tag: {element: v, "tag": tag}})
         if val.get("preserve_fqdn"):
             linear_dict.update(
                 {
@@ -170,6 +174,14 @@ class Logging_global(ResourceModule):
                     }
                 }
             )
+        if val.get("port"):
+            linear_dict.update(
+                {"port" + tag: {element: {"port": val.get("port"), "tag": tag}}}
+            )
+        if val.get("state"):
+            linear_dict.update(
+                {"state" + element: {element: {"state": val.get("state")}}}
+            )
         if val.get("archive"):
             _archive = val.get("archive")
             if _archive.get("size"):
@@ -177,7 +189,9 @@ class Logging_global(ResourceModule):
                     {
                         element
                         + "size"
-                        + tag: {element: {"archive_size": _archive.get("size")}}
+                        + tag: {
+                            element: {"archive_size": _archive.get("size"), "tag": tag}
+                        }
                     }
                 )
             if _archive.get("file_num"):
@@ -185,7 +199,12 @@ class Logging_global(ResourceModule):
                     {
                         element
                         + "file_num"
-                        + tag: {element: {"archive_file_num": _archive.get("file_num")}}
+                        + tag: {
+                            element: {
+                                "archive_file_num": _archive.get("file_num"),
+                                "tag": tag,
+                            }
+                        }
                     }
                 )
         return linear_dict
