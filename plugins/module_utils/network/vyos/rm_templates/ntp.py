@@ -24,9 +24,9 @@ class NtpTemplate(NetworkTemplate):
         prefix = {"set": "set", "remove": "delete"}
         super(NtpTemplate, self).__init__(
                 lines=lines, tmplt=self, prefix=prefix
-                )
+                )     
 
-    # fmt: off
+    # fmt: off  
     PARSERS = [
 
         #set system ntp allow_clients address <address>        
@@ -66,7 +66,7 @@ class NtpTemplate(NetworkTemplate):
 
         #set system ntp server <name>
         {
-            "name": "server_name",
+            "name": "name",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\sntp\sserver (\s(?P<name>\S+))? 
@@ -86,7 +86,7 @@ class NtpTemplate(NetworkTemplate):
 
         #set system ntp server <name> <options>
         {
-            "name": "server_options",
+            "name": "options",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\sntp\sserver (\s(?P<name>\S+))?  (\s(?P<options>noselect|pool|preempt|prefer))? 
