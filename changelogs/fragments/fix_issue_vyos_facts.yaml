@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - fix issue in route-maps facts code when route-maps facts are empty.

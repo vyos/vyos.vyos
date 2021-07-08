@@ -58,8 +58,13 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_a
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.route_maps.route_maps import (
     Route_mapsFacts,
 )
+<<<<<<< HEAD
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ntp.ntp import (
     NtpFacts,
+=======
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.prefix_lists.prefix_lists import (
+    Prefix_listsFacts,
+>>>>>>> 5c767d4266fe028cc0c11b05447e61ae89af9d45
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
     Default,
@@ -85,7 +90,11 @@ FACT_RESOURCE_SUBSETS = dict(
     bgp_global=Bgp_globalFacts,
     bgp_address_family=Bgp_address_familyFacts,
     route_maps=Route_mapsFacts,
+<<<<<<< HEAD
     ntp=NtpFacts
+=======
+    prefix_lists=Prefix_listsFacts,
+>>>>>>> 5c767d4266fe028cc0c11b05447e61ae89af9d45
 )
 
 

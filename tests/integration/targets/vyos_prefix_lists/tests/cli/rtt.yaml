@@ -1,0 +1,87 @@
+---
+- debug:
+    msg: START vyos_prefix_lists round trip integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Apply the provided configuration (base config)
+      register: base_config
+      vyos.vyos.vyos_prefix_lists:
+        config:
+          - afi: "ipv4"
+            prefix_lists:
+              - name: "AnsibleIPv4PrefixList"
+                description: "PL configured by ansible"
+                entries:
+                  - sequence: 2
+                    description: "Rule 2 given by ansible"
+                    action: "permit"
+                    prefix: "92.168.10.0/26"
+                    le: 32
+
+                  - sequence: 3
+                    description: "Rule 3"
+                    action: "deny"
+                    prefix: "72.168.2.0/24"
+                    ge: 26
+
+          - afi: "ipv6"
+            prefix_lists:
+              - name: "AllowIPv6Prefix"
+                description: "Configured by ansible for allowing IPv6 networks"
+                entries:
+                  - sequence: 5
+                    description: "Permit rule"
+                    action: "permit"
+                    prefix: "2001:db8:8000::/35"
+                    le: 37
+
+              - name: DenyIPv6Prefix
+                description: "Configured by ansible for disallowing IPv6 networks"
+                entries:
+                  - sequence: 8
+                    action: deny
+                    prefix: "2001:db8:2000::/35"
+                    le: 37
+        state: merged
+
+    - name: Gather prefix-lists facts
+      vyos.vyos.vyos_facts:
+        gather_subset:
+          - default
+        gather_network_resources:
+          - prefix_lists
+
+    - name: Update the configuration with the provided one (config to be reverted back)
+      register: result
+      vyos.vyos.vyos_prefix_lists:
+        config:
+          - afi: "ipv4"
+            prefix_lists:
+              - name: "AnsibleIPv4PrefixList"
+                description: "Configuration replaced by ansible"
+                entries:
+                  - sequence: 3
+                    description: "Rule 3 replaced by ansible"
+                    action: "permit"
+                    prefix: "82.168.2.0/24"
+                    ge: 26
+        state: replaced
+
+    - name: Assert that changes were applied
+      assert:
+        that: "{{ result['after'] == replaced['after'] }}"
+
+    - name: Revert back to base config using facts round trip
+      register: revert
+      vyos.vyos.vyos_prefix_lists:
+        config: "{{ ansible_facts['network_resources']['prefix_lists'] }}"
+        state: replaced
+
+    - name: Assert that config was reverted
+      assert:
+        that: "{{ revert['after'] == base_config['after']}}"
+
+  always:
+    - include_tasks: _remove_config.yaml

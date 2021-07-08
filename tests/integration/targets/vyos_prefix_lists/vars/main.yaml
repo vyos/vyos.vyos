@@ -1,0 +1,145 @@
+---
+merged:
+  before: []
+
+  commands:
+    - set policy prefix-list6 AllowIPv6Prefix
+    - set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
+    - set policy prefix-list6 AllowIPv6Prefix rule 5
+    - set policy prefix-list6 AllowIPv6Prefix rule 5 action 'permit'
+    - set policy prefix-list6 AllowIPv6Prefix rule 5 description 'Permit rule'
+    - set policy prefix-list6 AllowIPv6Prefix rule 5 le '37'
+    - set policy prefix-list6 AllowIPv6Prefix rule 5 prefix '2001:db8:8000::/35'
+    - set policy prefix-list6 DenyIPv6Prefix
+    - set policy prefix-list6 DenyIPv6Prefix description 'Configured by ansible for disallowing IPv6 networks'
+    - set policy prefix-list6 DenyIPv6Prefix rule 8
+    - set policy prefix-list6 DenyIPv6Prefix rule 8 action 'deny'
+    - set policy prefix-list6 DenyIPv6Prefix rule 8 le '37'
+    - set policy prefix-list6 DenyIPv6Prefix rule 8 prefix '2001:db8:2000::/35'
+    - set policy prefix-list AnsibleIPv4PrefixList
+    - set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 2
+    - set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'permit'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '92.168.10.0/26'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 3
+    - set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'deny'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 3 ge '26'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '72.168.2.0/24'
+
+  after:
+    - afi: ipv4
+      prefix_lists:
+        - description: PL configured by ansible
+          name: AnsibleIPv4PrefixList
+          entries:
+            - action: permit
+              description: Rule 2 given by ansible
+              sequence: 2
+              le: 32
+              prefix: 92.168.10.0/26
+            - action: deny
+              description: Rule 3
+              ge: 26
+              sequence: 3
+              prefix: 72.168.2.0/24
+    - afi: ipv6
+      prefix_lists:
+        - description: Configured by ansible for allowing IPv6 networks
+          name: AllowIPv6Prefix
+          entries:
+            - action: permit
+              description: Permit rule
+              sequence: 5
+              le: 37
+              prefix: 2001:db8:8000::/35
+        - description: Configured by ansible for disallowing IPv6 networks
+          name: DenyIPv6Prefix
+          entries:
+            - action: deny
+              sequence: 8
+              le: 37
+              prefix: 2001:db8:2000::/35
+
+replaced:
+  commands:
+    - set policy prefix-list AnsibleIPv4PrefixList description 'Configuration replaced by ansible'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 3 action 'permit'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 3 description 'Rule 3 replaced by ansible'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 3 prefix '82.168.2.0/24'
+    - delete policy prefix-list AnsibleIPv4PrefixList rule 2
+
+  after:
+    - afi: ipv4
+      prefix_lists:
+        - description: Configuration replaced by ansible
+          name: AnsibleIPv4PrefixList
+          entries:
+            - action: permit
+              description: Rule 3 replaced by ansible
+              ge: 26
+              sequence: 3
+              prefix: 82.168.2.0/24
+    - afi: ipv6
+      prefix_lists:
+        - description: Configured by ansible for allowing IPv6 networks
+          name: AllowIPv6Prefix
+          entries:
+            - action: permit
+              description: Permit rule
+              sequence: 5
+              le: 37
+              prefix: 2001:db8:8000::/35
+        - description: Configured by ansible for disallowing IPv6 networks
+          name: DenyIPv6Prefix
+          entries:
+            - action: deny
+              sequence: 8
+              le: 37
+              prefix: 2001:db8:2000::/35
+
+overridden:
+  commands:
+    - delete policy prefix-list6 AllowIPv6Prefix
+    - delete policy prefix-list6 DenyIPv6Prefix
+    - set policy prefix-list AnsibleIPv4PrefixList description 'Rule 3 overridden by ansible'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'deny'
+    - delete policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given
+      by ansible'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 2 ge '26'
+    - delete policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
+    - set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '82.168.2.0/24'
+    - delete policy prefix-list AnsibleIPv4PrefixList rule 3
+    - set policy prefix-list OverriddenPrefixList
+    - set policy prefix-list OverriddenPrefixList description 'Configuration overridden
+      by ansible'
+    - set policy prefix-list OverriddenPrefixList rule 10
+    - set policy prefix-list OverriddenPrefixList rule 10 action 'permit'
+    - set policy prefix-list OverriddenPrefixList rule 10 le '32'
+    - set policy prefix-list OverriddenPrefixList rule 10 prefix '203.0.113.96/27'
+
+  after:
+    - afi: ipv4
+      prefix_lists:
+        - description: Rule 3 overridden by ansible
+          name: AnsibleIPv4PrefixList
+          entries:
+            - action: deny
+              ge: 26
+              sequence: 2
+              prefix: 82.168.2.0/24
+        - description: Configuration overridden by ansible
+          name: OverriddenPrefixList
+          entries:
+            - action: permit
+              sequence: 10
+              le: 32
+              prefix: 203.0.113.96/27
+
+deleted:
+  commands:
+    - delete policy prefix-list AnsibleIPv4PrefixList
+    - delete policy prefix-list6 AllowIPv6Prefix
+    - delete policy prefix-list6 DenyIPv6Prefix

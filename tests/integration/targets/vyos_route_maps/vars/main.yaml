@@ -1,5 +1,6 @@
 ---
 merged:
+  before: []
   commands:
     - set policy route-map test1 rule 1 description test
     - set policy route-map test1 rule 1 action permit
