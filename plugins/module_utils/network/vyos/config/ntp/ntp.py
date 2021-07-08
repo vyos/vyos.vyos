@@ -87,7 +87,14 @@ class Ntp(ResourceModule):
             wantd = {}
 
         # remove superfluous config for overridden and deleted
+
         if self.state in ["overridden", "deleted"]:
+            for k, have in iteritems(haved):
+                if k not in wantd:
+                    self._compare(want={}, have=have)
+
+
+        """   if self.state in ["overridden", "deleted"]:
             for k, have in iteritems(haved):
                 if k not in wantd:
                     if k == "servers":
@@ -97,19 +104,10 @@ class Ntp(ResourceModule):
                     # self._compare(want={}, have=have)
                     self.commands.append (
                         self._tmplt.render({prsrname:have},prsrname,True)
-                   )
+                   ) """
 
-     
         for k, want in iteritems(wantd):
-            if "name" in want:
-                self.compare(parsers = self.parsers, want=want, have=haved.pop(k, {}))
-                #self._compare(want=want, have=haved.pop(k, {}))
-            else:
-                want = {k:want}
-                x= haved.pop(k,{})
-                have = {k:x}
-                self.compare(parsers = self.parsers, want = want, have = have)
-
+            self._compare(want=want, have=haved.pop(k, {}))
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
@@ -117,53 +115,35 @@ class Ntp(ResourceModule):
            the `want` and `have` data with the `parsers` defined
            for the Ntp network resource.
         """
+        self.compare(parsers=self.parsers, want=want, have=have)
 
-        """ w_servers = want.get("servers", {})
-        h_servers = have.get("servers", {}) """
-
-        #q(want)
-        #q(have)
-        """q(want["servers"])
-        q(have["servers"]) """
-        """ if "name" in want:
-            w_servers = want
-            h_servers = have
-
-            #q(w_servers)
-            #q(h_servers)
-            self._compare_servers(want=w_servers, have=h_servers) """
-
-    
-    """ def _compare_servers(self,want,have):
-        for wk, wserver in iteritems(want):
-            hserver = have.pop(wk, {})
-            #q(wserver)
-            #q(hserver)
-            self.compare(parsers = self.parsers, want = wserver, have = hserver) """
-    
     
     def _ntp_list_to_dict(self, entry):
         servers_dict = {}
+        #result = {}
         for k, data in iteritems(entry):
-            if "servers" in k:
+            if k == "servers":
                 for value in data:
-                    servers_dict.update({value["name"]: value})
+                    if "options" in value:
+                        result = self._serveroptions_list_to_dict(value)
+                        for res, resvalue in iteritems(result):
+                            servers_dict.update({res:resvalue})
+                    else:    
+                        servers_dict.update({value["name"]: value})
             else:
-                servers_dict.update({k:data})
+                for value in data:
+                    servers_dict.update({"ip_"+value: {k:value}})
         return servers_dict
  
-    
-    
-    
-    """ def _ntp_list_to_dict(self, entry):
-        q(entry)
-        for k, data in iteritems(entry):
-            # if "servers" in k:
-                servers_dict = {}
-                for value in data:
-                    servers_dict.update({value["name"]: value})
-                data = servers_dict                                    
-                # entry["servers"] = servers_dict
-                # self._ntp_list_to_dict()    
-                
-        q(entry) """
+   
+    def _serveroptions_list_to_dict(self, entry):
+        serveroptions_dict = {}
+        for Opk, Op in iteritems(entry):
+            if Opk == "options":
+                for val in Op:
+                    dict = {}
+                    dict.update({"name":entry["name"]})
+                    dict.update({Opk:val})
+                    serveroptions_dict.update({entry["name"]+"_"+val: dict }  )
+                    #serveroptions_dict.update({entry["name"]+"_"+val: {"name":entry["name"]}})
+        return serveroptions_dict
