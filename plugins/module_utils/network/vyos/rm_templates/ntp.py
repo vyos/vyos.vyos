@@ -37,7 +37,7 @@ class NtpTemplate(NetworkTemplate):
                 ^set\ssystem\sntp\sallow-clients\saddress   (\s(?P<ipaddress>\S+))?
                 $""",
                 re.VERBOSE),
-            "setval": "system ntp allow_clients address {{ipaddress}}",
+            "setval": "system ntp allow-clients address {{allow_clients}}",
             #"compval": "address",
             "result": {  
                        
@@ -56,7 +56,7 @@ class NtpTemplate(NetworkTemplate):
                 ^set\ssystem\sntp\slisten-address (\s(?P<ip_address>\S+))? 
                 $""",
                 re.VERBOSE),
-            "setval": "system ntp listen_address {{ip_address}}",
+            "setval": "system ntp listen-address {{listen_addresses}}",
             #"compval": "address",
             "result": {            
                  "listen_addresses": ["{{ip_address}}"]
