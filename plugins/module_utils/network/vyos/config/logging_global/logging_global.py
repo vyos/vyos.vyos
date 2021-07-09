@@ -57,14 +57,14 @@ class Logging_global(ResourceModule):
             "global_params.marker_interval",
             "global_params.preserve_fqdn",
             "global_params",
-            "hosts.port",
+            "hosts",
             "hosts.facility",
             "users",
             # "hosts.protocol",
             "console.state",
-            "users.tag",
-            "hosts.tag",
-            "files.tag",
+            # "users.tag",
+            # "hosts.tag",
+            # "files.tag",
             "global_params.state",
         ]
 
@@ -96,16 +96,19 @@ class Logging_global(ResourceModule):
         if self.state == "merged":
             wantd = dict_merge(haved, wantd)
 
-        # if state is deleted, empty out wantd and set haved to wantd
-        if self.state == "deleted":
-            haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
-            wantd = {}
-
         # remove superfluous config for overridden and deleted
-        if self.state in ["overridden", "deleted"]:
-            for k, have in iteritems(haved):
-                if k not in wantd:
-                    self._compare(want={}, have=have)
+        if self.state in ["overridden", "replaced", "deleted"]:
+            _wantd = {}
+            if haved:
+                haved = {k: {k: {}} for k, v in iteritems(self.have)}
+                for k, have in iteritems(haved):
+                    if k not in _wantd:
+                        self._compare(want={}, have=have)
+
+            if self.state == "deleted":
+                wantd = _wantd
+            else:
+                haved = _wantd
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
@@ -121,7 +124,6 @@ class Logging_global(ResourceModule):
     def list_to_dict(self, param, op):
         _temp_param = {}
         _dict_vals = None
-        primary_k = {"files": "path", "hosts": "hostname", "users": "username"}
         for element, val in iteritems(param):
             if element == "facilities":  # only with recursion call
                 _tem_par = {}
@@ -144,7 +146,6 @@ class Logging_global(ResourceModule):
             elif element == "hosts" or element == "users" or element == "files":
                 for v in val:
                     if v.get("facilities"):
-                        # v["facilities"] = self.list_to_dict(v, op)
                         _dict_vals = self.list_to_dict(v, op)
                     else:
                         _dict_vals = None
@@ -181,6 +182,14 @@ class Logging_global(ResourceModule):
         if val.get("state"):
             linear_dict.update(
                 {"state" + element: {element: {"state": val.get("state")}}}
+            )
+        if (
+            element in primary_k.keys()
+            and len(val.keys()) == 1
+            # and val.keys()[0] == tag
+        ):
+            linear_dict.update(
+                {"tag" + element + tag: {element: {"tag": tag}, "tag": tag}}
             )
         if val.get("archive"):
             _archive = val.get("archive")

@@ -65,22 +65,28 @@ class Logging_globalTemplate(NetworkTemplate):
                 tmplt += " level {level}".format(level=val["level"]) 
         elif config_data.get("users"):
             val = config_data.get("users")
-            if val.get("facility") and config_data["tag"]:
-                tmplt += " user {username} facility {facility}".format(username=config_data["tag"],facility=val["facility"])
+            if config_data.get("tag"):
+                tmplt += " user {username}".format(username=config_data["tag"])
+            if val.get("facility"):
+                tmplt += " facility {facility}".format(facility=val["facility"])
             if val.get("level"):
                 tmplt += " level {level}".format(level=val["level"])
         elif config_data.get("hosts"):
             val = config_data.get("hosts")
-            if val.get("facility") and config_data.get("tag"):
-                tmplt += " host {hostname} facility {facility}".format(hostname=config_data["tag"],facility=val["facility"])
+            if config_data.get("tag"):
+                tmplt += " host {hostname}".format(hostname=config_data["tag"])
+            if val.get("facility"):
+                tmplt += " facility {facility}".format(facility=val["facility"])
             if val.get("level"):
                 tmplt += " level {level}".format(level=val["level"]) 
             if val.get("protocol"):
                 tmplt += " protocol {protocol}".format(protocol=val["protocol"])
         elif config_data.get("files"):
             val = config_data.get("files")
-            if val.get("facility") and config_data.get("tag"):
-                tmplt += " file {path} facility {facility}".format(path=config_data["tag"],facility=val["facility"])
+            if config_data.get("tag"):
+                tmplt += " file {path}".format(path=config_data["tag"])
+            if val.get("facility"):
+                tmplt += " facility {facility}".format(facility=val["facility"])
             if val.get("level"):
                 tmplt += " level {level}".format(level=val["level"])
         if tmplt == "system syslog":
@@ -92,11 +98,12 @@ class Logging_globalTemplate(NetworkTemplate):
             "name": "console",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\ssyslog\sconsole
-                (\sfacility\s(?P<facility>all|auth|authpriv|cron|daemon|kern|lpr|mail|mark|news|protocols|security|syslog|user|uucp|local[0-7]))?
+                ^set\ssystem\ssyslog\sconsole\sfacility
+                (\s(?P<facility>all|auth|authpriv|cron|daemon|kern|lpr|mail|mark|news|protocols|security|syslog|user|uucp|local[0-7]))?
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
+            "remval": "system syslog console",
             "result": {
                 "config": {
                     "console": {
@@ -124,22 +131,22 @@ class Logging_globalTemplate(NetworkTemplate):
                 }
             },
         },
-        { #file parsers
-            "name": "files.tag",
-            "getval": re.compile(
-                r"""
-                ^set\ssystem\ssyslog\sfile
-                (\s(?P<path>\S+))
-                $""", re.VERBOSE),
-            "setval": "system syslog file {{ files.tag }}",
-            "result": {
-                "config": {
-                    "files": {"{{ path }}": {
-                        "path": "{{ path }}",
-                    },}
-                }
-            },
-        },
+        # { #file parsers
+        #     "name": "files.tag",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set\ssystem\ssyslog\sfile
+        #         (\s(?P<path>\S+))
+        #         $""", re.VERBOSE),
+        #     "setval": "system syslog file {{ files.tag }}",
+        #     "result": {
+        #         "config": {
+        #             "files": {"{{ path }}": {
+        #                 "path": "{{ path }}",
+        #             },}
+        #         }
+        #     },
+        # },
         {
             "name": "files.archive_size",
             "getval": re.compile(
@@ -190,6 +197,7 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
+            "remval": "system syslog file",
             "result": {
                 "config": {
                     "files": {"{{ path }}":{
@@ -240,8 +248,8 @@ class Logging_globalTemplate(NetworkTemplate):
             "name": "global_params.archive_size",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\ssyslog\sglobal
-                (\sarchive\ssize\s(?P<size>'(\d+)'))?
+                ^set\ssystem\ssyslog\sglobal\sarchive\ssize
+                (\s(?P<size>'(\d+)'))?
                 $""", re.VERBOSE),
             "setval": "system syslog global archive size {{ global_params.archive_size }}",
             "result": {
@@ -258,8 +266,8 @@ class Logging_globalTemplate(NetworkTemplate):
             "name": "global_params.marker_interval",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\ssyslog\sglobal
-                (\smarker\sinterval\s(?P<marker_interval>'(\d+)'))?
+                ^set\ssystem\ssyslog\sglobal\smarker\sinterval
+                (\s(?P<marker_interval>'(\d+)'))?
                 $""", re.VERBOSE),
             "setval": "system syslog global marker interval {{ global_params.marker_interval }}",
             "result": {
@@ -275,7 +283,7 @@ class Logging_globalTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\sglobal
-                (\s(?P<preserve_fqdn>preserve-fqdn))?
+                (\s(?P<preserve_fqdn>preserve-fqdn))
                 $""", re.VERBOSE),
             "setval": "system syslog global preserve-fqdn",
             "result": {
@@ -290,11 +298,12 @@ class Logging_globalTemplate(NetworkTemplate):
             "name": "global_params",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\ssyslog\sglobal
-                (\sfacility\s(?P<facility>all|auth|authpriv|cron|daemon|kern|lpr|mail|mark|news|protocols|security|syslog|user|uucp|local[0-7]))?
+                ^set\ssystem\ssyslog\sglobal\sfacility
+                (\s(?P<facility>all|auth|authpriv|cron|daemon|kern|lpr|mail|mark|news|protocols|security|syslog|user|uucp|local[0-7]))?
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
+            "remval": "system syslog global",
             "result": {
                 "config": {
                     "global_params": {
@@ -306,31 +315,32 @@ class Logging_globalTemplate(NetworkTemplate):
                 }
             },
         },
-        { #host parsers
-            "name": "hosts.tag",
+        # { #host parsers
+        #     "name": "hosts.tag",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set\ssystem\ssyslog\shost
+        #         (\s(?P<hostname>\S+))
+        #         $""", re.VERBOSE),
+        #     "setval": "system syslog host {{ hosts.tag }}",
+        #     "result": {
+        #         "config": {
+        #             "hosts": {"{{ hostname }}":{
+        #                 "hostname": "{{ hostname }}",
+        #             },}
+        #         }
+        #     },
+        # },
+        {
+            "name": "hosts",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\shost
                 (\s(?P<hostname>\S+))
-                $""", re.VERBOSE),
-            "setval": "system syslog host {{ hosts.tag }}",
-            "result": {
-                "config": {
-                    "hosts": {"{{ hostname }}":{
-                        "hostname": "{{ hostname }}",
-                    },}
-                }
-            },
-        },
-        {
-            "name": "hosts.port",
-            "getval": re.compile(
-                r"""
-                ^set\ssystem\ssyslog\shost
-                (\s(?P<hostname>\S+))?
-                (\sport\s(?P<port>'(\d+)'))?
+                (\sport\s(?P<port>'(\d+)'))
                 $""", re.VERBOSE),
             "setval": "system syslog host {{ hosts.tag }} port {{ hosts.port }}",
+            "remval": "system syslog host",
             "result": {
                 "config": {
                     "hosts": {"{{ hostname }}":{
@@ -345,8 +355,8 @@ class Logging_globalTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\shost
-                (\s(?P<hostname>\S+))?
-                (\sfacility\s(?P<facility>all|auth|authpriv|cron|daemon|kern|lpr|mail|mark|news|protocols|security|syslog|user|uucp|local[0-7]))?
+                (\s(?P<hostname>\S+))
+                (\sfacility\s(?P<facility>all|auth|authpriv|cron|daemon|kern|lpr|mail|mark|news|protocols|security|syslog|user|uucp|local[0-7]))
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 (\sprotocol\s(?P<protocol>'(udp|tcp)'))?
                 $""", re.VERBOSE),
@@ -396,6 +406,7 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
+            "remval": "system syslog user",
             "result": {
                 "config": {
                     "users": {
@@ -409,22 +420,22 @@ class Logging_globalTemplate(NetworkTemplate):
                 }
             },
         },
-        {
-            "name": "users.tag",
-            "getval": re.compile(
-                r"""
-                ^set\ssystem\ssyslog\suser
-                (\s(?P<username>\S+))
-                $""", re.VERBOSE),
-            "setval": "system syslog user {{ users.tag }}",
-            "result": {
-                "config": {
-                    "users": {
-                        "{{ username }}":{
-                        "username": "{{ username }}",
-                    }}
-                }
-            },
-        },  
+        # {
+        #     "name": "users.tag",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set\ssystem\ssyslog\suser
+        #         (\s(?P<username>\S+))
+        #         $""", re.VERBOSE),
+        #     "setval": "system syslog user {{ users.tag }}",
+        #     "result": {
+        #         "config": {
+        #             "users": {
+        #                 "{{ username }}":{
+        #                 "username": "{{ username }}",
+        #             }}
+        #         }
+        #     },
+        # },  
     ]
     # fmt: on
