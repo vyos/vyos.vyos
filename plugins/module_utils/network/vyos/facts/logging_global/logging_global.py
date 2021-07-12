@@ -65,10 +65,12 @@ class Logging_globalFacts(object):
                     objFinal[ke] = sorted(
                         objFinal[ke], key=lambda item: item["username"]
                     )
-                elif ke == "console_params":
-                    objFinal[ke] = sorted(
-                        objFinal[ke], key=lambda item: item["facility"]
-                    )
+                elif ke == "console":
+                    if objFinal[ke].get("facilities"):
+                        objFinal[ke]["facilities"] = sorted(
+                            objFinal[ke]["facilities"],
+                            key=lambda item: item["facility"],
+                        )
         return objFinal
 
     def populate_facts(self, connection, ansible_facts, data=None):
