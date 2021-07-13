@@ -1,0 +1,16 @@
+---
+- debug:
+    msg: START vyos_prefix_lists parsed integration tests on connection={{ ansible_connection }}
+
+- name: Parse externally provided prefix-lists configuration
+  register: result
+  vyos.vyos.vyos_prefix_lists:
+    running_config: "{{ lookup('file', './_parsed.cfg') }}"
+    state: parsed
+
+- name: Assert that config was correctly parsed
+  assert:
+    that:
+      - "{{ result['parsed'][0] == merged['after'][0] }}"
+      - "{{ result['parsed'][1] == merged['after'][1] }}"
+      - "{{ result['parsed']|length == 2 }}"

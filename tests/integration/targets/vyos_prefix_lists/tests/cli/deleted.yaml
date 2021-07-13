@@ -1,0 +1,108 @@
+---
+- debug:
+    msg: START vyos_prefix_lists deleted integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    # Delete all prefix-lists
+    - name: Delete all prefix-lists
+      register: result
+      vyos.vyos.vyos_prefix_lists: &id006
+        config:
+        state: deleted
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ result['before'][0] == merged['after'][0] }}"
+          - "{{ result['before'][1] == merged['after'][1] }}"
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ deleted['commands'] | symmetric_difference(result['commands']) |length\
+            \ == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - result["after"] == []
+
+    - name: Delete all prefix-lists (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_prefix_lists: *id006
+
+    - name: Assert that task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+          - result.commands|length == 0
+
+    - include_tasks: _remove_config.yaml
+
+    - include_tasks: _populate_config.yaml
+
+    # Delete all prefix-lists for an AFI
+    - name: Delete all prefix-lists for IPv6 AFI
+      register: result
+      vyos.vyos.vyos_prefix_lists:
+        config:
+          - afi: "ipv6"
+        state: deleted
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ result['before'][0] == merged['after'][0] }}"
+          - "{{ result['before'][1] == merged['after'][1] }}"
+          - "{{ result['before']|length == 2 }}"
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - '"delete policy prefix-list6 AllowIPv6Prefix" in result.commands'
+          - '"delete policy prefix-list6 DenyIPv6Prefix" in result.commands'
+          - result.commands|length == 2
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - result["after"][0] == merged["after"][0]
+          - result["after"]|length == 1
+
+    - include_tasks: _remove_config.yaml
+
+    - include_tasks: _populate_config.yaml
+
+    # Delete single prefix-list from different AFIs
+    - name: Delete a single prefix-list from different AFIs
+      register: result
+      vyos.vyos.vyos_prefix_lists:
+        config:
+          - afi: "ipv4"
+            prefix_lists:
+              - name: "AnsibleIPv4PrefixList"
+          - afi: "ipv6"
+            prefix_lists:
+              - name: "DenyIPv6Prefix"
+        state: deleted
+
+    - name: Assert that before dicts are correctly generated
+      assert:
+        that:
+          - "{{ result['before'][0] == merged['after'][0] }}"
+          - "{{ result['before'][1] == merged['after'][1] }}"
+          - "{{ result['before']|length == 2 }}"
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - '"delete policy prefix-list AnsibleIPv4PrefixList" in result.commands'
+          - '"delete policy prefix-list6 DenyIPv6Prefix" in result.commands'
+          - result.commands|length == 2
+
+  always:
+    - include_tasks: _remove_config.yaml
