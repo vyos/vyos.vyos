@@ -27,28 +27,7 @@ class Logging_globalTemplate(NetworkTemplate):
             lines=lines, tmplt=self, prefix=prefix, module=module
         )
 
-    # vyos@vyos:~$ show configuration commands | grep syslog
-    # set system syslog console facility all
-    # set system syslog console facility local7 level 'err'
-    # set system syslog console facility news level 'debug'
-
-    # set system syslog file abc archive size '125'
-    # set system syslog file def archive file '2'
-    # set system syslog file def facility local7 level 'emerg'
-
-    # set system syslog host 10.0.2.15 facility all level 'all'
-    # set system syslog host 10.0.2.15 facility all protocol 'udp'
-
-    # set system syslog user paul facility local7 level 'err'
-    # set system syslog user vyos facility local6 level 'emerg'
-    # set system syslog user vyos facility local7 level 'err'
-
-    # set system syslog global archive file '2'
-    # set system syslog global facility cron level 'err'
-    # set system syslog global marker interval '111'
-    # set system syslog global preserve-fqdn
     # fmt: off
-
     def tmplt_params(config_data):
         tmplt = "system syslog"
         if config_data.get("global_params"):
@@ -131,22 +110,6 @@ class Logging_globalTemplate(NetworkTemplate):
                 }
             },
         },
-        # { #file parsers
-        #     "name": "files.tag",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set\ssystem\ssyslog\sfile
-        #         (\s(?P<path>\S+))
-        #         $""", re.VERBOSE),
-        #     "setval": "system syslog file {{ files.tag }}",
-        #     "result": {
-        #         "config": {
-        #             "files": {"{{ path }}": {
-        #                 "path": "{{ path }}",
-        #             },}
-        #         }
-        #     },
-        # },
         {
             "name": "files.archive_size",
             "getval": re.compile(
@@ -315,22 +278,6 @@ class Logging_globalTemplate(NetworkTemplate):
                 }
             },
         },
-        # { #host parsers
-        #     "name": "hosts.tag",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set\ssystem\ssyslog\shost
-        #         (\s(?P<hostname>\S+))
-        #         $""", re.VERBOSE),
-        #     "setval": "system syslog host {{ hosts.tag }}",
-        #     "result": {
-        #         "config": {
-        #             "hosts": {"{{ hostname }}":{
-        #                 "hostname": "{{ hostname }}",
-        #             },}
-        #         }
-        #     },
-        # },
         {
             "name": "hosts",
             "getval": re.compile(
@@ -374,28 +321,6 @@ class Logging_globalTemplate(NetworkTemplate):
                 }
             },
         },
-        # {
-        #     "name": "hosts.protocol",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set\ssystem\ssyslog\shost
-        #         (\s(?P<hostname>\S+))?
-        #         (\sfacility\s(?P<facility>all|auth|authpriv|cron|daemon|kern|lpr|mail|mark|news|protocols|security|syslog|user|uucp|local[0-7]))?
-        #         (\sprotocol\s(?P<protocol>'(udp|tcp)'))?
-        #         $""", re.VERBOSE),
-        #     "setval": tmplt_params,
-        #     "result": {
-        #         "config": {
-        #             "hosts": {"{{ hostname }}":{
-        #                 "hostname": "{{ hostname }}",
-        #                 "facilities":[{
-        #                     "protocol": "{{ protocol }}",
-        #                     "facility": "{{ facility }}",
-        #                 },]
-        #             },}
-        #         }
-        #     },
-        # },
         { #user parsers
             "name": "users",
             "getval": re.compile(
@@ -420,22 +345,5 @@ class Logging_globalTemplate(NetworkTemplate):
                 }
             },
         },
-        # {
-        #     "name": "users.tag",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set\ssystem\ssyslog\suser
-        #         (\s(?P<username>\S+))
-        #         $""", re.VERBOSE),
-        #     "setval": "system syslog user {{ users.tag }}",
-        #     "result": {
-        #         "config": {
-        #             "users": {
-        #                 "{{ username }}":{
-        #                 "username": "{{ username }}",
-        #             }}
-        #         }
-        #     },
-        # },  
     ]
     # fmt: on

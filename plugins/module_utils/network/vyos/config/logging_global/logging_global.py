@@ -48,24 +48,20 @@ class Logging_global(ResourceModule):
             tmplt=Logging_globalTemplate(),
         )
         self.parsers = [
-            "console",
-            "files.archive_size",
-            "files.archive_file_num",
-            "files",
-            "global_params.archive_file_num",
-            "global_params.archive_size",
-            "global_params.marker_interval",
-            "global_params.preserve_fqdn",
-            "global_params",
-            "hosts",
-            "hosts.facility",
             "users",
-            # "hosts.protocol",
+            "files",
+            "hosts",
+            "console",
+            "global_params",
             "console.state",
-            # "users.tag",
-            # "hosts.tag",
-            # "files.tag",
+            "hosts.facility",
+            "files.archive_size",
             "global_params.state",
+            "files.archive_file_num",
+            "global_params.archive_size",
+            "global_params.preserve_fqdn",
+            "global_params.marker_interval",
+            "global_params.archive_file_num",
         ]
 
     def execute_module(self):
@@ -96,19 +92,20 @@ class Logging_global(ResourceModule):
         if self.state == "merged":
             wantd = dict_merge(haved, wantd)
 
-        # remove superfluous config for overridden and deleted
+        # remove superfluous config for non merged state
         if self.state in ["overridden", "replaced", "deleted"]:
             _wantd = {}
-            if haved:
+            if haved and haved != wantd:
                 haved = {k: {k: {}} for k, v in iteritems(self.have)}
                 for k, have in iteritems(haved):
                     if k not in _wantd:
                         self._compare(want={}, have=have)
 
             if self.state == "deleted":
-                wantd = _wantd
+                wantd = _wantd  # delete to specify want stays blank
             else:
-                haved = _wantd
+                if haved != wantd:
+                    haved = _wantd  # other config to form commands on basis of want
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))

@@ -236,7 +236,6 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         playbook["state"] = "merged"
         set_module_args(playbook)
         result = self.execute_module(changed=True)
-        # print(result["commands"])
         self.maxDiff = None
         self.assertEqual(sorted(result["commands"]), sorted(compare_cmds))
 
@@ -341,7 +340,23 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         playbook["state"] = "replaced"
         set_module_args(playbook)
         result = self.execute_module(changed=True)
-        print(result["commands"])
+        self.maxDiff = None
+        self.assertEqual(sorted(result["commands"]), sorted(compare_cmds))
+
+    def test_vyos_logging_global_replaced_idempotent(self):
+        """
+        passing all commands as have and expecting [] commands
+        """
+        self.execute_show_command.return_value = dedent(
+            """\
+            set system syslog console facility local6
+            """
+        )
+        playbook = dict(config=dict(console=dict(facilities=[dict(facility="local6")])))
+        compare_cmds = []
+        playbook["state"] = "replaced"
+        set_module_args(playbook)
+        result = self.execute_module(changed=False)
         self.maxDiff = None
         self.assertEqual(sorted(result["commands"]), sorted(compare_cmds))
 
@@ -381,7 +396,6 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         playbook["state"] = "overridden"
         set_module_args(playbook)
         result = self.execute_module(changed=True)
-        print(result["commands"])
         self.maxDiff = None
         self.assertEqual(sorted(result["commands"]), sorted(compare_cmds))
 
@@ -412,3 +426,35 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         result = self.execute_module()
         self.maxDiff = None
         self.assertEqual(sorted(result["rendered"]), sorted(compare_cmds))
+
+    def test_vyos_logging_global_parsed(self):
+        set_module_args(
+            dict(
+                running_config=dedent(
+                    """\
+                    set system syslog console facility all
+                    set system syslog file xyz
+                    """
+                ),
+                state="parsed",
+            )
+        )
+        parsed = dict(
+            console=dict(facilities=[dict(facility="all")]), files=[dict(path="xyz")]
+        )
+        result = self.execute_module(changed=False)
+        self.maxDiff = None
+        self.assertEqual(sorted(result["parsed"]), sorted(parsed))
+
+    def test_vyos_logging_global_gathered(self):
+        self.execute_show_command.return_value = dedent(
+            """\
+            set system syslog console facility all
+            """
+        )
+        set_module_args(dict(state="gathered"))
+        gathered = dict(console=dict(facilities=[dict(facility="all")]))
+        result = self.execute_module(changed=False)
+
+        self.maxDiff = None
+        self.assertEqual(sorted(result["gathered"]), sorted(gathered))
