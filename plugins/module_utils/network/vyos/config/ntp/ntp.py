@@ -85,26 +85,44 @@ class Ntp(ResourceModule):
                 k: v for k, v in iteritems(haved) if k in wantd or not wantd
             }
             wantd = {}
+            commandlist = []
+            for k,have in iteritems(haved):
+                for k,val in iteritems(have):
+                    if k not in commandlist and k!="options":
+                        commandlist.append(k)
+            for k in commandlist:
+                if k == "allow_clients":
+                    self.commands.append(
+                        "delete system ntp allow-clients"
+                    )
+                elif k=="listen_addresses":
+                     self.commands.append(
+                        "delete system ntp listen-address"
+                    )
+                else:
+                    self.commands.append(
+                        "delete system ntp server"
+                    )
+    
 
         # remove superfluous config for overridden and deleted
-
-        if self.state in ["overridden", "deleted"]:
+        #Getting the list of the server names from haved 
+        #   to avoid the duplication of overridding/replacing the servers
+        if self.state in ["overridden","replaced"]:
+            servernames = []
+            for hk, have in iteritems(haved):
+                for k, val in iteritems(have):
+                    if k == "name" and val not in servernames:
+                        servernames.append(val)    
+                
             for k, have in iteritems(haved):
-                if k not in wantd:
-                    self._compare(want={}, have=have)
-
-
-        """   if self.state in ["overridden", "deleted"]:
-            for k, have in iteritems(haved):
-                if k not in wantd:
-                    if k == "servers":
-                        prsrname = "name"
-                    else:
-                        prsrname = k
-                    # self._compare(want={}, have=have)
-                    self.commands.append (
-                        self._tmplt.render({prsrname:have},prsrname,True)
-                   ) """
+                if k not in wantd and "name" not in have:
+                    self._compareoverride(want={}, have=have)
+                    #removing the servername from the list after deleting it from haved
+                elif k not in wantd and have["name"] in servernames:
+                    self._compareoverride(want={}, have=have)
+                    servernames.remove(have["name"])
+                   
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
@@ -115,12 +133,23 @@ class Ntp(ResourceModule):
            the `want` and `have` data with the `parsers` defined
            for the Ntp network resource.
         """
-        self.compare(parsers=self.parsers, want=want, have=have)
+        if "options" in want:
+            self.compare(parsers="options", want=want, have=have)
+        else:
+            self.compare(parsers=self.parsers, want=want, have=have)  
+
+
+    def _compareoverride(self, want, have):
+        # do not delete configuration with options level 
+        for i, val in iteritems(have):
+            if i =="options":
+                pass
+            else:
+                self.compare(parsers=i, want={}, have=have)
 
     
     def _ntp_list_to_dict(self, entry):
         servers_dict = {}
-        #result = {}
         for k, data in iteritems(entry):
             if k == "servers":
                 for value in data:
@@ -144,6 +173,5 @@ class Ntp(ResourceModule):
                     dict = {}
                     dict.update({"name":entry["name"]})
                     dict.update({Opk:val})
-                    serveroptions_dict.update({entry["name"]+"_"+val: dict }  )
-                    #serveroptions_dict.update({entry["name"]+"_"+val: {"name":entry["name"]}})
+                    serveroptions_dict.update({entry["name"]+"_"+val: dict })                    
         return serveroptions_dict

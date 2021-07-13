@@ -98,8 +98,7 @@ class NtpTemplate(NetworkTemplate):
                 "servers": {
                     "{{name}}": {
                         "name": "{{name}}",
-                        "options": "{{options}}"                   
-
+                        "options":["{{options}}",] ,                
                     }  
                 }
             }
