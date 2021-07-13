@@ -58,6 +58,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_a
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.route_maps.route_maps import (
     Route_mapsFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.prefix_lists.prefix_lists import (
+    Prefix_listsFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.logging_global.logging_global import (
     Logging_globalFacts,
 )
@@ -85,6 +88,7 @@ FACT_RESOURCE_SUBSETS = dict(
     bgp_global=Bgp_globalFacts,
     bgp_address_family=Bgp_address_familyFacts,
     route_maps=Route_mapsFacts,
+    prefix_lists=Prefix_listsFacts,
     logging_global=Logging_globalFacts,
 )
 
@@ -98,9 +102,7 @@ class Facts(FactsBase):
     def __init__(self, module):
         super(Facts, self).__init__(module)
 
-    def get_facts(
-        self, legacy_facts_type=None, resource_facts_type=None, data=None
-    ):
+    def get_facts(self, legacy_facts_type=None, resource_facts_type=None, data=None):
         """Collect the facts for vyos
         :param legacy_facts_type: List of legacy facts types
         :param resource_facts_type: List of resource fact types
@@ -113,7 +115,5 @@ class Facts(FactsBase):
                 FACT_RESOURCE_SUBSETS, resource_facts_type, data
             )
         if self.VALID_LEGACY_GATHER_SUBSETS:
-            self.get_network_legacy_facts(
-                FACT_LEGACY_SUBSETS, legacy_facts_type
-            )
+            self.get_network_legacy_facts(FACT_LEGACY_SUBSETS, legacy_facts_type)
         return self.ansible_facts, self._warnings
