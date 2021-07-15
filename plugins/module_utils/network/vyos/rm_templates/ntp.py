@@ -89,7 +89,7 @@ class NtpTemplate(NetworkTemplate):
             "name": "options",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\sserver (\s(?P<name>\S+))?  (\s(?P<options>noselect|pool|preempt|prefer))? 
+                ^set\ssystem\sntp\sserver (\s(?P<name>\S+))? (\s(?P<options>noselect|pool|preempt|prefer))?            
                 $""",
                 re.VERBOSE),
             "setval": "system ntp server {{name}} {{options}}",
@@ -98,7 +98,7 @@ class NtpTemplate(NetworkTemplate):
                 "servers": {
                     "{{name}}": {
                         "name": "{{name}}",
-                        "options":["{{options}}",] ,                
+                        "options":["{{options}}"]                 
                     }  
                 }
             }
