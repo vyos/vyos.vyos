@@ -1,0 +1,10 @@
+---
+- name: Remove pre-existing ntp config
+  vyos.vyos.vyos_config:
+    lines:
+        -  delete system ntp allow-clients
+        -  delete system ntp listen-address
+        -  delete system ntp server
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
