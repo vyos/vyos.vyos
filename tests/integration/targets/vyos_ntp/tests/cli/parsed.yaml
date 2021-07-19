@@ -16,6 +16,3 @@
     that:
       - result.changed == false
       - result.parsed == parsed.after
-      #- result.parsed == ansible_facts['network_resources']['ntp']
-      #- result.parsed|symmetric_difference(merged.after) == []
-      #- result.parsed == parsed.after
