@@ -37,10 +37,11 @@
 
     - assert:
         that:
-          - result.commands|length == 10
+          - result.commands|length == 19
           - result.changed == true
-          - result.commands|symmetric_difference(overridden.commands) == []
-          - result.after|symmetric_difference(ansible_facts['network_resources']['ntp']) == []
+          - result.after == ansible_facts['network_resources']['ntp']
+          #- result.commands|symmetric_difference(overridden.commands) == []
+          #- result.after|symmetric_difference(ansible_facts['network_resources']['ntp']) == []
 
     - name: Override the existing configuration with the provided running configuration
         (IDEMPOTENT)

@@ -115,3 +115,17 @@ deleted:
     -  delete system ntp server
 
   after: []
+
+
+parsed:
+  after:
+      allow_clients:
+      - 10.4.9.0/24
+      listen_addresses:
+      - 10.1.9.16
+      servers:
+      - name: 10.3.6.5
+        options:
+          - noselect
+
+
