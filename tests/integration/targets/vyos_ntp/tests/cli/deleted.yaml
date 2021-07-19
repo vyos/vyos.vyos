@@ -25,6 +25,7 @@
       assert:
         that:
           - result.after == {}
+          - result.after == deleted.after
 
     - name: Delete the existing configuration with the provided running configuration
         (IDEMPOTENT)

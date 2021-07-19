@@ -22,30 +22,33 @@ merged:
 
   after:
       allow_clients:
-      - 10.2.3.0/24
-      - 10.4.7.0/24
       - 10.1.2.0/24
       - 10.4.9.0/24
+      - 10.4.7.0/24
+      - 10.2.3.0/24
       listen_addresses:
       - 10.4.5.1
-      - 10.7.9.21
       - 10.1.9.16
-      - 10.8.9.4
       - 10.5.3.2
+      - 10.8.9.4
+      - 10.7.9.21      
       servers:
-      - name: server5
+      - name: 10.3.6.5
+        options:          
+          - preempt          
+          - prefer
+          - pool
+          - noselect      
 
       - name: server4
         options:
+          - pool 
           - noselect
-          - pool
 
-      - name: 10.3.6.5
-        options:
-          - noselect
-          - preempt
-          - pool
-          - prefer
+      - name: server5
+          
+
+
 
 replaced:
   commands:
@@ -114,7 +117,7 @@ deleted:
     -  delete system ntp listen-address
     -  delete system ntp server
 
-  after: []
+  after: {}
 
 
 parsed:
