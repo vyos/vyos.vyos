@@ -25,13 +25,6 @@
       assert:
         that:
           - result.after == {}
-          #- result.after == ansible_facts['network_resources']['ntp']
-
-          #- result.commands|length == 0
-          #- result.commands|symmetric_difference(deleted.commands) == []
-          #- result.after == result.commands|symmetric_difference(deleted.commands)
-          #- "{{ deleted['after'] | symmetric_difference(result['after']) |length\
-          #  \ == 0 }}"
 
     - name: Delete the existing configuration with the provided running configuration
         (IDEMPOTENT)
