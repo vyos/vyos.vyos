@@ -10,7 +10,12 @@
     running_config: "{{ lookup('file', '_parsed.cfg') }}"
     state: parsed
 
-- assert:
+
+- name: Assert that config was correctly parsed
+  assert:
     that:
       - result.changed == false
-      - result.parsed|symmetric_difference(merged.after) == []
+      - result.parsed == parsed.after
+      #- result.parsed == ansible_facts['network_resources']['ntp']
+      #- result.parsed|symmetric_difference(merged.after) == []
+      #- result.parsed == parsed.after

@@ -22,4 +22,5 @@
       assert:
         that:
           - result.changed == false
-          - result.gathered|symmetric_difference(ansible_facts['network_resources']['ntp']) == []
+          - result.gathered == ansible_facts['network_resources']['ntp']
+          #- result.gathered|symmetric_difference(ansible_facts['network_resources']['ntp']) == []

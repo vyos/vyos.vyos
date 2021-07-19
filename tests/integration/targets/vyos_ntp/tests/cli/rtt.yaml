@@ -46,7 +46,8 @@
           - baseconfig.commands|length == 16
           - baseconfig.changed == true
           - baseconfig.commands|symmetric_difference(merged.commands) == []
-          - baseconfig.after|symmetric_difference(ansible_facts['network_resources']['ntp']) == []
+          - baseconfig.after == ansible_facts['network_resources']['ntp']
+          #- baseconfig.after|symmetric_difference(ansible_facts['network_resources']['ntp']) == []
 
     - name: Merge the existing configuration with the provided running configuration
       register: result
