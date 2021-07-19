@@ -92,20 +92,34 @@ class Logging_global(ResourceModule):
         if self.state == "merged":
             wantd = dict_merge(haved, wantd)
 
-        # remove superfluous config for non merged state
-        if self.state in ["overridden", "replaced", "deleted"]:
-            _wantd = {}
-            if haved and haved != wantd:
-                haved = {k: {k: {}} for k, v in iteritems(self.have)}
-                for k, have in iteritems(haved):
-                    if k not in _wantd:
-                        self._compare(want={}, have=have)
+        # if state is deleted, empty out wantd and set haved to wantd
+        if self.state == "deleted":
+            haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
+            wantd = {}
 
-            if self.state == "deleted":
-                wantd = _wantd  # delete to specify want stays blank
-            else:
-                if haved != wantd:
-                    haved = _wantd  # other config to form commands on basis of want
+        # remove superfluous config for overridden and deleted
+        if self.state in ["overridden", "deleted", "replaced"]:
+            for k, have in iteritems(haved):
+                if k not in wantd:
+                    self._compare(want={}, have=have)
+
+        # if self.state == "deleted":
+        #     wantd = haved
+
+        # # remove superfluous config for non merged state
+        # if self.state in ["overridden", "replaced"]:
+        #     _wantd = {}
+        #     if haved and haved != wantd:
+        #         haved = {k: {k: {}} for k, v in iteritems(self.have)}
+        #         for k, have in iteritems(haved):
+        #             if k not in _wantd:
+        #                 self._compare(want={}, have=have)
+
+        #     if self.state == "deleted":
+        #         wantd = _wantd  # delete to specify want stays blank
+        #     else:
+        #         if haved != wantd:
+        #             haved = _wantd  # other config to form commands on basis of want
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
@@ -125,8 +139,10 @@ class Logging_global(ResourceModule):
             if element == "facilities":  # only with recursion call
                 _tem_par = {}
                 for par in val:
-                    if par.get("facility") and par.get("level"):
-                        _tem_par.update({par.get("facility") + par.get("level"): par})
+                    if par.get("facility") and par.get("severity"):
+                        _tem_par.update(
+                            {par.get("facility") + par.get("severity"): par}
+                        )
                     elif par.get("facility") and par.get("protocol"):
                         _tem_par.update(
                             {par.get("facility") + par.get("protocol"): par}
@@ -176,9 +192,18 @@ class Logging_global(ResourceModule):
             linear_dict.update(
                 {"port" + tag: {element: {"port": val.get("port"), "tag": tag}}}
             )
-        if val.get("state"):
+        if val.get("state") or tag == "":
             linear_dict.update(
-                {"state" + element: {element: {"state": val.get("state")}}}
+                {
+                    "state"
+                    + element: {
+                        element: {
+                            "state": "enable"
+                            if not val.get("state")
+                            else val.get("state")
+                        }
+                    }
+                }
             )
         if (
             element in primary_k.keys()

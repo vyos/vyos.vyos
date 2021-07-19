@@ -39,8 +39,7 @@ class Logging_globalFacts(object):
     def get_logging_data(self, connection):
         return connection.get("show configuration commands | grep syslog")
 
-    def process_facts(self, objs):
-        objFinal = objs[0] if len(objs) >= 1 else {}
+    def process_facts(self, objFinal):
         if objFinal:
             for ke, vl in iteritems(objFinal):
                 if ke == "files":
@@ -65,7 +64,7 @@ class Logging_globalFacts(object):
                     objFinal[ke] = sorted(
                         objFinal[ke], key=lambda item: item["username"]
                     )
-                elif ke == "console":
+                elif ke == "console" or ke == "global_params":
                     if objFinal[ke].get("facilities"):
                         objFinal[ke]["facilities"] = sorted(
                             objFinal[ke]["facilities"],
@@ -93,8 +92,7 @@ class Logging_globalFacts(object):
         logging_global_parser = Logging_globalTemplate(
             lines=data.splitlines(), module=self._module
         )
-        objs = list(logging_global_parser.parse().values())
-
+        objs = logging_global_parser.parse()
         ansible_facts["ansible_network_resources"].pop("logging_global", None)
         objs = self.process_facts(objs)
 
@@ -103,9 +101,8 @@ class Logging_globalFacts(object):
                 self.argument_spec, {"config": objs}, redact=True
             )
         )
-        if not objs:
-            params["config"] = {}
-        facts["logging_global"] = params["config"]
+
+        facts["logging_global"] = params.get("config", {})
         ansible_facts["ansible_network_resources"].update(facts)
 
         return ansible_facts

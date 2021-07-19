@@ -70,7 +70,7 @@ options:
                   - local5
                   - local6
                   - local7
-              level: &level
+              severity: &severity
                 description: logging level
                 type: str
                 choices:
@@ -107,7 +107,7 @@ options:
             elements: dict
             suboptions:
               facility: *facility
-              level: *level
+              severity: *severity
       global_params:
         description: logging to serial console
         type: dict
@@ -135,7 +135,7 @@ options:
             elements: dict
             suboptions:
               facility: *facility
-              level: *level
+              severity: *severity
               protocol:
                 description: syslog communication protocol
                 type: str
@@ -189,10 +189,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.logg
     Logging_global,
 )
 
-# import debugpy
+import debugpy
 
-# debugpy.listen(3001)
-# debugpy.wait_for_client()
+debugpy.listen(3001)
+debugpy.wait_for_client()
 
 
 def main():

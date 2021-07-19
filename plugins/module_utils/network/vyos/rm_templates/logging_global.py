@@ -34,30 +34,30 @@ class Logging_globalTemplate(NetworkTemplate):
             val = config_data.get("global_params")
             if val.get("facility"):
                 tmplt += " global facility {facility}".format(facility=val["facility"])
-            if val.get("level"):
-                tmplt += " level {level}".format(level=val["level"])            
+            if val.get("severity"):
+                tmplt += " level {level}".format(level=val["severity"])            
         elif config_data.get("console"):
             val = config_data.get("console")
             if val.get("facility"):
                 tmplt += " console facility {facility}".format(facility=val["facility"])
-            if val.get("level"):
-                tmplt += " level {level}".format(level=val["level"]) 
+            if val.get("severity"):
+                tmplt += " level {level}".format(level=val["severity"]) 
         elif config_data.get("users"):
             val = config_data.get("users")
             if config_data.get("tag"):
                 tmplt += " user {username}".format(username=config_data["tag"])
             if val.get("facility"):
                 tmplt += " facility {facility}".format(facility=val["facility"])
-            if val.get("level"):
-                tmplt += " level {level}".format(level=val["level"])
+            if val.get("severity"):
+                tmplt += " level {level}".format(level=val["severity"])
         elif config_data.get("hosts"):
             val = config_data.get("hosts")
             if config_data.get("tag"):
                 tmplt += " host {hostname}".format(hostname=config_data["tag"])
             if val.get("facility"):
                 tmplt += " facility {facility}".format(facility=val["facility"])
-            if val.get("level"):
-                tmplt += " level {level}".format(level=val["level"]) 
+            if val.get("severity"):
+                tmplt += " level {level}".format(level=val["severity"]) 
             if val.get("protocol"):
                 tmplt += " protocol {protocol}".format(protocol=val["protocol"])
         elif config_data.get("files"):
@@ -66,8 +66,8 @@ class Logging_globalTemplate(NetworkTemplate):
                 tmplt += " file {path}".format(path=config_data["tag"])
             if val.get("facility"):
                 tmplt += " facility {facility}".format(facility=val["facility"])
-            if val.get("level"):
-                tmplt += " level {level}".format(level=val["level"])
+            if val.get("severity"):
+                tmplt += " level {level}".format(level=val["severity"])
         if tmplt == "system syslog":
             tmplt = None
         return tmplt
@@ -82,17 +82,15 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
-            "remval": "system syslog console",
+            "remval": "system syslog console facility {{ console.facility }}",
             "result": {
-                "config": {
-                    "console": {
-                        "facilities": [{
-                            "facility": "{{ facility }}",
-                            "level": "{{ level }}",
-                        }]
-                    }
+                "console": {
+                    "facilities": [{
+                        "facility": "{{ facility }}",
+                        "severity": "{{ level }}",
+                    }]
                 }
-            },
+            }
         },
         {
             "name": "console.state",
@@ -103,12 +101,10 @@ class Logging_globalTemplate(NetworkTemplate):
                 $""", re.VERBOSE),
             "setval": "system syslog console",
             "result": {
-                "config": {
-                    "console": {
-                        "state": "{{ 'enabled' if console is defined else 'disabled' }}",
-                    }
+                "console": {
+                    "state": "{{ 'enabled' if console is defined else 'disabled' }}",
                 }
-            },
+            }
         },
         {
             "name": "files.archive_size",
@@ -119,16 +115,15 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\sarchive\ssize\s(?P<size>'(\d+)'))?
                 $""", re.VERBOSE),
             "setval": "system syslog file {{ files.tag }} archive size {{ files.archive_size }}",
+            "remval": "system syslog file {{ files.tag }}",
             "result": {
-                "config": {
-                    "files": {"{{ path }}": {
-                        "path": "{{ path }}",
-                        "archive": {
-                            "size": "{{ size }}",
-                        },
-                    },}
-                }
-            },
+                "files": {"{{ path }}": {
+                    "path": "{{ path }}",
+                    "archive": {
+                        "size": "{{ size }}",
+                    },
+                },}
+            }
         },
         {
             "name": "files.archive_file_num",
@@ -139,16 +134,15 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\sarchive\sfile\s(?P<file_num>'(\d+)'))?
                 $""", re.VERBOSE),
             "setval": "system syslog file {{ files.tag }} archive file {{ files.archive_file_num }}",
+            "remval": "system syslog file {{ files.tag }}",
             "result": {
-                "config": {
-                    "files": {"{{ path }}":{
-                        "path": "{{ path }}",
-                        "archive": {
-                            "file_num": "{{ file_num }}",
-                        },
-                    },}
-                }
-            },
+                "files": {"{{ path }}":{
+                    "path": "{{ path }}",
+                    "archive": {
+                        "file_num": "{{ file_num }}",
+                    },
+                },}
+            }
         },
         {
             "name": "files",
@@ -160,18 +154,17 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
-            "remval": "system syslog file",
+            "remval": "system syslog file {{ tag }}"
+                      "{{ (' facility ' + files.facility) if files.facility is defined else '' }}",
             "result": {
-                "config": {
-                    "files": {"{{ path }}":{
-                        "path": "{{ path }}",
-                        "facilities":[{
-                            "facility": "{{ facility }}",
-                            "level": "{{ level }}",
-                        },]
-                    },}
-                }
-            },
+                "files": {"{{ path }}":{
+                    "path": "{{ path }}",
+                    "facilities":[{
+                        "facility": "{{ facility }}",
+                        "severity": "{{ level }}",
+                    },]
+                },}
+            }
         },
         { #global_param parsers
             "name": "global_params.state",
@@ -182,12 +175,10 @@ class Logging_globalTemplate(NetworkTemplate):
                 $""", re.VERBOSE),
             "setval": "system syslog global",
             "result": {
-                "config": {
-                    "global_params": {
-                        "state": "{{ 'enabled' if global is defined else 'disabled' }}",
-                    }
+                "global_params": {
+                    "state": "{{ 'enabled' if global is defined else 'disabled' }}",
                 }
-            },
+            }
         },
         {
             "name": "global_params.archive_file_num",
@@ -197,15 +188,14 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\s(?P<file_num>'(\d+)'))?
                 $""", re.VERBOSE),
             "setval": "system syslog global archive file {{ global_params.archive_file_num }}",
+            "remval": "system syslog global archive",
             "result": {
-                "config": {
-                    "global_params": {
-                        "archive": {
-                            "file_num": "{{ file_num }}",
-                        },
-                    }
+                "global_params": {
+                    "archive": {
+                        "file_num": "{{ file_num }}",
+                    },
                 }
-            },
+            }
         },
         {
             "name": "global_params.archive_size",
@@ -215,15 +205,14 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\s(?P<size>'(\d+)'))?
                 $""", re.VERBOSE),
             "setval": "system syslog global archive size {{ global_params.archive_size }}",
+            "remval": "system syslog global archive",
             "result": {
-                "config": {
-                    "global_params": {
-                        "archive": {
-                            "size": "{{ size }}",
-                        },
-                    }
+                "global_params": {
+                    "archive": {
+                        "size": "{{ size }}",
+                    },
                 }
-            },
+            }
         },
         {
             "name": "global_params.marker_interval",
@@ -233,13 +222,12 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\s(?P<marker_interval>'(\d+)'))?
                 $""", re.VERBOSE),
             "setval": "system syslog global marker interval {{ global_params.marker_interval }}",
+            "remval": "system syslog global marker",
             "result": {
-                "config": {
-                    "global_params": {
-                        "marker_interval": "{{ marker_interval }}",
-                    }
+                "global_params": {
+                    "marker_interval": "{{ marker_interval }}",
                 }
-            },
+            }
         },
         {
             "name": "global_params.preserve_fqdn",
@@ -250,12 +238,10 @@ class Logging_globalTemplate(NetworkTemplate):
                 $""", re.VERBOSE),
             "setval": "system syslog global preserve-fqdn",
             "result": {
-                "config": {
-                    "global_params": {
-                        "preserve_fqdn": "{{ True if preserve_fqdn is defined }}",
-                    }
+                "global_params": {
+                    "preserve_fqdn": "{{ True if preserve_fqdn is defined }}",
                 }
-            },
+            }
         },
         {
             "name": "global_params",
@@ -266,17 +252,15 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
-            "remval": "system syslog global",
+            "remval": "system syslog global facility {{ global_params.facility }}",
             "result": {
-                "config": {
-                    "global_params": {
-                        "facilities": [{
-                            "facility": "{{ facility }}",
-                            "level": "{{ level }}",
-                        },],
-                    }
+                "global_params": {
+                    "facilities": [{
+                        "facility": "{{ facility }}",
+                        "severity": "{{ level }}",
+                    },],
                 }
-            },
+            }
         },
         {
             "name": "hosts",
@@ -287,15 +271,13 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\sport\s(?P<port>'(\d+)'))
                 $""", re.VERBOSE),
             "setval": "system syslog host {{ hosts.tag }} port {{ hosts.port }}",
-            "remval": "system syslog host",
+            # "remval": "system syslog host",
             "result": {
-                "config": {
-                    "hosts": {"{{ hostname }}":{
-                        "hostname": "{{ hostname }}",
-                        "port": "{{ port }}",
-                    },}
-                }
-            },
+                "hosts": {"{{ hostname }}":{
+                    "hostname": "{{ hostname }}",
+                    "port": "{{ port }}",
+                },}
+            }
         },
         {
             "name": "hosts.facility",
@@ -308,18 +290,24 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\sprotocol\s(?P<protocol>'(udp|tcp)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
+            "remval": "system syslog host {{ tag }}",
+                    #   "{{ (' facility ' + hosts.facility) if hosts.facility is defined else '' }}"
+                    #   "{{ (' level ' + hosts.severity) if hosts.severity is defined else '' }}"
+                    #   "{{ (' protocol ' + hosts.protocol) if hosts.protocol is defined else '' }}", 
+                    #   "{{ ('system syslog host ' + tag) if hosts.protocol is defined else '' }}"
+                    #   "{{ (' facility ' + hosts.facility) if hosts.protocol is defined else '' }}",
+                    #   "{{ ('system syslog host ' + tag) if hosts.severity is defined else '' }}"
+                    #   "{{ (' facility ' + hosts.facility) if hosts.severity is defined else '' }}"],
             "result": {
-                "config": {
-                    "hosts": {"{{ hostname }}":{
-                        "hostname": "{{ hostname }}",
-                        "facilities":[{
-                            "facility": "{{ facility }}",
-                            "level": "{{ level }}",
-                            "protocol": "{{ protocol }}",
-                        },]
-                    },}
-                }
-            },
+                "hosts": {"{{ hostname }}":{
+                    "hostname": "{{ hostname }}",
+                    "facilities":[{
+                        "facility": "{{ facility }}",
+                        "severity": "{{ level }}",
+                        "protocol": "{{ protocol }}",
+                    },]
+                },}
+            }
         },
         { #user parsers
             "name": "users",
@@ -331,19 +319,17 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
-            "remval": "system syslog user",
+            "remval": "system syslog user {{ tag }}",
             "result": {
-                "config": {
-                    "users": {
-                        "{{ username }}":{
-                        "username": "{{ username }}",
-                        "facilities":[{
-                            "facility": "{{ facility }}",
-                            "level": "{{ level }}",
-                        },]
-                    }}
-                }
-            },
+                "users": {
+                    "{{ username }}":{
+                    "username": "{{ username }}",
+                    "facilities":[{
+                        "facility": "{{ facility }}",
+                        "severity": "{{ level }}",
+                    },]
+                }}
+            }
         },
     ]
     # fmt: on
