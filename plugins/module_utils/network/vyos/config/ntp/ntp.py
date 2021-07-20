@@ -85,7 +85,12 @@ class Ntp(ResourceModule):
                 k: v for k, v in iteritems(haved) if k in wantd or not wantd
             }
             wantd = {}
-            commandlist = []
+
+            self.commands.append(
+                "delete system ntp"
+            )
+
+            """ commandlist = []
             for k,have in iteritems(haved):
                 for k,val in iteritems(have):
                     if k not in commandlist and k!="options":
@@ -102,7 +107,7 @@ class Ntp(ResourceModule):
                 else:
                     self.commands.append(
                         "delete system ntp server"
-                    )
+                    ) """
     
 
         # remove superfluous config for overridden and deleted

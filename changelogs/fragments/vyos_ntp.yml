@@ -1,0 +1,4 @@
+---
+
+minor_changes:
+  - Add vyos_ntp Resource Module
