@@ -74,11 +74,25 @@ class NtpFacts(object):
         objs = ntp_parser.parse()
 
         if objs:
+            if "allow_clients" in objs:
+                objs["allow_clients"] = sorted(list(objs["allow_clients"]))
+            
+            if "listen_addresses" in objs:
+                objs["listen_addresses"] = sorted(list(objs["listen_addresses"]))
+            
+            """ if "options" in objs["servers"].values():
+                val = objs["servers"].values() 
+                val["options"] = sorted(val["options"]) """
+
             if "servers" in objs:
                 objs["servers"] = list(objs["servers"].values())
                 objs["servers"] = sorted(
                     objs["servers"], key=lambda k: k["name"]
                 )
+                for i in objs["servers"]:
+                    if "options" in i:
+                        i["options"] = sorted(list(i["options"]))
+                       
                             
         ansible_facts['ansible_network_resources'].pop('ntp', None)
 

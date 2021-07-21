@@ -1,6 +1,12 @@
 ---
 merged:
-  before: []
+  before:
+      servers:
+      - name: time1.vyos.net
+
+      - name: time2.vyos.net
+
+      - name: time3.vyos.net
   commands:
     - set system ntp allow-clients address 10.4.9.0/24
     - set system ntp server server4 pool
@@ -23,29 +29,35 @@ merged:
   after:
       allow_clients:
       - 10.1.2.0/24
-      - 10.4.9.0/24
-      - 10.4.7.0/24
       - 10.2.3.0/24
+      - 10.4.7.0/24
+      - 10.4.9.0/24
       listen_addresses:
-      - 10.4.5.1
       - 10.1.9.16
+      - 10.4.5.1
       - 10.5.3.2
-      - 10.8.9.4
       - 10.7.9.21      
+      - 10.8.9.4      
       servers:
       - name: 10.3.6.5
         options:          
-          - preempt          
-          - prefer
+          - noselect
           - pool
-          - noselect      
+          - preempt
+          - prefer     
 
       - name: server4
         options:
-          - pool 
           - noselect
+          - pool
 
       - name: server5
+
+      - name: time1.vyos.net
+
+      - name: time2.vyos.net
+
+      - name: time3.vyos.net
           
 
 
@@ -77,6 +89,12 @@ replaced:
         - name: ser
           options:
             - prefer
+            
+        - name: time1.vyos.net
+
+        - name: time2.vyos.net
+
+        - name: time3.vyos.net
 
 
 overridden:
@@ -99,6 +117,8 @@ overridden:
       listen_addresses:
       - 10.7.8.1
       servers:
+      - name: serv
+      
       - name: server1
         options:
           - pool
@@ -108,27 +128,51 @@ overridden:
         options:
           - noselect
           - preempt
+        
+      - name: time1.vyos.net
 
-      - name: serv
+      - name: time2.vyos.net
+
+      - name: time3.vyos.net
 
 deleted:
   commands:
-    -  delete system ntp allow-clients
-    -  delete system ntp listen-address
-    -  delete system ntp server
+    - delete system ntp allow-clients
+    - delete system ntp listen-address
+    - delete system ntp server 10.3.6.5
+    - delete system ntp server server4
+    - delete system ntp server server5
 
-  after: {}
+
+  after:
+    servers:
+      - name: time1.vyos.net
+
+      - name: time2.vyos.net
+
+      - name: time3.vyos.net
 
 
 parsed:
   after:
       allow_clients:
       - 10.4.9.0/24
+      - 10.5.9.0/24
       listen_addresses:
       - 10.1.9.16
+      - 10.3.9.1
       servers:
       - name: 10.3.6.5
         options:
           - noselect
+          - pool
+      
+      - name: check
+    
+      - name: time1.vyos.net
+
+      - name: time2.vyos.net
+
+      - name: time3.vyos.net
 
 
