@@ -125,49 +125,10 @@ class Ntp(ResourceModule):
                 elif k not in wantd and have["name"] in servernames:
                     self._compareoverride(want={}, have=have)
                     servernames.remove(have["name"])
-
-            """ for k in commandlist:
-                if k not in wantd and k == "allow_clients":
-                    self.commands.append(
-                        self._tmplt.render({"": k}, "allow_clients_delete", True)
-                    )
-                elif k not in wantd and k == "listen_addresses":
-                     self.commands.append(
-                        self._tmplt.render({"": k}, "listen_addresses_delete", True)
-                    ) """
-             #removing the servername and commandlist from the list after deleting it from haved
-            """ for k, have in iteritems(haved):
-                if k not in wantd:
-                    for hk, hval in iteritems(have):                    
-                        if hk == "allow_clients" and hk in commandlist:
-                            self.commands.append(
-                                self._tmplt.render({"": hk}, "allow_clients_delete", True)
-                            )
-                            commandlist.remove(hk)
-                        elif hk == "listen_addresses" and hk in commandlist:
-                            self.commands.append(
-                                self._tmplt.render({"": hk}, "listen_addresses_delete", True)
-                            )
-                            commandlist.remove(hk)
-                        elif hk == "name" and have["name"] in servernames:
-                            self._compareoverride(want={}, have=have)
-                            servernames.remove(have["name"]) """
                    
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
-        
-        """   for k, want in iteritems(wantd):
-                if k in haved:
-                    for wk,wval in iteritems(want):
-                        if wk == "allow_clients":
-                            self.commands.append(
-                                self._tmplt.render({"allow_clients":wval}, "allow_clients", False)
-                            )
-                        elif wk == "listen_addresses":
-                            self.commands.append(
-                                self._tmplt.render({"listen_addresses":wval}, "listen_addresses", False)
-                            ) """
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and

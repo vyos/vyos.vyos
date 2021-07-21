@@ -176,8 +176,10 @@ class TestVyosNTPModule(TestVyosModule):
                  ),
             )
         commands = [
-                "delete system ntp allow-clients",
-                "delete system ntp listen-address",
+                "delete system ntp allow-clients address 10.1.1.0/24",
+                "delete system ntp allow-clients address 10.1.2.0/24",
+                "delete system ntp listen-address 10.2.3.1",
+                "delete system ntp listen-address 10.4.3.1",
                 "delete system ntp server server1",
                 "delete system ntp server server3",
                 "set system ntp allow-clients address 10.3.4.0/24",
@@ -256,8 +258,10 @@ class TestVyosNTPModule(TestVyosModule):
                  ),
             )
         commands = [
-                "delete system ntp allow-clients", 
-                "delete system ntp listen-address",
+                "delete system ntp allow-clients address 10.1.1.0/24",
+                "delete system ntp allow-clients address 10.1.2.0/24",
+                "delete system ntp listen-address 10.2.3.1",
+                "delete system ntp listen-address 10.4.3.1",
                 "delete system ntp server server1",
                 "delete system ntp server server3",
                 "set system ntp allow-clients address 10.9.9.0/24",
