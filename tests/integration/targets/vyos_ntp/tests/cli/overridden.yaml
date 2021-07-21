@@ -37,7 +37,6 @@
 
     - assert:
         that:
-          - result.commands|length == 19
           - result.changed == true
           - result.after == ansible_facts['network_resources']['ntp']
           - result.after == overridden.after

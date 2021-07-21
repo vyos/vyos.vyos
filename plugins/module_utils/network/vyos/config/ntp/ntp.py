@@ -52,7 +52,9 @@ class Ntp(ResourceModule):
             "allow_clients",
             "listen_addresses",
             "name",
-            "options"
+            "options",
+            "allow_clients_delete",
+            "listen_addresses_delete"
         ]
 
     def execute_module(self):
@@ -86,40 +88,36 @@ class Ntp(ResourceModule):
             }
             wantd = {}
 
-            self.commands.append(
-                "delete system ntp"
-            )
+            commandlist = self._commandlist(haved)
+            servernames = self._servernames(haved)
 
-            """ commandlist = []
-            for k,have in iteritems(haved):
-                for k,val in iteritems(have):
-                    if k not in commandlist and k!="options":
-                        commandlist.append(k)
-            for k in commandlist:
-                if k == "allow_clients":
-                    self.commands.append(
-                        "delete system ntp allow-clients"
-                    )
-                elif k=="listen_addresses":
-                     self.commands.append(
-                        "delete system ntp listen-address"
-                    )
-                else:
-                    self.commands.append(
-                        "delete system ntp server"
-                    ) """
-    
+             #removing the servername and commandlist from the list after deleting it from haved
+            for k, have in iteritems(haved):
+                if k not in wantd:
+                    for hk, hval in iteritems(have):                    
+                        if hk == "allow_clients" and hk in commandlist:
+                            self.commands.append(
+                                self._tmplt.render({"": hk}, "allow_clients_delete", True)
+                            )
+                            commandlist.remove(hk)
+                        elif hk == "listen_addresses" and hk in commandlist:
+                            self.commands.append(
+                                self._tmplt.render({"": hk}, "listen_addresses_delete", True)
+                            )
+                            commandlist.remove(hk)
+                        elif hk == "name" and have["name"] in servernames:
+                            self._compareoverride(want={}, have=have)
+                            servernames.remove(have["name"])    
 
-        # remove superfluous config for overridden and deleted
+        # remove existing config for overridden,replaced and deleted
         #Getting the list of the server names from haved 
         #   to avoid the duplication of overridding/replacing the servers
         if self.state in ["overridden","replaced"]:
-            servernames = []
-            for hk, have in iteritems(haved):
-                for k, val in iteritems(have):
-                    if k == "name" and val not in servernames:
-                        servernames.append(val)    
-                
+
+            commandlist = self._commandlist(haved)
+            servernames = self._servernames(haved)
+
+
             for k, have in iteritems(haved):
                 if k not in wantd and "name" not in have:
                     self._compareoverride(want={}, have=have)
@@ -127,10 +125,49 @@ class Ntp(ResourceModule):
                 elif k not in wantd and have["name"] in servernames:
                     self._compareoverride(want={}, have=have)
                     servernames.remove(have["name"])
+
+            """ for k in commandlist:
+                if k not in wantd and k == "allow_clients":
+                    self.commands.append(
+                        self._tmplt.render({"": k}, "allow_clients_delete", True)
+                    )
+                elif k not in wantd and k == "listen_addresses":
+                     self.commands.append(
+                        self._tmplt.render({"": k}, "listen_addresses_delete", True)
+                    ) """
+             #removing the servername and commandlist from the list after deleting it from haved
+            """ for k, have in iteritems(haved):
+                if k not in wantd:
+                    for hk, hval in iteritems(have):                    
+                        if hk == "allow_clients" and hk in commandlist:
+                            self.commands.append(
+                                self._tmplt.render({"": hk}, "allow_clients_delete", True)
+                            )
+                            commandlist.remove(hk)
+                        elif hk == "listen_addresses" and hk in commandlist:
+                            self.commands.append(
+                                self._tmplt.render({"": hk}, "listen_addresses_delete", True)
+                            )
+                            commandlist.remove(hk)
+                        elif hk == "name" and have["name"] in servernames:
+                            self._compareoverride(want={}, have=have)
+                            servernames.remove(have["name"]) """
                    
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
+        
+        """   for k, want in iteritems(wantd):
+                if k in haved:
+                    for wk,wval in iteritems(want):
+                        if wk == "allow_clients":
+                            self.commands.append(
+                                self._tmplt.render({"allow_clients":wval}, "allow_clients", False)
+                            )
+                        elif wk == "listen_addresses":
+                            self.commands.append(
+                                self._tmplt.render({"listen_addresses":wval}, "listen_addresses", False)
+                            ) """
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
@@ -180,3 +217,21 @@ class Ntp(ResourceModule):
                     dict.update({Opk:val})
                     serveroptions_dict.update({entry["name"]+"_"+val: dict })                    
         return serveroptions_dict
+
+
+    def _commandlist(self, haved):
+        commandlist = []
+        for k,have in iteritems(haved):
+            for ck,cval in iteritems(have):
+                if ck !="options" and ck not in commandlist:
+                    commandlist.append(ck)
+        return commandlist
+    
+    def _servernames(self,haved):
+        servernames = []
+        for k,have in iteritems(haved):
+            for sk,sval in iteritems(have):
+                if sk == "name" and sval not in ["time1.vyos.net","time2.vyos.net","time3.vyos.net"]:
+                    if sval not in servernames:
+                        servernames.append(sval)
+        return servernames

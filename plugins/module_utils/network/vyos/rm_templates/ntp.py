@@ -34,7 +34,7 @@ class NtpTemplate(NetworkTemplate):
             "name": "allow_clients",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\sallow-clients\saddress   (\s(?P<ipaddress>\S+))?
+                ^set\ssystem\sntp\sallow-clients\saddress (\s(?P<ipaddress>\S+))?
                 $""",
                 re.VERBOSE),
             "setval": "system ntp allow-clients address {{allow_clients}}",
@@ -43,6 +43,22 @@ class NtpTemplate(NetworkTemplate):
                        
                  "allow_clients": ["{{ipaddress}}"]
                      
+                
+            }
+            
+        },
+
+        #set system ntp allow_clients          
+        {
+            "name": "allow_clients_delete",
+            "getval": re.compile(
+                r"""
+                ^set\ssystem\sntp\sallow-clients
+                $""",
+                re.VERBOSE),
+            "setval": "system ntp allow-clients",
+            #"compval": "address",
+            "result": {                       
                 
             }
             
@@ -61,6 +77,20 @@ class NtpTemplate(NetworkTemplate):
             "result": {            
                  "listen_addresses": ["{{ip_address}}"]
             
+            }
+        },
+
+         #set system ntp listen_address 
+        {
+            "name": "listen_addresses_delete",
+            "getval": re.compile(
+                r"""
+                ^set\ssystem\sntp\slisten-address
+                $""",
+                re.VERBOSE),
+            "setval": "system ntp listen-address",
+            #"compval": "address",
+            "result": {                        
             }
         },
 

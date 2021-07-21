@@ -18,6 +18,9 @@
       - set system ntp listen-address 10.8.9.4
       - set system ntp listen-address 10.4.5.1
       - set system ntp server 10.3.6.5 prefer
+      #- set system ntp server time1.vyos.net
+      #- set system ntp server time2.vyos.net
+      #- set system ntp server time3.vyos.net
   ignore_errors: true
   vars:
     ansible_connection: ansible.netcommon.network_cli

@@ -17,14 +17,12 @@
     - name: Assert that before dicts were correctly generated
       assert:
         that:
-          - result.commands|length == 3
           - result.changed == true
-          - result.commands|symmetric_difference(deleted.commands) == []
+          - result.commands == deleted.commands
 
     - name: Assert that the after dicts were correctly generated
       assert:
         that:
-          - result.after == {}
           - result.after == deleted.after
 
     - name: Delete the existing configuration with the provided running configuration
