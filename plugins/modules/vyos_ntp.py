@@ -12,6 +12,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+
 DOCUMENTATION = """
   module: vyos_ntp
   version added: 2.4.0
@@ -84,6 +85,9 @@ EXAMPLES = """
 # # Before state:
 # # -------------
 #   vyos@vyos:~$ show configuration commands | grep ntp
+#     set system ntp server time1.vyos.net
+#     set system ntp server time2.vyos.net
+#     set system ntp server time3.vyos.net
 #   vyos@vyos:~$
 
 # # Task
@@ -124,41 +128,62 @@ EXAMPLES = """
 # # -------------
 #    "after": {
 #        "allow_clients": [
-#            "10.4.9.0/24",
 #            "10.1.2.0/24",
+#            "10.2.3.0/24",
 #            "10.4.7.0/24",
-#            "10.2.3.0/24"
+#            "10.4.9.0/24"
 #        ],
 #        "listen_addresses": [
-#            "10.8.9.4",
+#            "10.1.9.16",
+#            "10.4.5.1",
 #            "10.5.3.2",
 #            "10.7.9.21",
-#            "10.4.5.1",
-#            "10.1.9.16"
+#            "10.8.9.4"
 #        ],
 #        "servers": [
 #            {
 #                "name": "10.3.6.5",
 #                "options": [
-#                    "prefer",
-#                    "preempt",
+#                    "noselect",
 #                    "pool",
-#                    "noselect"
+#                    "preempt",
+#                    "prefer"
 #                ]
 #            },
 #            {
 #                "name": "server4",
 #                "options": [
-#                    "pool",
-#                    "noselect"
+#                    "noselect",
+#                    "pool"
 #                ]
 #            },
 #            {
 #                "name": "server5"
+#            },
+#            {
+#                "name": "time1.vyos.net"
+#            },
+#            {
+#                "name": "time2.vyos.net"
+#            },
+#            {
+#                "name": "time3.vyos.net"
 #            }
 #        ]
 #    },
-#    "before": {},
+#    "before": {
+#        "servers": [
+#            {
+#                "name": "time1.vyos.net"
+#            },
+#            {
+#                "name": "time2.vyos.net"
+#            },
+#            {
+#                "name": "time3.vyos.net"
+#            }
+#        ]
+#    },
 #    "changed": true,
 #    "commands": [
 #        "set system ntp allow-clients address 10.4.9.0/24",
@@ -176,7 +201,7 @@ EXAMPLES = """
 #        "set system ntp allow-clients address 10.2.3.0/24",
 #        "set system ntp listen-address 10.8.9.4",
 #        "set system ntp listen-address 10.4.5.1",
-#        "set system ntp server 10.3.6.5 prefer"
+#        "set system ntp server 10.3.6.5 prefer",
 #    ]
 
 # After state:
@@ -198,6 +223,9 @@ EXAMPLES = """
 #    set system ntp server server4 noselect
 #    set system ntp server server4 pool
 #    set system ntp server server5
+#    set system ntp server time1.vyos.net
+#    set system ntp server time2.vyos.net
+#    set system ntp server time3.vyos.net
 #    vyos@vyos:~$
 
 
@@ -225,6 +253,9 @@ EXAMPLES = """
 #    set system ntp server server4 noselect
 #    set system ntp server server4 pool
 #    set system ntp server server5
+#    set system ntp server time1.vyos.net
+#    set system ntp server time2.vyos.net
+#    set system ntp server time3.vyos.net
 #    vyos@vyos:~$
 
 # # Task
@@ -258,6 +289,15 @@ EXAMPLES = """
 #                "options": [
 #                    "prefer"
 #                ]
+#            },
+#            {
+#                "name": "time1.vyos.net"
+#            },
+#            {
+#                "name": "time2.vyos.net"
+#            },
+#            {
+#                "name": "time3.vyos.net"
 #            }
 #        ]
 #    },
@@ -279,8 +319,8 @@ EXAMPLES = """
 #            {
 #                "name": "10.3.6.5",
 #                "options": [
-#                    "pool",
 #                    "noselect",
+#                    "pool",
 #                    "preempt",
 #                    "prefer"
 #                ]
@@ -288,12 +328,21 @@ EXAMPLES = """
 #            {
 #                "name": "server4",
 #                "options": [
-#                    "pool",
-#                    "noselect"
+#                    "noselect",
+#                    "pool"
 #                ]
 #            },
 #            {
 #                "name": "server5"
+#            },
+#            {
+#                "name": "time1.vyos.net"
+#            },
+#            {
+#                "name": "time2.vyos.net"
+#            },
+#            {
+#                "name": "time3.vyos.net"
 #            }
 #        ]
 #    },
@@ -321,7 +370,10 @@ EXAMPLES = """
 #        vyos@vyos:~$ show configuration commands | grep ntp
 #        set system ntp allow-clients address '10.6.6.0/24'
 #        set system ntp listen-address '10.1.3.1'
-#        set system ntp server ser prefer
+#        set system ntp server ser prefer,
+#        set system ntp server time1.vyos.net
+#        set system ntp server time2.vyos.net
+#        set system ntp server time3.vyos.net
 #        vyos@vyos:~$
 
 
@@ -335,7 +387,10 @@ EXAMPLES = """
 #        vyos@vyos:~$ show configuration commands | grep ntp
 #        set system ntp allow-clients address '10.6.6.0/24'
 #        set system ntp listen-address '10.1.3.1'
-#        set system ntp server ser prefer
+#        set system ntp server ser prefer,
+#        set system ntp server time1.vyos.net
+#        set system ntp server time2.vyos.net
+#        set system ntp server time3.vyos.net
 #        vyos@vyos:~$
 
 # # Task
@@ -374,22 +429,31 @@ EXAMPLES = """
 #                ],
 #                "servers": [
 #                    {
-#                        "name": "serv"
-#                    },
-#                    {
-#                        "name": "server1",
-#                        "options": [
-#                            "prefer",
-#                            "pool"
-#                        ]
-#                    },
-#                    {
-#                        "name": "server2",
-#                        "options": [
-#                            "preempt",
-#                            "noselect"
-#                        ]
-#                    }
+#                "name": "serv"
+#            },
+#            {
+#                "name": "server1",
+#                "options": [
+#                    "pool",
+#                    "prefer"
+#                ]
+#            },
+#            {
+#                "name": "server2",
+#                "options": [
+#                    "noselect",
+#                    "preempt"
+#                ]
+#            },
+#            {
+#                "name": "time1.vyos.net"
+#            },
+#            {
+#                "name": "time2.vyos.net"
+#            },
+#            {
+#                "name": "time3.vyos.net"
+#            }
 #                ]
 #            },
 #            "before": {
@@ -405,6 +469,15 @@ EXAMPLES = """
 #                        "options": [
 #                            "prefer"
 #                        ]
+#                    },
+#                    {
+#                        "name": "time1.vyos.net"
+#                    },
+#                    {
+#                        "name": "time2.vyos.net"
+#                    },
+#                    {
+#                        "name": "time3.vyos.net"
 #                    }
 #                ]
 #            },
@@ -432,6 +505,9 @@ EXAMPLES = """
 #        set system ntp server server1 prefer
 #        set system ntp server server2 noselect
 #        set system ntp server server2 preempt
+#        set system ntp server time1.vyos.net
+#        set system ntp server time2.vyos.net
+#        set system ntp server time3.vyos.net
 #        vyos@vyos:~$ 
 
 
@@ -450,6 +526,9 @@ EXAMPLES = """
 #        set system ntp server server1 prefer
 #        set system ntp server server2 noselect
 #        set system ntp server server2 preempt
+#        set system ntp server time1.vyos.net
+#        set system ntp server time2.vyos.net
+#        set system ntp server time3.vyos.net
 #        vyos@vyos:~$ 
 
 # # Task
@@ -480,12 +559,21 @@ EXAMPLES = """
 #                        ]
 #                    },
 #                    {
-#                        "name": "server2",
-#                        "options": [
-#                            "preempt",
-#                            "noselect"
-#                        ]
-#                    }
+#                         "name": "server2",
+#                         "options": [
+#                             "noselect",
+#                             "preempt"
+#                         ]
+#                     },
+#                     {
+#                          "name": "time1.vyos.net"
+#                     },
+#                     {
+#                         "name": "time2.vyos.net"
+#                     },
+#                     {
+#                         "name": "time3.vyos.net"
+#                     }
 #                ]
 #            }
 
@@ -499,6 +587,9 @@ EXAMPLES = """
 #        set system ntp server server1 prefer
 #        set system ntp server server2 noselect
 #        set system ntp server server2 preempt
+#        set system ntp server time1.vyos.net
+#        set system ntp server time2.vyos.net
+#        set system ntp server time3.vyos.net
 #        vyos@vyos:~$ 
 
 
@@ -516,32 +607,34 @@ EXAMPLES = """
 #        set system ntp server server1 prefer
 #        set system ntp server server2 noselect
 #        set system ntp server server2 preempt
+#        set system ntp server time1.vyos.net
+#        set system ntp server time2.vyos.net
+#        set system ntp server time3.vyos.net
 #        vyos@vyos:~$ 
 
 # # Task
 # # -------------
-  - name: Gather ntp config
-      vyos.vyos.vyos_ntp:
-        config:
-          allow_clients:
-            - 10.7.7.0/24
-            - 10.8.8.0/24
-          listen_addresses:
-            - 10.7.9.1
-          servers:
-            - name: server7
-
-            - name: server45
-              options:
-                - noselect
-                - prefer
-
-        state: rendered
+#  - name: Delete ntp config
+#      vyos.vyos.vyos_ntp:
+#        config:
+#        state: deleted
 
 
 # # Task output:
 # # -------------
-#            "after": {},
+#            "after": {
+#                "servers": [
+#                    {
+#                        "name": "time1.vyos.net"
+#                    },
+#                    {
+#                       "name": "time2.vyos.net"
+#                    },
+#                    {
+#                        "name": "time3.vyos.net"
+#                    }
+#                ]
+#            },
 #            "before": {
 #                "allow_clients": [
 #                    "10.3.3.0/24"
@@ -561,28 +654,40 @@ EXAMPLES = """
 #                        ]
 #                    },
 #                    {
-#                        "name": "server2",
-#                        "options": [
-#                            "preempt",
-#                            "noselect"
-#                        ]
-#                    }
+#                          "name": "server2",
+#                          "options": [
+#                              "noselect",
+#                              "preempt"
+#                          ]
+#                      },
+#                      {
+#                          "name": "time1.vyos.net"
+#                      },
+#                      {
+#                          "name": "time2.vyos.net"
+#                      },
+#                      {
+#                          "name": "time3.vyos.net"
+#                      }
 #                ]
 #            },
 #            "changed": true,
 #            "commands": [
 #                "delete system ntp allow-clients",
 #                "delete system ntp listen-address",
-#                "delete system ntp server"
+#                "delete system ntp server serv",
+                "delete system ntp server server1",
+#                "delete system ntp server server2"
+#
 #            ]
 
 # After state:
 # # -------------
 #        vyos@vyos:~$ show configuration commands | grep ntp
-#        set system ntp
+#        set system ntp server time1.vyos.net
+#        set system ntp server time2.vyos.net
+#        set system ntp server time3.vyos.net
 #        vyos@vyos:~$ 
-
-
 
 
 # # -------------------
@@ -592,7 +697,9 @@ EXAMPLES = """
 # # Before state:
 # # -------------
 #        vyos@vyos:~$ show configuration commands | grep ntp
-#        set system ntp
+#        set system ntp server time1.vyos.net
+#        set system ntp server time2.vyos.net
+#        set system ntp server time3.vyos.net
 #        vyos@vyos:~$
 
 # # Task
@@ -609,9 +716,14 @@ EXAMPLES = """
 #                    - name: server7
 #
 #                    - name: server45
-#                    options:
+#                      options:
 #                        - noselect
 #                        - prefer
+#                    - name: time1.vyos.net
+#
+#                    - name: time2.vyos.net
+#
+#                    - name: time3.vyos.net 
 #
 #                state: rendered
 
@@ -624,7 +736,10 @@ EXAMPLES = """
 #                "set system ntp listen-address 10.7.9.1",
 #                "set system ntp server server7",
 #                "set system ntp server server45 noselect",
-#                "set system ntp server server45 prefer"
+#                "set system ntp server server45 prefer",
+#                "set system ntp server time1.vyos.net",
+#                "set system ntp server time2.vyos.net",
+#                "set system ntp server time3.vyos.net"
 #            ]
 
 
@@ -636,7 +751,14 @@ EXAMPLES = """
 # # -------------
 #           "set system ntp allow-clients address 10.7.7.0/24",
 #           "set system ntp listen-address 10.7.9.1",
-#           "set system ntp server server45 noselect"
+#           "set system ntp server server45 noselect",
+#           "set system ntp allow-clients addres 10.8.6.0/24",
+#           "set system ntp listen-address 10.5.4.1",
+#           "set system ntp server server45 pool",
+#           "set system ntp server time1.vyos.net",
+#           "set system ntp server time2.vyos.net",
+#           "set system ntp server time3.vyos.net"
+
 # # Task:
 # # -------------
 #     - name: Parse externally provided ntp configuration
@@ -648,19 +770,32 @@ EXAMPLES = """
 # # -------------
 #           parsed = {
 #                "allow_clients": [
-#                    "10.7.7.0/24"
+#                    "10.7.7.0/24",
+#                    "10.8.6.0/24        
 #                ],
 #                "listen_addresses": [
+#                    "10.5.4.1",
 #                    "10.7.9.1"
 #                ],
 #                "servers": [
 #                    {
-#                        "name": "server46",
+#                        "name": "server45",
 #                        "options": [
-#                            "noselect"
+#                            "noselect",
+#                            "pool"
 #                                                      
 #                        ]
+#                    },
+#                    {
+#                        "name": "time1.vyos.net"
+#                    },
+#                    {
+#                        "name": "time2.vyos.net"
+#                    },
+#                    {
+#                        "name": "time3.vyos.net"
 #                    }
+#
 #                ]
 #            }
 
@@ -675,7 +810,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ntp.
 )
 
 
-
 def main():
     """
     Main entry point for module execution
@@ -683,6 +817,7 @@ def main():
     :returns: the result form module invocation
     """
     module = AnsibleModule(
+
         argument_spec=NtpArgs.argument_spec,
         mutually_exclusive=[["config", "running_config"]],
         required_if=[
@@ -695,9 +830,11 @@ def main():
         supports_check_mode=True,
     )
 
+
     result = Ntp(module).execute_module()
     module.exit_json(**result)
 
 
 if __name__ == "__main__":
     main()
+
