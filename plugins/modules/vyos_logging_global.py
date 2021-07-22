@@ -181,10 +181,543 @@ options:
     default: merged
     description:
       - The state the configuration should be left in
+      - The states I(replaced) and I(overridden) have identical
+        behaviour for this module.
+      - Refer to examples for more details.
     type: str
 """
 EXAMPLES = """
+# Using state: merged
 
+# Before state:
+# -------------
+
+# vyos:~$show configuration commands | grep syslog
+
+- name: Apply the provided configuration
+  vyos.vyos.vyos_logging_global:
+    config:
+      console:
+        facilities:
+          - facility: local7
+            severity: err
+      files:
+        - path: logFile
+          archive:
+            file_num: 2
+          facilities:
+            - facility: local6
+              severity: emerg
+      hosts:
+        - hostname: 172.16.0.1
+          facilities:
+            - facility: local7
+              severity: all
+            - facility: all
+              protocol: udp
+          port: 223
+      users:
+        - username: vyos
+          facilities:
+          - facility: local7
+            severity: debug
+      global_params:
+        archive:
+          file_num: 2
+          size: 111
+        facilities:
+        - facility: cron
+          severity: debug
+        marker_interval: 111
+        preserve_fqdn: true
+    state: merged
+
+# Commands Fired:
+# ---------------
+
+# "commands": [
+#     "set system syslog console facility local7 level err",
+#     "set system syslog file logFile archive file 2",
+#     "set system syslog host 172.16.0.1 facility local7 level all",
+#     "set system syslog file logFile facility local6 level emerg",
+#     "set system syslog host 172.16.0.1 facility all protocol udp",
+#     "set system syslog user vyos facility local7 level debug",
+#     "set system syslog host 172.16.0.1 port 223",
+#     "set system syslog global facility cron level debug",
+#     "set system syslog global archive file 2",
+#     "set system syslog global archive size 111",
+#     "set system syslog global marker interval 111",
+#     "set system syslog global preserve-fqdn"
+# ],
+
+# After state:
+# ------------
+
+# vyos:~$ show configuration commands | grep syslog
+# set system syslog console facility local7 level 'err'
+# set system syslog file logFile archive file '2'
+# set system syslog file logFile facility local6 level 'emerg'
+# set system syslog global archive file '2'
+# set system syslog global archive size '111'
+# set system syslog global facility cron level 'debug'
+# set system syslog global marker interval '111'
+# set system syslog global preserve-fqdn
+# set system syslog host 172.16.0.1 facility all protocol 'udp'
+# set system syslog host 172.16.0.1 facility local7 level 'all'
+# set system syslog host 172.16.0.1 port '223'
+# set system syslog user vyos facility local7 level 'debug'
+
+# Using state: deleted
+
+# Before state:
+# -------------
+
+# vyos:~$show configuration commands | grep syslog
+# set system syslog console facility local7 level 'err'
+# set system syslog file logFile archive file '2'
+# set system syslog file logFile facility local6 level 'emerg'
+# set system syslog global archive file '2'
+# set system syslog global archive size '111'
+# set system syslog global facility cron level 'debug'
+# set system syslog global marker interval '111'
+# set system syslog global preserve-fqdn
+# set system syslog host 172.16.0.1 facility all protocol 'udp'
+# set system syslog host 172.16.0.1 facility local7 level 'all'
+# set system syslog host 172.16.0.1 port '223'
+# set system syslog user vyos facility local7 level 'debug'
+
+- name: delete the existing configuration
+  vyos.vyos.vyos_logging_global:
+    state: deleted
+
+# Commands Fired:
+# ---------------
+
+# "commands": [
+#     "delete system syslog"
+# ],
+
+# After state:
+# ------------
+
+# vyos:~$show configuration commands | grep syslog
+
+# Using state: overridden
+
+# Before state:
+# -------------
+
+# vyos:~$show configuration commands | grep syslog
+# set system syslog console facility local7 level 'err'
+# set system syslog file logFile archive file '2'
+# set system syslog file logFile facility local6 level 'emerg'
+# set system syslog global archive file '2'
+# set system syslog global archive size '111'
+# set system syslog global facility cron level 'debug'
+# set system syslog global marker interval '111'
+# set system syslog global preserve-fqdn
+# set system syslog host 172.16.0.1 facility all protocol 'udp'
+# set system syslog host 172.16.0.1 facility local7 level 'all'
+# set system syslog host 172.16.0.1 port '223'
+# set system syslog user vyos facility local7 level 'debug'
+
+- name: Override the current configuration
+  vyos.vyos.vyos_logging_global:
+    config:
+      console:
+        facilities:
+          - facility: all
+          - facility: local7
+            severity: err
+          - facility: news
+            severity: debug
+      files:
+        - path: logFileNew
+      hosts:
+        - hostname: 172.16.0.2
+          facilities:
+            - facility: local5
+              severity: all
+      global_params:
+        archive:
+          file_num: 10
+    state: overridden
+
+# Commands Fired:
+# ---------------
+
+# "commands": [
+#     "delete system syslog file logFile",
+#     "delete system syslog global facility cron",
+#     "delete system syslog host 172.16.0.1",
+#     "delete system syslog user vyos",
+#     "set system syslog console facility all",
+#     "set system syslog console facility news level debug",
+#     "set system syslog file logFileNew",
+#     "set system syslog host 172.16.0.2 facility local5 level all",
+#     "set system syslog global archive file 10",
+#     "delete system syslog global archive size 111",
+#     "delete system syslog global marker",
+#     "delete system syslog global preserve-fqdn"
+# ],
+
+# After state:
+# ------------
+
+# vyos:~$show configuration commands | grep syslog
+# set system syslog console facility all
+# set system syslog console facility local7 level 'err'
+# set system syslog console facility news level 'debug'
+# set system syslog file logFileNew
+# set system syslog global archive file '10'
+# set system syslog host 172.16.0.2 facility local5 level 'all'
+
+# Using state: replaced
+
+# Before state:
+# -------------
+
+# vyos:~$show configuration commands | grep syslog
+# set system syslog console facility all
+# set system syslog console facility local7 level 'err'
+# set system syslog console facility news level 'debug'
+# set system syslog file logFileNew
+# set system syslog global archive file '10'
+# set system syslog host 172.16.0.2 facility local5 level 'all'
+
+- name: Replace with the provided configuration
+  register: result
+  vyos.vyos.vyos_logging_global:
+    config:
+      console:
+        facilities:
+          - facility: local6
+      users:
+        - username: paul
+          facilities:
+          - facility: local7
+            severity: err
+    state: replaced
+
+# Commands Fired:
+# ---------------
+
+# "commands": [
+#     "delete system syslog console facility all",
+#     "delete system syslog console facility local7",
+#     "delete system syslog console facility news",
+#     "delete system syslog file logFileNew",
+#     "delete system syslog global archive file 10",
+#     "delete system syslog host 172.16.0.2",
+#     "set system syslog console facility local6",
+#     "set system syslog user paul facility local7 level err"
+# ],
+
+# After state:
+# ------------
+
+# vyos:~$show configuration commands | grep syslog
+# set system syslog console facility local6
+# set system syslog user paul facility local7 level 'err'
+
+# Using state: gathered
+
+- name: Gather logging config
+  vyos.vyos.vyos_logging_global:
+    state: gathered
+
+# Module Execution Result:
+# ------------------------
+
+# "gathered": {
+#     "console": {
+#         "facilities": [
+#             {
+#                 "facility": "local6"
+#             },
+#             {
+#                 "facility": "local7",
+#                 "severity": "err"
+#             }
+#         ]
+#     },
+#     "files": [
+#         {
+#             "archive": {
+#                 "file_num": 2
+#             },
+#             "facilities": [
+#                 {
+#                     "facility": "local6",
+#                     "severity": "emerg"
+#                 }
+#             ],
+#             "path": "logFile"
+#         }
+#     ],
+#     "global_params": {
+#         "archive": {
+#             "file_num": 2,
+#             "size": 111
+#         },
+#         "facilities": [
+#             {
+#                 "facility": "cron",
+#                 "severity": "debug"
+#             }
+#         ],
+#         "marker_interval": 111,
+#         "preserve_fqdn": true
+#     },
+#     "hosts": [
+#         {
+#             "facilities": [
+#                 {
+#                     "facility": "all",
+#                     "protocol": "udp"
+#                 },
+#                 {
+#                     "facility": "local7",
+#                     "severity": "all"
+#                 }
+#             ],
+#             "hostname": "172.16.0.1",
+#             "port": 223
+#         }
+#     ],
+#     "users": [
+#         {
+#             "facilities": [
+#                 {
+#                     "facility": "local7",
+#                     "severity": "err"
+#                 }
+#             ],
+#             "username": "paul"
+#         },
+#         {
+#             "facilities": [
+#                 {
+#                     "facility": "local7",
+#                     "severity": "debug"
+#                 }
+#             ],
+#             "username": "vyos"
+#         }
+#     ]
+# },
+
+# After state:
+# ------------
+
+# vyos:~$show configuration commands | grep syslog
+# set system syslog console facility local6
+# set system syslog console facility local7 level 'err'
+# set system syslog file logFile archive file '2'
+# set system syslog file logFile facility local6 level 'emerg'
+# set system syslog global archive file '2'
+# set system syslog global archive size '111'
+# set system syslog global facility cron level 'debug'
+# set system syslog global marker interval '111'
+# set system syslog global preserve-fqdn
+# set system syslog host 172.16.0.1 facility all protocol 'udp'
+# set system syslog host 172.16.0.1 facility local7 level 'all'
+# set system syslog host 172.16.0.1 port '223'
+# set system syslog user paul facility local7 level 'err'
+# set system syslog user vyos facility local7 level 'debug'
+
+# Using state: rendered
+
+- name: Render the provided configuration
+  vyos.vyos.vyos_logging_global:
+    config:
+      console:
+        facilities:
+          - facility: local7
+            severity: err
+      files:
+        - path: logFile
+          archive:
+            file_num: 2
+          facilities:
+            - facility: local6
+              severity: emerg
+      hosts:
+        - hostname: 172.16.0.1
+          facilities:
+            - facility: local7
+              severity: all
+            - facility: all
+              protocol: udp
+          port: 223
+      users:
+        - username: vyos
+          facilities:
+            - facility: local7
+              severity: debug
+      global_params:
+        archive:
+          file_num: 2
+          size: 111
+        facilities:
+          - facility: cron
+            severity: debug
+        marker_interval: 111
+        preserve_fqdn: true
+    state: rendered
+
+# Module Execution Result:
+# ------------------------
+
+# "rendered": [
+#     "set system syslog console facility local7 level err",
+#     "set system syslog file logFile facility local6 level emerg",
+#     "set system syslog file logFile archive file 2",
+#     "set system syslog host 172.16.0.1 facility local7 level all",
+#     "set system syslog host 172.16.0.1 facility all protocol udp",
+#     "set system syslog host 172.16.0.1 port 223",
+#     "set system syslog user vyos facility local7 level debug",
+#     "set system syslog global facility cron level debug",
+#     "set system syslog global archive file 2",
+#     "set system syslog global archive size 111",
+#     "set system syslog global marker interval 111",
+#     "set system syslog global preserve-fqdn"
+# ]
+
+# Using state: parsed
+
+# File: parsed.cfg
+# ----------------
+
+# set system syslog console facility local6
+# set system syslog console facility local7 level 'err'
+# set system syslog file logFile archive file '2'
+# set system syslog file logFile facility local6 level 'emerg'
+# set system syslog global archive file '2'
+# set system syslog global archive size '111'
+# set system syslog global facility cron level 'debug'
+# set system syslog global marker interval '111'
+# set system syslog global preserve-fqdn
+# set system syslog host 172.16.0.1 facility all protocol 'udp'
+# set system syslog host 172.16.0.1 facility local7 level 'all'
+# set system syslog host 172.16.0.1 port '223'
+# set system syslog user paul facility local7 level 'err'
+# set system syslog user vyos facility local7 level 'debug'
+
+- name: Parse the provided configuration
+  vyos.vyos.vyos_logging_global:
+    running_config: "{{ lookup('file', 'parsed_vyos.cfg') }}"
+    state: parsed
+
+# Module Execution Result:
+# ------------------------
+
+# "parsed": {
+#     "console": {
+#         "facilities": [
+#             {
+#                 "facility": "local6"
+#             },
+#             {
+#                 "facility": "local7",
+#                 "severity": "err"
+#             }
+#         ]
+#     },
+#     "files": [
+#         {
+#             "archive": {
+#                 "file_num": 2
+#             },
+#             "facilities": [
+#                 {
+#                     "facility": "local6",
+#                     "severity": "emerg"
+#                 }
+#             ],
+#             "path": "logFile"
+#         }
+#     ],
+#     "global_params": {
+#         "archive": {
+#             "file_num": 2,
+#             "size": 111
+#         },
+#         "facilities": [
+#             {
+#                 "facility": "cron",
+#                 "severity": "debug"
+#             }
+#         ],
+#         "marker_interval": 111,
+#         "preserve_fqdn": true
+#     },
+#     "hosts": [
+#         {
+#             "facilities": [
+#                 {
+#                     "facility": "all",
+#                     "protocol": "udp"
+#                 },
+#                 {
+#                     "facility": "local7",
+#                     "severity": "all"
+#                 }
+#             ],
+#             "hostname": "172.16.0.1",
+#             "port": 223
+#         }
+#     ],
+#     "users": [
+#         {
+#             "facilities": [
+#                 {
+#                     "facility": "local7",
+#                     "severity": "err"
+#                 }
+#             ],
+#             "username": "paul"
+#         },
+#         {
+#             "facilities": [
+#                 {
+#                     "facility": "local7",
+#                     "severity": "debug"
+#                 }
+#             ],
+#             "username": "vyos"
+#         }
+#     ]
+#   }
+# }
+"""
+RETURN = """
+before:
+  description: The configuration prior to the model invocation.
+  returned: always
+  sample: >
+    The configuration returned will always be in the same format
+     of the parameters above.
+  type: dict
+after:
+  description: The resulting configuration model invocation.
+  returned: when changed
+  sample: >
+    The configuration returned will always be in the same format
+     of the parameters above.
+  type: dict
+commands:
+  description: The set of commands pushed to the remote device.
+  returned: always
+  type: list
+  sample:
+    - "set system syslog console facility local7 level 'err'"
+    - "set system syslog global archive size '111'"
+    - "set system syslog host 172.16.0.1 facility all protocol 'udp'"
+    - "set system syslog host 172.16.0.1 facility local7 level 'all'"
+    - "set system syslog host 172.16.0.1 port '223'"
+    - "set system syslog user paul facility local7 level 'err'"
+    - "set system syslog file logFile facility local6 level 'emerg'"
 """
 
 from ansible.module_utils.basic import AnsibleModule
@@ -194,11 +727,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.log
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.logging_global.logging_global import (
     Logging_global,
 )
-
-# import debugpy
-
-# debugpy.listen(3001)
-# debugpy.wait_for_client()
 
 
 def main():

@@ -14,6 +14,13 @@ Version added: 1.0.0
    :local:
    :depth: 1
 
+DEPRECATED
+----------
+:Removed in collection release after 2023-08-01
+:Why: Updated module released with more functionality.
+:Alternative: vyos_logging_global
+
+
 
 Synopsis
 --------
@@ -432,6 +439,10 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
 
 Status
 ------
+
+
+- This module will be removed in version . *[deprecated]*
+- For more information see `DEPRECATED`_.
 
 
 Authors
