@@ -79,11 +79,11 @@ plugin_routing:
     lldp_interfaces:
       redirect: vyos.vyos.vyos
     vyos_logging:
-      redirect: vyos.vyos.vyos    
+      redirect: vyos.vyos.vyos
     vyos_logging_global:
-      redirect: vyos.vyos.vyos  
+      redirect: vyos.vyos.vyos
     logging_global:
-      redirect: vyos.vyos.vyos  
+      redirect: vyos.vyos.vyos
     logging:
       redirect: vyos.vyos.vyos
     vyos_ospfv2:
