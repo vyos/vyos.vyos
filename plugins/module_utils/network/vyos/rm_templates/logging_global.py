@@ -8,9 +8,9 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The Logging_global parser templates file. This contains 
-a list of parser definitions and associated functions that 
-facilitates both facts gathering and native command generation for 
+The Logging_global parser templates file. This contains
+a list of parser definitions and associated functions that
+facilitates both facts gathering and native command generation for
 the given network resource.
 """
 
@@ -29,52 +29,63 @@ class Logging_globalTemplate(NetworkTemplate):
 
     # fmt: off
     def tmplt_params(config_data):
-        tmplt = "system syslog"
-        if config_data.get("global_params"):
-            val = config_data.get("global_params")
-            if val.get("facility"):
-                tmplt += " global facility {facility}".format(facility=val["facility"])
-            if val.get("severity"):
-                tmplt += " level {level}".format(level=val["severity"])            
-        elif config_data.get("console"):
-            val = config_data.get("console")
-            if val.get("facility"):
-                tmplt += " console facility {facility}".format(facility=val["facility"])
-            if val.get("severity"):
-                tmplt += " level {level}".format(level=val["severity"]) 
-        elif config_data.get("users"):
-            val = config_data.get("users")
-            if config_data.get("tag"):
-                tmplt += " user {username}".format(username=config_data["tag"])
+
+        def templt_common(val, tmplt):
             if val.get("facility"):
                 tmplt += " facility {facility}".format(facility=val["facility"])
             if val.get("severity"):
                 tmplt += " level {level}".format(level=val["severity"])
-        elif config_data.get("hosts"):
-            val = config_data.get("hosts")
-            if config_data.get("tag"):
-                tmplt += " host {hostname}".format(hostname=config_data["tag"])
-            if val.get("facility"):
-                tmplt += " facility {facility}".format(facility=val["facility"])
-            if val.get("severity"):
-                tmplt += " level {level}".format(level=val["severity"]) 
             if val.get("protocol"):
                 tmplt += " protocol {protocol}".format(protocol=val["protocol"])
+            return tmplt
+
+        tmplt = ""
+        if config_data.get("global_params"):
+            val = config_data.get("global_params")
+            if not val.get("archive"):
+                tmplt += "system syslog global"
+            tmplt = templt_common(val.get("facilities"), tmplt)
+        elif config_data.get("console"):
+            val = config_data.get("console")
+            tmplt += "system syslog console"
+            tmplt = templt_common(val.get("facilities"), tmplt)
+        elif config_data.get("users"):
+            val = config_data.get("users")
+            if val.get("username") and not val.get("archive"):
+                tmplt += "system syslog user {username}".format(username=val["username"])
+            if val.get("facilities"):
+                tmplt = templt_common(val.get("facilities"), tmplt)
+        elif config_data.get("hosts"):
+            val = config_data.get("hosts")
+            if val.get("hostname") and not val.get("archive") and not val.get("port"):
+                tmplt += "system syslog host {hostname}".format(hostname=val["hostname"])
+            if val.get("facilities"):
+                tmplt = templt_common(val.get("facilities"), tmplt)
         elif config_data.get("files"):
             val = config_data.get("files")
-            if config_data.get("tag"):
-                tmplt += " file {path}".format(path=config_data["tag"])
-            if val.get("facility"):
-                tmplt += " facility {facility}".format(facility=val["facility"])
-            if val.get("severity"):
-                tmplt += " level {level}".format(level=val["severity"])
-        if tmplt == "system syslog":
-            tmplt = None
+            if val.get("path") and not val.get("archive"):
+                tmplt += "system syslog file {path}".format(path=val["path"])
+            if val.get("facilities"):
+                tmplt = templt_common(val.get("facilities"), tmplt)
         return tmplt
 
     PARSERS = [
-        { #console parsers
-            "name": "console",
+        {
+            "name": "syslog.state",
+            "getval": re.compile(
+                r"""
+                ^set\ssystem
+                (\s(?P<syslog>syslog))
+                $""", re.VERBOSE),
+            "setval": "system syslog",
+            "result": {
+                "syslog": {
+                    "state": "{{ 'enabled' if syslog is defined else 'disabled' }}",
+                }
+            }
+        },
+        {
+            "name": "console.facilities",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\sconsole\sfacility
@@ -82,13 +93,13 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
-            "remval": "system syslog console facility {{ console.facility }}",
+            "remval": "system syslog console facility {{ console.facilities.facility }}",
             "result": {
                 "console": {
                     "facilities": [{
                         "facility": "{{ facility }}",
                         "severity": "{{ level }}",
-                    }]
+                    }, ]
                 }
             }
         },
@@ -107,41 +118,63 @@ class Logging_globalTemplate(NetworkTemplate):
             }
         },
         {
-            "name": "files.archive_size",
+            "name": "files.archive.state",
+            "getval": re.compile(
+                r"""
+                ^set\ssystem\ssyslog\sfile
+                (\s(?P<path>\S+))?
+                (\s(?P<archive>archive))
+                $""", re.VERBOSE),
+            "setval": "system syslog file {{ files.path }} archive",
+            "result": {
+                "files": {
+                    "{{ path }}": {
+                        "path": "{{ path }}",
+                        "archive": {
+                            "state": "{{ 'enabled' if archive is defined else 'disabled' }}",
+                        },
+                    },
+                }
+            }
+        },
+        {
+            "name": "files.archive.size",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\sfile
                 (\s(?P<path>\S+))?
                 (\sarchive\ssize\s(?P<size>'(\d+)'))?
                 $""", re.VERBOSE),
-            "setval": "system syslog file {{ files.tag }} archive size {{ files.archive_size }}",
-            "remval": "system syslog file {{ files.tag }}",
+            "setval": "system syslog file {{ files.path }} archive size {{ files.archive.size }}",
             "result": {
-                "files": {"{{ path }}": {
-                    "path": "{{ path }}",
-                    "archive": {
-                        "size": "{{ size }}",
+                "files": {
+                    "{{ path }}": {
+                        "path": "{{ path }}",
+                        "archive": {
+                            "size": "{{ size }}",
+                        },
                     },
-                },}
+                }
             }
         },
         {
-            "name": "files.archive_file_num",
+            "name": "files.archive.file_num",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\sfile
                 (\s(?P<path>\S+))?
                 (\sarchive\sfile\s(?P<file_num>'(\d+)'))?
                 $""", re.VERBOSE),
-            "setval": "system syslog file {{ files.tag }} archive file {{ files.archive_file_num }}",
-            "remval": "system syslog file {{ files.tag }}",
+            "setval": "system syslog file {{ files.path }} archive file {{ files.archive.file_num }}",
             "result": {
-                "files": {"{{ path }}":{
-                    "path": "{{ path }}",
-                    "archive": {
-                        "file_num": "{{ file_num }}",
+                "files": {
+                    "{{ path }}": {
+                        "path": "{{ path }}",
+                        "archive": {
+                            "file_num": "{{ file_num }}",
+                        },
                     },
-                },}
+                }
             }
         },
         {
@@ -154,19 +187,20 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
-            "remval": "system syslog file {{ tag }}"
-                      "{{ (' facility ' + files.facility) if files.facility is defined else '' }}",
+            "remval": "system syslog file{{ (' ' + files.path) if files.path|d('') is defined else '' }}",
             "result": {
-                "files": {"{{ path }}":{
-                    "path": "{{ path }}",
-                    "facilities":[{
-                        "facility": "{{ facility }}",
-                        "severity": "{{ level }}",
-                    },]
-                },}
+                "files": {
+                    "{{ path }}": {
+                        "path": "{{ path }}",
+                        "facilities": [{
+                            "facility": "{{ facility }}",
+                            "severity": "{{ level }}",
+                        }, ]
+                    },
+                }
             }
         },
-        { #global_param parsers
+        {
             "name": "global_params.state",
             "getval": re.compile(
                 r"""
@@ -181,14 +215,29 @@ class Logging_globalTemplate(NetworkTemplate):
             }
         },
         {
-            "name": "global_params.archive_file_num",
+            "name": "global_params.archive.state",
+            "getval": re.compile(
+                r"""
+                ^set\ssystem\ssyslog\sglobal
+                (\s(?P<archive>archive))
+                $""", re.VERBOSE),
+            "setval": "system syslog global archive",
+            "result": {
+                "global_params": {
+                    "archive": {
+                        "state": "{{ 'enabled' if archive is defined else 'disabled' }}",
+                    },
+                }
+            }
+        },
+        {
+            "name": "global_params.archive.file_num",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\sglobal\sarchive\sfile
                 (\s(?P<file_num>'(\d+)'))?
                 $""", re.VERBOSE),
-            "setval": "system syslog global archive file {{ global_params.archive_file_num }}",
-            "remval": "system syslog global archive",
+            "setval": "system syslog global archive file {{ global_params.archive.file_num }}",
             "result": {
                 "global_params": {
                     "archive": {
@@ -198,14 +247,13 @@ class Logging_globalTemplate(NetworkTemplate):
             }
         },
         {
-            "name": "global_params.archive_size",
+            "name": "global_params.archive.size",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\sglobal\sarchive\ssize
                 (\s(?P<size>'(\d+)'))?
                 $""", re.VERBOSE),
-            "setval": "system syslog global archive size {{ global_params.archive_size }}",
-            "remval": "system syslog global archive",
+            "setval": "system syslog global archive size {{ global_params.archive.size }}",
             "result": {
                 "global_params": {
                     "archive": {
@@ -244,7 +292,7 @@ class Logging_globalTemplate(NetworkTemplate):
             }
         },
         {
-            "name": "global_params",
+            "name": "global_params.facilities",
             "getval": re.compile(
                 r"""
                 ^set\ssystem\ssyslog\sglobal\sfacility
@@ -252,13 +300,31 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
-            "remval": "system syslog global facility {{ global_params.facility }}",
+            "remval": "system syslog global facility {{ global_params.facilities.facility }}",
             "result": {
                 "global_params": {
                     "facilities": [{
                         "facility": "{{ facility }}",
                         "severity": "{{ level }}",
-                    },],
+                    }, ],
+                }
+            }
+        },
+        {
+            "name": "hosts.port",
+            "getval": re.compile(
+                r"""
+                ^set\ssystem\ssyslog\shost
+                (\s(?P<hostname>\S+))
+                (\sport\s(?P<port>'(\d+)'))
+                $""", re.VERBOSE),
+            "setval": "system syslog host {{ hosts.hostname }} port {{ hosts.port }}",
+            "result": {
+                "hosts": {
+                    "{{ hostname }}": {
+                        "hostname": "{{ hostname }}",
+                        "port": "{{ port }}",
+                    },
                 }
             }
         },
@@ -268,48 +334,26 @@ class Logging_globalTemplate(NetworkTemplate):
                 r"""
                 ^set\ssystem\ssyslog\shost
                 (\s(?P<hostname>\S+))
-                (\sport\s(?P<port>'(\d+)'))
-                $""", re.VERBOSE),
-            "setval": "system syslog host {{ hosts.tag }} port {{ hosts.port }}",
-            # "remval": "system syslog host",
-            "result": {
-                "hosts": {"{{ hostname }}":{
-                    "hostname": "{{ hostname }}",
-                    "port": "{{ port }}",
-                },}
-            }
-        },
-        {
-            "name": "hosts.facility",
-            "getval": re.compile(
-                r"""
-                ^set\ssystem\ssyslog\shost
-                (\s(?P<hostname>\S+))
                 (\sfacility\s(?P<facility>all|auth|authpriv|cron|daemon|kern|lpr|mail|mark|news|protocols|security|syslog|user|uucp|local[0-7]))
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 (\sprotocol\s(?P<protocol>'(udp|tcp)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
-            "remval": "system syslog host {{ tag }}",
-                    #   "{{ (' facility ' + hosts.facility) if hosts.facility is defined else '' }}"
-                    #   "{{ (' level ' + hosts.severity) if hosts.severity is defined else '' }}"
-                    #   "{{ (' protocol ' + hosts.protocol) if hosts.protocol is defined else '' }}", 
-                    #   "{{ ('system syslog host ' + tag) if hosts.protocol is defined else '' }}"
-                    #   "{{ (' facility ' + hosts.facility) if hosts.protocol is defined else '' }}",
-                    #   "{{ ('system syslog host ' + tag) if hosts.severity is defined else '' }}"
-                    #   "{{ (' facility ' + hosts.facility) if hosts.severity is defined else '' }}"],
+            "remval": "system syslog host {{ hosts.hostname }}",
             "result": {
-                "hosts": {"{{ hostname }}":{
-                    "hostname": "{{ hostname }}",
-                    "facilities":[{
-                        "facility": "{{ facility }}",
-                        "severity": "{{ level }}",
-                        "protocol": "{{ protocol }}",
-                    },]
-                },}
+                "hosts": {
+                    "{{ hostname }}": {
+                        "hostname": "{{ hostname }}",
+                        "facilities": [{
+                            "facility": "{{ facility }}",
+                            "severity": "{{ level }}",
+                            "protocol": "{{ protocol }}",
+                        }, ]
+                    },
+                }
             }
         },
-        { #user parsers
+        {
             "name": "users",
             "getval": re.compile(
                 r"""
@@ -319,16 +363,17 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
                 $""", re.VERBOSE),
             "setval": tmplt_params,
-            "remval": "system syslog user {{ tag }}",
+            "remval": "system syslog user {{ users.username }}",
             "result": {
                 "users": {
-                    "{{ username }}":{
-                    "username": "{{ username }}",
-                    "facilities":[{
-                        "facility": "{{ facility }}",
-                        "severity": "{{ level }}",
-                    },]
-                }}
+                    "{{ username }}": {
+                        "username": "{{ username }}",
+                        "facilities": [{
+                            "facility": "{{ facility }}",
+                            "severity": "{{ level }}",
+                        }, ]
+                    }
+                }
             }
         },
     ]

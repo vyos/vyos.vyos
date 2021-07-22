@@ -1,0 +1,4 @@
+---
+- name: delete the provided configuration
+  vyos.vyos.vyos_logging_global:
+    state: deleted

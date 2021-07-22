@@ -10,7 +10,9 @@ __metaclass__ = type
 from textwrap import dedent
 from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
 from ansible_collections.vyos.vyos.plugins.modules import vyos_logging_global
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
+    set_module_args,
+)
 from .vyos_module import TestVyosModule
 
 
@@ -48,9 +50,6 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         self.mock_execute_show_command.stop()
 
     def test_vyos_logging_global_merged_idempotent(self):
-        """
-        passing all commands as have and expecting [] commands
-        """
         self.execute_show_command.return_value = dedent(
             """\
             set system syslog console facility all
@@ -81,8 +80,8 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                 console=dict(
                     facilities=[
                         dict(facility="all"),
-                        dict(facility="local7", level="err"),
-                        dict(facility="news", level="debug"),
+                        dict(facility="local7", severity="err"),
+                        dict(facility="news", severity="debug"),
                     ]
                 ),
                 files=[
@@ -92,8 +91,8 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                         path="def",
                         archive=dict(file_num=2),
                         facilities=[
-                            dict(facility="local6", level="emerg"),
-                            dict(facility="local7", level="emerg"),
+                            dict(facility="local6", severity="emerg"),
+                            dict(facility="local7", severity="emerg"),
                         ],
                     ),
                 ],
@@ -102,7 +101,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                         hostname="10.0.2.15",
                         port=122,
                         facilities=[
-                            dict(facility="all", level="all"),
+                            dict(facility="all", severity="all"),
                             dict(facility="all", protocol="udp"),
                         ],
                     ),
@@ -115,13 +114,13 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                     dict(
                         username="vyos",
                         facilities=[
-                            dict(facility="local7", level="debug"),
-                            dict(facility="local6", level="alert"),
+                            dict(facility="local7", severity="debug"),
+                            dict(facility="local6", severity="alert"),
                         ],
                     ),
                     dict(
                         username="paul",
-                        facilities=[dict(facility="local7", level="err")],
+                        facilities=[dict(facility="local7", severity="err")],
                     ),
                 ],
                 global_params=dict(
@@ -129,8 +128,8 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                     marker_interval=111,
                     preserve_fqdn="True",
                     facilities=[
-                        dict(facility="cron", level="debug"),
-                        dict(facility="local7", level="debug"),
+                        dict(facility="cron", severity="debug"),
+                        dict(facility="local7", severity="debug"),
                     ],
                 ),
             )
@@ -144,9 +143,6 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         self.assertEqual(sorted(result["commands"]), sorted(compare_cmds))
 
     def test_vyos_logging_global_merged(self):
-        """
-        passing all commands as have and expecting [] commands
-        """
         self.execute_show_command.return_value = dedent(
             """\
             """
@@ -156,8 +152,8 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                 console=dict(
                     facilities=[
                         dict(facility="all"),
-                        dict(facility="local7", level="err"),
-                        dict(facility="news", level="debug"),
+                        dict(facility="local7", severity="err"),
+                        dict(facility="news", severity="debug"),
                     ]
                 ),
                 files=[
@@ -167,8 +163,8 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                         path="def",
                         archive=dict(file_num=2),
                         facilities=[
-                            dict(facility="local6", level="emerg"),
-                            dict(facility="local7", level="emerg"),
+                            dict(facility="local6", severity="emerg"),
+                            dict(facility="local7", severity="emerg"),
                         ],
                     ),
                 ],
@@ -177,7 +173,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                         hostname="10.0.2.15",
                         port=122,
                         facilities=[
-                            dict(facility="all", level="all"),
+                            dict(facility="all", severity="all"),
                             dict(facility="all", protocol="udp"),
                         ],
                     ),
@@ -190,13 +186,13 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                     dict(
                         username="vyos",
                         facilities=[
-                            dict(facility="local7", level="debug"),
-                            dict(facility="local6", level="alert"),
+                            dict(facility="local7", severity="debug"),
+                            dict(facility="local6", severity="alert"),
                         ],
                     ),
                     dict(
                         username="paul",
-                        facilities=[dict(facility="local7", level="err")],
+                        facilities=[dict(facility="local7", severity="err")],
                     ),
                 ],
                 global_params=dict(
@@ -204,8 +200,8 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                     marker_interval=111,
                     preserve_fqdn="True",
                     facilities=[
-                        dict(facility="cron", level="debug"),
-                        dict(facility="local7", level="debug"),
+                        dict(facility="cron", severity="debug"),
+                        dict(facility="local7", severity="debug"),
                     ],
                 ),
             )
@@ -240,9 +236,6 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         self.assertEqual(sorted(result["commands"]), sorted(compare_cmds))
 
     def test_vyos_logging_global_deleted(self):
-        """
-        passing all commands as have and expecting [] commands
-        """
         self.execute_show_command.return_value = dedent(
             """\
             set system syslog console facility all
@@ -269,13 +262,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
             """
         )
         playbook = dict(config=dict())
-        compare_cmds = [
-            "delete system syslog console",
-            "delete system syslog file",
-            "delete system syslog global",
-            "delete system syslog host",
-            "delete system syslog user",
-        ]
+        compare_cmds = ["delete system syslog"]
         playbook["state"] = "deleted"
         set_module_args(playbook)
         result = self.execute_module(changed=True)
@@ -313,30 +300,44 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         )
         playbook = dict(
             config=dict(
-                console=dict(facilities=[dict(facility="local7", level="emerg")]),
+                console=dict(
+                    facilities=[dict(facility="local7", severity="emerg")]
+                ),
                 files=[
                     dict(
                         path="abc",
                         archive=dict(file_num=2),
                         facilities=[
-                            dict(facility="local6", level="err"),
-                            dict(facility="local7", level="emerg"),
+                            dict(facility="local6", severity="err"),
+                            dict(facility="local7", severity="emerg"),
                         ],
                     )
                 ],
             )
         )
         compare_cmds = [
-            "delete system syslog console",
-            "delete system syslog file",
-            "delete system syslog global",
-            "delete system syslog host",
-            "delete system syslog user",
+            "delete system syslog console facility all",
+            "delete system syslog console facility local7",
+            "delete system syslog console facility news",
+            "delete system syslog file def",
+            "delete system syslog file xyz",
+            "delete system syslog global facility cron",
+            "delete system syslog global facility local7",
+            "delete system syslog global archive file 2",
+            "delete system syslog global archive size 111",
+            "delete system syslog global marker",
+            "delete system syslog global preserve-fqdn",
+            "delete system syslog host 10.0.2.12",
+            "delete system syslog host 10.0.2.15",
+            "delete system syslog user paul",
+            "delete system syslog user vyos",
             "set system syslog console facility local7 level emerg",
             "set system syslog file abc facility local6 level err",
             "set system syslog file abc facility local7 level emerg",
+            "delete system syslog file abc archive size 125",
             "set system syslog file abc archive file 2",
         ]
+
         playbook["state"] = "replaced"
         set_module_args(playbook)
         result = self.execute_module(changed=True)
@@ -352,7 +353,9 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
             set system syslog console facility local6
             """
         )
-        playbook = dict(config=dict(console=dict(facilities=[dict(facility="local6")])))
+        playbook = dict(
+            config=dict(console=dict(facilities=[dict(facility="local6")]))
+        )
         compare_cmds = []
         playbook["state"] = "replaced"
         set_module_args(playbook)
@@ -361,9 +364,6 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         self.assertEqual(sorted(result["commands"]), sorted(compare_cmds))
 
     def test_vyos_logging_global_overridden(self):
-        """
-        passing all commands as have and expecting [] commands
-        """
         self.execute_show_command.return_value = dedent(
             """\
             set system syslog console
@@ -372,22 +372,22 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         )
         playbook = dict(
             config=dict(
-                console=dict(facilities=[dict(facility="local7", level="emerg")]),
+                console=dict(
+                    facilities=[dict(facility="local7", severity="emerg")]
+                ),
                 files=[
                     dict(
                         path="abc",
                         archive=dict(file_num=2),
                         facilities=[
-                            dict(facility="local6", level="err"),
-                            dict(facility="local7", level="emerg"),
+                            dict(facility="local6", severity="err"),
+                            dict(facility="local7", severity="emerg"),
                         ],
                     )
                 ],
             )
         )
         compare_cmds = [
-            "delete system syslog console",
-            "delete system syslog global",
             "set system syslog console facility local7 level emerg",
             "set system syslog file abc facility local6 level err",
             "set system syslog file abc facility local7 level emerg",
@@ -396,22 +396,25 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         playbook["state"] = "overridden"
         set_module_args(playbook)
         result = self.execute_module(changed=True)
+        print(result["commands"])
         self.maxDiff = None
         self.assertEqual(sorted(result["commands"]), sorted(compare_cmds))
 
     def test_vyos_logging_global_rendered(self):
-        """
-        passing all commands as have and expecting [] commands
-        """
         playbook = dict(
             config=dict(
                 console=dict(facilities=[dict(facility="all")]),
                 hosts=[
-                    dict(hostname="10.0.2.16", facilities=[dict(facility="local6")])
+                    dict(
+                        hostname="10.0.2.16",
+                        facilities=[dict(facility="local6")],
+                    )
                 ],
                 users=[
                     dict(username="vyos"),
-                    dict(username="paul", facilities=[dict(facility="local7")]),
+                    dict(
+                        username="paul", facilities=[dict(facility="local7")]
+                    ),
                 ],
             )
         )
@@ -440,7 +443,8 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
             )
         )
         parsed = dict(
-            console=dict(facilities=[dict(facility="all")]), files=[dict(path="xyz")]
+            console=dict(facilities=[dict(facility="all")]),
+            files=[dict(path="xyz")],
         )
         result = self.execute_module(changed=False)
         self.maxDiff = None

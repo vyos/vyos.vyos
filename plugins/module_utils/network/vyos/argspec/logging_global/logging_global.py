@@ -28,8 +28,7 @@ The arg spec for the vyos_logging_global module
 
 
 class Logging_globalArgs(object):  # pylint: disable=R0903
-    """The arg spec for the vyos_logging_global module
-    """
+    """The arg spec for the vyos_logging_global module"""
 
     argument_spec = {
         "config": {
@@ -38,7 +37,10 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                 "console": {
                     "type": "dict",
                     "options": {
-                        "state": {"type": "str", "choices": ["enabled", "disabled"]},
+                        "state": {
+                            "type": "str",
+                            "choices": ["enabled", "disabled"],
+                        },
                         "facilities": {
                             "type": "list",
                             "elements": "dict",
@@ -97,6 +99,10 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                         "archive": {
                             "type": "dict",
                             "options": {
+                                "state": {
+                                    "type": "str",
+                                    "choices": ["enabled", "disabled"],
+                                },
                                 "file_num": {"type": "int"},
                                 "size": {"type": "int"},
                             },
@@ -154,10 +160,17 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                 "global_params": {
                     "type": "dict",
                     "options": {
-                        "state": {"type": "str", "choices": ["enabled", "disabled"]},
+                        "state": {
+                            "type": "str",
+                            "choices": ["enabled", "disabled"],
+                        },
                         "archive": {
                             "type": "dict",
                             "options": {
+                                "state": {
+                                    "type": "str",
+                                    "choices": ["enabled", "disabled"],
+                                },
                                 "file_num": {"type": "int"},
                                 "size": {"type": "int"},
                             },
@@ -265,10 +278,22 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                                         "all",
                                     ],
                                 },
-                                "protocol": {"type": "str", "choices": ["udp", "tcp"]},
+                                "protocol": {
+                                    "type": "str",
+                                    "choices": ["udp", "tcp"],
+                                },
                             },
                         },
                         "hostname": {"type": "str"},
+                    },
+                },
+                "syslog": {
+                    "type": "dict",
+                    "options": {
+                        "state": {
+                            "type": "str",
+                            "choices": ["enabled", "disabled"],
+                        }
                     },
                 },
                 "users": {

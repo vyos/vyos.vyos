@@ -14,8 +14,6 @@ for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
 
-from copy import deepcopy
-
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
     utils,
@@ -29,8 +27,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.log
 
 
 class Logging_globalFacts(object):
-    """ The vyos logging_global facts class
-    """
+    """The vyos logging_global facts class"""
 
     def __init__(self, module, subspec="config", options="options"):
         self._module = module
@@ -47,7 +44,9 @@ class Logging_globalFacts(object):
                     for k, v in vl.items():
                         _files.append(v)
                     objFinal[ke] = _files
-                    objFinal[ke] = sorted(objFinal[ke], key=lambda item: item["path"])
+                    objFinal[ke] = sorted(
+                        objFinal[ke], key=lambda item: item["path"]
+                    )
                 elif ke == "hosts":
                     _hosts = []
                     for k, v in vl.items():
@@ -73,7 +72,7 @@ class Logging_globalFacts(object):
         return objFinal
 
     def populate_facts(self, connection, ansible_facts, data=None):
-        """ Populate the facts for Logging_global network resource
+        """Populate the facts for Logging_global network resource
 
         :param connection: the device connection
         :param ansible_facts: Facts dictionary

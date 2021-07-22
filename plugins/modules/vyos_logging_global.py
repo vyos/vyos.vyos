@@ -95,6 +95,7 @@ options:
             description: Log file size and rotation characteristics
             type: dict
             suboptions:
+              state: *state_config
               file_num:
                 description: Number of saved files (default is 5)
                 type: int
@@ -145,6 +146,11 @@ options:
           hostname:
             description: Remote host name or IP address
             type: str
+      syslog:
+        description: logging syslog
+        type: dict
+        suboptions:
+          state: *state_config
       users:
         description: logging to file
         type: list
@@ -189,10 +195,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.logg
     Logging_global,
 )
 
-import debugpy
+# import debugpy
 
-debugpy.listen(3001)
-debugpy.wait_for_client()
+# debugpy.listen(3001)
+# debugpy.wait_for_client()
 
 
 def main():

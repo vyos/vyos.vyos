@@ -102,7 +102,9 @@ class Facts(FactsBase):
     def __init__(self, module):
         super(Facts, self).__init__(module)
 
-    def get_facts(self, legacy_facts_type=None, resource_facts_type=None, data=None):
+    def get_facts(
+        self, legacy_facts_type=None, resource_facts_type=None, data=None
+    ):
         """Collect the facts for vyos
         :param legacy_facts_type: List of legacy facts types
         :param resource_facts_type: List of resource fact types
@@ -115,5 +117,7 @@ class Facts(FactsBase):
                 FACT_RESOURCE_SUBSETS, resource_facts_type, data
             )
         if self.VALID_LEGACY_GATHER_SUBSETS:
-            self.get_network_legacy_facts(FACT_LEGACY_SUBSETS, legacy_facts_type)
+            self.get_network_legacy_facts(
+                FACT_LEGACY_SUBSETS, legacy_facts_type
+            )
         return self.ansible_facts, self._warnings

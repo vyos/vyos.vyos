@@ -22,6 +22,7 @@ from copy import deepcopy
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     dict_merge,
+    get_from_dict,
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
@@ -48,24 +49,22 @@ class Logging_global(ResourceModule):
             tmplt=Logging_globalTemplate(),
         )
         self.parsers = [
-            "users",
-            "files",
-            "hosts",
-            "console",
-            "global_params",
-            "console.state",
-            "hosts.facility",
-            "files.archive_size",
-            "global_params.state",
-            "files.archive_file_num",
-            "global_params.archive_size",
-            "global_params.preserve_fqdn",
+            "console.facilities",
+            "global_params.archive.file_num",
+            "global_params.archive.size",
             "global_params.marker_interval",
-            "global_params.archive_file_num",
+            "global_params.preserve_fqdn",
+            "global_params.facilities",
+            "files.archive.size",
+            "files.archive.file_num",
+            "files",
+            "hosts.port",
+            "hosts",
+            "users",
         ]
 
     def execute_module(self):
-        """ Execute the module
+        """Execute the module
 
         :rtype: A dictionary
         :returns: The result from module execution
@@ -76,8 +75,8 @@ class Logging_global(ResourceModule):
         return self.result
 
     def generate_commands(self):
-        """ Generate configuration commands to send based on
-            want, have and desired state.
+        """Generate configuration commands to send based on
+        want, have and desired state.
         """
         if self.want:
             wantd = self.list_to_dict(self.want, "want")
@@ -88,154 +87,151 @@ class Logging_global(ResourceModule):
         else:
             haved = dict()
 
-        # if state is merged, merge want onto have and then compare
+        if self.state in ["overridden", "replaced"]:
+            if wantd != haved:
+                wantx, havex = self.call_op(wantd, haved, "overridden")
+                for k, have in iteritems(havex):
+                    if k not in wantx:
+                        self._compare(want={}, have=have)
+
+        if not self.state == "deleted":
+            wantd, haved = self.call_op(wantd, haved)
+
         if self.state == "merged":
             wantd = dict_merge(haved, wantd)
-
-        # if state is deleted, empty out wantd and set haved to wantd
-        if self.state == "deleted":
-            haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
-            wantd = {}
-
-        # remove superfluous config for overridden and deleted
-        if self.state in ["overridden", "deleted", "replaced"]:
-            for k, have in iteritems(haved):
-                if k not in wantd:
-                    self._compare(want={}, have=have)
-
-        # if self.state == "deleted":
-        #     wantd = haved
-
-        # # remove superfluous config for non merged state
-        # if self.state in ["overridden", "replaced"]:
-        #     _wantd = {}
-        #     if haved and haved != wantd:
-        #         haved = {k: {k: {}} for k, v in iteritems(self.have)}
-        #         for k, have in iteritems(haved):
-        #             if k not in _wantd:
-        #                 self._compare(want={}, have=have)
-
-        #     if self.state == "deleted":
-        #         wantd = _wantd  # delete to specify want stays blank
-        #     else:
-        #         if haved != wantd:
-        #             haved = _wantd  # other config to form commands on basis of want
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
-           populates the list of commands to be run by comparing
-           the `want` and `have` data with the `parsers` defined
-           for the Logging_global network resource.
+        populates the list of commands to be run by comparing
+        the `want` and `have` data with the `parsers` defined
+        for the Logging_global network resource.
         """
         self.compare(parsers=self.parsers, want=want, have=have)
+        self.handleStates(want=want, have=have)
 
-    def list_to_dict(self, param, op):
-        _temp_param = {}
-        _dict_vals = None
+    def operation_rep(self, params):
+        op_val = dict()
+        for k, val in iteritems(params):
+            if k in ["console", "global_params"]:
+                mod_val = deepcopy(val)
+                op_val.update(self.flatten_facility({k: mod_val}))
+            elif k in ["files", "hosts", "users"]:
+                for m, n in iteritems(val):
+                    mod_n = deepcopy(n)
+                    if mod_n.get("archive"):
+                        del mod_n["archive"]
+                    if mod_n.get("facilities"):
+                        del mod_n["facilities"]
+                    if mod_n.get("port"):
+                        del mod_n["port"]
+                    tm = self.flatten_facility({k: {m: mod_n}})
+                    op_val.update(tm)
+        return op_val
+
+    def call_op(self, _want, _have, mode=None):
+        if mode == "overridden":
+            w = self.operation_rep(_want)
+            h = self.operation_rep(_have)
+        else:
+            w = self.flatten_facility(_want)
+            h = self.flatten_facility(_have)
+        return w, h
+
+    def handleStates(self, want=None, have=None):
+        stateparsers = [
+            "syslog.state",
+            "console.state",
+            "global_params.state",
+            "global_params.archive.state",
+            "files.archive.state",
+        ]
+        for par in stateparsers:
+            op = get_from_dict(want, par)
+            if op == "enabled":
+                self.addcmd(want, par)
+            elif op == "disabled":
+                self.addcmd(want, par, True)
+                break
+
+    def flatten_facility(self, param):
+        temp_param = dict()
         for element, val in iteritems(param):
-            if element == "facilities":  # only with recursion call
-                _tem_par = {}
-                for par in val:
-                    if par.get("facility") and par.get("severity"):
-                        _tem_par.update(
-                            {par.get("facility") + par.get("severity"): par}
-                        )
-                    elif par.get("facility") and par.get("protocol"):
-                        _tem_par.update(
-                            {par.get("facility") + par.get("protocol"): par}
-                        )
-                    else:
-                        _tem_par.update({par.get("facility"): par})
-                return _tem_par
-            elif element == "console" or element == "global_params":
-                if val.get("facilities"):
-                    _dict_vals = self.list_to_dict(val, op)
-                else:
-                    _dict_vals = None
-                _temp_param.update(self.make_linear_dicts(element, val, _dict_vals))
-            elif element == "hosts" or element == "users" or element == "files":
-                for v in val:
+            if element in ["console", "global_params", "syslog"]:
+                if element != "syslog" and val.get("facilities"):
+                    for k, v in iteritems(val.get("facilities")):
+                        temp_param[k + element] = {element: {"facilities": v}}
+                    del val["facilities"]
+                if val:
+                    temp_param[element] = {element: val}
+            if element in ["files", "hosts", "users"]:
+                for k, v in iteritems(val):
                     if v.get("facilities"):
-                        _dict_vals = self.list_to_dict(v, op)
-                    else:
-                        _dict_vals = None
-                    _temp_param.update(self.make_linear_dicts(element, v, _dict_vals))
-        return _temp_param
-
-    def make_linear_dicts(self, element, val, _dict_vals):
-        linear_dict = {}
-        primary_k = {"files": "path", "hosts": "hostname", "users": "username"}
-        tag = val.get(primary_k.get(element)) if primary_k.get(element) else ""
-        if _dict_vals:
-            for k, v in iteritems(_dict_vals):
-                linear_dict.update({element + k + tag: {element: v, "tag": tag}})
-        if val.get("preserve_fqdn"):
-            linear_dict.update(
-                {
-                    "preserve_fqdn": {
-                        element: {"preserve_fqdn": val.get("preserve_fqdn")}
-                    }
-                }
-            )
-        if val.get("marker_interval"):
-            linear_dict.update(
-                {
-                    "marker_interval": {
-                        element: {"marker_interval": val.get("marker_interval")}
-                    }
-                }
-            )
-        if val.get("port"):
-            linear_dict.update(
-                {"port" + tag: {element: {"port": val.get("port"), "tag": tag}}}
-            )
-        if val.get("state") or tag == "":
-            linear_dict.update(
-                {
-                    "state"
-                    + element: {
-                        element: {
-                            "state": "enable"
-                            if not val.get("state")
-                            else val.get("state")
-                        }
-                    }
-                }
-            )
-        if (
-            element in primary_k.keys()
-            and len(val.keys()) == 1
-            # and val.keys()[0] == tag
-        ):
-            linear_dict.update(
-                {"tag" + element + tag: {element: {"tag": tag}, "tag": tag}}
-            )
-        if val.get("archive"):
-            _archive = val.get("archive")
-            if _archive.get("size"):
-                linear_dict.update(
-                    {
-                        element
-                        + "size"
-                        + tag: {
-                            element: {"archive_size": _archive.get("size"), "tag": tag}
-                        }
-                    }
-                )
-            if _archive.get("file_num"):
-                linear_dict.update(
-                    {
-                        element
-                        + "file_num"
-                        + tag: {
-                            element: {
-                                "archive_file_num": _archive.get("file_num"),
-                                "tag": tag,
+                        for pk, dat in iteritems(v.get("facilities")):
+                            temp_param[pk + k] = {
+                                element: {
+                                    "facilities": dat,
+                                    self.pkey.get(element): v.get(
+                                        self.pkey.get(element)
+                                    ),
+                                }
                             }
-                        }
-                    }
-                )
-        return linear_dict
+                        del v["facilities"]
+                        if len(list(v.keys())) > 1:
+                            temp_param[k] = {element: v}
+                    else:
+                        temp_param[k] = {element: v}
+        return temp_param
+
+    def list_to_dict(self, param, op=None):
+        updated_param = dict()
+        if self.state == "deleted":
+            if op == "have" and param:
+                self.handleStates({"syslog": {"state": "disabled"}})
+            updated_param == {}
+        else:
+            self.pkey = {
+                "files": "path",
+                "hosts": "hostname",
+                "users": "username",
+            }
+            for element, val in iteritems(param):
+                if element == "facilities":  # only with recursion call
+                    _tem_par = {}
+                    for par in val:
+                        if par.get("facility") and par.get("severity"):
+                            _tem_par.update(
+                                {
+                                    par.get("facility")
+                                    + par.get("severity"): par
+                                }
+                            )
+                        elif par.get("facility") and par.get("protocol"):
+                            _tem_par.update(
+                                {
+                                    par.get("facility")
+                                    + par.get("protocol"): par
+                                }
+                            )
+                        else:
+                            _tem_par.update({par.get("facility"): par})
+                    return _tem_par
+                elif element in ["console", "global_params", "syslog"]:
+                    if element != "syslog" and val.get("facilities"):
+                        val["facilities"] = self.list_to_dict(val)
+                    updated_param[element] = val
+                elif element in ["hosts", "users", "files"]:
+                    for v in val:
+                        if v.get("facilities"):
+                            v["facilities"] = self.list_to_dict(v)
+                        if updated_param.get(element):
+                            updated_param[element].update(
+                                {v.get(self.pkey.get(element)): v}
+                            )
+                        else:
+                            updated_param[element] = {
+                                v.get(self.pkey.get(element)): v
+                            }
+            return updated_param
