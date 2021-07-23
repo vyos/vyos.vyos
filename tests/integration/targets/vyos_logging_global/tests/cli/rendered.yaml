@@ -23,7 +23,7 @@
                 size: 125
 
           hosts:
-            - hostname: 10.0.2.15
+            - hostname: 172.16.2.15
               facilities:
                 - facility: all
                   severity: all

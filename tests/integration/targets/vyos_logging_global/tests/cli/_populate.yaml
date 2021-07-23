@@ -24,14 +24,14 @@
             - facility: local7
               severity: emerg
       hosts:
-        - hostname: 10.0.2.15
+        - hostname: 172.16.2.15
           facilities:
             - facility: all
               severity: all
             - facility: all
               protocol: udp
           port: 122
-        - hostname: 10.0.2.12
+        - hostname: 172.16.2.12
           facilities:
             - facility: all
               protocol: udp
