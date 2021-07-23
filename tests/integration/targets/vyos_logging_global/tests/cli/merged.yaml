@@ -39,8 +39,6 @@
             facilities:
               - facility: cron
                 severity: debug
-            marker_interval: 111
-            preserve_fqdn: true
         state: merged
 
     - name: Assert that correct set of commands were generated

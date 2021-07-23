@@ -54,6 +54,4 @@
             severity: debug
           - facility: local7
             severity: debug
-        marker_interval: 111
-        preserve_fqdn: true
     state: merged

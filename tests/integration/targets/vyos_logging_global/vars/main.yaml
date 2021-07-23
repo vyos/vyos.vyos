@@ -9,8 +9,6 @@ merged:
     - set system syslog global facility cron level debug
     - set system syslog global archive file 2
     - set system syslog global archive size 111
-    - set system syslog global marker interval 111
-    - set system syslog global preserve-fqdn
     - set system syslog file def archive file 2
     - set system syslog file def facility local6 level emerg
   after:
@@ -42,8 +40,6 @@ merged:
       facilities:
         - facility: cron
           severity: debug
-      marker_interval: 111
-      preserve_fqdn: true
 
 overridden:
   commands:
@@ -58,8 +54,7 @@ overridden:
     - delete system syslog user vyos
     - set system syslog file Myfile
     - delete system syslog global archive size 111
-    - delete system syslog global marker
-    - delete system syslog global preserve-fqdn
+
   after:
     console:
       facilities:
@@ -83,8 +78,6 @@ rendered:
     - set system syslog global facility cron level debug
     - set system syslog global archive file 2
     - set system syslog global archive size 111
-    - set system syslog global marker interval 111
-    - set system syslog global preserve-fqdn
 
 deleted:
   commands:
