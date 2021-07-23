@@ -286,10 +286,7 @@ class Firewall_rulesFacts(object):
         a_lst = ["code", "type", "type_name"]
         if attrib == 'icmp':
                 attrib = 'icmpv6'
-        """ if search('icmpv6 type', conf):
-            re.sub('icmpv6 type', 'icmpv6 type-name')  """ 
-        conf = re.sub('icmpv6 type', 'icmpv6 type-name',conf)
-        #conf.replace("icmpv6 type", "icmpv6 type-name")     
+        conf = re.sub('icmpv6 type', 'icmpv6 type-name',conf)    
         cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
         return cfg_dict
 
