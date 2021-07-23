@@ -14,7 +14,6 @@
           console:
             facilities:
               - facility: all
-
           files:
             - path: def
               archive:
@@ -23,20 +22,16 @@
                 - facility: local6
                   severity: emerg
             - path: xyz
-
           hosts:
             - hostname: 172.16.2.15
               facilities:
                 - facility: all
                   severity: all
-              port: 122
-
           users:
             - username: vyos
               facilities:
                 - facility: local7
                   severity: debug
-
           global_params:
             archive:
               file_num: 2

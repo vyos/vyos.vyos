@@ -7,7 +7,6 @@ merged:
     - set system syslog user vyos facility local7 level debug
     - set system syslog file xyz
     - set system syslog global facility cron level debug
-    - set system syslog host 172.16.2.15 port 122
     - set system syslog global archive file 2
     - set system syslog global archive size 111
     - set system syslog global marker interval 111
@@ -31,7 +30,6 @@ merged:
         facilities:
           - facility: all
             severity: all
-        port: 122
     users:
       - username: vyos
         facilities:
@@ -81,7 +79,6 @@ rendered:
     - set system syslog console facility all
     - set system syslog file abc archive size 125
     - set system syslog host 172.16.2.15 facility all level all
-    - set system syslog host 172.16.2.15 port 122
     - set system syslog user vyos facility local7 level debug
     - set system syslog global facility cron level debug
     - set system syslog global archive file 2

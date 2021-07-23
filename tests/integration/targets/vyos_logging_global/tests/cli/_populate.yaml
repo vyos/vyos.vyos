@@ -1,5 +1,5 @@
 ---
-- name: Parse the provided configuration
+- name: POPULATE Apply the provided configuration
   register: result
   vyos.vyos.vyos_logging_global:
     config:
@@ -30,7 +30,6 @@
               severity: all
             - facility: all
               protocol: udp
-          port: 122
         - hostname: 172.16.2.12
           facilities:
             - facility: all
