@@ -93,3 +93,20 @@ deleted:
   commands:
     - delete system syslog
   after: {}
+
+parsed:
+  after:
+    console:
+      facilities:
+        - facility: news
+          severity: debug
+    files:
+      - path: def
+        facilities:
+          - facility: local7
+            severity: emerg
+    global_params:
+      facilities:
+        - facility: local7
+          severity: debug
+      marker_interval: 111
