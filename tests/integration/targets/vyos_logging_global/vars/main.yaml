@@ -109,4 +109,3 @@ parsed:
       facilities:
         - facility: local7
           severity: debug
-      marker_interval: 111
