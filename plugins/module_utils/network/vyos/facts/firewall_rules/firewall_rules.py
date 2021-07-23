@@ -13,6 +13,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+import re
 from re import findall, search, M
 from copy import deepcopy
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
@@ -167,6 +168,7 @@ class Firewall_rulesFacts(object):
             "fragment",
             "disabled",
             "description",
+            "icmp"
         ]
         rule = self.parse_attr(conf, a_lst)
         r_sub = {
@@ -282,6 +284,12 @@ class Firewall_rulesFacts(object):
         :return: generated config dictionary.
         """
         a_lst = ["code", "type", "type_name"]
+        if attrib == 'icmp':
+                attrib = 'icmpv6'
+        """ if search('icmpv6 type', conf):
+            re.sub('icmpv6 type', 'icmpv6 type-name')  """ 
+        conf = re.sub('icmpv6 type', 'icmpv6 type-name',conf)
+        #conf.replace("icmpv6 type", "icmpv6 type-name")     
         cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
         return cfg_dict
 
