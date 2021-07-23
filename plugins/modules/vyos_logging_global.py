@@ -186,6 +186,7 @@ options:
       - Refer to examples for more details.
     type: str
 """
+
 EXAMPLES = """
 # Using state: merged
 
@@ -691,33 +692,52 @@ EXAMPLES = """
 #   }
 # }
 """
+
 RETURN = """
 before:
-  description: The configuration prior to the model invocation.
-  returned: always
-  sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
+  description: The configuration prior to the module execution.
+  returned: when state is I(merged), I(replaced), I(overridden), I(deleted) or I(purged)
   type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
 after:
-  description: The resulting configuration model invocation.
+  description: The resulting configuration after module execution.
   returned: when changed
-  sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
   type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
 commands:
   description: The set of commands pushed to the remote device.
-  returned: always
+  returned: when state is I(merged), I(replaced), I(overridden), I(deleted) or I(purged)
   type: list
   sample:
-    - "set system syslog console facility local7 level 'err'"
-    - "set system syslog global archive size '111'"
-    - "set system syslog host 172.16.0.1 facility all protocol 'udp'"
-    - "set system syslog host 172.16.0.1 facility local7 level 'all'"
-    - "set system syslog host 172.16.0.1 port '223'"
-    - "set system syslog user paul facility local7 level 'err'"
-    - "set system syslog file logFile facility local6 level 'emerg'"
+    - "set system syslog console facility local7 level err"
+    - "set system syslog host 172.16.0.1 port 223"
+    - "set system syslog global archive size 111"
+rendered:
+  description: The provided configuration in the task rendered in device-native format (offline).
+  returned: when state is I(rendered)
+  type: list
+  sample:
+    - "set system syslog host 172.16.0.1 port 223"
+    - "set system syslog user vyos facility local7 level debug"
+    - "set system syslog global facility cron level debug"
+gathered:
+  description: Facts about the network resource gathered from the remote device as structured data.
+  returned: when state is I(gathered)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+parsed:
+  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
+  returned: when state is I(parsed)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
 """
 
 from ansible.module_utils.basic import AnsibleModule
