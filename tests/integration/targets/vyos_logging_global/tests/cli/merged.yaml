@@ -1,0 +1,56 @@
+---
+- debug:
+    msg:
+      START vyos_logging_global merged integration tests on connection={{ ansible_connection
+      }}
+
+- include_tasks: _remove_config.yaml
+
+- block:  # no after state match because 1.1.8 vyos does show all commands on show command
+    - name: Merge the provided configuration with the existing running configuration
+      register: result
+      vyos.vyos.vyos_logging_global: &id001
+        config:
+          console:
+            facilities:
+              - facility: all
+          files:
+            - path: def
+              archive:
+                file_num: 2
+              facilities:
+                - facility: local6
+                  severity: emerg
+          hosts:
+            - hostname: 172.16.2.15
+              facilities:
+                - facility: all
+                  severity: all
+          users:
+            - username: vyos
+              facilities:
+                - facility: local7
+                  severity: debug
+          global_params:
+            archive:
+              file_num: 2
+              size: 111
+            facilities:
+              - facility: cron
+                severity: debug
+        state: merged
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ merged['commands'] | symmetric_difference(result['commands']) |length\
+            \ == 0 }}"
+
+    - name:
+        Merge the provided configuration with the existing running configuration
+        (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_logging_global: *id001
+
+  always:
+    - include_tasks: _remove_config.yaml

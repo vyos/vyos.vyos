@@ -1,0 +1,95 @@
+---
+merged:
+  before: {}
+  commands:
+    - set system syslog host 172.16.2.15 facility all level all
+    - set system syslog console facility all
+    - set system syslog user vyos facility local7 level debug
+    - set system syslog global facility cron level debug
+    - set system syslog global archive file 2
+    - set system syslog global archive size 111
+    - set system syslog file def archive file 2
+    - set system syslog file def facility local6 level emerg
+  after:
+    console:
+      facilities:
+        - facility: all
+    files:
+      - path: def
+        facilities:
+          - facility: local6
+            severity: emerg
+    hosts:
+      - hostname: 172.16.2.15
+        facilities:
+          - facility: all
+            severity: all
+    users:
+      - username: vyos
+        facilities:
+          - facility: local7
+            severity: debug
+    global_params:
+      archive:
+        size: 111
+      facilities:
+        - facility: cron
+          severity: debug
+
+overridden:
+  commands:
+    - delete system syslog file def
+    - delete system syslog global facility cron
+    - delete system syslog global facility local7
+    - delete system syslog host 172.16.2.12
+    - delete system syslog host 172.16.2.15
+    - delete system syslog user paul
+    - delete system syslog user vyos
+    - set system syslog console facility all
+    - set system syslog global archive file 2
+    - delete system syslog global archive size 111
+
+  after:
+    console:
+      facilities:
+        - facility: all
+        - facility: local7
+          severity: err
+        - facility: news
+          severity: debug
+    files:
+      - path: Myfile
+    global_params:
+      archive:
+        file_num: 2
+
+rendered:
+  commands:
+    - set system syslog console facility all
+    - set system syslog file abc archive size 125
+    - set system syslog host 172.16.2.15 facility all level all
+    - set system syslog user vyos facility local7 level debug
+    - set system syslog global facility cron level debug
+    - set system syslog global archive file 2
+    - set system syslog global archive size 111
+
+deleted:
+  commands:
+    - delete system syslog
+  after: {}
+
+parsed:
+  after:
+    console:
+      facilities:
+        - facility: news
+          severity: debug
+    files:
+      - path: def
+        facilities:
+          - facility: local7
+            severity: emerg
+    global_params:
+      facilities:
+        - facility: local7
+          severity: debug

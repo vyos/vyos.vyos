@@ -1,0 +1,39 @@
+---
+- debug:
+    msg: START vyos_logging_global overridden integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:  # no after state match because 1.1.8 vyos does show all commands on show command
+    - name: Overrides all device configuration with provided configuration
+      register: result
+      vyos.vyos.vyos_logging_global: &id001
+        config:
+          console:
+            facilities:
+              - facility: all
+              - facility: local7
+                severity: err
+              - facility: news
+                severity: debug
+          global_params:
+            archive:
+              file_num: 2
+        state: overridden
+
+    - name: Assert that correct commands were generated
+      assert:
+        that:
+          - "{{ overridden['commands'] | symmetric_difference(result['commands'])\
+            \ |length == 0 }}"
+
+    - name: Overrides all device configuration with provided configurations (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_logging_global: *id001
+
+  always:
+
+    - include_tasks: _remove_config.yaml

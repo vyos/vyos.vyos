@@ -1,0 +1,50 @@
+---
+- debug:
+    msg: START vyos_logging_global rendered integration tests on connection={{ ansible_connection
+      }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+
+    - name: Structure provided configuration into device specific commands
+      register: result
+      vyos.vyos.vyos_logging_global: &id001
+        config:
+          console:
+            facilities:
+              - facility: all
+          files:
+            - path: abc
+              archive:
+                size: 125
+          hosts:
+            - hostname: 172.16.2.15
+              facilities:
+                - facility: all
+                  severity: all
+          users:
+            - username: vyos
+              facilities:
+                - facility: local7
+                  severity: debug
+          global_params:
+            archive:
+              file_num: 2
+              size: 111
+            facilities:
+              - facility: cron
+                severity: debug
+        state: rendered
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ rendered['commands'] | symmetric_difference(result['rendered'])\
+            \ |length == 0 }}"
+
+  always:
+
+    - include_tasks: _remove_config.yaml

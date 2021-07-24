@@ -30,6 +30,10 @@ short_description: Manage logging on network devices
 description:
 - This module provides declarative management of logging on Vyatta Vyos devices.
 version_added: 1.0.0
+deprecated:
+    alternative: vyos_logging_global
+    why: Updated module released with more functionality.
+    removed_at_date: '2023-08-01'
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).

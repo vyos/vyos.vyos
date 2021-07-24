@@ -7,3 +7,6 @@ plugins/modules/vyos_route_maps.py import-2.6!skip
 plugins/modules/vyos_prefix_lists.py import-2.6!skip
 plugins/module_utils/network/vyos/config/prefix_lists/prefix_lists.py import-2.6!skip
 plugins/module_utils/network/vyos/config/prefix_lists/prefix_lists.py compile-2.6!skip
+plugins/modules/vyos_logging_global.py import-2.6!skip
+plugins/module_utils/network/vyos/config/logging_global/logging_global.py import-2.6!skip
+plugins/module_utils/network/vyos/config/logging_global/logging_global.py compile-2.6!skip

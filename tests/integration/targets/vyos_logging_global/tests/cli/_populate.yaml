@@ -1,0 +1,53 @@
+---
+- name: POPULATE Apply the provided configuration
+  register: result
+  vyos.vyos.vyos_logging_global:
+    config:
+      console:
+        facilities:
+          - facility: all
+          - facility: local7
+            severity: err
+          - facility: news
+            severity: debug
+      files:
+        - path: def
+          archive:
+            file_num: 2
+          facilities:
+            - facility: local6
+              severity: emerg
+            - facility: local7
+              severity: emerg
+      hosts:
+        - hostname: 172.16.2.15
+          facilities:
+            - facility: all
+              severity: all
+            - facility: all
+              protocol: udp
+        - hostname: 172.16.2.12
+          facilities:
+            - facility: all
+              protocol: udp
+      users:
+        - username: vyos
+          facilities:
+            - facility: local7
+              severity: debug
+            - facility: local6
+              severity: alert
+        - username: paul
+          facilities:
+            - facility: local7
+              severity: err
+      global_params:
+        archive:
+          file_num: 2
+          size: 111
+        facilities:
+          - facility: cron
+            severity: debug
+          - facility: local7
+            severity: debug
+    state: merged
