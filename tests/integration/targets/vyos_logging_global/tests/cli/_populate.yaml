@@ -11,10 +11,6 @@
           - facility: news
             severity: debug
       files:
-        - path: xyz
-        - path: abc
-          archive:
-            size: 125
         - path: def
           archive:
             file_num: 2
