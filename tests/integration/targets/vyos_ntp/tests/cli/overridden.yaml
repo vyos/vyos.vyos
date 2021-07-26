@@ -13,10 +13,10 @@
       register: result
       vyos.vyos.vyos_ntp: &id001
         config:
-          allow_clients:
-          - 10.3.3.0/24
-          listen_addresses:
-          - 10.7.8.1
+          #allow_clients:
+          #- 10.3.3.0/24
+          #listen_addresses:
+          #- 10.7.8.1
           servers:
           - name: server1
             options:

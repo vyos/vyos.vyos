@@ -8,36 +8,36 @@ merged:
 
       - name: time3.vyos.net
   commands:
-    - set system ntp allow-clients address 10.4.9.0/24
+    #- set system ntp allow-clients address 10.4.9.0/24
     - set system ntp server server4 pool
-    - set system ntp listen-address 10.1.9.16
-    - set system ntp allow-clients address 10.4.7.0/24
-    - set system ntp listen-address 10.5.3.2
+    #- set system ntp listen-address 10.1.9.16
+    #- set system ntp allow-clients address 10.4.7.0/24
+    #- set system ntp listen-address 10.5.3.2
     - set system ntp server server5
     - set system ntp server 10.3.6.5 noselect
     - set system ntp server 10.3.6.5 pool
-    - set system ntp listen-address 10.7.9.21
+    #- set system ntp listen-address 10.7.9.21
     - set system ntp server 10.3.6.5 preempt
-    - set system ntp allow-clients address 10.1.2.0/24
+    #- set system ntp allow-clients address 10.1.2.0/24
     - set system ntp server server4 noselect
-    - set system ntp allow-clients address 10.2.3.0/24
-    - set system ntp listen-address 10.8.9.4
-    - set system ntp listen-address 10.4.5.1
+    #- set system ntp allow-clients address 10.2.3.0/24
+    #- set system ntp listen-address 10.8.9.4
+    #- set system ntp listen-address 10.4.5.1
     - set system ntp server 10.3.6.5 prefer
 
 
   after:
-      allow_clients:
-      - 10.1.2.0/24
-      - 10.2.3.0/24
-      - 10.4.7.0/24
-      - 10.4.9.0/24
-      listen_addresses:
-      - 10.1.9.16
-      - 10.4.5.1
-      - 10.5.3.2
-      - 10.7.9.21      
-      - 10.8.9.4      
+      #allow_clients:
+      #- 10.1.2.0/24
+      #- 10.2.3.0/24
+      #- 10.4.7.0/24
+      #- 10.4.9.0/24
+      #listen_addresses:
+      #- 10.1.9.16
+      #- 10.4.5.1
+      #- 10.5.3.2
+      #- 10.7.9.21      
+      #- 10.8.9.4      
       servers:
       - name: 10.3.6.5
         options:          
@@ -64,27 +64,27 @@ merged:
 
 replaced:
   commands:
-    - delete system ntp allow-clients address 10.4.7.0/24
-    - delete system ntp allow-clients address 10.2.3.0/24
-    - delete system ntp allow-clients address 10.1.2.0/24
-    - delete system ntp allow-clients address 10.4.9.0/24
-    - delete system ntp listen-address 10.7.9.21
-    - delete system ntp listen-address 10.4.5.1
-    - delete system ntp listen-address 10.5.3.2
-    - delete system ntp listen-address 10.8.9.4
-    - delete system ntp listen-address 10.1.9.16
+    #- delete system ntp allow-clients address 10.4.7.0/24
+    #- delete system ntp allow-clients address 10.2.3.0/24
+    #- delete system ntp allow-clients address 10.1.2.0/24
+    #- delete system ntp allow-clients address 10.4.9.0/24
+    #- delete system ntp listen-address 10.7.9.21
+    #- delete system ntp listen-address 10.4.5.1
+    #- delete system ntp listen-address 10.5.3.2
+    #- delete system ntp listen-address 10.8.9.4
+    #- delete system ntp listen-address 10.1.9.16
     - delete system ntp server 10.3.6.5
     - delete system ntp server server4
     - delete system ntp server server5
-    - set system ntp allow-clients address 10.6.6.0/24
-    - set system ntp listen-address 10.1.3.1
+    #- set system ntp allow-clients address 10.6.6.0/24
+    #- set system ntp listen-address 10.1.3.1
     - set system ntp server ser prefer
 
   after:
-      allow_clients:
-        - 10.6.6.0/24
-      listen_addresses:
-        - 10.1.3.1
+      #allow_clients:
+      #  - 10.6.6.0/24
+      #listen_addresses:
+      #  - 10.1.3.1
       servers:
         - name: ser
           options:
@@ -99,11 +99,11 @@ replaced:
 
 overridden:
   commands:
-    -  delete system ntp allow-clients address 10.6.6.0/24
-    -  delete system ntp listen-address 10.1.3.1
+    #-  delete system ntp allow-clients address 10.6.6.0/24
+    #-  delete system ntp listen-address 10.1.3.1
     -  delete system ntp server ser
-    -  set system ntp allow-clients address 10.3.3.0/24
-    -  set system ntp listen-address 10.7.8.1
+    #-  set system ntp allow-clients address 10.3.3.0/24
+    #-  set system ntp listen-address 10.7.8.1
     -  set system ntp server server1 pool
     -  set system ntp server server1 prefer
     -  set system ntp server server2 noselect
@@ -112,10 +112,10 @@ overridden:
 
 
   after:
-      allow_clients:
-      - 10.3.3.0/24
-      listen_addresses:
-      - 10.7.8.1
+      #allow_clients:
+      #- 10.3.3.0/24
+      #listen_addresses:
+      #- 10.7.8.1
       servers:
       - name: serv
       
@@ -137,8 +137,8 @@ overridden:
 
 deleted:
   commands:
-    - delete system ntp allow-clients
-    - delete system ntp listen-address
+    #- delete system ntp allow-clients
+    #- delete system ntp listen-address
     - delete system ntp server 10.3.6.5
     - delete system ntp server server4
     - delete system ntp server server5
@@ -155,12 +155,12 @@ deleted:
 
 parsed:
   after:
-      allow_clients:
-      - 10.4.9.0/24
-      - 10.5.9.0/24
-      listen_addresses:
-      - 10.1.9.16
-      - 10.3.9.1
+      #allow_clients:
+      #- 10.4.9.0/24
+      #- 10.5.9.0/24
+      #listen_addresses:
+      #- 10.1.9.16
+      #- 10.3.9.1
       servers:
       - name: 10.3.6.5
         options:

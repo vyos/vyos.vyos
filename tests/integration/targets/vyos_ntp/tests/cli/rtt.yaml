@@ -10,17 +10,17 @@
       register: baseconfig
       vyos.vyos.vyos_ntp:
         config:
-          allow_clients:
-          - 10.1.2.0/24
-          - 10.2.3.0/24
-          - 10.4.7.0/24
-          - 10.4.9.0/24
-          listen_addresses:
-          - 10.1.9.16
-          - 10.4.5.1
-          - 10.5.3.2
-          - 10.7.9.21
-          - 10.8.9.4
+          #allow_clients:
+          #- 10.1.2.0/24
+          #- 10.2.3.0/24
+          #- 10.4.7.0/24
+          #- 10.4.9.0/24
+          #listen_addresses:
+          #- 10.1.9.16
+          #- 10.4.5.1
+          #- 10.5.3.2
+          #- 10.7.9.21
+          #- 10.8.9.4
           servers:
           - name: 10.3.6.5
             options:
@@ -50,7 +50,7 @@
 
     - assert:
         that:
-          - baseconfig.commands|length == 16
+          - baseconfig.commands|length == 7
           - baseconfig.changed == true
           - baseconfig.commands|symmetric_difference(merged.commands) == []
           - baseconfig.after == ansible_facts['network_resources']['ntp']
@@ -59,10 +59,10 @@
       register: result
       vyos.vyos.vyos_ntp:
         config:
-          allow_clients:
-          - 10.3.3.0/24
-          listen_addresses:
-          - 10.7.8.1
+          #allow_clients:
+          #- 10.3.3.0/24
+          #listen_addresses:
+          #- 10.7.8.1
           servers:
           - name: server1
             options:

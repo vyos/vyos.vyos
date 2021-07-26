@@ -10,17 +10,17 @@
       register: result
       vyos.vyos.vyos_ntp: &id001
         config:
-          allow_clients:
-          - 10.2.3.0/24
-          - 10.4.7.0/24
-          - 10.1.2.0/24
-          - 10.4.9.0/24
-          listen_addresses:
-          - 10.4.5.1
-          - 10.7.9.21
-          - 10.1.9.16
-          - 10.8.9.4
-          - 10.5.3.2
+          #allow_clients:
+          #- 10.2.3.0/24
+          #- 10.4.7.0/24
+          #- 10.1.2.0/24
+          #- 10.4.9.0/24
+          #listen_addresses:
+          #- 10.4.5.1
+          #- 10.7.9.21
+          #- 10.1.9.16
+          #- 10.8.9.4
+          #- 10.5.3.2
           servers:
           - name: server5
 
@@ -43,7 +43,7 @@
 
     - assert:
         that:
-          - result.commands|length == 16
+          - result.commands|length == 7
           - result.changed == true
           - result.commands|symmetric_difference(merged.commands) == []
           - result.after == ansible_facts['network_resources']['ntp']
