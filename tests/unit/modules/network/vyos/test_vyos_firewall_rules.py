@@ -81,7 +81,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         self.execute_show_command.side_effect = load_from_file
 
 
-
+    
     def test_vyos_firewall_rule_set_01_merged(self):
         set_module_args(
             dict(
@@ -140,7 +140,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall name V4-OUTBOUND default-action 'accept'",
             "set firewall name V4-OUTBOUND description 'This is IPv4 OUTBOUND rule set'",
         ]
-        self.execute_module(changed=True, commands=commands)
+        self.execute_module(changed=True, commands=commands) 
 
 
     def test_vyos_firewall_rule_set_02_merged(self):
@@ -201,7 +201,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall name V4-OUTBOUND default-action 'accept'",
             "set firewall name V4-OUTBOUND description 'This is IPv4 OUTBOUND rule set'",
         ]
-        self.execute_module(changed=True, commands=commands)
+        self.execute_module(changed=True, commands=commands) 
 
     def test_vyos_firewall_v4_rule_sets_rule_merged_01(self):
         set_module_args(
@@ -780,6 +780,15 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 name="V6-EGRESS",
                                 default_action="reject",
                                 description="This rule-set is configured by Ansible RM",
+                                rules=[
+                                    dict(
+                                    icmp= dict(
+                                            type_name="echo-request"
+                                        ),
+                                    number=20 
+                                    )
+
+                                ]
                             ),
                         ],
                     ),
@@ -840,6 +849,15 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
+                                rules=[
+                                    dict(
+                                    icmp= dict(
+                                            type_name="echo-request"
+                                        ),
+                                    number=20 
+                                    )
+
+                                ]
                             ),
                         ],
                     ),
@@ -853,6 +871,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+    
     def test_vyos_firewall_v4v6_rule_sets_rule_rep_idem_01(self):
         set_module_args(
             dict(
@@ -893,6 +912,15 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
+                                rules=[
+                                    dict(
+                                    icmp= dict(
+                                            type_name="echo-request"
+                                        ),
+                                    number=20 
+                                    )
+
+                                ]
                             ),
                         ],
                     ),
@@ -900,7 +928,8 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                 state="replaced",
             )
         )
-        self.execute_module(changed=False, commands=[])
+        self.execute_module(changed=False, commands=[]) 
+        
 
     def test_vyos_firewall_v4v6_rule_sets_rule_mer_idem_01(self):
         set_module_args(
@@ -941,7 +970,17 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             ),
                             dict(
                                 name="V6-EGRESS",
-                                default_action="reject",                              
+                                default_action="reject",
+                                rules=[
+                                    dict(
+                                    icmp= dict(
+                                            type_name="echo-request"
+                                        ),
+                                    number=20 
+                                    )
+
+                                ]
+                                                             
                             ),
                         ],
                     ),
@@ -1039,6 +1078,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+   
     def test_vyos_firewall_v4v6_rule_sets_rule_ovr_idem_01(self):
         set_module_args(
             dict(
@@ -1079,6 +1119,15 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
+                                rules=[
+                                    dict(
+                                    icmp= dict(
+                                            type_name="echo-request"
+                                        ),
+                                    number=20 
+                                    )
+
+                                ]
                             ),
                         ],
                     ),
@@ -1087,5 +1136,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             )
         )
         self.execute_module(changed=False, commands=[])
+
+       
 
 
