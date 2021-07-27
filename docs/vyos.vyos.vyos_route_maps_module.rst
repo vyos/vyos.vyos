@@ -1464,7 +1464,7 @@ Examples
     #             "route_map": "test3"
     #         }
     #     ],
-    #     "before": {},
+    #     "before": [],
     #     "changed": true,
     #     "commands": [
     #         "set policy route-map test1 rule 1 description test",
@@ -1672,7 +1672,7 @@ Examples
     #
     # Module Execution:
     #
-    # "after": {},
+    # "after": [],
     #     "before": [
     #         {
     #             "entries": [

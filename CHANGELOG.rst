@@ -5,6 +5,24 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.5.0
+======
+
+Minor Changes
+-------------
+
+- vyos_logging_global logging resource module.
+
+Deprecated Features
+-------------------
+
+- The vyos_logging module has been deprecated in favor of the new vyos_logging_global resource module and will be removed in a release after "2023-08-01".
+
+Bugfixes
+--------
+
+- fix issue in route-maps facts code when route-maps facts are empty.
+
 v2.4.0
 ======
 
