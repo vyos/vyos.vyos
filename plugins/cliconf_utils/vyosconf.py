@@ -20,6 +20,8 @@ __metaclass__ = type
 
 import re
 
+KEEP_EXISTING_VALUES = "..."
+
 
 class VyosConf:
     def __init__(self, commands=None):
@@ -188,7 +190,7 @@ class VyosConf:
                 (subset, subdel) = self.diff_to(other[key], structure[key])
                 for s in subset:
                     toset.append(quoted_key + " " + s)
-                if "!" not in other[key]:
+                if KEEP_EXISTING_VALUES not in other[key]:
                     for d in subdel:
                         todel.append(quoted_key + " " + d)
             else:
@@ -196,7 +198,7 @@ class VyosConf:
                 todel.append(quoted_key)
                 continue  # del
         for (key, value) in other.items():
-            if key == "!":
+            if key == KEEP_EXISTING_VALUES:
                 continue
             quoted_key = "'" + key + "'" if " " in key or '"' in key else key
             if key not in structure:

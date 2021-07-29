@@ -61,10 +61,12 @@ options:
       active configuration. By default, the configuration commands config are
       matched against the active config and the deltas are loaded line by line.
       If the C(match) argument is set to C(none) the active configuration is ignored
-      and the configuration is always loaded. If the C(match) argument is set to C(smart)
-      both the active configuration and the target configuration are simlulated
+      and the configuration is always loaded. If the C(match) argument is set to
+      C(smart) both the active configuration and the target configuration are simlulated
       and the results compared to bring the target device into a reliable and
-      reproducable state.
+      reproducable state. Using C(smart), the special value C(...) indicates that
+      this keys value should not be changed and any preexisting siblings should not
+      be removed from the target.
     type: str
     default: line
     choices:

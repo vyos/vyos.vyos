@@ -135,14 +135,14 @@ class TestListElements(unittest.TestCase):
             conf.diff_commands_to(
                 VyosConf(
                     [
-                        "set a b !",
+                        "set a b ...",
                     ]
                 )
             ),
             ["delete a c"],
         )
         self.assertListEqual(
-            conf.diff_commands_to(VyosConf(["set a !", "set a d e"])),
+            conf.diff_commands_to(VyosConf(["set a ...", "set a d e"])),
             ["set a d e"],
         )
         self.assertListEqual(
