@@ -150,6 +150,22 @@ class VyosConf:
         """
         return [self.check_command(c) for c in commands]
 
+    def quote_key(self, key):
+        """
+        This function adds quotes to key if quotes are needed for correct parsing.
+        :param key: str to wrap in quotes if needed
+        :return: str
+        """
+        if len(key) == 0:
+            return ""
+        if '"' in key:
+            return "'" + key + "'"
+        if "'" in key:
+            return '"' + key + '"'
+        if not re.match(r"^[a-zA-Z0-9./-]*$", key):
+            return "'" + key + "'"
+        return key
+
     def build_commands(self, structure=None, nested=False):
         """
         This function builds a list of commands to recreate the current configuration.
@@ -161,10 +177,9 @@ class VyosConf:
             return [""] if nested else []
         commands = []
         for (key, value) in structure.items():
+            quoted_key = self.quote_key(key)
             for c in self.build_commands(value, True):
-                if " " in key or '"' in key:
-                    key = "'" + key + "'"
-                commands.append((key + " " + c).strip())
+                commands.append((quoted_key + " " + c).strip())
         if nested:
             return commands
         return ["set " + c for c in commands]
@@ -184,7 +199,7 @@ class VyosConf:
         toset = []
         todel = []
         for key in structure.keys():
-            quoted_key = "'" + key + "'" if " " in key or '"' in key else key
+            quoted_key = self.quote_key(key)
             if key in other:
                 # keys in both configs, pls compare subkeys
                 (subset, subdel) = self.diff_to(other[key], structure[key])
@@ -200,7 +215,7 @@ class VyosConf:
         for (key, value) in other.items():
             if key == KEEP_EXISTING_VALUES:
                 continue
-            quoted_key = "'" + key + "'" if " " in key or '"' in key else key
+            quoted_key = self.quote_key(key)
             if key not in structure:
                 # keys only in other, pls set all subkeys
                 (subset, subdel) = self.diff_to(other[key], None)

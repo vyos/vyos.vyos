@@ -111,6 +111,24 @@ class TestListElements(unittest.TestCase):
             ),
             sorted(["set a b 'c a'", "set a c b"]),
         )
+        self.assertEqual(
+            sorted(
+                VyosConf(
+                    [
+                        "set a b 10.0.0.1/24",
+                        "set a c ABCabc123+/=",
+                        "set a d $6$ABC.abc.123.+./=..",
+                    ]
+                ).build_commands()
+            ),
+            sorted(
+                [
+                    "set a b 10.0.0.1/24",
+                    "set a c 'ABCabc123+/='",
+                    "set a d '$6$ABC.abc.123.+./=..'",
+                ]
+            ),
+        )
 
     def test_check_commands(self):
         conf = VyosConf(["set a b 'c a'", "set a c b"])
