@@ -205,12 +205,12 @@ class VyosConf:
                 (subset, subdel) = self.diff_to(other[key], structure[key])
                 for s in subset:
                     toset.append(quoted_key + " " + s)
-                if KEEP_EXISTING_VALUES not in other[key]:
-                    for d in subdel:
-                        todel.append(quoted_key + " " + d)
+                for d in subdel:
+                    todel.append(quoted_key + " " + d)
             else:
-                # keys only in this, pls del
-                todel.append(quoted_key)
+                # keys only in this, delete if KEEP_EXISTING_VALUES not set
+                if KEEP_EXISTING_VALUES not in other:
+                    todel.append(quoted_key)
                 continue  # del
         for (key, value) in other.items():
             if key == KEEP_EXISTING_VALUES:

@@ -173,6 +173,13 @@ class TestListElements(unittest.TestCase):
             ["delete a b 'c a'", "set a b 'a c'"],
         )
 
+        self.assertListEqual(
+            VyosConf(
+                ["set a b c d", "set a b c e", "set a b d"]
+            ).diff_commands_to(VyosConf(["set a b c d", "set a b ..."])),
+            ["delete a b c e"],
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
