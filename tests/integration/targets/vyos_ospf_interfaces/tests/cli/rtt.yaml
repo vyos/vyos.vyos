@@ -26,8 +26,7 @@
                 passive: true
         state: merged
 
-    - become: true
-      vyos.vyos.vyos_facts:
+    - vyos.vyos.vyos_facts:
         gather_network_resources: ospf_interfaces
 
     - assert:
@@ -38,7 +37,6 @@
           - baseconfig.after|symmetric_difference(ansible_facts['network_resources']['ospf_interfaces']) == []
 
     - name: Apply the provided configuration (config to be reverted)
-      become: true
       register: result
       vyos.vyos.vyos_ospf_interfaces:
         config:
@@ -52,7 +50,6 @@
                 dead_interval: 39
 
     - name: Revert back to base config using facts round trip
-      become: true
       register: revert
       vyos.vyos.vyos_ospf_interfaces:
         config: "{{ ansible_facts['network_resources']['ospf_interfaces'] }}"

@@ -4,7 +4,6 @@
       }}
 
 - name: Provide the running configuration for parsing (config to be parsed)
-  become: true
   register: result
   vyos.vyos.vyos_ospf_interfaces:
     running_config: "{{ lookup('file', '_parsed.cfg') }}"

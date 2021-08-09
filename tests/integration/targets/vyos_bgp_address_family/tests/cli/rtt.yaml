@@ -41,8 +41,7 @@
                       route_map: "map01"
         state: merged
 
-    - become: true
-      vyos.vyos.vyos_facts:
+    - vyos.vyos.vyos_facts:
         gather_network_resources: bgp_address_family
 
     - assert:
@@ -53,7 +52,6 @@
           - baseconfig.after == ansible_facts['network_resources']['bgp_address_family']
 
     - name: Apply the provided configuration (config to be reverted)
-      become: true
       register: result
       vyos.vyos.vyos_bgp_address_family:
         config:
@@ -73,7 +71,6 @@
               neighbor_address: "203.0.113.5"
 
     - name: Revert back to base config using facts round trip
-      become: true
       register: revert
       vyos.vyos.vyos_bgp_address_family:
         config: "{{ ansible_facts['network_resources']['bgp_address_family'] }}"
