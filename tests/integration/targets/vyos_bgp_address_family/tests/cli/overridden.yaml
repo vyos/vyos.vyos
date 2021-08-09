@@ -32,8 +32,7 @@
                       acl: 10
         state: overridden
 
-    - become: true
-      vyos.vyos.vyos_facts:
+    - vyos.vyos.vyos_facts:
         gather_network_resources: bgp_address_family
 
     - assert:

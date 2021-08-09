@@ -16,8 +16,7 @@
           as_number: "65536"
         state: deleted
 
-    - become: true
-      vyos.vyos.vyos_facts:
+    - vyos.vyos.vyos_facts:
         gather_network_resources: bgp_global
 
     - assert:

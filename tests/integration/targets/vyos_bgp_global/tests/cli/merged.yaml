@@ -42,8 +42,7 @@
             router_id: "192.1.2.9"
         state: merged
 
-    - become: true
-      vyos.vyos.vyos_facts:
+    - vyos.vyos.vyos_facts:
         gather_network_resources: bgp_global
 
     - assert:
