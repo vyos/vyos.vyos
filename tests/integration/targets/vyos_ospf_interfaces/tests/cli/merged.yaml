@@ -26,8 +26,7 @@
                 passive: true
         state: merged
 
-    - become: true
-      vyos.vyos.vyos_facts:
+    - vyos.vyos.vyos_facts:
         gather_network_resources: ospf_interfaces
 
     - assert:

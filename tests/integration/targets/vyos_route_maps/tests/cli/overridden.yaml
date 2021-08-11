@@ -30,8 +30,7 @@
                   weight: 4
         state: overridden
 
-    - become: true
-      vyos.vyos.vyos_facts:
+    - vyos.vyos.vyos_facts:
         gather_network_resources: route_maps
 
     - assert:

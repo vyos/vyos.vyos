@@ -1,0 +1,3 @@
+---
+trivial:
+  - Remove ansible_become usage from integration testing.

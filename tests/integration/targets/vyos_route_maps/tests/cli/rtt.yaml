@@ -33,8 +33,7 @@
                   weight: 4
         state: merged
 
-    - become: true
-      vyos.vyos.vyos_facts:
+    - vyos.vyos.vyos_facts:
         gather_network_resources: route_maps
 
     - assert:
@@ -65,7 +64,6 @@
                   weight: 4
 
     - name: Revert back to base config using facts round trip
-      become: true
       register: revert
       vyos.vyos.vyos_route_maps:
         config: "{{ ansible_facts['network_resources']['route_maps'] }}"

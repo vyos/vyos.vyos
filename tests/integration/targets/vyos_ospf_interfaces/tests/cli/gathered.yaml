@@ -14,8 +14,7 @@
       vyos.vyos.vyos_ospf_interfaces:
         state: gathered
 
-    - become: true
-      vyos.vyos.vyos_facts:
+    - vyos.vyos.vyos_facts:
         gather_network_resources: ospf_interfaces
 
     - assert:
