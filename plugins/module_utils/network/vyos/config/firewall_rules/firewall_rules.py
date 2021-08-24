@@ -170,7 +170,7 @@ class Firewall_rules(ConfigBase):
             for h in have:
                 r_sets = self._get_r_sets(h)
                 for rs in r_sets:
-                    w = self.search_r_sets_in_have(want, rs["name"], "r_list")
+                    w = self.search_r_sets_in_target(want, rs["name"], "r_list")
                     commands.extend(
                         self._add_r_sets(h["afi"], rs, w, opr=False)
                     )
@@ -189,7 +189,7 @@ class Firewall_rules(ConfigBase):
             for h in have:
                 r_sets = self._get_r_sets(h)
                 for rs in r_sets:
-                    w = self.search_r_sets_in_have(want, rs["name"], "r_list")
+                    w = self.search_r_sets_in_target(want, rs["name"], "r_list")
                     if not w:
                         commands.append(
                             self._compute_command(
@@ -214,7 +214,7 @@ class Firewall_rules(ConfigBase):
         for w in want:
             r_sets = self._get_r_sets(w)
             for rs in r_sets:
-                h = self.search_r_sets_in_have(have, rs["name"], "r_list")
+                h = self.search_r_sets_in_target(have, rs["name"], "r_list")
                 commands.extend(self._add_r_sets(w["afi"], rs, h))
         return commands
 
@@ -231,7 +231,7 @@ class Firewall_rules(ConfigBase):
                 r_sets = self._get_r_sets(w)
                 if r_sets:
                     for rs in r_sets:
-                        h = self.search_r_sets_in_have(
+                        h = self.search_r_sets_in_target(
                             have, rs["name"], "r_list"
                         )
                         if h:
@@ -344,7 +344,7 @@ class Firewall_rules(ConfigBase):
         if w_rules:
             for w in w_rules:
                 cmd = self._compute_command(afi, name, w["number"], opr=opr)
-                h = self.search_r_sets_in_have(
+                h = self.search_r_sets_in_target(
                     h_rules, w["number"], type="rules"
                 )
                 for key, val in iteritems(w):
@@ -825,7 +825,7 @@ class Firewall_rules(ConfigBase):
                             )
         return commands
 
-    def search_r_sets_in_have(self, have, w_name, type="rule_sets"):
+    def search_r_sets_in_target(self, target, w_name, type="rule_sets"):
         """
         This function  returns the rule-set/rule if it is present in target config.
         :param have: target config.
@@ -833,21 +833,21 @@ class Firewall_rules(ConfigBase):
         :param type: rule_sets/rule/r_list.
         :return: rule-set/rule.
         """
-        if have:
+        if target:
             key = "name"
             if type == "rules":
                 key = "number"
-                for r in have:
+                for r in target:
                     if r[key] == w_name:
                         return r
             elif type == "r_list":
-                for h in have:
-                    r_sets = self._get_r_sets(h)
+                for t in target:
+                    r_sets = self._get_r_sets(t)
                     for rs in r_sets:
                         if rs[key] == w_name:
                             return rs
             else:
-                for rs in have:
+                for rs in target:
                     if rs[key] == w_name:
                         return rs
         return None
