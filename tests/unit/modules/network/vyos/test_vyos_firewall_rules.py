@@ -780,7 +780,6 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         )
         commands = [
             "delete firewall name V4-INGRESS rule 101 disabled",
-            "delete firewall name V4-EGRESS default-action",
             "set firewall name V4-INGRESS description 'This is IPv4 INGRESS rule set'",
             "set firewall name V4-INGRESS rule 101 protocol 'tcp'",
             "set firewall name V4-INGRESS rule 101 description 'Rule 101 is configured by Ansible RM'",
@@ -840,7 +839,6 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         )
         commands = [
             "delete firewall name V4-INGRESS enable-default-log",
-            "delete firewall name V4-EGRESS default-action",
         ]
         self.execute_module(changed=True, commands=commands)
 

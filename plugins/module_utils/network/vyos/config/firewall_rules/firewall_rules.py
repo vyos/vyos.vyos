@@ -178,12 +178,17 @@ class Firewall_rules(ConfigBase):
                     wanted_rule_set = self.search_r_sets_in_target(
                         want, rs["name"], "r_list"
                     )
-                    # Remove the rules that we already have for this rule set.
-                    commands.extend(
-                        self._add_r_sets(
-                            h["afi"], want=rs, have=wanted_rule_set, opr=False
+                    if wanted_rule_set is not None:
+                        # Remove the rules that we already have if the wanted
+                        # rules exist under the same name.
+                        commands.extend(
+                            self._add_r_sets(
+                                h["afi"],
+                                want=rs,
+                                have=wanted_rule_set,
+                                opr=False,
+                            )
                         )
-                    )
         # Merge the desired configuration into what we already have.
         commands.extend(self._state_merged(want, have))
         return commands
