@@ -205,8 +205,7 @@ class Firewall_rules(ConfigBase):
             for h in have:
                 r_sets = self._get_r_sets(h)
                 for rs in r_sets:
-                    w = self.search_r_sets_in_have(
-                        want, rs["name"], "r_list")
+                    w = self.search_r_sets_in_have(want, rs["name"], "r_list")
                     if not w:
                         commands.append(
                             self._compute_command(
