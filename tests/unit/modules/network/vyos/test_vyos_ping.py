@@ -49,9 +49,7 @@ class TestVyosPingModule(TestVyosModule):
             output = list()
 
             for command in commands:
-                filename = (
-                    str(command).split(" | ", maxsplit=1).replace(" ", "_")
-                )
+                filename = str(command).split(" | ", 1)[0].replace(" ", "_")
                 output.append(load_fixture("vyos_ping_%s" % filename))
             return output
 
