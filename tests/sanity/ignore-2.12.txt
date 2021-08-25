@@ -12,6 +12,6 @@ plugins/module_utils/network/vyos/config/logging_global/logging_global.py import
 plugins/module_utils/network/vyos/config/logging_global/logging_global.py compile-2.6!skip
 plugins/cliconf/vyos.py pylint:arguments-renamed
 tests/unit/mock/loader.py pylint:arguments-renamed
-tests/unit/modules/network/vyos/test_vyos_user.py:arguments-renamed
-tests/unit/modules/network/vyos/test_vyos_interface.py:arguments-renamed
-tests/unit/modules/network/vyos/test_vyos_static_route.py:arguments-renamed
+tests/unit/modules/network/vyos/test_vyos_user.py pylint:arguments-renamed
+tests/unit/modules/network/vyos/test_vyos_interface.py pylint:arguments-renamed
+tests/unit/modules/network/vyos/test_vyos_static_route.py pylint:arguments-renamed
