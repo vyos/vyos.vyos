@@ -842,52 +842,6 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
-    def test_vyos_firewall_v4v6_rule_sets_rule_rep_03(self):
-        set_module_args(
-            dict(
-                config=[
-                    dict(
-                        afi="ipv4",
-                        rule_sets=[
-                            dict(
-                                name="V4-INGRESS",
-                                description="This is IPv4 V4-INGRESS rule set",
-                                default_action="accept",
-                                enable_default_log=True,
-                                rules=[
-                                    dict(
-                                        number="101",
-                                        action="accept",
-                                        description="Rule 101 is configured by Ansible",
-                                        ipsec="match-ipsec",
-                                        protocol="icmp",
-                                        fragment="match-frag",
-                                        disabled=True,
-                                    ),
-                                    dict(
-                                        number="102",
-                                        action="accept",
-                                        description="Rule 102 is configured by Ansible",
-                                        protocol="icmp",
-                                        disabled=True,
-                                    ),
-                                ],
-                            ),
-                        ],
-                    ),
-                ],
-                state="replaced",
-            )
-        )
-        commands = [
-            "set firewall name V4-INGRESS rule 102 disabled",
-            "set firewall name V4-INGRESS rule 102 action 'accept'",
-            "set firewall name V4-INGRESS rule 102 protocol 'icmp'",
-            "set firewall name V4-INGRESS rule 102 description 'Rule 102 is configured by Ansible'",
-            "set firewall name V4-INGRESS rule 102",
-        ]
-        self.execute_module(changed=True, commands=commands)
-
     def test_vyos_firewall_v4v6_rule_sets_rule_rep_idem_01(self):
         set_module_args(
             dict(
