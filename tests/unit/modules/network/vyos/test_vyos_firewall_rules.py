@@ -80,8 +80,6 @@ class TestVyosFirewallRulesModule(TestVyosModule):
 
         self.execute_show_command.side_effect = load_from_file
 
-
-    
     def test_vyos_firewall_rule_set_01_merged(self):
         set_module_args(
             dict(
@@ -140,8 +138,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall name V4-OUTBOUND default-action 'accept'",
             "set firewall name V4-OUTBOUND description 'This is IPv4 OUTBOUND rule set'",
         ]
-        self.execute_module(changed=True, commands=commands) 
-
+        self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_rule_set_02_merged(self):
         set_module_args(
@@ -201,7 +198,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall name V4-OUTBOUND default-action 'accept'",
             "set firewall name V4-OUTBOUND description 'This is IPv4 OUTBOUND rule set'",
         ]
-        self.execute_module(changed=True, commands=commands) 
+        self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_v4_rule_sets_rule_merged_01(self):
         set_module_args(
@@ -246,7 +243,6 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall name INBOUND rule 101 ipsec 'match-ipsec'",
         ]
         self.execute_module(changed=True, commands=commands)
-
 
     def test_vyos_firewall_v4_rule_sets_rule_merged_02(self):
         set_module_args(
@@ -420,9 +416,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         ipsec="match-ipsec",
                                         protocol="icmp",
                                         disabled=True,
-                                        icmp= dict(
-                                            type_name="echo-request"
-                                        )
+                                        icmp=dict(type_name="echo-request"),
                                     )
                                 ],
                             ),
@@ -691,7 +685,6 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
-
     def test_vyos_firewall_v4_rule_sets_del_01(self):
         set_module_args(
             dict(
@@ -782,13 +775,10 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 description="This rule-set is configured by Ansible RM",
                                 rules=[
                                     dict(
-                                    icmp= dict(
-                                            type_name="echo-request"
-                                        ),
-                                    number=20 
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
                                     )
-
-                                ]
+                                ],
                             ),
                         ],
                     ),
@@ -851,13 +841,10 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 default_action="reject",
                                 rules=[
                                     dict(
-                                    icmp= dict(
-                                            type_name="echo-request"
-                                        ),
-                                    number=20 
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
                                     )
-
-                                ]
+                                ],
                             ),
                         ],
                     ),
@@ -871,7 +858,6 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
-    
     def test_vyos_firewall_v4v6_rule_sets_rule_rep_idem_01(self):
         set_module_args(
             dict(
@@ -907,20 +893,17 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                         rule_sets=[
                             dict(
                                 name="V6-INGRESS",
-                                default_action="accept",                               
+                                default_action="accept",
                             ),
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
                                 rules=[
                                     dict(
-                                    icmp= dict(
-                                            type_name="echo-request"
-                                        ),
-                                    number=20 
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
                                     )
-
-                                ]
+                                ],
                             ),
                         ],
                     ),
@@ -928,8 +911,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                 state="replaced",
             )
         )
-        self.execute_module(changed=False, commands=[]) 
-        
+        self.execute_module(changed=False, commands=[])
 
     def test_vyos_firewall_v4v6_rule_sets_rule_mer_idem_01(self):
         set_module_args(
@@ -966,21 +948,17 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                         rule_sets=[
                             dict(
                                 name="V6-INGRESS",
-                                default_action="accept",                               
+                                default_action="accept",
                             ),
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
                                 rules=[
                                     dict(
-                                    icmp= dict(
-                                            type_name="echo-request"
-                                        ),
-                                    number=20 
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
                                     )
-
-                                ]
-                                                             
+                                ],
                             ),
                         ],
                     ),
@@ -1078,7 +1056,6 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
-   
     def test_vyos_firewall_v4v6_rule_sets_rule_ovr_idem_01(self):
         set_module_args(
             dict(
@@ -1121,13 +1098,10 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 default_action="reject",
                                 rules=[
                                     dict(
-                                    icmp= dict(
-                                            type_name="echo-request"
-                                        ),
-                                    number=20 
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
                                     )
-
-                                ]
+                                ],
                             ),
                         ],
                     ),
@@ -1136,7 +1110,3 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             )
         )
         self.execute_module(changed=False, commands=[])
-
-       
-
-
