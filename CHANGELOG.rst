@@ -5,6 +5,14 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.5.1
+======
+
+Bugfixes
+--------
+
+- fix issue in firewall rules facts code when IPV6 ICMP type name in vyos.vyos.vyos_firewall_rules is not idempotent
+
 v2.5.0
 ======
 
