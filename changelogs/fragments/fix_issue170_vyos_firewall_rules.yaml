@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - fix issue in firewall rules facts code when IPV6 ICMP type name in vyos.vyos.vyos_firewall_rules is not idempotent

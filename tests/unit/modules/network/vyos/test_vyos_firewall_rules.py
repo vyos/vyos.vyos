@@ -416,6 +416,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         ipsec="match-ipsec",
                                         protocol="icmp",
                                         disabled=True,
+                                        icmp=dict(type_name="echo-request"),
                                     )
                                 ],
                             ),
@@ -435,6 +436,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall ipv6-name INBOUND rule 101 disabled",
             "set firewall ipv6-name INBOUND rule 101 action 'accept'",
             "set firewall ipv6-name INBOUND rule 101 ipsec 'match-ipsec'",
+            "set firewall ipv6-name INBOUND rule 101 icmpv6 type echo-request",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -771,6 +773,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 name="V6-EGRESS",
                                 default_action="reject",
                                 description="This rule-set is configured by Ansible RM",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    )
+                                ],
                             ),
                         ],
                     ),
@@ -831,6 +839,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    )
+                                ],
                             ),
                         ],
                     ),
@@ -884,6 +898,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    )
+                                ],
                             ),
                         ],
                     ),
@@ -933,6 +953,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    )
+                                ],
                             ),
                         ],
                     ),
@@ -1070,6 +1096,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    )
+                                ],
                             ),
                         ],
                     ),
