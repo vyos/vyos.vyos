@@ -287,3 +287,14 @@ releases:
     - fix_issue_vyos_facts.yaml
     - vyos_logging_global_module.yaml
     release_date: '2021-07-26'
+  2.5.1:
+    changes:
+      bugfixes:
+      - fix issue in firewall rules facts code when IPV6 ICMP type name in vyos.vyos.vyos_firewall_rules
+        is not idempotent
+    fragments:
+    - doc_updated_correct_platform.yaml
+    - fix_issue170_vyos_firewall_rules.yaml
+    - fix_pylint_issues.yaml
+    - tests_become.yaml
+    release_date: '2021-08-27'
