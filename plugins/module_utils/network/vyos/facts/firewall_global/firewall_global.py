@@ -207,17 +207,24 @@ class Firewall_globalFacts(object):
         :return: generated config dictionary.
         """
         cfg_dict = {}
-        cfg_dict["port_group"] = self.parse_group_lst(conf, "port-group")
-        cfg_dict["address_group"] = self.parse_group_lst(conf, "address-group")
-        cfg_dict["network_group"] = self.parse_group_lst(conf, "network-group")
+        cfg_dict["port_group"] = self.parse_group_lst(
+            conf, "port-group", False
+        )
+        cfg_dict["address_group"] = self.parse_group_lst(
+            conf, "address-group"
+        ) + self.parse_group_lst(conf, "ipv6-address-group")
+        cfg_dict["network_group"] = self.parse_group_lst(
+            conf, "network-group"
+        ) + self.parse_group_lst(conf, "ipv6-network-group")
         return cfg_dict
 
-    def parse_group_lst(self, conf, type):
+    def parse_group_lst(self, conf, type, include_afi=True):
         """
         This function fetches the name of group and invoke function to
         parse group attributes'.
         :param conf: configuration data.
         :param type: type of group.
+        :param include_afi: if the afi should be included in the parsed object
         :return: generated group list configuration.
         """
         g_lst = []
@@ -228,7 +235,16 @@ class Firewall_globalFacts(object):
             for gr in set(groups):
                 gr_regex = r" %s .+$" % gr
                 cfg = "\n".join(findall(gr_regex, conf, M))
-                obj = self.parse_groups(cfg, type, gr)
+                if "ipv6" in type:
+                    # fmt: off
+                    obj = self.parse_groups(cfg, type[len("ipv6-"):], gr)
+                    # fmt: on
+                    if include_afi:
+                        obj["afi"] = "ipv6"
+                else:
+                    obj = self.parse_groups(cfg, type, gr)
+                    if include_afi:
+                        obj["afi"] = "ipv4"
                 obj["name"] = gr.strip("'")
                 if obj:
                     rules_lst.append(obj)
