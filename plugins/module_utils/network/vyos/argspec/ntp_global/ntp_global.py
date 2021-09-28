@@ -27,9 +27,8 @@ The arg spec for the vyos_ntp module
 """
 
 
-class NtpArgs(object):  # pylint: disable=R0903
-    """The arg spec for the vyos_ntp module
-    """
+class Ntp_globalArgs(object):  # pylint: disable=R0903
+    """The arg spec for the vyos_ntp module"""
 
     argument_spec = {
         "config": {
@@ -45,7 +44,12 @@ class NtpArgs(object):  # pylint: disable=R0903
                         "options": {
                             "type": "list",
                             "elements": "str",
-                            "choices": ["noselect", "pool", "preempt", "prefer"],
+                            "choices": [
+                                "noselect",
+                                "dynamic",
+                                "preempt",
+                                "prefer",
+                            ],
                         },
                     },
                 },

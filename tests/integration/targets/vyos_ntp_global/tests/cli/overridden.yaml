@@ -1,6 +1,6 @@
 ---
 - debug:
-    msg: START vyos_ntp overridden integration tests on connection={{
+    msg: START vyos_ntp_global overridden integration tests on connection={{
       ansible_connection }}
 
 - include_tasks: _remove_config.yaml
@@ -11,40 +11,38 @@
 
     - name: Override the existing configuration with the provided running configuration
       register: result
-      vyos.vyos.vyos_ntp: &id001
+      vyos.vyos.vyos_ntp_global: &id001
         config:
-          #allow_clients:
-          #- 10.3.3.0/24
-          #listen_addresses:
-          #- 10.7.8.1
           servers:
-          - name: server1
-            options:
-              - pool
-              - prefer
+            - name: server1
+              options:
+                - dynamic
+                - prefer
 
-          - name: server2
-            options:
-              - noselect
-              - preempt
+            - name: server2
+              options:
+                - noselect
+                - preempt
 
-          - name: serv
+            - name: server_add
+              options:
+                - preempt
         state: overridden
 
     - become: true
       vyos.vyos.vyos_facts:
-        gather_network_resources: ntp
+        gather_network_resources: ntp_global
 
     - assert:
         that:
           - result.changed == true
-          - result.after == ansible_facts['network_resources']['ntp']
+          - result.after == ansible_facts['network_resources']['ntp_global']
           - result.after == overridden.after
 
     - name: Override the existing configuration with the provided running configuration
         (IDEMPOTENT)
       register: result
-      vyos.vyos.vyos_ntp: *id001
+      vyos.vyos.vyos_ntp_global: *id001
 
     - name: Assert that the previous task was idempotent
       assert:

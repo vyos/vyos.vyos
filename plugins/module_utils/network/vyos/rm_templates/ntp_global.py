@@ -8,9 +8,9 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The Ntp parser templates file. This contains 
-a list of parser definitions and associated functions that 
-facilitates both facts gathering and native command generation for 
+The Ntp parser templates file. This contains
+a list of parser definitions and associated functions that
+facilitates both facts gathering and native command generation for
 the given network resource.
 """
 
@@ -19,17 +19,18 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
     NetworkTemplate,
 )
 
+
 class NtpTemplate(NetworkTemplate):
     def __init__(self, lines=None):
         prefix = {"set": "set", "remove": "delete"}
         super(NtpTemplate, self).__init__(
-                lines=lines, tmplt=self, prefix=prefix
-                )     
+            lines=lines, tmplt=self, prefix=prefix
+        )
 
-    # fmt: off  
+    # fmt: off
     PARSERS = [
 
-        #set system ntp allow_clients address <address>        
+        # set system ntp allow_clients address <address>
         {
             "name": "allow_clients",
             "getval": re.compile(
@@ -38,17 +39,12 @@ class NtpTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE),
             "setval": "system ntp allow-clients address {{allow_clients}}",
-            #"compval": "address",
-            "result": {  
-                       
-                 "allow_clients": ["{{ipaddress}}"]
-                     
-                
+            "result": {
+                "allow_clients": ["{{ipaddress}}"]
             }
-            
         },
 
-        #set system ntp allow_clients          
+        # set system ntp allow_clients
         {
             "name": "allow_clients_delete",
             "getval": re.compile(
@@ -57,30 +53,27 @@ class NtpTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE),
             "setval": "system ntp allow-clients",
-            #"compval": "address",
-            "result": {                       
-                
+            "result": {
+
             }
-            
+
         },
 
-        #set system ntp listen_address <address>
+        # set system ntp listen_address <address>
         {
             "name": "listen_addresses",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\slisten-address (\s(?P<ip_address>\S+))? 
+                ^set\ssystem\sntp\slisten-address (\s(?P<ip_address>\S+))?
                 $""",
                 re.VERBOSE),
             "setval": "system ntp listen-address {{listen_addresses}}",
-            #"compval": "address",
-            "result": {            
-                 "listen_addresses": ["{{ip_address}}"]
-            
+            "result": {
+                "listen_addresses": ["{{ip_address}}"]
             }
         },
 
-         #set system ntp listen_address 
+        # set system ntp listen_address
         {
             "name": "listen_addresses_delete",
             "getval": re.compile(
@@ -89,47 +82,46 @@ class NtpTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE),
             "setval": "system ntp listen-address",
-            #"compval": "address",
-            "result": {                        
+            "result": {
             }
         },
 
-        #set system ntp server <name>
+        # set system ntp server <name>
         {
             "name": "name",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\sserver (\s(?P<name>\S+))? 
+                ^set\ssystem\sntp\sserver (\s(?P<name>\S+))?
                 $""",
                 re.VERBOSE),
             "setval": "system ntp server {{name}}",
-            #"compval": "name",
             "result": {
                 "servers": {
-                    "{{name}}": {                    
+                    "{{name}}": {
                         "name": "{{name}}"
                     }
                 }
-            
+
             }
         },
 
-        #set system ntp server <name> <options>
+        # set system ntp server <name> <options>
         {
             "name": "options",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\sserver (\s(?P<name>\S+))? (\s(?P<options>noselect|pool|preempt|prefer))?            
+                ^set\ssystem\sntp\sserver
+                \s(?P<name>\S+)
+                \s(?P<options>noselect|dynamic|preempt|prefer)?
                 $""",
                 re.VERBOSE),
             "setval": "system ntp server {{name}} {{options}}",
-            #"compval": "options",
             "result": {
                 "servers": {
                     "{{name}}": {
                         "name": "{{name}}",
-                        "options":["{{options}}"]                 
-                    }  
+                        "options": ["{{options}}"]
+                    }
                 }
             }
         }

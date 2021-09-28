@@ -1,12 +1,12 @@
 ---
 - debug:
-    msg: START vyos_ntp empty_config integration tests on connection={{
+    msg: START vyos_ntp_global empty_config integration tests on connection={{
       ansible_connection }}
 
 - name: Merged with empty config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_ntp:
+  vyos.vyos.vyos_ntp_global:
     config:
     state: merged
 
@@ -17,7 +17,7 @@
 - name: Replaced with empty config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_ntp:
+  vyos.vyos.vyos_ntp_global:
     config:
     state: replaced
 
@@ -28,7 +28,7 @@
 - name: Overridden with empty config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_ntp:
+  vyos.vyos.vyos_ntp_global:
     config:
     state: overridden
 
@@ -39,7 +39,7 @@
 - name: Parsed with empty running_config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_ntp:
+  vyos.vyos.vyos_ntp_global:
     running_config:
     state: parsed
 
@@ -51,7 +51,7 @@
 - name: Rendered with empty config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_ntp:
+  vyos.vyos.vyos_ntp_global:
     config:
     state: rendered
 

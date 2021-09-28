@@ -18,8 +18,6 @@ created.
 """
 
 
-from copy import deepcopy
-
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     dict_merge,
@@ -30,22 +28,22 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
     Facts,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ntp import (
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ntp_global import (
     NtpTemplate,
 )
 
 
-class Ntp(ResourceModule):
+class Ntp_global(ResourceModule):
     """
     The vyos_ntp config class
     """
 
     def __init__(self, module):
-        super(Ntp, self).__init__(
+        super(Ntp_global, self).__init__(
             empty_fact_val={},
             facts_module=Facts(module),
             module=module,
-            resource="ntp",
+            resource="ntp_global",
             tmplt=NtpTemplate(),
         )
         self.parsers = [
@@ -54,11 +52,11 @@ class Ntp(ResourceModule):
             "name",
             "options",
             "allow_clients_delete",
-            "listen_addresses_delete"
+            "listen_addresses_delete",
         ]
 
     def execute_module(self):
-        """ Execute the module
+        """Execute the module
 
         :rtype: A dictionary
         :returns: The result from module execution
@@ -69,13 +67,12 @@ class Ntp(ResourceModule):
         return self.result
 
     def generate_commands(self):
-        """ Generate configuration commands to send based on
-            want, have and desired state.
+        """Generate configuration commands to send based on
+        want, have and desired state.
         """
 
         wantd = self._ntp_list_to_dict(self.want)
         haved = self._ntp_list_to_dict(self.have)
-        
 
         # if state is merged, merge want onto have and then compare
         if self.state == "merged":
@@ -91,66 +88,66 @@ class Ntp(ResourceModule):
             commandlist = self._commandlist(haved)
             servernames = self._servernames(haved)
 
-             #removing the servername and commandlist from the list after deleting it from haved
+            # removing the servername and commandlist from the list after deleting it from haved
             for k, have in iteritems(haved):
                 if k not in wantd:
-                    for hk, hval in iteritems(have):                    
+                    for hk, hval in iteritems(have):
                         if hk == "allow_clients" and hk in commandlist:
                             self.commands.append(
-                                self._tmplt.render({"": hk}, "allow_clients_delete", True)
+                                self._tmplt.render(
+                                    {"": hk}, "allow_clients_delete", True
+                                )
                             )
                             commandlist.remove(hk)
                         elif hk == "listen_addresses" and hk in commandlist:
                             self.commands.append(
-                                self._tmplt.render({"": hk}, "listen_addresses_delete", True)
+                                self._tmplt.render(
+                                    {"": hk}, "listen_addresses_delete", True
+                                )
                             )
                             commandlist.remove(hk)
                         elif hk == "name" and have["name"] in servernames:
                             self._compareoverride(want={}, have=have)
-                            servernames.remove(have["name"])    
+                            servernames.remove(have["name"])
 
         # remove existing config for overridden,replaced and deleted
-        #Getting the list of the server names from haved 
+        # Getting the list of the server names from haved
         #   to avoid the duplication of overridding/replacing the servers
-        if self.state in ["overridden","replaced"]:
+        if self.state in ["overridden", "replaced"]:
 
             commandlist = self._commandlist(haved)
             servernames = self._servernames(haved)
 
-
             for k, have in iteritems(haved):
                 if k not in wantd and "name" not in have:
                     self._compareoverride(want={}, have=have)
-                    #removing the servername from the list after deleting it from haved
+                    # removing the servername from the list after deleting it from haved
                 elif k not in wantd and have["name"] in servernames:
                     self._compareoverride(want={}, have=have)
                     servernames.remove(have["name"])
-                   
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
-           populates the list of commands to be run by comparing
-           the `want` and `have` data with the `parsers` defined
-           for the Ntp network resource.
+        populates the list of commands to be run by comparing
+        the `want` and `have` data with the `parsers` defined
+        for the Ntp network resource.
         """
         if "options" in want:
             self.compare(parsers="options", want=want, have=have)
         else:
-            self.compare(parsers=self.parsers, want=want, have=have)  
-
+            self.compare(parsers=self.parsers, want=want, have=have)
 
     def _compareoverride(self, want, have):
-        # do not delete configuration with options level 
+        # do not delete configuration with options level
         for i, val in iteritems(have):
-            if i =="options":
+            if i == "options":
                 pass
             else:
                 self.compare(parsers=i, want={}, have=have)
 
-    
     def _ntp_list_to_dict(self, entry):
         servers_dict = {}
         for k, data in iteritems(entry):
@@ -159,40 +156,44 @@ class Ntp(ResourceModule):
                     if "options" in value:
                         result = self._serveroptions_list_to_dict(value)
                         for res, resvalue in iteritems(result):
-                            servers_dict.update({res:resvalue})
-                    else:    
+                            servers_dict.update({res: resvalue})
+                    else:
                         servers_dict.update({value["name"]: value})
             else:
                 for value in data:
-                    servers_dict.update({"ip_"+value: {k:value}})
+                    servers_dict.update({"ip_" + value: {k: value}})
         return servers_dict
- 
-   
+
     def _serveroptions_list_to_dict(self, entry):
         serveroptions_dict = {}
         for Opk, Op in iteritems(entry):
             if Opk == "options":
                 for val in Op:
                     dict = {}
-                    dict.update({"name":entry["name"]})
-                    dict.update({Opk:val})
-                    serveroptions_dict.update({entry["name"]+"_"+val: dict })                    
+                    dict.update({"name": entry["name"]})
+                    dict.update({Opk: val})
+                    serveroptions_dict.update(
+                        {entry["name"] + "_" + val: dict}
+                    )
         return serveroptions_dict
-
 
     def _commandlist(self, haved):
         commandlist = []
-        for k,have in iteritems(haved):
-            for ck,cval in iteritems(have):
-                if ck !="options" and ck not in commandlist:
+        for k, have in iteritems(haved):
+            for ck, cval in iteritems(have):
+                if ck != "options" and ck not in commandlist:
                     commandlist.append(ck)
         return commandlist
-    
-    def _servernames(self,haved):
+
+    def _servernames(self, haved):
         servernames = []
-        for k,have in iteritems(haved):
-            for sk,sval in iteritems(have):
-                if sk == "name" and sval not in ["time1.vyos.net","time2.vyos.net","time3.vyos.net"]:
+        for k, have in iteritems(haved):
+            for sk, sval in iteritems(have):
+                if sk == "name" and sval not in [
+                    "time1.vyos.net",
+                    "time2.vyos.net",
+                    "time3.vyos.net",
+                ]:
                     if sval not in servernames:
                         servernames.append(sval)
         return servernames

@@ -1,0 +1,94 @@
+---
+rtt:
+  commands:
+    - set system ntp server server4 dynamic
+    - set system ntp server 10.3.6.5 noselect
+    - set system ntp server 10.3.6.5 dynamic
+    - set system ntp server 10.3.6.5 preempt
+    - set system ntp server server4 noselect
+    - set system ntp server 10.3.6.5 prefer
+    - set system ntp server 0.pool.ntp.org
+    - set system ntp server 1.pool.ntp.org
+    - set system ntp server 2.pool.ntp.org
+
+merged:
+  commands:
+    - set system ntp server server5
+    - set system ntp server server4 dynamic
+    - set system ntp server 10.3.6.5 noselect
+    - set system ntp server 10.3.6.5 dynamic
+    - set system ntp server 10.3.6.5 preempt
+    - set system ntp server server4 noselect
+    - set system ntp server 10.3.6.5 prefer
+
+  after:
+    servers:
+      - name: 10.3.6.5
+        options:
+          - dynamic
+          - noselect
+          - preempt
+          - prefer
+
+      - name: server4
+        options:
+          - dynamic
+          - noselect
+
+      - name: server5
+
+replaced:
+  commands:
+    - delete system ntp server 10.3.6.5
+    - delete system ntp server server4
+    - delete system ntp server server5
+    - set system ntp server server_new prefer
+
+  after:
+    servers:
+      - name: server_new
+        options:
+          - prefer
+
+overridden:
+  commands:
+    - delete system ntp server server_new
+    - set system ntp server server1 dynamic
+    - set system ntp server server1 prefer
+    - set system ntp server server2 noselect
+    - set system ntp server server2 preempt
+    - set system ntp server server_add preempt
+
+
+  after:
+    servers:
+      - name: server1
+        options:
+          - dynamic
+          - prefer
+
+      - name: server2
+        options:
+          - noselect
+          - preempt
+      - name: server_add
+        options:
+          - preempt
+
+deleted:
+  commands:
+    - delete system ntp server 10.3.6.5
+    - delete system ntp server server4
+    - delete system ntp server server5
+
+parsed:
+  after:
+    servers:
+      - name: 0.pool.ntp.org
+
+      - name: 1.pool.ntp.org
+      - name: 10.3.6.5
+        options:
+          - dynamic
+          - noselect
+      - name: 2.pool.ntp.org

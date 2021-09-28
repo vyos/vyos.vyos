@@ -1,6 +1,6 @@
 ---
 - debug:
-    msg: START vyos_ntp gathered integration tests on connection={{
+    msg: START vyos_ntp_global gathered integration tests on connection={{
       ansible_connection }}
 
 - include_tasks: _remove_config.yaml
@@ -11,16 +11,15 @@
 
     - name: Gather config from the device in structured format.
       register: result
-      vyos.vyos.vyos_ntp:
+      vyos.vyos.vyos_ntp_global:
         state: gathered
 
     - become: true
       vyos.vyos.vyos_facts:
-        gather_network_resources: ntp
+        gather_network_resources: ntp_global
 
     - name: Assert that facts are correctly generated
       assert:
         that:
           - result.changed == false
-          - result.gathered == ansible_facts['network_resources']['ntp']
-         
+          - result.gathered == ansible_facts['network_resources']['ntp_global']

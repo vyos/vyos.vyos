@@ -1,6 +1,6 @@
 ---
 - debug:
-    msg: START vyos_ntp replaced integration tests on connection={{
+    msg: START vyos_ntp_global replaced integration tests on connection={{
       ansible_connection }}
 
 - include_tasks: _remove_config.yaml
@@ -10,33 +10,29 @@
 - block:
     - name: Replace  the provided configuration with the existing running configuration
       register: result
-      vyos.vyos.vyos_ntp: &id001
+      vyos.vyos.vyos_ntp_global: &id001
         config:
-          #allow_clients:
-          #- 10.6.6.0/24
-          #listen_addresses:
-          #- 10.1.3.1
           servers:
-          - name: ser
-            options:
-              - prefer
+            - name: server_new
+              options:
+                - prefer
         state: replaced
 
     - become: true
       vyos.vyos.vyos_facts:
-        gather_network_resources: ntp
+        gather_network_resources: ntp_global
 
     - assert:
         that:
           - result.changed == true
-          - result.after == ansible_facts['network_resources']['ntp']
+          - result.after == ansible_facts['network_resources']['ntp_global']
           - result.after == replaced.after
 
     - name:
         Replace the provided configuration with the existing running configuration
         (IDEMPOTENT)
       register: result
-      vyos.vyos.vyos_ntp: *id001
+      vyos.vyos.vyos_ntp_global: *id001
 
     - name: Assert that the previous task was idempotent
       assert:
