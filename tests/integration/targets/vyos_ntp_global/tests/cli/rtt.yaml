@@ -11,23 +11,23 @@
       vyos.vyos.vyos_ntp_global:
         config:
           servers:
-            - name: 10.3.6.5
+            - server: 10.3.6.5
               options:
                 - noselect
                 - dynamic
                 - preempt
                 - prefer
 
-            - name: server4
+            - server: server4
               options:
                 - noselect
                 - dynamic
 
-            - name: 0.pool.ntp.org
+            - server: 0.pool.ntp.org
 
-            - name: 1.pool.ntp.org
+            - server: 1.pool.ntp.org
 
-            - name: 2.pool.ntp.org
+            - server: 2.pool.ntp.org
 
         state: merged
 
@@ -37,7 +37,7 @@
 
     - assert:
         that:
-          - baseconfig.commands|length == 9
+          - baseconfig.commands|length == 6
           - baseconfig.changed == true
           - baseconfig.commands|symmetric_difference(rtt.commands) == []
           - baseconfig.after == ansible_facts['network_resources']['ntp_global']
@@ -47,12 +47,12 @@
       vyos.vyos.vyos_ntp_global:
         config:
           servers:
-            - name: server1
+            - server: server1
               options:
                 - dynamic
                 - prefer
 
-            - name: server2
+            - server: server2
               options:
                 - noselect
                 - preempt

@@ -41,7 +41,7 @@ DOCUMENTATION = """
                 type: list
                 elements: dict
                 suboptions:
-                    name:
+                    server:
                         description: server name for NTP
                         type: str
                     options:
@@ -58,6 +58,8 @@ DOCUMENTATION = """
         - This option is used only with state I(parsed).
         - The value of this option should be the output received from the VYOS device by
           executing the command B(show configuration commands | grep ntp).
+        - The states I(replaced) and I(overridden) have identical
+          behaviour for this module.
         - The state I(parsed) reads the configuration from C(show configuration commands | grep ntp) option and
           transforms it into Ansible structured data as per the resource module's argspec
           and the value is then returned in the I(parsed) key within the result.
@@ -107,14 +109,14 @@ EXAMPLES = """
                 - 10.8.9.4
                 - 10.5.3.2
                 servers:
-                - name: server5
+                - server: server5
 
-                - name: server4
+                - server: server4
                     options:
                     - noselect
                     - dynamic
 
-                - name: 10.3.6.5
+                - server: 10.3.6.5
                     options:
                     - noselect
                     - preempt
@@ -142,7 +144,7 @@ EXAMPLES = """
 #        ],
 #        "servers": [
 #            {
-#                "name": "10.3.6.5",
+#                "server": "10.3.6.5",
 #                "options": [
 #                    "noselect",
 #                    "dynamic",
@@ -151,36 +153,36 @@ EXAMPLES = """
 #                ]
 #            },
 #            {
-#                "name": "server4",
+#                "server": "server4",
 #                "options": [
 #                    "noselect",
 #                    "dynamic"
 #                ]
 #            },
 #            {
-#                "name": "server5"
+#                "server": "server5"
 #            },
 #            {
-#                "name": "time1.vyos.net"
+#                "server": "time1.vyos.net"
 #            },
 #            {
-#                "name": "time2.vyos.net"
+#                "server": "time2.vyos.net"
 #            },
 #            {
-#                "name": "time3.vyos.net"
+#                "server": "time3.vyos.net"
 #            }
 #        ]
 #    },
 #    "before": {
 #        "servers": [
 #            {
-#                "name": "time1.vyos.net"
+#                "server": "time1.vyos.net"
 #            },
 #            {
-#                "name": "time2.vyos.net"
+#                "server": "time2.vyos.net"
 #            },
 #            {
-#                "name": "time3.vyos.net"
+#                "server": "time3.vyos.net"
 #            }
 #        ]
 #    },
@@ -268,7 +270,7 @@ EXAMPLES = """
                 listen_addresses:
                     - 10.1.3.1
                 servers:
-                    - name: ser
+                    - server: ser
                     options:
                         - prefer
                 state: replaced
@@ -285,19 +287,19 @@ EXAMPLES = """
 #        ],
 #        "servers": [
 #            {
-#                "name": "ser",
+#                "server": "ser",
 #                "options": [
 #                    "prefer"
 #                ]
 #            },
 #            {
-#                "name": "time1.vyos.net"
+#                "server": "time1.vyos.net"
 #            },
 #            {
-#                "name": "time2.vyos.net"
+#                "server": "time2.vyos.net"
 #            },
 #            {
-#                "name": "time3.vyos.net"
+#                "server": "time3.vyos.net"
 #            }
 #        ]
 #    },
@@ -317,7 +319,7 @@ EXAMPLES = """
 #        ],
 #        "servers": [
 #            {
-#                "name": "10.3.6.5",
+#                "server": "10.3.6.5",
 #                "options": [
 #                    "noselect",
 #                    "dynamic",
@@ -326,23 +328,23 @@ EXAMPLES = """
 #                ]
 #            },
 #            {
-#                "name": "server4",
+#                "server": "server4",
 #                "options": [
 #                    "noselect",
 #                    "dynamic"
 #                ]
 #            },
 #            {
-#                "name": "server5"
+#                "server": "server5"
 #            },
 #            {
-#                "name": "time1.vyos.net"
+#                "server": "time1.vyos.net"
 #            },
 #            {
-#                "name": "time2.vyos.net"
+#                "server": "time2.vyos.net"
 #            },
 #            {
-#                "name": "time3.vyos.net"
+#                "server": "time3.vyos.net"
 #            }
 #        ]
 #    },
@@ -403,17 +405,17 @@ EXAMPLES = """
                 listen_addresses:
                 - 10.7.8.1
                 servers:
-                - name: server1
+                - server: server1
                     options:
                     - dynamic
                     - prefer
 
-                - name: server2
+                - server: server2
                     options:
                     - noselect
                     - preempt
 
-                - name: serv
+                - server: serv
                 state: overridden
 
 
@@ -429,30 +431,30 @@ EXAMPLES = """
 #                ],
 #                "servers": [
 #                    {
-#                "name": "serv"
+#                "server": "serv"
 #            },
 #            {
-#                "name": "server1",
+#                "server": "server1",
 #                "options": [
 #                    "dynamic",
 #                    "prefer"
 #                ]
 #            },
 #            {
-#                "name": "server2",
+#                "server": "server2",
 #                "options": [
 #                    "noselect",
 #                    "preempt"
 #                ]
 #            },
 #            {
-#                "name": "time1.vyos.net"
+#                "server": "time1.vyos.net"
 #            },
 #            {
-#                "name": "time2.vyos.net"
+#                "server": "time2.vyos.net"
 #            },
 #            {
-#                "name": "time3.vyos.net"
+#                "server": "time3.vyos.net"
 #            }
 #                ]
 #            },
@@ -465,19 +467,19 @@ EXAMPLES = """
 #                ],
 #                "servers": [
 #                    {
-#                        "name": "ser",
+#                        "server": "ser",
 #                        "options": [
 #                            "prefer"
 #                        ]
 #                    },
 #                    {
-#                        "name": "time1.vyos.net"
+#                        "server": "time1.vyos.net"
 #                    },
 #                    {
-#                        "name": "time2.vyos.net"
+#                        "server": "time2.vyos.net"
 #                    },
 #                    {
-#                        "name": "time3.vyos.net"
+#                        "server": "time3.vyos.net"
 #                    }
 #                ]
 #            },
@@ -549,30 +551,30 @@ EXAMPLES = """
 #                ],
 #                "servers": [
 #                    {
-#                        "name": "serv"
+#                        "server": "serv"
 #                    },
 #                    {
-#                        "name": "server1",
+#                        "server": "server1",
 #                        "options": [
 #                            "dynamic",
 #                            "prefer"
 #                        ]
 #                    },
 #                    {
-#                         "name": "server2",
+#                         "server": "server2",
 #                         "options": [
 #                             "noselect",
 #                             "preempt"
 #                         ]
 #                     },
 #                     {
-#                          "name": "time1.vyos.net"
+#                          "server": "time1.vyos.net"
 #                     },
 #                     {
-#                         "name": "time2.vyos.net"
+#                         "server": "time2.vyos.net"
 #                     },
 #                     {
-#                         "name": "time3.vyos.net"
+#                         "server": "time3.vyos.net"
 #                     }
 #                ]
 #            }
@@ -625,13 +627,13 @@ EXAMPLES = """
 #            "after": {
 #                "servers": [
 #                    {
-#                        "name": "time1.vyos.net"
+#                        "server": "time1.vyos.net"
 #                    },
 #                    {
-#                       "name": "time2.vyos.net"
+#                       "server": "time2.vyos.net"
 #                    },
 #                    {
-#                        "name": "time3.vyos.net"
+#                        "server": "time3.vyos.net"
 #                    }
 #                ]
 #            },
@@ -644,30 +646,30 @@ EXAMPLES = """
 #                ],
 #                "servers": [
 #                    {
-#                        "name": "serv"
+#                        "server": "serv"
 #                    },
 #                    {
-#                        "name": "server1",
+#                        "server": "server1",
 #                        "options": [
 #                            "dynamic",
 #                            "prefer"
 #                        ]
 #                    },
 #                    {
-#                          "name": "server2",
+#                          "server": "server2",
 #                          "options": [
 #                              "noselect",
 #                              "preempt"
 #                          ]
 #                      },
 #                      {
-#                          "name": "time1.vyos.net"
+#                          "server": "time1.vyos.net"
 #                      },
 #                      {
-#                          "name": "time2.vyos.net"
+#                          "server": "time2.vyos.net"
 #                      },
 #                      {
-#                          "name": "time3.vyos.net"
+#                          "server": "time3.vyos.net"
 #                      }
 #                ]
 #            },
@@ -713,17 +715,17 @@ EXAMPLES = """
                 listen_addresses:
                     - 10.7.9.1
                 servers:
-                    - name: server7
+                    - server: server7
 
-                    - name: server45
+                    - server: server45
                       options:
                         - noselect
                         - prefer
-                    - name: time1.vyos.net
+                    - server: time1.vyos.net
 
-                    - name: time2.vyos.net
+                    - server: time2.vyos.net
 
-                    - name: time3.vyos.net
+                    - server: time3.vyos.net
 
                 state: rendered
 
@@ -779,7 +781,7 @@ EXAMPLES = """
 #                ],
 #                "servers": [
 #                    {
-#                        "name": "server45",
+#                        "server": "server45",
 #                        "options": [
 #                            "noselect",
 #                            "dynamic"
@@ -787,19 +789,71 @@ EXAMPLES = """
 #                        ]
 #                    },
 #                    {
-#                        "name": "time1.vyos.net"
+#                        "server": "time1.vyos.net"
 #                    },
 #                    {
-#                        "name": "time2.vyos.net"
+#                        "server": "time2.vyos.net"
 #                    },
 #                    {
-#                        "name": "time3.vyos.net"
+#                        "server": "time3.vyos.net"
 #                    }
 #
 #                ]
 #            }
 
 """
+RETURN = """
+before:
+  description: The configuration prior to the module execution.
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
+  type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+after:
+  description: The resulting configuration after module execution.
+  returned: when changed
+  type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+commands:
+  description: The set of commands pushed to the remote device.
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
+  type: list
+  sample:
+    - set system ntp server server1 dynamic
+    - set system ntp server server1 prefer
+    - set system ntp server server2 noselect
+    - set system ntp server server2 preempt
+    - set system ntp server server_add preempt
+rendered:
+  description: The provided configuration in the task rendered in device-native format (offline).
+  returned: when I(state) is C(rendered)
+  type: list
+  sample:
+    - set system ntp server server1 dynamic
+    - set system ntp server server1 prefer
+    - set system ntp server server2 noselect
+    - set system ntp server server2 preempt
+    - set system ntp server server_add preempt
+
+gathered:
+  description: Facts about the network resource gathered from the remote device as structured data.
+  returned: when I(state) is C(gathered)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+parsed:
+  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
+  returned: when I(state) is C(parsed)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+"""
+
 
 from ansible.module_utils.basic import AnsibleModule
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ntp_global.ntp_global import (

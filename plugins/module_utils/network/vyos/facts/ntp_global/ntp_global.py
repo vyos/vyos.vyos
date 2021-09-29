@@ -89,7 +89,7 @@ class Ntp_globalFacts(object):
             if "servers" in objs:
                 objs["servers"] = list(objs["servers"].values())
                 objs["servers"] = sorted(
-                    objs["servers"], key=lambda k: k["name"]
+                    objs["servers"], key=lambda k: k["server"]
                 )
                 for i in objs["servers"]:
                     if "options" in i:

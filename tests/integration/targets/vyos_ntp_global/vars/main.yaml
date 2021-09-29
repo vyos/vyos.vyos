@@ -7,9 +7,6 @@ rtt:
     - set system ntp server 10.3.6.5 preempt
     - set system ntp server server4 noselect
     - set system ntp server 10.3.6.5 prefer
-    - set system ntp server 0.pool.ntp.org
-    - set system ntp server 1.pool.ntp.org
-    - set system ntp server 2.pool.ntp.org
 
 merged:
   commands:
@@ -23,19 +20,22 @@ merged:
 
   after:
     servers:
-      - name: 10.3.6.5
+      - server: 0.pool.ntp.org
+      - server: 1.pool.ntp.org
+      - server: 10.3.6.5
         options:
           - dynamic
           - noselect
           - preempt
           - prefer
+      - server: 2.pool.ntp.org
 
-      - name: server4
+      - server: server4
         options:
           - dynamic
           - noselect
 
-      - name: server5
+      - server: server5
 
 replaced:
   commands:
@@ -46,9 +46,12 @@ replaced:
 
   after:
     servers:
-      - name: server_new
-        options:
+      - server: 0.pool.ntp.org
+      - server: 1.pool.ntp.org
+      - server: 2.pool.ntp.org
+      - options:
           - prefer
+        server: server_new
 
 overridden:
   commands:
@@ -62,16 +65,19 @@ overridden:
 
   after:
     servers:
-      - name: server1
+      - server: 0.pool.ntp.org
+      - server: 1.pool.ntp.org
+      - server: 2.pool.ntp.org
+      - server: server1
         options:
           - dynamic
           - prefer
 
-      - name: server2
+      - server: server2
         options:
           - noselect
           - preempt
-      - name: server_add
+      - server: server_add
         options:
           - preempt
 
@@ -84,11 +90,19 @@ deleted:
 parsed:
   after:
     servers:
-      - name: 0.pool.ntp.org
+      - server: 0.pool.ntp.org
 
-      - name: 1.pool.ntp.org
-      - name: 10.3.6.5
+      - server: 1.pool.ntp.org
+      - server: 10.3.6.5
         options:
           - dynamic
           - noselect
-      - name: 2.pool.ntp.org
+      - server: 2.pool.ntp.org
+
+populate:
+  config:
+    servers:
+      - server: 0.pool.ntp.org
+
+      - server: 1.pool.ntp.org
+      - server: 2.pool.ntp.org

@@ -103,23 +103,6 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>name</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>server name for NTP</div>
-                </td>
-            </tr>
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>options</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -139,6 +122,23 @@ Parameters
                         <div>server options for NTP</div>
                 </td>
             </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>server</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>server name for NTP</div>
+                </td>
+            </tr>
 
 
             <tr>
@@ -155,6 +155,7 @@ Parameters
                 <td>
                         <div>This option is used only with state <em>parsed</em>.</div>
                         <div>The value of this option should be the output received from the VYOS device by executing the command <b>show configuration commands | grep ntp</b>.</div>
+                        <div>The states <em>replaced</em> and <em>overridden</em> have identical behaviour for this module.</div>
                         <div>The state <em>parsed</em> reads the configuration from <code>show configuration commands | grep ntp</code> option and transforms it into Ansible structured data as per the resource module&#x27;s argspec and the value is then returned in the <em>parsed</em> key within the result.</div>
                 </td>
             </tr>
@@ -229,14 +230,14 @@ Examples
                     - 10.8.9.4
                     - 10.5.3.2
                     servers:
-                    - name: server5
+                    - server: server5
 
-                    - name: server4
+                    - server: server4
                         options:
                         - noselect
                         - dynamic
 
-                    - name: 10.3.6.5
+                    - server: 10.3.6.5
                         options:
                         - noselect
                         - preempt
@@ -264,7 +265,7 @@ Examples
     #        ],
     #        "servers": [
     #            {
-    #                "name": "10.3.6.5",
+    #                "server": "10.3.6.5",
     #                "options": [
     #                    "noselect",
     #                    "dynamic",
@@ -273,36 +274,36 @@ Examples
     #                ]
     #            },
     #            {
-    #                "name": "server4",
+    #                "server": "server4",
     #                "options": [
     #                    "noselect",
     #                    "dynamic"
     #                ]
     #            },
     #            {
-    #                "name": "server5"
+    #                "server": "server5"
     #            },
     #            {
-    #                "name": "time1.vyos.net"
+    #                "server": "time1.vyos.net"
     #            },
     #            {
-    #                "name": "time2.vyos.net"
+    #                "server": "time2.vyos.net"
     #            },
     #            {
-    #                "name": "time3.vyos.net"
+    #                "server": "time3.vyos.net"
     #            }
     #        ]
     #    },
     #    "before": {
     #        "servers": [
     #            {
-    #                "name": "time1.vyos.net"
+    #                "server": "time1.vyos.net"
     #            },
     #            {
-    #                "name": "time2.vyos.net"
+    #                "server": "time2.vyos.net"
     #            },
     #            {
-    #                "name": "time3.vyos.net"
+    #                "server": "time3.vyos.net"
     #            }
     #        ]
     #    },
@@ -390,7 +391,7 @@ Examples
                     listen_addresses:
                         - 10.1.3.1
                     servers:
-                        - name: ser
+                        - server: ser
                         options:
                             - prefer
                     state: replaced
@@ -407,19 +408,19 @@ Examples
     #        ],
     #        "servers": [
     #            {
-    #                "name": "ser",
+    #                "server": "ser",
     #                "options": [
     #                    "prefer"
     #                ]
     #            },
     #            {
-    #                "name": "time1.vyos.net"
+    #                "server": "time1.vyos.net"
     #            },
     #            {
-    #                "name": "time2.vyos.net"
+    #                "server": "time2.vyos.net"
     #            },
     #            {
-    #                "name": "time3.vyos.net"
+    #                "server": "time3.vyos.net"
     #            }
     #        ]
     #    },
@@ -439,7 +440,7 @@ Examples
     #        ],
     #        "servers": [
     #            {
-    #                "name": "10.3.6.5",
+    #                "server": "10.3.6.5",
     #                "options": [
     #                    "noselect",
     #                    "dynamic",
@@ -448,23 +449,23 @@ Examples
     #                ]
     #            },
     #            {
-    #                "name": "server4",
+    #                "server": "server4",
     #                "options": [
     #                    "noselect",
     #                    "dynamic"
     #                ]
     #            },
     #            {
-    #                "name": "server5"
+    #                "server": "server5"
     #            },
     #            {
-    #                "name": "time1.vyos.net"
+    #                "server": "time1.vyos.net"
     #            },
     #            {
-    #                "name": "time2.vyos.net"
+    #                "server": "time2.vyos.net"
     #            },
     #            {
-    #                "name": "time3.vyos.net"
+    #                "server": "time3.vyos.net"
     #            }
     #        ]
     #    },
@@ -525,17 +526,17 @@ Examples
                     listen_addresses:
                     - 10.7.8.1
                     servers:
-                    - name: server1
+                    - server: server1
                         options:
                         - dynamic
                         - prefer
 
-                    - name: server2
+                    - server: server2
                         options:
                         - noselect
                         - preempt
 
-                    - name: serv
+                    - server: serv
                     state: overridden
 
 
@@ -551,30 +552,30 @@ Examples
     #                ],
     #                "servers": [
     #                    {
-    #                "name": "serv"
+    #                "server": "serv"
     #            },
     #            {
-    #                "name": "server1",
+    #                "server": "server1",
     #                "options": [
     #                    "dynamic",
     #                    "prefer"
     #                ]
     #            },
     #            {
-    #                "name": "server2",
+    #                "server": "server2",
     #                "options": [
     #                    "noselect",
     #                    "preempt"
     #                ]
     #            },
     #            {
-    #                "name": "time1.vyos.net"
+    #                "server": "time1.vyos.net"
     #            },
     #            {
-    #                "name": "time2.vyos.net"
+    #                "server": "time2.vyos.net"
     #            },
     #            {
-    #                "name": "time3.vyos.net"
+    #                "server": "time3.vyos.net"
     #            }
     #                ]
     #            },
@@ -587,19 +588,19 @@ Examples
     #                ],
     #                "servers": [
     #                    {
-    #                        "name": "ser",
+    #                        "server": "ser",
     #                        "options": [
     #                            "prefer"
     #                        ]
     #                    },
     #                    {
-    #                        "name": "time1.vyos.net"
+    #                        "server": "time1.vyos.net"
     #                    },
     #                    {
-    #                        "name": "time2.vyos.net"
+    #                        "server": "time2.vyos.net"
     #                    },
     #                    {
-    #                        "name": "time3.vyos.net"
+    #                        "server": "time3.vyos.net"
     #                    }
     #                ]
     #            },
@@ -671,30 +672,30 @@ Examples
     #                ],
     #                "servers": [
     #                    {
-    #                        "name": "serv"
+    #                        "server": "serv"
     #                    },
     #                    {
-    #                        "name": "server1",
+    #                        "server": "server1",
     #                        "options": [
     #                            "dynamic",
     #                            "prefer"
     #                        ]
     #                    },
     #                    {
-    #                         "name": "server2",
+    #                         "server": "server2",
     #                         "options": [
     #                             "noselect",
     #                             "preempt"
     #                         ]
     #                     },
     #                     {
-    #                          "name": "time1.vyos.net"
+    #                          "server": "time1.vyos.net"
     #                     },
     #                     {
-    #                         "name": "time2.vyos.net"
+    #                         "server": "time2.vyos.net"
     #                     },
     #                     {
-    #                         "name": "time3.vyos.net"
+    #                         "server": "time3.vyos.net"
     #                     }
     #                ]
     #            }
@@ -747,13 +748,13 @@ Examples
     #            "after": {
     #                "servers": [
     #                    {
-    #                        "name": "time1.vyos.net"
+    #                        "server": "time1.vyos.net"
     #                    },
     #                    {
-    #                       "name": "time2.vyos.net"
+    #                       "server": "time2.vyos.net"
     #                    },
     #                    {
-    #                        "name": "time3.vyos.net"
+    #                        "server": "time3.vyos.net"
     #                    }
     #                ]
     #            },
@@ -766,30 +767,30 @@ Examples
     #                ],
     #                "servers": [
     #                    {
-    #                        "name": "serv"
+    #                        "server": "serv"
     #                    },
     #                    {
-    #                        "name": "server1",
+    #                        "server": "server1",
     #                        "options": [
     #                            "dynamic",
     #                            "prefer"
     #                        ]
     #                    },
     #                    {
-    #                          "name": "server2",
+    #                          "server": "server2",
     #                          "options": [
     #                              "noselect",
     #                              "preempt"
     #                          ]
     #                      },
     #                      {
-    #                          "name": "time1.vyos.net"
+    #                          "server": "time1.vyos.net"
     #                      },
     #                      {
-    #                          "name": "time2.vyos.net"
+    #                          "server": "time2.vyos.net"
     #                      },
     #                      {
-    #                          "name": "time3.vyos.net"
+    #                          "server": "time3.vyos.net"
     #                      }
     #                ]
     #            },
@@ -835,17 +836,17 @@ Examples
                     listen_addresses:
                         - 10.7.9.1
                     servers:
-                        - name: server7
+                        - server: server7
 
-                        - name: server45
+                        - server: server45
                           options:
                             - noselect
                             - prefer
-                        - name: time1.vyos.net
+                        - server: time1.vyos.net
 
-                        - name: time2.vyos.net
+                        - server: time2.vyos.net
 
-                        - name: time3.vyos.net
+                        - server: time3.vyos.net
 
                     state: rendered
 
@@ -901,7 +902,7 @@ Examples
     #                ],
     #                "servers": [
     #                    {
-    #                        "name": "server45",
+    #                        "server": "server45",
     #                        "options": [
     #                            "noselect",
     #                            "dynamic"
@@ -909,19 +910,136 @@ Examples
     #                        ]
     #                    },
     #                    {
-    #                        "name": "time1.vyos.net"
+    #                        "server": "time1.vyos.net"
     #                    },
     #                    {
-    #                        "name": "time2.vyos.net"
+    #                        "server": "time2.vyos.net"
     #                    },
     #                    {
-    #                        "name": "time3.vyos.net"
+    #                        "server": "time3.vyos.net"
     #                    }
     #
     #                ]
     #            }
 
 
+
+Return Values
+-------------
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html#common-return-values>`_, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=0 cellpadding=0 class="documentation-table">
+        <tr>
+            <th colspan="1">Key</th>
+            <th>Returned</th>
+            <th width="100%">Description</th>
+        </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>after</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>when changed</td>
+                <td>
+                            <div>The resulting configuration after module execution.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>before</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
+                <td>
+                            <div>The configuration prior to the module execution.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>commands</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
+                <td>
+                            <div>The set of commands pushed to the remote device.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set system ntp server server1 dynamic&#x27;, &#x27;set system ntp server server1 prefer&#x27;, &#x27;set system ntp server server2 noselect&#x27;, &#x27;set system ntp server server2 preempt&#x27;, &#x27;set system ntp server server_add preempt&#x27;]</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>gathered</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>gathered</code></td>
+                <td>
+                            <div>Facts about the network resource gathered from the remote device as structured data.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>parsed</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>parsed</code></td>
+                <td>
+                            <div>The device native config provided in <em>running_config</em> option parsed into structured data as per module argspec.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>rendered</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>rendered</code></td>
+                <td>
+                            <div>The provided configuration in the task rendered in device-native format (offline).</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set system ntp server server1 dynamic&#x27;, &#x27;set system ntp server server1 prefer&#x27;, &#x27;set system ntp server server2 noselect&#x27;, &#x27;set system ntp server server2 preempt&#x27;, &#x27;set system ntp server server_add preempt&#x27;]</div>
+                </td>
+            </tr>
+    </table>
+    <br/><br/>
 
 
 Status

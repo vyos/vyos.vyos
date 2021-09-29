@@ -78,11 +78,13 @@ class TestVyosNTPModule(TestVyosModule):
                     allow_clients=["10.1.1.0/24", "10.1.2.0/24"],
                     listen_addresses=["10.2.3.1", "10.4.3.1"],
                     servers=[
-                        dict(name="server1"),
-                        dict(name="server3", options=["noselect", "dynamic"]),
-                        dict(name="time1.vyos.net"),
-                        dict(name="time2.vyos.net"),
-                        dict(name="time3.vyos.net"),
+                        dict(server="server1"),
+                        dict(
+                            server="server3", options=["noselect", "dynamic"]
+                        ),
+                        dict(server="time1.vyos.net"),
+                        dict(server="time2.vyos.net"),
+                        dict(server="time3.vyos.net"),
                     ],
                 ),
                 state="merged",
@@ -97,9 +99,9 @@ class TestVyosNTPModule(TestVyosModule):
                     allow_clients=["10.2.2.0/24", "10.3.3.0/24"],
                     listen_addresses=["10.3.4.1", "10.4.5.1"],
                     servers=[
-                        dict(name="server4", options=["dynamic", "preempt"]),
+                        dict(server="server4", options=["dynamic", "preempt"]),
                         dict(
-                            name="server5",
+                            server="server5",
                             options=[
                                 "noselect",
                                 "dynamic",
@@ -135,9 +137,9 @@ class TestVyosNTPModule(TestVyosModule):
                     allow_clients=["10.3.4.0/24", "10.4.5.0/24"],
                     listen_addresses=["10.3.3.1", "10.4.4.1"],
                     servers=[
-                        dict(name="server4", options=["noselect", "prefer"]),
+                        dict(server="server4", options=["noselect", "prefer"]),
                         dict(
-                            name="server6",
+                            server="server6",
                             options=[
                                 "noselect",
                                 "dynamic",
@@ -145,9 +147,9 @@ class TestVyosNTPModule(TestVyosModule):
                                 "preempt",
                             ],
                         ),
-                        dict(name="time1.vyos.net"),
-                        dict(name="time2.vyos.net"),
-                        dict(name="time3.vyos.net"),
+                        dict(server="time1.vyos.net"),
+                        dict(server="time2.vyos.net"),
+                        dict(server="time3.vyos.net"),
                     ],
                 ),
                 state="replaced",
@@ -180,11 +182,13 @@ class TestVyosNTPModule(TestVyosModule):
                     allow_clients=["10.1.1.0/24", "10.1.2.0/24"],
                     listen_addresses=["10.2.3.1", "10.4.3.1"],
                     servers=[
-                        dict(name="server1"),
-                        dict(name="server3", options=["noselect", "dynamic"]),
-                        dict(name="time1.vyos.net"),
-                        dict(name="time2.vyos.net"),
-                        dict(name="time3.vyos.net"),
+                        dict(server="server1"),
+                        dict(
+                            server="server3", options=["noselect", "dynamic"]
+                        ),
+                        dict(server="time1.vyos.net"),
+                        dict(server="time2.vyos.net"),
+                        dict(server="time3.vyos.net"),
                     ],
                 ),
                 state="replaced",
@@ -199,11 +203,13 @@ class TestVyosNTPModule(TestVyosModule):
                     allow_clients=["10.9.9.0/24"],
                     listen_addresses=["10.9.9.1"],
                     servers=[
-                        dict(name="server9"),
-                        dict(name="server6", options=["noselect", "dynamic"]),
-                        dict(name="time1.vyos.net"),
-                        dict(name="time2.vyos.net"),
-                        dict(name="time3.vyos.net"),
+                        dict(server="server9"),
+                        dict(
+                            server="server6", options=["noselect", "dynamic"]
+                        ),
+                        dict(server="time1.vyos.net"),
+                        dict(server="time2.vyos.net"),
+                        dict(server="time3.vyos.net"),
                     ],
                 ),
                 state="overridden",
@@ -231,11 +237,13 @@ class TestVyosNTPModule(TestVyosModule):
                     allow_clients=["10.1.1.0/24", "10.1.2.0/24"],
                     listen_addresses=["10.2.3.1", "10.4.3.1"],
                     servers=[
-                        dict(name="server1"),
-                        dict(name="server3", options=["noselect", "dynamic"]),
-                        dict(name="time1.vyos.net"),
-                        dict(name="time2.vyos.net"),
-                        dict(name="time3.vyos.net"),
+                        dict(server="server1"),
+                        dict(
+                            server="server3", options=["noselect", "dynamic"]
+                        ),
+                        dict(server="time1.vyos.net"),
+                        dict(server="time2.vyos.net"),
+                        dict(server="time3.vyos.net"),
                     ],
                 ),
                 state="overridden",
@@ -250,11 +258,13 @@ class TestVyosNTPModule(TestVyosModule):
                     allow_clients=["10.7.7.0/24", "10.8.8.0/24"],
                     listen_addresses=["10.7.9.1"],
                     servers=[
-                        dict(name="server79"),
-                        dict(name="server46", options=["noselect", "dynamic"]),
-                        dict(name="time1.vyos.net"),
-                        dict(name="time2.vyos.net"),
-                        dict(name="time3.vyos.net"),
+                        dict(server="server79"),
+                        dict(
+                            server="server46", options=["noselect", "dynamic"]
+                        ),
+                        dict(server="time1.vyos.net"),
+                        dict(server="time2.vyos.net"),
+                        dict(server="time3.vyos.net"),
                     ],
                 ),
                 state="rendered",
@@ -299,11 +309,11 @@ class TestVyosNTPModule(TestVyosModule):
             "allow_clients": ["10.6.7.0/24", "10.7.7.0/24"],
             "listen_addresses": ["10.7.7.1", "10.7.9.1"],
             "servers": [
-                {"name": "check"},
-                {"name": "server46", "options": ["noselect", "prefer"]},
-                {"name": "time1.vyos.net"},
-                {"name": "time2.vyos.net"},
-                {"name": "time3.vyos.net"},
+                {"server": "check"},
+                {"server": "server46", "options": ["noselect", "prefer"]},
+                {"server": "time1.vyos.net"},
+                {"server": "time2.vyos.net"},
+                {"server": "time3.vyos.net"},
             ],
         }
         self.assertEqual(parsed_list, result["parsed"])
@@ -315,11 +325,11 @@ class TestVyosNTPModule(TestVyosModule):
             "allow_clients": ["10.1.1.0/24", "10.1.2.0/24"],
             "listen_addresses": ["10.2.3.1", "10.4.3.1"],
             "servers": [
-                {"name": "server1"},
-                {"name": "server3", "options": ["dynamic", "noselect"]},
-                {"name": "time1.vyos.net"},
-                {"name": "time2.vyos.net"},
-                {"name": "time3.vyos.net"},
+                {"server": "server1"},
+                {"server": "server3", "options": ["dynamic", "noselect"]},
+                {"server": "time1.vyos.net"},
+                {"server": "time2.vyos.net"},
+                {"server": "time3.vyos.net"},
             ],
         }
 
@@ -332,11 +342,11 @@ class TestVyosNTPModule(TestVyosModule):
                     allow_clients=["10.1.1.0/24"],
                     listen_addresses=["10.2.3.1"],
                     servers=[
-                        dict(name="server1"),
-                        dict(name="server3", options=["noselect"]),
-                        dict(name="time1.vyos.net"),
-                        dict(name="time2.vyos.net"),
-                        dict(name="time3.vyos.net"),
+                        dict(server="server1"),
+                        dict(server="server3", options=["noselect"]),
+                        dict(server="time1.vyos.net"),
+                        dict(server="time2.vyos.net"),
+                        dict(server="time3.vyos.net"),
                     ],
                 ),
                 state="deleted",
@@ -347,5 +357,8 @@ class TestVyosNTPModule(TestVyosModule):
             "delete system ntp listen-address",
             "delete system ntp server server1",
             "delete system ntp server server3",
+            "delete system ntp server time1.vyos.net",
+            "delete system ntp server time2.vyos.net",
+            "delete system ntp server time3.vyos.net",
         ]
         self.execute_module(changed=True, commands=commands)

@@ -12,14 +12,14 @@
       vyos.vyos.vyos_ntp_global: &id001
         config:
           servers:
-            - name: server5
+            - server: server5
 
-            - name: server4
+            - server: server4
               options:
                 - noselect
                 - dynamic
 
-            - name: 10.3.6.5
+            - server: 10.3.6.5
               options:
                 - noselect
                 - preempt

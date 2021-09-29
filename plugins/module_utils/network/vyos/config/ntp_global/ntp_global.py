@@ -17,7 +17,6 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
-
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     dict_merge,
@@ -49,7 +48,7 @@ class Ntp_global(ResourceModule):
         self.parsers = [
             "allow_clients",
             "listen_addresses",
-            "name",
+            "server",
             "options",
             "allow_clients_delete",
             "listen_addresses_delete",
@@ -87,7 +86,6 @@ class Ntp_global(ResourceModule):
 
             commandlist = self._commandlist(haved)
             servernames = self._servernames(haved)
-
             # removing the servername and commandlist from the list after deleting it from haved
             for k, have in iteritems(haved):
                 if k not in wantd:
@@ -106,9 +104,9 @@ class Ntp_global(ResourceModule):
                                 )
                             )
                             commandlist.remove(hk)
-                        elif hk == "name" and have["name"] in servernames:
+                        elif hk == "server" and have["server"] in servernames:
                             self._compareoverride(want={}, have=have)
-                            servernames.remove(have["name"])
+                            servernames.remove(have["server"])
 
         # remove existing config for overridden,replaced and deleted
         # Getting the list of the server names from haved
@@ -119,12 +117,12 @@ class Ntp_global(ResourceModule):
             servernames = self._servernames(haved)
 
             for k, have in iteritems(haved):
-                if k not in wantd and "name" not in have:
+                if k not in wantd and "server" not in have:
                     self._compareoverride(want={}, have=have)
                     # removing the servername from the list after deleting it from haved
-                elif k not in wantd and have["name"] in servernames:
+                elif k not in wantd and have["server"] in servernames:
                     self._compareoverride(want={}, have=have)
-                    servernames.remove(have["name"])
+                    servernames.remove(have["server"])
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
@@ -158,7 +156,7 @@ class Ntp_global(ResourceModule):
                         for res, resvalue in iteritems(result):
                             servers_dict.update({res: resvalue})
                     else:
-                        servers_dict.update({value["name"]: value})
+                        servers_dict.update({value["server"]: value})
             else:
                 for value in data:
                     servers_dict.update({"ip_" + value: {k: value}})
@@ -170,10 +168,10 @@ class Ntp_global(ResourceModule):
             if Opk == "options":
                 for val in Op:
                     dict = {}
-                    dict.update({"name": entry["name"]})
+                    dict.update({"server": entry["server"]})
                     dict.update({Opk: val})
                     serveroptions_dict.update(
-                        {entry["name"] + "_" + val: dict}
+                        {entry["server"] + "_" + val: dict}
                     )
         return serveroptions_dict
 
@@ -189,10 +187,10 @@ class Ntp_global(ResourceModule):
         servernames = []
         for k, have in iteritems(haved):
             for sk, sval in iteritems(have):
-                if sk == "name" and sval not in [
-                    "time1.vyos.net",
-                    "time2.vyos.net",
-                    "time3.vyos.net",
+                if sk == "server" and sval not in [
+                    "0.pool.ntp.org",
+                    "1.pool.ntp.org",
+                    "2.pool.ntp.org",
                 ]:
                     if sval not in servernames:
                         servernames.append(sval)

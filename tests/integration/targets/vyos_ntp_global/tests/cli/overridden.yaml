@@ -14,17 +14,17 @@
       vyos.vyos.vyos_ntp_global: &id001
         config:
           servers:
-            - name: server1
+            - server: server1
               options:
                 - dynamic
                 - prefer
 
-            - name: server2
+            - server: server2
               options:
                 - noselect
                 - preempt
 
-            - name: server_add
+            - server: server_add
               options:
                 - preempt
         state: overridden

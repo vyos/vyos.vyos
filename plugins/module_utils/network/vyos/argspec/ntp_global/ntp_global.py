@@ -40,7 +40,7 @@ class Ntp_globalArgs(object):  # pylint: disable=R0903
                     "type": "list",
                     "elements": "dict",
                     "options": {
-                        "name": {"type": "str"},
+                        "server": {"type": "str"},
                         "options": {
                             "type": "list",
                             "elements": "str",
