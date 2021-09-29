@@ -149,7 +149,7 @@ EXAMPLES = """
 # -------------
 # Before state:
 # -------------
-#
+# testing
 # vyos@vyos:~$ show configuration commands | grep interfaces
 # set interfaces ethernet eth0 address 'dhcp'
 # set interfaces ethernet eth0 address 'dhcpv6'
