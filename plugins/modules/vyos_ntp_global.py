@@ -15,7 +15,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
   module: vyos_ntp_global
-  version added: 2.4.0
+  version_added: 2.4.0
   short_description:  Manages ntp modules of Vyos network devices
   description:
   - This module manages ntp configuration on devices running Vyos
@@ -94,73 +94,34 @@ EXAMPLES = """
 
 # # Task
 # # -------------
-          - name: Merge the provided configuration for the existing ntp config
-            vyos.vyos.vyos_ntp_global:
-                config:
-                allow_clients:
-                - 10.2.3.0/24
-                - 10.4.7.0/24
-                - 10.1.2.0/24
-                - 10.4.9.0/24
-                listen_addresses:
-                - 10.4.5.1
-                - 10.7.9.21
-                - 10.1.9.16
-                - 10.8.9.4
-                - 10.5.3.2
-                servers:
-                - server: server5
-
-                - server: server4
-                    options:
-                    - noselect
-                    - dynamic
-
-                - server: 10.3.6.5
-                    options:
-                    - noselect
-                    - preempt
-                    - dynamic
-                    - prefer
-
-                state: merged
+- name: Replace the existing ntp config with the new config
+  vyos.vyos.vyos_ntp_global:
+    config:
+        allow_clients:
+          - 10.6.6.0/24
+        listen_addresses:
+          - 10.1.3.1
+        servers:
+          - server: ser
+            options:
+                - prefer
 
 
 # # Task output:
 # # -------------
-#    "after": {
-#        "allow_clients": [
-#            "10.1.2.0/24",
-#            "10.2.3.0/24",
-#            "10.4.7.0/24",
-#            "10.4.9.0/24"
+#        "after": {
+#         "allow_clients": [
+#            "10.6.6.0/24"
 #        ],
 #        "listen_addresses": [
-#            "10.1.9.16",
-#            "10.4.5.1",
-#            "10.5.3.2",
-#            "10.7.9.21",
-#            "10.8.9.4"
+#            "10.1.3.1"
 #        ],
 #        "servers": [
 #            {
-#                "server": "10.3.6.5",
+#                "server": "ser",
 #                "options": [
-#                    "noselect",
-#                    "dynamic",
-#                    "preempt",
 #                    "prefer"
 #                ]
-#            },
-#            {
-#                "server": "server4",
-#                "options": [
-#                    "noselect",
-#                    "dynamic"
-#                ]
-#            },
-#            {
-#                "server": "server5"
 #            },
 #            {
 #                "server": "time1.vyos.net"
@@ -174,62 +135,24 @@ EXAMPLES = """
 #        ]
 #    },
 #    "before": {
-#        "servers": [
-#            {
-#                "server": "time1.vyos.net"
-#            },
-#            {
-#                "server": "time2.vyos.net"
-#            },
-#            {
-#                "server": "time3.vyos.net"
-#            }
-#        ]
 #    },
 #    "changed": true,
 #    "commands": [
-#        "set system ntp allow-clients address 10.4.9.0/24",
-#        "set system ntp server server4 dynamic",
-#        "set system ntp listen-address 10.1.9.16",
-#        "set system ntp allow-clients address 10.4.7.0/24",
-#        "set system ntp listen-address 10.5.3.2",
-#        "set system ntp server server5",
-#        "set system ntp server 10.3.6.5 noselect",
-#        "set system ntp server 10.3.6.5 dynamic",
-#        "set system ntp listen-address 10.7.9.21",
-#        "set system ntp server 10.3.6.5 preempt",
-#        "set system ntp allow-clients address 10.1.2.0/24",
-#        "set system ntp server server4 noselect",
-#        "set system ntp allow-clients address 10.2.3.0/24",
-#        "set system ntp listen-address 10.8.9.4",
-#        "set system ntp listen-address 10.4.5.1",
-#        "set system ntp server 10.3.6.5 prefer",
+#        "set system ntp allow-clients address 10.6.6.0/24",
+#        "set system ntp listen-address 10.1.3.1",
+#        "set system ntp server ser prefer"
 #    ]
 
 # After state:
 # # -------------
-#    vyos@vyos:~$ show configuration commands | grep ntp
-#    set system ntp allow-clients address '10.4.9.0/24'
-#    set system ntp allow-clients address '10.4.7.0/24'
-#    set system ntp allow-clients address '10.1.2.0/24'
-#    set system ntp allow-clients address '10.2.3.0/24'
-#    set system ntp listen-address '10.1.9.16'
-#    set system ntp listen-address '10.5.3.2'
-#    set system ntp listen-address '10.7.9.21'
-#    set system ntp listen-address '10.8.9.4'
-#    set system ntp listen-address '10.4.5.1'
-#    set system ntp server 10.3.6.5 noselect
-#    set system ntp server 10.3.6.5 dynamic
-#    set system ntp server 10.3.6.5 preempt
-#    set system ntp server 10.3.6.5 prefer
-#    set system ntp server server4 noselect
-#    set system ntp server server4 dynamic
-#    set system ntp server server5
-#    set system ntp server time1.vyos.net
-#    set system ntp server time2.vyos.net
-#    set system ntp server time3.vyos.net
-#    vyos@vyos:~$
-
+#        vyos@vyos:~$ show configuration commands | grep ntp
+#        set system ntp allow-clients address '10.6.6.0/24'
+#        set system ntp listen-address '10.1.3.1'
+#        set system ntp server ser prefer,
+#        set system ntp server time1.vyos.net
+#        set system ntp server time2.vyos.net
+#        set system ntp server time3.vyos.net
+#        vyos@vyos:~$
 
 
 # # -------------------
@@ -262,18 +185,18 @@ EXAMPLES = """
 
 # # Task
 # # -------------
-        - name: Replace the existing ntp config with the new config
-          vyos.vyos.vyos_ntp_global:
-                config:
-                allow_clients:
-                    - 10.6.6.0/24
-                listen_addresses:
-                    - 10.1.3.1
-                servers:
-                    - server: ser
-                    options:
-                        - prefer
-                state: replaced
+- name: Replace the existing ntp config with the new config
+  vyos.vyos.vyos_ntp_global:
+    config:
+        allow_clients:
+          - 10.6.6.0/24
+        listen_addresses:
+          - 10.1.3.1
+        servers:
+          - server: ser
+            options:
+                - prefer
+    state: replaced
 
 
 # # Task output:
@@ -397,26 +320,26 @@ EXAMPLES = """
 
 # # Task
 # # -------------
-        - name: Gather ntp config
-            vyos.vyos.vyos_ntp_global:
-                config:
-                allow_clients:
-                - 10.3.3.0/24
-                listen_addresses:
-                - 10.7.8.1
-                servers:
-                - server: server1
-                    options:
-                    - dynamic
-                    - prefer
+- name: Override ntp config
+  vyos.vyos.vyos_ntp_global:
+        config:
+        allow_clients:
+        - 10.3.3.0/24
+        listen_addresses:
+        - 10.7.8.1
+        servers:
+        - server: server1
+          options:
+            - dynamic
+            - prefer
 
-                - server: server2
-                    options:
-                    - noselect
-                    - preempt
+        - server: server2
+          options:
+            - noselect
+            - preempt
 
-                - server: serv
-                state: overridden
+        - server: serv
+        state: overridden
 
 
 
@@ -535,10 +458,9 @@ EXAMPLES = """
 
 # # Task
 # # -------------
-        - name: Gather ntp config
-          vyos.vyos.vyos_ntp_global:
-                config:
-                state: gathered
+- name: Gather ntp config
+  vyos.vyos.vyos_ntp_global:
+        state: gathered
 
 # # Task output:
 # # -------------
@@ -616,10 +538,9 @@ EXAMPLES = """
 
 # # Task
 # # -------------
-  - name: Delete ntp config
-    vyos.vyos.vyos_ntp_global:
-        config:
-        state: deleted
+- name: Delete ntp config
+  vyos.vyos.vyos_ntp_global:
+    state: deleted
 
 
 # # Task output:
@@ -678,7 +599,7 @@ EXAMPLES = """
 #                "delete system ntp allow-clients",
 #                "delete system ntp listen-address",
 #                "delete system ntp server serv",
-                "delete system ntp server server1",
+#                "delete system ntp server server1",
 #                "delete system ntp server server2"
 #
 #            ]
@@ -706,28 +627,28 @@ EXAMPLES = """
 
 # # Task
 # # -------------
-        - name: Gather ntp config
-          vyos.vyos.vyos_ntp_global:
-               config:
-                allow_clients:
-                    - 10.7.7.0/24
-                    - 10.8.8.0/24
-                listen_addresses:
-                    - 10.7.9.1
-                servers:
-                    - server: server7
+- name: Gather ntp config
+  vyos.vyos.vyos_ntp_global:
+       config:
+        allow_clients:
+            - 10.7.7.0/24
+            - 10.8.8.0/24
+        listen_addresses:
+            - 10.7.9.1
+        servers:
+            - server: server7
 
-                    - server: server45
-                      options:
-                        - noselect
-                        - prefer
-                    - server: time1.vyos.net
+            - server: server45
+              options:
+                - noselect
+                - prefer
+            - server: time1.vyos.net
 
-                    - server: time2.vyos.net
+            - server: time2.vyos.net
 
-                    - server: time3.vyos.net
+            - server: time3.vyos.net
 
-                state: rendered
+        state: rendered
 
 
 # # Task output:
@@ -763,10 +684,10 @@ EXAMPLES = """
 
 # # Task:
 # # -------------
-     - name: Parse externally provided ntp configuration
-       vyos.vyos.vyos_ntp_global:
-         running_config: "{{ lookup('file', './sample_config.cfg') }}"
-         state: parsed
+- name: Parse externally provided ntp configuration
+  vyos.vyos.vyos_ntp_global:
+     running_config: "{{ lookup('file', './sample_config.cfg') }}"
+     state: parsed
 
 # # Task output:
 # # -------------

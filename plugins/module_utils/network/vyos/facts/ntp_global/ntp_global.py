@@ -30,7 +30,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ntp
 
 
 class Ntp_globalFacts(object):
-    """ The vyos ntp facts class"""
+    """The vyos ntp facts class"""
 
     def __init__(self, module, subspec="config", options="options"):
         self._module = module
