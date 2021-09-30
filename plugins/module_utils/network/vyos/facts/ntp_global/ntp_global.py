@@ -16,7 +16,6 @@ based on the configuration.
 """
 
 import re
-from copy import deepcopy
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
     utils,
@@ -35,16 +34,6 @@ class Ntp_globalFacts(object):
     def __init__(self, module, subspec="config", options="options"):
         self._module = module
         self.argument_spec = Ntp_globalArgs.argument_spec
-        spec = deepcopy(self.argument_spec)
-        if subspec:
-            if options:
-                facts_argument_spec = spec[subspec][options]
-            else:
-                facts_argument_spec = spec[subspec]
-        else:
-            facts_argument_spec = spec
-
-        self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def get_config(self, connection):
         return connection.get("show configuration commands | grep ntp")
@@ -69,7 +58,7 @@ class Ntp_globalFacts(object):
         for resource in data.splitlines():
             config_lines.append(re.sub("'", "", resource))
         # parse native config using the Ntp template
-        ntp_parser = NtpTemplate(lines=config_lines)
+        ntp_parser = NtpTemplate(lines=config_lines, module=self._module)
 
         objs = ntp_parser.parse()
 
@@ -98,7 +87,9 @@ class Ntp_globalFacts(object):
         ansible_facts["ansible_network_resources"].pop("ntp_global", None)
 
         params = utils.remove_empties(
-            ntp_parser.validate_config(self.argument_spec, {"config": objs})
+            ntp_parser.validate_config(
+                self.argument_spec, {"config": objs}, redact=True
+            )
         )
 
         if params.get("config"):

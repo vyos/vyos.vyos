@@ -21,10 +21,10 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 
 
 class NtpTemplate(NetworkTemplate):
-    def __init__(self, lines=None):
+    def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
         super(NtpTemplate, self).__init__(
-            lines=lines, tmplt=self, prefix=prefix
+            lines=lines, tmplt=self, prefix=prefix, module=module
         )
 
     # fmt: off

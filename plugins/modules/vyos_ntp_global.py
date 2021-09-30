@@ -102,7 +102,7 @@ EXAMPLES = """
         listen_addresses:
           - 10.1.3.1
         servers:
-          - server: ser
+          - server: 203.0.113.0
             options:
                 - prefer
 
@@ -140,7 +140,7 @@ EXAMPLES = """
 #    "commands": [
 #        "set system ntp allow-clients address 10.6.6.0/24",
 #        "set system ntp listen-address 10.1.3.1",
-#        "set system ntp server ser prefer"
+#        "set system ntp server 203.0.113.0 prefer"
 #    ]
 
 # After state:
@@ -148,7 +148,7 @@ EXAMPLES = """
 #        vyos@vyos:~$ show configuration commands | grep ntp
 #        set system ntp allow-clients address '10.6.6.0/24'
 #        set system ntp listen-address '10.1.3.1'
-#        set system ntp server ser prefer,
+#        set system ntp server 203.0.113.0 prefer,
 #        set system ntp server time1.vyos.net
 #        set system ntp server time2.vyos.net
 #        set system ntp server time3.vyos.net
@@ -193,7 +193,7 @@ EXAMPLES = """
         listen_addresses:
           - 10.1.3.1
         servers:
-          - server: ser
+          - server: 203.0.113.0
             options:
                 - prefer
     state: replaced
@@ -287,7 +287,7 @@ EXAMPLES = """
 #        "delete system ntp server server5",
 #        "set system ntp allow-clients address 10.6.6.0/24",
 #        "set system ntp listen-address 10.1.3.1",
-#        "set system ntp server ser prefer"
+#        "set system ntp server 203.0.113.0 prefer"
 #    ]
 
 # After state:
@@ -295,7 +295,7 @@ EXAMPLES = """
 #        vyos@vyos:~$ show configuration commands | grep ntp
 #        set system ntp allow-clients address '10.6.6.0/24'
 #        set system ntp listen-address '10.1.3.1'
-#        set system ntp server ser prefer,
+#        set system ntp server 203.0.113.0 prefer,
 #        set system ntp server time1.vyos.net
 #        set system ntp server time2.vyos.net
 #        set system ntp server time3.vyos.net
@@ -312,7 +312,7 @@ EXAMPLES = """
 #        vyos@vyos:~$ show configuration commands | grep ntp
 #        set system ntp allow-clients address '10.6.6.0/24'
 #        set system ntp listen-address '10.1.3.1'
-#        set system ntp server ser prefer,
+#        set system ntp server 203.0.113.0 prefer,
 #        set system ntp server time1.vyos.net
 #        set system ntp server time2.vyos.net
 #        set system ntp server time3.vyos.net
@@ -323,22 +323,22 @@ EXAMPLES = """
 - name: Override ntp config
   vyos.vyos.vyos_ntp_global:
         config:
-        allow_clients:
-        - 10.3.3.0/24
-        listen_addresses:
-        - 10.7.8.1
-        servers:
-        - server: server1
-          options:
-            - dynamic
-            - prefer
+          allow_clients:
+            - 10.3.3.0/24
+          listen_addresses:
+            - 10.7.8.1
+          servers:
+            - server: server1
+              options:
+                - dynamic
+                - prefer
 
-        - server: server2
-          options:
-            - noselect
-            - preempt
+            - server: server2
+              options:
+                - noselect
+                - preempt
 
-        - server: serv
+            - server: serv
         state: overridden
 
 
