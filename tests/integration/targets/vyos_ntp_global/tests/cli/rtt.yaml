@@ -57,7 +57,6 @@
                 - preempt
 
     - name: Revert back to base config using facts round trip
-      become: true
       register: revert
       vyos.vyos.vyos_ntp_global:
         config: "{{ ansible_facts['network_resources']['ntp_global'] }}"
