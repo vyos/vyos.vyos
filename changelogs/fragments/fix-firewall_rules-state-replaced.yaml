@@ -1,3 +1,0 @@
----
-bugfixes:
-  - Fix vyos_firewall_rules with state replaced to only replace the specified rules.

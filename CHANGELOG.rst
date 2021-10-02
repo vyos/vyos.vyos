@@ -5,6 +5,21 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.6.0
+======
+
+Minor Changes
+-------------
+
+- Add vyos_ntp Resource Module
+- Adds support for specifying an `afi` for an `address_group` for `vyos.vyos.firewall_global`.  As a result, `address_group` now supports IPv6.
+- Adds support for specifying an `afi` for an `network_group` for `vyos.vyos.firewall_global`.  As a result, `network_group` now supports IPv6.
+
+Bugfixes
+--------
+
+- Fix vyos_firewall_rules with state replaced to only replace the specified rules.
+
 v2.5.1
 ======
 
