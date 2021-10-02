@@ -298,3 +298,21 @@ releases:
     - fix_pylint_issues.yaml
     - tests_become.yaml
     release_date: '2021-08-27'
+  2.6.0:
+    changes:
+      bugfixes:
+      - Fix vyos_firewall_rules with state replaced to only replace the specified
+        rules.
+      minor_changes:
+      - Add vyos_ntp Resource Module
+      - Adds support for specifying an `afi` for an `address_group` for `vyos.vyos.firewall_global`.  As
+        a result, `address_group` now supports IPv6.
+      - Adds support for specifying an `afi` for an `network_group` for `vyos.vyos.firewall_global`.  As
+        a result, `network_group` now supports IPv6.
+    fragments:
+    - 0-copy_ignore_txt.yml
+    - fix-firewall_rules-state-replaced.yaml
+    - set_allow_duplicates.yaml
+    - support_ipv6_address_and_network_groups.yaml
+    - vyos_ntp.yml
+    release_date: '2021-10-02'
