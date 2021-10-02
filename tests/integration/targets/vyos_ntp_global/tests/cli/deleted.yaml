@@ -1,0 +1,40 @@
+---
+- debug:
+    msg: START vyos_ntp_global deleted integration tests on connection={{ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+
+    - name: Delete the provided configuration
+      register: result
+      vyos.vyos.vyos_ntp_global: &id001
+        config:
+        state: deleted
+
+    - name: Assert that before dicts were correctly generated
+      assert:
+        that:
+          - result.changed == true
+          - result.commands == deleted.commands
+
+    - name: Assert that the after dicts were correctly generated
+      assert:
+        that:
+          - result.after == populate.config
+
+    - name: Delete the existing configuration with the provided running configuration
+        (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_ntp_global: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+
+    - include_tasks: _remove_config.yaml

@@ -1,0 +1,33 @@
+---
+- debug:
+    msg: START vyos_ntp_global rendered integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+
+    - name: Structure provided configuration into device specific commands
+      register: result
+      vyos.vyos.vyos_ntp_global: &id001
+        config:
+          servers:
+            - server: server5
+
+            - server: server4
+              options:
+                - noselect
+                - dynamic
+
+            - server: 10.3.6.5
+              options:
+                - noselect
+                - preempt
+                - dynamic
+                - prefer
+        state: rendered
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.rendered|symmetric_difference(merged.commands) == []
