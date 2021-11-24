@@ -53,6 +53,7 @@ coverage.xml
 
 #ide
 .vscode
+*.swp
 
 # Django stuff:
 *.log
