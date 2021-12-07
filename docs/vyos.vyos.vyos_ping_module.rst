@@ -19,9 +19,9 @@ Synopsis
 --------
 - Tests reachability using ping from a VyOS device to a remote destination.
 - Tested against VyOS 1.1.8 (helium)
-- For a general purpose network module, see the :ref:`net_ping <net_ping_module>` module.
-- For Windows targets, use the :ref:`win_ping <win_ping_module>` module instead.
-- For targets running Python, use the :ref:`ping <ping_module>` module instead.
+- For a general purpose network module, see the net_ping module.
+- For Windows targets, use the win_ping module instead.
+- For targets running Python, use the ping module instead.
 
 
 
@@ -273,9 +273,9 @@ Notes
 
 .. note::
    - Tested against VyOS 1.1.8 (helium).
-   - For a general purpose network module, see the :ref:`net_ping <net_ping_module>` module.
-   - For Windows targets, use the :ref:`win_ping <win_ping_module>` module instead.
-   - For targets running Python, use the :ref:`ping <ping_module>` module instead.
+   - For a general purpose network module, see the net_ping module.
+   - For Windows targets, use the win_ping module instead.
+   - For targets running Python, use the ping module instead.
    - This module works with connection ``network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
    - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
 
