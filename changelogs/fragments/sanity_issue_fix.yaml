@@ -1,0 +1,3 @@
+---
+trivial:
+  - Add libssh dependency and fix doc issues.
