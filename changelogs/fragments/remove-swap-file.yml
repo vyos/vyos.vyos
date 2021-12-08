@@ -1,2 +1,3 @@
+---
 trivial:
   - Removed unintended file tests/unit/modules/network/vyos/.test_vyos_firewall_rules.py.swp
