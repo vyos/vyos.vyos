@@ -1,0 +1,4 @@
+---
+trivial:
+  - Bump pre-commit `black` version to match that used by `tox`
+  - Fix existing errors that pre-commit checks against by running `pre-commit run --all-files`
