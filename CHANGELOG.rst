@@ -5,6 +5,47 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.6.0
+======
+
+Minor Changes
+-------------
+
+- Add vyos_ntp Resource Module
+- Adds support for specifying an `afi` for an `address_group` for `vyos.vyos.firewall_global`.  As a result, `address_group` now supports IPv6.
+- Adds support for specifying an `afi` for an `network_group` for `vyos.vyos.firewall_global`.  As a result, `network_group` now supports IPv6.
+
+Bugfixes
+--------
+
+- Fix vyos_firewall_rules with state replaced to only replace the specified rules.
+
+v2.5.1
+======
+
+Bugfixes
+--------
+
+- fix issue in firewall rules facts code when IPV6 ICMP type name in vyos.vyos.vyos_firewall_rules is not idempotent
+
+v2.5.0
+======
+
+Minor Changes
+-------------
+
+- vyos_logging_global logging resource module.
+
+Deprecated Features
+-------------------
+
+- The vyos_logging module has been deprecated in favor of the new vyos_logging_global resource module and will be removed in a release after "2023-08-01".
+
+Bugfixes
+--------
+
+- fix issue in route-maps facts code when route-maps facts are empty.
+
 v2.4.0
 ======
 

@@ -416,6 +416,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         ipsec="match-ipsec",
                                         protocol="icmp",
                                         disabled=True,
+                                        icmp=dict(type_name="echo-request"),
                                     )
                                 ],
                             ),
@@ -435,6 +436,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall ipv6-name INBOUND rule 101 disabled",
             "set firewall ipv6-name INBOUND rule 101 action 'accept'",
             "set firewall ipv6-name INBOUND rule 101 ipsec 'match-ipsec'",
+            "set firewall ipv6-name INBOUND rule 101 icmpv6 type echo-request",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -771,6 +773,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 name="V6-EGRESS",
                                 default_action="reject",
                                 description="This rule-set is configured by Ansible RM",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    )
+                                ],
                             ),
                         ],
                     ),
@@ -780,7 +788,6 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         )
         commands = [
             "delete firewall name V4-INGRESS rule 101 disabled",
-            "delete firewall name V4-EGRESS default-action",
             "set firewall name V4-INGRESS description 'This is IPv4 INGRESS rule set'",
             "set firewall name V4-INGRESS rule 101 protocol 'tcp'",
             "set firewall name V4-INGRESS rule 101 description 'Rule 101 is configured by Ansible RM'",
@@ -831,6 +838,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    )
+                                ],
                             ),
                         ],
                     ),
@@ -840,7 +853,6 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         )
         commands = [
             "delete firewall name V4-INGRESS enable-default-log",
-            "delete firewall name V4-EGRESS default-action",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -884,6 +896,44 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    )
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+                state="replaced",
+            )
+        )
+        self.execute_module(changed=False, commands=[])
+
+    def test_vyos_firewall_v4v6_rule_sets_rule_rep_idem_02(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="V4-INGRESS",
+                                description="This is IPv4 V4-INGRESS rule set",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="accept",
+                                        description="Rule 101 is configured by Ansible",
+                                        ipsec="match-ipsec",
+                                        protocol="icmp",
+                                        fragment="match-frag",
+                                        disabled=True,
+                                    ),
+                                ],
                             ),
                         ],
                     ),
@@ -933,6 +983,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    )
+                                ],
                             ),
                         ],
                     ),
@@ -1070,6 +1126,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             dict(
                                 name="V6-EGRESS",
                                 default_action="reject",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    )
+                                ],
                             ),
                         ],
                     ),

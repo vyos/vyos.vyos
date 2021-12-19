@@ -378,8 +378,15 @@ class Firewall_global(ConfigBase):
 
         if w_grp:
             for want in w_grp:
-                cmd = self._compute_command(key="group", attr=attr, opr=opr)
                 h = self.search_attrib_in_have(h_grp, want, "name")
+                if "afi" in want and want["afi"] == "ipv6":
+                    cmd = self._compute_command(
+                        key="group", attr="ipv6-" + attr, opr=opr
+                    )
+                else:
+                    cmd = self._compute_command(
+                        key="group", attr=attr, opr=opr
+                    )
                 for key, val in iteritems(want):
                     if val:
                         if (

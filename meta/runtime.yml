@@ -86,6 +86,10 @@ plugin_routing:
       redirect: vyos.vyos.vyos
     logging:
       redirect: vyos.vyos.vyos
+    vyos_ntp_global:
+      redirect: vyos.vyos.vyos
+    ntp_global:
+      redirect: vyos.vyos.vyos
     vyos_ospfv2:
       redirect: vyos.vyos.vyos
     ospfv2:
@@ -211,6 +215,8 @@ plugin_routing:
         warning_text: See the plugin documentation for more details
     logging_global:
       redirect: vyos.vyos.vyos_logging_global
+    ntp_global:
+      redirect: vyos.vyos.vyos_ntp_global
     ospfv2:
       redirect: vyos.vyos.vyos_ospfv2
     ospfv3:

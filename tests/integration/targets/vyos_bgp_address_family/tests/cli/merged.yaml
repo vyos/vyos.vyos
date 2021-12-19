@@ -41,8 +41,7 @@
                       route_map: "map01"
         state: merged
 
-    - become: true
-      vyos.vyos.vyos_facts:
+    - vyos.vyos.vyos_facts:
         gather_network_resources: bgp_address_family
 
     - assert:

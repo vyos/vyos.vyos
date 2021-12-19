@@ -86,7 +86,7 @@ class TestVyosInterfaceModule(TestVyosModule):
         self.mock_execute_lldp_command.stop()
         self.mock_execute_interfaces_command.stop()
 
-    def load_fixtures(self, commands=None, transport="cli"):
+    def load_fixtures(self, commands=None, transport="cli", filename=None):
         self.get_config.return_value = load_fixture(
             "vyos_interface_config.cfg"
         )
