@@ -49,6 +49,7 @@ class Ntp_globalArgs(object):  # pylint: disable=R0903
                                 "dynamic",
                                 "preempt",
                                 "prefer",
+                                "pool",
                             ],
                         },
                     },

@@ -104,7 +104,7 @@ class TestVyosNTPModule(TestVyosModule):
                             server="server5",
                             options=[
                                 "noselect",
-                                "dynamic",
+                                "pool",
                                 "preempt",
                                 "prefer",
                             ],
@@ -122,7 +122,7 @@ class TestVyosNTPModule(TestVyosModule):
             "set system ntp listen-address 10.4.5.1",
             "set system ntp server server4 dynamic",
             "set system ntp server server4 preempt",
-            "set system ntp server server5 dynamic",
+            "set system ntp server server5 pool",
             "set system ntp server server5 noselect",
             "set system ntp server server5 preempt",
             "set system ntp server server5 prefer",

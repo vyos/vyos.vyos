@@ -112,7 +112,7 @@ class NtpTemplate(NetworkTemplate):
                 r"""
                 ^set\ssystem\sntp\sserver
                 \s(?P<name>\S+)
-                \s(?P<options>noselect|dynamic|preempt|prefer)?
+                \s(?P<options>noselect|dynamic|preempt|prefer|pool)?
                 $""",
                 re.VERBOSE),
             "setval": "system ntp server {{server}} {{options}}",
