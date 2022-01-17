@@ -192,10 +192,284 @@ class Snmp_serverTemplate(NetworkTemplate):
                 "snmp_v3": {
                     "groups": {
                         "{{ name }}": {
-                            "{{ group }}": "{{ name }}",
-                            "{{ mode }}": '{{ mode.split(" ")[1] is mode is defined else None }}',
-                            "{{ seclevel }}": '{{ seclevel.split(" ")[1] is seclevel is defined else None }}',
-                            "{{ view }}": '{{ view.split(" ")[1] is view is defined else None }}',
+                            "group": "{{ name }}",
+                            "mode": '{{ mode.split(" ")[1] is mode is defined else None }}',
+                            "seclevel": '{{ seclevel.split(" ")[1] is seclevel is defined else None }}',
+                            "view": '{{ view.split(" ")[1] is view is defined else None }}',
+                } 
+            }
+        },
+        # set service snmp v3 trap-target <> auth <>
+        {
+            "name": "snmp_v3.trap_targets.authentication",
+            "getval": re.compile(
+                r"""
+                ^set\sservice\ssnmp\sv3\strap-target
+                \s+(?P<name>\S+)
+                \s+auth
+                \s*(?P<enc>encrypted-key\s\S+)*
+                \s*(?P<plain>plaintext-key\s\S+)*
+                \s*(?P<type>type\s\S+)*
+                $""",
+                re.VERBOSE),
+            "setval": _tmpltsnmp_server_v3_trap_target,
+            "result": {
+                "snmp_v3": {
+                    "trap_targets": {
+                        "{{ name }}": {
+                            "address": "{{ name }}",
+                            "authentication": {
+                                "encrypted_key": '{{ enc.split(" ")[1] is enc is defined else None }}',
+                                "plaintext_key": '{{ plain.split(" ")[1] is plain is defined else None }}',
+                                "type": '{{ type.split(" ")[1] is type is defined else None }}',
+                } 
+            }
+        },
+        # set service snmp v3 trap-target <> port <>
+        {
+            "name": "snmp_v3.trap_targets.port",
+            "getval": re.compile(
+                r"""
+                ^set\sservice\ssnmp\sv3\strap-target
+                \s+(?P<name>\S+)
+                \s+(?P<port>port\s\d+)*
+                $""",
+                re.VERBOSE),
+            "setval": "set service snmp v3 trap-target port {{ snmp_v3.trap_targets.port }}",
+            "result": {
+                "snmp_v3": {
+                    "trap_targets": {
+                        "{{ name }}": {
+                            "address": "{{ name }}",
+                            "port": "{{ port }}"
+                        }
+                    }
+                } 
+            }
+        },
+        # set service snmp v3 trap-target <> protocol <>
+        {
+            "name": "snmp_v3.trap_targets.protocol",
+            "getval": re.compile(
+                r"""
+                ^set\sservice\ssnmp\sv3\strap-target
+                \s+(?P<name>\S+)
+                \s+(?P<protocol>protocol\s\S+)*
+                $""",
+                re.VERBOSE),
+            "setval": "set service snmp v3 trap-target protocol {{ snmp_v3.trap_targets.protocol }}",
+            "result": {
+                "snmp_v3": {
+                    "trap_targets": {
+                        "{{ name }}": {
+                            "address": "{{ name }}",
+                            "protocol": "{{ protocol }}"
+                        }
+                    }
+                } 
+            }
+        },
+        # set service snmp v3 trap-target <> type <>
+        {
+            "name": "snmp_v3.trap_targets.type",
+            "getval": re.compile(
+                r"""
+                ^set\sservice\ssnmp\sv3\strap-target
+                \s+(?P<name>\S+)
+                \s+(?P<type>type\s\S+)*
+                $""",
+                re.VERBOSE),
+            "setval": "set service snmp v3 trap-target type {{ snmp_v3.trap_targets.type }}",
+            "result": {
+                "snmp_v3": {
+                    "trap_targets": {
+                        "{{ name }}": {
+                            "address": "{{ name }}",
+                            "type": "{{ type }}"
+                        }
+                    }
+                } 
+            }
+        },
+        # set service snmp v3 trap-target <> auth <>
+        {
+            "name": "snmp_v3.trap_targets.authentication",
+            "getval": re.compile(
+                r"""
+                ^set\sservice\ssnmp\sv3\strap-target
+                \s+(?P<name>\S+)
+                \s+auth
+                \s*(?P<enc>encrypted-key\s\S+)*
+                \s*(?P<plain>plaintext-key\s\S+)*
+                \s*(?P<type>type\s\S+)*
+                $""",
+                re.VERBOSE),
+            "setval": _tmpltsnmp_server_v3_trap_target,
+            "result": {
+                "snmp_v3": {
+                    "trap_targets": {
+                        "{{ name }}": {
+                            "{{ address }}": "{{ name }}",
+                            "authentication": {
+                                "{{ encrypted_key }}": '{{ enc.split(" ")[1] is enc is defined else None }}',
+                                "{{ plaintext_key }}": '{{ plain.split(" ")[1] is plain is defined else None }}',
+                                "{{ type }}": '{{ type.split(" ")[1] is type is defined else None }}',
+                } 
+            }
+        },
+        # set service snmp v3 trap-target <> auth <>
+        {
+            "name": "snmp_v3.trap_targets.authentication",
+            "getval": re.compile(
+                r"""
+                ^set\sservice\ssnmp\sv3\strap-target
+                \s+(?P<name>\S+)
+                \s+auth
+                \s*(?P<enc>encrypted-key\s\S+)*
+                \s*(?P<plain>plaintext-key\s\S+)*
+                \s*(?P<type>type\s\S+)*
+                $""",
+                re.VERBOSE),
+            "setval": _tmpltsnmp_server_v3_trap_target,
+            "result": {
+                "snmp_v3": {
+                    "trap_targets": {
+                        "{{ name }}": {
+                            "{{ address }}": "{{ name }}",
+                            "authentication": {
+                                "{{ encrypted_key }}": '{{ enc.split(" ")[1] is enc is defined else None }}',
+                                "{{ plaintext_key }}": '{{ plain.split(" ")[1] is plain is defined else None }}',
+                                "{{ type }}": '{{ type.split(" ")[1] is type is defined else None }}',
+                } 
+            }
+        },
+        # set service snmp v3 trap-target <> auth <>
+        {
+            "name": "snmp_v3.trap_targets.authentication",
+            "getval": re.compile(
+                r"""
+                ^set\sservice\ssnmp\sv3\strap-target
+                \s+(?P<name>\S+)
+                \s+auth
+                \s*(?P<enc>encrypted-key\s\S+)*
+                \s*(?P<plain>plaintext-key\s\S+)*
+                \s*(?P<type>type\s\S+)*
+                $""",
+                re.VERBOSE),
+            "setval": _tmpltsnmp_server_v3_trap_target,
+            "result": {
+                "snmp_v3": {
+                    "trap_targets": {
+                        "{{ name }}": {
+                            "{{ address }}": "{{ name }}",
+                            "authentication": {
+                                "{{ encrypted_key }}": '{{ enc.split(" ")[1] is enc is defined else None }}',
+                                "{{ plaintext_key }}": '{{ plain.split(" ")[1] is plain is defined else None }}',
+                                "{{ type }}": '{{ type.split(" ")[1] is type is defined else None }}',
+                } 
+            }
+        },
+        # set service snmp v3 trap-target <> auth <>
+        {
+            "name": "snmp_v3.trap_targets.authentication",
+            "getval": re.compile(
+                r"""
+                ^set\sservice\ssnmp\sv3\strap-target
+                \s+(?P<name>\S+)
+                \s+auth
+                \s*(?P<enc>encrypted-key\s\S+)*
+                \s*(?P<plain>plaintext-key\s\S+)*
+                \s*(?P<type>type\s\S+)*
+                $""",
+                re.VERBOSE),
+            "setval": _tmpltsnmp_server_v3_trap_target,
+            "result": {
+                "snmp_v3": {
+                    "trap_targets": {
+                        "{{ name }}": {
+                            "{{ address }}": "{{ name }}",
+                            "authentication": {
+                                "{{ encrypted_key }}": '{{ enc.split(" ")[1] is enc is defined else None }}',
+                                "{{ plaintext_key }}": '{{ plain.split(" ")[1] is plain is defined else None }}',
+                                "{{ type }}": '{{ type.split(" ")[1] is type is defined else None }}',
+                } 
+            }
+        },
+        # set service snmp v3 trap-target <> auth <>
+        {
+            "name": "snmp_v3.trap_targets.authentication",
+            "getval": re.compile(
+                r"""
+                ^set\sservice\ssnmp\sv3\strap-target
+                \s+(?P<name>\S+)
+                \s+auth
+                \s*(?P<enc>encrypted-key\s\S+)*
+                \s*(?P<plain>plaintext-key\s\S+)*
+                \s*(?P<type>type\s\S+)*
+                $""",
+                re.VERBOSE),
+            "setval": _tmpltsnmp_server_v3_trap_target,
+            "result": {
+                "snmp_v3": {
+                    "trap_targets": {
+                        "{{ name }}": {
+                            "{{ address }}": "{{ name }}",
+                            "authentication": {
+                                "{{ encrypted_key }}": '{{ enc.split(" ")[1] is enc is defined else None }}',
+                                "{{ plaintext_key }}": '{{ plain.split(" ")[1] is plain is defined else None }}',
+                                "{{ type }}": '{{ type.split(" ")[1] is type is defined else None }}',
+                } 
+            }
+        },
+        # set service snmp v3 trap-target <> auth <>
+        {
+            "name": "snmp_v3.trap_targets.authentication",
+            "getval": re.compile(
+                r"""
+                ^set\sservice\ssnmp\sv3\strap-target
+                \s+(?P<name>\S+)
+                \s+auth
+                \s*(?P<enc>encrypted-key\s\S+)*
+                \s*(?P<plain>plaintext-key\s\S+)*
+                \s*(?P<type>type\s\S+)*
+                $""",
+                re.VERBOSE),
+            "setval": _tmpltsnmp_server_v3_trap_target,
+            "result": {
+                "snmp_v3": {
+                    "trap_targets": {
+                        "{{ name }}": {
+                            "{{ address }}": "{{ name }}",
+                            "authentication": {
+                                "{{ encrypted_key }}": '{{ enc.split(" ")[1] is enc is defined else None }}',
+                                "{{ plaintext_key }}": '{{ plain.split(" ")[1] is plain is defined else None }}',
+                                "{{ type }}": '{{ type.split(" ")[1] is type is defined else None }}',
+                } 
+            }
+        },
+        # set service snmp v3 trap-target <> auth <>
+        {
+            "name": "snmp_v3.trap_targets.authentication",
+            "getval": re.compile(
+                r"""
+                ^set\sservice\ssnmp\sv3\strap-target
+                \s+(?P<name>\S+)
+                \s+auth
+                \s*(?P<enc>encrypted-key\s\S+)*
+                \s*(?P<plain>plaintext-key\s\S+)*
+                \s*(?P<type>type\s\S+)*
+                $""",
+                re.VERBOSE),
+            "setval": _tmpltsnmp_server_v3_trap_target,
+            "result": {
+                "snmp_v3": {
+                    "trap_targets": {
+                        "{{ name }}": {
+                            "{{ address }}": "{{ name }}",
+                            "authentication": {
+                                "{{ encrypted_key }}": '{{ enc.split(" ")[1] is enc is defined else None }}',
+                                "{{ plaintext_key }}": '{{ plain.split(" ")[1] is plain is defined else None }}',
+                                "{{ type }}": '{{ type.split(" ")[1] is type is defined else None }}',
                 } 
             }
         },
