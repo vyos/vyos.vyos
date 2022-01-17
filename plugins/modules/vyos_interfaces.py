@@ -154,7 +154,6 @@ EXAMPLES = """
 # set interfaces ethernet eth0 address 'dhcp'
 # set interfaces ethernet eth0 address 'dhcpv6'
 # set interfaces ethernet eth0 duplex 'auto'
-# test
 # set interfaces ethernet eth0 hw-id '08:00:27:30:f0:22'
 # set interfaces ethernet eth0 smp-affinity 'auto'
 # set interfaces ethernet eth0 speed 'auto'
