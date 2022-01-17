@@ -51,9 +51,9 @@ DOCUMENTATION = """
                         choices:
                             - noselect
                             - dynamic
+                            - pool
                             - preempt
                             - prefer
-                            - pool
     running_config:
         description:
         - This option is used only with state I(parsed).
