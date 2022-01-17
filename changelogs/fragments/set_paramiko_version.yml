@@ -1,0 +1,3 @@
+---
+trivial:
+  - Set paramiko version to 2.8.1.
