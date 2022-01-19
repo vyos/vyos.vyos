@@ -51,6 +51,7 @@ DOCUMENTATION = """
                         choices:
                             - noselect
                             - dynamic
+                            - pool
                             - preempt
                             - prefer
     running_config:
@@ -627,7 +628,7 @@ EXAMPLES = """
 
 # # Task
 # # -------------
-- name: Gather ntp config
+- name: Render ntp config
   vyos.vyos.vyos_ntp_global:
        config:
         allow_clients:
@@ -642,6 +643,7 @@ EXAMPLES = """
               options:
                 - noselect
                 - prefer
+                - pool
             - server: time1.vyos.net
 
             - server: time2.vyos.net
@@ -660,6 +662,7 @@ EXAMPLES = """
 #                "set system ntp server server7",
 #                "set system ntp server server45 noselect",
 #                "set system ntp server server45 prefer",
+#                "set system ntp server server45 pool",
 #                "set system ntp server time1.vyos.net",
 #                "set system ntp server time2.vyos.net",
 #                "set system ntp server time3.vyos.net"

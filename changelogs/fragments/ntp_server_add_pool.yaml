@@ -1,0 +1,3 @@
+---
+major_changes:
+  - Add 'pool' as value to server key in ntp_global.

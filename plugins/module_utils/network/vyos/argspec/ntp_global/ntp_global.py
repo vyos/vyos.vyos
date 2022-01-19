@@ -47,6 +47,7 @@ class Ntp_globalArgs(object):  # pylint: disable=R0903
                             "choices": [
                                 "noselect",
                                 "dynamic",
+                                "pool",
                                 "preempt",
                                 "prefer",
                             ],
