@@ -19,6 +19,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
     NetworkTemplate,
 )
 
+
 def _tmplt_snmp_server_communities(config_data):
     config_data = config_data["communities"]
     command = []
@@ -40,43 +41,34 @@ def _tmplt_snmp_server_communities(config_data):
         command.append(cmd)
     return command
 
+
 def _tmplt_snmp_server_trap_target(config_data):
     config_data = config_data["trap_target"]
     command = "service snmp trap-target {address}".format(**config_data)
     if "authorization_type" in config_data:
-        command += " authorization {authorization_type}".format(
-            **config_data
-        )
+        command += " authorization {authorization_type}".format(**config_data)
     if "client" in config_data:
-        command += " client {client}".format(
-            **config_data
-        )
+        command += " client {client}".format(**config_data)
     if "network" in config_data:
-        command += " network {network}".format(
-            **config_data
-        )
+        command += " network {network}".format(**config_data)
     return command
+
 
 def _tmplt_snmp_server_v3_groups(config_data):
     config_data = config_data["snmp_v3"]["groups"]
     command = []
     cmd = "service snmp v3 group {group}".format(**config_data)
     if "mode" in config_data:
-        mode_cmd = cmd + " mode {mode}".format(
-            **config_data
-        )
+        mode_cmd = cmd + " mode {mode}".format(**config_data)
         command.append(mode_cmd)
     if "seclevel" in config_data:
-        sec_cmd = cmd + " seclevel {seclevel}".format(
-            **config_data
-        )
+        sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
         command.append(sec_cmd)
     if "view" in config_data:
-        view_cmd = cmd + " view {view}".format(
-            **config_data
-        )
+        view_cmd = cmd + " view {view}".format(**config_data)
         command.append(view_cmd)
     return command
+
 
 def _tmplt_snmp_server_v3_trap_target(config_data):
     config_data = config_data["snmp_v3"]["trap_targets"]
@@ -88,18 +80,13 @@ def _tmplt_snmp_server_v3_trap_target(config_data):
         command += " privacy"
         config_data = config_data["privacy"]
     if "type" in config_data:
-        command += " type {mode}".format(
-            **config_data
-        )
+        command += " type {mode}".format(**config_data)
     if "encrypted_key" in config_data:
-        command += " encrypted-key {encrypted_key}".format(
-            **config_data
-        )
+        command += " encrypted-key {encrypted_key}".format(**config_data)
     if "plaintext_key" in config_data:
-        command += " plaintext-key {plaintext_key}".format(
-            **config_data
-        )
+        command += " plaintext-key {plaintext_key}".format(**config_data)
     return command
+
 
 def _tmplt_snmp_server_v3_user(config_data):
     config_data = config_data["snmp_v3"]["users"]
@@ -113,40 +100,41 @@ def _tmplt_snmp_server_v3_user(config_data):
             else:
                 val = " privacy"
             if "type" in config:
-                type_cmd = cmd + val + " type {type}".format(
-                    **config
-                )
+                type_cmd = cmd + val + " type {type}".format(**config)
                 command.append(type_cmd)
             if "encrypted_key" in config:
-                enc_cmd = cmd + val + " encrypted-key {encrypted_key}".format(
-                    **config
+                enc_cmd = (
+                    cmd
+                    + val
+                    + " encrypted-key {encrypted_key}".format(**config)
                 )
                 command.append(enc_cmd)
             if "plaintext_key" in config:
-                plain_cmd = cmd + val + " plaintext-key {plaintext_key}".format(
-                    **config
+                plain_cmd = (
+                    cmd
+                    + val
+                    + " plaintext-key {plaintext_key}".format(**config)
                 )
                 command.append(plain_cmd)
     return command
+
 
 def _tmplt_snmp_server_v3_views(config_data):
     config_data = config_data["snmp_v3"]["views"]
     command = "service snmp v3 view {view} oid {oid}".format(**config_data)
     if "exclude" in config_data:
-        command += " exclude {exclude}".format(
-            **config_data
-        )
+        command += " exclude {exclude}".format(**config_data)
     if "mask" in config_data:
-        command += " mask {mask}".format(
-            **config_data
-        )
+        command += " mask {mask}".format(**config_data)
     return command
 
 
 class Snmp_serverTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
-        super(Snmp_serverTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix, module=module)
+        super(Snmp_serverTemplate, self).__init__(
+            lines=lines, tmplt=self, prefix=prefix, module=module
+        )
 
     # fmt: off
     PARSERS = [
@@ -167,8 +155,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 "communities": {
                     "{{ name }}": {
                         "name": "{{ name }}",
-                        "clients": ['{{ client if client is defined else "None" }}',],
-                        "networks": ['{{ network if network is defined else "None" }}',],
+                        "clients": ['{{ client if client is defined else "None" }}'],
+                        "networks": ['{{ network if network is defined else "None" }}'],
                         "authorization_type": '{{ auth.split(" ")[1] if auth is defined else None }}'
                     }
                 }
@@ -299,7 +287,7 @@ class Snmp_serverTemplate(NetworkTemplate):
             "result": {
                 "snmp_v3": {
                     "engine_id": "{{ name }}",
-                } 
+                }
             }
         },
         # service snmp v3 group <>
@@ -325,7 +313,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                             "view": '{{ view.split(" ")[1] if view is defined else None }}',
                         }
                     }
-                } 
+                }
             }
         },
         # service snmp v3 trap-target <> auth <>
@@ -354,7 +342,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                             }
                         }
                     }
-                } 
+                }
             }
         },
         # service snmp v3 trap-target <> port <>
@@ -376,7 +364,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                             "port": "{{ port }}"
                         }
                     }
-                } 
+                }
             }
         },
         # service snmp v3 trap-target <> protocol <>
@@ -398,7 +386,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                             "protocol": "{{ protocol }}"
                         }
                     }
-                } 
+                }
             }
         },
         # service snmp v3 trap-target <> type <>
@@ -420,7 +408,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                             "type": "{{ type }}"
                         }
                     }
-                } 
+                }
             }
         },
         # service snmp v3 trap-target <> user <>
@@ -442,7 +430,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                             "user": "{{ user }}"
                         }
                     }
-                } 
+                }
             }
         },
         # service snmp v3 trap-target <> privacy <>
@@ -471,7 +459,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                             }
                         }
                     }
-                } 
+                }
             }
         },
         # service snmp v3 user <> auth <>
@@ -500,7 +488,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                             }
                         }
                     }
-                } 
+                }
             }
         },
         # service snmp v3 user <> privacy <>
@@ -529,7 +517,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                             }
                         }
                     }
-                } 
+                }
             }
         },
         # service snmp v3 user <> group <>
@@ -551,7 +539,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                             "group": "{{ group.split(" ")[1] if group is defined else None }}"
                         }
                     }
-                } 
+                }
             }
         },
         # service snmp v3  user <> mode <>
@@ -573,7 +561,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                             "mode": "{{ mode }}"
                         }
                     }
-                } 
+                }
             }
         },
         # service snmp v3 view <>
@@ -599,7 +587,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                             "mask": '{{ mask.split(" ")[1] if mask is defined else None }}',
                         }
                     }
-                } 
+                }
             }
         },
     ]

@@ -28,8 +28,7 @@ The arg spec for the vyos_snmp_server module
 
 
 class Snmp_serverArgs(object):  # pylint: disable=R0903
-    """The arg spec for the vyos_snmp_server module
-    """
+    """The arg spec for the vyos_snmp_server module"""
 
     argument_spec = {
         "config": {
@@ -78,7 +77,10 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                             "elements": "dict",
                             "options": {
                                 "group": {"type": "str"},
-                                "mode": {"type": "str", "choices": ["ro", "rw"]},
+                                "mode": {
+                                    "type": "str",
+                                    "choices": ["ro", "rw"],
+                                },
                                 "seclevel": {
                                     "type": "str",
                                     "choices": ["auth", "priv"],
@@ -150,7 +152,10 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                                 },
                                 "engine_id": {"type": "str"},
                                 "group": {"type": "str"},
-                                "mode": {"type": "str", "choices": ["ro", "rw"]},
+                                "mode": {
+                                    "type": "str",
+                                    "choices": ["ro", "rw"],
+                                },
                                 "privacy": {
                                     "type": "dict",
                                     "options": {

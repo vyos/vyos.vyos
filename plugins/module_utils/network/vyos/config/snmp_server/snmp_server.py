@@ -17,8 +17,6 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
-from copy import deepcopy
-
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     dict_merge,
@@ -36,6 +34,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
     get_from_dict,
 )
 import re
+
 
 class Snmp_server(ResourceModule):
     """
@@ -60,7 +59,7 @@ class Snmp_server(ResourceModule):
         ]
 
     def execute_module(self):
-        """ Execute the module
+        """Execute the module
 
         :rtype: A dictionary
         :returns: The result from module execution
@@ -71,8 +70,8 @@ class Snmp_server(ResourceModule):
         return self.result
 
     def generate_commands(self):
-        """ Generate configuration commands to send based on
-            want, have and desired state.
+        """Generate configuration commands to send based on
+        want, have and desired state.
         """
         wantd = self._snmp_server_list_to_dict(self.want)
         haved = self._snmp_server_list_to_dict(self.have)
@@ -80,7 +79,7 @@ class Snmp_server(ResourceModule):
         # if state is merged, merge want onto have and then compare
         if self.state == "merged":
             wantd = dict_merge(haved, wantd)
-        
+
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
             self.commands.append("delete service snmp")
@@ -90,7 +89,7 @@ class Snmp_server(ResourceModule):
 
         if self.state not in ["merged", "deleted"]:
             self._move_negate_commands()
-    
+
     def _move_negate_commands(self):
         command_set = []
         for cmd in self.commands:
@@ -100,21 +99,23 @@ class Snmp_server(ResourceModule):
                 command_set.append(cmd)
         self.commands = command_set
 
-
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
-           populates the list of commands to be run by comparing
-           the `want` and `have` data with the `parsers` defined
-           for the Snmp_server network resource.
+        populates the list of commands to be run by comparing
+        the `want` and `have` data with the `parsers` defined
+        for the Snmp_server network resource.
         """
         self._compare_lists(want, have)
         self._compare_snmp_v3(want, have)
         for key, value in iteritems(want):
-            self.compare(parsers=self.parsers, want={key: value}, have={key: have.pop(key, "")})
+            self.compare(
+                parsers=self.parsers,
+                want={key: value},
+                have={key: have.pop(key, "")},
+            )
         for key, entry in iteritems(have):
             if entry:
                 self.compare(parsers=self.parsers, want={}, have={key: entry})
-        
 
     def _compare_lists(self, want, have):
         parsers = [
@@ -133,7 +134,12 @@ class Snmp_server(ResourceModule):
                         h = {}
                         if k != "name":
                             if hdict.get(key):
-                                h = {"communities": {k: hdict[key].pop(k, ""), "name": key}}
+                                h = {
+                                    "communities": {
+                                        k: hdict[key].pop(k, ""),
+                                        "name": key,
+                                    }
+                                }
                             self.compare(
                                 parsers="communities",
                                 want={"communities": {k: v, "name": key}},
@@ -157,7 +163,9 @@ class Snmp_server(ResourceModule):
                                 want={},
                             )
                 else:
-                    self.compare(parsers=parsers, want={}, have={attrib: entry})
+                    self.compare(
+                        parsers=parsers, want={}, have={attrib: entry}
+                    )
 
     def _compare_snmp_v3(self, want, have):
         parsers = [
@@ -169,30 +177,57 @@ class Snmp_server(ResourceModule):
             "snmp_v3.users.group",
             "snmp_v3.users.mode",
             "snmp_v3.views",
-            "snmp_v3.engine_id"
+            "snmp_v3.engine_id",
         ]
-        attribute_dict = {"groups": "group", "trap_targets": "address", "users": "user", "views": "view"}
+        attribute_dict = {
+            "groups": "group",
+            "trap_targets": "address",
+            "users": "user",
+            "views": "view",
+        }
         wdict = get_from_dict(want, "snmp_v3") or {}
         hdict = get_from_dict(have, "snmp_v3") or {}
         for attrib in attribute_dict.keys():
             wattrib = get_from_dict(wdict, attrib) or {}
             hattrib = get_from_dict(hdict, attrib) or {}
             for key, entry in iteritems(wattrib):
-                self._compare_snmp_v3_auth_privacy(entry, hattrib.get(key, {}), attrib)
+                self._compare_snmp_v3_auth_privacy(
+                    entry, hattrib.get(key, {}), attrib
+                )
                 for k, v in iteritems(entry):
-                    if k!= attribute_dict[attrib]:
+                    if k != attribute_dict[attrib]:
                         h = {}
                         if hattrib.get(key):
-                            h = {"snmp_v3": {attrib: {k: hattrib[key].pop(k, ""), attribute_dict[attrib]: hattrib[key][attribute_dict[attrib]]}}}
+                            h = {
+                                "snmp_v3": {
+                                    attrib: {
+                                        k: hattrib[key].pop(k, ""),
+                                        attribute_dict[attrib]: hattrib[key][
+                                            attribute_dict[attrib]
+                                        ],
+                                    }
+                                }
+                            }
                         self.compare(
                             parsers=parsers,
-                            want={"snmp_v3": {attrib: {k: v, attribute_dict[attrib]: entry[attribute_dict[attrib]]}}},
+                            want={
+                                "snmp_v3": {
+                                    attrib: {
+                                        k: v,
+                                        attribute_dict[attrib]: entry[
+                                            attribute_dict[attrib]
+                                        ],
+                                    }
+                                }
+                            },
                             have=h,
                         )
             # remove remaining items in have for replaced
             for key, entry in iteritems(hattrib):
                 self._compare_snmp_v3_auth_privacy({}, entry, attrib)
-                self.compare(parsers=parsers, want={}, have={"snmp_v3": {attrib: entry}})
+                self.compare(
+                    parsers=parsers, want={}, have={"snmp_v3": {attrib: entry}}
+                )
             hdict.pop(attrib, {})
         for key, entry in iteritems(wdict):
             # self.addcmd(entry, attrib, False)
@@ -223,12 +258,37 @@ class Snmp_server(ResourceModule):
                 if key != primary_key and key in ["authentication", "privacy"]:
                     self.compare(
                         parsers=parsers,
-                        want={"snmp_v3": {attrib: {key: entry, primary_key: wattrib[primary_key]}}},
-                        have={"snmp_v3": {attrib: {key: hattrib.pop(key, {}), primary_key: wattrib[primary_key]}}},
+                        want={
+                            "snmp_v3": {
+                                attrib: {
+                                    key: entry,
+                                    primary_key: wattrib[primary_key],
+                                }
+                            }
+                        },
+                        have={
+                            "snmp_v3": {
+                                attrib: {
+                                    key: hattrib.pop(key, {}),
+                                    primary_key: wattrib[primary_key],
+                                }
+                            }
+                        },
                     )
             for key, entry in iteritems(hattrib):
                 if key != primary_key and key in ["authentication", "privacy"]:
-                    self.compare(parsers=parsers, want={}, have={"snmp_v3": {attrib: {key: entry, primary_key: hattrib[primary_key]}}})
+                    self.compare(
+                        parsers=parsers,
+                        want={},
+                        have={
+                            "snmp_v3": {
+                                attrib: {
+                                    key: entry,
+                                    primary_key: hattrib[primary_key],
+                                }
+                            }
+                        },
+                    )
 
     def _snmp_server_list_to_dict(self, entry):
         param_dict = {
