@@ -110,6 +110,10 @@ plugin_routing:
       redirect: vyos.vyos.vyos
     prefix_lists:
       redirect: vyos.vyos.vyos
+    vyos_snmp_server:
+      redirect: vyos.vyos.vyos
+    snmp_server:
+      redirect: vyos.vyos.vyos
     vyos_static_route:
       redirect: vyos.vyos.vyos
     static_route:
@@ -227,6 +231,8 @@ plugin_routing:
       redirect: vyos.vyos.vyos_ping
     prefix_lists:
       redirect: vyos.vyos.vyos_prefix_lists
+    snmp_server:
+      redirect: vyos.vyos.vyos_snmp_servers
     static_route:
       redirect: vyos.vyos.vyos_static_route
       deprecation:

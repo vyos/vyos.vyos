@@ -40,8 +40,8 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                     "elements": "dict",
                     "options": {
                         "name": {"type": "str"},
-                        "client": {"type": "str"},
-                        "network": {"type": "str"},
+                        "clients": {"type": "list", "elements": "str"},
+                        "networks": {"type": "list", "elements": "str"},
                         "authorization_type": {
                             "type": "str",
                             "choices": ["ro", "rw"],
@@ -50,8 +50,9 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                 },
                 "contact": {"type": "str"},
                 "description": {"type": "str"},
-                "listen_address": {
-                    "type": "dict",
+                "listen_addresses": {
+                    "type": "list",
+                    "elements": "dict",
                     "options": {
                         "address": {"type": "str"},
                         "port": {"type": "int"},
@@ -156,7 +157,9 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                                         "type": {
                                             "type": "str",
                                             "choices": ["des", "aes"],
-                                        }
+                                        },
+                                        "encrypted_key": {"type": "str"},
+                                        "plaintext_key": {"type": "str"},
                                     },
                                 },
                                 "tsm_key": {"type": "str"},
@@ -168,7 +171,7 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                             "options": {
                                 "view": {"type": "str"},
                                 "oid": {"type": "str"},
-                                "exclude": {"type": "bool"},
+                                "exclude": {"type": "str"},
                                 "mask": {"type": "str"},
                             },
                         },

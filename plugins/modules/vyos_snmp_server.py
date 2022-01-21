@@ -226,7 +226,7 @@ options:
                 type: str
               exclude:
                 description: Exclude is optional argument.
-                type: bool
+                type: str
               mask:
                 description: Defines a bit-mask that is indicating which subidentifiers of the associated subtree OID should be regarded as significant.
                 type: str
