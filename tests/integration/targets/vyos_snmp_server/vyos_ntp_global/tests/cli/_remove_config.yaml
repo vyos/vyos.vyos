@@ -1,8 +1,0 @@
----
-- name: Remove pre-existing ntp_global config
-  vyos.vyos.vyos_ntp_global:
-    config:
-    state: deleted
-  ignore_errors: true
-  vars:
-    ansible_connection: ansible.netcommon.network_cli
