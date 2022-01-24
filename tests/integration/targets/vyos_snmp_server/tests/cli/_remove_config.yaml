@@ -1,0 +1,8 @@
+---
+- name: Remove pre-existing snmp_server config
+  vyos.vyos.vyos_snmp_server:
+    config:
+    state: deleted
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

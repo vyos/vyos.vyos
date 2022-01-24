@@ -82,7 +82,8 @@ class Snmp_server(ResourceModule):
 
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
-            self.commands.append("delete service snmp")
+            if haved:
+                self.commands.append("delete service snmp")
 
         if self.state != "deleted":
             self._compare(want=wantd, have=haved)
