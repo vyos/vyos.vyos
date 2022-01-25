@@ -100,8 +100,14 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                                             "type": "str",
                                             "choices": ["md5", "sha"],
                                         },
-                                        "encrypted_key": {"type": "str"},
-                                        "plaintext_key": {"type": "str"},
+                                        "encrypted_key": {
+                                            "type": "str",
+                                            "no_log": True,
+                                        },
+                                        "plaintext_key": {
+                                            "type": "str",
+                                            "no_log": True,
+                                        },
                                     },
                                 },
                                 "engine_id": {"type": "str"},
@@ -113,8 +119,14 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                                             "type": "str",
                                             "choices": ["des", "aes"],
                                         },
-                                        "encrypted_key": {"type": "str"},
-                                        "plaintext_key": {"type": "str"},
+                                        "encrypted_key": {
+                                            "type": "str",
+                                            "no_log": True,
+                                        },
+                                        "plaintext_key": {
+                                            "type": "str",
+                                            "no_log": True,
+                                        },
                                     },
                                 },
                                 "protocol": {
@@ -130,7 +142,7 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                         "tsm": {
                             "type": "dict",
                             "options": {
-                                "local_key": {"type": "str"},
+                                "local_key": {"type": "str", "no_log": True},
                                 "port": {"type": "int"},
                             },
                         },
@@ -146,8 +158,14 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                                             "type": "str",
                                             "choices": ["md5", "sha"],
                                         },
-                                        "encrypted_key": {"type": "str"},
-                                        "plaintext_key": {"type": "str"},
+                                        "encrypted_key": {
+                                            "type": "str",
+                                            "no_log": True,
+                                        },
+                                        "plaintext_key": {
+                                            "type": "str",
+                                            "no_log": True,
+                                        },
                                     },
                                 },
                                 "engine_id": {"type": "str"},
@@ -163,11 +181,17 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                                             "type": "str",
                                             "choices": ["des", "aes"],
                                         },
-                                        "encrypted_key": {"type": "str"},
-                                        "plaintext_key": {"type": "str"},
+                                        "encrypted_key": {
+                                            "type": "str",
+                                            "no_log": True,
+                                        },
+                                        "plaintext_key": {
+                                            "type": "str",
+                                            "no_log": True,
+                                        },
                                     },
                                 },
-                                "tsm_key": {"type": "str"},
+                                "tsm_key": {"type": "str", "no_log": True},
                             },
                         },
                         "views": {

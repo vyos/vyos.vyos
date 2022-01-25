@@ -13,7 +13,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 DOCUMENTATION = """
-module: vyos_snmp_serve
+module: vyos_snmp_server
 version_added: 2.7.0
 short_description: Manages snmp_server resource module
 description: This module manages the snmp server attributes of Vyos network devices
@@ -36,12 +36,14 @@ options:
           name:
             description: Community name
             type: str
-          client:
+          clients:
             description: IP address of SNMP client allowed to contact system
-            type: str
-          network:
+            type: list
+            elements: str
+          networks:
             description: Subnet of SNMP client(s) allowed to contact system
-            type: str
+            type: list
+            elements: str
           authorization_type:
             description: Authorization type (rw or ro)
             type: str
@@ -52,9 +54,10 @@ options:
       description:
         description: Description information
         type: str
-      listen_address:
+      listen_addresses:
         description: IP address to listen for incoming SNMP requests
-        type: dict
+        type: list
+        elements: dict
         suboptions:
           address:
             description: IP address to listen for incoming SNMP requests.
@@ -210,11 +213,17 @@ options:
                     description: Defines the protocol using for privacy
                     type: str
                     choices: ['des', 'aes']
+                  encrypted_key:
+                    description: Defines the encrypted password for privacy
+                    type: str
+                  plaintext_key:
+                    description: Defines the clear text password for privacy
+                    type: str
               tsm_key:
                 description: Specifies finger print or file name of TSM certificate.
                 type: str
           views:
-            desscription: Specifies the view with name viewname
+            description: Specifies the view with name viewname
             type: list
             elements: dict
             suboptions:
@@ -232,12 +241,10 @@ options:
                 type: str
   running_config:
     description:
-    - This option is used only with state I(parsed).
-    - The value of this option should be the output received from the vyos device by
-      executing the command B("show configuration commands | grep snmp").
-    - The state I(parsed) reads the configuration from C(running_config) option and
-      transforms it into Ansible structured data as per the resource module's argspec
-      and the value is then returned in the I(parsed) key within the result.
+    - The state the configuration should be left in.
+    - The states I(replaced) and I(overridden) have identical
+       behaviour for this module.
+    - Please refer to examples for more details.
     type: str
   state:
     choices:
@@ -253,9 +260,787 @@ options:
       - The state the configuration should be left in
     type: str
 """
-
 EXAMPLES = """
 
+# Using merged
+# Before State:
+
+# vyos@vyos:~$ show configuration commands | grep snmp
+# vyos@vyos:~$
+
+  - name: Merge provided configuration with device configuration
+    vyos.vyos.vyos_snmp_server:
+      config:
+        communities:
+          - name: "switches"
+            authorization_type: "rw"
+          - name: "bridges"
+            clients: ["1.1.1.1", "12.1.1.10"]
+        contact: "admin2@ex.com"
+        listen_addresses:
+          - address: "20.1.1.1"
+          - address: "100.1.2.1"
+            port: 33
+        snmp_v3:
+          users:
+            - user: admin_user
+              authentication:
+                plaintext_key: "abc1234567"
+                type: "sha"
+              privacy:
+                plaintext_key: "abc1234567"
+                type: "aes"
+
+      state: merged
+
+# After State:
+
+# vyos@vyos:~$ show configuration commands | grep snmp
+# set service snmp community bridges client '1.1.1.1'
+# set service snmp community bridges client '12.1.1.10'
+# set service snmp community switches authorization 'rw'
+# set service snmp contact 'admin2@ex.com'
+# set service snmp listen-address 20.1.1.1
+# set service snmp listen-address 100.1.2.1 port '33'
+# set service snmp v3 user admin_user auth plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user auth type 'sha'
+# set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user privacy type 'aes'
+# vyos@vyos:~$
+#
+# Module Execution:
+#
+# "after": {
+#         "communities": [
+#             {
+#                 "clients": [
+#                     "1.1.1.1",
+#                     "12.1.1.10"
+#                 ],
+#                 "name": "bridges"
+#             },
+#             {
+#                 "authorization_type": "rw",
+#                 "name": "switches"
+#             }
+#         ],
+#         "contact": "admin2@ex.com",
+#         "listen_addresses": [
+#             {
+#                 "address": "100.1.2.1",
+#                 "port": 33
+#             },
+#             {
+#                 "address": "20.1.1.1"
+#             }
+#         ],
+#         "snmp_v3": {
+#             "users": [
+#                 {
+#                     "authentication": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "sha"
+#                     },
+#                     "privacy": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "aes"
+#                     },
+#                     "user": "admin_user"
+#                 }
+#             ]
+#         }
+#     },
+#     "before": {},
+#     "changed": true,
+#     "commands": [
+#         "set service snmp community switches authorization rw",
+#         "set service snmp community bridges client 1.1.1.1",
+#         "set service snmp community bridges client 12.1.1.10",
+#         "set service snmp listen-address 20.1.1.1",
+#         "set service snmp listen-address 100.1.2.1 port 33",
+#         "set service snmp v3 user admin_user auth type sha",
+#         "set service snmp v3 user admin_user auth plaintext-key ********",
+#         "set service snmp v3 user admin_user privacy type aes",
+#         "set service snmp v3 user admin_user privacy plaintext-key ********",
+#         "set service snmp contact admin2@ex.com"
+#     ],
+#
+
+# using Replaced:
+
+# Before State
+# vyos@vyos:~$ show configuration commands | grep snmp
+# set service snmp community bridges client '1.1.1.1'
+# set service snmp community bridges client '12.1.1.10'
+# set service snmp community switches authorization 'rw'
+# set service snmp contact 'admin2@ex.com'
+# set service snmp listen-address 20.1.1.1
+# set service snmp listen-address 100.1.2.1 port '33'
+# set service snmp v3 user admin_user auth plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user auth type 'sha'
+# set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user privacy type 'aes'
+# vyos@vyos:~$
+
+  - name: Replace
+    vyos.vyos.vyos_snmp_server:
+      config:
+        communities:
+          - name: "bridges"
+            networks: ["1.1.1.0/24", "12.1.1.0/24"]
+        location: "RDU, NC"
+        listen_addresses:
+          - address: "100.1.2.1"
+            port: 33
+        snmp_v3:
+          groups:
+            - group: "default"
+              view: "default"
+          users:
+            - user: admin_user
+              authentication:
+                plaintext_key: "abc1234567"
+                type: "sha"
+              privacy:
+                plaintext_key: "abc1234567"
+                type: "aes"
+              group: "default"
+            - user: guest_user2
+              authentication:
+                plaintext_key: "opq1234567"
+                type: "sha"
+              privacy:
+                plaintext_key: "opq1234567"
+                type: "aes"
+          views:
+            - view: "default"
+              oid: 1
+
+      state: replaced
+
+# After State:
+# vyos@vyos:~$ show configuration commands | grep snmp
+# set service snmp community bridges network '1.1.1.0/24'
+# set service snmp community bridges network '12.1.1.0/24'
+# set service snmp community switches
+# set service snmp listen-address 100.1.2.1 port '33'
+# set service snmp location 'RDU, NC'
+# set service snmp v3 group default view 'default'
+# set service snmp v3 user admin_user auth plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user auth type 'sha'
+# set service snmp v3 user admin_user group 'default'
+# set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user privacy type 'aes'
+# set service snmp v3 user guest_user2 auth plaintext-key 'opq1234567'
+# set service snmp v3 user guest_user2 auth type 'sha'
+# set service snmp v3 user guest_user2 privacy plaintext-key 'opq1234567'
+# set service snmp v3 user guest_user2 privacy type 'aes'
+# set service snmp v3 view default oid 1
+# vyos@vyos:~$
+#
+#
+# Module Execution:
+# "after": {
+#         "communities": [
+#             {
+#                 "name": "bridges",
+#                 "networks": [
+#                     "1.1.1.0/24",
+#                     "12.1.1.0/24"
+#                 ]
+#             },
+#             {
+#                 "name": "switches"
+#             }
+#         ],
+#         "listen_addresses": [
+#             {
+#                 "address": "100.1.2.1",
+#                 "port": 33
+#             }
+#         ],
+#         "location": "RDU, NC",
+#         "snmp_v3": {
+#             "groups": [
+#                 {
+#                     "group": "default",
+#                     "view": "default"
+#                 }
+#             ],
+#             "users": [
+#                 {
+#                     "authentication": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "sha"
+#                     },
+#                     "group": "default",
+#                     "privacy": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "aes"
+#                     },
+#                     "user": "admin_user"
+#                 },
+#                 {
+#                     "authentication": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "sha"
+#                     },
+#                     "privacy": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "aes"
+#                     },
+#                     "user": "guest_user2"
+#                 }
+#             ],
+#             "views": [
+#                 {
+#                     "oid": "1",
+#                     "view": "default"
+#                 }
+#             ]
+#         }
+#     },
+#     "before": {
+#         "communities": [
+#             {
+#                 "clients": [
+#                     "1.1.1.1",
+#                     "12.1.1.10"
+#                 ],
+#                 "name": "bridges"
+#             },
+#             {
+#                 "authorization_type": "rw",
+#                 "name": "switches"
+#             }
+#         ],
+#         "contact": "admin2@ex.com",
+#         "listen_addresses": [
+#             {
+#                 "address": "100.1.2.1",
+#                 "port": 33
+#             },
+#             {
+#                 "address": "20.1.1.1"
+#             }
+#         ],
+#         "snmp_v3": {
+#             "users": [
+#                 {
+#                     "authentication": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "sha"
+#                     },
+#                     "privacy": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "aes"
+#                     },
+#                     "user": "admin_user"
+#                 }
+#             ]
+#         }
+#     },
+#     "changed": true,
+#     "commands": [
+#         "delete service snmp contact admin2@ex.com",
+#         "delete service snmp listen-address 20.1.1.1",
+#         "delete service snmp community switches authorization rw",
+#         "delete service snmp community bridges client 12.1.1.10",
+#         "delete service snmp community bridges client 1.1.1.1",
+#         "set service snmp community bridges network 1.1.1.0/24",
+#         "set service snmp community bridges network 12.1.1.0/24",
+#         "set service snmp v3 group default view default",
+#         "set service snmp v3 user admin_user group default",
+#         "set service snmp v3 user guest_user2 auth type sha",
+#         "set service snmp v3 user guest_user2 auth plaintext-key ********",
+#         "set service snmp v3 user guest_user2 privacy type aes",
+#         "set service snmp v3 user guest_user2 privacy plaintext-key ********",
+#         "set service snmp v3 view default oid 1",
+#         "set service snmp location 'RDU, NC'"
+#     ],
+
+# Using overridden:
+# Before State
+# vyos@vyos:~$ show configuration commands | grep snmp
+# set service snmp community bridges client '1.1.1.1'
+# set service snmp community bridges client '12.1.1.10'
+# set service snmp community switches authorization 'rw'
+# set service snmp contact 'admin2@ex.com'
+# set service snmp listen-address 20.1.1.1
+# set service snmp listen-address 100.1.2.1 port '33'
+# set service snmp v3 user admin_user auth plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user auth type 'sha'
+# set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user privacy type 'aes'
+# vyos@vyos:~$
+
+  - name: Override config
+    vyos.vyos.vyos_snmp_server:
+      config:
+        communities:
+          - name: "bridges"
+            networks: ["1.1.1.0/24", "12.1.1.0/24"]
+        location: "RDU, NC"
+        listen_addresses:
+          - address: "100.1.2.1"
+            port: 33
+        snmp_v3:
+          groups:
+            - group: "default"
+              view: "default"
+          users:
+            - user: admin_user
+              authentication:
+                plaintext_key: "abc1234567"
+                type: "sha"
+              privacy:
+                plaintext_key: "abc1234567"
+                type: "aes"
+              group: "default"
+            - user: guest_user2
+              authentication:
+                plaintext_key: "opq1234567"
+                type: "sha"
+              privacy:
+                plaintext_key: "opq1234567"
+                type: "aes"
+          views:
+            - view: "default"
+              oid: 1
+
+      state: overridden
+
+# After State:
+# vyos@vyos:~$ show configuration commands | grep snmp
+# set service snmp community bridges network '1.1.1.0/24'
+# set service snmp community bridges network '12.1.1.0/24'
+# set service snmp community switches
+# set service snmp listen-address 100.1.2.1 port '33'
+# set service snmp location 'RDU, NC'
+# set service snmp v3 group default view 'default'
+# set service snmp v3 user admin_user auth plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user auth type 'sha'
+# set service snmp v3 user admin_user group 'default'
+# set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user privacy type 'aes'
+# set service snmp v3 user guest_user2 auth plaintext-key 'opq1234567'
+# set service snmp v3 user guest_user2 auth type 'sha'
+# set service snmp v3 user guest_user2 privacy plaintext-key 'opq1234567'
+# set service snmp v3 user guest_user2 privacy type 'aes'
+# set service snmp v3 view default oid 1
+# vyos@vyos:~$
+#
+#
+# Module Execution:
+# "after": {
+#         "communities": [
+#             {
+#                 "name": "bridges",
+#                 "networks": [
+#                     "1.1.1.0/24",
+#                     "12.1.1.0/24"
+#                 ]
+#             },
+#             {
+#                 "name": "switches"
+#             }
+#         ],
+#         "listen_addresses": [
+#             {
+#                 "address": "100.1.2.1",
+#                 "port": 33
+#             }
+#         ],
+#         "location": "RDU, NC",
+#         "snmp_v3": {
+#             "groups": [
+#                 {
+#                     "group": "default",
+#                     "view": "default"
+#                 }
+#             ],
+#             "users": [
+#                 {
+#                     "authentication": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "sha"
+#                     },
+#                     "group": "default",
+#                     "privacy": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "aes"
+#                     },
+#                     "user": "admin_user"
+#                 },
+#                 {
+#                     "authentication": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "sha"
+#                     },
+#                     "privacy": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "aes"
+#                     },
+#                     "user": "guest_user2"
+#                 }
+#             ],
+#             "views": [
+#                 {
+#                     "oid": "1",
+#                     "view": "default"
+#                 }
+#             ]
+#         }
+#     },
+#     "before": {
+#         "communities": [
+#             {
+#                 "clients": [
+#                     "1.1.1.1",
+#                     "12.1.1.10"
+#                 ],
+#                 "name": "bridges"
+#             },
+#             {
+#                 "authorization_type": "rw",
+#                 "name": "switches"
+#             }
+#         ],
+#         "contact": "admin2@ex.com",
+#         "listen_addresses": [
+#             {
+#                 "address": "100.1.2.1",
+#                 "port": 33
+#             },
+#             {
+#                 "address": "20.1.1.1"
+#             }
+#         ],
+#         "snmp_v3": {
+#             "users": [
+#                 {
+#                     "authentication": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "sha"
+#                     },
+#                     "privacy": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "aes"
+#                     },
+#                     "user": "admin_user"
+#                 }
+#             ]
+#         }
+#     },
+#     "changed": true,
+#     "commands": [
+#         "delete service snmp contact admin2@ex.com",
+#         "delete service snmp listen-address 20.1.1.1",
+#         "delete service snmp community switches authorization rw",
+#         "delete service snmp community bridges client 12.1.1.10",
+#         "delete service snmp community bridges client 1.1.1.1",
+#         "set service snmp community bridges network 1.1.1.0/24",
+#         "set service snmp community bridges network 12.1.1.0/24",
+#         "set service snmp v3 group default view default",
+#         "set service snmp v3 user admin_user group default",
+#         "set service snmp v3 user guest_user2 auth type sha",
+#         "set service snmp v3 user guest_user2 auth plaintext-key ********",
+#         "set service snmp v3 user guest_user2 privacy type aes",
+#         "set service snmp v3 user guest_user2 privacy plaintext-key ********",
+#         "set service snmp v3 view default oid 1",
+#         "set service snmp location 'RDU, NC'"
+#     ],
+
+# Using deleted:
+
+# Before State:
+# vyos@vyos:~$ show configuration commands | grep snmp
+# set service snmp community bridges network '1.1.1.0/24'
+# set service snmp community bridges network '12.1.1.0/24'
+# set service snmp community switches
+# set service snmp listen-address 100.1.2.1 port '33'
+# set service snmp location 'RDU, NC'
+# set service snmp v3 group default view 'default'
+# set service snmp v3 user admin_user auth plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user auth type 'sha'
+# set service snmp v3 user admin_user group 'default'
+# set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user privacy type 'aes'
+# set service snmp v3 user guest_user2 auth plaintext-key 'opq1234567'
+# set service snmp v3 user guest_user2 auth type 'sha'
+# set service snmp v3 user guest_user2 privacy plaintext-key 'opq1234567'
+# set service snmp v3 user guest_user2 privacy type 'aes'
+# set service snmp v3 view default oid 1
+# vyos@vyos:~$
+
+  - name: Delete Config
+    vyos.vyos.vyos_snmp_server:
+      state: deleted
+
+# After State:
+# vyos@vyos:~$ show configuration commands | grep snmp
+# vyos@vyos:~$
+#
+# Module Execution:
+# "after": {},
+#     "before": {
+#         "communities": [
+#             {
+#                 "name": "bridges",
+#                 "networks": [
+#                     "1.1.1.0/24",
+#                     "12.1.1.0/24"
+#                 ]
+#             },
+#             {
+#                 "name": "switches"
+#             }
+#         ],
+#         "listen_addresses": [
+#             {
+#                 "address": "100.1.2.1",
+#                 "port": 33
+#             }
+#         ],
+#         "location": "RDU, NC",
+#         "snmp_v3": {
+#             "groups": [
+#                 {
+#                     "group": "default",
+#                     "view": "default"
+#                 }
+#             ],
+#             "users": [
+#                 {
+#                     "authentication": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "sha"
+#                     },
+#                     "group": "default",
+#                     "privacy": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "aes"
+#                     },
+#                     "user": "admin_user"
+#                 },
+#                 {
+#                     "authentication": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "sha"
+#                     },
+#                     "privacy": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "aes"
+#                     },
+#                     "user": "guest_user2"
+#                 }
+#             ],
+#             "views": [
+#                 {
+#                     "oid": "1",
+#                     "view": "default"
+#                 }
+#             ]
+#         }
+#     },
+#     "changed": true,
+#     "commands": [
+#         "delete service snmp"
+#     ],
+
+# Using rendered:
+  - name: Render provided configuration
+    vyos.vyos.vyos_snmp_server:
+      config:
+        communities:
+          - name: "switches"
+            authorization_type: "rw"
+          - name: "bridges"
+            clients: ["1.1.1.1", "12.1.1.10"]
+        contact: "admin2@ex.com"
+        listen_addresses:
+          - address: "20.1.1.1"
+          - address: "100.1.2.1"
+            port: 33
+        snmp_v3:
+          users:
+            - user: admin_user
+              authentication:
+                plaintext_key: "abc1234567"
+                type: "sha"
+              privacy:
+                plaintext_key: "abc1234567"
+                type: "aes"
+
+      state: rendered
+
+# Module Execution:
+#  "rendered": [
+#         "set service snmp community switches authorization rw",
+#         "set service snmp community bridges client 1.1.1.1",
+#         "set service snmp community bridges client 12.1.1.10",
+#         "set service snmp listen-address 20.1.1.1",
+#         "set service snmp listen-address 100.1.2.1 port 33",
+#         "set service snmp v3 user admin_user auth type sha",
+#         "set service snmp v3 user admin_user auth plaintext-key ********",
+#         "set service snmp v3 user admin_user privacy type aes",
+#         "set service snmp v3 user admin_user privacy plaintext-key ********",
+#         "set service snmp contact admin2@ex.com"
+#     ]
+#
+
+# Using Gathered:
+# Before State:
+
+# vyos@vyos:~$ show configuration commands | grep snmp
+# set service snmp community bridges client '1.1.1.1'
+# set service snmp community bridges client '12.1.1.10'
+# set service snmp community switches authorization 'rw'
+# set service snmp contact 'admin2@ex.com'
+# set service snmp listen-address 20.1.1.1
+# set service snmp listen-address 100.1.2.1 port '33'
+# set service snmp v3 user admin_user auth plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user auth type 'sha'
+# set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
+# set service snmp v3 user admin_user privacy type 'aes'
+# vyos@vyos:~$
+
+  - name: gather configs
+    vyos.vyos.vyos_snmp_server:
+      state: gathered
+
+# Module Execution:
+#   "gathered": {
+#         "communities": [
+#             {
+#                 "clients": [
+#                     "1.1.1.1",
+#                     "12.1.1.10"
+#                 ],
+#                 "name": "bridges"
+#             },
+#             {
+#                 "authorization_type": "rw",
+#                 "name": "switches"
+#             }
+#         ],
+#         "contact": "admin2@ex.com",
+#         "listen_addresses": [
+#             {
+#                 "address": "100.1.2.1",
+#                 "port": 33
+#             },
+#             {
+#                 "address": "20.1.1.1"
+#             }
+#         ],
+#         "snmp_v3": {
+#             "users": [
+#                 {
+#                     "authentication": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "sha"
+#                     },
+#                     "privacy": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "aes"
+#                     },
+#                     "user": "admin_user"
+#                 }
+#             ]
+#         }
+#     },
+
+# Using parsed:
+
+# _parsed_snmp.cfg
+# set service snmp community routers authorization 'ro'
+# set service snmp community routers client '203.0.113.10'
+# set service snmp community routers client '203.0.113.20'
+# set service snmp community routers network '192.0.2.0/24'
+# set service snmp community routers network '2001::/64'
+# set service snmp contact 'admin@example.com'
+# set service snmp listen-address 172.16.254.36 port '161'
+# set service snmp listen-address 2001::1
+# set service snmp location 'UK, London'
+# set service snmp trap-target 203.0.113.10
+# set service snmp v3 engineid '000000000000000000000002'
+# set service snmp v3 group default mode 'ro'
+# set service snmp v3 group default view 'default'
+# set service snmp v3 user vyos auth plaintext-key 'vyos12345678'
+# set service snmp v3 user vyos auth type 'sha'
+# set service snmp v3 user vyos group 'default'
+# set service snmp v3 user vyos privacy plaintext-key 'vyos12345678'
+# set service snmp v3 user vyos privacy type 'aes'
+# set service snmp v3 view default oid 1
+
+  - name: parse configs
+    vyos.vyos.vyos_snmp_server:
+      running_config: "{{ lookup('file', './_parsed_snmp.cfg') }}"
+      state: parsed
+
+# Module Execution:
+# "parsed": {
+#         "communities": [
+#             {
+#                 "authorization_type": "ro",
+#                 "clients": [
+#                     "203.0.113.10",
+#                     "203.0.113.20"
+#                 ],
+#                 "name": "routers",
+#                 "networks": [
+#                     "192.0.2.0/24",
+#                     "2001::/64"
+#                 ]
+#             }
+#         ],
+#         "contact": "admin@example.com",
+#         "listen_addresses": [
+#             {
+#                 "address": "172.16.254.36",
+#                 "port": 161
+#             },
+#             {
+#                 "address": "2001::1"
+#             }
+#         ],
+#         "location": "UK, London",
+#         "snmp_v3": {
+#             "engine_id": "000000000000000000000002",
+#             "groups": [
+#                 {
+#                     "group": "default",
+#                     "mode": "ro",
+#                     "view": "default"
+#                 }
+#             ],
+#             "users": [
+#                 {
+#                     "authentication": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "sha"
+#                     },
+#                     "group": "default",
+#                     "privacy": {
+#                         "plaintext_key": "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER",
+#                         "type": "aes"
+#                     },
+#                     "user": "vyos"
+#                 }
+#             ],
+#             "views": [
+#                 {
+#                     "oid": "1",
+#                     "view": "default"
+#                 }
+#             ]
+#         },
+#         "trap_target": {
+#             "address": "203.0.113.10"
+#         }
+#     }
+#
 """
 
 RETURN = """

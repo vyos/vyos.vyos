@@ -8,9 +8,9 @@ merged:
     - set service snmp listen-address 20.1.1.1
     - set service snmp listen-address 100.1.2.1 port 33
     - set service snmp v3 user admin_user auth type sha
-    - set service snmp v3 user admin_user auth plaintext-key abc1234567
+    - set service snmp v3 user admin_user auth plaintext-key ********
     - set service snmp v3 user admin_user privacy type aes
-    - set service snmp v3 user admin_user privacy plaintext-key abc1234567
+    - set service snmp v3 user admin_user privacy plaintext-key ********
     - set service snmp contact admin2@ex.com
   after:
     communities:
@@ -28,10 +28,10 @@ merged:
     snmp_v3:
       users:
         - authentication:
-            plaintext_key: "abc1234567"
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "sha"
           privacy:
-            plaintext_key: "abc1234567"
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "aes"
           user: "admin_user"
 
@@ -47,9 +47,9 @@ overridden:
     - set service snmp v3 group default view default
     - set service snmp v3 user admin_user group default
     - set service snmp v3 user guest_user2 auth type sha
-    - set service snmp v3 user guest_user2 auth plaintext-key opq1234567
+    - set service snmp v3 user guest_user2 auth plaintext-key ********
     - set service snmp v3 user guest_user2 privacy type aes
-    - set service snmp v3 user guest_user2 privacy plaintext-key opq1234567
+    - set service snmp v3 user guest_user2 privacy plaintext-key ********
     - set service snmp v3 view default oid 1
     - set service snmp location \'RDU\'
 
@@ -70,18 +70,18 @@ overridden:
           view: "default"
       users:
         - authentication:
-            plaintext_key: "abc1234567"
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "sha"
           group: "default"
           privacy:
-            plaintext_key: "abc1234567"
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "aes"
           user: "admin_user"
         - authentication:
-            plaintext_key: "opq1234567"
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "sha"
           privacy:
-            plaintext_key: "opq1234567"
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "aes"
           user: "guest_user2"
       views:
@@ -118,11 +118,11 @@ parsed:
           view: "default"
       users:
         - authentication:
-            plaintext_key: "vyos12345678"
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "sha"
           group: "default"
           privacy:
-            plaintext_key: "vyos12345678"
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "aes"
           user: "vyos"
       views:
