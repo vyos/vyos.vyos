@@ -22,7 +22,7 @@
               port: 33
           snmp_v3:
             users:
-              - user: admin_user
+              - user: adminuser
                 authentication:
                   plaintext_key: "abc1234567"
                   type: "sha"

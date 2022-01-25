@@ -7,10 +7,10 @@ merged:
     - set service snmp community bridges client 12.1.1.10
     - set service snmp listen-address 20.1.1.1
     - set service snmp listen-address 100.1.2.1 port 33
-    - set service snmp v3 user admin_user auth type sha
-    - set service snmp v3 user admin_user auth plaintext-key ********
-    - set service snmp v3 user admin_user privacy type aes
-    - set service snmp v3 user admin_user privacy plaintext-key ********
+    - set service snmp v3 user adminuser auth type sha
+    - set service snmp v3 user adminuser auth plaintext-key ********
+    - set service snmp v3 user adminuser privacy type aes
+    - set service snmp v3 user adminuser privacy plaintext-key ********
     - set service snmp contact admin2@ex.com
   after:
     communities:
@@ -33,7 +33,7 @@ merged:
           privacy:
             plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "aes"
-          user: "admin_user"
+          user: "adminuser"
 
 overridden:
   commands:
@@ -44,12 +44,10 @@ overridden:
     - delete service snmp community bridges client 1.1.1.1
     - set service snmp community bridges network 1.1.1.0/24
     - set service snmp community bridges network 12.1.1.0/24
-    - set service snmp v3 group default view default
-    - set service snmp v3 user admin_user group default
-    - set service snmp v3 user guest_user2 auth type sha
-    - set service snmp v3 user guest_user2 auth plaintext-key ********
-    - set service snmp v3 user guest_user2 privacy type aes
-    - set service snmp v3 user guest_user2 privacy plaintext-key ********
+    - set service snmp v3 user guestuser2 auth type sha
+    - set service snmp v3 user guestuser2 auth plaintext-key ********
+    - set service snmp v3 user guestuser2 privacy type aes
+    - set service snmp v3 user guestuser2 privacy plaintext-key ********
     - set service snmp v3 view default oid 1
     - set service snmp location \'RDU\'
 
@@ -65,25 +63,21 @@ overridden:
         port: 33
     location: "RDU, NC"
     snmp_v3:
-      groups:
-        - group: "default"
-          view: "default"
       users:
         - authentication:
             plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "sha"
-          group: "default"
           privacy:
             plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "aes"
-          user: "admin_user"
+          user: "adminuser"
         - authentication:
             plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "sha"
           privacy:
             plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
             type: "aes"
-          user: "guest_user2"
+          user: "guestuser2"
       views:
         - oid: 1
           view: "default"

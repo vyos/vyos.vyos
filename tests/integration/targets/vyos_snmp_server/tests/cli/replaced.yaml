@@ -9,7 +9,7 @@
 
 - block:
 
-    - name: Override the existing configuration with the provided running configuration
+    - name: Replace the existing configuration with the provided running configuration
       register: result
       vyos.vyos.vyos_snmp_server: &id001
         config:
@@ -21,19 +21,16 @@
             - address: "100.1.2.1"
               port: 33
           snmp_v3:
-            groups:
-              - group: "default"
-                view: "default"
             users:
-              - user: admin_user
+              - user: adminuser
+                engine_id: "33"
                 authentication:
                   plaintext_key: "abc1234567"
                   type: "sha"
                 privacy:
                   plaintext_key: "abc1234567"
                   type: "aes"
-                group: "default"
-              - user: guest_user2
+              - user: guestuser2
                 authentication:
                   plaintext_key: "opq1234567"
                   type: "sha"
@@ -52,10 +49,10 @@
         that:
           - result.changed == true
           - result.after == ansible_facts['network_resources']['snmp_server']
-          - result.commands|length == 15
+          - result.commands|length == 13
 
 
-    - name: Override the existing configuration with the provided running configuration
+    - name: Replace the existing configuration with the provided running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_snmp_server: *id001
