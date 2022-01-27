@@ -1063,17 +1063,19 @@ commands:
   returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
   type: list
   sample:
-    - sample command 1
-    - sample command 2
-    - sample command 3
+     set service snmp community routers authorization 'ro'
+     set service snmp community routers client '203.0.113.10'
+     set service snmp community routers client '203.0.113.20'
+     set service snmp community routers network '192.0.2.0/24'
 rendered:
   description: The provided configuration in the task rendered in device-native format (offline).
   returned: when I(state) is C(rendered)
   type: list
   sample:
-    - sample command 1
-    - sample command 2
-    - sample command 3
+     set service snmp community routers authorization 'ro'
+     set service snmp community routers client '203.0.113.10'
+     set service snmp community routers client '203.0.113.20'
+     set service snmp community routers network '192.0.2.0/24'
 gathered:
   description: Facts about the network resource gathered from the remote device as structured data.
   returned: when I(state) is C(gathered)

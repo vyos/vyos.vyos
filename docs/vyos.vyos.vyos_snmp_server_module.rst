@@ -1233,7 +1233,7 @@ Examples
     # Before State:
 
     # vyos@vyos:~$ show configuration commands | grep snmp
-    # vyos@vyos:~$ 
+    # vyos@vyos:~$
 
       - name: Merge provided configuration with device configuration
         vyos.vyos.vyos_snmp_server:
@@ -1273,10 +1273,10 @@ Examples
     # set service snmp v3 user admin_user auth type 'sha'
     # set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
     # set service snmp v3 user admin_user privacy type 'aes'
-    # vyos@vyos:~$ 
-    # 
+    # vyos@vyos:~$
+    #
     # Module Execution:
-    # 
+    #
     # "after": {
     #         "communities": [
     #             {
@@ -1331,7 +1331,7 @@ Examples
     #         "set service snmp v3 user admin_user privacy plaintext-key ********",
     #         "set service snmp contact admin2@ex.com"
     #     ],
-    # 
+    #
 
     # using Replaced:
 
@@ -1347,7 +1347,7 @@ Examples
     # set service snmp v3 user admin_user auth type 'sha'
     # set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
     # set service snmp v3 user admin_user privacy type 'aes'
-    # vyos@vyos:~$ 
+    # vyos@vyos:~$
 
       - name: Replace
         vyos.vyos.vyos_snmp_server:
@@ -1403,9 +1403,9 @@ Examples
     # set service snmp v3 user guest_user2 privacy plaintext-key 'opq1234567'
     # set service snmp v3 user guest_user2 privacy type 'aes'
     # set service snmp v3 view default oid 1
-    # vyos@vyos:~$ 
-    # 
-    # 
+    # vyos@vyos:~$
+    #
+    #
     # Module Execution:
     # "after": {
     #         "communities": [
@@ -1539,7 +1539,7 @@ Examples
     # set service snmp v3 user admin_user auth type 'sha'
     # set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
     # set service snmp v3 user admin_user privacy type 'aes'
-    # vyos@vyos:~$ 
+    # vyos@vyos:~$
 
       - name: Override config
         vyos.vyos.vyos_snmp_server:
@@ -1595,9 +1595,9 @@ Examples
     # set service snmp v3 user guest_user2 privacy plaintext-key 'opq1234567'
     # set service snmp v3 user guest_user2 privacy type 'aes'
     # set service snmp v3 view default oid 1
-    # vyos@vyos:~$ 
-    # 
-    # 
+    # vyos@vyos:~$
+    #
+    #
     # Module Execution:
     # "after": {
     #         "communities": [
@@ -1738,7 +1738,7 @@ Examples
     # set service snmp v3 user guest_user2 privacy plaintext-key 'opq1234567'
     # set service snmp v3 user guest_user2 privacy type 'aes'
     # set service snmp v3 view default oid 1
-    # vyos@vyos:~$ 
+    # vyos@vyos:~$
 
       - name: Delete Config
         vyos.vyos.vyos_snmp_server:
@@ -1747,7 +1747,7 @@ Examples
     # After State:
     # vyos@vyos:~$ show configuration commands | grep snmp
     # vyos@vyos:~$
-    # 
+    #
     # Module Execution:
     # "after": {},
     #     "before": {
@@ -1870,7 +1870,7 @@ Examples
     # set service snmp v3 user admin_user auth type 'sha'
     # set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
     # set service snmp v3 user admin_user privacy type 'aes'
-    # vyos@vyos:~$ 
+    # vyos@vyos:~$
 
       - name: gather configs
         vyos.vyos.vyos_snmp_server:
@@ -2071,7 +2071,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The set of commands pushed to the remote device.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;sample command 1&#x27;, &#x27;sample command 2&#x27;, &#x27;sample command 3&#x27;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">set service snmp community routers authorization &#x27;ro&#x27; set service snmp community routers client &#x27;203.0.113.10&#x27; set service snmp community routers client &#x27;203.0.113.20&#x27; set service snmp community routers network &#x27;192.0.2.0/24&#x27;</div>
                 </td>
             </tr>
             <tr>
@@ -2122,7 +2122,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The provided configuration in the task rendered in device-native format (offline).</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;sample command 1&#x27;, &#x27;sample command 2&#x27;, &#x27;sample command 3&#x27;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">set service snmp community routers authorization &#x27;ro&#x27; set service snmp community routers client &#x27;203.0.113.10&#x27; set service snmp community routers client &#x27;203.0.113.20&#x27; set service snmp community routers network &#x27;192.0.2.0/24&#x27;</div>
                 </td>
             </tr>
     </table>
