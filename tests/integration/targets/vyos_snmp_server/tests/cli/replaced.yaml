@@ -1,0 +1,67 @@
+---
+- debug:
+    msg: START vyos_snmp_server replaced integration tests on connection={{
+      ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+
+    - name: Replace the existing configuration with the provided running configuration
+      register: result
+      vyos.vyos.vyos_snmp_server: &id001
+        config:
+          communities:
+            - name: "bridges"
+              networks: ["1.1.1.0/24", "12.1.1.0/24"]
+          location: "RDU"
+          listen_addresses:
+            - address: "100.1.2.1"
+              port: 33
+          snmp_v3:
+            users:
+              - user: adminuser
+                engine_id: "33"
+                authentication:
+                  plaintext_key: "abc1234567"
+                  type: "sha"
+                privacy:
+                  plaintext_key: "abc1234567"
+                  type: "aes"
+              - user: guestuser2
+                authentication:
+                  plaintext_key: "opq1234567"
+                  type: "sha"
+                privacy:
+                  plaintext_key: "opq1234567"
+                  type: "aes"
+            views:
+              - view: "default"
+                oid: 1
+        state: replaced
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: snmp_server
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.after == ansible_facts['network_resources']['snmp_server']
+          - result.commands|length == 13
+
+
+    - name: Replace the existing configuration with the provided running configuration
+        (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_snmp_server: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+
+    - include_tasks: _remove_config.yaml

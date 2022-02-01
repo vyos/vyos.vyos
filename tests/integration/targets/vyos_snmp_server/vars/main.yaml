@@ -1,0 +1,126 @@
+---
+merged:
+  before: {}
+  commands:
+    - set service snmp community switches authorization rw
+    - set service snmp community bridges client 1.1.1.1
+    - set service snmp community bridges client 12.1.1.10
+    - set service snmp listen-address 20.1.1.1
+    - set service snmp listen-address 100.1.2.1 port 33
+    - set service snmp v3 user adminuser auth type sha
+    - set service snmp v3 user adminuser auth plaintext-key ********
+    - set service snmp v3 user adminuser privacy type aes
+    - set service snmp v3 user adminuser privacy plaintext-key ********
+    - set service snmp contact admin2@ex.com
+  after:
+    communities:
+      - clients:
+          - 1.1.1.1
+          - 12.1.1.10
+        name: "bridges"
+      - authorization_type: "rw"
+        name: "switches"
+    contact: "admin2@ex.com"
+    listen_addresses:
+      - address: "100.1.2.1"
+        port: 33
+      - address: "20.1.1.1"
+    snmp_v3:
+      users:
+        - authentication:
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
+            type: "sha"
+          privacy:
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
+            type: "aes"
+          user: "adminuser"
+
+overridden:
+  commands:
+    - delete service snmp contact admin2@ex.com
+    - delete service snmp listen-address 20.1.1.1
+    - delete service snmp community switches authorization rw
+    - delete service snmp community bridges client 12.1.1.10
+    - delete service snmp community bridges client 1.1.1.1
+    - set service snmp community bridges network 1.1.1.0/24
+    - set service snmp community bridges network 12.1.1.0/24
+    - set service snmp v3 user guestuser2 auth type sha
+    - set service snmp v3 user guestuser2 auth plaintext-key ********
+    - set service snmp v3 user guestuser2 privacy type aes
+    - set service snmp v3 user guestuser2 privacy plaintext-key ********
+    - set service snmp v3 view default oid 1
+    - set service snmp location \'RDU\'
+
+  after:
+    communities:
+      - name: "bridges"
+        networks:
+          - "1.1.1.0/24"
+          - "12.1.1.0/24"
+      - name: "switches"
+    listen_addresses:
+      - address: "100.1.2.1"
+        port: 33
+    location: "RDU, NC"
+    snmp_v3:
+      users:
+        - authentication:
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
+            type: "sha"
+          privacy:
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
+            type: "aes"
+          user: "adminuser"
+        - authentication:
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
+            type: "sha"
+          privacy:
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
+            type: "aes"
+          user: "guestuser2"
+      views:
+        - oid: 1
+          view: "default"
+
+deleted:
+  commands:
+    - delete service snmp
+  after: {}
+
+parsed:
+  after:
+    communities:
+      - authorization_type: "ro"
+        clients:
+          - 203.0.113.10
+          - 203.0.113.20
+        name: "routers"
+        networks:
+          - 192.0.2.0/24
+          - 2001::/64
+    contact: "admin@example.com"
+    listen_addresses:
+      - address: "172.16.254.36"
+        port: 161
+      - address: "2001::1"
+    location: "UK, London"
+    snmp_v3:
+      engine_id: "000000000000000000000002"
+      groups:
+        - group: "default"
+          mode: "ro"
+          view: "default"
+      users:
+        - authentication:
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
+            type: "sha"
+          group: "default"
+          privacy:
+            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
+            type: "aes"
+          user: "vyos"
+      views:
+        - oid: "1"
+          view: "default"
+    trap_target:
+      address: "203.0.113.10"
