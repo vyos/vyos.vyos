@@ -115,9 +115,9 @@ Parameters
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
                                     <li>noselect</li>
                                     <li>dynamic</li>
+                                    <li>pool</li>
                                     <li>preempt</li>
                                     <li>prefer</li>
-                                    <li>pool</li>
                         </ul>
                 </td>
                 <td>

@@ -316,3 +316,19 @@ releases:
     - support_ipv6_address_and_network_groups.yaml
     - vyos_ntp.yml
     release_date: '2021-10-02'
+  2.7.0:
+    changes:
+      major_changes:
+      - Add 'pool' as value to server key in ntp_global.
+      minor_changes:
+      - Add vyos_snmp_server resource module.
+    fragments:
+    - add_snmp_server_resource_module.yaml
+    - ntp_server_add_pool.yaml
+    - remove-swap-file.yml
+    - sanity_issue_fix.yaml
+    modules:
+    - description: Manages snmp_server resource module
+      name: vyos_snmp_server
+      namespace: ''
+    release_date: '2022-01-31'

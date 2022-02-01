@@ -5,6 +5,24 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.7.0
+======
+
+Major Changes
+-------------
+
+- Add 'pool' as value to server key in ntp_global.
+
+Minor Changes
+-------------
+
+- Add vyos_snmp_server resource module.
+
+New Modules
+-----------
+
+- vyos_snmp_server - Manages snmp_server resource module
+
 v2.6.0
 ======
 
