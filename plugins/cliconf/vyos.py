@@ -54,7 +54,9 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.c
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     to_list,
 )
-from ansible.plugins.cliconf import CliconfBase
+from ansible_collections.ansible.netcommon.plugins.plugin_utils.cliconf_base import (
+    CliconfBase,
+)
 
 
 class Cliconf(CliconfBase):
