@@ -100,7 +100,8 @@ class Firewall_rulesFacts(object):
         r_v4 = []
         r_v6 = []
         for r in set(rules):
-            rule_regex = r" %s .+$" % r.strip("'")
+            name_key = "ipv6-name" if type == "ipv6" else "name"
+            rule_regex = r" %s %s .+$" % (name_key, r.strip("'"))
             cfg = findall(rule_regex, data, M)
             fr = self.render_config(cfg, r.strip("'"))
             fr["name"] = r.strip("'")
