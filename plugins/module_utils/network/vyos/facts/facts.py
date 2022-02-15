@@ -70,6 +70,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ntp_g
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.snmp_server.snmp_server import (
     Snmp_serverFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.hostname.hostname import (
+    HostnameFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
     Default,
     Neighbors,
@@ -98,6 +101,7 @@ FACT_RESOURCE_SUBSETS = dict(
     logging_global=Logging_globalFacts,
     ntp_global=Ntp_globalFacts,
     snmp_server=Snmp_serverFacts,
+    hostname=HostnameFacts,
 )
 
 

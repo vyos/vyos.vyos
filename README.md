@@ -41,6 +41,7 @@ Name | Description
 [vyos.vyos.vyos_firewall_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_global_module.rst)|FIREWALL global resource module
 [vyos.vyos.vyos_firewall_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_interfaces_module.rst)|FIREWALL interfaces resource module
 [vyos.vyos.vyos_firewall_rules](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_rules_module.rst)|FIREWALL rules resource module
+[vyos.vyos.vyos_hostname](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_hostname_module.rst)|Manages hostname resource module
 [vyos.vyos.vyos_interface](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_interface_module.rst)|(deprecated, removed after 2022-06-01) Manage Interface on VyOS network devices
 [vyos.vyos.vyos_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_interfaces_module.rst)|Interfaces resource module
 [vyos.vyos.vyos_l3_interface](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_l3_interface_module.rst)|(deprecated, removed after 2022-06-01) Manage L3 interfaces on VyOS network devices
