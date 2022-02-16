@@ -5,6 +5,8 @@
 
 - include_tasks: _remove_config.yaml
 
+- include_tasks: _populate_config.yaml
+
 - block:
     - name: Replace the provided configuration with the existing running configuration
       register: result
@@ -24,11 +26,6 @@
           - result.after == ansible_facts['network_resources']['hostname']
           - result.after == merged.after
 
-
-    - name: Assert that before dicts were correctly generated
-      assert:
-        that:
-          - result.before == {}
 
     - name:
         Replace the provided configuration with the existing running configuration

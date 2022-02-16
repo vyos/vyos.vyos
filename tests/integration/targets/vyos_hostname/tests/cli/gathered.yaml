@@ -22,3 +22,7 @@
         that:
           - result.changed == false
           - result.gathered == ansible_facts['network_resources']['hostname']
+
+  always:
+
+      - include_tasks: _remove_config.yaml
