@@ -38,6 +38,10 @@ plugin_routing:
       redirect: vyos.vyos.vyos
     firewall_rules:
       redirect: vyos.vyos.vyos
+    vyos_hostname:
+      redirect: vyos.vyos.vyos
+    hostname:
+      redirect: vyos.vyos.vyos
     vyos_interface:
       redirect: vyos.vyos.vyos
     interface:
@@ -153,6 +157,8 @@ plugin_routing:
       redirect: vyos.vyos.vyos_firewall_interfaces
     firewall_rules:
       redirect: vyos.vyos.vyos_firewall_rules
+    hostname:
+      redirect: vyos.vyos.vyos_hostname
     interface:
       redirect: vyos.vyos.vyos_interface
       deprecation:
