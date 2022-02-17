@@ -218,6 +218,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         action="accept",
                                         description="Rule 101 is configured by Ansible",
                                         ipsec="match-ipsec",
+                                        log="disable",
                                         protocol="icmp",
                                         fragment="match-frag",
                                         disabled=True,
@@ -241,6 +242,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall name INBOUND rule 101 disabled",
             "set firewall name INBOUND rule 101 action 'accept'",
             "set firewall name INBOUND rule 101 ipsec 'match-ipsec'",
+            "set firewall name INBOUND rule 101 log 'disable'",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -1016,6 +1018,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         action="reject",
                                         description="Rule 1 is configured by Ansible RM",
                                         ipsec="match-ipsec",
+                                        log="enable",
                                         protocol="tcp",
                                         fragment="match-frag",
                                         disabled=False,
@@ -1066,6 +1069,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall name V4-IN description 'This is IPv4 INGRESS rule set'",
             "set firewall name V4-IN enable-default-log",
             "set firewall name V4-IN rule 1 protocol 'tcp'",
+            "set firewall name V4-IN rule 1 log 'enable'",
             "set firewall name V4-IN rule 1 description 'Rule 1 is configured by Ansible RM'",
             "set firewall name V4-IN rule 1 fragment 'match-frag'",
             "set firewall name V4-IN rule 1 source group address-group IN-ADDR-GROUP",

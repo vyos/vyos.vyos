@@ -220,6 +220,13 @@ options:
                 choices:
                 - match-ipsec
                 - match-none
+              log:
+                description:
+                - Option to log packets matching rule
+                type: str
+                choices:
+                - disable
+                - enable
               limit:
                 description:
                 - Rate limit using a token bucket filter.

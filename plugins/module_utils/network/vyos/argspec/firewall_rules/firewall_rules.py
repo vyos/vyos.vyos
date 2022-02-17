@@ -164,6 +164,10 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     },
                                     "type": "dict",
                                 },
+                                "log": {
+                                    "type": "str",
+                                    "choices": ["enable", "disable"],
+                                },
                                 "number": {"required": True, "type": "int"},
                                 "p2p": {
                                     "elements": "dict",
