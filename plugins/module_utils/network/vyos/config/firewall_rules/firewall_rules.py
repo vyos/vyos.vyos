@@ -356,6 +356,7 @@ class Firewall_rules(ConfigBase):
             "fragment",
             "disabled",
             "description",
+            "log",
         )
         if w_rules:
             for w in w_rules:
@@ -1022,6 +1023,7 @@ class Firewall_rules(ConfigBase):
         r_set = (
             "p2p",
             "ipsec",
+            "log",
             "action",
             "fragment",
             "protocol",

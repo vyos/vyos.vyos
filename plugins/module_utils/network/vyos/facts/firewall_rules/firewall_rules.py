@@ -163,6 +163,7 @@ class Firewall_rulesFacts(object):
         """
         a_lst = [
             "ipsec",
+            "log",
             "action",
             "protocol",
             "fragment",
