@@ -375,7 +375,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>disabled</b>
+                    <b>disable</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">boolean</span>
@@ -389,6 +389,7 @@ Parameters
                 </td>
                 <td>
                         <div>Option to disable firewall rule.</div>
+                        <div style="font-size: small; color: darkgreen"><br/>aliases: disabled</div>
                 </td>
             </tr>
             <tr>
@@ -653,6 +654,28 @@ Parameters
             </tr>
 
 
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>log</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>disable</li>
+                                    <li>enable</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Option to log packets matching rule</div>
+                </td>
+            </tr>
             <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>

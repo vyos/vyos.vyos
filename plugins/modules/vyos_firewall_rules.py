@@ -144,10 +144,11 @@ options:
                     - The whole list can also be "negated" using '!'.
                     - For example:'!22,telnet,http,123,1001-1005'.
                     type: str
-              disabled:
+              disable:
                 description:
                 - Option to disable firewall rule.
                 type: bool
+                aliases: ["disabled"]
               fragment:
                 description:
                 - IP fragment match.
