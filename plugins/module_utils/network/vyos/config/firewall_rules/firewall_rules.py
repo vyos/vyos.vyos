@@ -924,7 +924,7 @@ class Firewall_rules(ConfigBase):
             value
             and opr
             and attrib != "enable_default_log"
-            and attrib not in ["disable", "disabled"]
+            and attrib != "disable"
         ):
             cmd += " '" + str(value) + "'"
         return cmd
