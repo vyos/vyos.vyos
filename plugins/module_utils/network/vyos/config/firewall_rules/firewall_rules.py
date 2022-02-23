@@ -358,7 +358,7 @@ class Firewall_rules(ConfigBase):
             "number",
             "protocol",
             "fragment",
-            "disabled",
+            "disable",
             "description",
             "log",
         )
@@ -375,7 +375,7 @@ class Firewall_rules(ConfigBase):
                             and key in l_set
                             and not (h and self._is_w_same(w, h, key))
                         ):
-                            if key == "disabled":
+                            if key == "disable":
                                 if not (
                                     not val
                                     and (not h or key not in h or not h[key])
@@ -398,7 +398,7 @@ class Firewall_rules(ConfigBase):
                                 )
                                 continue
                             if (
-                                key == "disabled"
+                                key == "disable"
                                 and val
                                 and h
                                 and (key not in h or not h[key])
@@ -924,7 +924,7 @@ class Firewall_rules(ConfigBase):
             value
             and opr
             and attrib != "enable_default_log"
-            and attrib != "disabled"
+            and attrib not in ["disable", "disabled"]
         ):
             cmd += " '" + str(value) + "'"
         return cmd
@@ -1033,7 +1033,7 @@ class Firewall_rules(ConfigBase):
             "action",
             "fragment",
             "protocol",
-            "disabled",
+            "disable",
             "description",
             "mac_address",
             "default_action",
