@@ -265,9 +265,6 @@ class Firewall_rulesFacts(object):
         """
         a_lst = ["new", "invalid", "related", "established"]
         cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
-        import q
-
-        q(conf, cfg_dict)
         return cfg_dict
 
     def parse_group(self, conf, attrib=None):
