@@ -772,7 +772,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 description="This rule-set is configured by Ansible RM",
                             ),
                             dict(
-                                name="V6-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                                 description="This rule-set is configured by Ansible RM",
                                 rules=[
@@ -800,7 +800,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall name V4-INGRESS rule 102 description 'Rule 102 is configured by Ansible RM'",
             "set firewall name V4-INGRESS rule 102",
             "set firewall ipv6-name V6-INGRESS description 'This rule-set is configured by Ansible RM'",
-            "set firewall ipv6-name V6-EGRESS description 'This rule-set is configured by Ansible RM'",
+            "set firewall ipv6-name EGRESS description 'This rule-set is configured by Ansible RM'",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -838,7 +838,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 default_action="accept",
                             ),
                             dict(
-                                name="V6-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                                 rules=[
                                     dict(
@@ -883,7 +883,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 ],
                             ),
                             dict(
-                                name="V4-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                             ),
                         ],
@@ -896,7 +896,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 default_action="accept",
                             ),
                             dict(
-                                name="V6-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                                 rules=[
                                     dict(
@@ -970,7 +970,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 ],
                             ),
                             dict(
-                                name="V4-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                             ),
                         ],
@@ -983,7 +983,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 default_action="accept",
                             ),
                             dict(
-                                name="V6-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                                 rules=[
                                     dict(
@@ -1062,9 +1062,9 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         )
         commands = [
             "delete firewall ipv6-name V6-INGRESS",
-            "delete firewall ipv6-name V6-EGRESS",
+            "delete firewall ipv6-name EGRESS",
             "delete firewall name V4-INGRESS",
-            "delete firewall name V4-EGRESS",
+            "delete firewall name EGRESS",
             "set firewall name V4-IN default-action 'accept'",
             "set firewall name V4-IN description 'This is IPv4 INGRESS rule set'",
             "set firewall name V4-IN enable-default-log",
@@ -1115,7 +1115,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 ],
                             ),
                             dict(
-                                name="V4-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                             ),
                         ],
@@ -1128,7 +1128,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 default_action="accept",
                             ),
                             dict(
-                                name="V6-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                                 rules=[
                                     dict(
