@@ -1,5 +1,0 @@
----
-minor_changes:
-  - Update vyos_facts to support IPv4 and IPv6 rule sets having the same name
-  - Update vyos_firewall_rules to support IPv4 and IPv6 rule sets having the same name
-  - Rename V4-EGRESS/V6-EGRESS to EGRESS in the tests to test the same-name situation

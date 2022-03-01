@@ -332,3 +332,23 @@ releases:
       name: vyos_snmp_server
       namespace: ''
     release_date: '2022-01-31'
+  2.8.0:
+    changes:
+      minor_changes:
+      - Add vyos_hostname resource module.
+      - Rename V4-EGRESS/V6-EGRESS to EGRESS in the tests to test the same-name situation
+      - Update vyos_facts to support IPv4 and IPv6 rule sets having the same name
+      - Update vyos_firewall_rules to support IPv4 and IPv6 rule sets having the same
+        name
+      - vyos_firewall_rules - Add support for log enable on individual rules
+      - vyos_firewall_rules - fixed incorrect option 'disabled' passed to the rules.
+    fragments:
+    - rule_set_same_name.yaml
+    - vyos_firewall_rules_add_log.yaml
+    - vyos_firewall_rules_fix_rules_disable.yaml
+    - vyos_hostname_rm.yaml
+    modules:
+    - description: Manages hostname resource module
+      name: vyos_hostname
+      namespace: ''
+    release_date: '2022-03-01'

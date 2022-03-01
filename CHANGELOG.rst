@@ -5,6 +5,24 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v2.8.0
+======
+
+Minor Changes
+-------------
+
+- Add vyos_hostname resource module.
+- Rename V4-EGRESS/V6-EGRESS to EGRESS in the tests to test the same-name situation
+- Update vyos_facts to support IPv4 and IPv6 rule sets having the same name
+- Update vyos_firewall_rules to support IPv4 and IPv6 rule sets having the same name
+- vyos_firewall_rules - Add support for log enable on individual rules
+- vyos_firewall_rules - fixed incorrect option 'disabled' passed to the rules.
+
+New Modules
+-----------
+
+- vyos_hostname - Manages hostname resource module
+
 v2.7.0
 ======
 
