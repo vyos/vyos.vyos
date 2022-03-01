@@ -1,3 +1,0 @@
----
-minor_changes:
-  - vyos_firewall_rules - fixed incorrect option 'disabled' passed to the rules.
