@@ -17,10 +17,12 @@ merged:
     - set firewall name INBOUND default-action 'accept'
     - set firewall name INBOUND description 'IPv4 INBOUND rule set'
     - set firewall name INBOUND rule 101 action 'accept'
+    - set firewall name INBOUND rule 101 disable
     - set firewall name INBOUND rule 101
     - set firewall name INBOUND rule 101 description 'Rule 101 is configured by Ansible'
     - set firewall name INBOUND rule 101 ipsec 'match-ipsec'
     - set firewall name INBOUND rule 102 action 'reject'
+    - set firewall name INBOUND rule 102 disable
     - set firewall name INBOUND rule 102
     - set firewall name INBOUND rule 102 description 'Rule 102 is configured by Ansible'
     - set firewall name INBOUND rule 102 ipsec 'match-ipsec'
@@ -58,8 +60,10 @@ merged:
               action: accept
               description: Rule 101 is configured by Ansible
               ipsec: match-ipsec
+              disable: true
             - number: 102
               action: reject
+              disable: true
               description: Rule 102 is configured by Ansible
               ipsec: match-ipsec
             - number: 103

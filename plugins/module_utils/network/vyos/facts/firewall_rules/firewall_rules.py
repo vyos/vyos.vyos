@@ -168,7 +168,7 @@ class Firewall_rulesFacts(object):
             "action",
             "protocol",
             "fragment",
-            "disabled",
+            "disable",
             "description",
             "icmp",
         ]
@@ -341,10 +341,14 @@ class Firewall_rulesFacts(object):
                             config[attrib] = True
                 else:
                     out = search(r"^.*" + regex + " (.+)", conf, M)
+                    if not out and attrib == "disable":
+                        out = search(r"^.*\d+" + " ('disable'$)", conf, M)
                     if out:
                         val = out.group(1).strip("'")
                         if self.is_num(attrib):
                             val = int(val)
+                        if attrib == "disable":
+                            val = True
                         config[attrib] = val
         return config
 
