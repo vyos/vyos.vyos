@@ -1,4 +1,3 @@
-#
 # (c) 2017 Red Hat Inc.
 #
 # This file is part of Ansible
@@ -21,8 +20,8 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 DOCUMENTATION = """
-author: Ansible Networking Team
-cliconf: vyos
+author: Ansible Networking Team (@ansible-network)
+name: vyos
 short_description: Use vyos cliconf to run command on VyOS platform
 description:
 - This vyos plugin provides low level abstraction apis for sending and receiving CLI
