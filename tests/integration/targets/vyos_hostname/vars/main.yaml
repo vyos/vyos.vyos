@@ -8,5 +8,5 @@ merged:
 
 deleted:
   commands:
-    - delete system host-name vyos
+    - delete system host-name vyosuser
   after: {}

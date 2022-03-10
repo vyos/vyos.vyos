@@ -1,8 +1,8 @@
 ---
-- name: Remove pre-existing hostname config
-  vyos.vyos.vyos_hostname:
-    config:
-    state: deleted
+- name: Delete Hostname vyosuser
+  vyos.vyos.vyos_config:
+    lines:
+      - delete system host-name 'vyosuser'
   ignore_errors: true
   vars:
     ansible_connection: ansible.netcommon.network_cli
