@@ -36,6 +36,7 @@ options:
       to the device is present in this list, the existing cache is invalidated.
     version_added: 2.0.0
     type: list
+    elements: str
     default: []
     vars:
     - name: ansible_vyos_config_commands
