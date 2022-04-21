@@ -100,7 +100,8 @@ class Firewall_rulesFacts(object):
         r_v4 = []
         r_v6 = []
         for r in set(rules):
-            rule_regex = r" %s .+$" % r.strip("'")
+            name_key = "ipv6-name" if type == "ipv6" else "name"
+            rule_regex = r" %s %s .+$" % (name_key, r.strip("'"))
             cfg = findall(rule_regex, data, M)
             fr = self.render_config(cfg, r.strip("'"))
             fr["name"] = r.strip("'")
@@ -163,10 +164,11 @@ class Firewall_rulesFacts(object):
         """
         a_lst = [
             "ipsec",
+            "log",
             "action",
             "protocol",
             "fragment",
-            "disabled",
+            "disable",
             "description",
             "icmp",
         ]
@@ -339,10 +341,14 @@ class Firewall_rulesFacts(object):
                             config[attrib] = True
                 else:
                     out = search(r"^.*" + regex + " (.+)", conf, M)
+                    if not out and attrib == "disable":
+                        out = search(r"^.*\d+" + " ('disable'$)", conf, M)
                     if out:
                         val = out.group(1).strip("'")
                         if self.is_num(attrib):
                             val = int(val)
+                        if attrib == "disable":
+                            val = True
                         config[attrib] = val
         return config
 

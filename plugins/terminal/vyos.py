@@ -32,28 +32,28 @@ from ansible_collections.ansible.netcommon.plugins.plugin_utils.terminal_base im
 class TerminalModule(TerminalBase):
 
     terminal_stdout_re = [
-        re.compile(br"[\r\n]?[\w+\-\.:\/\[\]]+(?:\([^\)]+\)){,3}(?:>|#) ?$"),
-        re.compile(br"\@[\w\-\.]+:\S+?[>#\$] ?$"),
+        re.compile(rb"[\r\n]?[\w+\-\.:\/\[\]]+(?:\([^\)]+\)){,3}(?:>|#) ?$"),
+        re.compile(rb"\@[\w\-\.]+:\S+?[>#\$] ?$"),
     ]
 
     terminal_stderr_re = [
-        re.compile(br"\n\s*Invalid command:"),
-        re.compile(br"\nCommit failed"),
-        re.compile(br"\n\s+Set failed"),
-        re.compile(br"\n\s+Delete failed"),
+        re.compile(rb"\n\s*Invalid command:"),
+        re.compile(rb"\nCommit failed"),
+        re.compile(rb"\n\s+Set failed"),
+        re.compile(rb"\n\s+Delete failed"),
     ]
 
     ansi_re = TerminalBase.ansi_re + [
         # Color codes
-        re.compile(br"\x1b\[(\d+(;\d+)*)?m"),
+        re.compile(rb"\x1b\[(\d+(;\d+)*)?m"),
         # Clear line (CSI K)
-        re.compile(br"\x1b\[K"),
+        re.compile(rb"\x1b\[K"),
         # Xterm change cursor mode (CSI ? 1 [h|l])
-        re.compile(br"\x1b\[\?1(h|l)"),
+        re.compile(rb"\x1b\[\?1(h|l)"),
         # Xterm change keypad (ESC [=|>])
-        re.compile(br"\x1b(=|>)"),
+        re.compile(rb"\x1b(=|>)"),
         # Xterm window title string (OSC <title string> BEL)
-        re.compile(br"\x1b]0;[^\x07]*\x07"),
+        re.compile(rb"\x1b]0;[^\x07]*\x07"),
     ]
 
     terminal_config_prompt = re.compile(r"^.+#$")

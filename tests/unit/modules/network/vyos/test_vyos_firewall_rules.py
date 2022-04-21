@@ -218,9 +218,10 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         action="accept",
                                         description="Rule 101 is configured by Ansible",
                                         ipsec="match-ipsec",
+                                        log="disable",
                                         protocol="icmp",
                                         fragment="match-frag",
-                                        disabled=True,
+                                        disable=True,
                                     )
                                 ],
                             ),
@@ -238,9 +239,10 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
             "set firewall name INBOUND rule 101 fragment 'match-frag'",
             "set firewall name INBOUND rule 101",
-            "set firewall name INBOUND rule 101 disabled",
+            "set firewall name INBOUND rule 101 disable",
             "set firewall name INBOUND rule 101 action 'accept'",
             "set firewall name INBOUND rule 101 ipsec 'match-ipsec'",
+            "set firewall name INBOUND rule 101 log 'disable'",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -433,7 +435,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall ipv6-name INBOUND rule 101 protocol 'icmp'",
             "set firewall ipv6-name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
             "set firewall ipv6-name INBOUND rule 101",
-            "set firewall ipv6-name INBOUND rule 101 disabled",
+            "set firewall ipv6-name INBOUND rule 101 disable",
             "set firewall ipv6-name INBOUND rule 101 action 'accept'",
             "set firewall ipv6-name INBOUND rule 101 ipsec 'match-ipsec'",
             "set firewall ipv6-name INBOUND rule 101 icmpv6 type echo-request",
@@ -770,7 +772,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 description="This rule-set is configured by Ansible RM",
                             ),
                             dict(
-                                name="V6-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                                 description="This rule-set is configured by Ansible RM",
                                 rules=[
@@ -787,18 +789,18 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             )
         )
         commands = [
-            "delete firewall name V4-INGRESS rule 101 disabled",
+            "delete firewall name V4-INGRESS rule 101 disable",
             "set firewall name V4-INGRESS description 'This is IPv4 INGRESS rule set'",
             "set firewall name V4-INGRESS rule 101 protocol 'tcp'",
             "set firewall name V4-INGRESS rule 101 description 'Rule 101 is configured by Ansible RM'",
             "set firewall name V4-INGRESS rule 101 action 'reject'",
-            "set firewall name V4-INGRESS rule 102 disabled",
+            "set firewall name V4-INGRESS rule 102 disable",
             "set firewall name V4-INGRESS rule 102 action 'accept'",
             "set firewall name V4-INGRESS rule 102 protocol 'icmp'",
             "set firewall name V4-INGRESS rule 102 description 'Rule 102 is configured by Ansible RM'",
             "set firewall name V4-INGRESS rule 102",
             "set firewall ipv6-name V6-INGRESS description 'This rule-set is configured by Ansible RM'",
-            "set firewall ipv6-name V6-EGRESS description 'This rule-set is configured by Ansible RM'",
+            "set firewall ipv6-name EGRESS description 'This rule-set is configured by Ansible RM'",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -836,7 +838,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 default_action="accept",
                             ),
                             dict(
-                                name="V6-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                                 rules=[
                                     dict(
@@ -881,7 +883,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 ],
                             ),
                             dict(
-                                name="V4-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                             ),
                         ],
@@ -894,7 +896,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 default_action="accept",
                             ),
                             dict(
-                                name="V6-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                                 rules=[
                                     dict(
@@ -968,7 +970,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 ],
                             ),
                             dict(
-                                name="V4-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                             ),
                         ],
@@ -981,7 +983,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 default_action="accept",
                             ),
                             dict(
-                                name="V6-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                                 rules=[
                                     dict(
@@ -1016,6 +1018,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         action="reject",
                                         description="Rule 1 is configured by Ansible RM",
                                         ipsec="match-ipsec",
+                                        log="enable",
                                         protocol="tcp",
                                         fragment="match-frag",
                                         disabled=False,
@@ -1059,13 +1062,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         )
         commands = [
             "delete firewall ipv6-name V6-INGRESS",
-            "delete firewall ipv6-name V6-EGRESS",
+            "delete firewall ipv6-name EGRESS",
             "delete firewall name V4-INGRESS",
-            "delete firewall name V4-EGRESS",
+            "delete firewall name EGRESS",
             "set firewall name V4-IN default-action 'accept'",
             "set firewall name V4-IN description 'This is IPv4 INGRESS rule set'",
             "set firewall name V4-IN enable-default-log",
             "set firewall name V4-IN rule 1 protocol 'tcp'",
+            "set firewall name V4-IN rule 1 log 'enable'",
             "set firewall name V4-IN rule 1 description 'Rule 1 is configured by Ansible RM'",
             "set firewall name V4-IN rule 1 fragment 'match-frag'",
             "set firewall name V4-IN rule 1 source group address-group IN-ADDR-GROUP",
@@ -1074,7 +1078,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall name V4-IN rule 1",
             "set firewall name V4-IN rule 1 action 'reject'",
             "set firewall name V4-IN rule 1 ipsec 'match-ipsec'",
-            "set firewall name V4-IN rule 2 disabled",
+            "set firewall name V4-IN rule 2 disable",
             "set firewall name V4-IN rule 2 action 'accept'",
             "set firewall name V4-IN rule 2 protocol 'icmp'",
             "set firewall name V4-IN rule 2 description 'Rule 102 is configured by Ansible RM'",
@@ -1111,7 +1115,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 ],
                             ),
                             dict(
-                                name="V4-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                             ),
                         ],
@@ -1124,7 +1128,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 default_action="accept",
                             ),
                             dict(
-                                name="V6-EGRESS",
+                                name="EGRESS",
                                 default_action="reject",
                                 rules=[
                                     dict(

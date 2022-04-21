@@ -39,11 +39,13 @@
                     action: accept
                     description: Rule 101 is configured by Ansible
                     ipsec: match-ipsec
+                    disabled: true
 
                   - number: 102
                     action: reject
                     description: Rule 102 is configured by Ansible
                     ipsec: match-ipsec
+                    disable: true
 
                   - number: 103
                     action: accept
@@ -60,6 +62,9 @@
                       related: true
         state: merged
 
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: firewall_rules
+
     - name: Assert that before dicts were correctly generated
       assert:
         that:
@@ -70,6 +75,12 @@
       assert:
         that:
           - "{{ merged['commands'] | symmetric_difference(result['commands']) |length\
+            \ == 0 }}"
+
+    - name: Assert that fact was correctly generated
+      assert:
+        that:
+          - "{{ merged['after'] | symmetric_difference(ansible_facts['network_resources']['firewall_rules']) |length\
             \ == 0 }}"
 
     - name: Assert that after dicts was correctly generated

@@ -176,7 +176,7 @@ class Firewall_rules(ConfigBase):
                     # already have (to be replaced by our desired
                     # configuration's rule set).
                     wanted_rule_set = self.search_r_sets_in_have(
-                        want, rs["name"], "r_list"
+                        want, rs["name"], "r_list", h["afi"]
                     )
                     if wanted_rule_set is not None:
                         # Remove the rules that we already have if the wanted
@@ -205,7 +205,9 @@ class Firewall_rules(ConfigBase):
             for h in have:
                 r_sets = self._get_r_sets(h)
                 for rs in r_sets:
-                    w = self.search_r_sets_in_have(want, rs["name"], "r_list")
+                    w = self.search_r_sets_in_have(
+                        want, rs["name"], "r_list", h["afi"]
+                    )
                     if not w:
                         commands.append(
                             self._compute_command(
@@ -230,7 +232,9 @@ class Firewall_rules(ConfigBase):
         for w in want:
             r_sets = self._get_r_sets(w)
             for rs in r_sets:
-                h = self.search_r_sets_in_have(have, rs["name"], "r_list")
+                h = self.search_r_sets_in_have(
+                    have, rs["name"], "r_list", w["afi"]
+                )
                 commands.extend(self._add_r_sets(w["afi"], rs, h))
         return commands
 
@@ -248,7 +252,7 @@ class Firewall_rules(ConfigBase):
                 if r_sets:
                     for rs in r_sets:
                         h = self.search_r_sets_in_have(
-                            have, rs["name"], "r_list"
+                            have, rs["name"], "r_list", w["afi"]
                         )
                         if h:
                             commands.append(
@@ -354,8 +358,9 @@ class Firewall_rules(ConfigBase):
             "number",
             "protocol",
             "fragment",
-            "disabled",
+            "disable",
             "description",
+            "log",
         )
         if w_rules:
             for w in w_rules:
@@ -370,7 +375,7 @@ class Firewall_rules(ConfigBase):
                             and key in l_set
                             and not (h and self._is_w_same(w, h, key))
                         ):
-                            if key == "disabled":
+                            if key == "disable":
                                 if not (
                                     not val
                                     and (not h or key not in h or not h[key])
@@ -393,7 +398,7 @@ class Firewall_rules(ConfigBase):
                                 )
                                 continue
                             if (
-                                key == "disabled"
+                                key == "disable"
                                 and val
                                 and h
                                 and (key not in h or not h[key])
@@ -841,12 +846,13 @@ class Firewall_rules(ConfigBase):
                             )
         return commands
 
-    def search_r_sets_in_have(self, have, w_name, type="rule_sets"):
+    def search_r_sets_in_have(self, have, w_name, type="rule_sets", afi=None):
         """
         This function  returns the rule-set/rule if it is present in target config.
         :param have: target config.
         :param w_name: rule-set name.
         :param type: rule_sets/rule/r_list.
+        :param afi: address family (when type is r_list).
         :return: rule-set/rule.
         """
         if have:
@@ -858,10 +864,11 @@ class Firewall_rules(ConfigBase):
                         return r
             elif type == "r_list":
                 for h in have:
-                    r_sets = self._get_r_sets(h)
-                    for rs in r_sets:
-                        if rs[key] == w_name:
-                            return rs
+                    if h["afi"] == afi:
+                        r_sets = self._get_r_sets(h)
+                        for rs in r_sets:
+                            if rs[key] == w_name:
+                                return rs
             else:
                 for rs in have:
                     if rs[key] == w_name:
@@ -917,7 +924,7 @@ class Firewall_rules(ConfigBase):
             value
             and opr
             and attrib != "enable_default_log"
-            and attrib != "disabled"
+            and attrib != "disable"
         ):
             cmd += " '" + str(value) + "'"
         return cmd
@@ -1022,10 +1029,11 @@ class Firewall_rules(ConfigBase):
         r_set = (
             "p2p",
             "ipsec",
+            "log",
             "action",
             "fragment",
             "protocol",
-            "disabled",
+            "disable",
             "description",
             "mac_address",
             "default_action",

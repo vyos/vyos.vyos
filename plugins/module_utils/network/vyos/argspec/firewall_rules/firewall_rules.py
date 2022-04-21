@@ -87,7 +87,10 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     },
                                     "type": "dict",
                                 },
-                                "disabled": {"type": "bool"},
+                                "disable": {
+                                    "type": "bool",
+                                    "aliases": ["disabled"],
+                                },
                                 "fragment": {
                                     "choices": [
                                         "match-frag",
@@ -163,6 +166,10 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                         },
                                     },
                                     "type": "dict",
+                                },
+                                "log": {
+                                    "type": "str",
+                                    "choices": ["enable", "disable"],
                                 },
                                 "number": {"required": True, "type": "int"},
                                 "p2p": {
