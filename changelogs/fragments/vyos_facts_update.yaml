@@ -1,0 +1,3 @@
+---
+major_changes:
+  - "`vyos_facts` - change default gather_subset to `min` from `!config` (https://github.com/ansible-collections/vyos.vyos/issues/231)."
