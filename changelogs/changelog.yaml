@@ -352,3 +352,21 @@ releases:
       name: vyos_hostname
       namespace: ''
     release_date: '2022-03-01'
+  3.0.0:
+    changes:
+      bugfixes:
+      - Add symlink of modules under plugins/action
+      major_changes:
+      - Minimum required ansible.netcommon version is 2.5.1.
+      - Updated base plugin references to ansible.netcommon.
+      - '`vyos_facts` - change default gather_subset to `min` from `!config` (https://github.com/ansible-collections/vyos.vyos/issues/231).'
+      minor_changes:
+      - Change preconfig hostname from vyos to vyosuser
+    fragments:
+    - add_fqcn_ansible_connection.yaml
+    - add_symlinks_redirection.yml
+    - change_host_name.yml
+    - netcommon_ref_update.yaml
+    - vyos_facts_remove_warning.yaml
+    - vyos_facts_update.yaml
+    release_date: '2022-04-26'

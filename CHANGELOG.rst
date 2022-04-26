@@ -5,6 +5,26 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v3.0.0
+======
+
+Major Changes
+-------------
+
+- Minimum required ansible.netcommon version is 2.5.1.
+- Updated base plugin references to ansible.netcommon.
+- `vyos_facts` - change default gather_subset to `min` from `!config` (https://github.com/ansible-collections/vyos.vyos/issues/231).
+
+Minor Changes
+-------------
+
+- Change preconfig hostname from vyos to vyosuser
+
+Bugfixes
+--------
+
+- Add symlink of modules under plugins/action
+
 v2.8.0
 ======
 
