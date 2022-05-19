@@ -31,6 +31,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils
 )
 import re
 
+
 class Firewall_rules(ConfigBase):
     """
     The vyos_firewall_rules class
@@ -576,7 +577,11 @@ class Firewall_rules(ConfigBase):
                 ):
                     if item == "type_name":
                         os_version = self._get_os_version()
-                        ver = re.search("vyos ([\d\.]+)-?.*", os_version, re.IGNORECASE)
+                        ver = re.search(
+                            "vyos ([\d\.]+)-?.*",  # noqa: W605
+                            os_version,
+                            re.IGNORECASE,
+                        )
                         if ver.group(1) >= "1.4":
                             param_name = "type-name"
                         else:
@@ -584,7 +589,14 @@ class Firewall_rules(ConfigBase):
                         if "ipv6-name" in cmd:
                             commands.append(
                                 cmd
-                                + (" " + "icmpv6" + " " + param_name + " " + val)
+                                + (
+                                    " "
+                                    + "icmpv6"
+                                    + " "
+                                    + param_name
+                                    + " "
+                                    + val
+                                )
                             )
                         else:
                             commands.append(
