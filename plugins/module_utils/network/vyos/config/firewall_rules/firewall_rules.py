@@ -578,7 +578,7 @@ class Firewall_rules(ConfigBase):
                     if item == "type_name":
                         os_version = self._get_os_version()
                         ver = re.search(
-                            "vyos ([\d\.]+)-?.*",  # noqa: W605
+                            "vyos ([\\d\\.]+)-?.*",  # noqa: W605
                             os_version,
                             re.IGNORECASE,
                         )
