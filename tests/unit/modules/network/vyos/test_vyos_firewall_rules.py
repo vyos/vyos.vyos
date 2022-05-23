@@ -66,6 +66,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         )
         self.execute_show_command = self.mock_execute_show_command.start()
 
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_rules.firewall_rules.Firewall_rules._get_os_version"
+        )
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = "Vyos 1.2"
+
     def tearDown(self):
         super(TestVyosFirewallRulesModule, self).tearDown()
         self.mock_get_resource_connection_config.stop()
@@ -73,6 +79,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         self.mock_get_config.stop()
         self.mock_load_config.stop()
         self.mock_execute_show_command.stop()
+        self.mock_get_os_version.stop()
 
     def load_fixtures(self, commands=None):
         def load_from_file(*args, **kwargs):
@@ -1144,3 +1151,48 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             )
         )
         self.execute_module(changed=False, commands=[])
+
+    def test_vyos_firewall_v6_rule_sets_rule_merged_01_version(self):
+        self.get_os_version.return_value = "VyOS 1.4-rolling-202007010117"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="INBOUND",
+                                description="This is IPv6 INBOUND rule set",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="accept",
+                                        description="Rule 101 is configured by Ansible",
+                                        ipsec="match-ipsec",
+                                        protocol="icmp",
+                                        disabled=True,
+                                        icmp=dict(type_name="echo-request"),
+                                    )
+                                ],
+                            ),
+                        ],
+                    )
+                ],
+                state="merged",
+            )
+        )
+        commands = [
+            "set firewall ipv6-name INBOUND default-action 'accept'",
+            "set firewall ipv6-name INBOUND description 'This is IPv6 INBOUND rule set'",
+            "set firewall ipv6-name INBOUND enable-default-log",
+            "set firewall ipv6-name INBOUND rule 101 protocol 'icmp'",
+            "set firewall ipv6-name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
+            "set firewall ipv6-name INBOUND rule 101",
+            "set firewall ipv6-name INBOUND rule 101 disable",
+            "set firewall ipv6-name INBOUND rule 101 action 'accept'",
+            "set firewall ipv6-name INBOUND rule 101 ipsec 'match-ipsec'",
+            "set firewall ipv6-name INBOUND rule 101 icmpv6 type-name echo-request",
+        ]
+        self.execute_module(changed=True, commands=commands)

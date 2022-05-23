@@ -29,6 +29,7 @@ from ansible.module_utils.six import iteritems
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     list_diff_want_only,
 )
+import re
 
 
 class Firewall_rules(ConfigBase):
@@ -575,10 +576,27 @@ class Firewall_rules(ConfigBase):
                     and not (h_icmp and self._is_w_same(w[attr], h_icmp, item))
                 ):
                     if item == "type_name":
+                        os_version = self._get_os_version()
+                        ver = re.search(
+                            "vyos ([\\d\\.]+)-?.*",  # noqa: W605
+                            os_version,
+                            re.IGNORECASE,
+                        )
+                        if ver.group(1) >= "1.4":
+                            param_name = "type-name"
+                        else:
+                            param_name = "type"
                         if "ipv6-name" in cmd:
                             commands.append(
                                 cmd
-                                + (" " + "icmpv6" + " " + "type" + " " + val)
+                                + (
+                                    " "
+                                    + "icmpv6"
+                                    + " "
+                                    + param_name
+                                    + " "
+                                    + val
+                                )
                             )
                         else:
                             commands.append(
@@ -1040,3 +1058,11 @@ class Firewall_rules(ConfigBase):
             "enable_default_log",
         )
         return True if key in r_set else False
+
+    def _get_os_version(self):
+        os_version = "1.2"
+        if self._connection:
+            os_version = self._connection.get_device_info()[
+                "network_os_version"
+            ]
+        return os_version
