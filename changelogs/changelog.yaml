@@ -370,3 +370,10 @@ releases:
     - vyos_facts_remove_warning.yaml
     - vyos_facts_update.yaml
     release_date: '2022-04-26'
+  3.0.1:
+    changes:
+      minor_changes:
+      - firewall_rules - icmpv6 type - add support for vyos sw >= 1.4.
+    fragments:
+    - firewall_rule_cli_change_version_1.4.yaml
+    release_date: '2022-05-25'

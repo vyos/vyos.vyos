@@ -5,6 +5,14 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v3.0.1
+======
+
+Minor Changes
+-------------
+
+- firewall_rules - icmpv6 type - add support for vyos sw >= 1.4.
+
 v3.0.0
 ======
 
