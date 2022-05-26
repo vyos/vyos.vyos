@@ -21,7 +21,6 @@ jobs:
     if: ${{ always() }}
     needs:
       - changelog
-      - integration
       - sanity
       - unit-galaxy
     runs-on: ubuntu-latest
