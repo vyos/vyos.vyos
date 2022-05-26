@@ -1,0 +1,34 @@
+name: Test collection
+
+concurrency:
+  group: ${{ github.head_ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  changelog:
+    uses: ansible-network/github_actions/.github/workflows/changelog.yml@main
+  sanity:
+    uses: ansible-network/github_actions/.github/workflows/sanity.yml@main
+  unit-galaxy:
+    uses: ansible-network/github_actions/.github/workflows/unit_galaxy.yml@main
+
+  all_green:
+    if: ${{ always() }}
+    needs:
+      - changelog
+      - integration
+      - sanity
+      - unit-galaxy
+    runs-on: ubuntu-latest
+    steps:
+      - run: >-
+          python -c "assert set([
+          '${{ needs.changelog.result }}',
+          '${{ needs.sanity.result }}',
+          '${{ needs.unit-galaxy.result }}'
+          ]) == {'success'}"
