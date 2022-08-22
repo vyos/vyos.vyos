@@ -71,7 +71,7 @@ class TestVyosStaticRoutesModule(TestVyosModule):
         self.mock_load_config.stop()
         self.mock_execute_show_command.stop()
 
-    def load_fixtures(self, commands=None):
+    def load_fixtures(self, commands=None, filename=None):
         def load_from_file(*args, **kwargs):
             return load_fixture("vyos_static_routes_config.cfg")
 

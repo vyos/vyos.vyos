@@ -54,7 +54,7 @@ class TestVyosBgpafModule(TestVyosModule):
         self.mock_get_resource_connection_config.stop()
         self.mock_execute_show_command.stop()
 
-    def load_fixtures(self, commands=None, transport="cli", filename=None):
+    def load_fixtures(self, commands=None, filename=None):
         if filename is None:
             filename = "vyos_bgp_address_family_config.cfg"
 

@@ -43,7 +43,7 @@ class TestVyosPingModule(TestVyosModule):
         super(TestVyosPingModule, self).tearDown()
         self.mock_run_commands.stop()
 
-    def load_fixtures(self, commands=None):
+    def load_fixtures(self, commands=None, filename=None):
         def load_from_file(*args, **kwargs):
             commands = kwargs["commands"]
             output = list()

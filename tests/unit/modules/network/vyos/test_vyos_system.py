@@ -51,7 +51,7 @@ class TestVyosSystemModule(TestVyosModule):
         self.mock_get_config.stop()
         self.mock_load_config.stop()
 
-    def load_fixtures(self, commands=None):
+    def load_fixtures(self, commands=None, filename=None):
         self.get_config.return_value = load_fixture("vyos_config_config.cfg")
 
     def test_vyos_system_hostname(self):
