@@ -64,7 +64,7 @@ class TestVyosFactsModule(TestVyosModule):
         self.mock_get_capabilities.stop()
         self.mock_get_resource_connection.stop()
 
-    def load_fixtures(self, commands=None):
+    def load_fixtures(self, commands=None, filename=None):
         def load_from_file(*args, **kwargs):
             module, commands = args
             output = list()

@@ -75,7 +75,7 @@ class TestVyosConfigModule(TestVyosModule):
         self.mock_run_commands.stop()
         self.mock_get_connection.stop()
 
-    def load_fixtures(self, commands=None):
+    def load_fixtures(self, commands=None, filename=None):
         config_file = "vyos_config_config.cfg"
         self.get_config.return_value = load_fixture(config_file)
         self.load_config.return_value = None
