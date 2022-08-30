@@ -100,7 +100,7 @@ Parameters
                 </td>
                 <td>
                         <div><b>Deprecated</b></div>
-                        <div>Starting with Ansible 2.5 we recommend using <code>connection: network_cli</code>.</div>
+                        <div>Starting with Ansible 2.5 we recommend using <code>connection: ansible.netcommon.network_cli</code>.</div>
                         <div>For more information please see the <a href='../network/getting_started/network_differences.html#multiple-communication-protocols'>Network Guide</a>.</div>
                         <div><hr/></div>
                         <div>A dict object containing connection details.</div>
@@ -247,7 +247,7 @@ Notes
    - Tested against VyOS 1.1.8 (helium).
    - Running ``show system boot-messages all`` will cause the module to hang since VyOS is using a custom pager setting to display the output of that command.
    - If a command sent to the device requires answering a prompt, it is possible to pass a dict containing *command*, *answer* and *prompt*. See examples.
-   - This module works with connection ``network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
+   - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
    - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
 
 
