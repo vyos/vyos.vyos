@@ -7,7 +7,8 @@
 
 - include_tasks: _populate.yaml
 
-- block:  # no after state match because 1.1.8 vyos does show all commands on show command
+- block:
+    # no after state match because 1.1.8 vyos does show all commands on show command
     - name: Overrides all device configuration with provided configuration
       register: result
       vyos.vyos.vyos_logging_global: &id001
