@@ -83,9 +83,9 @@ class Cliconf(CliconfBase):
             if match:
                 device_info["network_os_version"] = match.group(1)
 
-            match = re.search(r"HW model:\s*(\S+)", data)
+            match = re.search(r"(HW|Hardware) model:\s*(\S+)", data)
             if match:
-                device_info["network_os_model"] = match.group(1)
+                device_info["network_os_model"] = match.group(2)
 
             reply = self.get("show host name")
             device_info["network_os_hostname"] = to_text(
