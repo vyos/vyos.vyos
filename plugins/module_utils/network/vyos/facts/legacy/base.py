@@ -47,7 +47,7 @@ class Default(LegacyFactsBase):
         self.facts.update(self.platform_facts())
 
     def parse_serialnum(self, data):
-        match = re.search(r"(HW|Hardware) S/N:\s+(\S+)", data)
+        match = re.search(r"(?:HW|Hardware) S/N:\s+(\S+)", data)
         if match:
             return match.group(2)
 
