@@ -58,6 +58,11 @@ class TerminalModule(TerminalBase):
 
     terminal_config_prompt = re.compile(r"^.+#$")
 
+    terminal_config_command = bytes(
+        os.getenv("ANSIBLE_VYOS_TERMINAL_CONFIG_COMMAND", "set terminal"),
+        "utf-8",
+    )
+
     try:
         terminal_length = os.getenv("ANSIBLE_VYOS_TERMINAL_LENGTH", 10000)
         terminal_length = int(terminal_length)
@@ -69,10 +74,14 @@ class TerminalModule(TerminalBase):
 
     def on_open_shell(self):
         try:
-            for cmd in (b"set terminal length 0", b"set terminal width 512"):
+            for cmd in (
+                b"%b length 0" % self.terminal_config_command,
+                b"%b width 512" % self.terminal_config_command,
+            ):
                 self._exec_cli_command(cmd)
             self._exec_cli_command(
-                b"set terminal length %d" % self.terminal_length
+                b"%b length %d"
+                % (self.terminal_config_command, self.terminal_length)
             )
         except AnsibleConnectionFailure:
             raise AnsibleConnectionFailure("unable to set terminal parameters")
