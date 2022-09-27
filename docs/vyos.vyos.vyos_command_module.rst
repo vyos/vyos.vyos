@@ -19,7 +19,6 @@ Synopsis
 --------
 - The command module allows running one or more commands on remote devices running VyOS.  This module can also be introspected to validate key parameters before returning successfully.  If the conditional statements are not met in the wait period, the task fails.
 - Certain ``show`` commands in VyOS produce many lines of output and use a custom pager that can cause this module to hang.  If the value of the environment variable ``ANSIBLE_VYOS_TERMINAL_LENGTH`` is not set, the default number of 10000 is used.
-- EdgeOS, a fork of Vyatta used on Ubiquity devices, uses a different command to set the terminal configuration.  If the value of the environment variable ``ANSIBLE_VYOS_TERMINAL_CONFIG_COMMAND`` is not set, the default command `set terminal` is used.  To work on EdgeOS, you need to set it to just `terminal`.
 
 
 
