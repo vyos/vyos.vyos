@@ -33,6 +33,8 @@ description:
   collection of usernames in the current running config. It also supports purging
   usernames from the configuration that are not explicitly defined.
 version_added: 1.0.0
+extends_documentation_fragment:
+- vyos.vyos.vyos
 notes:
 - Tested against VyOS 1.1.8 (helium).
 - This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
@@ -51,8 +53,7 @@ options:
       name:
         description:
         - The username to be configured on the VyOS device. This argument accepts a string
-          value and is mutually exclusive with the C(aggregate) argument. Please note
-          that this option is not same as C(provider username).
+          value and is mutually exclusive with the C(aggregate) argument.
         required: True
         type: str
       full_name:
@@ -63,8 +64,7 @@ options:
       configured_password:
         description:
         - The password to be configured on the VyOS device. The password needs to be provided
-          in clear and it will be encrypted on the device. Please note that this option
-          is not same as C(provider password).
+          in clear and it will be encrypted on the device.
         type: str
       update_password:
         description:
@@ -96,8 +96,7 @@ options:
   name:
     description:
     - The username to be configured on the VyOS device. This argument accepts a string
-      value and is mutually exclusive with the C(aggregate) argument. Please note
-      that this option is not same as C(provider username).
+      value and is mutually exclusive with the C(aggregate) argument.
     type: str
   full_name:
     description:
@@ -107,8 +106,7 @@ options:
   configured_password:
     description:
     - The password to be configured on the VyOS device. The password needs to be provided
-      in clear and it will be encrypted on the device. Please note that this option
-      is not same as C(provider password).
+      in clear and it will be encrypted on the device.
     type: str
   update_password:
     description:
@@ -146,8 +144,6 @@ options:
     choices:
     - present
     - absent
-extends_documentation_fragment:
-- vyos.vyos.vyos
 """
 
 EXAMPLES = """

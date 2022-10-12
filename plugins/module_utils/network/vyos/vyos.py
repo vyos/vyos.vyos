@@ -31,35 +31,9 @@ __metaclass__ = type
 import json
 
 from ansible.module_utils._text import to_text
-from ansible.module_utils.basic import env_fallback
 from ansible.module_utils.connection import Connection, ConnectionError
 
 _DEVICE_CONFIGS = {}
-
-vyos_provider_spec = {
-    "host": dict(),
-    "port": dict(type="int"),
-    "username": dict(fallback=(env_fallback, ["ANSIBLE_NET_USERNAME"])),
-    "password": dict(
-        fallback=(env_fallback, ["ANSIBLE_NET_PASSWORD"]), no_log=True
-    ),
-    "ssh_keyfile": dict(
-        fallback=(env_fallback, ["ANSIBLE_NET_SSH_KEYFILE"]), type="path"
-    ),
-    "timeout": dict(type="int"),
-}
-vyos_argument_spec = {
-    "provider": dict(
-        type="dict",
-        options=vyos_provider_spec,
-        removed_at_date="2022-06-01",
-        removed_from_collection="vyos.vyos",
-    )
-}
-
-
-def get_provider_argspec():
-    return vyos_provider_spec
 
 
 def get_connection(module):
