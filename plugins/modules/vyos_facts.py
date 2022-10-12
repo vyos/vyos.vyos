@@ -146,9 +146,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts
     Facts,
     FACT_RESOURCE_SUBSETS,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
-)
 
 
 def main():
@@ -158,7 +155,6 @@ def main():
     :returns: ansible_facts
     """
     argument_spec = FactsArgs.argument_spec
-    argument_spec.update(vyos_argument_spec)
 
     module = AnsibleModule(
         argument_spec=argument_spec, supports_check_mode=True

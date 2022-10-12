@@ -177,9 +177,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
     load_config,
     run_commands,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
-)
 
 
 def search_obj_in_list(vlan_id, lst):
@@ -375,7 +372,6 @@ def main():
     )
 
     argument_spec.update(element_spec)
-    argument_spec.update(vyos_argument_spec)
 
     required_one_of = [
         ["vlan_id", "aggregate"],

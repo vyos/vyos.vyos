@@ -166,9 +166,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
     get_config,
     load_config,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
-)
 
 
 def spec_to_commands(updates, module):
@@ -308,7 +305,6 @@ def main():
 
     argument_spec.update(element_spec)
 
-    argument_spec.update(vyos_argument_spec)
     required_if = [
         ("dest", "host", ["name", "facility", "level"]),
         ("dest", "file", ["name", "facility", "level"]),

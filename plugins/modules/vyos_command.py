@@ -154,9 +154,6 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     run_commands,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
-)
 
 
 def parse_commands(module, warnings):
@@ -182,8 +179,6 @@ def main():
         retries=dict(default=10, type="int"),
         interval=dict(default=1, type="int"),
     )
-
-    spec.update(vyos_argument_spec)
 
     module = AnsibleModule(argument_spec=spec, supports_check_mode=True)
 

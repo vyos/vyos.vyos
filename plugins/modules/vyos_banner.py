@@ -95,9 +95,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
     get_config,
     load_config,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
-)
 
 
 def spec_to_commands(updates, module):
@@ -163,8 +160,6 @@ def main():
         text=dict(),
         state=dict(default="present", choices=["present", "absent"]),
     )
-
-    argument_spec.update(vyos_argument_spec)
 
     required_if = [("state", "present", ("text",))]
 

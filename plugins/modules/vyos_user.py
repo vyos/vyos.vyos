@@ -194,9 +194,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
     load_config,
 )
 from ansible.module_utils.six import iteritems
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
-)
 
 
 def validate_level(value, module):
@@ -364,7 +361,6 @@ def main():
     )
 
     argument_spec.update(element_spec)
-    argument_spec.update(vyos_argument_spec)
 
     mutually_exclusive = [("name", "aggregate")]
     module = AnsibleModule(
