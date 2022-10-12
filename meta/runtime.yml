@@ -32,6 +32,15 @@ plugin_routing:
       redirect: vyos.vyos.vyos_lldp_global
     lldp_interfaces:
       redirect: vyos.vyos.vyos_lldp_interfaces
+    logging:
+      redirect: vyos.vyos.vyos_logging
+      deprecation:
+        removal_date: '2023-08-01'
+        warning_text: See the plugin documentation for more details
+    vyos_logging:
+      deprecation:
+        removal_date: '2023-08-01'
+        warning_text: See the plugin documentation for more details
     logging_global:
       redirect: vyos.vyos.vyos_logging_global
     ntp_global:
