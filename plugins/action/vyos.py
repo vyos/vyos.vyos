@@ -39,14 +39,7 @@ class ActionModule(ActionNetworkModule):
         persistent_connection = self._play_context.connection.split(".")[-1]
         warnings = []
 
-        if persistent_connection == "network_cli":
-            provider = self._task.args.get("provider", {})
-            if any(provider.values()):
-                display.warning(
-                    "provider is unnecessary when using network_cli and will be ignored"
-                )
-                del self._task.args["provider"]
-        else:
+        if persistent_connection != "network_cli":
             return {
                 "failed": True,
                 "msg": "Connection type %s is not valid for this module"
