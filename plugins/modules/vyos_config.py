@@ -203,7 +203,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
     run_commands,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
     get_connection,
 )
 
@@ -339,8 +338,6 @@ def main():
         backup_options=dict(type="dict", options=backup_spec),
         save=dict(type="bool", default=False),
     )
-
-    argument_spec.update(vyos_argument_spec)
 
     mutually_exclusive = [("lines", "src")]
 

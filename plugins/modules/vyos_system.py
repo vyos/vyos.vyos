@@ -99,9 +99,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
     get_config,
     load_config,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
-)
 
 
 def spec_key_to_device_key(key):
@@ -196,8 +193,6 @@ def main():
             type="str", default="present", choices=["present", "absent"]
         ),
     )
-
-    argument_spec.update(vyos_argument_spec)
 
     module = AnsibleModule(
         argument_spec=argument_spec,
