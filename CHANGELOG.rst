@@ -5,6 +5,29 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v4.0.0
+======
+
+Major Changes
+-------------
+
+- Use of connection: local and the provider option are no longer valid on any modules in this collection.
+
+Minor Changes
+-------------
+
+- Update fact gathering to support v1.3 show version output
+
+Removed Features (previously deprecated)
+----------------------------------------
+
+- vyos_interface - use vyos_interfaces instead.
+- vyos_l3_interface - use vyos_l3_interfaces instead.
+- vyos_linkagg - use vyos_lag_interfaces instead.
+- vyos_lldp - use vyos_lldp_global instead.
+- vyos_lldp_interface - use vyos_lldp_interfaces instead.
+- vyos_static_route - use vyos_static_routes instead.
+
 v3.0.1
 ======
 
@@ -229,7 +252,7 @@ Minor Changes
 New Modules
 -----------
 
-- vyos_ospf_interfaces - OSPF Interfaces resource module
+- vyos_ospf_interfaces - OSPF Interfaces Resource Module.
 
 v1.0.5
 ======
