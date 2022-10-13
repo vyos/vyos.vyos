@@ -23,8 +23,16 @@ releases:
     - description: FIREWALL rules resource module
       name: vyos_firewall_rules
       namespace: ''
+    - description: (deprecated, removed after 2022-06-01) Manage Interface on VyOS
+        network devices
+      name: vyos_interface
+      namespace: ''
     - description: Interfaces resource module
       name: vyos_interfaces
+      namespace: ''
+    - description: (deprecated, removed after 2022-06-01) Manage L3 interfaces on
+        VyOS network devices
+      name: vyos_l3_interface
       namespace: ''
     - description: L3 interfaces resource module
       name: vyos_l3_interfaces
@@ -32,8 +40,20 @@ releases:
     - description: LAG interfaces resource module
       name: vyos_lag_interfaces
       namespace: ''
+    - description: (deprecated, removed after 2022-06-01) Manage link aggregation
+        groups on VyOS network devices
+      name: vyos_linkagg
+      namespace: ''
+    - description: (deprecated, removed after 2022-06-01) Manage LLDP configuration
+        on VyOS network devices
+      name: vyos_lldp
+      namespace: ''
     - description: LLDP global resource module
       name: vyos_lldp_global
+      namespace: ''
+    - description: (deprecated, removed after 2022-06-01) Manage LLDP interfaces configuration
+        on VyOS network devices
+      name: vyos_lldp_interface
       namespace: ''
     - description: LLDP interfaces resource module
       name: vyos_lldp_interfaces
@@ -49,6 +69,10 @@ releases:
       namespace: ''
     - description: Tests reachability using ping from VyOS network devices
       name: vyos_ping
+      namespace: ''
+    - description: (deprecated, removed after 2022-06-01) Manage static IP routes
+        on Vyatta VyOS network devices
+      name: vyos_static_route
       namespace: ''
     - description: Static routes resource module
       name: vyos_static_routes
