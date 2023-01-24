@@ -8,7 +8,6 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Purge the provided configuration
       register: result
       vyos.vyos.vyos_bgp_global: &id001
@@ -27,5 +26,4 @@
           - ansible_facts.network_resources.bgp_global == []
 
   always:
-
     - include_tasks: _remove_config.yaml

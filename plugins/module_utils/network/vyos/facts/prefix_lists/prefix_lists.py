@@ -15,14 +15,13 @@ based on the configuration.
 """
 
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.prefix_lists.prefix_lists import (
+    Prefix_listsArgs,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.prefix_lists import (
     Prefix_listsTemplate,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.prefix_lists.prefix_lists import (
-    Prefix_listsArgs,
 )
 
 
@@ -53,9 +52,7 @@ class Prefix_listsFacts(object):
             data = self.get_config(connection)
 
         # parse native config using the Prefix_lists template
-        prefix_lists_parser = Prefix_listsTemplate(
-            lines=data.splitlines(), module=self._module
-        )
+        prefix_lists_parser = Prefix_listsTemplate(lines=data.splitlines(), module=self._module)
 
         objs = prefix_lists_parser.parse()
         objs = sorted(
@@ -79,9 +76,7 @@ class Prefix_listsFacts(object):
         ansible_facts["ansible_network_resources"].pop("prefix_lists", None)
 
         params = utils.remove_empties(
-            prefix_lists_parser.validate_config(
-                self.argument_spec, {"config": objs}, redact=True
-            )
+            prefix_lists_parser.validate_config(self.argument_spec, {"config": objs}, redact=True)
         )
 
         if params.get("config"):

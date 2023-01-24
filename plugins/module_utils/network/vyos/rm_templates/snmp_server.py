@@ -15,6 +15,7 @@ the given network resource.
 """
 
 import re
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
@@ -25,9 +26,7 @@ def _tmplt_snmp_server_communities(config_data):
     command = []
     cmd = "service snmp community {name}".format(**config_data)
     if "authorization_type" in config_data:
-        auth_cmd = cmd + " authorization {authorization_type}".format(
-            **config_data
-        )
+        auth_cmd = cmd + " authorization {authorization_type}".format(**config_data)
         command.append(auth_cmd)
     if "clients" in config_data:
         for c in config_data["clients"]:
@@ -103,18 +102,10 @@ def _tmplt_snmp_server_v3_user(config_data):
                 type_cmd = cmd + val + " type {type}".format(**config)
                 command.append(type_cmd)
             if "encrypted_key" in config:
-                enc_cmd = (
-                    cmd
-                    + val
-                    + " encrypted-key {encrypted_key}".format(**config)
-                )
+                enc_cmd = cmd + val + " encrypted-key {encrypted_key}".format(**config)
                 command.append(enc_cmd)
             if "plaintext_key" in config:
-                plain_cmd = (
-                    cmd
-                    + val
-                    + " plaintext-key {plaintext_key}".format(**config)
-                )
+                plain_cmd = cmd + val + " plaintext-key {plaintext_key}".format(**config)
                 command.append(plain_cmd)
     return command
 

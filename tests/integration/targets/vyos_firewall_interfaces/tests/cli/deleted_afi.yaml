@@ -1,6 +1,7 @@
 ---
 - debug:
-    msg: Start vyos_firewall_interfaces deleted integration tests ansible_connection={{
+    msg:
+      Start vyos_firewall_interfaces deleted integration tests ansible_connection={{
       ansible_connection }}
 
 - include_tasks: _populate_rule_sets.yaml
@@ -8,22 +9,18 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Delete firewall interfaces based on IP address type provided.
       register: result
       vyos.vyos.vyos_firewall_interfaces: &id001
         config:
-
           - name: eth1
             access_rules:
-
               - afi: ipv4
 
               - afi: ipv6
 
           - name: eth2
             access_rules:
-
               - afi: ipv4
 
               - afi: ipv6
@@ -62,7 +59,6 @@
           - "{{ deleted_afi['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml
 
     - include_tasks: _remove_firewall_config.yaml

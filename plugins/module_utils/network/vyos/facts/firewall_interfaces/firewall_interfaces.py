@@ -13,11 +13,11 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from re import findall, search, M
 from copy import deepcopy
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from re import M, findall, search
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_interfaces.firewall_interfaces import (
     Firewall_interfacesArgs,
 )
@@ -57,20 +57,14 @@ class Firewall_interfacesFacts(object):
             # using mock data instead
             data = self.get_device_data(connection)
         objs = []
-        interfaces = findall(
-            r"^set interfaces ethernet (?:\'*)(\S+)(?:\'*)", data, M
-        )
+        interfaces = findall(r"^set interfaces ethernet (?:\'*)(\S+)(?:\'*)", data, M)
         if interfaces:
             objs = self.get_names(data, interfaces)
-        ansible_facts["ansible_network_resources"].pop(
-            "firewall_interfaces", None
-        )
+        ansible_facts["ansible_network_resources"].pop("firewall_interfaces", None)
         facts = {}
         if objs:
             facts["firewall_interfaces"] = []
-            params = utils.validate_config(
-                self.argument_spec, {"config": objs}
-            )
+            params = utils.validate_config(self.argument_spec, {"config": objs})
             for cfg in params["config"]:
                 facts["firewall_interfaces"].append(utils.remove_empties(cfg))
 
@@ -127,9 +121,7 @@ class Firewall_interfacesFacts(object):
             if config:
                 ar_lst.append(config)
         if v6_ar:
-            v6_conf = "\n".join(
-                findall(r"(^.*?%s.*?$)" % " ipv6-name", conf, M)
-            )
+            v6_conf = "\n".join(findall(r"(^.*?%s.*?$)" % " ipv6-name", conf, M))
             config = self.parse_int_rules(v6_conf, "ipv6")
             if config:
                 ar_lst.append(config)

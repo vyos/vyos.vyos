@@ -1,12 +1,12 @@
 ---
 - debug:
-    msg: Start vyos_static_routes deleted integration tests ansible_connection={{
+    msg:
+      Start vyos_static_routes deleted integration tests ansible_connection={{
       ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Delete all the static routes.
       register: result
       vyos.vyos.vyos_static_routes: &id001
@@ -46,5 +46,4 @@
           - "{{ deleted_afi_all['after'] | symmetric_difference(result['before'])\
             \ |length == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

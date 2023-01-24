@@ -183,9 +183,7 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
                                         "next_hop": {"type": "str"},
                                     },
                                 },
-                                "large_community_large_community_list": {
-                                    "type": "str"
-                                },
+                                "large_community_large_community_list": {"type": "str"},
                                 "metric": {"type": "int"},
                                 "origin": {
                                     "type": "str",

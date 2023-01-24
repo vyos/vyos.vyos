@@ -10,7 +10,7 @@
       register: result
       vyos.vyos.vyos_hostname:
         config:
-          hostname: 'vyosTest'
+          hostname: "vyosTest"
         state: rendered
 
     - assert:

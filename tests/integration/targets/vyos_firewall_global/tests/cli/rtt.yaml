@@ -1,12 +1,12 @@
 ---
 - debug:
-    msg: START vyos_firewall_global round trip integration tests on connection={{
+    msg:
+      START vyos_firewall_global round trip integration tests on connection={{
       ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
-
     - name: Apply the provided configuration (base config)
       register: base_config
       vyos.vyos.vyos_firewall_global:
@@ -20,7 +20,6 @@
             all: true
             broadcast: true
           state_policy:
-
             - connection_type: established
               action: accept
               log: true
@@ -28,7 +27,6 @@
             - connection_type: invalid
               action: reject
           route_redirects:
-
             - afi: ipv4
               ip_src_route: true
               icmp_redirects:
@@ -36,22 +34,18 @@
                 receive: false
           group:
             address_group:
-
               - name: MGMT-HOSTS
                 description: This group has the Management hosts address list
                 members:
-
                   - address: 192.0.1.1
 
                   - address: 192.0.1.3
 
                   - address: 192.0.1.5
             network_group:
-
               - name: MGMT
                 description: This group has the Management network addresses
                 members:
-
                   - address: 192.0.1.0/24
         state: merged
 
@@ -90,5 +84,4 @@
       assert:
         that: "{{ base_config['after'] == revert['after']}}"
   always:
-
     - include_tasks: _remove_config.yaml

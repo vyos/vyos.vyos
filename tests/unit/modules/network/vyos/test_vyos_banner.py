@@ -18,11 +18,10 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
 from ansible_collections.vyos.vyos.plugins.modules import vyos_banner
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule
 
 
@@ -53,9 +52,7 @@ class TestVyosBannerModule(TestVyosModule):
 
     def test_vyos_banner_create(self):
         set_module_args(dict(banner="pre-login", text="test\nbanner\nstring"))
-        commands = [
-            "set system login banner pre-login 'test\\nbanner\\nstring'"
-        ]
+        commands = ["set system login banner pre-login 'test\\nbanner\\nstring'"]
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_banner_remove(self):

@@ -197,21 +197,17 @@ import re
 from ansible.module_utils._text import to_text
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import ConnectionError
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    load_config,
     get_config,
+    get_connection,
+    load_config,
     run_commands,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    get_connection,
-)
-
 
 DEFAULT_COMMENT = "configured by vyos_config"
 
-CONFIG_FILTERS = [
-    re.compile(r"set system login user \S+ authentication encrypted-password")
-]
+CONFIG_FILTERS = [re.compile(r"set system login user \S+ authentication encrypted-password")]
 
 
 def get_candidate(module):
@@ -364,9 +360,7 @@ def main():
             result["changed"] = True
         run_commands(module, commands=["exit"])
 
-    if result.get("changed") and any(
-        (module.params["src"], module.params["lines"])
-    ):
+    if result.get("changed") and any((module.params["src"], module.params["lines"])):
         msg = (
             "To ensure idempotency and correct diff the input configuration lines should be"
             " similar to how they appear if present in"

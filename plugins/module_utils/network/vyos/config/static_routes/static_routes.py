@@ -15,23 +15,23 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 from copy import deepcopy
+
+from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    to_list,
     dict_diff,
     remove_empties,
+    to_list,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
-)
-from ansible.module_utils.six import iteritems
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
-    get_route_type,
+    dict_delete,
     get_lst_diff_for_dicts,
     get_lst_same_for_dicts,
-    dict_delete,
+    get_route_type,
 )
 
 
@@ -56,9 +56,7 @@ class Static_routes(ConfigBase):
         facts, _warnings = Facts(self._module).get_facts(
             self.gather_subset, self.gather_network_resources, data=data
         )
-        static_routes_facts = facts["ansible_network_resources"].get(
-            "static_routes"
-        )
+        static_routes_facts = facts["ansible_network_resources"].get("static_routes")
         if not static_routes_facts:
             return []
         return static_routes_facts
@@ -99,9 +97,7 @@ class Static_routes(ConfigBase):
                 self._module.fail_json(
                     msg="value of running_config parameter must not be empty for state parsed"
                 )
-            result["parsed"] = self.get_static_routes_facts(
-                data=running_config
-            )
+            result["parsed"] = self.get_static_routes_facts(data=running_config)
         else:
             changed_static_routes_facts = []
 
@@ -138,14 +134,9 @@ class Static_routes(ConfigBase):
                   to the desired configuration
         """
         commands = []
-        if (
-            self.state in ("merged", "replaced", "overridden", "rendered")
-            and not want
-        ):
+        if self.state in ("merged", "replaced", "overridden", "rendered") and not want:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(
-                    self.state
-                )
+                msg="value of config parameter must not be empty for state {0}".format(self.state)
             )
         if self.state == "overridden":
             commands.extend(self._state_overridden(want=want, have=have))
@@ -189,9 +180,7 @@ class Static_routes(ConfigBase):
                     if key == "next_hops":
                         commands.extend(self._update_next_hop(want, have))
                     elif key == "blackhole_config":
-                        commands.extend(
-                            self._update_blackhole(key, want, have)
-                        )
+                        commands.extend(self._update_blackhole(key, want, have))
         commands.extend(self._state_merged(want, have))
         return commands
 
@@ -243,11 +232,7 @@ class Static_routes(ConfigBase):
                     af = w["address_families"]
                     for item in af:
                         if self.afi_in_have(have, item):
-                            commands.append(
-                                self._compute_command(
-                                    afi=item["afi"], remove=True
-                                )
-                            )
+                            commands.append(self._compute_command(afi=item["afi"], remove=True))
         else:
             routes = self._get_routes(have)
             if self._is_ip_route_exist(routes):
@@ -308,11 +293,7 @@ class Static_routes(ConfigBase):
                             )
                         )
                     elif attrib == "type":
-                        commands.append(
-                            self._compute_command(
-                                dest=want["dest"], key="blackhole"
-                            )
-                        )
+                        commands.append(self._compute_command(dest=want["dest"], key="blackhole"))
         return commands
 
     def _add_next_hop(self, want, have, opr=True):
@@ -327,13 +308,9 @@ class Static_routes(ConfigBase):
         want_copy = deepcopy(remove_empties(want))
         have_copy = deepcopy(remove_empties(have))
         if not opr:
-            diff_next_hops = get_lst_same_for_dicts(
-                want_copy, have_copy, "next_hops"
-            )
+            diff_next_hops = get_lst_same_for_dicts(want_copy, have_copy, "next_hops")
         else:
-            diff_next_hops = get_lst_diff_for_dicts(
-                want_copy, have_copy, "next_hops"
-            )
+            diff_next_hops = get_lst_diff_for_dicts(want_copy, have_copy, "next_hops")
         if diff_next_hops:
             for hop in diff_next_hops:
                 for element in hop:
@@ -361,9 +338,7 @@ class Static_routes(ConfigBase):
                             self._compute_command(
                                 dest=want["dest"],
                                 key="next-hop",
-                                attrib=hop["forward_router_address"]
-                                + " "
-                                + "distance",
+                                attrib=hop["forward_router_address"] + " " + "distance",
                                 value=str(hop[element]),
                                 opr=opr,
                             )
@@ -373,9 +348,7 @@ class Static_routes(ConfigBase):
                             self._compute_command(
                                 dest=want["dest"],
                                 key="next-hop",
-                                attrib=hop["forward_router_address"]
-                                + " "
-                                + "next-hop-interface",
+                                attrib=hop["forward_router_address"] + " " + "next-hop-interface",
                                 value=hop[element],
                                 opr=opr,
                             )
@@ -414,14 +387,9 @@ class Static_routes(ConfigBase):
                                 value=str(value),
                             )
                         )
-                    elif (
-                        attrib == "type"
-                        and "distance" not in want_blackhole.keys()
-                    ):
+                    elif attrib == "type" and "distance" not in want_blackhole.keys():
                         commands.append(
-                            self._compute_command(
-                                dest=want["dest"], key="blackhole", remove=True
-                            )
+                            self._compute_command(dest=want["dest"], key="blackhole", remove=True)
                         )
         return commands
 
@@ -438,9 +406,7 @@ class Static_routes(ConfigBase):
         want_copy = deepcopy(remove_empties(want))
         have_copy = deepcopy(remove_empties(have))
 
-        diff_next_hops = get_lst_diff_for_dicts(
-            have_copy, want_copy, "next_hops"
-        )
+        diff_next_hops = get_lst_diff_for_dicts(have_copy, want_copy, "next_hops")
         if diff_next_hops:
             for hop in diff_next_hops:
                 for element in hop:
@@ -468,9 +434,7 @@ class Static_routes(ConfigBase):
                             self._compute_command(
                                 dest=want["dest"],
                                 key="next-hop",
-                                attrib=hop["forward_router_address"]
-                                + " "
-                                + "distance",
+                                attrib=hop["forward_router_address"] + " " + "distance",
                                 value=str(hop[element]),
                                 remove=True,
                             )
@@ -480,9 +444,7 @@ class Static_routes(ConfigBase):
                             self._compute_command(
                                 dest=want["dest"],
                                 key="next-hop",
-                                attrib=hop["forward_router_address"]
-                                + " "
-                                + "next-hop-interface",
+                                attrib=hop["forward_router_address"] + " " + "next-hop-interface",
                                 value=hop[element],
                                 remove=True,
                             )
@@ -502,9 +464,7 @@ class Static_routes(ConfigBase):
         want_nh = want.get("next_hops") or []
         # delete static route operation per destination
         if not opr and not want_nh:
-            commands.append(
-                self._compute_command(dest=want["dest"], remove=True)
-            )
+            commands.append(self._compute_command(dest=want["dest"], remove=True))
 
         else:
             temp_have_next_hops = have.pop("next_hops", None)
@@ -520,9 +480,7 @@ class Static_routes(ConfigBase):
                 for key, value in iteritems(updates):
                     if value:
                         if key == "blackhole_config":
-                            commands.extend(
-                                self._add_blackhole(key, want, have)
-                            )
+                            commands.extend(self._add_blackhole(key, want, have))
         return commands
 
     def _compute_command(

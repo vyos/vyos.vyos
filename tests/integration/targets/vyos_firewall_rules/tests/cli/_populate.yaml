@@ -1,7 +1,8 @@
 ---
 - name: Setup
   vars:
-    lines: "set firewall group address-group 'inbound'\nset firewall ipv6-name UPLINK\
+    lines:
+      "set firewall group address-group 'inbound'\nset firewall ipv6-name UPLINK\
       \ default-action 'accept'\nset firewall ipv6-name UPLINK description 'This\
       \ is ipv6 specific rule-set'\nset firewall ipv6-name UPLINK rule 1 action\
       \ 'accept'\nset firewall ipv6-name UPLINK rule 1 description 'Fwipv6-Rule\
@@ -24,4 +25,4 @@
       \ firewall name INBOUND rule 103 state new 'disable'\nset firewall name INBOUND\
       \ rule 103 state related 'enable'\n"
   ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    config: "{{ lines }}"

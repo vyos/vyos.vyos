@@ -15,11 +15,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-from re import findall, M
 from copy import deepcopy
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from re import M, findall
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.interfaces.interfaces import (
     InterfacesArgs,
 )
@@ -75,9 +75,7 @@ class InterfacesFacts(object):
         facts = {}
         if objs:
             facts["interfaces"] = []
-            params = utils.validate_config(
-                self.argument_spec, {"config": objs}
-            )
+            params = utils.validate_config(self.argument_spec, {"config": objs})
             for cfg in params["config"]:
                 facts["interfaces"].append(utils.remove_empties(cfg))
 
@@ -96,9 +94,7 @@ class InterfacesFacts(object):
         """
         vif_conf = "\n".join(filter(lambda x: ("vif" in x), conf))
         eth_conf = "\n".join(filter(lambda x: ("vif" not in x), conf))
-        config = self.parse_attribs(
-            ["description", "speed", "mtu", "duplex"], eth_conf
-        )
+        config = self.parse_attribs(["description", "speed", "mtu", "duplex"], eth_conf)
         config["vifs"] = self.parse_vifs(vif_conf)
 
         return utils.remove_empties(config)

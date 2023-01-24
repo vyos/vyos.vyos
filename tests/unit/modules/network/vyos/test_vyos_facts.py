@@ -19,11 +19,11 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 import json
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_facts
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
@@ -40,9 +40,7 @@ class TestVyosFactsModule(TestVyosModule):
         self.mock_get_resource_connection = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
         )
-        self.get_resource_connection = (
-            self.mock_get_resource_connection.start()
-        )
+        self.get_resource_connection = self.mock_get_resource_connection.start()
 
         self.mock_get_capabilities = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base.get_capabilities"

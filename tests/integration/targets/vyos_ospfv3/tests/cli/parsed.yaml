@@ -1,6 +1,7 @@
 ---
 - debug:
-    msg: START vyos_ospfv3 parsed integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_ospfv3 parsed integration tests on connection={{ ansible_connection
       }}
 
 - name: Parse externally provided ospfv3 config to agnostic model

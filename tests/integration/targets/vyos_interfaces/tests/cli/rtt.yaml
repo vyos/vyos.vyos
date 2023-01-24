@@ -1,17 +1,16 @@
 ---
 - debug:
-    msg: START vyos_interfaces round trip integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_interfaces round trip integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
-
     - name: Apply the provided configuration (base config)
       register: base_config
       vyos.vyos.vyos_interfaces:
         config:
-
           - name: eth0
             enabled: true
             duplex: auto
@@ -21,7 +20,6 @@
             description: Interface - 1
             mtu: 1500
             vifs:
-
               - vlan_id: 100
                 description: Eth1 - VIF 100
                 mtu: 200
@@ -46,12 +44,10 @@
       register: result
       vyos.vyos.vyos_interfaces:
         config:
-
           - name: eth1
             description: Interface 1 - Description (WILL BE REVERTED)
             mtu: 1200
             vifs:
-
               - vlan_id: 100
                 description: Eth1 - VIF 100 (WILL BE REVERTED)
                 mtu: 400
@@ -68,7 +64,8 @@
 
     - name: Assert that changes were applied
       assert:
-        that: "{{ round_trip['after'] | symmetric_difference(result['after']) |length\
+        that:
+          "{{ round_trip['after'] | symmetric_difference(result['after']) |length\
           \ == 0 }}"
 
     - name: Revert back to base config using facts round trip
@@ -79,8 +76,8 @@
 
     - name: Assert that config was reverted
       assert:
-        that: "{{ base_config['after'] | symmetric_difference(revert['after']) |length\
+        that:
+          "{{ base_config['after'] | symmetric_difference(revert['after']) |length\
           \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

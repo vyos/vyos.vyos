@@ -13,11 +13,11 @@ based on the configuration.
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
-from re import findall, search, M
 from copy import deepcopy
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from re import M, findall, search
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.static_routes.static_routes import (
     Static_routesArgs,
 )
@@ -63,9 +63,7 @@ class Static_routesFacts(object):
         r_v4 = []
         r_v6 = []
         af = []
-        static_routes = findall(
-            r"set protocols static route(6)? (\S+)", data, M
-        )
+        static_routes = findall(r"set protocols static route(6)? (\S+)", data, M)
         if static_routes:
             for route in set(static_routes):
                 route_regex = r" %s .+$" % route[1]
@@ -91,9 +89,7 @@ class Static_routesFacts(object):
         facts = {}
         if objs:
             facts["static_routes"] = []
-            params = utils.validate_config(
-                self.argument_spec, {"config": objs}
-            )
+            params = utils.validate_config(self.argument_spec, {"config": objs})
             for cfg in params["config"]:
                 facts["static_routes"].append(utils.remove_empties(cfg))
 
@@ -151,9 +147,7 @@ class Static_routesFacts(object):
 
                     dis = hop.find("disable")
                     hop_info = hop.split(" ")
-                    nh_info = {
-                        "forward_router_address": hop_info[0].strip("'")
-                    }
+                    nh_info = {"forward_router_address": hop_info[0].strip("'")}
                     if interface:
                         nh_info["interface"] = interface.group(1).strip("'")
                     if distance:
@@ -162,16 +156,11 @@ class Static_routesFacts(object):
                     elif dis >= 1:
                         nh_info["enabled"] = False
                     for element in nh_list:
-                        if (
-                            element["forward_router_address"]
-                            == nh_info["forward_router_address"]
-                        ):
+                        if element["forward_router_address"] == nh_info["forward_router_address"]:
                             if "interface" in nh_info.keys():
                                 element["interface"] = nh_info["interface"]
                             if "admin_distance" in nh_info.keys():
-                                element["admin_distance"] = nh_info[
-                                    "admin_distance"
-                                ]
+                                element["admin_distance"] = nh_info["admin_distance"]
                             if "enabled" in nh_info.keys():
                                 element["enabled"] = nh_info["enabled"]
                             nh_info = None

@@ -6,7 +6,6 @@
 - include_tasks: _remove_config.yaml
 
 - block:
-
     - name: Structure provided configuration into device specific commands
       register: result
       vyos.vyos.vyos_lldp_global:
@@ -24,5 +23,4 @@
             \ |length == 0 }}"
 
   always:
-
     - include_tasks: _remove_config.yaml

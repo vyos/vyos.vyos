@@ -8,20 +8,15 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Overrides all device configuration with provided configuration
       register: result
       vyos.vyos.vyos_static_routes: &id001
         config:
-
           - address_families:
-
               - afi: ipv4
                 routes:
-
                   - dest: 198.0.2.48/28
                     next_hops:
-
                       - forward_router_address: 192.0.2.18
         state: overridden
 
@@ -57,5 +52,4 @@
           - "{{ overridden['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

@@ -181,26 +181,24 @@ commands:
 """
 
 import re
-
 from copy import deepcopy
 from functools import partial
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     remove_default_spec,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     get_config,
     load_config,
 )
-from ansible.module_utils.six import iteritems
 
 
 def validate_level(value, module):
     if value not in ("admin", "operator"):
-        module.fail_json(
-            msg="level must be either admin or operator, got %s" % value
-        )
+        module.fail_json(msg="level must be either admin or operator, got %s" % value)
 
 
 def spec_to_commands(updates, module):
@@ -231,8 +229,7 @@ def spec_to_commands(updates, module):
                 add(
                     commands,
                     want,
-                    "authentication plaintext-password %s"
-                    % want["configured_password"],
+                    "authentication plaintext-password %s" % want["configured_password"],
                 )
 
     return commands
@@ -338,9 +335,7 @@ def main():
         full_name=dict(),
         level=dict(aliases=["role"]),
         configured_password=dict(no_log=True),
-        update_password=dict(
-            default="always", choices=["on_create", "always"]
-        ),
+        update_password=dict(default="always", choices=["on_create", "always"]),
         state=dict(default="present", choices=["present", "absent"]),
     )
 

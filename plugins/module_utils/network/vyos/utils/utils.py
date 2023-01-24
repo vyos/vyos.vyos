@@ -7,8 +7,8 @@
 from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
-from ansible.module_utils.six import iteritems
 from ansible.module_utils.basic import missing_required_lib
+from ansible.module_utils.six import iteritems
 
 try:
     import ipaddress
@@ -112,11 +112,7 @@ def get_lst_same_for_dicts(want, have, lst):
     if want and have:
         want_list = want.get(lst) or {}
         have_list = have.get(lst) or {}
-        diff = [
-            i
-            for i in want_list and have_list
-            if i in have_list and i in want_list
-        ]
+        diff = [i for i in want_list and have_list if i in have_list and i in want_list]
     return diff
 
 
@@ -133,11 +129,7 @@ def list_diff_have_only(want_list, have_list):
     elif not have_list:
         diff = None
     else:
-        diff = [
-            i
-            for i in have_list + want_list
-            if i in have_list and i not in want_list
-        ]
+        diff = [i for i in have_list + want_list if i in have_list and i not in want_list]
     return diff
 
 
@@ -154,11 +146,7 @@ def list_diff_want_only(want_list, have_list):
     elif not have_list:
         diff = want_list
     else:
-        diff = [
-            i
-            for i in have_list + want_list
-            if i in want_list and i not in have_list
-        ]
+        diff = [i for i in have_list + want_list if i in want_list and i not in have_list]
     return diff
 
 
@@ -173,11 +161,7 @@ def search_dict_tv_in_list(d_val1, d_val2, lst, key1, key2):
     :return:
     """
     obj = next(
-        (
-            item
-            for item in lst
-            if item[key1] == d_val1 and item[key2] == d_val2
-        ),
+        (item for item in lst if item[key1] == d_val1 and item[key2] == d_val2),
         None,
     )
     if obj:
@@ -249,13 +233,7 @@ def _bool_to_str(val):
     :param val: bool value.
     :return: enable/disable.
     """
-    return (
-        "enable"
-        if str(val) == "True"
-        else "disable"
-        if str(val) == "False"
-        else val
-    )
+    return "enable" if str(val) == "True" else "disable" if str(val) == "False" else val
 
 
 def _is_w_same(w, h, key):

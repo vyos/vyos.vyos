@@ -19,15 +19,14 @@ created.
 
 
 from ansible.module_utils.six import iteritems
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    dict_merge,
-)
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    dict_merge,
 )
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.prefix_lists import (
     Prefix_listsTemplate,
 )
@@ -86,18 +85,14 @@ class Prefix_lists(ResourceModule):
 
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
-            haved = {
-                k: v for k, v in iteritems(haved) if k in wantd or not wantd
-            }
+            haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
             for key, hvalue in iteritems(haved):
                 wvalue = wantd.pop(key, {})
                 if wvalue:
                     wplists = wvalue.get("prefix_lists", {})
                     hplists = hvalue.get("prefix_lists", {})
                     hvalue["prefix_lists"] = {
-                        k: v
-                        for k, v in iteritems(hplists)
-                        if k in wplists or not wplists
+                        k: v for k, v in iteritems(hplists) if k in wplists or not wplists
                     }
 
         # remove superfluous config for overridden and deleted
@@ -174,9 +169,5 @@ class Prefix_lists(ResourceModule):
                     if "entries" in pl:
                         for entry in pl["entries"]:
                             entry.update({"afi": afi, "name": pl["name"]})
-                        pl["entries"] = {
-                            x["sequence"]: x for x in pl["entries"]
-                        }
-                value["prefix_lists"] = {
-                    entry["name"]: entry for entry in value["prefix_lists"]
-                }
+                        pl["entries"] = {x["sequence"]: x for x in pl["entries"]}
+                value["prefix_lists"] = {entry["name"]: entry for entry in value["prefix_lists"]}

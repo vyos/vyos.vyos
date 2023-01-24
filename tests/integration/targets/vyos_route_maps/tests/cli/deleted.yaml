@@ -8,7 +8,6 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Delete the provided configuration
       register: result
       vyos.vyos.vyos_route_maps: &id001
@@ -27,7 +26,8 @@
           - "{{ deleted['after'] | symmetric_difference(result['after']) |length\
             \ == 0 }}"
 
-    - name: Delete the existing configuration with the provided running configuration
+    - name:
+        Delete the existing configuration with the provided running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_route_maps: *id001
@@ -38,5 +38,4 @@
           - result['changed'] == false
 
   always:
-
     - include_tasks: _remove_config.yaml

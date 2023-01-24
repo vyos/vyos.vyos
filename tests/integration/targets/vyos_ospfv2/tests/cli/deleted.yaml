@@ -6,7 +6,6 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Delete attributes of ospfv2.
       register: result
       vyos.vyos.vyos_ospfv2: &id001
@@ -44,5 +43,4 @@
         that:
           - "{{ deleted['after'] == result['before'] }}"
   always:
-
     - include_tasks: _remove_config.yaml

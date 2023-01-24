@@ -185,7 +185,7 @@ rendered:
     - set firewall source-validation 'strict'
 deleted:
   commands:
-    - 'delete firewall '
+    - "delete firewall "
   after: []
 round_trip:
   after:

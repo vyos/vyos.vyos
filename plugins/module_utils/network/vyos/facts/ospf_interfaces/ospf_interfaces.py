@@ -16,14 +16,13 @@ based on the configuration.
 
 import re
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospf_interfaces.ospf_interfaces import (
+    Ospf_interfacesArgs,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ospf_interfaces import (
     Ospf_interfacesTemplate,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospf_interfaces.ospf_interfaces import (
-    Ospf_interfacesArgs,
 )
 
 
@@ -35,9 +34,7 @@ class Ospf_interfacesFacts(object):
         self.argument_spec = Ospf_interfacesArgs.argument_spec
 
     def get_device_data(self, connection):
-        return connection.get(
-            'show configuration commands |  match "set interfaces"'
-        )
+        return connection.get('show configuration commands |  match "set interfaces"')
 
     def get_config_set(self, data):
         """To classify the configurations beased on interface"""
@@ -69,9 +66,7 @@ class Ospf_interfacesFacts(object):
         """
         facts = {}
         objs = []
-        ospf_interfaces_parser = Ospf_interfacesTemplate(
-            lines=[], module=self._module
-        )
+        ospf_interfaces_parser = Ospf_interfacesTemplate(lines=[], module=self._module)
 
         if not data:
             data = self.get_device_data(connection)

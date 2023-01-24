@@ -1,17 +1,16 @@
 ---
 - debug:
-    msg: Start vyos_interfaces deleted integration tests ansible_connection={{ ansible_connection
+    msg:
+      Start vyos_interfaces deleted integration tests ansible_connection={{ ansible_connection
       }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Delete attributes of given interfaces
       register: result
       vyos.vyos.vyos_interfaces: &id001
         config:
-
           - name: eth1
 
           - name: eth2
@@ -49,5 +48,4 @@
           - "{{ deleted['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

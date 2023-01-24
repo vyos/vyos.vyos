@@ -25,7 +25,6 @@
   register: result
   vyos.vyos.vyos_user:
     aggregate:
-
       - name: ansibletest2
 
       - name: ansibletest3
@@ -55,7 +54,6 @@
   register: result
   vyos.vyos.vyos_user:
     aggregate:
-
       - name: ansibletest2
 
       - name: ansibletest3
@@ -71,7 +69,6 @@
   register: result
   vyos.vyos.vyos_user:
     users:
-
       - name: ansibletest1
 
       - name: ansibletest2

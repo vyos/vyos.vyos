@@ -6,7 +6,6 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Delete attributes of LLDP service.
       register: result
       vyos.vyos.vyos_lldp_global: &id001
@@ -43,5 +42,4 @@
         that:
           - "{{ deleted['after'] == result['before'] }}"
   always:
-
     - include_tasks: _remove_config.yaml

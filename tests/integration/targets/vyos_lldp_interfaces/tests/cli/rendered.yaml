@@ -1,12 +1,12 @@
 ---
 - debug:
-    msg: START vyos_lldp_interfaces rendered integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_lldp_interfaces rendered integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
-
     - name: Structure provided configuration into device specific commands
       register: result
       vyos.vyos.vyos_lldp_interfaces:
@@ -33,5 +33,4 @@
           - "{{ rendered['commands'] | symmetric_difference(result['rendered'])\
             \ |length == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

@@ -164,7 +164,6 @@ commands:
 """
 import re
 import time
-
 from copy import deepcopy
 
 from ansible.module_utils._text import to_text
@@ -173,6 +172,7 @@ from ansible.module_utils.common.validation import check_required_one_of
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     remove_default_spec,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     load_config,
     run_commands,
@@ -204,27 +204,17 @@ def map_obj_to_commands(updates, module):
             if obj_in_have:
                 for obj in obj_in_have:
                     for i in obj["interfaces"]:
-                        commands.append(
-                            "delete interfaces ethernet {0} vif {1}".format(
-                                i, vlan_id
-                            )
-                        )
+                        commands.append("delete interfaces ethernet {0} vif {1}".format(i, vlan_id))
 
         elif state == "present":
             if not obj_in_have:
                 if w["interfaces"] and w["vlan_id"]:
                     for i in w["interfaces"]:
-                        cmd = "set interfaces ethernet {0} vif {1}".format(
-                            i, vlan_id
-                        )
+                        cmd = "set interfaces ethernet {0} vif {1}".format(i, vlan_id)
                         if w["name"]:
-                            commands.append(
-                                cmd + " description {0}".format(name)
-                            )
+                            commands.append(cmd + " description {0}".format(name))
                         elif w["address"]:
-                            commands.append(
-                                cmd + " address {0}".format(address)
-                            )
+                            commands.append(cmd + " address {0}".format(address))
                         else:
                             commands.append(cmd)
 
@@ -234,9 +224,7 @@ def map_obj_to_commands(updates, module):
             if not obj_in_want:
                 for i in h["interfaces"]:
                     commands.append(
-                        "delete interfaces ethernet {0} vif {1}".format(
-                            i, h["vlan_id"]
-                        )
+                        "delete interfaces ethernet {0} vif {1}".format(i, h["vlan_id"])
                     )
 
     return commands
@@ -271,9 +259,7 @@ def map_params_to_obj(module):
                 "address": module.params["address"],
                 "state": module.params["state"],
                 "interfaces": module.params["interfaces"],
-                "associated_interfaces": module.params[
-                    "associated_interfaces"
-                ],
+                "associated_interfaces": module.params["associated_interfaces"],
             }
         )
 
@@ -338,13 +324,9 @@ def check_declarative_intent_params(want, module, result):
         if w.get("associated_interfaces") is None:
             continue
         for i in w["associated_interfaces"]:
-            if (set(obj_interface) - set(w["associated_interfaces"])) != set(
-                []
-            ):
+            if (set(obj_interface) - set(w["associated_interfaces"])) != set([]):
                 module.fail_json(
-                    msg="Interface {0} not configured on vlan {1}".format(
-                        i, w["vlan_id"]
-                    )
+                    msg="Interface {0} not configured on vlan {1}".format(i, w["vlan_id"])
                 )
 
 

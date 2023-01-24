@@ -1,6 +1,7 @@
 ---
 - debug:
-    msg: START vyos_firewall_interfaces parsed integration tests on connection={{
+    msg:
+      START vyos_firewall_interfaces parsed integration tests on connection={{
       ansible_connection }}
 
 - include_tasks: _remove_config.yaml
@@ -12,7 +13,6 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Gather firewall_interfaces facts
       register: firewall_interfaces_facts
       vyos.vyos.vyos_facts:
@@ -29,7 +29,8 @@
 
     - name: Assert that correct parsing done
       assert:
-        that: "{{ ansible_facts['network_resources']['firewall_interfaces'] | symmetric_difference(result['parsed'])\
+        that:
+          "{{ ansible_facts['network_resources']['firewall_interfaces'] | symmetric_difference(result['parsed'])\
           \ |length == 0 }}"
 
     - name: Gather the existing running configuration (IDEMPOTENT)
@@ -41,7 +42,6 @@
         that:
           - result['changed'] == false
   always:
-
     - include_tasks: _remove_config.yaml
 
     - include_tasks: _remove_firewall_config.yaml

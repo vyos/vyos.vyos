@@ -36,5 +36,4 @@
       vyos.vyos.vyos_logging_global: *id001
 
   always:
-
     - include_tasks: _remove_config.yaml

@@ -24,6 +24,7 @@ __metaclass__ = type
 Compat module for Python3.x's unittest.mock module
 """
 import sys
+
 import _io
 
 # Python 2.7
@@ -102,9 +103,7 @@ if sys.version_info >= (3,) and sys.version_info < (3, 4, 4):
         global file_spec
         if file_spec is None:
 
-            file_spec = list(
-                set(dir(_io.TextIOWrapper)).union(set(dir(_io.BytesIO)))
-            )
+            file_spec = list(set(dir(_io.TextIOWrapper)).union(set(dir(_io.BytesIO))))
 
         if mock is None:
             mock = MagicMock(name="open", spec=open)

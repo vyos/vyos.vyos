@@ -14,10 +14,10 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 from copy import deepcopy
-from re import findall, search, M
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from re import M, findall, search
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_global.firewall_global import (
     Firewall_globalArgs,
 )
@@ -207,9 +207,7 @@ class Firewall_globalFacts(object):
         :return: generated config dictionary.
         """
         cfg_dict = {}
-        cfg_dict["port_group"] = self.parse_group_lst(
-            conf, "port-group", False
-        )
+        cfg_dict["port_group"] = self.parse_group_lst(conf, "port-group", False)
         cfg_dict["address_group"] = self.parse_group_lst(
             conf, "address-group"
         ) + self.parse_group_lst(conf, "ipv6-address-group")

@@ -15,6 +15,7 @@ the given network resource.
 """
 
 import re
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
@@ -38,9 +39,7 @@ def _tmplt_bgp_af_aggregate_address(config_data):
 def _tmplt_bgp_af_redistribute_metric(config_data):
     if config_data["address_family"]["redistribute"].get("metric"):
         afi = config_data["address_family"]["afi"] + "-unicast"
-        command = "protocols bgp {as_number} address-family ".format(
-            **config_data
-        )
+        command = "protocols bgp {as_number} address-family ".format(**config_data)
         if config_data["address_family"]["redistribute"].get("metric"):
             command += afi + " redistribute {protocol} metric {metric}".format(
                 **config_data["address_family"]["redistribute"]
@@ -51,15 +50,10 @@ def _tmplt_bgp_af_redistribute_metric(config_data):
 def _tmplt_bgp_af_redistribute_route_map(config_data):
     if config_data["address_family"]["redistribute"].get("route_map"):
         afi = config_data["address_family"]["afi"] + "-unicast"
-        command = "protocols bgp {as_number} address-family ".format(
-            **config_data
-        )
+        command = "protocols bgp {as_number} address-family ".format(**config_data)
         if config_data["address_family"]["redistribute"].get("route_map"):
-            command += (
-                afi
-                + " redistribute {protocol} route-map {route_map}".format(
-                    **config_data["address_family"]["redistribute"]
-                )
+            command += afi + " redistribute {protocol} route-map {route_map}".format(
+                **config_data["address_family"]["redistribute"]
             )
         return command
 
@@ -67,9 +61,7 @@ def _tmplt_bgp_af_redistribute_route_map(config_data):
 def _tmplt_bgp_af_redistribute_table(config_data):
     if config_data["address_family"]["redistribute"].get("table"):
         afi = config_data["address_family"]["afi"] + "-unicast"
-        command = "protocols bgp {as_number} address-family ".format(
-            **config_data
-        )
+        command = "protocols bgp {as_number} address-family ".format(**config_data)
         if config_data["address_family"]["redistribute"].get("table"):
             command += afi + " table {table}".format(
                 **config_data["address_family"]["redistribute"]
@@ -81,9 +73,7 @@ def _tmplt_bgp_af_delete_redistribute(config_data):
     afi = config_data["address_family"]["afi"] + "-unicast"
     command = "protocols bgp {as_number} address-family ".format(**config_data)
     config_data = config_data["address_family"]
-    command += afi + " redistribute {protocol}".format(
-        **config_data["redistribute"]
-    )
+    command += afi + " redistribute {protocol}".format(**config_data["redistribute"])
     return command
 
 
@@ -91,18 +81,11 @@ def _tmplt_bgp_af_neighbor_distribute_list(config_data):
     command = []
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
     cmd = "protocols bgp {as_number} neighbor ".format(**config_data)
-    cmd += "{neighbor_address} address-family ".format(
-        **config_data["neighbors"]
-    )
+    cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
     for list_el in config_data["distribute_list"]:
         command.append(
-            cmd
-            + afi
-            + " distribute-list "
-            + list_el["action"]
-            + " "
-            + str(list_el["acl"])
+            cmd + afi + " distribute-list " + list_el["action"] + " " + str(list_el["acl"])
         )
     return command
 
@@ -111,18 +94,11 @@ def _tmplt_bgp_af_neighbor_route_map(config_data):
     command = []
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
     cmd = "protocols bgp {as_number} neighbor ".format(**config_data)
-    cmd += "{neighbor_address} address-family ".format(
-        **config_data["neighbors"]
-    )
+    cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
     for list_el in config_data["route_map"]:
         command.append(
-            cmd
-            + afi
-            + " route-map "
-            + list_el["action"]
-            + " "
-            + str(list_el["route_map"])
+            cmd + afi + " route-map " + list_el["action"] + " " + str(list_el["route_map"])
         )
     return command
 
@@ -131,18 +107,11 @@ def _tmplt_bgp_af_neighbor_prefix_list(config_data):
     command = []
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
     cmd = "protocols bgp {as_number} neighbor ".format(**config_data)
-    cmd += "{neighbor_address} address-family ".format(
-        **config_data["neighbors"]
-    )
+    cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
     for list_el in config_data["prefix_list"]:
         command.append(
-            cmd
-            + afi
-            + " prefix-list "
-            + list_el["action"]
-            + " "
-            + str(list_el["prefix_list"])
+            cmd + afi + " prefix-list " + list_el["action"] + " " + str(list_el["prefix_list"])
         )
     return command
 
@@ -151,18 +120,11 @@ def _tmplt_bgp_af_neighbor_filter_list(config_data):
     command = []
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
     cmd = "protocols bgp {as_number} neighbor ".format(**config_data)
-    cmd += "{neighbor_address} address-family ".format(
-        **config_data["neighbors"]
-    )
+    cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
     for list_el in config_data["filter_list"]:
         command.append(
-            cmd
-            + afi
-            + " filter-list "
-            + list_el["action"]
-            + " "
-            + str(list_el["path_list"])
+            cmd + afi + " filter-list " + list_el["action"] + " " + str(list_el["path_list"])
         )
     return command
 
@@ -171,9 +133,7 @@ def _tmplt_bgp_af_neighbor_attribute(config_data):
     command = []
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
     cmd = "protocols bgp {as_number} neighbor ".format(**config_data)
-    cmd += "{neighbor_address} address-family ".format(
-        **config_data["neighbors"]
-    )
+    cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
     for k in config_data["attribute_unchanged"].keys():
         if config_data["attribute_unchanged"][k]:
@@ -187,10 +147,7 @@ def _tmplt_bgp_af_neighbor_delete(config_data):
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
     command = "protocols bgp {as_number} ".format(**config_data)
     command += (
-        "neighbor {neighbor_address} address-family ".format(
-            **config_data["neighbors"]
-        )
-        + afi
+        "neighbor {neighbor_address} address-family ".format(**config_data["neighbors"]) + afi
     )
     config_data = config_data["neighbors"]["address_family"]
     if config_data.get("allowas_in"):
@@ -238,10 +195,7 @@ def _tmplt_bgp_af_neighbor(config_data):
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
     command = "protocols bgp {as_number} ".format(**config_data)
     command += (
-        "neighbor {neighbor_address} address-family ".format(
-            **config_data["neighbors"]
-        )
-        + afi
+        "neighbor {neighbor_address} address-family ".format(**config_data["neighbors"]) + afi
     )
     config_data = config_data["neighbors"]["address_family"]
     if config_data.get("allowas_in"):
@@ -255,9 +209,7 @@ def _tmplt_bgp_af_neighbor(config_data):
         elif config_data["capability"].get("orf"):
             command += " prefix-list {orf}".format(**config_data["capability"])
     elif config_data.get("default_originate"):
-        command += " default-originate route-map {default_originate}".format(
-            **config_data
-        )
+        command += " default-originate route-map {default_originate}".format(**config_data)
     elif config_data.get("maximum_prefix"):
         command += " maximum-prefix {maximum_prefix}".format(**config_data)
     elif config_data.get("nexthop_local"):

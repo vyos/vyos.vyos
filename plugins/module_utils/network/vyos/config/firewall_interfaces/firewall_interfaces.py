@@ -15,17 +15,17 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 from copy import deepcopy
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    to_list,
     remove_empties,
     search_obj_in_list,
+    to_list,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
-)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 
 
 class Firewall_interfaces(ConfigBase):
@@ -54,9 +54,7 @@ class Firewall_interfaces(ConfigBase):
         facts, _warnings = Facts(self._module).get_facts(
             self.gather_subset, self.gather_network_resources, data=data
         )
-        firewall_interfaces_facts = facts["ansible_network_resources"].get(
-            "firewall_interfaces"
-        )
+        firewall_interfaces_facts = facts["ansible_network_resources"].get("firewall_interfaces")
         if not firewall_interfaces_facts:
             return []
         return firewall_interfaces_facts
@@ -72,16 +70,12 @@ class Firewall_interfaces(ConfigBase):
         commands = list()
 
         if self.state in self.ACTION_STATES:
-            existing_firewall_interfaces_facts = (
-                self.get_firewall_interfaces_facts()
-            )
+            existing_firewall_interfaces_facts = self.get_firewall_interfaces_facts()
         else:
             existing_firewall_interfaces_facts = []
 
         if self.state in self.ACTION_STATES or self.state == "rendered":
-            commands.extend(
-                self.set_config(existing_firewall_interfaces_facts)
-            )
+            commands.extend(self.set_config(existing_firewall_interfaces_facts))
 
         if commands and self.state in self.ACTION_STATES:
             if not self._module.check_mode:
@@ -92,9 +86,7 @@ class Firewall_interfaces(ConfigBase):
             result["commands"] = commands
 
         if self.state in self.ACTION_STATES or self.state == "gathered":
-            changed_firewall_interfaces_facts = (
-                self.get_firewall_interfaces_facts()
-            )
+            changed_firewall_interfaces_facts = self.get_firewall_interfaces_facts()
         elif self.state == "rendered":
             result["rendered"] = commands
         elif self.state == "parsed":
@@ -103,9 +95,7 @@ class Firewall_interfaces(ConfigBase):
                 self._module.fail_json(
                     msg="value of running_config parameter must not be empty for state parsed"
                 )
-            result["parsed"] = self.get_firewall_interfaces_facts(
-                data=running_config
-            )
+            result["parsed"] = self.get_firewall_interfaces_facts(data=running_config)
         else:
             changed_firewall_interfaces_facts = []
 
@@ -142,14 +132,9 @@ class Firewall_interfaces(ConfigBase):
                   to the desired configuration
         """
         commands = []
-        if (
-            self.state in ("merged", "replaced", "overridden", "rendered")
-            and not w
-        ):
+        if self.state in ("merged", "replaced", "overridden", "rendered") and not w:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(
-                    self.state
-                )
+                msg="value of config parameter must not be empty for state {0}".format(self.state)
             )
         if self.state == "overridden":
             commands.extend(self._state_overridden(w, h))
@@ -189,41 +174,27 @@ class Firewall_interfaces(ConfigBase):
             for h_ar in have:
                 w_ar = search_obj_in_list(h_ar["name"], want)
                 if not w_ar and "access_rules" in h_ar:
-                    commands.append(
-                        self._compute_command(name=h_ar["name"], opr=False)
-                    )
+                    commands.append(self._compute_command(name=h_ar["name"], opr=False))
                 else:
                     h_rules = h_ar.get("access_rules") or []
                     key = "direction"
                     if w_ar:
                         w_rules = w_ar.get("access_rules") or []
                         if not w_rules and h_rules:
-                            commands.append(
-                                self._compute_command(
-                                    name=h_ar["name"], opr=False
-                                )
-                            )
+                            commands.append(self._compute_command(name=h_ar["name"], opr=False))
                     if h_rules:
                         for h_rule in h_rules:
-                            w_rule = search_obj_in_list(
-                                h_rule["afi"], w_rules, key="afi"
-                            )
+                            w_rule = search_obj_in_list(h_rule["afi"], w_rules, key="afi")
                             have_rules = h_rule.get("rules") or []
                             if w_rule:
                                 want_rules = w_rule.get("rules") or []
                             for h in have_rules:
                                 if key in h:
-                                    w = search_obj_in_list(
-                                        h[key], want_rules, key=key
-                                    )
+                                    w = search_obj_in_list(h[key], want_rules, key=key)
                                     if (
                                         not w
                                         or key not in w
-                                        or (
-                                            "name" in h
-                                            and w
-                                            and "name" not in w
-                                        )
+                                        or ("name" in h and w and "name" not in w)
                                     ):
                                         commands.append(
                                             self._compute_command(
@@ -267,9 +238,7 @@ class Firewall_interfaces(ConfigBase):
         elif have:
             for h in have:
                 if "access_rules" in h:
-                    commands.append(
-                        self._compute_command(name=h["name"], opr=False)
-                    )
+                    commands.append(self._compute_command(name=h["name"], opr=False))
         return commands
 
     def _delete_access_rules(self, want, have, opr=False):
@@ -321,9 +290,7 @@ class Firewall_interfaces(ConfigBase):
             for h in h_rules:
                 if key in h:
                     commands.append(
-                        self._compute_command(
-                            afi=want["afi"], name=name, attrib=h[key], opr=opr
-                        )
+                        self._compute_command(afi=want["afi"], name=name, attrib=h[key], opr=opr)
                     )
         for w in w_rules:
             h = search_obj_in_list(w[key], h_rules, key=key)
@@ -388,9 +355,7 @@ class Firewall_interfaces(ConfigBase):
             h = search_obj_in_list(w[key], h_rules, key=key)
             if key in w:
                 if opr:
-                    if "name" in w and not (
-                        h and h[key] == w[key] and h["name"] == w["name"]
-                    ):
+                    if "name" in w and not (h and h[key] == w[key] and h["name"] == w["name"]):
                         commands.append(
                             self._compute_command(
                                 afi=want["afi"],
@@ -401,16 +366,10 @@ class Firewall_interfaces(ConfigBase):
                         )
                     elif not (h and key in h):
                         commands.append(
-                            self._compute_command(
-                                afi=want["afi"], name=name, attrib=w[key]
-                            )
+                            self._compute_command(afi=want["afi"], name=name, attrib=w[key])
                         )
                 elif not opr:
-                    if (
-                        not h
-                        or key not in h
-                        or ("name" in w and h and "name" not in h)
-                    ):
+                    if not h or key not in h or ("name" in w and h and "name" not in h):
                         commands.append(
                             self._compute_command(
                                 afi=want["afi"],
@@ -421,9 +380,7 @@ class Firewall_interfaces(ConfigBase):
                         )
         return commands
 
-    def _compute_command(
-        self, afi=None, name=None, attrib=None, value=None, opr=True
-    ):
+    def _compute_command(self, afi=None, name=None, attrib=None, value=None, opr=True):
         """
         This function construct the add/delete command based on passed attributes.
         :param afi:  address type.

@@ -8,7 +8,6 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Structure provided configuration into device specific commands
       register: result
       vyos.vyos.vyos_firewall_global: &id001
@@ -22,7 +21,6 @@
             all: true
             broadcast: true
           state_policy:
-
             - connection_type: established
               action: accept
               log: true
@@ -30,7 +28,6 @@
             - connection_type: invalid
               action: reject
           route_redirects:
-
             - afi: ipv4
               ip_src_route: true
               icmp_redirects:
@@ -38,11 +35,9 @@
                 receive: false
           group:
             address_group:
-
               - name: SALES-HOSTS
                 description: Sales office hosts address list
                 members:
-
                   - address: 192.0.2.1
 
                   - address: 192.0.2.2
@@ -52,16 +47,13 @@
               - name: ENG-HOSTS
                 description: Sales office hosts address list
                 members:
-
                   - address: 192.0.3.1
 
                   - address: 192.0.3.2
             network_group:
-
               - name: MGMT
                 description: This group has the Management network addresses
                 members:
-
                   - address: 192.0.1.0/24
         state: rendered
 
@@ -80,5 +72,4 @@
         that:
           - result['changed'] == false
   always:
-
     - include_tasks: _remove_config.yaml

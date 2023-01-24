@@ -21,15 +21,11 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import (
-    patch,
-    MagicMock,
-)
-from ansible_collections.vyos.vyos.plugins.modules import vyos_config
 from ansible_collections.vyos.vyos.plugins.cliconf.vyos import Cliconf
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.plugins.modules import vyos_config
+from ansible_collections.vyos.vyos.tests.unit.compat.mock import MagicMock, patch
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
@@ -82,9 +78,7 @@ class TestVyosConfigModule(TestVyosModule):
 
     def test_vyos_config_unchanged(self):
         src = load_fixture("vyos_config_config.cfg")
-        self.conn.get_diff = MagicMock(
-            return_value=self.cliconf_obj.get_diff(src, src)
-        )
+        self.conn.get_diff = MagicMock(return_value=self.cliconf_obj.get_diff(src, src))
         set_module_args(dict(src=src))
         self.execute_module()
 
@@ -97,9 +91,7 @@ class TestVyosConfigModule(TestVyosModule):
             "delete interfaces ethernet eth0 address",
         ]
         self.conn.get_diff = MagicMock(
-            return_value=self.cliconf_obj.get_diff(
-                candidate, self.running_config
-            )
+            return_value=self.cliconf_obj.get_diff(candidate, self.running_config)
         )
         self.execute_module(changed=True, commands=commands)
 
@@ -124,9 +116,7 @@ class TestVyosConfigModule(TestVyosModule):
         set_module_args(dict(lines=commands))
         candidate = "\n".join(commands)
         self.conn.get_diff = MagicMock(
-            return_value=self.cliconf_obj.get_diff(
-                candidate, self.running_config
-            )
+            return_value=self.cliconf_obj.get_diff(candidate, self.running_config)
         )
         self.execute_module(changed=True, commands=commands)
 
@@ -135,9 +125,7 @@ class TestVyosConfigModule(TestVyosModule):
         new_config = ["set system host-name router"]
         set_module_args(dict(lines=new_config, config=config))
         candidate = "\n".join(new_config)
-        self.conn.get_diff = MagicMock(
-            return_value=self.cliconf_obj.get_diff(candidate, config)
-        )
+        self.conn.get_diff = MagicMock(return_value=self.cliconf_obj.get_diff(candidate, config))
         self.execute_module(changed=True, commands=new_config)
 
     def test_vyos_config_match_none(self):
@@ -148,8 +136,6 @@ class TestVyosConfigModule(TestVyosModule):
         set_module_args(dict(lines=lines, match="none"))
         candidate = "\n".join(lines)
         self.conn.get_diff = MagicMock(
-            return_value=self.cliconf_obj.get_diff(
-                candidate, None, diff_match="none"
-            )
+            return_value=self.cliconf_obj.get_diff(candidate, None, diff_match="none")
         )
         self.execute_module(changed=True, commands=lines, sort=False)

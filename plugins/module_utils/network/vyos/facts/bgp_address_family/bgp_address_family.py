@@ -15,14 +15,14 @@ based on the configuration.
 """
 
 import re
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.bgp_address_family.bgp_address_family import (
+    Bgp_address_familyArgs,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_address_family import (
     Bgp_address_familyTemplate,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.bgp_address_family.bgp_address_family import (
-    Bgp_address_familyArgs,
 )
 
 
@@ -34,9 +34,7 @@ class Bgp_address_familyFacts(object):
         self.argument_spec = Bgp_address_familyArgs.argument_spec
 
     def get_device_data(self, connection):
-        return connection.get(
-            'show configuration commands |  match "set protocols bgp"'
-        )
+        return connection.get('show configuration commands |  match "set protocols bgp"')
 
     def populate_facts(self, connection, ansible_facts, data=None):
         """Populate the facts for Bgp_address_family network resource
@@ -60,40 +58,28 @@ class Bgp_address_familyFacts(object):
                 config_lines.append(re.sub("'", "", resource))
 
         # parse native config using the Bgp_address_family template
-        bgp_address_family_parser = Bgp_address_familyTemplate(
-            lines=config_lines
-        )
+        bgp_address_family_parser = Bgp_address_familyTemplate(lines=config_lines)
         objs = bgp_address_family_parser.parse()
         if objs:
             if "address_family" in objs:
                 objs["address_family"] = list(objs["address_family"].values())
                 for af in objs["address_family"]:
                     if "networks" in af:
-                        af["networks"] = sorted(
-                            af["networks"], key=lambda k: k["prefix"]
-                        )
+                        af["networks"] = sorted(af["networks"], key=lambda k: k["prefix"])
                     if "aggregate_address" in af:
                         af["aggregate_address"] = sorted(
                             af["aggregate_address"], key=lambda k: k["prefix"]
                         )
             if "neighbors" in objs:
                 objs["neighbors"] = list(objs["neighbors"].values())
-                objs["neighbors"] = sorted(
-                    objs["neighbors"], key=lambda k: k["neighbor_address"]
-                )
+                objs["neighbors"] = sorted(objs["neighbors"], key=lambda k: k["neighbor_address"])
                 for neigh in objs["neighbors"]:
                     if "address_family" in neigh:
-                        neigh["address_family"] = list(
-                            neigh["address_family"].values()
-                        )
+                        neigh["address_family"] = list(neigh["address_family"].values())
 
-        ansible_facts["ansible_network_resources"].pop(
-            "bgp_address_family", None
-        )
+        ansible_facts["ansible_network_resources"].pop("bgp_address_family", None)
 
-        params = utils.remove_empties(
-            utils.validate_config(self.argument_spec, {"config": objs})
-        )
+        params = utils.remove_empties(utils.validate_config(self.argument_spec, {"config": objs}))
 
         facts["bgp_address_family"] = params.get("config", [])
         ansible_facts["ansible_network_resources"].update(facts)

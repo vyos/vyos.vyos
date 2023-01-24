@@ -8,7 +8,6 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Gather config from the device in structured format.
       register: result
       vyos.vyos.vyos_bgp_global:

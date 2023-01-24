@@ -34,7 +34,7 @@
 - name: Configuring when commands starts with whitespaces
   register: result
   vyos.vyos.vyos_config:
-    src: '{{ role_path }}/tests/cli/config.cfg'
+    src: "{{ role_path }}/tests/cli/config.cfg"
 
 - assert:
     that:

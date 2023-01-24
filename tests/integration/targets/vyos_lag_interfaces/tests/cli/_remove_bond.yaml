@@ -3,4 +3,4 @@
   vars:
     lines: "delete interfaces bonding bond0\ndelete interfaces bonding bond1\n"
   ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    config: "{{ lines }}"
