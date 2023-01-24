@@ -316,8 +316,7 @@ def run(module, result):
 
         if result.get("filtered"):
             result["warnings"].append(
-                "Some configuration commands were "
-                "removed, please see the filtered key"
+                "Some configuration commands were removed, please see the filtered key"
             )
 
         result["changed"] = True
