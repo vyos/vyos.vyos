@@ -1,27 +1,24 @@
 ---
 - debug:
-    msg: START vyos_l3_interfaces merged integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_l3_interfaces merged integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
-
     - include_tasks: _populate.yaml
 
     - name: Overrides all device configuration with provided configuration
       register: result
       vyos.vyos.vyos_l3_interfaces: &id001
         config:
-
           - name: eth0
             ipv4:
-
               - address: dhcp
 
           - name: eth1
             ipv4:
-
               - address: 192.0.2.15/24
         state: overridden
 
@@ -57,5 +54,4 @@
           - "{{ overridden['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

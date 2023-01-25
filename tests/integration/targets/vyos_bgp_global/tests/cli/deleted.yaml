@@ -8,7 +8,6 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Delete the provided configuration
       register: result
       vyos.vyos.vyos_bgp_global: &id001
@@ -26,7 +25,8 @@
           - result.commands|symmetric_difference(deleted.commands) == []
           - result.after == ansible_facts['network_resources']['bgp_global']
 
-    - name: Delete the existing configuration with the provided running configuration
+    - name:
+        Delete the existing configuration with the provided running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_bgp_global: *id001
@@ -37,5 +37,4 @@
           - result['changed'] == false
 
   always:
-
     - include_tasks: _remove_config.yaml

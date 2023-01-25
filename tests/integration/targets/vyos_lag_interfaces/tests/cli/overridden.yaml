@@ -10,16 +10,13 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Overrides all device configuration with provided configuration
       register: result
       vyos.vyos.vyos_lag_interfaces: &id001
         config:
-
           - name: bond1
             mode: active-backup
             members:
-
               - member: eth2
             primary: eth2
             hash_policy: layer2
@@ -57,5 +54,4 @@
           - "{{ overridden['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

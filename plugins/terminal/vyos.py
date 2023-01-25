@@ -24,9 +24,7 @@ import os
 import re
 
 from ansible.errors import AnsibleConnectionFailure
-from ansible_collections.ansible.netcommon.plugins.plugin_utils.terminal_base import (
-    TerminalBase,
-)
+from ansible_collections.ansible.netcommon.plugins.plugin_utils.terminal_base import TerminalBase
 
 
 class TerminalModule(TerminalBase):
@@ -71,8 +69,6 @@ class TerminalModule(TerminalBase):
         try:
             for cmd in (b"set terminal length 0", b"set terminal width 512"):
                 self._exec_cli_command(cmd)
-            self._exec_cli_command(
-                b"set terminal length %d" % self.terminal_length
-            )
+            self._exec_cli_command(b"set terminal length %d" % self.terminal_length)
         except AnsibleConnectionFailure:
             raise AnsibleConnectionFailure("unable to set terminal parameters")

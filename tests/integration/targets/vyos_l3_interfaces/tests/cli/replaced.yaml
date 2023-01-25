@@ -1,27 +1,24 @@
 ---
 - debug:
-    msg: START vyos_l3_interfaces replaced integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_l3_interfaces replaced integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
-
     - include_tasks: _populate.yaml
 
     - name: Replace device configurations of listed interfaces with provided configurations
       register: result
       vyos.vyos.vyos_l3_interfaces: &id001
         config:
-
           - name: eth1
             ipv4:
-
               - address: 192.0.2.19/24
 
           - name: eth2
             ipv6:
-
               - address: 2001:db8::11/32
         state: replaced
 
@@ -42,7 +39,8 @@
           - "{{ replaced['after'] | symmetric_difference(result['after']) |length\
             \ == 0 }}"
 
-    - name: Replace device configurations of listed interfaces with provided configurarions
+    - name:
+        Replace device configurations of listed interfaces with provided configurarions
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_l3_interfaces: *id001
@@ -58,5 +56,4 @@
           - "{{ replaced['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

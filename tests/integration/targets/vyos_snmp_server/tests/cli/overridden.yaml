@@ -8,7 +8,6 @@
 - include_tasks: _populate_config.yaml
 
 - block:
-
     - name: Override the existing configuration with the provided running configuration
       register: result
       vyos.vyos.vyos_snmp_server: &id001
@@ -51,8 +50,8 @@
           - result.after == ansible_facts['network_resources']['snmp_server']
           - result.commands|length == 13
 
-
-    - name: Override the existing configuration with the provided running configuration
+    - name:
+        Override the existing configuration with the provided running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_snmp_server: *id001
@@ -63,5 +62,4 @@
           - result['changed'] == false
 
   always:
-
     - include_tasks: _remove_config.yaml

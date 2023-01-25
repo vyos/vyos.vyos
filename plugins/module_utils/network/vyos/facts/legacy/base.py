@@ -14,9 +14,10 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 import platform
 import re
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    run_commands,
     get_capabilities,
+    run_commands,
 )
 
 

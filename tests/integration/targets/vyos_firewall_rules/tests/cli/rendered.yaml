@@ -1,32 +1,28 @@
 ---
 - debug:
-    msg: START vyos_firewall_rules rendered integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_firewall_rules rendered integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
-
     - name: Structure provided configuration into device specific commands
       register: result
       vyos.vyos.vyos_firewall_rules:
         config:
-
           - afi: ipv6
             rule_sets:
-
               - name: UPLINK
                 description: This is ipv6 specific rule-set
                 default_action: accept
 
           - afi: ipv4
             rule_sets:
-
               - name: INBOUND
                 description: IPv4 INBOUND rule set
                 default_action: accept
                 rules:
-
                   - number: 101
                     action: accept
                     description: Rule 101 is configured by Ansible

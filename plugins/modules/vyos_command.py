@@ -148,12 +148,11 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.p
     Conditional,
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    transform_commands,
     to_lines,
+    transform_commands,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    run_commands,
-)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import run_commands
 
 
 def parse_commands(module, warnings):
@@ -216,9 +215,7 @@ def main():
         msg = "One or more conditional statements have not been satisfied"
         module.fail_json(msg=msg, failed_conditions=failed_conditions)
 
-    result.update(
-        {"stdout": responses, "stdout_lines": list(to_lines(responses))}
-    )
+    result.update({"stdout": responses, "stdout_lines": list(to_lines(responses))})
 
     module.exit_json(**result)
 

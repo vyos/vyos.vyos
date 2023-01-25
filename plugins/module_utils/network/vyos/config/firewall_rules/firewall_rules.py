@@ -14,22 +14,22 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+import re
 from copy import deepcopy
+
+from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    to_list,
     remove_empties,
+    to_list,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
-)
-from ansible.module_utils.six import iteritems
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     list_diff_want_only,
 )
-import re
 
 
 class Firewall_rules(ConfigBase):
@@ -58,9 +58,7 @@ class Firewall_rules(ConfigBase):
         facts, _warnings = Facts(self._module).get_facts(
             self.gather_subset, self.gather_network_resources, data=data
         )
-        firewall_rules_facts = facts["ansible_network_resources"].get(
-            "firewall_rules"
-        )
+        firewall_rules_facts = facts["ansible_network_resources"].get("firewall_rules")
         if not firewall_rules_facts:
             return []
         return firewall_rules_facts
@@ -101,9 +99,7 @@ class Firewall_rules(ConfigBase):
                 self._module.fail_json(
                     msg="value of running_config parameter must not be empty for state parsed"
                 )
-            result["parsed"] = self.get_firewall_rules_facts(
-                data=running_config
-            )
+            result["parsed"] = self.get_firewall_rules_facts(data=running_config)
         else:
             changed_firewall_rules_facts = []
 
@@ -140,14 +136,9 @@ class Firewall_rules(ConfigBase):
                   to the desired configuration
         """
         commands = []
-        if (
-            self.state in ("merged", "replaced", "overridden", "rendered")
-            and not w
-        ):
+        if self.state in ("merged", "replaced", "overridden", "rendered") and not w:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(
-                    self.state
-                )
+                msg="value of config parameter must not be empty for state {0}".format(self.state)
             )
         if self.state == "overridden":
             commands.extend(self._state_overridden(w, h))
@@ -206,19 +197,11 @@ class Firewall_rules(ConfigBase):
             for h in have:
                 r_sets = self._get_r_sets(h)
                 for rs in r_sets:
-                    w = self.search_r_sets_in_have(
-                        want, rs["name"], "r_list", h["afi"]
-                    )
+                    w = self.search_r_sets_in_have(want, rs["name"], "r_list", h["afi"])
                     if not w:
-                        commands.append(
-                            self._compute_command(
-                                h["afi"], rs["name"], remove=True
-                            )
-                        )
+                        commands.append(self._compute_command(h["afi"], rs["name"], remove=True))
                     else:
-                        commands.extend(
-                            self._add_r_sets(h["afi"], rs, w, opr=False)
-                        )
+                        commands.extend(self._add_r_sets(h["afi"], rs, w, opr=False))
         commands.extend(self._state_merged(want, have))
         return commands
 
@@ -233,9 +216,7 @@ class Firewall_rules(ConfigBase):
         for w in want:
             r_sets = self._get_r_sets(w)
             for rs in r_sets:
-                h = self.search_r_sets_in_have(
-                    have, rs["name"], "r_list", w["afi"]
-                )
+                h = self.search_r_sets_in_have(have, rs["name"], "r_list", w["afi"])
                 commands.extend(self._add_r_sets(w["afi"], rs, h))
         return commands
 
@@ -252,28 +233,18 @@ class Firewall_rules(ConfigBase):
                 r_sets = self._get_r_sets(w)
                 if r_sets:
                     for rs in r_sets:
-                        h = self.search_r_sets_in_have(
-                            have, rs["name"], "r_list", w["afi"]
-                        )
+                        h = self.search_r_sets_in_have(have, rs["name"], "r_list", w["afi"])
                         if h:
-                            commands.append(
-                                self._compute_command(
-                                    w["afi"], h["name"], remove=True
-                                )
-                            )
+                            commands.append(self._compute_command(w["afi"], h["name"], remove=True))
                 elif have:
                     for h in have:
                         if h["afi"] == w["afi"]:
-                            commands.append(
-                                self._compute_command(w["afi"], remove=True)
-                            )
+                            commands.append(self._compute_command(w["afi"], remove=True))
         elif have:
             for h in have:
                 r_sets = self._get_r_sets(h)
                 if r_sets:
-                    commands.append(
-                        self._compute_command(afi=h["afi"], remove=True)
-                    )
+                    commands.append(self._compute_command(afi=h["afi"], remove=True))
         return commands
 
     def _add_r_sets(self, afi, want, have, opr=True):
@@ -297,26 +268,12 @@ class Firewall_rules(ConfigBase):
             h_rules = h_rs.pop("rules", None)
         if w_rs:
             for key, val in iteritems(w_rs):
-                if (
-                    opr
-                    and key in l_set
-                    and not (h_rs and self._is_w_same(w_rs, h_rs, key))
-                ):
+                if opr and key in l_set and not (h_rs and self._is_w_same(w_rs, h_rs, key)):
                     if key == "enable_default_log":
-                        if val and (
-                            not h_rs or key not in h_rs or not h_rs[key]
-                        ):
-                            commands.append(
-                                self._add_rs_base_attrib(
-                                    afi, want["name"], key, w_rs
-                                )
-                            )
+                        if val and (not h_rs or key not in h_rs or not h_rs[key]):
+                            commands.append(self._add_rs_base_attrib(afi, want["name"], key, w_rs))
                     else:
-                        commands.append(
-                            self._add_rs_base_attrib(
-                                afi, want["name"], key, w_rs
-                            )
-                        )
+                        commands.append(self._add_rs_base_attrib(afi, want["name"], key, w_rs))
                 elif not opr and key in l_set:
                     if (
                         key == "enable_default_log"
@@ -324,20 +281,10 @@ class Firewall_rules(ConfigBase):
                         and h_rs
                         and (key not in h_rs or not h_rs[key])
                     ):
-                        commands.append(
-                            self._add_rs_base_attrib(
-                                afi, want["name"], key, w_rs, opr
-                            )
-                        )
+                        commands.append(self._add_rs_base_attrib(afi, want["name"], key, w_rs, opr))
                     elif not (h_rs and self._in_target(h_rs, key)):
-                        commands.append(
-                            self._add_rs_base_attrib(
-                                afi, want["name"], key, w_rs, opr
-                            )
-                        )
-            commands.extend(
-                self._add_rules(afi, want["name"], w_rules, h_rules, opr)
-            )
+                        commands.append(self._add_rs_base_attrib(afi, want["name"], key, w_rs, opr))
+            commands.extend(self._add_rules(afi, want["name"], w_rules, h_rules, opr))
         if h_rules:
             have["rules"] = h_rules
         if w_rules:
@@ -366,87 +313,43 @@ class Firewall_rules(ConfigBase):
         if w_rules:
             for w in w_rules:
                 cmd = self._compute_command(afi, name, w["number"], opr=opr)
-                h = self.search_r_sets_in_have(
-                    h_rules, w["number"], type="rules"
-                )
+                h = self.search_r_sets_in_have(h_rules, w["number"], type="rules")
                 for key, val in iteritems(w):
                     if val:
-                        if (
-                            opr
-                            and key in l_set
-                            and not (h and self._is_w_same(w, h, key))
-                        ):
+                        if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
                             if key == "disable":
-                                if not (
-                                    not val
-                                    and (not h or key not in h or not h[key])
-                                ):
-                                    commands.append(
-                                        self._add_r_base_attrib(
-                                            afi, name, key, w
-                                        )
-                                    )
+                                if not (not val and (not h or key not in h or not h[key])):
+                                    commands.append(self._add_r_base_attrib(afi, name, key, w))
                             else:
-                                commands.append(
-                                    self._add_r_base_attrib(afi, name, key, w)
-                                )
+                                commands.append(self._add_r_base_attrib(afi, name, key, w))
                         elif not opr:
                             if key == "number" and self._is_del(l_set, h):
-                                commands.append(
-                                    self._add_r_base_attrib(
-                                        afi, name, key, w, opr=opr
-                                    )
-                                )
+                                commands.append(self._add_r_base_attrib(afi, name, key, w, opr=opr))
                                 continue
-                            if (
-                                key == "disable"
-                                and val
-                                and h
-                                and (key not in h or not h[key])
-                            ):
-                                commands.append(
-                                    self._add_r_base_attrib(
-                                        afi, name, key, w, opr=opr
-                                    )
-                                )
+                            if key == "disable" and val and h and (key not in h or not h[key]):
+                                commands.append(self._add_r_base_attrib(afi, name, key, w, opr=opr))
                             elif (
                                 key in l_set
                                 and not (h and self._in_target(h, key))
                                 and not self._is_del(l_set, h)
                             ):
-                                commands.append(
-                                    self._add_r_base_attrib(
-                                        afi, name, key, w, opr=opr
-                                    )
-                                )
+                                commands.append(self._add_r_base_attrib(afi, name, key, w, opr=opr))
                         elif key == "p2p":
                             commands.extend(self._add_p2p(key, w, h, cmd, opr))
                         elif key == "tcp":
                             commands.extend(self._add_tcp(key, w, h, cmd, opr))
                         elif key == "time":
-                            commands.extend(
-                                self._add_time(key, w, h, cmd, opr)
-                            )
+                            commands.extend(self._add_time(key, w, h, cmd, opr))
                         elif key == "icmp":
-                            commands.extend(
-                                self._add_icmp(key, w, h, cmd, opr)
-                            )
+                            commands.extend(self._add_icmp(key, w, h, cmd, opr))
                         elif key == "state":
-                            commands.extend(
-                                self._add_state(key, w, h, cmd, opr)
-                            )
+                            commands.extend(self._add_state(key, w, h, cmd, opr))
                         elif key == "limit":
-                            commands.extend(
-                                self._add_limit(key, w, h, cmd, opr)
-                            )
+                            commands.extend(self._add_limit(key, w, h, cmd, opr))
                         elif key == "recent":
-                            commands.extend(
-                                self._add_recent(key, w, h, cmd, opr)
-                            )
+                            commands.extend(self._add_recent(key, w, h, cmd, opr))
                         elif key == "destination" or key == "source":
-                            commands.extend(
-                                self._add_src_or_dest(key, w, h, cmd, opr)
-                            )
+                            commands.extend(self._add_src_or_dest(key, w, h, cmd, opr))
         return commands
 
     def _add_p2p(self, attr, w, h, cmd, opr):
@@ -467,15 +370,11 @@ class Firewall_rules(ConfigBase):
             if opr:
                 applications = list_diff_want_only(want, have)
                 for app in applications:
-                    commands.append(
-                        cmd + (" " + attr + " " + app["application"])
-                    )
+                    commands.append(cmd + (" " + attr + " " + app["application"]))
             elif not opr and have:
                 applications = list_diff_want_only(want, have)
                 for app in applications:
-                    commands.append(
-                        cmd + (" " + attr + " " + app["application"])
-                    )
+                    commands.append(cmd + (" " + attr + " " + app["application"]))
         return commands
 
     def _add_state(self, attr, w, h, cmd, opr):
@@ -497,26 +396,10 @@ class Firewall_rules(ConfigBase):
                 if (
                     opr
                     and item in l_set
-                    and not (
-                        h_state and self._is_w_same(w[attr], h_state, item)
-                    )
+                    and not (h_state and self._is_w_same(w[attr], h_state, item))
                 ):
-                    commands.append(
-                        cmd
-                        + (
-                            " "
-                            + attr
-                            + " "
-                            + item
-                            + " "
-                            + self._bool_to_str(val)
-                        )
-                    )
-                elif (
-                    not opr
-                    and item in l_set
-                    and not (h_state and self._in_target(h_state, item))
-                ):
+                    commands.append(cmd + (" " + attr + " " + item + " " + self._bool_to_str(val)))
+                elif not opr and item in l_set and not (h_state and self._in_target(h_state, item)):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
 
@@ -539,17 +422,11 @@ class Firewall_rules(ConfigBase):
                 if (
                     opr
                     and item in l_set
-                    and not (
-                        h_recent and self._is_w_same(w[attr], h_recent, item)
-                    )
+                    and not (h_recent and self._is_w_same(w[attr], h_recent, item))
                 ):
-                    commands.append(
-                        cmd + (" " + attr + " " + item + " " + str(val))
-                    )
+                    commands.append(cmd + (" " + attr + " " + item + " " + str(val)))
                 elif (
-                    not opr
-                    and item in l_set
-                    and not (h_recent and self._in_target(h_recent, item))
+                    not opr and item in l_set and not (h_recent and self._in_target(h_recent, item))
                 ):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
@@ -587,38 +464,14 @@ class Firewall_rules(ConfigBase):
                         else:
                             param_name = "type"
                         if "ipv6-name" in cmd:
-                            commands.append(
-                                cmd
-                                + (
-                                    " "
-                                    + "icmpv6"
-                                    + " "
-                                    + param_name
-                                    + " "
-                                    + val
-                                )
-                            )
+                            commands.append(cmd + (" " + "icmpv6" + " " + param_name + " " + val))
                         else:
                             commands.append(
-                                cmd
-                                + (
-                                    " "
-                                    + attr
-                                    + " "
-                                    + item.replace("_", "-")
-                                    + " "
-                                    + val
-                                )
+                                cmd + (" " + attr + " " + item.replace("_", "-") + " " + val)
                             )
                     else:
-                        commands.append(
-                            cmd + (" " + attr + " " + item + " " + str(val))
-                        )
-                elif (
-                    not opr
-                    and item in l_set
-                    and not (h_icmp and self._in_target(h_icmp, item))
-                ):
+                        commands.append(cmd + (" " + attr + " " + item + " " + str(val)))
+                elif not opr and item in l_set and not (h_icmp and self._in_target(h_icmp, item)):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
 
@@ -652,14 +505,10 @@ class Firewall_rules(ConfigBase):
                     and not (h_time and self._is_w_same(w[attr], h_time, item))
                 ):
                     if item == "utc":
-                        if not (
-                            not val and (not h_time or item not in h_time)
-                        ):
+                        if not (not val and (not h_time or item not in h_time)):
                             commands.append(cmd + (" " + attr + " " + item))
                     else:
-                        commands.append(
-                            cmd + (" " + attr + " " + item + " " + val)
-                        )
+                        commands.append(cmd + (" " + attr + " " + item + " " + val))
                 elif (
                     not opr
                     and item in l_set
@@ -686,18 +535,10 @@ class Firewall_rules(ConfigBase):
                 if h and key in h[attr].keys():
                     h_tcp = h[attr].get(key) or {}
                 if flags:
-                    if opr and not (
-                        h_tcp and self._is_w_same(w[attr], h[attr], key)
-                    ):
-                        commands.append(
-                            cmd + (" " + attr + " " + key + " " + flags)
-                        )
-                    if not opr and not (
-                        h_tcp and self._is_w_same(w[attr], h[attr], key)
-                    ):
-                        commands.append(
-                            cmd + (" " + attr + " " + key + " " + flags)
-                        )
+                    if opr and not (h_tcp and self._is_w_same(w[attr], h[attr], key)):
+                        commands.append(cmd + (" " + attr + " " + key + " " + flags))
+                    if not opr and not (h_tcp and self._is_w_same(w[attr], h[attr], key)):
+                        commands.append(cmd + (" " + attr + " " + key + " " + flags))
         return commands
 
     def _add_limit(self, attr, w, h, cmd, opr):
@@ -716,27 +557,15 @@ class Firewall_rules(ConfigBase):
             if (
                 opr
                 and key in w[attr].keys()
-                and not (
-                    h
-                    and attr in h.keys()
-                    and self._is_w_same(w[attr], h[attr], key)
-                )
+                and not (h and attr in h.keys() and self._is_w_same(w[attr], h[attr], key))
             ):
-                commands.append(
-                    cmd
-                    + (" " + attr + " " + key + " " + str(w[attr].get(key)))
-                )
+                commands.append(cmd + (" " + attr + " " + key + " " + str(w[attr].get(key))))
             elif (
                 not opr
                 and key in w[attr].keys()
-                and not (
-                    h and attr in h.keys() and self._in_target(h[attr], key)
-                )
+                and not (h and attr in h.keys() and self._in_target(h[attr], key))
             ):
-                commands.append(
-                    cmd
-                    + (" " + attr + " " + key + " " + str(w[attr].get(key)))
-                )
+                commands.append(cmd + (" " + attr + " " + key + " " + str(w[attr].get(key))))
             key = "rate"
             rate = w[attr].get(key) or {}
             if rate:
@@ -787,31 +616,15 @@ class Firewall_rules(ConfigBase):
                 if (
                     opr
                     and key in w[attr].keys()
-                    and not (
-                        h
-                        and attr in h.keys()
-                        and self._is_w_same(w[attr], h[attr], key)
-                    )
+                    and not (h and attr in h.keys() and self._is_w_same(w[attr], h[attr], key))
                 ):
                     commands.append(
-                        cmd
-                        + (
-                            " "
-                            + attr
-                            + " "
-                            + key.replace("_", "-")
-                            + " "
-                            + w[attr].get(key)
-                        )
+                        cmd + (" " + attr + " " + key.replace("_", "-") + " " + w[attr].get(key))
                     )
                 elif (
                     not opr
                     and key in w[attr].keys()
-                    and not (
-                        h
-                        and attr in h.keys()
-                        and self._in_target(h[attr], key)
-                    )
+                    and not (h and attr in h.keys() and self._in_target(h[attr], key))
                 ):
                     commands.append(cmd + (" " + attr + " " + key))
 
@@ -826,10 +639,7 @@ class Firewall_rules(ConfigBase):
                         if (
                             opr
                             and item in g_set
-                            and not (
-                                h_group
-                                and self._is_w_same(group, h_group, item)
-                            )
+                            and not (h_group and self._is_w_same(group, h_group, item))
                         ):
                             commands.append(
                                 cmd
@@ -847,20 +657,10 @@ class Firewall_rules(ConfigBase):
                         elif (
                             not opr
                             and item in g_set
-                            and not (
-                                h_group and self._in_target(h_group, item)
-                            )
+                            and not (h_group and self._in_target(h_group, item))
                         ):
                             commands.append(
-                                cmd
-                                + (
-                                    " "
-                                    + attr
-                                    + " "
-                                    + key
-                                    + " "
-                                    + item.replace("_", "-")
-                                )
+                                cmd + (" " + attr + " " + key + " " + item.replace("_", "-"))
                             )
         return commands
 
@@ -938,12 +738,7 @@ class Firewall_rules(ConfigBase):
             cmd += " rule " + str(number)
         if attrib:
             cmd += " " + attrib.replace("_", "-")
-        if (
-            value
-            and opr
-            and attrib != "enable_default_log"
-            and attrib != "disable"
-        ):
+        if value and opr and attrib != "enable_default_log" and attrib != "disable":
             cmd += " '" + str(value) + "'"
         return cmd
 
@@ -959,9 +754,7 @@ class Firewall_rules(ConfigBase):
         :return: generated command.
         """
         if attr == "number":
-            command = self._compute_command(
-                afi=afi, name=name, number=rule["number"], opr=opr
-            )
+            command = self._compute_command(afi=afi, name=name, number=rule["number"], opr=opr)
         else:
             command = self._compute_command(
                 afi=afi,
@@ -1062,7 +855,5 @@ class Firewall_rules(ConfigBase):
     def _get_os_version(self):
         os_version = "1.2"
         if self._connection:
-            os_version = self._connection.get_device_info()[
-                "network_os_version"
-            ]
+            os_version = self._connection.get_device_info()["network_os_version"]
         return os_version

@@ -145,9 +145,7 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                         },
                         "network": {
                             "elements": "dict",
-                            "options": {
-                                "address": {"required": True, "type": "str"}
-                            },
+                            "options": {"address": {"required": True, "type": "str"}},
                             "type": "list",
                         },
                         "range": {

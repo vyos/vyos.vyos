@@ -14,17 +14,17 @@ for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
 
+import re
+
 from ansible.module_utils.six import iteritems
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.snmp_server.snmp_server import (
+    Snmp_serverArgs,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.snmp_server import (
     Snmp_serverTemplate,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.snmp_server.snmp_server import (
-    Snmp_serverArgs,
-)
-import re
 
 
 class Snmp_serverFacts(object):
@@ -57,9 +57,7 @@ class Snmp_serverFacts(object):
             config_lines.append(re.sub("'", "", resource))
 
         # parse native config using the Snmp_server template
-        snmp_server_parser = Snmp_serverTemplate(
-            lines=config_lines, module=self._module
-        )
+        snmp_server_parser = Snmp_serverTemplate(lines=config_lines, module=self._module)
         objs = snmp_server_parser.parse()
         if objs:
             if "communities" in objs:
@@ -106,9 +104,7 @@ class Snmp_serverFacts(object):
         ansible_facts["ansible_network_resources"].pop("snmp_server", None)
 
         params = utils.remove_empties(
-            snmp_server_parser.validate_config(
-                self.argument_spec, {"config": objs}, redact=True
-            )
+            snmp_server_parser.validate_config(self.argument_spec, {"config": objs}, redact=True)
         )
 
         facts["snmp_server"] = params.get("config", {})

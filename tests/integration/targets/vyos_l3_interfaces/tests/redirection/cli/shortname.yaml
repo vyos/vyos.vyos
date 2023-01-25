@@ -7,7 +7,6 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Structure provided configuration into device specific commands
       register: result
       vyos.vyos.l3_interfaces: &id001
@@ -39,5 +38,4 @@
         that:
           - result['changed'] == false
   always:
-
     - include_tasks: _remove_config.yaml

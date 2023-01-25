@@ -17,23 +17,21 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
+import re
+
 from ansible.module_utils.six import iteritems
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    dict_merge,
-)
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    dict_merge,
+    get_from_dict,
 )
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.snmp_server import (
     Snmp_serverTemplate,
 )
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    get_from_dict,
-)
-import re
 
 
 class Snmp_server(ResourceModule):
@@ -164,9 +162,7 @@ class Snmp_server(ResourceModule):
                                 want={},
                             )
                 else:
-                    self.compare(
-                        parsers=parsers, want={}, have={attrib: entry}
-                    )
+                    self.compare(parsers=parsers, want={}, have={attrib: entry})
 
     def _compare_snmp_v3(self, want, have):
         parsers = [
@@ -192,9 +188,7 @@ class Snmp_server(ResourceModule):
             wattrib = get_from_dict(wdict, attrib) or {}
             hattrib = get_from_dict(hdict, attrib) or {}
             for key, entry in iteritems(wattrib):
-                self._compare_snmp_v3_auth_privacy(
-                    entry, hattrib.get(key, {}), attrib
-                )
+                self._compare_snmp_v3_auth_privacy(entry, hattrib.get(key, {}), attrib)
                 for k, v in iteritems(entry):
                     if k != attribute_dict[attrib]:
                         h = {}
@@ -215,9 +209,7 @@ class Snmp_server(ResourceModule):
                                 "snmp_v3": {
                                     attrib: {
                                         k: v,
-                                        attribute_dict[attrib]: entry[
-                                            attribute_dict[attrib]
-                                        ],
+                                        attribute_dict[attrib]: entry[attribute_dict[attrib]],
                                     }
                                 }
                             },
@@ -226,9 +218,7 @@ class Snmp_server(ResourceModule):
             # remove remaining items in have for replaced
             for key, entry in iteritems(hattrib):
                 self._compare_snmp_v3_auth_privacy({}, entry, attrib)
-                self.compare(
-                    parsers=parsers, want={}, have={"snmp_v3": {attrib: entry}}
-                )
+                self.compare(parsers=parsers, want={}, have={"snmp_v3": {attrib: entry}})
             hdict.pop(attrib, {})
         for key, entry in iteritems(wdict):
             # self.addcmd(entry, attrib, False)
@@ -239,9 +229,7 @@ class Snmp_server(ResourceModule):
             )
         # remove remaining items in have for replaced
         for key, entry in iteritems(hdict):
-            self.compare(
-                parsers=parsers, want={}, have={"snmp_v3": {key: entry}}
-            )
+            self.compare(parsers=parsers, want={}, have={"snmp_v3": {key: entry}})
 
     def _compare_snmp_v3_auth_privacy(self, wattrib, hattrib, attrib):
         parsers = [

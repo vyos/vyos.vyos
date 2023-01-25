@@ -18,15 +18,14 @@ created.
 """
 
 from ansible.module_utils.six import iteritems
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    dict_merge,
-)
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    dict_merge,
 )
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ntp_global import (
     NtpTemplate,
 )
@@ -79,9 +78,7 @@ class Ntp_global(ResourceModule):
 
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
-            haved = {
-                k: v for k, v in iteritems(haved) if k in wantd or not wantd
-            }
+            haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
             wantd = {}
 
             commandlist = self._commandlist(haved)
@@ -92,16 +89,12 @@ class Ntp_global(ResourceModule):
                     for hk, hval in iteritems(have):
                         if hk == "allow_clients" and hk in commandlist:
                             self.commands.append(
-                                self._tmplt.render(
-                                    {"": hk}, "allow_clients_delete", True
-                                )
+                                self._tmplt.render({"": hk}, "allow_clients_delete", True)
                             )
                             commandlist.remove(hk)
                         elif hk == "listen_addresses" and hk in commandlist:
                             self.commands.append(
-                                self._tmplt.render(
-                                    {"": hk}, "listen_addresses_delete", True
-                                )
+                                self._tmplt.render({"": hk}, "listen_addresses_delete", True)
                             )
                             commandlist.remove(hk)
                         elif hk == "server" and have["server"] in servernames:
@@ -170,9 +163,7 @@ class Ntp_global(ResourceModule):
                     dict = {}
                     dict.update({"server": entry["server"]})
                     dict.update({Opk: val})
-                    serveroptions_dict.update(
-                        {entry["server"] + "_" + val: dict}
-                    )
+                    serveroptions_dict.update({entry["server"] + "_" + val: dict})
         return serveroptions_dict
 
     def _commandlist(self, haved):

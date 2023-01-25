@@ -20,11 +20,10 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
 from ansible_collections.vyos.vyos.plugins.modules import vyos_system
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
@@ -80,9 +79,7 @@ class TestVyosSystemModule(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_system_domain_search(self):
-        set_module_args(
-            dict(domain_search=["foo.example.com", "bar.example.com"])
-        )
+        set_module_args(dict(domain_search=["foo.example.com", "bar.example.com"]))
         commands = [
             "set system domain-search domain 'foo.example.com'",
             "set system domain-search domain 'bar.example.com'",

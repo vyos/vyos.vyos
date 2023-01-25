@@ -15,6 +15,7 @@ the given network resource.
 """
 
 import re
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
@@ -36,12 +37,7 @@ def _tmplt_ospf_int_delete(config_data):
     int_type = get_interface_type(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
-        "interfaces "
-        + int_type
-        + " {name} ".format(**config_data)
-        + params[1]
-        + " "
-        + params[0]
+        "interfaces " + int_type + " {name} ".format(**config_data) + params[1] + " " + params[0]
     )
 
     return command
@@ -93,9 +89,7 @@ def _tmplt_ospf_int_auth_md5(config_data):
         + " authentication md5 key-id {key_id} ".format(
             **config_data["address_family"]["authentication"]["md5_key"]
         )
-        + "md5-key {key}".format(
-            **config_data["address_family"]["authentication"]["md5_key"]
-        )
+        + "md5-key {key}".format(**config_data["address_family"]["authentication"]["md5_key"])
     )
 
     return command
@@ -143,9 +137,7 @@ def _tmplt_ospf_int_hello_interval(config_data):
         + params[1]
         + " "
         + params[0]
-        + " hello-interval {hello_interval}".format(
-            **config_data["address_family"]
-        )
+        + " hello-interval {hello_interval}".format(**config_data["address_family"])
     )
 
     return command
@@ -161,9 +153,7 @@ def _tmplt_ospf_int_dead_interval(config_data):
         + params[1]
         + " "
         + params[0]
-        + " dead-interval {dead_interval}".format(
-            **config_data["address_family"]
-        )
+        + " dead-interval {dead_interval}".format(**config_data["address_family"])
     )
 
     return command
@@ -227,9 +217,7 @@ def _tmplt_ospf_int_retransmit_interval(config_data):
         + params[1]
         + " "
         + params[0]
-        + " retransmit-interval {retransmit_interval}".format(
-            **config_data["address_family"]
-        )
+        + " retransmit-interval {retransmit_interval}".format(**config_data["address_family"])
     )
 
     return command
@@ -245,9 +233,7 @@ def _tmplt_ospf_int_transmit_delay(config_data):
         + params[1]
         + " "
         + params[0]
-        + " transmit-delay {transmit_delay}".format(
-            **config_data["address_family"]
-        )
+        + " transmit-delay {transmit_delay}".format(**config_data["address_family"])
     )
 
     return command

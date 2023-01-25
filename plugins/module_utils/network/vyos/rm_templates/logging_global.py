@@ -15,6 +15,7 @@ the given network resource.
 """
 
 import re
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
@@ -43,21 +44,13 @@ def tmplt_params(config_data):
     elif config_data.get("users"):
         val = config_data.get("users")
         if val.get("username") and not val.get("archive"):
-            tmplt += "system syslog user {username}".format(
-                username=val["username"]
-            )
+            tmplt += "system syslog user {username}".format(username=val["username"])
         if val.get("facilities"):
             tmplt = templt_common(val.get("facilities"), tmplt)
     elif config_data.get("hosts"):
         val = config_data.get("hosts")
-        if (
-            val.get("hostname")
-            and not val.get("archive")
-            and not val.get("port")
-        ):
-            tmplt += "system syslog host {hostname}".format(
-                hostname=val["hostname"]
-            )
+        if val.get("hostname") and not val.get("archive") and not val.get("port"):
+            tmplt += "system syslog host {hostname}".format(hostname=val["hostname"])
         if val.get("facilities"):
             tmplt = templt_common(val.get("facilities"), tmplt)
     elif config_data.get("files"):

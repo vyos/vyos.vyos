@@ -1,12 +1,12 @@
 ---
 - debug:
-    msg: Start vyos_firewall_global deleted integration tests ansible_connection={{
+    msg:
+      Start vyos_firewall_global deleted integration tests ansible_connection={{
       ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Delete attributes of firewall.
       register: result
       vyos.vyos.vyos_firewall_global: &id001
@@ -44,5 +44,4 @@
         that:
           - "{{ deleted['after'] == result['before'] }}"
   always:
-
     - include_tasks: _remove_config.yaml

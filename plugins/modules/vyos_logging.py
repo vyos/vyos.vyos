@@ -153,7 +153,6 @@ commands:
 """
 
 import re
-
 from copy import deepcopy
 
 from ansible.module_utils._text import to_text
@@ -162,6 +161,7 @@ from ansible.module_utils.common.validation import check_required_if
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     remove_default_spec,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     get_config,
     load_config,
@@ -189,9 +189,7 @@ def spec_to_commands(updates, module):
                 )
             else:
                 commands.append(
-                    "delete system syslog {0} facility {1} level {2}".format(
-                        dest, facility, level
-                    )
+                    "delete system syslog {0} facility {1} level {2}".format(dest, facility, level)
                 )
         elif state == "present" and w not in have:
             if w["name"]:
@@ -202,9 +200,7 @@ def spec_to_commands(updates, module):
                 )
             else:
                 commands.append(
-                    "set system syslog {0} facility {1} level {2}".format(
-                        dest, facility, level
-                    )
+                    "set system syslog {0} facility {1} level {2}".format(dest, facility, level)
                 )
 
     return commands
@@ -285,9 +281,7 @@ def map_params_to_obj(module, required_if=None):
 def main():
     """main entry point for module execution"""
     element_spec = dict(
-        dest=dict(
-            type="str", choices=["console", "file", "global", "host", "user"]
-        ),
+        dest=dict(type="str", choices=["console", "file", "global", "host", "user"]),
         name=dict(type="str"),
         facility=dict(type="str"),
         level=dict(type="str"),
@@ -299,9 +293,7 @@ def main():
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
 
-    argument_spec = dict(
-        aggregate=dict(type="list", elements="dict", options=aggregate_spec)
-    )
+    argument_spec = dict(aggregate=dict(type="list", elements="dict", options=aggregate_spec))
 
     argument_spec.update(element_spec)
 

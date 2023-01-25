@@ -1,6 +1,7 @@
 ---
 - debug:
-    msg: START vyos_interfaces replaced integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_interfaces replaced integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
@@ -8,16 +9,13 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Replace device configurations of listed interfaces with provided configurations
       register: result
       vyos.vyos.vyos_interfaces: &id001
         config:
-
           - name: eth1
             description: Replaced by Ansible
             vifs:
-
               - vlan_id: 100
                 description: VIF 100 - Replaced by Ansible
 
@@ -43,7 +41,8 @@
           - "{{ replaced['after'] | symmetric_difference(result['after']) |length\
             \ == 0 }}"
 
-    - name: Replace device configurations of listed interfaces with provided configurarions
+    - name:
+        Replace device configurations of listed interfaces with provided configurarions
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_interfaces: *id001
@@ -59,5 +58,4 @@
           - "{{ replaced['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

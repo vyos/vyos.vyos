@@ -8,12 +8,11 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Replace device configurations of listed ospfv2 routes with provided configurations
       register: result
       vyos.vyos.vyos_ospfv2: &id001
         config:
-          log_adjacency_changes: 'detail'
+          log_adjacency_changes: "detail"
           max_metric:
             router_lsa:
               administrative: true
@@ -24,44 +23,44 @@
               always: true
               metric: 10
               metric_type: 2
-              route_map: 'ingress'
+              route_map: "ingress"
           mpls_te:
             enabled: true
-            router_address: '192.0.22.22'
+            router_address: "192.0.22.22"
           auto_cost:
             reference_bandwidth: 2
           neighbor:
-            - neighbor_id: '192.0.11.12'
+            - neighbor_id: "192.0.11.12"
               poll_interval: 10
               priority: 2
           redistribute:
-            - route_type: 'bgp'
+            - route_type: "bgp"
               metric: 10
               metric_type: 2
           passive_interface:
-            - 'eth1'
+            - "eth1"
           parameters:
-            router_id: '192.0.1.1'
+            router_id: "192.0.1.1"
             opaque_lsa: true
             rfc1583_compatibility: true
-            abr_type: 'cisco'
+            abr_type: "cisco"
           areas:
-            - area_id: '2'
+            - area_id: "2"
               area_type:
                 normal: true
               authentication: "plaintext-password"
-              shortcut: 'enable'
-            - area_id: '4'
+              shortcut: "enable"
+            - area_id: "4"
               area_type:
                 stub:
                   default_cost: 20
               network:
-                - address: '192.0.2.0/24'
-                - address: '192.0.12.0/24'
-                - address: '192.0.22.0/24'
-                - address: '192.0.32.0/24'
+                - address: "192.0.2.0/24"
+                - address: "192.0.12.0/24"
+                - address: "192.0.22.0/24"
+                - address: "192.0.32.0/24"
               range:
-                - address: '1.1.2.0/24'
+                - address: "1.1.2.0/24"
                   cost: 10
         state: replaced
 
@@ -81,7 +80,8 @@
         that:
           - "{{ replaced['after'] == result['after'] }}"
 
-    - name: Replace device configurations of listed ospfv2 routes  with provided configurarions
+    - name:
+        Replace device configurations of listed ospfv2 routes  with provided configurarions
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_ospfv2: *id001
@@ -96,5 +96,4 @@
         that:
           - "{{ replaced['after'] == result['before'] }}"
   always:
-
     - include_tasks: _remove_config.yaml

@@ -1,12 +1,12 @@
 ---
 - debug:
-    msg: Start vyos_firewall_rules deleted integration tests ansible_connection={{
+    msg:
+      Start vyos_firewall_rules deleted integration tests ansible_connection={{
       ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Delete firewall rule set.
       register: result
       vyos.vyos.vyos_firewall_rules: &id001
@@ -52,5 +52,4 @@
           - "{{ deleted_rs['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

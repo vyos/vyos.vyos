@@ -1,9 +1,10 @@
 ---
 - name: Setup
   vars:
-    lines: "set interfaces ethernet eth1 address '192.0.2.14/24'\nset interfaces\
+    lines:
+      "set interfaces ethernet eth1 address '192.0.2.14/24'\nset interfaces\
       \ ethernet eth2 address '192.0.2.10/24'\nset interfaces ethernet eth2 address\
       \ '192.0.2.11/24'\nset interfaces ethernet eth2 address '2001:db8::10/32'\n\
       set interfaces ethernet eth2 address '2001:db8::12/32'\n"
   ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    config: "{{ lines }}"

@@ -7,7 +7,6 @@
 - include_tasks: _populate_config.yaml
 
 - block:
-
     - name: Delete the provided configuration
       register: result
       vyos.vyos.vyos_ntp_global: &id001
@@ -25,7 +24,8 @@
         that:
           - result.after == populate.config
 
-    - name: Delete the existing configuration with the provided running configuration
+    - name:
+        Delete the existing configuration with the provided running configuration
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_ntp_global: *id001
@@ -36,5 +36,4 @@
           - result['changed'] == false
 
   always:
-
     - include_tasks: _remove_config.yaml

@@ -8,7 +8,6 @@
 - include_tasks: _populate_af.yaml
 
 - block:
-
     - name: Replace the existing af configuration with the provided running configuration
       register: result
       ignore_errors: true
@@ -52,5 +51,4 @@
           - result.msg == 'Use the _bgp_address_family module to delete the address_family under neighbor 5001::64, before replacing/deleting the neighbor.'
 
   always:
-
     - include_tasks: _remove_config.yaml

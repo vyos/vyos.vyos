@@ -15,8 +15,8 @@ the given network resource.
 """
 
 import re
-from ansible.module_utils.six import iteritems
 
+from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
@@ -27,9 +27,7 @@ def _tmplt_bgp_params_confederation(config_data):
     for list_el in config_data["bgp_params"]["confederation"]:
         for k, v in iteritems(list_el):
             command.append(
-                "protocols bgp {as_number} parameters confederation ".format(
-                    **config_data
-                )
+                "protocols bgp {as_number} parameters confederation ".format(**config_data)
                 + k
                 + " "
                 + str(v)
@@ -51,17 +49,11 @@ def _tmplt_bgp_maximum_paths(config_data):
 
 
 def _tmplt_bgp_aggregate_address(config_data):
-    command = "protocols bgp {as_number} aggregate-address".format(
-        **config_data
-    )
+    command = "protocols bgp {as_number} aggregate-address".format(**config_data)
     if config_data["aggregate_address"].get("as_set"):
-        command += " {prefix} as-set".format(
-            **config_data["aggregate_address"]
-        )
+        command += " {prefix} as-set".format(**config_data["aggregate_address"])
     if config_data["aggregate_address"].get("summary_only"):
-        command += " {prefix} summary-only".format(
-            **config_data["aggregate_address"]
-        )
+        command += " {prefix} summary-only".format(**config_data["aggregate_address"])
     return command
 
 
@@ -71,15 +63,11 @@ def _tmplt_delete_bgp_maximum_paths(config_data):
 
 
 def _tmplt_bgp_params_default(config_data):
-    command = "protocols bgp {as_number} parameters default".format(
-        **config_data
-    )
+    command = "protocols bgp {as_number} parameters default".format(**config_data)
     if config_data["bgp_params"]["default"].get("no_ipv4_unicast"):
         command += " no-ipv4-unicast"
     if config_data["bgp_params"]["default"].get("local_pref"):
-        command += " local-pref {local_pref}".format(
-            **config_data["bgp_params"]["default"]
-        )
+        command += " local-pref {local_pref}".format(**config_data["bgp_params"]["default"])
     return command
 
 
@@ -110,11 +98,7 @@ def _tmplt_bgp_timers(config_data):
     command = []
     for k, v in iteritems(config_data["timers"]):
         command.append(
-            "protocols bgp {as_number} ".format(**config_data)
-            + "timers "
-            + k
-            + " "
-            + str(v)
+            "protocols bgp {as_number} ".format(**config_data) + "timers " + k + " " + str(v)
         )
 
     return command
@@ -123,27 +107,21 @@ def _tmplt_bgp_timers(config_data):
 def _tmplt_bgp_neighbor_attribute_unchanged_as_path(config_data):
     command = "protocols bgp {as_number} ".format(
         **config_data
-    ) + "neighbor {address} attribute-unchanged as-path".format(
-        **config_data["neighbor"]
-    )
+    ) + "neighbor {address} attribute-unchanged as-path".format(**config_data["neighbor"])
     return command
 
 
 def _tmplt_bgp_neighbor_attribute_unchanged_med(config_data):
     command = "protocols bgp {as_number} ".format(
         **config_data
-    ) + "neighbor {address} attribute-unchanged med".format(
-        **config_data["neighbor"]
-    )
+    ) + "neighbor {address} attribute-unchanged med".format(**config_data["neighbor"])
     return command
 
 
 def _tmplt_bgp_neighbor_attribute_unchanged_next_hop(config_data):
     command = "protocols bgp {as_number} ".format(
         **config_data
-    ) + "neighbor {address} attribute-unchanged next-hop".format(
-        **config_data["neighbor"]
-    )
+    ) + "neighbor {address} attribute-unchanged next-hop".format(**config_data["neighbor"])
     return command
 
 
@@ -152,9 +130,7 @@ def _tmplt_bgp_neighbor_distribute_list(config_data):
     for list_el in config_data["neighbor"]["distribute_list"]:
         command.append(
             "protocols bgp {as_number} ".format(**config_data)
-            + "neighbor {address} distribute-list ".format(
-                **config_data["neighbor"]
-            )
+            + "neighbor {address} distribute-list ".format(**config_data["neighbor"])
             + list_el["action"]
             + " "
             + str(list_el["acl"])
@@ -180,9 +156,7 @@ def _tmplt_bgp_neighbor_prefix_list(config_data):
     for list_el in config_data["neighbor"]["prefix_list"]:
         command.append(
             "protocols bgp {as_number} ".format(**config_data)
-            + "neighbor {address} prefix-list ".format(
-                **config_data["neighbor"]
-            )
+            + "neighbor {address} prefix-list ".format(**config_data["neighbor"])
             + list_el["action"]
             + " "
             + str(list_el["prefix_list"])
@@ -195,9 +169,7 @@ def _tmplt_bgp_neighbor_filter_list(config_data):
     for list_el in config_data["neighbor"]["filter_list"]:
         command.append(
             "protocols bgp {as_number} ".format(**config_data)
-            + "neighbor {address} filter-list ".format(
-                **config_data["neighbor"]
-            )
+            + "neighbor {address} filter-list ".format(**config_data["neighbor"])
             + list_el["action"]
             + " "
             + str(list_el["path_list"])
@@ -207,9 +179,7 @@ def _tmplt_bgp_neighbor_filter_list(config_data):
 
 def _tmplt_bgp_params_distance(config_data):
     command = (
-        "protocols bgp {as_number} parameters distance global ".format(
-            **config_data
-        )
+        "protocols bgp {as_number} parameters distance global ".format(**config_data)
         + config_data["bgp_params"]["distance"]["type"]
         + " "
         + str(config_data["bgp_params"]["distance"]["value"])

@@ -1,7 +1,8 @@
 ---
 - name: Remove Config
   vars:
-    lines: "delete interfaces ethernet \"{{ intf }}\" description\ndelete interfaces\
+    lines:
+      "delete interfaces ethernet \"{{ intf }}\" description\ndelete interfaces\
       \ ethernet \"{{ intf }}\" speed\ndelete interfaces ethernet \"{{ intf }}\"\
       \ duplex\ndelete interfaces ethernet \"{{ intf }}\" mtu\ndelete interfaces\
       \ ethernet \"{{ intf }}\" disable\ndelete interfaces ethernet \"{{ intf }}\"\
@@ -12,4 +13,4 @@
   loop_control:
     loop_var: intf
   ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    config: "{{ lines }}"

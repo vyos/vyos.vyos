@@ -20,13 +20,10 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+from ansible_collections.vyos.vyos.plugins.modules import vyos_bgp_address_family
 from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
-from ansible_collections.vyos.vyos.plugins.modules import (
-    vyos_bgp_address_family,
-)
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
@@ -39,9 +36,7 @@ class TestVyosBgpafModule(TestVyosModule):
         self.mock_get_resource_connection_config = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_execute_show_command = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts."
@@ -72,13 +67,9 @@ class TestVyosBgpafModule(TestVyosModule):
                     address_family=[
                         dict(
                             afi="ipv4",
-                            aggregate_address=[
-                                dict(prefix="192.0.2.0/24", as_set=True)
-                            ],
+                            aggregate_address=[dict(prefix="192.0.2.0/24", as_set=True)],
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                                 dict(prefix="192.2.13.0/24", backdoor=True),
                             ],
                         ),
@@ -93,11 +84,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="export", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="export", route_map="map01")],
                                     soft_reconfiguration=True,
                                 ),
                             ],
@@ -125,13 +112,9 @@ class TestVyosBgpafModule(TestVyosModule):
                     address_family=[
                         dict(
                             afi="ipv4",
-                            aggregate_address=[
-                                dict(prefix="192.0.2.0/24", summary_only=True)
-                            ],
+                            aggregate_address=[dict(prefix="192.0.2.0/24", summary_only=True)],
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                             ],
                         ),
                         dict(
@@ -145,9 +128,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv6",
-                                    distribute_list=[
-                                        dict(action="export", acl=10)
-                                    ],
+                                    distribute_list=[dict(action="export", acl=10)],
                                     route_server_client=True,
                                 ),
                             ],
@@ -158,9 +139,7 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(
                                     afi="ipv4",
                                     filter_list=[
-                                        dict(
-                                            action="export", path_list="list01"
-                                        ),
+                                        dict(action="export", path_list="list01"),
                                     ],
                                     capability=dict(orf="send"),
                                 )
@@ -189,13 +168,9 @@ class TestVyosBgpafModule(TestVyosModule):
                     address_family=[
                         dict(
                             afi="ipv4",
-                            aggregate_address=[
-                                dict(prefix="192.0.2.0/24", as_set=True)
-                            ],
+                            aggregate_address=[dict(prefix="192.0.2.0/24", as_set=True)],
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                                 dict(prefix="192.2.13.0/24", backdoor=True),
                             ],
                         ),
@@ -210,11 +185,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="export", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="export", route_map="map01")],
                                     soft_reconfiguration=True,
                                 ),
                             ],
@@ -243,13 +214,9 @@ class TestVyosBgpafModule(TestVyosModule):
                     address_family=[
                         dict(
                             afi="ipv4",
-                            aggregate_address=[
-                                dict(prefix="192.0.2.0/24", summary_only=True)
-                            ],
+                            aggregate_address=[dict(prefix="192.0.2.0/24", summary_only=True)],
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                             ],
                         ),
                         dict(
@@ -263,17 +230,11 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="import", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="import", route_map="map01")],
                                 ),
                                 dict(
                                     afi="ipv6",
-                                    distribute_list=[
-                                        dict(action="export", acl=10)
-                                    ],
+                                    distribute_list=[dict(action="export", acl=10)],
                                     route_server_client=True,
                                 ),
                             ],
@@ -283,11 +244,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="export", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="export", route_map="map01")],
                                 ),
                             ],
                         ),
@@ -297,9 +254,7 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(
                                     afi="ipv4",
                                     filter_list=[
-                                        dict(
-                                            action="export", path_list="list01"
-                                        ),
+                                        dict(action="export", path_list="list01"),
                                     ],
                                     capability=dict(orf="send"),
                                 )
@@ -333,13 +288,9 @@ class TestVyosBgpafModule(TestVyosModule):
                     address_family=[
                         dict(
                             afi="ipv4",
-                            aggregate_address=[
-                                dict(prefix="192.0.2.0/24", as_set=True)
-                            ],
+                            aggregate_address=[dict(prefix="192.0.2.0/24", as_set=True)],
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                                 dict(prefix="192.2.13.0/24", backdoor=True),
                             ],
                         ),
@@ -354,11 +305,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="export", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="export", route_map="map01")],
                                     soft_reconfiguration=True,
                                 ),
                             ],
@@ -388,9 +335,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         dict(
                             afi="ipv4",
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                             ],
                         ),
                         dict(
@@ -404,17 +349,11 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="import", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="import", route_map="map01")],
                                 ),
                                 dict(
                                     afi="ipv6",
-                                    distribute_list=[
-                                        dict(action="export", acl=10)
-                                    ],
+                                    distribute_list=[dict(action="export", acl=10)],
                                     route_server_client=True,
                                 ),
                             ],
@@ -481,9 +420,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         dict(
                             afi="ipv4",
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                             ],
                         ),
                         dict(
@@ -497,17 +434,11 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="import", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="import", route_map="map01")],
                                 ),
                                 dict(
                                     afi="ipv6",
-                                    distribute_list=[
-                                        dict(action="export", acl=10)
-                                    ],
+                                    distribute_list=[dict(action="export", acl=10)],
                                     route_server_client=True,
                                 ),
                             ],
@@ -517,9 +448,7 @@ class TestVyosBgpafModule(TestVyosModule):
             )
         )
         result = self.execute_module(failed=True)
-        self.assertIn(
-            "Only one bgp instance is allowed per device", result["msg"]
-        )
+        self.assertIn("Only one bgp instance is allowed per device", result["msg"])
 
     def test_vyos_bgp_address_family_rendered(self):
         set_module_args(
@@ -530,13 +459,9 @@ class TestVyosBgpafModule(TestVyosModule):
                     address_family=[
                         dict(
                             afi="ipv4",
-                            aggregate_address=[
-                                dict(prefix="192.0.2.0/24", as_set=True)
-                            ],
+                            aggregate_address=[dict(prefix="192.0.2.0/24", as_set=True)],
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                                 dict(prefix="192.2.13.0/24", backdoor=True),
                             ],
                         ),
@@ -551,11 +476,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="export", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="export", route_map="map01")],
                                     soft_reconfiguration=True,
                                 ),
                             ],
@@ -613,9 +534,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         {"prefix": "192.1.13.0/24", "route_map": "map01"},
                         {"prefix": "192.2.13.0/24", "backdoor": True},
                     ],
-                    "aggregate_address": [
-                        {"prefix": "192.0.2.0/24", "as_set": True}
-                    ],
+                    "aggregate_address": [{"prefix": "192.0.2.0/24", "as_set": True}],
                 },
                 {
                     "afi": "ipv6",
@@ -654,9 +573,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         {"prefix": "192.1.13.0/24", "route_map": "map01"},
                         {"prefix": "192.2.13.0/24", "backdoor": True},
                     ],
-                    "aggregate_address": [
-                        {"prefix": "192.0.2.0/24", "as_set": True}
-                    ],
+                    "aggregate_address": [{"prefix": "192.0.2.0/24", "as_set": True}],
                 },
                 {
                     "afi": "ipv6",

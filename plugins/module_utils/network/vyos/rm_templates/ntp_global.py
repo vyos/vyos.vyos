@@ -15,6 +15,7 @@ the given network resource.
 """
 
 import re
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
@@ -23,9 +24,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 class NtpTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
-        super(NtpTemplate, self).__init__(
-            lines=lines, tmplt=self, prefix=prefix, module=module
-        )
+        super(NtpTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix, module=module)
 
     # fmt: off
     PARSERS = [

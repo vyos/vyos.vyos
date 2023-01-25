@@ -1,6 +1,7 @@
 ---
 - debug:
-    msg: START vyos_firewall_interfaces overridden integration tests on connection={{
+    msg:
+      START vyos_firewall_interfaces overridden integration tests on connection={{
       ansible_connection }}
 
 - include_tasks: _remove_config.yaml
@@ -12,18 +13,14 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Overrides all device configuration with provided configuration
       register: result
       vyos.vyos.vyos_firewall_interfaces: &id001
         config:
-
           - name: eth2
             access_rules:
-
               - afi: ipv4
                 rules:
-
                   - name: INBOUND
                     direction: out
         state: overridden
@@ -60,7 +57,6 @@
           - "{{ overridden['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml
 
     - include_tasks: _remove_firewall_config.yaml

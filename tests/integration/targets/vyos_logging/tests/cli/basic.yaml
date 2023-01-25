@@ -84,7 +84,6 @@
   register: result
   vyos.vyos.vyos_logging:
     aggregate:
-
       - dest: file
         name: test1
         facility: all
@@ -106,7 +105,6 @@
   register: result
   vyos.vyos.vyos_logging:
     aggregate:
-
       - dest: console
         facility: all
         level: info
@@ -132,7 +130,6 @@
   register: result
   vyos.vyos.vyos_logging:
     aggregate:
-
       - dest: console
         facility: all
         level: info

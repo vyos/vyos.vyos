@@ -9,4 +9,4 @@
       set protocols static route6 2001:db8:1000::/36 blackhole distance '2'\nset\
       \ protocols static route6 2001:db8:1000::/36\n"
   ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    config: "{{ lines }}"

@@ -8,11 +8,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 from textwrap import dedent
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_logging_global
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule
 
 
@@ -26,16 +26,12 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         self.mock_get_resource_connection_config = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
         )
-        self.get_resource_connection_facts = (
-            self.mock_get_resource_connection_facts.start()
-        )
+        self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.logging_global.logging_global.Logging_globalFacts.get_logging_data"
@@ -300,9 +296,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         )
         playbook = dict(
             config=dict(
-                console=dict(
-                    facilities=[dict(facility="local7", severity="emerg")]
-                ),
+                console=dict(facilities=[dict(facility="local7", severity="emerg")]),
                 files=[
                     dict(
                         path="abc",
@@ -353,9 +347,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
             set system syslog console facility local6
             """
         )
-        playbook = dict(
-            config=dict(console=dict(facilities=[dict(facility="local6")]))
-        )
+        playbook = dict(config=dict(console=dict(facilities=[dict(facility="local6")])))
         compare_cmds = []
         playbook["state"] = "replaced"
         set_module_args(playbook)
@@ -372,9 +364,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         )
         playbook = dict(
             config=dict(
-                console=dict(
-                    facilities=[dict(facility="local7", severity="emerg")]
-                ),
+                console=dict(facilities=[dict(facility="local7", severity="emerg")]),
                 files=[
                     dict(
                         path="abc",
@@ -412,9 +402,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                 ],
                 users=[
                     dict(username="vyos"),
-                    dict(
-                        username="paul", facilities=[dict(facility="local7")]
-                    ),
+                    dict(username="paul", facilities=[dict(facility="local7")]),
                 ],
             )
         )

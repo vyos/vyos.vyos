@@ -16,14 +16,13 @@ based on the configuration.
 
 from copy import deepcopy
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.route_maps.route_maps import (
+    Route_mapsArgs,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.route_maps import (
     Route_mapsTemplate,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.route_maps.route_maps import (
-    Route_mapsArgs,
 )
 
 
@@ -73,9 +72,7 @@ class Route_mapsFacts(object):
         ansible_facts["ansible_network_resources"].pop("route_maps", None)
 
         # import epdb;epdb.serve()
-        params = utils.remove_empties(
-            utils.validate_config(self.argument_spec, {"config": objs})
-        )
+        params = utils.remove_empties(utils.validate_config(self.argument_spec, {"config": objs}))
 
         if params.get("config"):
             facts["route_maps"] = params["config"]

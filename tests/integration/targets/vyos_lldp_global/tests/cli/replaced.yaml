@@ -1,6 +1,7 @@
 ---
 - debug:
-    msg: START vyos_lldp_global replaced integration tests on connection={{ ansible_connection
+    msg:
+      START vyos_lldp_global replaced integration tests on connection={{ ansible_connection
       }}
 
 - include_tasks: _remove_config.yaml
@@ -8,7 +9,6 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Replace device configurations of LLDP service with provided configurations
       register: result
       vyos.vyos.vyos_lldp_global: &id001
@@ -36,7 +36,8 @@
         that:
           - "{{ replaced['after'] == result['after'] }}"
 
-    - name: Replace device configurations of LLDP service with provided configurarions
+    - name:
+        Replace device configurations of LLDP service with provided configurarions
         (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_lldp_global: *id001
@@ -51,5 +52,4 @@
         that:
           - "{{ replaced['after'] == result['before'] }}"
   always:
-
     - include_tasks: _remove_config.yaml

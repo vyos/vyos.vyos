@@ -134,11 +134,11 @@ rtt:
   sample: {"avg": 2, "max": 8, "min": 1, "mdev": 24}
 """
 
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    run_commands,
-)
 import re
+
+from ansible.module_utils.basic import AnsibleModule
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import run_commands
 
 
 def main():
@@ -150,9 +150,7 @@ def main():
         ttl=dict(type="int"),
         size=dict(type="int"),
         interval=dict(type="int"),
-        state=dict(
-            type="str", choices=["absent", "present"], default="present"
-        ),
+        state=dict(type="str", choices=["absent", "present"], default="present"),
     )
 
     module = AnsibleModule(argument_spec=argument_spec)
@@ -170,9 +168,7 @@ def main():
     if warnings:
         results["warnings"] = warnings
 
-    results["commands"] = [
-        build_ping(dest, count, size, interval, source, ttl)
-    ]
+    results["commands"] = [build_ping(dest, count, size, interval, source, ttl)]
 
     ping_results = run_commands(module, commands=results["commands"])
     ping_results_list = ping_results[0].split("\n")

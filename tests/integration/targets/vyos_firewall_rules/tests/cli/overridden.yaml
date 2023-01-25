@@ -8,20 +8,16 @@
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Overrides all device configuration with provided configuration
       register: result
       vyos.vyos.vyos_firewall_rules: &id001
         config:
-
           - afi: ipv4
             rule_sets:
-
               - name: Downlink
                 description: IPv4 INBOUND rule set
                 default_action: accept
                 rules:
-
                   - number: 501
                     action: accept
                     description: Rule 501 is configured by Ansible
@@ -65,5 +61,4 @@
           - "{{ overridden['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

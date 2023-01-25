@@ -20,11 +20,10 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
 from ansible_collections.vyos.vyos.plugins.modules import vyos_command
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
@@ -84,9 +83,7 @@ class TestVyosCommandModule(TestVyosModule):
 
     def test_vyos_command_retries(self):
         wait_for = 'result[0] contains "test string"'
-        set_module_args(
-            dict(commands=["show version"], wait_for=wait_for, retries=2)
-        )
+        set_module_args(dict(commands=["show version"], wait_for=wait_for, retries=2))
         self.execute_module(failed=True)
         self.assertEqual(self.run_commands.call_count, 2)
 
@@ -95,9 +92,7 @@ class TestVyosCommandModule(TestVyosModule):
             'result[0] contains "VyOS maintainers"',
             'result[0] contains "test string"',
         ]
-        set_module_args(
-            dict(commands=["show version"], wait_for=wait_for, match="any")
-        )
+        set_module_args(dict(commands=["show version"], wait_for=wait_for, match="any"))
         self.execute_module()
 
     def test_vyos_command_match_all(self):
@@ -105,9 +100,7 @@ class TestVyosCommandModule(TestVyosModule):
             'result[0] contains "VyOS maintainers"',
             'result[0] contains "maintainers@vyos.net"',
         ]
-        set_module_args(
-            dict(commands=["show version"], wait_for=wait_for, match="all")
-        )
+        set_module_args(dict(commands=["show version"], wait_for=wait_for, match="all"))
         self.execute_module()
 
     def test_vyos_command_match_all_failure(self):
@@ -116,7 +109,5 @@ class TestVyosCommandModule(TestVyosModule):
             'result[0] contains "test string"',
         ]
         commands = ["show version", "show version"]
-        set_module_args(
-            dict(commands=commands, wait_for=wait_for, match="all")
-        )
+        set_module_args(dict(commands=commands, wait_for=wait_for, match="all"))
         self.execute_module(failed=True)

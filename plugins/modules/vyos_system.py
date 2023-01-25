@@ -95,6 +95,7 @@ EXAMPLES = """
 """
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     get_config,
     load_config,
@@ -155,13 +156,9 @@ def spec_to_commands(want, have):
                 commands.append("delete system %s" % device_key)
             for config in proposed:
                 if state == "absent" and config in current:
-                    commands.append(
-                        "delete system %s '%s'" % (device_key, config)
-                    )
+                    commands.append("delete system %s '%s'" % (device_key, config))
                 elif state == "present" and config not in current:
-                    commands.append(
-                        "set system %s '%s'" % (device_key, config)
-                    )
+                    commands.append("set system %s '%s'" % (device_key, config))
         else:
             if state == "absent" and current and proposed:
                 commands.append("delete system %s" % device_key)
@@ -186,12 +183,8 @@ def main():
         host_name=dict(type="str"),
         domain_name=dict(type="str"),
         domain_search=dict(type="list", elements="str"),
-        name_server=dict(
-            type="list", aliases=["name_servers"], elements="str"
-        ),
-        state=dict(
-            type="str", default="present", choices=["present", "absent"]
-        ),
+        name_server=dict(type="list", aliases=["name_servers"], elements="str"),
+        state=dict(type="str", default="present", choices=["present", "absent"]),
     )
 
     module = AnsibleModule(

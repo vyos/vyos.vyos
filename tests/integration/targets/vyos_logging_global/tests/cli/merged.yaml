@@ -6,7 +6,8 @@
 
 - include_tasks: _remove_config.yaml
 
-- block:  # no after state match because 1.1.8 vyos does show all commands on show command
+- block:
+    # no after state match because 1.1.8 vyos does show all commands on show command
     - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_logging_global: &id001

@@ -1,7 +1,8 @@
 ---
 - name: Setup
   vars:
-    lines: "set firewall all-ping 'enable'\nset firewall broadcast-ping 'enable'\n\
+    lines:
+      "set firewall all-ping 'enable'\nset firewall broadcast-ping 'enable'\n\
       set firewall config-trap 'enable'\nset firewall group address-group MGMT-HOSTS\
       \ address '192.0.1.1'\nset firewall group address-group MGMT-HOSTS address\
       \ '192.0.1.3'\nset firewall group address-group MGMT-HOSTS address '192.0.1.5'\n\
@@ -15,4 +16,4 @@
       \ log 'enable'\nset firewall state-policy invalid action 'reject'\nset firewall\
       \ syn-cookies 'enable'\nset firewall twa-hazards-protection 'enable'\n"
   ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    config: "{{ lines }}"

@@ -14,11 +14,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import re
-from re import findall, search, M
 from copy import deepcopy
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from re import M, findall, search
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_rules.firewall_rules import (
     Firewall_rulesArgs,
 )
@@ -59,9 +59,7 @@ class Firewall_rulesFacts(object):
             data = self.get_device_data(connection)
         # split the config into instances of the resource
         objs = []
-        v6_rules = findall(
-            r"^set firewall ipv6-name (?:\'*)(\S+)(?:\'*)", data, M
-        )
+        v6_rules = findall(r"^set firewall ipv6-name (?:\'*)(\S+)(?:\'*)", data, M)
         v4_rules = findall(r"^set firewall name (?:\'*)(\S+)(?:\'*)", data, M)
         if v6_rules:
             config = self.get_rules(data, v6_rules, type="ipv6")
@@ -78,9 +76,7 @@ class Firewall_rulesFacts(object):
         facts = {}
         if objs:
             facts["firewall_rules"] = []
-            params = utils.validate_config(
-                self.argument_spec, {"config": objs}
-            )
+            params = utils.validate_config(self.argument_spec, {"config": objs})
             for cfg in params["config"]:
                 facts["firewall_rules"].append(utils.remove_empties(cfg))
 

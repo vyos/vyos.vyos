@@ -20,11 +20,10 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
 from ansible_collections.vyos.vyos.plugins.modules import vyos_ospfv3
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
@@ -47,16 +46,12 @@ class TestVyosOspfv3Module(TestVyosModule):
         self.mock_get_resource_connection_config = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection"
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
         )
-        self.get_resource_connection_facts = (
-            self.mock_get_resource_connection_facts.start()
-        )
+        self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3.Ospfv3Facts.get_device_data"
@@ -254,9 +249,7 @@ class TestVyosOspfv3Module(TestVyosModule):
 
     def test_vyos_ospfv3_gathered(self):
         set_module_args(dict(state="gathered"))
-        result = self.execute_module(
-            changed=False, filename="vyos_ospfv3_config.cfg"
-        )
+        result = self.execute_module(changed=False, filename="vyos_ospfv3_config.cfg")
         gather_dict = {
             "areas": [
                 {
@@ -343,6 +336,4 @@ set protocols ospfv3 redistribute 'bgp'"""
             "set protocols ospfv3 area 3 range 2001:db40::/32",
         ]
         result = self.execute_module(changed=False)
-        self.assertEqual(
-            sorted(result["rendered"]), sorted(commands), result["rendered"]
-        )
+        self.assertEqual(sorted(result["rendered"]), sorted(commands), result["rendered"])

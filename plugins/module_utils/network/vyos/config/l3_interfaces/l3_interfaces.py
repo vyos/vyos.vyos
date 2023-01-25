@@ -17,21 +17,21 @@ __metaclass__ = type
 
 
 from copy import deepcopy
+
+from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    to_list,
     remove_empties,
+    to_list,
 )
-from ansible.module_utils.six import iteritems
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
-)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
-    search_obj_in_list,
-    get_interface_type,
     diff_list_of_dicts,
+    get_interface_type,
+    search_obj_in_list,
 )
 
 
@@ -61,9 +61,7 @@ class L3_interfaces(ConfigBase):
         facts, _warnings = Facts(self._module).get_facts(
             self.gather_subset, self.gather_network_resources, data=data
         )
-        l3_interfaces_facts = facts["ansible_network_resources"].get(
-            "l3_interfaces"
-        )
+        l3_interfaces_facts = facts["ansible_network_resources"].get("l3_interfaces")
         if not l3_interfaces_facts:
             return []
         return l3_interfaces_facts
@@ -104,9 +102,7 @@ class L3_interfaces(ConfigBase):
                 self._module.fail_json(
                     msg="value of running_config parameter must not be empty for state parsed"
                 )
-            result["parsed"] = self.get_l3_interfaces_facts(
-                data=running_config
-            )
+            result["parsed"] = self.get_l3_interfaces_facts(data=running_config)
         else:
             changed_l3_interfaces_facts = []
 
@@ -145,14 +141,9 @@ class L3_interfaces(ConfigBase):
         commands = []
         state = self._module.params["state"]
 
-        if (
-            state in ("merged", "replaced", "overridden", "rendered")
-            and not want
-        ):
+        if state in ("merged", "replaced", "overridden", "rendered") and not want:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(
-                    state
-                )
+                msg="value of config parameter must not be empty for state {0}".format(state)
             )
 
         if state == "overridden":
@@ -161,9 +152,7 @@ class L3_interfaces(ConfigBase):
         elif state == "deleted":
             if not want:
                 for intf in have:
-                    commands.extend(
-                        self._state_deleted({"name": intf["name"]}, intf)
-                    )
+                    commands.extend(self._state_deleted({"name": intf["name"]}, intf))
             else:
                 for item in want:
                     obj_in_have = search_obj_in_list(item["name"], have)
@@ -211,9 +200,7 @@ class L3_interfaces(ConfigBase):
         for intf in have:
             intf_in_want = search_obj_in_list(intf["name"], want)
             if not intf_in_want:
-                commands.extend(
-                    self._state_deleted({"name": intf["name"]}, intf)
-                )
+                commands.extend(self._state_deleted({"name": intf["name"]}, intf))
 
         for intf in want:
             intf_in_have = search_obj_in_list(intf["name"], have)
@@ -238,16 +225,12 @@ class L3_interfaces(ConfigBase):
         for update in self._get_updates(want_copy, have_copy):
             for key, value in iteritems(update):
                 commands.append(
-                    self._compute_commands(
-                        key=key, value=value, interface=want_copy["name"]
-                    )
+                    self._compute_commands(key=key, value=value, interface=want_copy["name"])
                 )
 
         if want_vifs:
             for want_vif in want_vifs:
-                have_vif = search_obj_in_list(
-                    want_vif["vlan_id"], have_vifs, key="vlan_id"
-                )
+                have_vif = search_obj_in_list(want_vif["vlan_id"], have_vifs, key="vlan_id")
                 if not have_vif:
                     have_vif = {}
 
@@ -291,9 +274,7 @@ class L3_interfaces(ConfigBase):
 
         if have_vifs:
             for have_vif in have_vifs:
-                want_vif = search_obj_in_list(
-                    have_vif["vlan_id"], want_vifs, key="vlan_id"
-                )
+                want_vif = search_obj_in_list(have_vif["vlan_id"], want_vifs, key="vlan_id")
                 if not want_vif:
                     want_vif = {"vlan_id": have_vif["vlan_id"]}
 
@@ -311,12 +292,8 @@ class L3_interfaces(ConfigBase):
 
         return commands
 
-    def _compute_commands(
-        self, interface, key, vif=None, value=None, remove=False
-    ):
-        intf_context = "interfaces {0} {1}".format(
-            get_interface_type(interface), interface
-        )
+    def _compute_commands(self, interface, key, vif=None, value=None, remove=False):
+        intf_context = "interfaces {0} {1}".format(get_interface_type(interface), interface)
         set_cmd = "set {0}".format(intf_context)
         del_cmd = "delete {0}".format(intf_context)
 
@@ -334,11 +311,7 @@ class L3_interfaces(ConfigBase):
     def _get_updates(self, want, have):
         updates = []
 
-        updates = diff_list_of_dicts(
-            want.get("ipv4", []), have.get("ipv4", [])
-        )
-        updates.extend(
-            diff_list_of_dicts(want.get("ipv6", []), have.get("ipv6", []))
-        )
+        updates = diff_list_of_dicts(want.get("ipv4", []), have.get("ipv4", []))
+        updates.extend(diff_list_of_dicts(want.get("ipv6", []), have.get("ipv6", [])))
 
         return updates

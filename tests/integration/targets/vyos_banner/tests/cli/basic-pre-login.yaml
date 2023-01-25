@@ -15,7 +15,7 @@
     state: present
 
 - debug:
-    msg: '{{ result }}'
+    msg: "{{ result }}"
 
 - assert:
     that:

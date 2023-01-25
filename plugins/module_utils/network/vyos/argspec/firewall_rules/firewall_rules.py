@@ -73,12 +73,8 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                         "address": {"type": "str"},
                                         "group": {
                                             "options": {
-                                                "address_group": {
-                                                    "type": "str"
-                                                },
-                                                "network_group": {
-                                                    "type": "str"
-                                                },
+                                                "address_group": {"type": "str"},
+                                                "network_group": {"type": "str"},
                                                 "port_group": {"type": "str"},
                                             },
                                             "type": "dict",
@@ -203,12 +199,8 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                         "address": {"type": "str"},
                                         "group": {
                                             "options": {
-                                                "address_group": {
-                                                    "type": "str"
-                                                },
-                                                "network_group": {
-                                                    "type": "str"
-                                                },
+                                                "address_group": {"type": "str"},
+                                                "network_group": {"type": "str"},
                                                 "port_group": {"type": "str"},
                                             },
                                             "type": "dict",

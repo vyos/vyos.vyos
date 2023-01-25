@@ -15,12 +15,11 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 
-from re import findall, search, M
 from copy import deepcopy
+from re import M, findall, search
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.lldp_interfaces.lldp_interfaces import (
     Lldp_interfacesArgs,
 )
@@ -87,9 +86,7 @@ class Lldp_interfacesFacts(object):
 
         civic_conf = "\n".join(filter(lambda x: ("civic-based" in x), conf))
         elin_conf = "\n".join(filter(lambda x: ("elin" in x), conf))
-        coordinate_conf = "\n".join(
-            filter(lambda x: ("coordinate-based" in x), conf)
-        )
+        coordinate_conf = "\n".join(filter(lambda x: ("coordinate-based" in x), conf))
         disable = "\n".join(filter(lambda x: ("disable" in x), conf))
 
         coordinate_based_conf = self.parse_attribs(
@@ -137,9 +134,7 @@ class Lldp_interfacesFacts(object):
                     c_add["ca_value"] = ca[2].strip("'")
                     civic_info_list.append(c_add)
 
-                country_code = search(
-                    r"^.*civic-based country-code (.+)", conf, M
-                )
+                country_code = search(r"^.*civic-based country-code (.+)", conf, M)
                 civic_based = {}
                 civic_based["ca_info"] = civic_info_list
                 civic_based["country_code"] = country_code.group(1).strip("'")

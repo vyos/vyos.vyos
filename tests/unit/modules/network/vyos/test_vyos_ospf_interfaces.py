@@ -20,11 +20,10 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
 from ansible_collections.vyos.vyos.plugins.modules import vyos_ospf_interfaces
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
@@ -37,9 +36,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
         self.mock_get_resource_connection_config = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_execute_show_command = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.Ospf_interfacesFacts.get_device_data"
@@ -76,9 +73,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                             dict(
                                 afi="ipv4",
                                 cost=100,
-                                authentication=dict(
-                                    plaintext_password="abcdefg!"
-                                ),
+                                authentication=dict(plaintext_password="abcdefg!"),
                                 priority=55,
                             ),
                             dict(afi="ipv6", mtu_ignore=True, instance=20),
@@ -173,9 +168,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                             dict(
                                 afi="ipv4",
                                 cost=100,
-                                authentication=dict(
-                                    plaintext_password="abcdefg!"
-                                ),
+                                authentication=dict(plaintext_password="abcdefg!"),
                                 priority=55,
                             ),
                         ],
@@ -241,9 +234,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                             dict(
                                 afi="ipv4",
                                 cost=100,
-                                authentication=dict(
-                                    plaintext_password="abcdefg!"
-                                ),
+                                authentication=dict(plaintext_password="abcdefg!"),
                                 priority=55,
                             ),
                         ],
@@ -338,9 +329,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                             dict(
                                 afi="ipv4",
                                 cost=100,
-                                authentication=dict(
-                                    plaintext_password="abcdefg!"
-                                ),
+                                authentication=dict(plaintext_password="abcdefg!"),
                                 priority=55,
                             ),
                             dict(afi="ipv6", mtu_ignore=True, instance=20),
@@ -370,9 +359,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
             "set interfaces bonding bond2 ipv6 ospfv3 passive",
         ]
         result = self.execute_module(changed=False)
-        self.assertEqual(
-            sorted(result["rendered"]), sorted(commands), result["rendered"]
-        )
+        self.assertEqual(sorted(result["rendered"]), sorted(commands), result["rendered"])
 
     def test_vyos_ospf_interfaces_parsed(self):
         commands = [
@@ -437,14 +424,10 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
 
     def test_vyos_ospf_interfaces_gathered(self):
         set_module_args(dict(state="gathered"))
-        result = self.execute_module(
-            changed=False, filename="vyos_ospf_interfaces_config.cfg"
-        )
+        result = self.execute_module(changed=False, filename="vyos_ospf_interfaces_config.cfg")
         gathered_list = [
             {
-                "address_family": [
-                    {"afi": "ipv6", "instance": "33", "mtu_ignore": True}
-                ],
+                "address_family": [{"afi": "ipv6", "instance": "33", "mtu_ignore": True}],
                 "name": "eth0",
             },
             {

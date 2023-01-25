@@ -12,7 +12,6 @@
       register: result
       vyos.vyos.lldp_interfaces: &id001
         config:
-
           - name: eth2
             location:
               elin: 0000000911

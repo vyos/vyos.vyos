@@ -42,8 +42,8 @@ options:
     - name: ansible_vyos_config_commands
 """
 
-import re
 import json
+import re
 
 from ansible.errors import AnsibleConnectionFailure
 from ansible.module_utils._text import to_text
@@ -51,12 +51,8 @@ from ansible.module_utils.common._collections_compat import Mapping
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import (
     NetworkConfig,
 )
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    to_list,
-)
-from ansible_collections.ansible.netcommon.plugins.plugin_utils.cliconf_base import (
-    CliconfBase,
-)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import to_list
+from ansible_collections.ansible.netcommon.plugins.plugin_utils.cliconf_base import CliconfBase
 
 
 class Cliconf(CliconfBase):
@@ -119,14 +115,10 @@ class Cliconf(CliconfBase):
         out = self.send_command(command)
         return out
 
-    def edit_config(
-        self, candidate=None, commit=True, replace=None, comment=None
-    ):
+    def edit_config(self, candidate=None, commit=True, replace=None, comment=None):
         resp = {}
         operations = self.get_device_operations()
-        self.check_edit_config_capability(
-            operations, candidate, commit, replace, comment
-        )
+        self.check_edit_config_capability(operations, candidate, commit, replace, comment)
 
         results = []
         requests = []
@@ -156,9 +148,7 @@ class Cliconf(CliconfBase):
         else:
             self.send_command("exit")
             if (
-                to_text(
-                    self._connection.get_prompt(), errors="surrogate_or_strict"
-                )
+                to_text(self._connection.get_prompt(), errors="surrogate_or_strict")
                 .strip()
                 .endswith("#")
             ):
@@ -183,9 +173,7 @@ class Cliconf(CliconfBase):
         if not command:
             raise ValueError("must provide value of command to execute")
         if output:
-            raise ValueError(
-                "'output' value %s is not supported for get" % output
-            )
+            raise ValueError("'output' value %s is not supported for get" % output)
 
         return self.send_command(
             command=command,
@@ -220,9 +208,7 @@ class Cliconf(CliconfBase):
         option_values = self.get_option_values()
 
         if candidate is None and device_operations["supports_generate_diff"]:
-            raise ValueError(
-                "candidate configuration is required to generate diff"
-            )
+            raise ValueError("candidate configuration is required to generate diff")
 
         if diff_match not in option_values["diff_match"]:
             raise ValueError(
@@ -239,9 +225,7 @@ class Cliconf(CliconfBase):
         if path:
             raise ValueError("'path' in diff is not supported")
 
-        set_format = candidate.startswith("set") or candidate.startswith(
-            "delete"
-        )
+        set_format = candidate.startswith("set") or candidate.startswith("delete")
         candidate_obj = NetworkConfig(indent=4, contents=candidate)
         if not set_format:
             config = [c.line for c in candidate_obj.items]
@@ -254,9 +238,7 @@ class Cliconf(CliconfBase):
                         break
                 commands.append(item)
 
-            candidate_commands = [
-                "set %s" % cmd.replace(" {", "") for cmd in commands
-            ]
+            candidate_commands = ["set %s" % cmd.replace(" {", "") for cmd in commands]
 
         else:
             candidate_commands = str(candidate).strip().split("\n")
@@ -265,9 +247,7 @@ class Cliconf(CliconfBase):
             diff["config_diff"] = list(candidate_commands)
             return diff
 
-        running_commands = [
-            str(c).replace("'", "") for c in running.splitlines()
-        ]
+        running_commands = [str(c).replace("'", "") for c in running.splitlines()]
 
         updates = list()
         visited = set()
@@ -276,9 +256,7 @@ class Cliconf(CliconfBase):
             item = str(line).replace("'", "")
 
             if not item.startswith("set") and not item.startswith("delete"):
-                raise ValueError(
-                    "line must start with either `set` or `delete`"
-                )
+                raise ValueError("line must start with either `set` or `delete`")
 
             elif item.startswith("set") and item not in running_commands:
                 updates.append(line)
@@ -307,10 +285,7 @@ class Cliconf(CliconfBase):
 
             output = cmd.pop("output", None)
             if output:
-                raise ValueError(
-                    "'output' value %s is not supported for run_commands"
-                    % output
-                )
+                raise ValueError("'output' value %s is not supported for run_commands" % output)
 
             try:
                 out = self.send_command(**cmd)
@@ -358,6 +333,4 @@ class Cliconf(CliconfBase):
         :return: None
         """
         if self._connection.connected:
-            self._update_cli_prompt_context(
-                config_context="#", exit_command="exit discard"
-            )
+            self._update_cli_prompt_context(config_context="#", exit_command="exit discard")

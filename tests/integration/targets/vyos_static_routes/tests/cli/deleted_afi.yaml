@@ -1,19 +1,17 @@
 ---
 - debug:
-    msg: Start vyos_static_routes deleted integration tests ansible_connection={{
+    msg:
+      Start vyos_static_routes deleted integration tests ansible_connection={{
       ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Delete static route based on afi.
       register: result
       vyos.vyos.vyos_static_routes: &id001
         config:
-
           - address_families:
-
               - afi: ipv4
 
               - afi: ipv6
@@ -52,5 +50,4 @@
           - "{{ deleted_afi_all['after'] | symmetric_difference(result['before'])\
             \ |length == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

@@ -91,6 +91,7 @@ commands:
 import re
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     get_config,
     load_config,
@@ -104,21 +105,13 @@ def spec_to_commands(updates, module):
 
     if state == "absent":
         if have.get("state") != "absent" or (
-            have.get("state") != "absent"
-            and "text" in have.keys()
-            and have["text"]
+            have.get("state") != "absent" and "text" in have.keys() and have["text"]
         ):
-            commands.append(
-                "delete system login banner %s" % module.params["banner"]
-            )
+            commands.append("delete system login banner %s" % module.params["banner"])
 
     elif state == "present":
-        if want["text"] and want["text"].encode().decode(
-            "unicode_escape"
-        ) != have.get("text"):
-            banner_cmd = (
-                "set system login banner %s " % module.params["banner"]
-            )
+        if want["text"] and want["text"].encode().decode("unicode_escape") != have.get("text"):
+            banner_cmd = "set system login banner %s " % module.params["banner"]
             banner_cmd += want["text"].strip()
             commands.append(banner_cmd)
 

@@ -1,10 +1,10 @@
 ---
 - debug:
-    msg: START vyos_bgp_address_family rendered integration tests on connection={{
+    msg:
+      START vyos_bgp_address_family rendered integration tests on connection={{
       ansible_connection }}
 
 - block:
-
     - name: Render the given config in the form of native config.
       register: result
       vyos.vyos.vyos_bgp_address_family: &id001

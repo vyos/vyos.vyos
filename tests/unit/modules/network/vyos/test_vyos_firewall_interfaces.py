@@ -20,13 +20,10 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+from ansible_collections.vyos.vyos.plugins.modules import vyos_firewall_interfaces
 from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
-from ansible_collections.vyos.vyos.plugins.modules import (
-    vyos_firewall_interfaces,
-)
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
@@ -49,16 +46,12 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         self.mock_get_resource_connection_config = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection"
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
         )
-        self.get_resource_connection_facts = (
-            self.mock_get_resource_connection_facts.start()
-        )
+        self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos."
@@ -97,9 +90,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                             ),
                             dict(
                                 afi="ipv6",
-                                rules=[
-                                    dict(name="V6-LOCAL", direction="local")
-                                ],
+                                rules=[dict(name="V6-LOCAL", direction="local")],
                             ),
                         ],
                     ),
@@ -116,9 +107,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                             ),
                             dict(
                                 afi="ipv6",
-                                rules=[
-                                    dict(name="V6-LOCAL", direction="local")
-                                ],
+                                rules=[dict(name="V6-LOCAL", direction="local")],
                             ),
                         ],
                     ),
@@ -155,9 +144,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                             ),
                             dict(
                                 afi="ipv6",
-                                rules=[
-                                    dict(name="V6-LOCAL", direction="local")
-                                ],
+                                rules=[dict(name="V6-LOCAL", direction="local")],
                             ),
                         ],
                     ),
@@ -174,9 +161,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                             ),
                             dict(
                                 afi="ipv6",
-                                rules=[
-                                    dict(name="V6-LOCAL", direction="local")
-                                ],
+                                rules=[dict(name="V6-LOCAL", direction="local")],
                             ),
                         ],
                     ),
@@ -207,11 +192,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_rule_set_03_deleted_per_interface(self):
-        set_module_args(
-            dict(
-                config=[dict(name="eth0"), dict(name="eth2")], state="deleted"
-            )
-        )
+        set_module_args(dict(config=[dict(name="eth0"), dict(name="eth2")], state="deleted"))
         commands = [
             "delete interfaces ethernet eth0 firewall",
             "delete interfaces ethernet eth2 firewall",
@@ -227,11 +208,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_rule_set_03_deleted(self):
-        set_module_args(
-            dict(
-                config=[dict(name="eth0"), dict(name="eth2")], state="deleted"
-            )
-        )
+        set_module_args(dict(config=[dict(name="eth0"), dict(name="eth2")], state="deleted"))
         commands = [
             "delete interfaces ethernet eth0 firewall",
             "delete interfaces ethernet eth2 firewall",
@@ -239,11 +216,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_rule_set_04_deleted_interface_idem(self):
-        set_module_args(
-            dict(
-                config=[dict(name="eth1"), dict(name="eth3")], state="deleted"
-            )
-        )
+        set_module_args(dict(config=[dict(name="eth1"), dict(name="eth3")], state="deleted"))
         self.execute_module(changed=False, commands=[])
 
     def test_vyos_firewall_rule_set_02_replaced_idem(self):
@@ -263,9 +236,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                             ),
                             dict(
                                 afi="ipv6",
-                                rules=[
-                                    dict(name="V6-LOCAL", direction="local")
-                                ],
+                                rules=[dict(name="V6-LOCAL", direction="local")],
                             ),
                         ],
                     ),
@@ -282,9 +253,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                             ),
                             dict(
                                 afi="ipv6",
-                                rules=[
-                                    dict(name="V6-LOCAL", direction="local")
-                                ],
+                                rules=[dict(name="V6-LOCAL", direction="local")],
                             ),
                         ],
                     ),
@@ -307,9 +276,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                             ),
                             dict(
                                 afi="ipv6",
-                                rules=[
-                                    dict(name="V6-LOCAL", direction="local")
-                                ],
+                                rules=[dict(name="V6-LOCAL", direction="local")],
                             ),
                         ],
                     ),
@@ -322,9 +289,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                             ),
                             dict(
                                 afi="ipv6",
-                                rules=[
-                                    dict(name="V6-LOCAL", direction="local")
-                                ],
+                                rules=[dict(name="V6-LOCAL", direction="local")],
                             ),
                         ],
                     ),
@@ -337,9 +302,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                             ),
                             dict(
                                 afi="ipv6",
-                                rules=[
-                                    dict(name="V6-LOCAL", direction="local")
-                                ],
+                                rules=[dict(name="V6-LOCAL", direction="local")],
                             ),
                         ],
                     ),
@@ -398,9 +361,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                             ),
                             dict(
                                 afi="ipv6",
-                                rules=[
-                                    dict(name="V6-LOCAL", direction="local")
-                                ],
+                                rules=[dict(name="V6-LOCAL", direction="local")],
                             ),
                         ],
                     ),
@@ -417,9 +378,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                             ),
                             dict(
                                 afi="ipv6",
-                                rules=[
-                                    dict(name="V6-LOCAL", direction="local")
-                                ],
+                                rules=[dict(name="V6-LOCAL", direction="local")],
                             ),
                         ],
                     ),

@@ -20,11 +20,10 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
 from ansible_collections.vyos.vyos.plugins.modules import vyos_user
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
@@ -59,17 +58,13 @@ class TestVyosUserModule(TestVyosModule):
         result = self.execute_module(changed=True)
         self.assertEqual(
             result["commands"],
-            [
-                "set system login user ansible authentication plaintext-password test"
-            ],
+            ["set system login user ansible authentication plaintext-password test"],
         )
 
     def test_vyos_user_delete(self):
         set_module_args(dict(name="ansible", state="absent"))
         result = self.execute_module(changed=True)
-        self.assertEqual(
-            result["commands"], ["delete system login user ansible"]
-        )
+        self.assertEqual(result["commands"], ["delete system login user ansible"])
 
     def test_vyos_user_level(self):
         set_module_args(dict(name="ansible", level="operator"))
@@ -107,9 +102,7 @@ class TestVyosUserModule(TestVyosModule):
         result = self.execute_module(changed=True)
         self.assertEqual(
             result["commands"],
-            [
-                "set system login user test authentication plaintext-password test"
-            ],
+            ["set system login user test authentication plaintext-password test"],
         )
 
     def test_vyos_user_update_password_on_create_ok(self):
@@ -133,7 +126,5 @@ class TestVyosUserModule(TestVyosModule):
         result = self.execute_module(changed=True)
         self.assertEqual(
             result["commands"],
-            [
-                "set system login user ansible authentication plaintext-password test"
-            ],
+            ["set system login user ansible authentication plaintext-password test"],
         )
