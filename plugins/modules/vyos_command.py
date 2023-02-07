@@ -74,7 +74,8 @@ options:
     - Specifies the number of retries a command should be tried before it is considered
       failed. The command is run on the target device every retry and evaluated against
       the I(wait_for) conditionals.
-    default: 10
+    - The commands are run once when I(retries) is set to C(0).
+    default: 9
     type: int
   interval:
     description:
@@ -175,7 +176,7 @@ def main():
         commands=dict(type="list", required=True, elements="raw"),
         wait_for=dict(type="list", aliases=["waitfor"], elements="str"),
         match=dict(default="all", choices=["all", "any"]),
-        retries=dict(default=10, type="int"),
+        retries=dict(default=9, type="int"),
         interval=dict(default=1, type="int"),
     )
 
@@ -186,6 +187,7 @@ def main():
     commands = parse_commands(module, warnings)
     wait_for = module.params["wait_for"] or list()
 
+    conditionals = []
     try:
         conditionals = [Conditional(c) for c in wait_for]
     except AttributeError as exc:
@@ -195,7 +197,8 @@ def main():
     interval = module.params["interval"]
     match = module.params["match"]
 
-    for item in range(retries):
+    # Always run at least once, and then `retries` more times.
+    for item in range(retries + 1):
         responses = run_commands(module, commands)
 
         for item in list(conditionals):
