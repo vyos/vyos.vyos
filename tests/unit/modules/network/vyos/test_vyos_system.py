@@ -28,7 +28,6 @@ from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosSystemModule(TestVyosModule):
-
     module = vyos_system
 
     def setUp(self):

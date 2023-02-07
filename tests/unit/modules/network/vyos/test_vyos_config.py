@@ -30,7 +30,6 @@ from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosConfigModule(TestVyosModule):
-
     module = vyos_config
 
     def setUp(self):

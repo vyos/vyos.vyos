@@ -33,7 +33,6 @@ class Ospfv2Facts(object):
         subspec="config",
         options="options",
     ):
-
         self._module = module
         self.argument_spec = Ospfv2Args.argument_spec
         spec = deepcopy(self.argument_spec)

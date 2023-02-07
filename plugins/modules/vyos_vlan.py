@@ -299,7 +299,6 @@ def map_config_to_obj(module):
 
 
 def check_declarative_intent_params(want, module, result):
-
     have = None
     obj_interface = list()
     is_delay = False

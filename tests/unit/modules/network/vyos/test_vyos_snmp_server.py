@@ -28,7 +28,6 @@ from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosSnmpServerModule(TestVyosModule):
-
     module = vyos_snmp_server
 
     def setUp(self):

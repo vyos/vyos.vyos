@@ -28,7 +28,6 @@ from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosHostnameModule(TestVyosModule):
-
     module = vyos_hostname
 
     def setUp(self):

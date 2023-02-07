@@ -28,7 +28,6 @@ from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosBgpglobalModule(TestVyosModule):
-
     module = vyos_bgp_global
 
     def setUp(self):
@@ -432,7 +431,6 @@ class TestVyosBgpglobalModule(TestVyosModule):
         )
 
     def test_vyos_bgp_global_parsed(self):
-
         commands = [
             "set protocols bgp 65536 neighbor 10.0.0.4 disable-connected-check",
             "set protocols bgp 65536 neighbor 10.0.0.4 timers holdtime 30",

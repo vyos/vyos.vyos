@@ -43,7 +43,6 @@ class InterfacesFacts(object):
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def get_device_data(self, connection):
-
         data = connection.get_config(flags=["| grep interfaces"])
         return data
 

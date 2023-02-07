@@ -28,7 +28,6 @@ from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosFirewallInterfacesModule(TestVyosModule):
-
     module = vyos_firewall_interfaces
 
     def setUp(self):

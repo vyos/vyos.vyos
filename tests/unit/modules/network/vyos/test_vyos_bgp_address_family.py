@@ -28,7 +28,6 @@ from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosBgpafModule(TestVyosModule):
-
     module = vyos_bgp_address_family
 
     def setUp(self):

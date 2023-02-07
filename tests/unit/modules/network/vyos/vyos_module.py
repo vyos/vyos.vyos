@@ -61,7 +61,6 @@ class TestVyosModule(ModuleTestCase):
         defaults=False,
         filename=None,
     ):
-
         if filename is None:
             self.load_fixtures(commands)
         else:

@@ -28,7 +28,6 @@ from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosRouteMapsModule(TestVyosModule):
-
     module = vyos_route_maps
 
     def setUp(self):
@@ -460,7 +459,6 @@ class TestVyosRouteMapsModule(TestVyosModule):
         )
 
     def test_yos_route_maps_parsed(self):
-
         parsed_str = (
             "set policy route-map test3 rule 1 action 'permit'"
             "\nset policy route-map test3 rule 1 match interface 'eth2'\nset policy route-map test3 rule 1 match ipv6 nexthop"

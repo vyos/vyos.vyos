@@ -28,7 +28,6 @@ from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosNTPModule(TestVyosModule):
-
     module = vyos_ntp_global
 
     def setUp(self):
@@ -274,7 +273,6 @@ class TestVyosNTPModule(TestVyosModule):
         )
 
     def test_ntp_parsed(self):
-
         commands = (
             "set system ntp allow-clients address 10.7.7.0/24",
             "set system ntp allow-clients address 10.6.7.0/24",

@@ -26,7 +26,6 @@ from .vyos_module import TestVyosModule
 
 
 class TestVyosBannerModule(TestVyosModule):
-
     module = vyos_banner
 
     def setUp(self):

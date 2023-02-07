@@ -17,7 +17,6 @@ from .vyos_module import TestVyosModule
 
 
 class TestVyosLoggingGlobalModule(TestVyosModule):
-
     module = vyos_logging_global
 
     def setUp(self):
