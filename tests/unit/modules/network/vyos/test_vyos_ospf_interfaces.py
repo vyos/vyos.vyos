@@ -28,7 +28,6 @@ from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosOspfInterfacesModule(TestVyosModule):
-
     module = vyos_ospf_interfaces
 
     def setUp(self):

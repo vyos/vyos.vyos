@@ -218,7 +218,7 @@ class Ospfv2(ConfigBase):
         w = deepcopy(remove_empties(want))
         leaf = ("default_metric", "log_adjacency_changes")
         if w:
-            for (key, val) in iteritems(w):
+            for key, val in iteritems(w):
                 if opr and key in leaf and not _is_w_same(w, have, key):
                     commands.append(self._form_attr_cmd(attr=key, val=_bool_to_str(val), opr=opr))
                 elif not opr and key in leaf and not _in_target(have, key):
@@ -287,7 +287,7 @@ class Ospfv2(ConfigBase):
                 ),
             }
             leaf = leaf_dict[attr]
-            for (item, value) in iteritems(want[attr]):
+            for item, value in iteritems(want[attr]):
                 if opr and item in leaf and not _is_w_same(want[attr], h, item):
                     if item == "enabled":
                         item = "enable"
@@ -383,7 +383,7 @@ class Ospfv2(ConfigBase):
             commands.append(cmd + attr.replace("_", "-"))
         elif w:
             for w_item in w:
-                for (key, val) in iteritems(w_item):
+                for key, val in iteritems(w_item):
                     if not cmd:
                         cmd = self._compute_command(opr=opr)
                     h_item = self.search_obj_in_have(h, w_item, name[attr])
@@ -491,7 +491,7 @@ class Ospfv2(ConfigBase):
             commands.append(self._compute_command(attr=attr, opr=opr))
         elif w:
             for w_item in w:
-                for (key, val) in iteritems(w_item):
+                for key, val in iteritems(w_item):
                     if not cmd:
                         cmd = self._compute_command(opr=opr)
                     h_item = self.search_obj_in_have(h, w_item, name[attr])
@@ -588,7 +588,7 @@ class Ospfv2(ConfigBase):
                 leaf = leaf_dict[attr]
                 if h and key in h.keys():
                     h_attrib = h.get(key) or {}
-                for (item, val) in iteritems(w[key]):
+                for item, val in iteritems(w[key]):
                     if opr and item in leaf and not _is_w_same(w[key], h_attrib, item):
                         if item in ("administrative", "always") and val:
                             commands.append(
@@ -611,7 +611,6 @@ class Ospfv2(ConfigBase):
                                 + str(val)
                             )
                     elif not opr and item in leaf and not _in_target(h_attrib, item):
-
                         commands.append(cmd + attr + " " + item)
         return commands
 
@@ -650,7 +649,7 @@ class Ospfv2(ConfigBase):
                         self._form_attr_cmd(key="area", attr=w_area["area_id"], opr=opr)
                     )
                 else:
-                    for (key, val) in iteritems(w_area):
+                    for key, val in iteritems(w_area):
                         if opr and key in l_set and not _is_w_same(w_area, h_area, key):
                             if key == "area_id":
                                 commands.append(
@@ -723,7 +722,7 @@ class Ospfv2(ConfigBase):
                 if w_area:
                     if h_type and key in h_type.keys():
                         h_area = h_type.get(key) or {}
-                    for (item, val) in iteritems(w_type[key]):
+                    for item, val in iteritems(w_type[key]):
                         if (
                             opr
                             and item in a_type[key]

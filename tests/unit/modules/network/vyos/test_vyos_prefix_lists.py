@@ -30,7 +30,6 @@ from .vyos_module import TestVyosModule
 
 
 class TestVyosPrefixListsModule(TestVyosModule):
-
     # Testing strategy
     # ------------------
     # (a) The unit tests cover `merged` and `replaced` for every attribute.

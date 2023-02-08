@@ -28,7 +28,6 @@ from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosStaticRoutesModule(TestVyosModule):
-
     module = vyos_static_routes
 
     def setUp(self):

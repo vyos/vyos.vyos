@@ -136,7 +136,6 @@ class Bgp_global(ResourceModule):
         self.commands = command_set
 
     def _compare_neighbor(self, want, have):
-
         parsers = [
             "neighbor.advertisement_interval",
             "neighbor.allowas_in",

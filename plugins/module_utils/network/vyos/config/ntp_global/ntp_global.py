@@ -105,7 +105,6 @@ class Ntp_global(ResourceModule):
         # Getting the list of the server names from haved
         #   to avoid the duplication of overridding/replacing the servers
         if self.state in ["overridden", "replaced"]:
-
             commandlist = self._commandlist(haved)
             servernames = self._servernames(haved)
 
