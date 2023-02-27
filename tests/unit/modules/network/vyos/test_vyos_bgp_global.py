@@ -20,8 +20,9 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+from unittest.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_bgp_global
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
 from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
 
 from .vyos_module import TestVyosModule, load_fixture
