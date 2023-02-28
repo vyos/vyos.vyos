@@ -21,9 +21,10 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+from unittest.mock import MagicMock, patch
+
 from ansible_collections.vyos.vyos.plugins.cliconf.vyos import Cliconf
 from ansible_collections.vyos.vyos.plugins.modules import vyos_config
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import MagicMock, patch
 from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
 
 from .vyos_module import TestVyosModule, load_fixture
