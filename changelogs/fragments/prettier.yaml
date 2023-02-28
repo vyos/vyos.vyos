@@ -1,3 +1,0 @@
----
-trivial:
-  - Add isort and prettier pre-commit hooks
