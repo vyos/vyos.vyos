@@ -1,4 +1,6 @@
 ---
+- ansible.builtin.include_tasks: _add_bond.yaml
+
 - name: Setup
   vars:
     lines:

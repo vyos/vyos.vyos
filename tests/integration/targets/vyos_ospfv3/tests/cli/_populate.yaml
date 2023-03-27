@@ -1,4 +1,6 @@
 ---
+- ansible.builtin.include_tasks: _remove_config.yaml
+
 - name: Setup
   vars:
     lines: "set protocols ospfv3 area 2 export-list 'export1' \n

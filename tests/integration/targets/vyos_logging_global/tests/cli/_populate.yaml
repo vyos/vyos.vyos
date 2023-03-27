@@ -1,4 +1,6 @@
 ---
+- ansible.builtin.include_tasks: _remove_config.yaml
+
 - name: POPULATE Apply the provided configuration
   register: result
   vyos.vyos.vyos_logging_global:

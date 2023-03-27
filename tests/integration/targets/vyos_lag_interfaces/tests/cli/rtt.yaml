@@ -3,8 +3,6 @@
     msg: START vyos_lag_interfaces round trip integration tests on connection={{
       ansible_connection }}
 
-- include_tasks: _remove_config.yaml
-
 - include_tasks: _remove_bond.yaml
 
 - block:
@@ -69,4 +67,4 @@
           "{{ base_config['after'] | symmetric_difference(revert['after']) |length\
           \ == 0 }}"
   always:
-    - include_tasks: _remove_config.yaml
+    - include_tasks: _remove_bond.yaml
