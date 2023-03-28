@@ -2,7 +2,7 @@
 
 # VyOS Collection
 [![CI](https://zuul-ci.org/gated.svg)](https://dashboard.zuul.ansible.com/t/ansible/project/github.com/ansible-collections/vyos.vyos) <!--[![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/vyos)](https://codecov.io/gh/ansible-collections/vyos)-->
-
+[![Codecov](https://codecov.io/gh/ansible-collections/vyos.vyos/branch/main/graph/badge.svg)](https://codecov.io/gh/ansible-collections/vyos.vyos)
 The Ansible VyOS collection includes a variety of Ansible content to help automate the management of VyOS network appliances.
 
 This collection has been tested against VyOS 1.1.8 (helium).
