@@ -10,6 +10,5 @@
       - set interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
       - set interfaces bonding bond2 ip ospf transmit-delay 45
       - set interfaces bonding bond2 ipv6 ospfv3 passive
-  ignore_errors: true
   vars:
     ansible_connection: ansible.netcommon.network_cli
