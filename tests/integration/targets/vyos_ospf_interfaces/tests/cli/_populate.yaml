@@ -1,5 +1,7 @@
 ---
-- name: setup
+- ansible.builtin.include_tasks: _remove_config.yaml
+
+- name: Setup
   vyos.vyos.vyos_config:
     lines:
       - set interfaces ethernet eth0 ip ospf cost 50

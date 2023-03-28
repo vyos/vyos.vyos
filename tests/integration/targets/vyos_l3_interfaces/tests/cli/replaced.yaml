@@ -4,11 +4,9 @@
       START vyos_l3_interfaces replaced integration tests on connection={{ ansible_connection
       }}
 
-- include_tasks: _remove_config.yaml
+- include_tasks: _populate.yaml
 
 - block:
-    - include_tasks: _populate.yaml
-
     - name: Replace device configurations of listed interfaces with provided configurations
       register: result
       vyos.vyos.vyos_l3_interfaces: &id001

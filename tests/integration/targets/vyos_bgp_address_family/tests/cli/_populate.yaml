@@ -1,5 +1,7 @@
 ---
-- name: setup
+- ansible.builtin.include_tasks: _remove_config.yaml
+
+- name: Setup
   vyos.vyos.vyos_config:
     lines:
       - set policy access-list 20 description 'acl20'

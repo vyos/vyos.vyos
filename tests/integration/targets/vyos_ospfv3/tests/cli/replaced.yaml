@@ -3,8 +3,6 @@
     msg: START vyos_ospfv3 replaced integration tests on connection={{
       ansible_connection }}
 
-- include_tasks: _remove_config.yaml
-
 - include_tasks: _populate.yaml
 
 - block:

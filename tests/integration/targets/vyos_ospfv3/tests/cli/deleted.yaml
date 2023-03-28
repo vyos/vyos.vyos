@@ -1,6 +1,6 @@
 ---
 - debug:
-    msg: Start vyos_ospfv3 deleted integration tests ansible_connection={{
+    msg: START vyos_ospfv3 deleted integration tests ansible_connection={{
       ansible_connection }}
 
 - include_tasks: _populate.yaml

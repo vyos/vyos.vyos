@@ -4,8 +4,6 @@
       START vyos_lag_interfaces parsed integration tests on connection={{ ansible_connection
       }}
 
-- include_tasks: _remove_config.yaml
-
 - include_tasks: _populate.yaml
 
 - block:
@@ -30,4 +28,4 @@
           \ |length == 0 }}"
 
   always:
-    - include_tasks: _remove_config.yaml
+    - include_tasks: _remove_bond.yaml

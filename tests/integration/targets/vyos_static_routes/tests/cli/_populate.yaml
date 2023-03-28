@@ -1,4 +1,6 @@
 ---
+- ansible.builtin.include_tasks: _remove_config.yaml
+
 - name: Setup
   vars:
     lines: "set protocols static route 192.0.2.32/28 next-hop '192.0.2.10'\nset\

@@ -2,8 +2,6 @@
 - debug:
     msg: START l3_interfaces rendered on connection={{ ansible_connection }}
 
-- include_tasks: _remove_config.yaml
-
 - include_tasks: _populate.yaml
 
 - block:

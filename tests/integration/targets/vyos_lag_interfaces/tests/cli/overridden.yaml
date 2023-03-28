@@ -3,10 +3,6 @@
     msg: START vyos_lag_interfaces overridden integration tests on connection={{
       ansible_connection }}
 
-- include_tasks: _remove_config.yaml
-
-- include_tasks: _remove_bond.yaml
-
 - include_tasks: _populate.yaml
 
 - block:
@@ -54,4 +50,4 @@
           - "{{ overridden['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-    - include_tasks: _remove_config.yaml
+    - include_tasks: _remove_bond.yaml

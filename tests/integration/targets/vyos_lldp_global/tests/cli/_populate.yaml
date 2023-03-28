@@ -1,4 +1,6 @@
 ---
+- ansible.builtin.include_tasks: _remove_config.yaml
+
 - name: Setup
   vars:
     lines:

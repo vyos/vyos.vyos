@@ -1,6 +1,6 @@
 ---
 - debug:
-    msg: Start vyos_lldp_global deleted integration tests ansible_connection={{
+    msg: START vyos_lldp_global deleted integration tests ansible_connection={{
       ansible_connection }}
 
 - include_tasks: _populate.yaml

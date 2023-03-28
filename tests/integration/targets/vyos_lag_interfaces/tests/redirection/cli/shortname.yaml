@@ -2,10 +2,6 @@
 - debug:
     msg: START lag_interfaces merged on connection={{ ansible_connection }}
 
-- include_tasks: _remove_config.yaml
-
-- include_tasks: _remove_bond.yaml
-
 - include_tasks: _add_bond.yaml
 
 - block:
@@ -63,4 +59,4 @@
           - "{{ merged['after'] | symmetric_difference(result['before']) |length\
             \ == 0 }}"
   always:
-    - include_tasks: _remove_config.yaml
+    - include_tasks: _remove_bond.yaml

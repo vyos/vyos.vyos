@@ -1,14 +1,12 @@
 ---
 - debug:
     msg:
-      Start vyos_interfaces deleted integration tests ansible_connection={{ ansible_connection
+      START vyos_interfaces deleted integration tests ansible_connection={{ ansible_connection
       }}
 
-- include_tasks: _remove_config.yaml
+- include_tasks: _populate.yaml
 
 - block:
-    - include_tasks: _populate.yaml
-
     - name: Delete attributes of given interfaces
       register: result
       vyos.vyos.vyos_l3_interfaces: &id001
