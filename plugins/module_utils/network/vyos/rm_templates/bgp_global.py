@@ -873,7 +873,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} password {{ neighbor.address }}",
+            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} password {{ neighbor.password }}",
             "compval": "neighbor.password",
             "result": {
                 "as_number": "{{ as_num }}",
