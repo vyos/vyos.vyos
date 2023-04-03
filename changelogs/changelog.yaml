@@ -386,3 +386,15 @@ releases:
       - prettier.yaml
       - rm_base.yaml
     release_date: "2023-02-27"
+  4.0.2:
+    changes:
+      bugfixes:
+        - bgp_global - changed to use `neighbor.password` rather than `neighbor.address`
+          (https://github.com/ansible-collections/vyos.vyos/issues/304).
+      doc_changes:
+        - vyos_interfaces - Updated documentation with examples and task output.
+    fragments:
+      - bgp-password-fix.yml
+      - ci_codecov.yml
+      - update_intf_doc.yaml
+    release_date: "2023-04-03"
