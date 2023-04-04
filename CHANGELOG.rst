@@ -5,6 +5,19 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v4.0.2
+======
+
+Bugfixes
+--------
+
+- bgp_global - changed to use `neighbor.password` rather than `neighbor.address` (https://github.com/ansible-collections/vyos.vyos/issues/304).
+
+Documentation Changes
+---------------------
+
+- vyos_interfaces - Updated documentation with examples and task output.
+
 v4.0.1
 ======
 
