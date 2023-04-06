@@ -180,7 +180,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>The module, by default, will connect to the remote device and retrieve the current running-config to use as a base for comparing against the contents of source. There are times when it is not desirable to have the task get the current running-config for every task in a playbook.  The <em>running_config</em> argument allows the implementer to pass in the configuration to use as the base config for comparison. This value of this option should be the output received from device by executing command C(show configuration commands | grep &#x27;firewall&#x27;</div>
+                        <div>The module, by default, will connect to the remote device and retrieve the current running-config to use as a base for comparing against the contents of source. There are times when it is not desirable to have the task get the current running-config for every task in a playbook.  The <em>running_config</em> argument allows the implementer to pass in the configuration to use as the base config for comparison. This value of this option should be the output received from device by executing command <code>show configuration commands | grep &#x27;firewall&#x27;</code>.</div>
                 </td>
             </tr>
             <tr>
