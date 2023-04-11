@@ -190,7 +190,14 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                 "recent": {
                                     "options": {
                                         "count": {"type": "int"},
-                                        "time": {"type": "int"},
+                                        "time": {
+                                            "type": {
+                                                "choices": [
+                                                    "second",
+                                                    "minute",
+                                                    "hour"
+                                                ]
+                                        },
                                     },
                                     "type": "dict",
                                 },

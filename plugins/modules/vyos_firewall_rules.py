@@ -293,8 +293,8 @@ options:
                     type: int
                   time:
                     description:
-                    - Source addresses seen in the last N seconds.
-                    type: int
+                    - Source addresses seen in the last second/minute/hour.
+                    type: text ("second", "minute", or "hour")
               source:
                 description:
                 - Source parameters.
