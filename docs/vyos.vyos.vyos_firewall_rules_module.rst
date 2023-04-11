@@ -794,7 +794,7 @@ Parameters
                     <b>count</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">text ("second", "minute", or "hour")</span>
+                        <span style="color: purple">integer</span>
                     </div>
                 </td>
                 <td>
@@ -813,13 +813,13 @@ Parameters
                     <b>time</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">integer</span>
+                        <span style="color: purple">text ("second", "minute", or "hour")</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
-                        <div>Source addresses seen in the last N seconds.</div>
+                        <div>Source addresses seen in the last second/minute/hour.</div>
                 </td>
             </tr>
 
