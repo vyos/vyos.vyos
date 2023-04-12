@@ -1,3 +1,0 @@
----
-bugfix:
-  - vyos-firewall_rules - Changed recent.count from int to raw text to support VyOS 1.4.
