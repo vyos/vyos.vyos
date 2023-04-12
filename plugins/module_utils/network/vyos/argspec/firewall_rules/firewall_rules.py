@@ -197,6 +197,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                                     "minute",
                                                     "hour"
                                                 ]
+                                            }
                                         },
                                     },
                                     "type": "dict",
