@@ -1,9 +1,11 @@
-black==22.8.0
-coverage==4.5.4
-git+https://github.com/ansible-community/pytest-ansible-units.git
+# For ansible-tox-linters
+black==23.3.0
 flake8
-pytest-xdist
 yamllint
 
-mock
+# Unit test runner
+pytest-ansible
+pytest-xdist
+
+# For integration tests
 pexpect
