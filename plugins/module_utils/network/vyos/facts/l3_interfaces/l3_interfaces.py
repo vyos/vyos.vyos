@@ -128,6 +128,8 @@ class L3_interfacesFacts(object):
                 config["ipv6"].append({"address": item})
             elif item == "no-default-link-local":
                 config["ipv6"].append({"address": item})
+            elif item == "autoconf":
+                config["ipv6"].append({"address": item})
             else:
                 ip_version = get_ip_address_version(item.split("/")[0])
                 if ip_version == 4:
