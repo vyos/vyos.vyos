@@ -1,3 +1,4 @@
 ---
 trivial:
   - vyos-l3_interface_facts - fixed #295 - error when using no-default-link-local option.
+  - vyos-l3_interface_facts - fAdd support for Tunnel, Bridge and Dummy interfaces
