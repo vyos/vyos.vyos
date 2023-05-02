@@ -16,32 +16,11 @@ jobs:
   sanity:
     uses: Qalthos/github_actions/.github/workflows/sanity.yml@milestone-no-fail
     with:
-      matrix_include: >-
+      unstable: >-
         [
-          {
-            "os": "ubuntu-20.04",
-            "ansible-version": "stable-2.9",
-            "python-version": "3.6",
-            "unstable": false,
-          },
-          {
-            "os": "ubuntu-latest",
-            "ansible-version": "stable-2.15",
-            "python-version": "3.10",
-            "unstable": true,
-          },
-          {
-            "os": "ubuntu-latest",
-            "ansible-version": "milestone",
-            "python-version": "3.10",
-            "unstable": true,
-          },
-          {
-            "os": "ubuntu-latest",
-            "ansible-version": "devel",
-            "python-version": "3.10",
-            "unstable": true,
-          },
+          "stable-2.15",
+          "milestone",
+          "devel",
         ]
   unit-galaxy:
     uses: ansible-network/github_actions/.github/workflows/unit_galaxy.yml@main
