@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - vyos-l3_interface_facts - fixed error when using no-default-link-local option. (https://github.com/ansible-collections/vyos.vyos/issues/295)
