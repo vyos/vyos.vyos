@@ -60,7 +60,7 @@ class L3_interfacesFacts(object):
         # operate on a collection of resource x
         objs = []
         interface_names = re.findall(
-            r"set interfaces (?:ethernet|bonding|vti|vxlan) (?:\'*)(\S+)(?:\'*)",
+            r"set interfaces (?:ethernet|bonding|bridge|dummy|tunnel|vti|vxlan) (?:\'*)(\S+)(?:\'*)",
             data,
             re.M,
         )

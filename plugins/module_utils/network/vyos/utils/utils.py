@@ -40,6 +40,12 @@ def get_interface_type(interface):
         return "openvpn"
     elif interface.startswith("wg"):
         return "wireguard"
+    elif interface.startswith("tun"):
+        return "tunnel"
+    elif interface.startswith("br"):
+        return "bridge"
+    elif interface.startswith("dum"):
+        return "dummy"
 
 
 def dict_delete(base, comparable):
