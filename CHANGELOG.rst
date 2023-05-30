@@ -5,6 +5,19 @@ Vyos Collection Release Notes
 .. contents:: Topics
 
 
+v4.1.0
+======
+
+Minor Changes
+-------------
+
+- vyos-l3_interface_support - Add support for Tunnel, Bridge and Dummy interfaces. (https://github.com/ansible-collections/vyos.vyos/issues/265)
+
+Bugfixes
+--------
+
+- vyos-l3_interface_facts - fixed error when using no-default-link-local option. (https://github.com/ansible-collections/vyos.vyos/issues/295)
+
 v4.0.2
 ======
 
