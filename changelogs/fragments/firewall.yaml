@@ -1,3 +1,0 @@
----
-trivial:
-  - vyos-firewall_interfaces - fixed unclosed C() macro.
