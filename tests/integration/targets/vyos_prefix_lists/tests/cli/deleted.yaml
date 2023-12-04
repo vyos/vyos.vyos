@@ -9,6 +9,7 @@
 - block:
     # Delete all prefix-lists
     - name: Delete all prefix-lists
+      ignore_errors: true
       register: result
       vyos.vyos.vyos_prefix_lists: &id006
         config:
