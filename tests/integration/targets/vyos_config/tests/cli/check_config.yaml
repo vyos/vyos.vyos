@@ -52,6 +52,6 @@
 
 - assert:
     that:
-      - "{{ result.filtered|length }} == 2"
+      - result.filtered|length == 2
 
 - debug: msg="END cli/config_check.yaml on connection={{ ansible_connection }}"
