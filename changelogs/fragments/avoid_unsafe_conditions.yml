@@ -1,0 +1,3 @@
+---
+trivial:
+  - avoid_unsafe_conditions - Avoid unsafe conditions in integration tests to resolve issues related to assertion unsafe conditions.
