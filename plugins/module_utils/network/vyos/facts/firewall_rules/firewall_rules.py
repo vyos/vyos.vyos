@@ -61,15 +61,31 @@ class Firewall_rulesFacts(object):
             data = self.get_device_data(connection)
         # split the config into instances of the resource
         objs = []
-        v6_rules = findall(r"^set firewall ipv6-name (?:\'*)(\S+)(?:\'*)", data, M)
-        v4_rules = findall(r"^set firewall name (?:\'*)(\S+)(?:\'*)", data, M)
+        # check 1.4+ first
+        new_rules = True
+        v6_rules = findall(r"^set firewall ipv6 name (?:\'*)(\S+)(?:\'*)", data, M)
+        if not v6_rules:
+            v6_rules = findall(r"^set firewall ipv6-name (?:\'*)(\S+)(?:\'*)", data, M)
+            if v6_rules:
+                new_rules = False
+        v4_rules = findall(r"^set firewall ipv4 name (?:\'*)(\S+)(?:\'*)", data, M)
+        if not v4_rules:
+            v4_rules = findall(r"^set firewall name (?:\'*)(\S+)(?:\'*)", data, M)
+            if v4_rules:
+                new_rules = False
         if v6_rules:
-            config = self.get_rules(data, v6_rules, type="ipv6")
+            if new_rules:
+                config = self.get_rules_post_1_4(data, v6_rules, type="ipv6")
+            else:
+                config = self.get_rules(data, v6_rules, type="ipv6")
             if config:
                 config = utils.remove_empties(config)
                 objs.append(config)
         if v4_rules:
-            config = self.get_rules(data, v4_rules, type="ipv4")
+            if new_rules:
+                config = self.get_rules_post_1_4(data, v4_rules, type="ipv4")
+            else:
+                config = self.get_rules(data, v4_rules, type="ipv4")
             if config:
                 config = utils.remove_empties(config)
                 objs.append(config)
@@ -112,6 +128,35 @@ class Firewall_rulesFacts(object):
         if r_v6:
             config = {"afi": "ipv6", "rule_sets": r_v6}
         return config
+    
+    def get_rules_post_1_4(self, data, rules, type):
+        """
+        This function performs following:
+        - Form regex to fetch 'rule-sets' specific config from data.
+        - Form the rule-set list based on ip address.
+        Specifically for v1.4+ version.
+        :param data: configuration.
+        :param rules: list of rule-sets.
+        :param type: ip address type.
+        :return: generated rule-sets configuration.
+        """
+        r_v4 = []
+        r_v6 = []
+        for r in set(rules):
+            rule_regex = r" %s %s %s .+$" % (type, "name", r.strip("'"))
+            cfg = findall(rule_regex, data, M)
+            fr = self.render_config(cfg, r.strip("'"))
+            fr["name"] = r.strip("'")
+            if type == "ipv6":
+                r_v6.append(fr)
+            else:
+                r_v4.append(fr)
+        if r_v4:
+            config = {"afi": "ipv4", "rule_sets": r_v4}
+        if r_v6:
+            config = {"afi": "ipv6", "rule_sets": r_v6}
+        return config
+
 
     def render_config(self, conf, match):
         """
@@ -386,3 +431,13 @@ class Firewall_rulesFacts(object):
         """
         num_set = ("time", "code", "type", "count", "burst", "number")
         return True if attrib in num_set else False
+
+    def _get_os_version(self):
+        """
+        Get the base version number before the '-' in the version string.
+        """
+        os_version = "1.2"
+        if self._connection:
+            os_version = self.get_device_data(self._connection)["network_os_version"]
+            os_version = self._connection.get_device_info()["network_os_major_version"]
+        return os_version

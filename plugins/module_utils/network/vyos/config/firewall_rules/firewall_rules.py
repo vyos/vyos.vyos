@@ -461,12 +461,7 @@ class Firewall_rules(ConfigBase):
                 ):
                     if item == "type_name":
                         os_version = self._get_os_version()
-                        ver = re.search(
-                            "vyos ([\\d\\.]+)-?.*",  # noqa: W605
-                            os_version,
-                            re.IGNORECASE,
-                        )
-                        if ver.group(1) >= "1.4":
+                        if os_version >= "1.4":
                             param_name = "type-name"
                         else:
                             param_name = "type"
@@ -808,6 +803,8 @@ class Firewall_rules(ConfigBase):
         :param afi: address type
         :return: rule-set type.
         """
+        if self._get_os_version() >= '1.4':
+            return "ipv6 name" if afi == "ipv6" else "ipv4 name"
         return "ipv6-name" if afi == "ipv6" else "name"
 
     def _is_del(self, l_set, h, key="number"):
@@ -864,7 +861,10 @@ class Firewall_rules(ConfigBase):
         return True if key in r_set else False
 
     def _get_os_version(self):
+        """
+        Get the base version number before the '-' in the version string.
+        """
         os_version = "1.2"
         if self._connection:
-            os_version = self._connection.get_device_info()["network_os_version"]
+            os_version = self._connection.get_device_info()["network_os_major_version"]
         return os_version

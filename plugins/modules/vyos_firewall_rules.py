@@ -103,6 +103,8 @@ options:
               action:
                 description:
                 - Specifying the action.
+                - inspect is available  < 1.4
+                - continue, return, jump, queue, synproxy are available >= 1.4
                 type: str
                 choices:
                 - drop
