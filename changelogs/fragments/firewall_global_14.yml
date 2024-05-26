@@ -1,0 +1,5 @@
+---
+minor_changes:
+- with 1.4+, use the the global keyword to define global firewall rules
+- Added tests for above change
+- Fixed ipv6 route-redirects and tests

@@ -520,6 +520,14 @@ class Firewall_global(ConfigBase):
         if want:
             for w in want:
                 h = self.search_attrib_in_have(have, w, "afi")
+                if 'afi' in w:
+                    afi = w['afi']
+                else:
+                    if h and 'afi' in h:
+                        afi = h['afi']
+                    else:
+                        afi = None
+                    afi = None
                 for key, val in iteritems(w):
                     if val and key != "afi":
                         if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
@@ -528,6 +536,7 @@ class Firewall_global(ConfigBase):
                                     attr=key,
                                     val=self._bool_to_str(val),
                                     opr=opr,
+                                    type=afi
                                 ),
                             )
                         elif not opr and key in l_set:
@@ -537,6 +546,7 @@ class Firewall_global(ConfigBase):
                                         attr=key,
                                         val=self._bool_to_str(val),
                                         opr=opr,
+                                        type=afi
                                     ),
                                 )
                                 continue
@@ -546,6 +556,7 @@ class Firewall_global(ConfigBase):
                                         attr=key,
                                         val=self._bool_to_str(val),
                                         opr=opr,
+                                        type=afi
                                     ),
                                 )
                         elif key == "icmp_redirects":
@@ -565,20 +576,27 @@ class Firewall_global(ConfigBase):
         commands = []
         h_red = {}
         l_set = ("send", "receive")
+        if w and 'afi' in w:
+            afi = w['afi']
+        else:
+            if h and 'afi' in h:
+                afi = h['afi']
+            else:
+                afi = None
         if w[attr]:
             if h and attr in h.keys():
                 h_red = h.get(attr) or {}
             for item, value in iteritems(w[attr]):
                 if opr and item in l_set and not (h_red and self._is_w_same(w[attr], h_red, item)):
                     commands.append(
-                        self._form_attr_cmd(attr=item, val=self._bool_to_str(value), opr=opr),
+                        self._form_attr_cmd(attr=item, val=self._bool_to_str(value), opr=opr, type=afi)
                     )
                 elif (
                     not opr
                     and item in l_set
                     and not (h_red and self._is_w_same(w[attr], h_red, item))
                 ):
-                    commands.append(self._form_attr_cmd(attr=item, opr=opr))
+                    commands.append(self._form_attr_cmd(attr=item, opr=opr, type=afi))
         return commands
 
     def search_attrib_in_have(self, have, want, attr):
@@ -595,16 +613,17 @@ class Firewall_global(ConfigBase):
                     return h
         return None
 
-    def _form_attr_cmd(self, key=None, attr=None, val=None, opr=True):
+    def _form_attr_cmd(self, key=None, attr=None, val=None, opr=True, type=None):
         """
         This function forms the command for leaf attribute.
         :param key: parent key.
         :param attr: attribute name
         :param value: value
         :param opr: True/False.
+        :param type: AF type of attribute.
         :return: generated command.
         """
-        command = self._compute_command(key=key, attr=self._map_attrib(attr), val=val, opr=opr)
+        command = self._compute_command(key=key, attr=self._map_attrib(attr,type=type), val=val, opr=opr)
         return command
 
     def _compute_command(self, key=None, attr=None, val=None, remove=False, opr=True):
@@ -621,6 +640,8 @@ class Firewall_global(ConfigBase):
             cmd = "delete firewall "
         else:
             cmd = "set firewall "
+        if key!="group" and self._get_os_version() >= '1.4':
+            cmd += "global-options "
         if key:
             cmd += key.replace("_", "-") + " "
         if attr:
@@ -730,3 +751,12 @@ class Firewall_global(ConfigBase):
         elif attrib == "validation":
             regex = "source-validation"
         return regex
+
+    def _get_os_version(self):
+        """
+        Get the base version number before the '-' in the version string.
+        """
+        os_version = "1.2"
+        if self._connection:
+            os_version = self._connection.get_device_info()["network_os_major_version"]
+        return os_version
