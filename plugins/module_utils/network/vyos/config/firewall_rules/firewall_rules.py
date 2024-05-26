@@ -333,7 +333,10 @@ class Firewall_rules(ConfigBase):
                             if key == "number" and self._is_del(l_set, h):
                                 commands.append(self._add_r_base_attrib(afi, name, key, w, opr=opr))
                                 continue
-                            if key == "disable" and val and h and (key not in h or not h[key]):
+                            if key == "tcp" and val and h and (key not in h or not h[key]
+                                                               or h[key] != w[key]):
+                                commands.extend(self._add_tcp(key, w, h, cmd, opr))
+                            elif key == "disable" and val and h and (key not in h or not h[key]):
                                 commands.append(self._add_r_base_attrib(afi, name, key, w, opr=opr))
                             elif (
                                 key in l_set
@@ -519,28 +522,67 @@ class Firewall_rules(ConfigBase):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
 
-    def _add_tcp(self, attr, w, h, cmd, opr):
+    def _add_tcp_1_4(self, attr, w, h, cmd, opr):
         """
         This function forms the commands for 'tcp' attributes based on the 'opr'.
+        Version 1.4+
         :param attr: attribute name.
         :param w: base config.
         :param h: target config.
         :param cmd: commands to be prepend.
         :return: generated list of commands.
         """
+        commands = []
+        have = []
+        key = "flag_list"
+
+        if w:
+            if w.get(attr):
+                want = w.get(attr).get(key) or []
+        if h:
+            if h.get(attr):
+                have = h.get(attr).get(key) or []
+        if want:
+            if opr:
+                flags = list_diff_want_only(want, have)
+                for flag in flags:
+                    invert = flag.get("invert", False)
+                    commands.append(cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"]))
+            elif not opr:
+                flags = list_diff_want_only(want, have)
+                for flag in flags:
+                    invert = flag.get("invert", False)
+                    commands.append(cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"]))
+#        if not opr:
+#            raise Exception(f"deleting tcp_flags {commands} {w} {h} {cmd} {opr}")
+        return commands
+
+
+    def _add_tcp(self, attr, w, h, cmd, opr):
+        """
+        This function forms the commands for 'tcp' attributes based on the 'opr'.
+        If < 1.4, handle tcp attributes.
+        :param attr: attribute name.
+        :param w: base config.
+        :param h: target config.
+        :param cmd: commands to be prepend.
+        :return: generated list of commands.
+        """
+        if self._get_os_version() >= '1.4': # pylint: disable=no-member
+            return self._add_tcp_1_4(attr, w, h, cmd, opr)
         h_tcp = {}
         commands = []
         if w[attr]:
-            key = "flags"
+            key = "flag_list"
             flags = w[attr].get(key) or {}
             if flags:
                 if h and key in h[attr].keys():
                     h_tcp = h[attr].get(key) or {}
                 if flags:
                     if opr and not (h_tcp and self._is_w_same(w[attr], h[attr], key)):
-                        commands.append(cmd + (" " + attr + " " + key + " " + flags))
+                        commands.append(cmd + (" " + attr + " " + "flags" + " " + flags))
                     if not opr and not (h_tcp and self._is_w_same(w[attr], h[attr], key)):
-                        commands.append(cmd + (" " + attr + " " + key + " " + flags))
+                        commands.append(cmd + (" " + attr + " " + "flags" + " " + flags))
         return commands
 
     def _add_limit(self, attr, w, h, cmd, opr):
@@ -831,7 +873,7 @@ class Firewall_rules(ConfigBase):
 
     def _in_target(self, h, key):
         """
-        This function checks whether the target nexist and key present in target config.
+        This function checks whether the target exists and key present in target config.
         :param h: target config.
         :param key: attribute name.
         :return: True/False.

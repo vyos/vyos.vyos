@@ -369,6 +369,21 @@ options:
                     description:
                     - TCP flags to be matched.
                     type: str
+                  flag_list:
+                    description: 
+                      - list of tcp flags to be matched
+                    type: list
+                    elements: dict
+                    suboptions:
+                      flag:
+                        description:
+                          - TCP flag to be matched.
+                        type: str
+                        choices: ['ack', 'cwr', 'ecn', 'fin', 'psh', 'rst', 'syn', 'urg']
+                      invert:
+                        description:
+                          - Invert the match.
+                        type: bool
               time:
                 description:
                 - Time to match rule.

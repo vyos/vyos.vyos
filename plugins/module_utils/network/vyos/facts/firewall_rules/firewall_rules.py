@@ -218,7 +218,7 @@ class Firewall_rulesFacts(object):
         rule = self.parse_attr(conf, a_lst)
         r_sub = {
             "p2p": self.parse_p2p(conf),
-            "tcp": self.parse_tcp(conf, "tcp"),
+            "tcp": self.parse_tcp(conf),
             "icmp": self.parse_icmp(conf, "icmp"),
             "time": self.parse_time(conf, "time"),
             "limit": self.parse_limit(conf, "limit"),
@@ -271,15 +271,42 @@ class Firewall_rulesFacts(object):
         cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
         return cfg_dict
 
-    def parse_tcp(self, conf, attrib=None):
+    def parse_tcp(self, conf):
         """
         This function triggers the parsing of 'tcp' attributes.
         :param conf: configuration.
         :param attrib: 'tcp'.
         :return: generated config dictionary.
         """
-        cfg_dict = self.parse_attr(conf, ["flags"], match=attrib)
-        return cfg_dict
+        f_lst = []
+        flags = findall(r"tcp flags (not )?(?:\'*)(\w+)(?:\'*)", conf, M)
+        # for pre 1.4, this is a string including possible commas
+        # and ! as an inverter. For 1.4+ this is a single flag per
+        # command and 'not' as the inverter
+        if flags:
+            flag_lst = []
+            for n,f in set(flags):
+                if "," in f:
+                    # pre 1.4 version with multiple flags
+                    fs = f.split(",")
+                    for f in fs:
+                        if "!" in f:
+                            obj = {"flag": f.strip("'!"), "invert": True}
+                        else:
+                            obj = {"flag": f.strip("'")}
+                        flag_lst.append(obj)
+                elif "!" in f:
+                    obj = {"flag": f.strip("'!"), "invert": True}
+                    flag_lst.append(obj)
+                else:
+                    obj = {"flag": f.strip("'")}
+                    if n:
+                        obj["invert"] = True
+                    flag_lst.append(obj)
+            f_lst = sorted(flag_lst, key=lambda i: i["flag"])
+            
+        return { "flag_list": f_lst }
+
 
     def parse_time(self, conf, attrib=None):
         """

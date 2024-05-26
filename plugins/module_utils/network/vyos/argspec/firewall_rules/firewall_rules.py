@@ -222,10 +222,33 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                         "new": {"type": "bool"},
                                         "related": {"type": "bool"},
                                     },
-                                    "type": "dict",
-                                },
-                                "tcp": {
-                                    "options": {"flags": {"type": "str"}},
+                                    "tcp": {
+                                        "options": {
+                                            "elements": "dict",
+                                            "options": {
+                                                "flag": {
+                                                    "choices": [
+                                                        "ack",
+                                                        "cwr",
+                                                        "ecn",
+                                                        "fin",
+                                                        "psh",
+                                                        "rst",
+                                                        "syn",
+                                                        "urg"
+                                                    ],
+                                                "type": "str"
+                                                },
+                                                "invert": {
+                                                     "type": "bool"
+                                                }
+                                            },
+                                            "type": "list"
+                                        },
+                                        "flags": {
+                                            "type": "str"
+                                        }
+                                    },
                                     "type": "dict",
                                 },
                                 "time": {
