@@ -553,10 +553,28 @@ class Firewall_rules(ConfigBase):
                 for flag in flags:
                     invert = flag.get("invert", False)
                     commands.append(cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"]))
-#        if not opr:
-#            raise Exception(f"deleting tcp_flags {commands} {w} {h} {cmd} {opr}")
         return commands
 
+    def _tcp_flags_string(self, flags):
+        """
+        This function forms the tcp flags string.
+        :param flags: flags list.
+        :return: flags string or None.
+        """
+        if not flags:
+            return ""
+        flag_str = ""
+        for flag in flags:
+            this_flag = flag["flag"].upper()
+            if flag.get("invert", False):
+                this_flag = "!" + this_flag
+            if len(flag_str)>0:
+                flag_str = ",".join([flag_str, this_flag])
+            else:
+                flag_str = this_flag
+        if len(flag_str)>0:
+            flag_str = "'" + flag_str + "'"
+        return flag_str
 
     def _add_tcp(self, attr, w, h, cmd, opr):
         """
@@ -579,10 +597,11 @@ class Firewall_rules(ConfigBase):
                 if h and key in h[attr].keys():
                     h_tcp = h[attr].get(key) or {}
                 if flags:
-                    if opr and not (h_tcp and self._is_w_same(w[attr], h[attr], key)):
-                        commands.append(cmd + (" " + attr + " " + "flags" + " " + flags))
-                    if not opr and not (h_tcp and self._is_w_same(w[attr], h[attr], key)):
-                        commands.append(cmd + (" " + attr + " " + "flags" + " " + flags))
+                    flag_str = self._tcp_flags_string(flags)
+                    if opr and not (h_tcp and flags == h_tcp):# self._is_w_same(w[attr], h[attr], key)):
+                        commands.append(cmd + (" " + attr + " " + "flags" + " " + flag_str))
+                    if not opr and not (h_tcp and flags == h_tcp):#self._is_w_same(w[attr], h[attr], key)):
+                        commands.append(cmd + (" " + attr + " " + "flags" + " " + flag_str))
         return commands
 
     def _add_limit(self, attr, w, h, cmd, opr):

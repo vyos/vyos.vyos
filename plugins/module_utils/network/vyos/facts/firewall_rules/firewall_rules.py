@@ -279,13 +279,14 @@ class Firewall_rulesFacts(object):
         :return: generated config dictionary.
         """
         f_lst = []
-        flags = findall(r"tcp flags (not )?(?:\'*)(\w+)(?:\'*)", conf, M)
+        flags = findall(r"tcp flags (not )?(?:\'*)([\w!,]+)(?:\'*)", conf, M)
         # for pre 1.4, this is a string including possible commas
         # and ! as an inverter. For 1.4+ this is a single flag per
         # command and 'not' as the inverter
         if flags:
             flag_lst = []
             for n,f in set(flags):
+                f = f.strip("'").lower()
                 if "," in f:
                     # pre 1.4 version with multiple flags
                     fs = f.split(",")
