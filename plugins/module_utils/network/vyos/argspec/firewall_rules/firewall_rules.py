@@ -222,8 +222,11 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                         "new": {"type": "bool"},
                                         "related": {"type": "bool"},
                                     },
-                                    "tcp": {
-                                        "options": {
+                                    "type": "dict",
+                                },
+                                "tcp": {
+                                    "options": {
+                                        "flags": {
                                             "elements": "dict",
                                             "options": {
                                                 "flag": {
@@ -235,18 +238,14 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                                         "psh",
                                                         "rst",
                                                         "syn",
-                                                        "urg"
+                                                        "urg",
+                                                        "all",
                                                     ],
-                                                "type": "str"
+                                                    "type": "str"
                                                 },
-                                                "invert": {
-                                                     "type": "bool"
-                                                }
+                                                "invert": { "type": "bool" }
                                             },
                                             "type": "list"
-                                        },
-                                        "flags": {
-                                            "type": "str"
                                         }
                                     },
                                     "type": "dict",

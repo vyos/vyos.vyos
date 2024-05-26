@@ -468,7 +468,7 @@ class Firewall_rules(ConfigBase):
                             param_name = "type-name"
                         else:
                             param_name = "type"
-                        if "ipv6-name" in cmd:
+                        if "ipv6" in cmd: # ipv6-name or ipv6
                             commands.append(cmd + (" " + "icmpv6" + " " + param_name + " " + val))
                         else:
                             commands.append(
@@ -568,12 +568,10 @@ class Firewall_rules(ConfigBase):
             this_flag = flag["flag"].upper()
             if flag.get("invert", False):
                 this_flag = "!" + this_flag
-            if len(flag_str)>0:
+            if len(flag_str) > 0:
                 flag_str = ",".join([flag_str, this_flag])
             else:
                 flag_str = this_flag
-        if len(flag_str)>0:
-            flag_str = "'" + flag_str + "'"
         return flag_str
 
     def _add_tcp(self, attr, w, h, cmd, opr):
@@ -586,7 +584,7 @@ class Firewall_rules(ConfigBase):
         :param cmd: commands to be prepend.
         :return: generated list of commands.
         """
-        if self._get_os_version() >= '1.4': # pylint: disable=no-member
+        if self._get_os_version() >= '1.4':
             return self._add_tcp_1_4(attr, w, h, cmd, opr)
         h_tcp = {}
         commands = []
@@ -598,9 +596,9 @@ class Firewall_rules(ConfigBase):
                     h_tcp = h[attr].get(key) or {}
                 if flags:
                     flag_str = self._tcp_flags_string(flags)
-                    if opr and not (h_tcp and flags == h_tcp):# self._is_w_same(w[attr], h[attr], key)):
+                    if opr and not (h_tcp and flags == h_tcp):
                         commands.append(cmd + (" " + attr + " " + "flags" + " " + flag_str))
-                    if not opr and not (h_tcp and flags == h_tcp):#self._is_w_same(w[attr], h[attr], key)):
+                    if not opr and not (h_tcp and flags == h_tcp):
                         commands.append(cmd + (" " + attr + " " + "flags" + " " + flag_str))
         return commands
 

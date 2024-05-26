@@ -66,7 +66,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_rules.firewall_rules.Firewall_rules._get_os_version",
         )
         self.get_os_version = self.mock_get_os_version.start()
-        self.get_os_version.return_value = "Vyos 1.2"
+        self.get_os_version.return_value = "1.2"
 
     def tearDown(self):
         super(TestVyosFirewallRulesModule, self).tearDown()
@@ -374,7 +374,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                             weekdays="!Sat,Sun",
                                             utc=True,
                                         ),
-                                        tcp=dict(flags="ALL"),
+                                        tcp=dict(
+                                            flags=[
+                                                dict(flag="all"),
+                                            ]
+                                        ),
+
                                     ),
                                 ],
                             ),
@@ -416,7 +421,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         description="Rule 101 is configured by Ansible",
                                         ipsec="match-ipsec",
                                         protocol="icmp",
-                                        disabled=True,
+                                        disable=True,
                                         icmp=dict(type_name="echo-request"),
                                     ),
                                 ],
@@ -566,7 +571,11 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                             weekdays="!Sat,Sun",
                                             utc=True,
                                         ),
-                                        tcp=dict(flags="ALL"),
+                                        tcp=dict(
+                                            flags=[
+                                                dict(flag="all"),
+                                            ]
+                                        ),
                                     ),
                                 ],
                             ),
@@ -743,14 +752,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         ipsec="match-ipsec",
                                         protocol="tcp",
                                         fragment="match-frag",
-                                        disabled=False,
+                                        disable=False,
                                     ),
                                     dict(
                                         number="102",
                                         action="accept",
                                         description="Rule 102 is configured by Ansible RM",
                                         protocol="icmp",
-                                        disabled=True,
+                                        disable=True,
                                     ),
                                 ],
                             ),
@@ -817,7 +826,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         ipsec="match-ipsec",
                                         protocol="icmp",
                                         fragment="match-frag",
-                                        disabled=True,
+                                        disable=True,
                                     ),
                                 ],
                             ),
@@ -871,8 +880,8 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         ipsec="match-ipsec",
                                         protocol="icmp",
                                         fragment="match-frag",
-                                        disabled=True,
-                                    ),
+                                        disable=True,
+                                    )
                                 ],
                             ),
                             dict(
@@ -926,7 +935,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         ipsec="match-ipsec",
                                         protocol="icmp",
                                         fragment="match-frag",
-                                        disabled=True,
+                                        disable=True,
                                     ),
                                 ],
                             ),
@@ -958,8 +967,8 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         ipsec="match-ipsec",
                                         protocol="icmp",
                                         fragment="match-frag",
-                                        disabled=True,
-                                    ),
+                                        disable=True,
+                                    )
                                 ],
                             ),
                             dict(
@@ -1014,7 +1023,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         log="enable",
                                         protocol="tcp",
                                         fragment="match-frag",
-                                        disabled=False,
+                                        disable=False,
                                         source=dict(
                                             group=dict(
                                                 address_group="IN-ADDR-GROUP",
@@ -1028,7 +1037,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         action="accept",
                                         description="Rule 102 is configured by Ansible RM",
                                         protocol="icmp",
-                                        disabled=True,
+                                        disable=True,
                                     ),
                                 ],
                             ),
@@ -1103,8 +1112,8 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         ipsec="match-ipsec",
                                         protocol="icmp",
                                         fragment="match-frag",
-                                        disabled=True,
-                                    ),
+                                        disable=True,
+                                    )
                                 ],
                             ),
                             dict(
@@ -1139,7 +1148,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         self.execute_module(changed=False, commands=[])
 
     def test_vyos_firewall_v6_rule_sets_rule_merged_01_version(self):
-        self.get_os_version.return_value = "VyOS 1.4-rolling-202007010117"
+        self.get_os_version.return_value = "1.4"
         set_module_args(
             dict(
                 config=[
@@ -1158,8 +1167,15 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         description="Rule 101 is configured by Ansible",
                                         ipsec="match-ipsec",
                                         protocol="icmp",
-                                        disabled=True,
+                                        disable=True,
                                         icmp=dict(type_name="echo-request"),
+                                    ),
+                                    dict(
+                                        number="102",
+                                        action="reject",
+                                        description="Rule 102 is configured by Ansible",
+                                        protocol="icmp",
+                                        icmp=dict(type=7),
                                     ),
                                 ],
                             ),
@@ -1170,15 +1186,20 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             ),
         )
         commands = [
-            "set firewall ipv6-name INBOUND default-action 'accept'",
-            "set firewall ipv6-name INBOUND description 'This is IPv6 INBOUND rule set'",
-            "set firewall ipv6-name INBOUND enable-default-log",
-            "set firewall ipv6-name INBOUND rule 101 protocol 'icmp'",
-            "set firewall ipv6-name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
-            "set firewall ipv6-name INBOUND rule 101",
-            "set firewall ipv6-name INBOUND rule 101 disable",
-            "set firewall ipv6-name INBOUND rule 101 action 'accept'",
-            "set firewall ipv6-name INBOUND rule 101 ipsec 'match-ipsec'",
-            "set firewall ipv6-name INBOUND rule 101 icmpv6 type-name echo-request",
+            "set firewall ipv6 name INBOUND default-action 'accept'",
+            "set firewall ipv6 name INBOUND description 'This is IPv6 INBOUND rule set'",
+            "set firewall ipv6 name INBOUND enable-default-log",
+            "set firewall ipv6 name INBOUND rule 101 protocol 'icmp'",
+            "set firewall ipv6 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
+            "set firewall ipv6 name INBOUND rule 101",
+            "set firewall ipv6 name INBOUND rule 101 disable",
+            "set firewall ipv6 name INBOUND rule 101 action 'accept'",
+            "set firewall ipv6 name INBOUND rule 101 ipsec 'match-ipsec'",
+            "set firewall ipv6 name INBOUND rule 101 icmpv6 type-name echo-request",
+            "set firewall ipv6 name INBOUND rule 102",
+            "set firewall ipv6 name INBOUND rule 102 action 'reject'",
+            "set firewall ipv6 name INBOUND rule 102 description 'Rule 102 is configured by Ansible'",
+            "set firewall ipv6 name INBOUND rule 102 protocol 'icmp'", 
+            'set firewall ipv6 name INBOUND rule 102 icmp type 7',
         ]
         self.execute_module(changed=True, commands=commands)

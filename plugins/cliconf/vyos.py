@@ -79,7 +79,7 @@ class Cliconf(CliconfBase):
             match = re.search(r"Version:\s*(.*)", data)
             if match:
                 device_info["network_os_version"] = match.group(1)
-            
+
             if device_info["network_os_version"]:
                 match = re.search(r"VyOS\s*(\d+\.\d+)", device_info["network_os_version"])
                 if match:

@@ -128,7 +128,7 @@ class Firewall_rulesFacts(object):
         if r_v6:
             config = {"afi": "ipv6", "rule_sets": r_v6}
         return config
-    
+
     def get_rules_post_1_4(self, data, rules, type):
         """
         This function performs following:
@@ -156,7 +156,6 @@ class Firewall_rulesFacts(object):
         if r_v6:
             config = {"afi": "ipv6", "rule_sets": r_v6}
         return config
-
 
     def render_config(self, conf, match):
         """
@@ -285,7 +284,7 @@ class Firewall_rulesFacts(object):
         # command and 'not' as the inverter
         if flags:
             flag_lst = []
-            for n,f in set(flags):
+            for n, f in set(flags):
                 f = f.strip("'").lower()
                 if "," in f:
                     # pre 1.4 version with multiple flags
@@ -305,9 +304,7 @@ class Firewall_rulesFacts(object):
                         obj["invert"] = True
                     flag_lst.append(obj)
             f_lst = sorted(flag_lst, key=lambda i: i["flag"])
-            
-        return { "flags": f_lst }
-
+        return {"flags": f_lst}
 
     def parse_time(self, conf, attrib=None):
         """

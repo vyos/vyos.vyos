@@ -375,8 +375,10 @@ options:
                       flag:
                         description:
                           - TCP flag to be matched.
+                          - syn, ack, fin, rst, urg, psh, all (1.3-)
+                          - syn, ack, fin, rst, urg, psh, cwr, ecn (1.4+)    
                         type: str
-                        choices: ['ack', 'cwr', 'ecn', 'fin', 'psh', 'rst', 'syn', 'urg']
+                        choices: ['ack', 'cwr', 'ecn', 'fin', 'psh', 'rst', 'syn', 'urg', 'all']
                       invert:
                         description:
                           - Invert the match.
