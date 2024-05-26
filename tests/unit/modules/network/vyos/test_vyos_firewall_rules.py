@@ -1174,7 +1174,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         number="102",
                                         action="reject",
                                         description="Rule 102 is configured by Ansible",
-                                        protocol="icmp",
+                                        protocol="ipv6-icmp",
                                         icmp=dict(type=7),
                                     ),
                                 ],
@@ -1199,7 +1199,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall ipv6 name INBOUND rule 102",
             "set firewall ipv6 name INBOUND rule 102 action 'reject'",
             "set firewall ipv6 name INBOUND rule 102 description 'Rule 102 is configured by Ansible'",
-            "set firewall ipv6 name INBOUND rule 102 protocol 'icmp'", 
-            'set firewall ipv6 name INBOUND rule 102 icmp type 7',
+            "set firewall ipv6 name INBOUND rule 102 protocol 'ipv6-icmp'", 
+            'set firewall ipv6 name INBOUND rule 102 icmpv6 type 7',
         ]
         self.execute_module(changed=True, commands=commands)

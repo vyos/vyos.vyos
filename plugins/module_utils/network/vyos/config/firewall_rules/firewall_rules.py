@@ -475,7 +475,10 @@ class Firewall_rules(ConfigBase):
                                 cmd + (" " + attr + " " + item.replace("_", "-") + " " + val),
                             )
                     else:
-                        commands.append(cmd + (" " + attr + " " + item + " " + str(val)))
+                        if "ipv6" in cmd: # ipv6-name or ipv6
+                            commands.append(cmd + (" " + "icmpv6" + " " + item + " " + str(val)))
+                        else:
+                            commands.append(cmd + (" " + attr + " " + item + " " + str(val)))
                 elif not opr and item in l_set and not (h_icmp and self._in_target(h_icmp, item)):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
