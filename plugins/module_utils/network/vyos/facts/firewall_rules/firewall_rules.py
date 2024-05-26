@@ -306,7 +306,7 @@ class Firewall_rulesFacts(object):
                     flag_lst.append(obj)
             f_lst = sorted(flag_lst, key=lambda i: i["flag"])
             
-        return { "flag_list": f_lst }
+        return { "flags": f_lst }
 
 
     def parse_time(self, conf, attrib=None):

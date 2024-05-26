@@ -534,7 +534,7 @@ class Firewall_rules(ConfigBase):
         """
         commands = []
         have = []
-        key = "flag_list"
+        key = "flags"
 
         if w:
             if w.get(attr):
@@ -591,7 +591,7 @@ class Firewall_rules(ConfigBase):
         h_tcp = {}
         commands = []
         if w[attr]:
-            key = "flag_list"
+            key = "flags"
             flags = w[attr].get(key) or {}
             if flags:
                 if h and key in h[attr].keys():

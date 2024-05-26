@@ -366,12 +366,9 @@ options:
                 type: dict
                 suboptions:
                   flags:
-                    description:
-                    - TCP flags to be matched.
-                    type: str
-                  flag_list:
                     description: 
                       - list of tcp flags to be matched
+                      - 5.0 breaking change to support 1.4+ and 1.3-
                     type: list
                     elements: dict
                     suboptions:
@@ -1514,6 +1511,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.fire
 def main():
     """
     Main entry point for module execution
+
     :returns: the result form module invocation
     """
     required_if = [
