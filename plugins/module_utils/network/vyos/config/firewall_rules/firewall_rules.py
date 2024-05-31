@@ -316,6 +316,7 @@ class Firewall_rules(ConfigBase):
             "disable",
             "description",
             "log",
+            "jump_target",
         )
         if w_rules:
             for w in w_rules:
@@ -919,6 +920,7 @@ class Firewall_rules(ConfigBase):
             "mac_address",
             "default_action",
             "enable_default_log",
+            "jump_target"
         )
         return True if key in r_set else False
 

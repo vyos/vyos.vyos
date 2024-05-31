@@ -111,6 +111,11 @@ options:
                 - reject
                 - accept
                 - inspect
+                - continue
+                - return
+                - jump
+                - queue
+                - synproxy
               destination:
                 description:
                 - Specifying the destination parameters.
@@ -224,9 +229,9 @@ options:
                 choices:
                 - match-ipsec
                 - match-none
-              log:
+              jump_target:
                 description:
-                - Option to log packets matching rule
+                  - Jump target if the action is jump.
                 type: str
                 choices:
                 - disable
@@ -257,6 +262,11 @@ options:
                         description:
                         - This is the time unit.
                         type: str
+              log:
+                description:
+                  - Log matching packets.
+                type: str
+                choices: ['disable', 'enable']
               p2p:
                 description:
                 - P2P application packets.

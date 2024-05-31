@@ -1203,3 +1203,60 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             'set firewall ipv6 name INBOUND rule 102 icmpv6 type 7',
         ]
         self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_jump_rules_merged_01(self):
+        self.get_os_version.return_value = "1.4"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="INBOUND",
+                                description="This is IPv6 INBOUND rule set with a jump action",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="jump",
+                                        description="Rule 101 is configured by Ansible",
+                                        ipsec="match-ipsec",
+                                        protocol="icmp",
+                                        icmp=dict(type_name="echo-request"),
+                                        jump_target="PROTECT-RE",
+                                    ),
+                                    dict(
+                                        number="102",
+                                        action="reject",
+                                        description="Rule 102 is configured by Ansible",
+                                        protocol="ipv6-icmp",
+                                        icmp=dict(type=7),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    )
+                ],
+                state="merged",
+            )
+        )
+        commands = [
+            "set firewall ipv6 name INBOUND default-action 'accept'",
+            "set firewall ipv6 name INBOUND description 'This is IPv6 INBOUND rule set with a jump action'",
+            "set firewall ipv6 name INBOUND enable-default-log",
+            "set firewall ipv6 name INBOUND rule 101 protocol 'icmp'",
+            "set firewall ipv6 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
+            "set firewall ipv6 name INBOUND rule 101",
+            "set firewall ipv6 name INBOUND rule 101 ipsec 'match-ipsec'",
+            "set firewall ipv6 name INBOUND rule 101 icmpv6 type-name echo-request",
+            "set firewall ipv6 name INBOUND rule 101 action 'jump'",
+            "set firewall ipv6 name INBOUND rule 101 jump-target 'PROTECT-RE'",
+            "set firewall ipv6 name INBOUND rule 102",
+            "set firewall ipv6 name INBOUND rule 102 action 'reject'",
+            "set firewall ipv6 name INBOUND rule 102 description 'Rule 102 is configured by Ansible'",
+            "set firewall ipv6 name INBOUND rule 102 protocol 'ipv6-icmp'", 
+            'set firewall ipv6 name INBOUND rule 102 icmpv6 type 7',
+        ]
+        self.execute_module(changed=True, commands=commands)

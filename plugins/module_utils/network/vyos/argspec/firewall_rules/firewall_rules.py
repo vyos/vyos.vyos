@@ -153,7 +153,10 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                 },
                                 "ipsec": {
                                     "choices": ["match-ipsec", "match-none"],
-                                    "type": "str",
+                                    "type": "str"
+                                },
+                                "jump_target": {
+                                    "type": "str"
                                 },
                                 "limit": {
                                     "options": {

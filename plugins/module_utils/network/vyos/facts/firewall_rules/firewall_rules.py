@@ -213,6 +213,7 @@ class Firewall_rulesFacts(object):
             "disable",
             "description",
             "icmp",
+            "jump_target",
         ]
         rule = self.parse_attr(conf, a_lst)
         r_sub = {
