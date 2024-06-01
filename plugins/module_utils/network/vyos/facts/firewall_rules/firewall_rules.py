@@ -63,12 +63,12 @@ class Firewall_rulesFacts(object):
         objs = []
         # check 1.4+ first
         new_rules = True
-        v6_rules = findall(r"^set firewall ipv6 name (?:\'*)(\S+)(?:\'*)", data, M)
+        v6_rules = findall(r"^set firewall ipv6 (name|forward|input|output) (?:\'*)(\S+)(?:\'*)", data, M)
         if not v6_rules:
             v6_rules = findall(r"^set firewall ipv6-name (?:\'*)(\S+)(?:\'*)", data, M)
             if v6_rules:
                 new_rules = False
-        v4_rules = findall(r"^set firewall ipv4 name (?:\'*)(\S+)(?:\'*)", data, M)
+        v4_rules = findall(r"^set firewall ipv4 (name|forward|input|output) (?:\'*)(\S+)(?:\'*)", data, M)
         if not v4_rules:
             v4_rules = findall(r"^set firewall name (?:\'*)(\S+)(?:\'*)", data, M)
             if v4_rules:
@@ -142,11 +142,16 @@ class Firewall_rulesFacts(object):
         """
         r_v4 = []
         r_v6 = []
-        for r in set(rules):
-            rule_regex = r" %s %s %s .+$" % (type, "name", r.strip("'"))
+        for kind,name in set(rules):
+            rule_regex = r" %s %s %s .+$" % (type, kind, name.strip("'"))
             cfg = findall(rule_regex, data, M)
-            fr = self.render_config(cfg, r.strip("'"))
-            fr["name"] = r.strip("'")
+            fr = self.render_config(cfg, name.strip("'"))
+            if kind == "name":
+                fr["name"] = name.strip("'")
+            elif kind in ("forward", "input", "output"):
+                fr["filter"] = kind
+            else:
+                raise ValueError("Unknown rule kind: %s %s" % kind, name)
             if type == "ipv6":
                 r_v6.append(fr)
             else:
