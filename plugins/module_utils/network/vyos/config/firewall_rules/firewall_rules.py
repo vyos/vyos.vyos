@@ -242,11 +242,11 @@ class Firewall_rules(ConfigBase):
                         rs_id = self._rs_id(rs, w["afi"])
                         h = self.search_r_sets_in_have(have, rs_id, "r_list")
                         if h:
-                            commands.append(self._compute_command(rs_id, remove=True))    
+                            commands.append(self._compute_command(rs_id, remove=True))
                 elif have:
                     for h in have:
                         if h["afi"] == w["afi"]:
-                            commands.append(self._compute_command(self._rs_id(None,w["afi"]), remove=True))
+                            commands.append(self._compute_command(self._rs_id(None, w["afi"]), remove=True))
         elif have:
             for h in have:
                 r_sets = self._get_r_sets(h)
@@ -265,7 +265,7 @@ class Firewall_rules(ConfigBase):
         :return: generated commands list.
         """
         commands = []
-        l_set = ("description", "default_action", "enable_default_log")
+        l_set = ("description", "default_action", "default_jump_target", "enable_default_log")
         h_rs = {}
         h_rules = {}
         w_rs = deepcopy(remove_empties(want))
@@ -472,14 +472,14 @@ class Firewall_rules(ConfigBase):
                             param_name = "type-name"
                         else:
                             param_name = "type"
-                        if "ipv6" in cmd: # ipv6-name or ipv6
+                        if "ipv6" in cmd:  # ipv6-name or ipv6
                             commands.append(cmd + (" " + "icmpv6" + " " + param_name + " " + val))
                         else:
                             commands.append(
                                 cmd + (" " + attr + " " + item.replace("_", "-") + " " + val),
                             )
                     else:
-                        if "ipv6" in cmd: # ipv6-name or ipv6
+                        if "ipv6" in cmd:  # ipv6-name or ipv6
                             commands.append(cmd + (" " + "icmpv6" + " " + item + " " + str(val)))
                         else:
                             commands.append(cmd + (" " + attr + " " + item + " " + str(val)))
@@ -747,7 +747,7 @@ class Firewall_rules(ConfigBase):
                     if key in r and r[key] == r_number:
                         return r
         return None
-    
+
     def search_r_sets_in_have(self, have, rs_id, type="rule_sets"):
         """
         This function  returns the rule-set/rule if it is present in target config.
@@ -835,7 +835,10 @@ class Firewall_rules(ConfigBase):
         if number:
             cmd += " rule " + str(number)
         if attrib:
-            cmd += " " + attrib.replace("_", "-")
+            if self._get_os_version() >= '1.4' and attrib == "enable_default_log":
+                cmd += " " + "default-log"
+            else:
+                cmd += " " + attrib.replace("_", "-")
         if value and opr and attrib != "enable_default_log" and attrib != "disable":
             cmd += " '" + str(value) + "'"
         return cmd
@@ -866,7 +869,7 @@ class Firewall_rules(ConfigBase):
         """
         This function returns the rule-set identifier based on
         the example rule, overriding the components as specified.
-        
+
         :param have: example rule.
         :param afi: address type.
         :param name: rule-set name.
@@ -881,7 +884,7 @@ class Firewall_rules(ConfigBase):
             identifier["afi"] = afi
         else:
             raise ValueError("afi must be provided")
-        
+
         if name:
             identifier["name"] = name
             return identifier
@@ -898,7 +901,7 @@ class Firewall_rules(ConfigBase):
         # raise ValueError("name or filter must be provided or present in have")
         # unless we want a wildcard
         return identifier
-    
+
     def _add_rs_base_attrib(self, rs_id, attrib, rule, opr=True):
         """
 

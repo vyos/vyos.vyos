@@ -79,6 +79,14 @@ options:
             - drop (Drop if no prior rules are hit (default))
             - reject (Drop and notify source if no prior rules are hit)
             - accept (Accept if no prior rules are hit)
+              - jump (Jump to another rule-set, 1.4+)
+            type: str
+            choices: ['drop', 'reject', 'accept', 'jump']
+          default_jump_target:
+            description:
+              - Default jump target if the default action is jump.
+              - Only valid in 1.4 and later.
+              - Only valid when default_action = jump.
             type: str
             choices:
             - drop
@@ -239,6 +247,8 @@ options:
               jump_target:
                 description:
                   - Jump target if the action is jump.
+                  - Only valid in 1.4 and later.
+                  - Only valid when action = jump.
                 type: str
                 choices:
                 - disable
@@ -302,6 +312,20 @@ options:
                 - all All IP protocols.
                 - (!)All IP protocols except for the specified name or number.
                 type: str
+              queue:
+                description:
+                  - Queue options.
+                  - Only valid in 1.4 and later.
+                  - Only valid when action = queue.
+                  - Can be a queue number or range.
+                type: str
+              queue_options:
+                description:
+                  - Queue options.
+                  - Only valid in 1.4 and later.
+                  - Only valid when action = queue.
+                type: str
+                choices: ['bypass', 'fanout']
               recent:
                 description:
                 - Parameters for matching recently seen sources.

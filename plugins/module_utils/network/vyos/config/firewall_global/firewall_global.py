@@ -623,7 +623,7 @@ class Firewall_global(ConfigBase):
         :param type: AF type of attribute.
         :return: generated command.
         """
-        command = self._compute_command(key=key, attr=self._map_attrib(attr,type=type), val=val, opr=opr)
+        command = self._compute_command(key=key, attr=self._map_attrib(attr, type=type), val=val, opr=opr)
         return command
 
     def _compute_command(self, key=None, attr=None, val=None, remove=False, opr=True):
@@ -640,7 +640,7 @@ class Firewall_global(ConfigBase):
             cmd = "delete firewall "
         else:
             cmd = "set firewall "
-        if key!="group" and self._get_os_version() >= '1.4':
+        if key != "group" and self._get_os_version() >= '1.4':
             cmd += "global-options "
         if key:
             cmd += key.replace("_", "-") + " "

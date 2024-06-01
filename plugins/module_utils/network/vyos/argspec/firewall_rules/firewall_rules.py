@@ -50,15 +50,16 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                     "elements": "dict",
                     "options": {
                         "default_action": {
-                            "choices": ["drop", "reject", "accept"],
+                            "choices": ["drop", "reject", "accept", "jump"],
                             "type": "str",
                         },
+                        "default_jump_target": { "type": "str" },
                         "description": {"type": "str"},
                         "enable_default_log": {"type": "bool"},
-                                                  'filter': {'choices': ['input',
-                                                                         'output',
-                                                                         'forward'],
-                                                             'type': 'str'},
+                        "filter": {
+                            "choices": ["input", "output", "forward"],
+                            "type": "str"
+                        },
                         "name": {"type": "str"},
                         "rules": {
                             "elements": "dict",
@@ -73,6 +74,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                         "return",
                                         "jump",
                                         "queue",
+                                        "synproxy",
                                     ],
                                     "type": "str",
                                 },
@@ -199,6 +201,13 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     "type": "list",
                                 },
                                 "protocol": {"type": "str"},
+                                "queue_options": {
+                                    "choices": [
+                                        "bypass",
+                                        "fanout",
+                                    ],
+                                    "type": "str",
+                                },
                                 "recent": {
                                     "options": {
                                         "count": {"type": "int"},

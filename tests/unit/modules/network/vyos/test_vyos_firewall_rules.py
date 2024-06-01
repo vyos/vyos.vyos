@@ -67,7 +67,6 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         )
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = "1.2"
-        self.maxDiff=None
 
     def tearDown(self):
         super(TestVyosFirewallRulesModule, self).tearDown()
@@ -1189,7 +1188,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         commands = [
             "set firewall ipv6 name INBOUND default-action 'accept'",
             "set firewall ipv6 name INBOUND description 'This is IPv6 INBOUND rule set'",
-            "set firewall ipv6 name INBOUND enable-default-log",
+            "set firewall ipv6 name INBOUND default-log",
             "set firewall ipv6 name INBOUND rule 101 protocol 'icmp'",
             "set firewall ipv6 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
             "set firewall ipv6 name INBOUND rule 101",
@@ -1200,7 +1199,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall ipv6 name INBOUND rule 102",
             "set firewall ipv6 name INBOUND rule 102 action 'reject'",
             "set firewall ipv6 name INBOUND rule 102 description 'Rule 102 is configured by Ansible'",
-            "set firewall ipv6 name INBOUND rule 102 protocol 'ipv6-icmp'", 
+            "set firewall ipv6 name INBOUND rule 102 protocol 'ipv6-icmp'",
             'set firewall ipv6 name INBOUND rule 102 icmpv6 type 7',
         ]
         self.execute_module(changed=True, commands=commands)
@@ -1246,7 +1245,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         commands = [
             "set firewall ipv6 name INBOUND default-action 'accept'",
             "set firewall ipv6 name INBOUND description 'This is IPv6 INBOUND rule set with a jump action'",
-            "set firewall ipv6 name INBOUND enable-default-log",
+            "set firewall ipv6 name INBOUND default-log",
             "set firewall ipv6 name INBOUND rule 101 protocol 'icmp'",
             "set firewall ipv6 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
             "set firewall ipv6 name INBOUND rule 101",
@@ -1257,7 +1256,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall ipv6 name INBOUND rule 102",
             "set firewall ipv6 name INBOUND rule 102 action 'reject'",
             "set firewall ipv6 name INBOUND rule 102 description 'Rule 102 is configured by Ansible'",
-            "set firewall ipv6 name INBOUND rule 102 protocol 'ipv6-icmp'", 
+            "set firewall ipv6 name INBOUND rule 102 protocol 'ipv6-icmp'",
             'set firewall ipv6 name INBOUND rule 102 icmpv6 type 7',
         ]
         self.execute_module(changed=True, commands=commands)

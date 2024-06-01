@@ -142,7 +142,7 @@ class Firewall_rulesFacts(object):
         """
         r_v4 = []
         r_v6 = []
-        for kind,name in set(rules):
+        for kind, name in set(rules):
             rule_regex = r" %s %s %s .+$" % (type, kind, name.strip("'"))
             cfg = findall(rule_regex, data, M)
             fr = self.render_config(cfg, name.strip("'"))
@@ -173,10 +173,12 @@ class Firewall_rulesFacts(object):
         :returns: The generated config
         """
         conf = "\n".join(filter(lambda x: x, conf))
-        a_lst = ["description", "default_action", "enable_default_log"]
+        a_lst = ["description", "default_action", "default_jump_target", "enable_default_log", "default_log"]
         config = self.parse_attr(conf, a_lst, match)
         if not config:
             config = {}
+        if 'default_log' in config:
+            config['enable_default_log'] = config.pop('default_log')
         config["rules"] = self.parse_rules_lst(conf)
         return config
 
@@ -219,6 +221,8 @@ class Firewall_rulesFacts(object):
             "description",
             "icmp",
             "jump_target",
+            "queue",
+            "queue_options",
         ]
         rule = self.parse_attr(conf, a_lst)
         r_sub = {
@@ -451,6 +455,7 @@ class Firewall_rulesFacts(object):
             "disabled",
             "established",
             "enable_default_log",
+            "default_log",
         )
         return True if attrib in bool_set else False
 
