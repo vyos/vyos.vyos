@@ -62,9 +62,16 @@ options:
         type: list
         elements: dict
         suboptions:
+          filter:
+            description:
+              - Filter type (exclusive to "name").
+              - Supported in 1.4 and later.
+            type: str
+            choices: ['input', 'output', 'forward']
           name:
             description:
             - Firewall rule set name.
+             - Required for 1.3- and optional for 1.4+.
             type: str
           default_action:
             description:

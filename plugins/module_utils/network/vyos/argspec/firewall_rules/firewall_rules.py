@@ -55,6 +55,10 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                         },
                         "description": {"type": "str"},
                         "enable_default_log": {"type": "bool"},
+                                                  'filter': {'choices': ['input',
+                                                                         'output',
+                                                                         'forward'],
+                                                             'type': 'str'},
                         "name": {"type": "str"},
                         "rules": {
                             "elements": "dict",

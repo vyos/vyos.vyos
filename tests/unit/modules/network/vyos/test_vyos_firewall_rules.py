@@ -67,6 +67,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         )
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = "1.2"
+        self.maxDiff=None
 
     def tearDown(self):
         super(TestVyosFirewallRulesModule, self).tearDown()
