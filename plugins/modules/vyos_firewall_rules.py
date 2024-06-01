@@ -237,6 +237,21 @@ options:
                     description:
                     - ICMP type.
                     type: int
+              inbound_interface:
+                description:
+                  - Inbound interface.
+                  - Only valid in 1.4 and later.
+                type: dict
+                suboptions:
+                  name:
+                    description:
+                      - Interface name.
+                      - Can have wildcards
+                    type: str
+                  group:
+                    description:
+                      - Interface group.
+                    type: str
               ipsec:
                 description:
                 - Inbound ip sec packets.
@@ -284,6 +299,50 @@ options:
                   - Log matching packets.
                 type: str
                 choices: ['disable', 'enable']
+              outbound_interface:
+                description:
+                  - Match outbound interface.
+                  - Only valid in 1.4 and later.
+                type: dict
+                suboptions:
+                  name:
+                    description:
+                      - Interface name.
+                      - Can have wildcards
+                    type: str
+                  group:
+                    description:
+                      - Interface group.
+                    type: str
+              packet_length:
+                description:
+                  - Packet length match.
+                  - Only valid in 1.4 and later.
+                  - Multiple values from 1 to 65535 and ranges are supported
+                type: list
+                elements: dict
+                suboptions:
+                  length:
+                    description:
+                      - Packet length or range.
+                    type: str
+              packet_length_exclude:
+                description:
+                  - Packet length match.
+                  - Only valid in 1.4 and later.
+                  - Multiple values from 1 to 65535 and ranges are supported
+                type: list
+                elements: dict
+                suboptions:
+                  length:
+                    description:
+                      - Packet length or range.
+                    type: str
+              packet_type:
+                description:
+                  - Packet type match.
+                type: str
+                choices: ['broadcast', 'multicast', 'host', 'other']
               p2p:
                 description:
                 - P2P application packets.
@@ -338,7 +397,8 @@ options:
                   time:
                     description:
                     - Source addresses seen in the last N seconds.
-                    type: int
+                      - Since 1.4, this is a string of second/minute/hour
+                    type: str
               source:
                 description:
                 - Source parameters.
@@ -380,6 +440,12 @@ options:
                     - <MAC address> MAC address to match.
                     - <!MAC address> Match everything except the specified MAC address.
                     type: str
+                  fqdn:
+                    description:
+                      - Fully qualified domain name.
+                      - Available in 1.4 and later.
+                    type: str
+
               state:
                 description:
                 - Session state.
@@ -401,6 +467,21 @@ options:
                     description:
                     - Related state.
                     type: bool
+              synproxy:
+                description:
+                  - SYN proxy options.
+                  - Only valid in 1.4 and later.
+                  - Only valid when action = synproxy.
+                type: dict
+                suboptions:
+                  mss:
+                    description:
+                      - Adjust MSS (501-65535)
+                    type: int
+                  window_scale:
+                    description:
+                      - Window scale (1-14).
+                    type: int
               tcp:
                 description:
                 - TCP flags to match.

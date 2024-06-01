@@ -157,6 +157,17 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     },
                                     "type": "dict",
                                 },
+                                "inbound_interface": {
+                                    "options": {
+                                        "group": {
+                                            "type": "str",
+                                        },
+                                        "name": {
+                                            "type": "str",
+                                        },
+                                    },
+                                    "type": "dict",
+                                },
                                 "ipsec": {
                                     "choices": ["match-ipsec", "match-none"],
                                     "type": "str"
@@ -182,6 +193,17 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     "choices": ["enable", "disable"],
                                 },
                                 "number": {"required": True, "type": "int"},
+                                "outbound_interface": {
+                                    "options": {
+                                        "group": {
+                                            "type": "str",
+                                        },
+                                        "name": {
+                                            "type": "str",
+                                        },
+                                    },
+                                    "type": "dict",
+                                },
                                 "p2p": {
                                     "elements": "dict",
                                     "options": {
@@ -194,13 +216,40 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                                 "edonkey",
                                                 "gnutella",
                                                 "kazaa",
-                                            ],
+                                             ],
+                                             "type": "str",
+                                        },
+                                    },
+                                    "type": "list"
+                                },
+                                "packet_length": {
+                                    "elements": "dict",
+                                    "options": {
+                                        "length": {
                                             "type": "str",
                                         },
                                     },
-                                    "type": "list",
+                                    "type": "list"
                                 },
-                                "protocol": {"type": "str"},
+                                "packet_length_exclude": {
+                                    "elements": "dict",
+                                    "options": {
+                                        "length": {
+                                            "type": "str",
+                                        }
+                                    },
+                                    "type": "list"},
+                                "packet_type": {
+                                	"choices": [
+                                		"broadcast",
+                                        "multicast",
+                                        "host",
+                                        "other"
+                                    ],
+                                    "type": "str"
+                                },
+                                "protocol": { "type": "str" },
+                                "queue": { "type": "str" },
                                 "queue_options": {
                                     "choices": [
                                         "bypass",
@@ -218,6 +267,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                 "source": {
                                     "options": {
                                         "address": {"type": "str"},
+                                        "fqdn": {"type": "str"},
                                         "group": {
                                             "options": {
                                                 "address_group": {"type": "str"},
@@ -239,6 +289,13 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                         "related": {"type": "bool"},
                                     },
                                     "type": "dict",
+                                },
+                               "synproxy": {
+                                   "options": {
+                                       "mss": {"type": "int"},
+                                       "window_scale": {"type": "int"},
+                                       },
+                                   "type": "dict",
                                 },
                                 "tcp": {
                                     "options": {

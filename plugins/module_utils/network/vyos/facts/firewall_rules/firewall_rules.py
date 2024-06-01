@@ -235,9 +235,41 @@ class Firewall_rulesFacts(object):
             "recent": self.parse_recent(conf, "recent"),
             "source": self.parse_src_or_dest(conf, "source"),
             "destination": self.parse_src_or_dest(conf, "destination"),
+            "inbound_interface": self.parse_interface(conf, "inbound-interface"),
+            "outbound_interface": self.parse_interface(conf, "outbound-interface"),
+            "packet_length": self.parse_packet_length(conf, "packet-length"),
+            "packet_length_exclude": self.parse_packet_length(conf, "packet-length-exclude"),
         }
         rule.update(r_sub)
         return rule
+
+    def parse_interface(self, conf, attrib):
+        """
+        This function triggers the parsing of 'interface' attributes.
+        :param conf: configuration.
+        :param attrib: 'interface'.
+        :return: generated config dictionary.
+        """
+        a_lst = ["name", "group"]
+        cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
+        return cfg_dict
+
+    def parse_packet_length(self, conf, attrib=None):
+        """
+        This function triggers the parsing of 'packet-length' attributes.
+        :param conf: configuration.
+        :param attrib: 'packet-length'.
+        :return: generated config dictionary.
+        """
+        lengths = []
+        rule_regex = r"%s (\d+)" % attrib
+        found_lengths = findall(rule_regex, conf, M)
+        if found_lengths:
+            lengths = []
+            for l in set(found_lengths):
+                obj = {"length": l.strip("'")}
+                lengths.append(obj)
+        return lengths
 
     def parse_p2p(self, conf):
         """

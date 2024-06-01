@@ -203,7 +203,6 @@ class Firewall_rules(ConfigBase):
                     rs_id = self._rs_id(rs, h["afi"])
                     w = self.search_r_sets_in_have(want, rs_id, "r_list")
                     if not w:
-                        print(f" removing {rs_id}")
                         commands.append(self._compute_command(rs_id, remove=True))
                     else:
                         commands.extend(self._add_r_sets(h["afi"], rs, w, opr=False))
@@ -340,8 +339,14 @@ class Firewall_rules(ConfigBase):
                             if key == "tcp" and val and h and (key not in h or not h[key]
                                                                or h[key] != w[key]):
                                 commands.extend(self._add_tcp(key, w, h, cmd, opr))
+                            if key in ("packet_length", "packet_length_exclude") and \
+                                   val and h and (key not in h or not h[key] or h[key] != w[key]):
+                                commands.extend(self._add_packet_length(key, w, h, cmd, opr))
                             elif key == "disable" and val and h and (key not in h or not h[key]):
                                 commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
+                            elif key in ("inbound_interface", "outbound_interface") and \
+                                    not (h and self._is_w_same(w, h, key)):
+                                commands.extend(self._add_interface(key, w, h, cmd, opr))
                             elif (
                                 key in l_set
                                 and not (h and self._in_target(h, key))
@@ -364,6 +369,10 @@ class Firewall_rules(ConfigBase):
                             commands.extend(self._add_recent(key, w, h, cmd, opr))
                         elif key == "destination" or key == "source":
                             commands.extend(self._add_src_or_dest(key, w, h, cmd, opr))
+                        elif key in ("packet_length", "packet_length_exclude"):
+                            commands.extend(self._add_packet_length(key, w, h, cmd, opr))
+                        elif key in ("inbound_interface", "outbound_interface"):
+                            commands.extend(self._add_interface(key, w, h, cmd, opr))
         return commands
 
     def _add_p2p(self, attr, w, h, cmd, opr):
@@ -487,6 +496,34 @@ class Firewall_rules(ConfigBase):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
 
+    def _add_interface(self, attr, w, h, cmd, opr):
+        """
+        This function forms the commands for 'interface' attributes based on the 'opr'.
+        :param attr: attribute name.
+        :param w: base config.
+        :param h: target config.
+        :param cmd: commands to be prepend.
+        :return: generated list of commands.
+        """
+        commands = []
+        h_if = {}
+        l_set = ("name", "group")
+        if w[attr]:
+            if h and attr in h.keys():
+                h_if = h.get(attr) or {}
+            for item, val in iteritems(w[attr]):
+                if (
+                    opr
+                    and item in l_set
+                    and not (h_if and self._is_w_same(w[attr], h_if, item))
+                ):
+                    commands.append(
+                        cmd + (" " + attr.replace("_", "-") + " " + item.replace("_", "-") + " " + val)
+                    )
+                elif not opr and item in l_set and not (h_if and self._in_target(h_if, item)):
+                    commands.append(cmd + (" " + attr.replace("_", "-") + " " + item.replace("_", "-")))
+        return commands
+
     def _add_time(self, attr, w, h, cmd, opr):
         """
         This function forms the commands for 'time' attributes based on the 'opr'.
@@ -560,6 +597,37 @@ class Firewall_rules(ConfigBase):
                 for flag in flags:
                     invert = flag.get("invert", False)
                     commands.append(cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"]))
+        return commands
+
+    def _add_packet_length(self, attr, w, h, cmd, opr):
+        """
+        This function forms the commands for 'packet_length[_exclude]' attributes based on the 'opr'.
+        If < 1.4, handle tcp attributes.
+        :param attr: attribute name.
+        :param w: base config.
+        :param h: target config.
+        :param cmd: commands to be prepend.
+        :return: generated list of commands.
+        """
+        commands = []
+        have = []
+
+        if w:
+            if w.get(attr):
+                want = w.get(attr) or []
+        if h:
+            if h.get(attr):
+                have = h.get(attr) or []
+        attr = attr.replace("_", "-")
+        if want:
+            if opr:
+                lengths = list_diff_want_only(want, have)
+                for l in lengths:
+                    commands.append(cmd + " " + attr + " " + str(l["length"]))
+            elif not opr:
+                lengths = list_diff_want_only(want, have)
+                for l in lengths:
+                    commands.append(cmd + " " + attr + " " + str(l["length"]))
         return commands
 
     def _tcp_flags_string(self, flags):
@@ -829,7 +897,7 @@ class Firewall_rules(ConfigBase):
             if rs_id["name"]:
                 cmd += " name " + rs_id["name"]
             elif rs_id["filter"]:
-                cmd += " filter " + rs_id["filter"]
+                cmd += " " + rs_id["filter"] + " filter"
         elif rs_id["name"]:
             cmd += " " + rs_id["name"]
         if number:
@@ -970,29 +1038,6 @@ class Firewall_rules(ConfigBase):
         :return: True/False.
         """
         return True if h and key in h else False
-
-    def _is_base_attrib(self, key):
-        """
-        This function checks whether key is present in predefined
-        based attribute set.
-        :param key:
-        :return: True/False.
-        """
-        r_set = (
-            "p2p",
-            "ipsec",
-            "log",
-            "action",
-            "fragment",
-            "protocol",
-            "disable",
-            "description",
-            "mac_address",
-            "default_action",
-            "enable_default_log",
-            "jump_target"
-        )
-        return True if key in r_set else False
 
     def _get_os_version(self):
         """

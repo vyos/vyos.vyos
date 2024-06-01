@@ -1226,6 +1226,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         protocol="icmp",
                                         icmp=dict(type_name="echo-request"),
                                         jump_target="PROTECT-RE",
+                                        packet_length_exclude=[dict(length=100), dict(length=200)]
                                     ),
                                     dict(
                                         number="102",
@@ -1247,6 +1248,8 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall ipv6 name INBOUND description 'This is IPv6 INBOUND rule set with a jump action'",
             "set firewall ipv6 name INBOUND default-log",
             "set firewall ipv6 name INBOUND rule 101 protocol 'icmp'",
+            "set firewall ipv6 name INBOUND rule 101 packet-length-exclude 100",
+            "set firewall ipv6 name INBOUND rule 101 packet-length-exclude 200",
             "set firewall ipv6 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
             "set firewall ipv6 name INBOUND rule 101",
             "set firewall ipv6 name INBOUND rule 101 ipsec 'match-ipsec'",
@@ -1259,4 +1262,264 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall ipv6 name INBOUND rule 102 protocol 'ipv6-icmp'",
             'set firewall ipv6 name INBOUND rule 102 icmpv6 type 7',
         ]
+        self.execute_module(changed=True, commands=commands)
+
+
+class TestVyosFirewallRulesModule14(TestVyosModule):
+    module = vyos_firewall_rules
+
+    def setUp(self):
+        super(TestVyosFirewallRulesModule14, self).setUp()
+        self.mock_get_config = patch(
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config"
+        )
+        self.get_config = self.mock_get_config.start()
+
+        self.mock_load_config = patch(
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config"
+        )
+        self.load_config = self.mock_load_config.start()
+
+        self.mock_get_resource_connection_config = patch(
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection"
+        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
+
+        self.mock_get_resource_connection_facts = patch(
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+        )
+        self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
+        self.mock_execute_show_command = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes.Static_routesFacts.get_device_data"
+        )
+
+        self.mock_execute_show_command = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_rules.firewall_rules.Firewall_rulesFacts.get_device_data"
+        )
+        self.execute_show_command = self.mock_execute_show_command.start()
+
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_rules.firewall_rules.Firewall_rules._get_os_version"
+        )
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = "1.4"
+
+    def tearDown(self):
+        super(TestVyosFirewallRulesModule14, self).tearDown()
+        self.mock_get_resource_connection_config.stop()
+        self.mock_get_resource_connection_facts.stop()
+        self.mock_get_config.stop()
+        self.mock_load_config.stop()
+        self.mock_execute_show_command.stop()
+        self.mock_get_os_version.stop()
+
+    def load_fixtures(self, commands=None, filename=None):
+        def load_from_file(*args, **kwargs):
+            return load_fixture("vyos_firewall_rules_config_v14.cfg")
+
+        self.execute_show_command.side_effect = load_from_file
+
+    def test_vyos_firewall_packet_length_merged_01(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="INBOUND",
+                                description="This is IPv6 INBOUND rule set with a jump action",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="jump",
+                                        description="Rule 101 is configured by Ansible",
+                                        jump_target="PROTECT-RE",
+                                        packet_length_exclude=[dict(length=100), dict(length=200)],
+                                        packet_length=[dict(length=22)]
+                                    ),
+                                ],
+                            ),
+                        ],
+                    )
+                ],
+                state="merged",
+            )
+        )
+        commands = [
+            "set firewall ipv6 name INBOUND default-action 'accept'",
+            "set firewall ipv6 name INBOUND description 'This is IPv6 INBOUND rule set with a jump action'",
+            "set firewall ipv6 name INBOUND default-log",
+            "set firewall ipv6 name INBOUND rule 101 packet-length-exclude 100",
+            "set firewall ipv6 name INBOUND rule 101 packet-length-exclude 200",
+            "set firewall ipv6 name INBOUND rule 101 packet-length 22",
+            "set firewall ipv6 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
+            "set firewall ipv6 name INBOUND rule 101",
+            "set firewall ipv6 name INBOUND rule 101 action 'jump'",
+            "set firewall ipv6 name INBOUND rule 101 jump-target 'PROTECT-RE'",
+        ]
+        self.maxDiff = None
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_packet_length_replace_01(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="V4-INGRESS",
+                                description="This is IPv4 V4-INGRESS rule set",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="accept",
+                                        description="Rule 101 is configured by Ansible",
+                                        packet_length_exclude=[dict(length=100), dict(length=200)],
+                                        packet_length=[dict(length=22)]
+                                    ),
+                                ],
+                            ),
+                        ],
+                    )
+                ],
+                state="replaced",
+            )
+        )
+        commands = [
+            "delete firewall ipv4 name V4-INGRESS rule 101 protocol",
+            "delete firewall ipv4 name V4-INGRESS rule 101 disable",
+            "delete firewall ipv4 name V4-INGRESS rule 101 packet-length-exclude 300",
+            "set firewall ipv4 name V4-INGRESS rule 101 packet-length-exclude 200",
+            "set firewall ipv4 name V4-INGRESS rule 101 packet-length 22",
+        ]
+        self.maxDiff = None
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_filter_merged_01(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                filter="input",
+                                description="This is IPv6 INBOUND rule set with a jump action",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="jump",
+                                        description="Rule 101 is configured by Ansible",
+                                        jump_target="PROTECT-RE",
+                                        packet_length_exclude=[dict(length=100), dict(length=200)],
+                                        packet_length=[dict(length=22)]
+                                    ),
+                                ],
+                            ),
+                        ],
+                    )
+                ],
+                state="merged",
+            )
+        )
+        commands = [
+            "set firewall ipv6 input filter default-action 'accept'",
+            "set firewall ipv6 input filter description 'This is IPv6 INBOUND rule set with a jump action'",
+            "set firewall ipv6 input filter default-log",
+            "set firewall ipv6 input filter rule 101 packet-length-exclude 100",
+            "set firewall ipv6 input filter rule 101 packet-length-exclude 200",
+            "set firewall ipv6 input filter rule 101 packet-length 22",
+            "set firewall ipv6 input filter rule 101 description 'Rule 101 is configured by Ansible'",
+            "set firewall ipv6 input filter rule 101",
+            "set firewall ipv6 input filter rule 101 action 'jump'",
+            "set firewall ipv6 input filter rule 101 jump-target 'PROTECT-RE'",
+        ]
+        self.maxDiff = None
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_interface_merged_01(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="V6-INGRESS",
+                                description="This is IPv6 INBOUND rule set with a jump action",
+                                default_action="accept",
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="jump",
+                                        description="Rule 101 is configured by Ansible",
+                                        jump_target="PROTECT-RE",
+                                        inbound_interface=dict(name="eth0"),
+                                        outbound_interface=dict(group="eth1"),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    )
+                ],
+                state="merged",
+            )
+        )
+        commands = [
+            "set firewall ipv6 name V6-INGRESS description 'This is IPv6 INBOUND rule set with a jump action'",
+            "set firewall ipv6 name V6-INGRESS rule 101 inbound-interface name eth0",
+            "set firewall ipv6 name V6-INGRESS rule 101 outbound-interface group eth1",
+            "set firewall ipv6 name V6-INGRESS rule 101 description 'Rule 101 is configured by Ansible'",
+            "set firewall ipv6 name V6-INGRESS rule 101",
+            "set firewall ipv6 name V6-INGRESS rule 101 action 'jump'",
+            "set firewall ipv6 name V6-INGRESS rule 101 jump-target 'PROTECT-RE'",
+        ]
+        self.maxDiff = None
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_interface_replace_02(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="IF-TEST",
+                                description="Changed",
+                                rules=[
+                                    dict(
+                                        number="10",
+                                        action="accept",
+                                        description="Rule 10 is configured by Ansible",
+                                        inbound_interface=dict(name="eth1"),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    )
+                ],
+                state="replaced",
+            )
+        )
+        commands = [
+            "set firewall ipv4 name IF-TEST description 'Changed'",
+            "set firewall ipv4 name IF-TEST rule 10 description 'Rule 10 is configured by Ansible'",
+            'set firewall ipv4 name IF-TEST rule 10 inbound-interface name eth1',
+            "delete firewall ipv4 name IF-TEST rule 10 outbound-interface group",
+        ]
+        self.maxDiff = None
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_v4v6_rule_sets_del_03(self):
+        set_module_args(dict(config=[], state="deleted"))
+        commands = ["delete firewall ipv4", "delete firewall ipv6"]
         self.execute_module(changed=True, commands=commands)
