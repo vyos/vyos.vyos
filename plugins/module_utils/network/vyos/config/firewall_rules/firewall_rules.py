@@ -333,6 +333,12 @@ class Firewall_rules(ConfigBase):
                             else:
                                 commands.append(self._add_r_base_attrib(rs_id, key, w))
                         elif not opr:
+                            # Note: if you are experiencing sticky configuration on replace
+                            # you may need to add an explicit check for the key here. Anything that
+                            # doesn't have a custom operation is taken care of by the `l_set` check
+                            # below, but I'm not sure how any of the others work.
+                            # It's possible that historically the delete was forced (but now it's
+                            # checked).
                             if key == "number" and self._is_del(l_set, h):
                                 commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
                                 continue
