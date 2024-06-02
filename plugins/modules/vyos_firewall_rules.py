@@ -31,6 +31,11 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 module: vyos_firewall_rules
@@ -71,7 +76,7 @@ options:
           name:
             description:
             - Firewall rule set name.
-             - Required for 1.3- and optional for 1.4+.
+            - Required for 1.3- and optional for 1.4+.
             type: str
           default_action:
             description:
@@ -488,7 +493,7 @@ options:
                 type: dict
                 suboptions:
                   flags:
-                    description: 
+                    description:
                       - list of tcp flags to be matched
                       - 5.0 breaking change to support 1.4+ and 1.3-
                     type: list
@@ -498,7 +503,7 @@ options:
                         description:
                           - TCP flag to be matched.
                           - syn, ack, fin, rst, urg, psh, all (1.3-)
-                          - syn, ack, fin, rst, urg, psh, cwr, ecn (1.4+)    
+                          - syn, ack, fin, rst, urg, psh, cwr, ecn (1.4+)
                         type: str
                         choices: ['ack', 'cwr', 'ecn', 'fin', 'psh', 'rst', 'syn', 'urg', 'all']
                       invert:
@@ -1624,12 +1629,8 @@ commands:
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_rules.firewall_rules import (
-    Firewall_rulesArgs,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_rules.firewall_rules import (
-    Firewall_rules,
-)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_rules.firewall_rules import Firewall_rulesArgs
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_rules.firewall_rules import Firewall_rules
 
 
 def main():
@@ -1657,5 +1658,5 @@ def main():
     module.exit_json(**result)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
