@@ -238,7 +238,8 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                             "type": "str",
                                         }
                                     },
-                                    "type": "list"},
+                                    "type": "list",
+                                },
                                 "packet_type": {
                                 	"choices": [
                                 		"broadcast",
@@ -256,6 +257,12 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                         "fanout",
                                     ],
                                     "type": "str",
+                                },
+                                "protocol": {"type": "str"},
+                                "queue": {"type": "str"},
+                                "queue_options": {
+                                    "choices": ["bypass", "fanout"],
+                                    "type": "str"
                                 },
                                 "recent": {
                                     "options": {
@@ -290,12 +297,12 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     },
                                     "type": "dict",
                                 },
-                               "synproxy": {
-                                   "options": {
-                                       "mss": {"type": "int"},
-                                       "window_scale": {"type": "int"},
-                                       },
-                                   "type": "dict",
+                                "synproxy": {
+                                    "options": {
+                                        "mss": {"type": "int"},
+                                        "window_scale": {"type": "int"},
+                                    },
+                                    "type": "dict",
                                 },
                                 "tcp": {
                                     "options": {
@@ -344,7 +351,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
             },
             "type": "list",
         },
-        "running_config": {"type": "str"},
+        "running_config": { "type": "str" },
         "state": {
             "choices": [
                 "merged",

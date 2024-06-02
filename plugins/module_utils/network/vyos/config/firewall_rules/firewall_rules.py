@@ -245,7 +245,9 @@ class Firewall_rules(ConfigBase):
                 elif have:
                     for h in have:
                         if h["afi"] == w["afi"]:
-                            commands.append(self._compute_command(self._rs_id(None, w["afi"]), remove=True))
+                            commands.append(
+                                self._compute_command(self._rs_id(None, w["afi"]), remove=True)
+                            )
         elif have:
             for h in have:
                 r_sets = self._get_r_sets(h)
@@ -342,16 +344,25 @@ class Firewall_rules(ConfigBase):
                             if key == "number" and self._is_del(l_set, h):
                                 commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
                                 continue
-                            if key == "tcp" and val and h and (key not in h or not h[key]
-                                                               or h[key] != w[key]):
+                            if (
+                                key == "tcp"
+                                and val
+                                and h
+                                and (key not in h or not h[key] or h[key] != w[key])
+                            ):
                                 commands.extend(self._add_tcp(key, w, h, cmd, opr))
-                            if key in ("packet_length", "packet_length_exclude") and \
-                                   val and h and (key not in h or not h[key] or h[key] != w[key]):
+                            if (
+                                key in ("packet_length", "packet_length_exclude")
+                                and val
+                                and h
+                                and (key not in h or not h[key] or h[key] != w[key])
+                            ):
                                 commands.extend(self._add_packet_length(key, w, h, cmd, opr))
                             elif key == "disable" and val and h and (key not in h or not h[key]):
                                 commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
-                            elif key in ("inbound_interface", "outbound_interface") and \
-                                    not (h and self._is_w_same(w, h, key)):
+                            elif key in ("inbound_interface", "outbound_interface") and not (
+                                h and self._is_w_same(w, h, key)
+                            ):
                                 commands.extend(self._add_interface(key, w, h, cmd, opr))
                             elif (
                                 key in l_set
@@ -518,16 +529,15 @@ class Firewall_rules(ConfigBase):
             if h and attr in h.keys():
                 h_if = h.get(attr) or {}
             for item, val in iteritems(w[attr]):
-                if (
-                    opr
-                    and item in l_set
-                    and not (h_if and self._is_w_same(w[attr], h_if, item))
-                ):
+                if opr and item in l_set and not (h_if and self._is_w_same(w[attr], h_if, item)):
                     commands.append(
-                        cmd + (" " + attr.replace("_", "-") + " " + item.replace("_", "-") + " " + val)
+                        cmd
+                        + (" " + attr.replace("_", "-") + " " + item.replace("_", "-") + " " + val)
                     )
                 elif not opr and item in l_set and not (h_if and self._in_target(h_if, item)):
-                    commands.append(cmd + (" " + attr.replace("_", "-") + " " + item.replace("_", "-")))
+                    commands.append(
+                        cmd + (" " + attr.replace("_", "-") + " " + item.replace("_", "-"))
+                    )
         return commands
 
     def _add_time(self, attr, w, h, cmd, opr):
@@ -597,12 +607,16 @@ class Firewall_rules(ConfigBase):
                 flags = list_diff_want_only(want, have)
                 for flag in flags:
                     invert = flag.get("invert", False)
-                    commands.append(cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"]))
+                    commands.append(
+                        cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"])
+                    )
             elif not opr:
                 flags = list_diff_want_only(want, have)
                 for flag in flags:
                     invert = flag.get("invert", False)
-                    commands.append(cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"]))
+                    commands.append(
+                        cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"])
+                    )
         return commands
 
     def _add_packet_length(self, attr, w, h, cmd, opr):
@@ -628,12 +642,12 @@ class Firewall_rules(ConfigBase):
         if want:
             if opr:
                 lengths = list_diff_want_only(want, have)
-                for l in lengths:
-                    commands.append(cmd + " " + attr + " " + str(l["length"]))
+                for l_rec in lengths:
+                    commands.append(cmd + " " + attr + " " + str(l_rec["length"]))
             elif not opr:
                 lengths = list_diff_want_only(want, have)
-                for l in lengths:
-                    commands.append(cmd + " " + attr + " " + str(l["length"]))
+                for l_rec in lengths:
+                    commands.append(cmd + " " + attr + " " + str(l_rec["length"]))
         return commands
 
     def _tcp_flags_string(self, flags):
@@ -665,7 +679,7 @@ class Firewall_rules(ConfigBase):
         :param cmd: commands to be prepend.
         :return: generated list of commands.
         """
-        if self._get_os_version() >= '1.4':
+        if self._get_os_version() >= "1.4":
             return self._add_tcp_1_4(attr, w, h, cmd, opr)
         h_tcp = {}
         commands = []
@@ -830,7 +844,7 @@ class Firewall_rules(ConfigBase):
         :param type: rule_sets if searching a rule_set and r_list if searching from a rule_list.
         :return: rule-set/rule.
         """
-        if 'afi' in rs_id:
+        if "afi" in rs_id:
             afi = rs_id["afi"]
         else:
             afi = None
@@ -899,7 +913,7 @@ class Firewall_rules(ConfigBase):
             cmd = "delete firewall " + self._get_fw_type(rs_id["afi"])
         else:
             cmd = "set firewall " + self._get_fw_type(rs_id["afi"])
-        if self._get_os_version() >= '1.4':
+        if self._get_os_version() >= "1.4":
             if rs_id["name"]:
                 cmd += " name " + rs_id["name"]
             elif rs_id["filter"]:
@@ -909,7 +923,7 @@ class Firewall_rules(ConfigBase):
         if number:
             cmd += " rule " + str(number)
         if attrib:
-            if self._get_os_version() >= '1.4' and attrib == "enable_default_log":
+            if self._get_os_version() >= "1.4" and attrib == "enable_default_log":
                 cmd += " " + "default-log"
             else:
                 cmd += " " + attrib.replace("_", "-")
@@ -950,10 +964,7 @@ class Firewall_rules(ConfigBase):
         :param filter: filter name.
         :return: rule-set identifier.
         """
-        identifier = {
-            "name": None,
-            "filter": None
-        }
+        identifier = {"name": None, "filter": None}
         if afi:
             identifier["afi"] = afi
         else:
@@ -1010,7 +1021,7 @@ class Firewall_rules(ConfigBase):
         :param afi: address type
         :return: rule-set type.
         """
-        if self._get_os_version() >= '1.4':
+        if self._get_os_version() >= "1.4":
             return "ipv6" if afi == "ipv6" else "ipv4"
         return "ipv6-name" if afi == "ipv6" else "name"
 

@@ -134,7 +134,7 @@ class InterfacesFacts(object):
                 config[item] = value.strip("'")
             else:
                 config[item] = None
-        
+
         # match only on disable next to the interface name
         # there are other sub-commands that can be disabled
         match = search(r"^ *disable", conf, M)
