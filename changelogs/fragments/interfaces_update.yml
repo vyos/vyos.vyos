@@ -3,3 +3,5 @@ minor_changes:
   - fixed bug where 'replace' would delete an active disable and not reinstate it
   - make l3_interfaces pick up loopback interfaces
   - added tests for verifying both of these
+  - fixed over-zealous handling of disable, which could catch other interface
+    items that are disabled.

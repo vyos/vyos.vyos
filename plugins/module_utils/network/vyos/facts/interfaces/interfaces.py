@@ -17,7 +17,7 @@ __metaclass__ = type
 
 
 from copy import deepcopy
-from re import M, findall
+from re import M, findall, search
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
 
@@ -66,7 +66,7 @@ class InterfacesFacts(object):
         )
         if interface_names:
             for interface in set(interface_names):
-                intf_regex = r" %s .+$" % interface.strip("'")
+                intf_regex = r" %s (.+$)" % interface.strip("'")
                 cfg = findall(intf_regex, data, M)
                 obj = self.render_config(cfg)
                 obj["name"] = interface.strip("'")
@@ -106,7 +106,7 @@ class InterfacesFacts(object):
         if vif_names:
             vifs_list = []
             for vif in set(vif_names):
-                vif_regex = r" %s .+$" % vif
+                vif_regex = r"%s (.+$)" % vif
                 cfg = "\n".join(findall(vif_regex, conf, M))
                 obj = self.parse_attribs(["description", "mtu"], cfg)
                 obj["vlan_id"] = int(vif)
@@ -117,6 +117,14 @@ class InterfacesFacts(object):
         return vifs_list
 
     def parse_attribs(self, attribs, conf):
+        """
+        Parse the attributes of a network interface.
+
+        :param attribs: List of attribute names.
+        :param conf: Configuration string.
+        :rtype: dict
+        :returns: Parsed configuration dictionary.
+        """
         config = {}
         for item in attribs:
             value = utils.parse_conf_arg(conf, item)
@@ -126,7 +134,11 @@ class InterfacesFacts(object):
                 config[item] = value.strip("'")
             else:
                 config[item] = None
-        if "disable" in conf:
+        
+        # match only on disable next to the interface name
+        # there are other sub-commands that can be disabled
+        match = search(r"^ *disable", conf, M)
+        if match:
             config["enabled"] = False
         else:
             config["enabled"] = True
