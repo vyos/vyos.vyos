@@ -17,6 +17,8 @@ fully qualified collection name (for example, `cisco.ios.ios`).
 Plugins and modules within a collection may be tested with only specific Ansible versions.
 A collection may contain metadata that identifies these versions.
 PEP440 is the schema used to describe the versions of Ansible.
+
+**Important Note**: This collection will not receive updates for Ansible versions greater than 2.9.10. The last version known to be compatible with Ansible `>=2.9.10` is v4.1.0. This is to ensure clarity regarding the support status of this collection.
 <!--end requires_ansible-->
 
 
