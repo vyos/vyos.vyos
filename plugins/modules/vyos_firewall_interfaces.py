@@ -91,7 +91,7 @@ options:
       for every task in a playbook.  The I(running_config) argument allows the implementer
       to pass in the configuration to use as the base config for comparison. This
       value of this option should be the output received from device by executing
-      command C(show configuration commands | grep 'firewall'
+      command C(show configuration commands | grep 'firewall').
     type: str
   state:
     description:

@@ -60,7 +60,7 @@ class L3_interfacesFacts(object):
         # operate on a collection of resource x
         objs = []
         interface_names = re.findall(
-            r"set interfaces (?:ethernet|bonding|vti|vxlan) (?:\'*)(\S+)(?:\'*)",
+            r"set interfaces (?:ethernet|bonding|bridge|dummy|tunnel|vti|vxlan) (?:\'*)(\S+)(?:\'*)",
             data,
             re.M,
         )
@@ -125,6 +125,10 @@ class L3_interfacesFacts(object):
             if item == "dhcp":
                 config["ipv4"].append({"address": item})
             elif item == "dhcpv6":
+                config["ipv6"].append({"address": item})
+            elif item == "no-default-link-local":
+                config["ipv6"].append({"address": item})
+            elif item == "autoconf":
                 config["ipv6"].append({"address": item})
             else:
                 ip_version = get_ip_address_version(item.split("/")[0])
