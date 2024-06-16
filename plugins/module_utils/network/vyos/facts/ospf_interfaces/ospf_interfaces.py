@@ -39,7 +39,7 @@ class Ospf_interfacesFacts(object):
         self.argument_spec = Ospf_interfacesArgs.argument_spec
 
     def get_device_data(self, connection):
-        if self._get_os_version() >= "1.4":
+        if self._get_os_version(connection) >= "1.4":
             # use set protocols ospf in order to get both ospf and ospfv3
             return connection.get("show configuration commands |  match 'set protocols ospf'")
         return connection.get('show configuration commands |  match "set interfaces"')
@@ -80,9 +80,9 @@ class Ospf_interfacesFacts(object):
             config_set.append(int_string)
         return config_set
 
-    def get_config_set(self, data):
+    def get_config_set(self, data, connection):
         """To classify the configurations beased on interface"""
-        if self._get_os_version() >= "1.4":
+        if self._get_os_version(connection) >= "1.4":
             return self.get_config_set_1_4(data)
         return self.get_config_set_1_2(data)
 
@@ -98,7 +98,7 @@ class Ospf_interfacesFacts(object):
         """
         facts = {}
         objs = []
-        if self._get_os_version() >= "1.4":
+        if self._get_os_version(connection) >= "1.4":
             ospf_interface_class = Ospf_interfacesTemplate14
         else:
             ospf_interface_class = Ospf_interfacesTemplate
@@ -109,7 +109,7 @@ class Ospf_interfacesFacts(object):
 
         # parse native config using the Ospf_interfaces template
         ospf_interfaces_facts = []
-        resources = self.get_config_set(data)
+        resources = self.get_config_set(data, connection)
         for resource in resources:
             ospf_interfaces_parser = ospf_interface_class(
                 lines=resource.split("\n"),
@@ -137,12 +137,11 @@ class Ospf_interfacesFacts(object):
 
         return ansible_facts
 
-    def _get_os_version(self):
+    def _get_os_version(self, connection):
         """
         Get the base version number before the '-' in the version string.
         """
         os_version = "1.2"
-        if self._connection:
-            os_version = self.get_device_data(self._connection)["network_os_version"]
-            os_version = self._connection.get_device_info()["network_os_major_version"]
+        if connection:
+            os_version = connection.get_device_info()["network_os_major_version"]
         return os_version

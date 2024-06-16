@@ -901,7 +901,7 @@ def main():
         argument_spec=Ospf_interfacesArgs.argument_spec,
         mutually_exclusive=[],
         required_if=[],
-        supports_check_mode=False,
+        supports_check_mode=True,
     )
 
     result = Ospf_interfaces(module).execute_module()

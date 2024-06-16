@@ -202,6 +202,60 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+    def test_vyos_ospf_passive_interfaces_replaced(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth0",
+                        address_family=[
+                            dict(
+                                afi="ipv4",
+                                passive=True,
+                            ),
+                        ],
+                    ),
+                    dict(
+                        name="eth1",
+                        address_family=[
+                            dict(
+                                afi="ipv4",
+                                passive=True,
+                            ),
+                            dict(
+                                afi="ipv6",
+                                passive=True,
+                            ),
+                        ],
+                    ),
+                    dict(
+                        name="bond2",
+                        address_family=[
+                            dict(
+                                afi="ipv4",
+                                passive=True,
+                            ),
+                            dict(afi="ipv6", passive=True),
+                        ],
+                    ),
+                ],
+                state="replaced",
+            )
+        )
+        commands = [
+            "delete protocols ospf interface eth1 cost 100",
+            "delete protocols ospfv3 interface eth0 instance-id 33",
+            "delete protocols ospfv3 interface eth0 mtu-ignore",
+            "delete protocols ospfv3 interface eth1 ifmtu 33",
+            "set protocols ospf interface bond2 passive",
+            "set protocols ospfv3 interface bond2 passive",
+            "set protocols ospf interface eth0 passive",
+            "set protocols ospf interface eth1 passive",
+            "set protocols ospfv3 interface eth1 passive",
+        ]
+        self.maxDiff = None
+        self.execute_module(changed=True, commands=commands)
+
     def test_vyos_ospf_interfaces_replaced_idempotent(self):
         set_module_args(
             dict(
