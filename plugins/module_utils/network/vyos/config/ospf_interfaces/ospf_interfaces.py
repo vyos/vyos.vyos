@@ -27,9 +27,12 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ospf_interfaces import (
-    Ospf_interfacesTemplate,
+    Ospf_interfacesTemplate
 )
 
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ospf_interfaces_14 import (
+    Ospf_interfacesTemplate14
+)
 
 class Ospf_interfaces(ResourceModule):
     """
@@ -42,7 +45,7 @@ class Ospf_interfaces(ResourceModule):
             facts_module=Facts(module),
             module=module,
             resource="ospf_interfaces",
-            tmplt=Ospf_interfacesTemplate(),
+            tmplt=Ospf_interfacesTemplate14(),
         )
         self.parsers = [
             "authentication_password",
