@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -25,7 +26,6 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     dict_merge,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.prefix_lists import (
     Prefix_listsTemplate,
@@ -120,8 +120,9 @@ class Prefix_lists(ResourceModule):
             for h in hplists.values():
                 self.commands.append(
                     "delete policy prefix-{0} {1}".format(
-                        "list" if h["afi"] == "ipv4" else "list6", h["name"]
-                    )
+                        "list" if h["afi"] == "ipv4" else "list6",
+                        h["name"],
+                    ),
                 )
 
     def _compare_plists(self, want, have):
@@ -158,7 +159,7 @@ class Prefix_lists(ResourceModule):
                     "list" if hr["afi"] == "ipv4" else "list6",
                     hr["name"],
                     hr["sequence"],
-                )
+                ),
             )
 
     def _prefix_list_list_to_dict(self, entry):

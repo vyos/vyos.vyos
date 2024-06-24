@@ -12,6 +12,7 @@ created
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from copy import deepcopy
@@ -24,7 +25,6 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
     search_obj_in_list,
     to_list,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 
 
@@ -52,7 +52,9 @@ class Firewall_interfaces(ConfigBase):
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources, data=data
+            self.gather_subset,
+            self.gather_network_resources,
+            data=data,
         )
         firewall_interfaces_facts = facts["ansible_network_resources"].get("firewall_interfaces")
         if not firewall_interfaces_facts:
@@ -93,7 +95,7 @@ class Firewall_interfaces(ConfigBase):
             running_config = self._module.params["running_config"]
             if not running_config:
                 self._module.fail_json(
-                    msg="value of running_config parameter must not be empty for state parsed"
+                    msg="value of running_config parameter must not be empty for state parsed",
                 )
             result["parsed"] = self.get_firewall_interfaces_facts(data=running_config)
         else:
@@ -134,7 +136,7 @@ class Firewall_interfaces(ConfigBase):
         commands = []
         if self.state in ("merged", "replaced", "overridden", "rendered") and not w:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(self.state)
+                msg="value of config parameter must not be empty for state {0}".format(self.state),
             )
         if self.state == "overridden":
             commands.extend(self._state_overridden(w, h))
@@ -202,7 +204,7 @@ class Firewall_interfaces(ConfigBase):
                                                 name=h_ar["name"],
                                                 attrib=h[key],
                                                 opr=False,
-                                            )
+                                            ),
                                         )
 
         commands.extend(self._state_merged(want, have))
@@ -290,7 +292,7 @@ class Firewall_interfaces(ConfigBase):
             for h in h_rules:
                 if key in h:
                     commands.append(
-                        self._compute_command(afi=want["afi"], name=name, attrib=h[key], opr=opr)
+                        self._compute_command(afi=want["afi"], name=name, attrib=h[key], opr=opr),
                     )
         for w in w_rules:
             h = search_obj_in_list(w[key], h_rules, key=key)
@@ -309,7 +311,7 @@ class Firewall_interfaces(ConfigBase):
                         attrib=w[key],
                         value=w["name"],
                         opr=opr,
-                    )
+                    ),
                 )
         return commands
 
@@ -362,11 +364,11 @@ class Firewall_interfaces(ConfigBase):
                                 name=name,
                                 attrib=w[key],
                                 value=w["name"],
-                            )
+                            ),
                         )
                     elif not (h and key in h):
                         commands.append(
-                            self._compute_command(afi=want["afi"], name=name, attrib=w[key])
+                            self._compute_command(afi=want["afi"], name=name, attrib=w[key]),
                         )
                 elif not opr:
                     if not h or key not in h or ("name" in w and h and "name" not in h):
@@ -376,7 +378,7 @@ class Firewall_interfaces(ConfigBase):
                                 name=name,
                                 attrib=w[key],
                                 opr=opr,
-                            )
+                            ),
                         )
         return commands
 

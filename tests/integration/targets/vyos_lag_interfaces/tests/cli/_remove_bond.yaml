@@ -1,17 +1,21 @@
----
 - name: Remove Config
   vars:
-    lines:
-      "delete interfaces bonding bond0 hash-policy\ndelete interfaces ethernet\
-      \ eth1 bond-group bond0\ndelete interfaces bonding bond0 mode\ndelete interfaces\
-      \ bonding bond0 primary\ndelete interfaces bonding bond1 hash-policy\ndelete\
-      \ interfaces ethernet eth2 bond-group bond1\ndelete interfaces bonding bond1\
-      \ mode\ndelete interfaces bonding bond1 primary\n"
+    lines: |-
+      delete interfaces bonding bond0 hash-policy
+      delete interfaces ethernet eth1 bond-group bond0
+      delete interfaces bonding bond0 mode
+      delete interfaces bonding bond0 primary
+      delete interfaces bonding bond1 hash-policy
+      delete interfaces ethernet eth2 bond-group bond1
+      delete interfaces bonding bond1 mode
+      delete interfaces bonding bond1 primary
   ansible.netcommon.cli_config:
     config: "{{ lines }}"
 
 - name: Remove Bond
   vars:
-    lines: "delete interfaces bonding bond0\ndelete interfaces bonding bond1\n"
+    lines: |
+      delete interfaces bonding bond0
+      delete interfaces bonding bond1
   ansible.netcommon.cli_config:
     config: "{{ lines }}"

@@ -10,6 +10,7 @@ The module file for vyos_route_maps
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -264,35 +265,35 @@ EXAMPLES = """
 
 # vyos@vyos:~$ show configuration commands |  match "set policy route-map"
 # vyos@vyos:~$
-    - name: Merge the provided configuration with the existing running configuration
-      register: result
-      vyos.vyos.vyos_route_maps: &id001
-        config:
-          - route_map: test1
-            entries:
-              - sequence: 1
-                description: "test"
-                action: permit
-                continue: 2
-                on_match:
-                  next: True
-          - route_map: test3
-            entries:
-              - sequence: 1
-                action: permit
-                match:
-                  rpki: invalid
-                  metric: 1
-                  peer: 192.0.2.32
-                set:
-                  local_preference: 4
-                  metric: 5
-                  metric_type: "type-1"
-                  origin: egp
-                  originator_id: 192.0.2.34
-                  tag: 5
-                  weight: 4
-        state: merged
+- name: Merge the provided configuration with the existing running configuration
+  register: result
+  vyos.vyos.vyos_route_maps: &id001
+    config:
+      - route_map: test1
+        entries:
+          - sequence: 1
+            description: "test"
+            action: permit
+            continue: 2
+            on_match:
+              next: true
+      - route_map: test3
+        entries:
+          - sequence: 1
+            action: permit
+            match:
+              rpki: invalid
+              metric: 1
+              peer: 192.0.2.32
+            set:
+              local_preference: 4
+              metric: 5
+              metric_type: "type-1"
+              origin: egp
+              originator_id: 192.0.2.34
+              tag: 5
+              weight: 4
+    state: merged
 # After State
 # vyos@vyos:~$ show configuration commands |  match "set policy route-maps"
 #   set policy route-map test1 rule 1 description test
@@ -913,12 +914,9 @@ EXAMPLES = """
 #         "set policy route-map test3 rule 1 match metric 3",
 #         "set policy route-map test3 rule 1 match peer 192.0.2.35"
 #     ],
-#
-
 """
 
 from ansible.module_utils.basic import AnsibleModule
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.route_maps.route_maps import (
     Route_mapsArgs,
 )

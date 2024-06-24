@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -34,12 +35,12 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
     def setUp(self):
         super(TestVyosOspfInterfacesModule, self).setUp()
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.Ospf_interfacesFacts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.Ospf_interfacesFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
 
@@ -91,7 +92,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set interfaces bonding bond2 ip ospf transmit-delay 9",
@@ -124,7 +125,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                         ],
                     ),
                 ],
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -149,7 +150,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                         ],
                     ),
                 ],
-            )
+            ),
         )
         commands = [
             "set interfaces ethernet eth0 ipv6 ospfv3 cost 500",
@@ -185,7 +186,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "set interfaces bonding bond2 ip ospf transmit-delay 9",
@@ -220,7 +221,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -251,7 +252,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         commands = [
             "set interfaces bonding bond2 ip ospf transmit-delay 9",
@@ -288,7 +289,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -301,7 +302,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="deleted",
-            )
+            ),
         )
         commands = ["delete interfaces ethernet eth0 ipv6 ospfv3"]
         self.execute_module(changed=True, commands=commands)
@@ -315,7 +316,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="deleted",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -347,7 +348,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="rendered",
-            )
+            ),
         )
         commands = [
             "set interfaces ethernet eth0 ip ospf cost 100",
@@ -389,7 +390,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                             "md5_key": {
                                 "key": "1111111111232345",
                                 "key_id": 10,
-                            }
+                            },
                         },
                         "bandwidth": 70,
                         "transmit_delay": 45,

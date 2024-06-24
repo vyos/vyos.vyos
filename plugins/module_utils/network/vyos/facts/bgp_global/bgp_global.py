@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -17,7 +18,6 @@ based on the configuration.
 import re
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.bgp_global.bgp_global import (
     Bgp_globalArgs,
 )
@@ -71,7 +71,7 @@ class Bgp_globalFacts(object):
         ansible_facts["ansible_network_resources"].pop("bgp_global", None)
 
         params = utils.remove_empties(
-            bgp_global_parser.validate_config(self.argument_spec, {"config": objs}, redact=True)
+            bgp_global_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
         )
 
         facts["bgp_global"] = params.get("config", [])

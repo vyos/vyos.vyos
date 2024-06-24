@@ -1,14 +1,13 @@
 ---
 - debug:
-    msg: START vyos_ntp_global rendered integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_ntp_global rendered integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
     - name: Structure provided configuration into device specific commands
       register: result
-      vyos.vyos.vyos_ntp_global: &id001
+      vyos.vyos.vyos_ntp_global:
         config:
           servers:
             - server: server5

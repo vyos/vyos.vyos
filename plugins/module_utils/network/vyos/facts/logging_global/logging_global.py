@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -16,7 +17,6 @@ based on the configuration.
 
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.logging_global.logging_global import (
     Logging_globalArgs,
 )
@@ -87,7 +87,11 @@ class Logging_globalFacts(object):
         objs = self.process_facts(objs)
 
         params = utils.remove_empties(
-            logging_global_parser.validate_config(self.argument_spec, {"config": objs}, redact=True)
+            logging_global_parser.validate_config(
+                self.argument_spec,
+                {"config": objs},
+                redact=True,
+            ),
         )
 
         facts["logging_global"] = params.get("config", {})

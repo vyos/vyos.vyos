@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_logging_global overridden integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_logging_global overridden integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
@@ -26,8 +25,7 @@
     - name: Assert that correct commands were generated
       assert:
         that:
-          - "{{ overridden['commands'] | symmetric_difference(result['commands'])\
-            \ |length == 0 }}"
+          - "{{ overridden['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
     - name: Overrides all device configuration with provided configurations (IDEMPOTENT)
       register: result

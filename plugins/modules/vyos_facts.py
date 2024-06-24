@@ -5,6 +5,7 @@
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 """
 The module file for vyos_facts
@@ -75,15 +76,15 @@ EXAMPLES = """
 # Collect only the interfaces facts
 - vyos.vyos.vyos_facts:
     gather_subset:
-    - '!all'
-    - '!min'
+      - '!all'
+      - '!min'
     gather_network_resources:
-    - interfaces
+      - interfaces
 
 # Do not collect interfaces facts
 - vyos.vyos.vyos_facts:
     gather_network_resources:
-    - '!interfaces'
+      - '!interfaces'
 
 # Collect interfaces and minimal default facts
 - vyos.vyos.vyos_facts:
@@ -139,7 +140,6 @@ ansible_net_gather_network_resources:
 """
 
 from ansible.module_utils.basic import AnsibleModule
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.facts.facts import (
     FactsArgs,
 )

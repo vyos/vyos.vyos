@@ -28,6 +28,7 @@ The module file for vyos_lldp_global
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -104,8 +105,8 @@ EXAMPLES = """
   vyos.vyos.vyos_lldp_global:
     config:
       legacy_protocols:
-      - fdp
-      - cdp
+        - fdp
+        - cdp
       snmp: enable
       address: 192.0.2.11
     state: merged
@@ -166,9 +167,9 @@ EXAMPLES = """
   vyos.vyos.vyos_lldp_global:
     config:
       legacy_protocols:
-      - edp
-      - sonmp
-      - cdp
+        - edp
+        - sonmp
+        - cdp
       address: 192.0.2.14
     state: replaced
 #
@@ -395,7 +396,7 @@ EXAMPLES = """
       address: 192.0.2.17
       enable: true
       legacy_protocols:
-      - cdp
+        - cdp
     state: rendered
 #
 #
@@ -438,8 +439,6 @@ EXAMPLES = """
 #         ]
 #     }
 #
-
-
 """
 RETURN = """
 before:
@@ -467,7 +466,6 @@ commands:
 
 
 from ansible.module_utils.basic import AnsibleModule
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.lldp_global.lldp_global import (
     Lldp_globalArgs,
 )

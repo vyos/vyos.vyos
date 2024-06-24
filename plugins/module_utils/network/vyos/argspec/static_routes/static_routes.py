@@ -27,6 +27,7 @@ The arg spec for the vyos_static_routes module
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -77,7 +78,7 @@ class Static_routesArgs(object):  # pylint: disable=R0903
                         },
                     },
                     "type": "list",
-                }
+                },
             },
             "type": "list",
         },

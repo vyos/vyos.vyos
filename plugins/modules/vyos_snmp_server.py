@@ -10,6 +10,7 @@ The module file for vyos_snmp_server
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -268,30 +269,29 @@ EXAMPLES = """
 # vyos@vyos:~$ show configuration commands | grep snmp
 # vyos@vyos:~$
 
-  - name: Merge provided configuration with device configuration
-    vyos.vyos.vyos_snmp_server:
-      config:
-        communities:
-          - name: "switches"
-            authorization_type: "rw"
-          - name: "bridges"
-            clients: ["1.1.1.1", "12.1.1.10"]
-        contact: "admin2@ex.com"
-        listen_addresses:
-          - address: "20.1.1.1"
-          - address: "100.1.2.1"
-            port: 33
-        snmp_v3:
-          users:
-            - user: admin_user
-              authentication:
-                plaintext_key: "abc1234567"
-                type: "sha"
-              privacy:
-                plaintext_key: "abc1234567"
-                type: "aes"
-
-      state: merged
+- name: Merge provided configuration with device configuration
+  vyos.vyos.vyos_snmp_server:
+    config:
+      communities:
+        - name: "switches"
+          authorization_type: "rw"
+        - name: "bridges"
+          clients: ["1.1.1.1", "12.1.1.10"]
+      contact: "admin2@ex.com"
+      listen_addresses:
+        - address: "20.1.1.1"
+        - address: "100.1.2.1"
+          port: 33
+      snmp_v3:
+        users:
+          - user: admin_user
+            authentication:
+              plaintext_key: "abc1234567"
+              type: "sha"
+            privacy:
+              plaintext_key: "abc1234567"
+              type: "aes"
+    state: merged
 
 # After State:
 
@@ -366,9 +366,10 @@ EXAMPLES = """
 #     ],
 #
 
-# using Replaced:
+# Using replaced
 
 # Before State
+# -------------
 # vyos@vyos:~$ show configuration commands | grep snmp
 # set service snmp community bridges client '1.1.1.1'
 # set service snmp community bridges client '12.1.1.10'
@@ -380,43 +381,42 @@ EXAMPLES = """
 # set service snmp v3 user admin_user auth type 'sha'
 # set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
 # set service snmp v3 user admin_user privacy type 'aes'
-# vyos@vyos:~$
 
-  - name: Replace
-    vyos.vyos.vyos_snmp_server:
-      config:
-        communities:
-          - name: "bridges"
-            networks: ["1.1.1.0/24", "12.1.1.0/24"]
-        location: "RDU, NC"
-        listen_addresses:
-          - address: "100.1.2.1"
-            port: 33
-        snmp_v3:
-          groups:
-            - group: "default"
-              view: "default"
-          users:
-            - user: admin_user
-              authentication:
-                plaintext_key: "abc1234567"
-                type: "sha"
-              privacy:
-                plaintext_key: "abc1234567"
-                type: "aes"
-              group: "default"
-            - user: guest_user2
-              authentication:
-                plaintext_key: "opq1234567"
-                type: "sha"
-              privacy:
-                plaintext_key: "opq1234567"
-                type: "aes"
-          views:
-            - view: "default"
-              oid: 1
+- name: Replace SNMP Server configuration
+  vyos.vyos.vyos_snmp_server:
+    config:
+      communities:
+        - name: "bridges"
+          networks: ["1.1.1.0/24", "12.1.1.0/24"]
+      location: "RDU, NC"
+      listen_addresses:
+        - address: "100.1.2.1"
+          port: 33
+      snmp_v3:
+        groups:
+          - group: "default"
+            view: "default"
+        users:
+          - user: admin_user
+            authentication:
+              plaintext_key: "abc1234567"
+              type: "sha"
+            privacy:
+              plaintext_key: "abc1234567"
+              type: "aes"
+            group: "default"
+          - user: guest_user2
+            authentication:
+              plaintext_key: "opq1234567"
+              type: "sha"
+            privacy:
+              plaintext_key: "opq1234567"
+              type: "aes"
+        views:
+          - view: "default"
+            oid: 1
 
-      state: replaced
+    state: replaced
 
 # After State:
 # vyos@vyos:~$ show configuration commands | grep snmp
@@ -572,43 +572,41 @@ EXAMPLES = """
 # set service snmp v3 user admin_user auth type 'sha'
 # set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
 # set service snmp v3 user admin_user privacy type 'aes'
-# vyos@vyos:~$
 
-  - name: Override config
-    vyos.vyos.vyos_snmp_server:
-      config:
-        communities:
-          - name: "bridges"
-            networks: ["1.1.1.0/24", "12.1.1.0/24"]
-        location: "RDU, NC"
-        listen_addresses:
-          - address: "100.1.2.1"
-            port: 33
-        snmp_v3:
-          groups:
-            - group: "default"
-              view: "default"
-          users:
-            - user: admin_user
-              authentication:
-                plaintext_key: "abc1234567"
-                type: "sha"
-              privacy:
-                plaintext_key: "abc1234567"
-                type: "aes"
-              group: "default"
-            - user: guest_user2
-              authentication:
-                plaintext_key: "opq1234567"
-                type: "sha"
-              privacy:
-                plaintext_key: "opq1234567"
-                type: "aes"
-          views:
-            - view: "default"
-              oid: 1
-
-      state: overridden
+- name: Override SNMP server config
+  vyos.vyos.vyos_snmp_server:
+    config:
+      communities:
+        - name: "bridges"
+          networks: ["1.1.1.0/24", "12.1.1.0/24"]
+      location: "RDU, NC"
+      listen_addresses:
+        - address: "100.1.2.1"
+          port: 33
+      snmp_v3:
+        groups:
+          - group: "default"
+            view: "default"
+        users:
+          - user: admin_user
+            authentication:
+              plaintext_key: "abc1234567"
+              type: "sha"
+            privacy:
+              plaintext_key: "abc1234567"
+              type: "aes"
+            group: "default"
+          - user: guest_user2
+            authentication:
+              plaintext_key: "opq1234567"
+              type: "sha"
+            privacy:
+              plaintext_key: "opq1234567"
+              type: "aes"
+        views:
+          - view: "default"
+            oid: 1
+    state: overridden
 
 # After State:
 # vyos@vyos:~$ show configuration commands | grep snmp
@@ -771,11 +769,10 @@ EXAMPLES = """
 # set service snmp v3 user guest_user2 privacy plaintext-key 'opq1234567'
 # set service snmp v3 user guest_user2 privacy type 'aes'
 # set service snmp v3 view default oid 1
-# vyos@vyos:~$
 
-  - name: Delete Config
-    vyos.vyos.vyos_snmp_server:
-      state: deleted
+- name: Delete Config
+  vyos.vyos.vyos_snmp_server:
+    state: deleted
 
 # After State:
 # vyos@vyos:~$ show configuration commands | grep snmp
@@ -849,30 +846,29 @@ EXAMPLES = """
 #     ],
 
 # Using rendered:
-  - name: Render provided configuration
-    vyos.vyos.vyos_snmp_server:
-      config:
-        communities:
-          - name: "switches"
-            authorization_type: "rw"
-          - name: "bridges"
-            clients: ["1.1.1.1", "12.1.1.10"]
-        contact: "admin2@ex.com"
-        listen_addresses:
-          - address: "20.1.1.1"
-          - address: "100.1.2.1"
-            port: 33
-        snmp_v3:
-          users:
-            - user: admin_user
-              authentication:
-                plaintext_key: "abc1234567"
-                type: "sha"
-              privacy:
-                plaintext_key: "abc1234567"
-                type: "aes"
-
-      state: rendered
+- name: Render provided configuration
+  vyos.vyos.vyos_snmp_server:
+    config:
+      communities:
+        - name: "switches"
+          authorization_type: "rw"
+        - name: "bridges"
+          clients: ["1.1.1.1", "12.1.1.10"]
+      contact: "admin2@ex.com"
+      listen_addresses:
+        - address: "20.1.1.1"
+        - address: "100.1.2.1"
+          port: 33
+      snmp_v3:
+        users:
+          - user: admin_user
+            authentication:
+              plaintext_key: "abc1234567"
+              type: "sha"
+            privacy:
+              plaintext_key: "abc1234567"
+              type: "aes"
+    state: rendered
 
 # Module Execution:
 #  "rendered": [
@@ -903,11 +899,10 @@ EXAMPLES = """
 # set service snmp v3 user admin_user auth type 'sha'
 # set service snmp v3 user admin_user privacy plaintext-key 'abc1234567'
 # set service snmp v3 user admin_user privacy type 'aes'
-# vyos@vyos:~$
 
-  - name: gather configs
-    vyos.vyos.vyos_snmp_server:
-      state: gathered
+- name: Gather SNMP server config
+  vyos.vyos.vyos_snmp_server:
+    state: gathered
 
 # Module Execution:
 #   "gathered": {
@@ -974,10 +969,10 @@ EXAMPLES = """
 # set service snmp v3 user vyos privacy type 'aes'
 # set service snmp v3 view default oid 1
 
-  - name: parse configs
-    vyos.vyos.vyos_snmp_server:
-      running_config: "{{ lookup('file', './_parsed_snmp.cfg') }}"
-      state: parsed
+- name: Parse SNMP server config
+  vyos.vyos.vyos_snmp_server:
+    running_config: "{{ lookup('file', './_parsed_snmp.cfg') }}"
+    state: parsed
 
 # Module Execution:
 # "parsed": {
@@ -1093,7 +1088,6 @@ parsed:
 """
 
 from ansible.module_utils.basic import AnsibleModule
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.snmp_server.snmp_server import (
     Snmp_serverArgs,
 )

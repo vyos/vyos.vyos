@@ -1,7 +1,6 @@
 ---
 merged:
   before: []
-
   commands:
     - set policy prefix-list6 AllowIPv6Prefix
     - set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
@@ -106,15 +105,13 @@ overridden:
     - delete policy prefix-list6 DenyIPv6Prefix
     - set policy prefix-list AnsibleIPv4PrefixList description 'Rule 3 overridden by ansible'
     - set policy prefix-list AnsibleIPv4PrefixList rule 2 action 'deny'
-    - delete policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given
-      by ansible'
+    - delete policy prefix-list AnsibleIPv4PrefixList rule 2 description 'Rule 2 given by ansible'
     - set policy prefix-list AnsibleIPv4PrefixList rule 2 ge '26'
     - delete policy prefix-list AnsibleIPv4PrefixList rule 2 le '32'
     - set policy prefix-list AnsibleIPv4PrefixList rule 2 prefix '82.168.2.0/24'
     - delete policy prefix-list AnsibleIPv4PrefixList rule 3
     - set policy prefix-list OverriddenPrefixList
-    - set policy prefix-list OverriddenPrefixList description 'Configuration overridden
-      by ansible'
+    - set policy prefix-list OverriddenPrefixList description 'Configuration overridden by ansible'
     - set policy prefix-list OverriddenPrefixList rule 10
     - set policy prefix-list OverriddenPrefixList rule 10 action 'permit'
     - set policy prefix-list OverriddenPrefixList rule 10 le '32'

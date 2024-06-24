@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -17,7 +18,6 @@ based on the configuration.
 import re
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ntp_global.ntp_global import (
     Ntp_globalArgs,
 )
@@ -81,7 +81,7 @@ class Ntp_globalFacts(object):
         ansible_facts["ansible_network_resources"].pop("ntp_global", None)
 
         params = utils.remove_empties(
-            ntp_parser.validate_config(self.argument_spec, {"config": objs}, redact=True)
+            ntp_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
         )
 
         if params.get("config"):

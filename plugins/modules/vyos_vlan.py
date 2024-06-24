@@ -6,6 +6,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -122,8 +123,8 @@ EXAMPLES = """
   vyos.vyos.vyos_vlan:
     vlan_id: 100
     interfaces:
-    - eth1
-    - eth2
+      - eth1
+      - eth2
 
 - name: Configure virtual interface address
   vyos.vyos.vyos_vlan:
@@ -136,14 +137,14 @@ EXAMPLES = """
     vlan_id: 100
     interfaces: eth0
     associated_interfaces:
-    - eth0
+      - eth0
 
 - name: vlan intent check
   vyos.vyos.vyos_vlan:
     vlan_id: 100
     associated_interfaces:
-    - eth3
-    - eth4
+      - eth3
+      - eth4
 
 - name: Delete vlan
   vyos.vyos.vyos_vlan:
@@ -164,6 +165,7 @@ commands:
 """
 import re
 import time
+
 from copy import deepcopy
 
 from ansible.module_utils._text import to_text
@@ -172,7 +174,6 @@ from ansible.module_utils.common.validation import check_required_one_of
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     remove_default_spec,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     load_config,
     run_commands,
@@ -224,7 +225,7 @@ def map_obj_to_commands(updates, module):
             if not obj_in_want:
                 for i in h["interfaces"]:
                     commands.append(
-                        "delete interfaces ethernet {0} vif {1}".format(i, h["vlan_id"])
+                        "delete interfaces ethernet {0} vif {1}".format(i, h["vlan_id"]),
                     )
 
     return commands
@@ -260,7 +261,7 @@ def map_params_to_obj(module):
                 "state": module.params["state"],
                 "interfaces": module.params["interfaces"],
                 "associated_interfaces": module.params["associated_interfaces"],
-            }
+            },
         )
 
     return obj
@@ -325,7 +326,7 @@ def check_declarative_intent_params(want, module, result):
         for i in w["associated_interfaces"]:
             if (set(obj_interface) - set(w["associated_interfaces"])) != set([]):
                 module.fail_json(
-                    msg="Interface {0} not configured on vlan {1}".format(i, w["vlan_id"])
+                    msg="Interface {0} not configured on vlan {1}".format(i, w["vlan_id"]),
                 )
 
 

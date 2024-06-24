@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -18,7 +19,6 @@ import re
 
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.snmp_server.snmp_server import (
     Snmp_serverArgs,
 )
@@ -104,7 +104,7 @@ class Snmp_serverFacts(object):
         ansible_facts["ansible_network_resources"].pop("snmp_server", None)
 
         params = utils.remove_empties(
-            snmp_server_parser.validate_config(self.argument_spec, {"config": objs}, redact=True)
+            snmp_server_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
         )
 
         facts["snmp_server"] = params.get("config", {})

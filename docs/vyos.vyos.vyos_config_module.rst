@@ -223,14 +223,14 @@ Examples
     - name: configure the remote device
       vyos.vyos.vyos_config:
         lines:
-        - set system host-name {{ inventory_hostname }}
-        - set service lldp
-        - delete service dhcp-server
+          - set system host-name {{ inventory_hostname }}
+          - set service lldp
+          - delete service dhcp-server
 
     - name: backup and load from file
       vyos.vyos.vyos_config:
         src: vyos.cfg
-        backup: yes
+        backup: true
 
     - name: render a Jinja2 template onto the VyOS router
       vyos.vyos.vyos_config:
@@ -240,11 +240,11 @@ Examples
       vyos.vyos.vyos_config:
         lines:
           # - set int eth eth2 description 'OUTSIDE'
-        - set interface ethernet eth2 description 'OUTSIDE'
+          - set interface ethernet eth2 description 'OUTSIDE'
 
     - name: configurable backup path
       vyos.vyos.vyos_config:
-        backup: yes
+        backup: true
         backup_options:
           filename: backup.cfg
           dir_path: /home/user

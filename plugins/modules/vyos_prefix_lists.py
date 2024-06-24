@@ -10,6 +10,7 @@ The module file for vyos_prefix_lists
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -1240,7 +1241,6 @@ EXAMPLES = """
 #             ]
 #         }
 #     ]
-
 """
 
 RETURN = """
@@ -1294,7 +1294,6 @@ parsed:
 
 
 from ansible.module_utils.basic import AnsibleModule
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.prefix_lists.prefix_lists import (
     Prefix_listsArgs,
 )

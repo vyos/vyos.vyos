@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_bgp_global deleted integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_bgp_global deleted integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
@@ -23,9 +22,7 @@
           - result.commands|symmetric_difference(deleted.commands) == []
           - result.after == ansible_facts['network_resources']['bgp_global']
 
-    - name:
-        Delete the existing configuration with the provided running configuration
-        (IDEMPOTENT)
+    - name: Delete the existing configuration with the provided running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_bgp_global: *id001
 

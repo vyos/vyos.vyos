@@ -10,6 +10,7 @@ The module file for vyos_ntp_global
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -98,18 +99,18 @@ EXAMPLES = """
 - name: Replace the existing ntp config with the new config
   vyos.vyos.vyos_ntp_global:
     config:
-        allow_clients:
-          - 10.6.6.0/24
-        listen_addresses:
-          - 10.1.3.1
-        servers:
-          - server: 203.0.113.0
-            options:
-                - prefer
+      allow_clients:
+        - 10.6.6.0/24
+      listen_addresses:
+        - 10.1.3.1
+      servers:
+        - server: 203.0.113.0
+          options:
+            - prefer
 
 
-# # Task output:
-# # -------------
+# Task output:
+# -------------
 #        "after": {
 #         "allow_clients": [
 #            "10.6.6.0/24"
@@ -189,14 +190,14 @@ EXAMPLES = """
 - name: Replace the existing ntp config with the new config
   vyos.vyos.vyos_ntp_global:
     config:
-        allow_clients:
-          - 10.6.6.0/24
-        listen_addresses:
-          - 10.1.3.1
-        servers:
-          - server: 203.0.113.0
-            options:
-                - prefer
+      allow_clients:
+        - 10.6.6.0/24
+      listen_addresses:
+        - 10.1.3.1
+      servers:
+        - server: 203.0.113.0
+          options:
+            - prefer
     state: replaced
 
 
@@ -302,8 +303,6 @@ EXAMPLES = """
 #        set system ntp server time3.vyos.net
 #        vyos@vyos:~$
 
-
-
 # # -------------------
 # # 3. Using overridden
 # # -------------------
@@ -319,30 +318,28 @@ EXAMPLES = """
 #        set system ntp server time3.vyos.net
 #        vyos@vyos:~$
 
-# # Task
-# # -------------
+# Task
+# -------------
 - name: Override ntp config
   vyos.vyos.vyos_ntp_global:
-        config:
-          allow_clients:
-            - 10.3.3.0/24
-          listen_addresses:
-            - 10.7.8.1
-          servers:
-            - server: server1
-              options:
-                - dynamic
-                - prefer
+    config:
+      allow_clients:
+        - 10.3.3.0/24
+      listen_addresses:
+        - 10.7.8.1
+      servers:
+        - server: server1
+          options:
+            - dynamic
+            - prefer
 
-            - server: server2
-              options:
-                - noselect
-                - preempt
+        - server: server2
+          options:
+            - noselect
+            - preempt
 
-            - server: serv
-        state: overridden
-
-
+        - server: serv
+    state: overridden
 
 # # Task output:
 # # -------------
@@ -436,11 +433,8 @@ EXAMPLES = """
 #        set system ntp server time3.vyos.net
 #        vyos@vyos:~$
 
-
-
-# # -------------------
-# # 4. Using gathered
-# # -------------------
+# 4. Using gathered
+# -------------------
 
 # # Before state:
 # # -------------
@@ -457,11 +451,11 @@ EXAMPLES = """
 #        set system ntp server time3.vyos.net
 #        vyos@vyos:~$
 
-# # Task
-# # -------------
+# Task
+# -------------
 - name: Gather ntp config
   vyos.vyos.vyos_ntp_global:
-        state: gathered
+    state: gathered
 
 # # Task output:
 # # -------------
@@ -626,32 +620,27 @@ EXAMPLES = """
 #        set system ntp server time3.vyos.net
 #        vyos@vyos:~$
 
-# # Task
-# # -------------
+# Task
+# -------------
 - name: Render ntp config
   vyos.vyos.vyos_ntp_global:
-       config:
-        allow_clients:
-            - 10.7.7.0/24
-            - 10.8.8.0/24
-        listen_addresses:
-            - 10.7.9.1
-        servers:
-            - server: server7
-
-            - server: server45
-              options:
-                - noselect
-                - prefer
-                - pool
-            - server: time1.vyos.net
-
-            - server: time2.vyos.net
-
-            - server: time3.vyos.net
-
-        state: rendered
-
+    config:
+      allow_clients:
+        - 10.7.7.0/24
+        - 10.8.8.0/24
+      listen_addresses:
+        - 10.7.9.1
+      servers:
+        - server: server7
+        - server: server45
+          options:
+            - noselect
+            - prefer
+            - pool
+        - server: time1.vyos.net
+        - server: time2.vyos.net
+        - server: time3.vyos.net
+      state: rendered
 
 # # Task output:
 # # -------------
@@ -685,12 +674,12 @@ EXAMPLES = """
 #           "set system ntp server time2.vyos.net",
 #           "set system ntp server time3.vyos.net"
 
-# # Task:
-# # -------------
+# Task:
+# -------------
 - name: Parse externally provided ntp configuration
   vyos.vyos.vyos_ntp_global:
-     running_config: "{{ lookup('file', './sample_config.cfg') }}"
-     state: parsed
+    running_config: "{{ lookup('file', './sample_config.cfg') }}"
+    state: parsed
 
 # # Task output:
 # # -------------
@@ -724,7 +713,6 @@ EXAMPLES = """
 #
 #                ]
 #            }
-
 """
 RETURN = """
 before:
@@ -780,7 +768,6 @@ parsed:
 
 
 from ansible.module_utils.basic import AnsibleModule
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ntp_global.ntp_global import (
     Ntp_globalArgs,
 )

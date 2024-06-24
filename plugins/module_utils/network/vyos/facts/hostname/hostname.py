@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -17,7 +18,6 @@ based on the configuration.
 import re
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.hostname.hostname import (
     HostnameArgs,
 )
@@ -62,7 +62,7 @@ class HostnameFacts(object):
         ansible_facts["ansible_network_resources"].pop("hostname", None)
 
         params = utils.remove_empties(
-            hostname_parser.validate_config(self.argument_spec, {"config": objs}, redact=True)
+            hostname_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
         )
 
         facts["hostname"] = params.get("config", {})

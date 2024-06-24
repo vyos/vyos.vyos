@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -24,7 +25,6 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     dict_merge,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ntp_global import (
     NtpTemplate,
@@ -89,12 +89,12 @@ class Ntp_global(ResourceModule):
                     for hk, hval in iteritems(have):
                         if hk == "allow_clients" and hk in commandlist:
                             self.commands.append(
-                                self._tmplt.render({"": hk}, "allow_clients_delete", True)
+                                self._tmplt.render({"": hk}, "allow_clients_delete", True),
                             )
                             commandlist.remove(hk)
                         elif hk == "listen_addresses" and hk in commandlist:
                             self.commands.append(
-                                self._tmplt.render({"": hk}, "listen_addresses_delete", True)
+                                self._tmplt.render({"": hk}, "listen_addresses_delete", True),
                             )
                             commandlist.remove(hk)
                         elif hk == "server" and have["server"] in servernames:

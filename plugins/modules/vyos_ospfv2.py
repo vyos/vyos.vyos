@@ -28,6 +28,7 @@ The module file for vyos_ospfv2
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -389,42 +390,42 @@ EXAMPLES = """
         auto_cost:
           reference_bandwidth: 2
         neighbor:
-        - neighbor_id: 192.0.11.12
-          poll_interval: 10
-          priority: 2
+          - neighbor_id: 192.0.11.12
+            poll_interval: 10
+            priority: 2
         redistribute:
-        - route_type: bgp
-          metric: 10
-          metric_type: 2
+          - route_type: bgp
+            metric: 10
+            metric_type: 2
         passive_interface:
-        - eth1
-        - eth2
+          - eth1
+          - eth2
         parameters:
           router_id: 192.0.1.1
           opaque_lsa: true
           rfc1583_compatibility: true
           abr_type: cisco
         areas:
-        - area_id: '2'
-          area_type:
-            normal: true
-            authentication: plaintext-password
-            shortcut: enable
-        - area_id: '3'
-          area_type:
-            nssa:
-              set: true
-        - area_id: '4'
-          area_type:
-            stub:
-              default_cost: 20
-          network:
-          - address: 192.0.2.0/24
-          range:
-          - address: 192.0.3.0/24
-            cost: 10
-          - address: 192.0.4.0/24
-          cost: 12
+          - area_id: '2'
+            area_type:
+              normal: true
+              authentication: plaintext-password
+              shortcut: enable
+          - area_id: '3'
+            area_type:
+              nssa:
+                set: true
+          - area_id: '4'
+            area_type:
+              stub:
+                default_cost: 20
+            network:
+              - address: 192.0.2.0/24
+            range:
+              - address: 192.0.3.0/24
+                cost: 10
+              - address: 192.0.4.0/24
+            cost: 12
     state: merged
 #
 #
@@ -612,23 +613,23 @@ EXAMPLES = """
   vyos.vyos.vyos_ospfv2:
     config:
       areas:
-      - area_id: '2'
-        area_type:
-          normal: true
-        authentication: plaintext-password
-        shortcut: enable
-      - area_id: '3'
-        area_type:
-          nssa:
-            set: false
-      - area_id: '4'
-        area_type:
-          stub:
-            default_cost: 20
-        network:
-        - address: 192.0.2.0/24
-        - address: 192.0.22.0/24
-        - address: 192.0.32.0/24
+        - area_id: '2'
+          area_type:
+            normal: true
+          authentication: plaintext-password
+          shortcut: enable
+        - area_id: '3'
+          area_type:
+            nssa:
+              set: false
+        - area_id: '4'
+          area_type:
+            stub:
+              default_cost: 20
+          network:
+            - address: 192.0.2.0/24
+            - address: 192.0.22.0/24
+            - address: 192.0.32.0/24
     state: merged
 #
 #
@@ -920,39 +921,40 @@ EXAMPLES = """
         auto_cost:
           reference_bandwidth: 2
         neighbor:
-        - neighbor_id: 192.0.11.12
-          poll_interval: 10
-          priority: 2
+          - neighbor_id: 192.0.11.12
+            poll_interval: 10
+            priority: 2
         redistribute:
-        - route_type: bgp
-          metric: 10
-          metric_type: 2
+          - route_type: bgp
+            metric: 10
+            metric_type: 2
         passive_interface:
-        - eth1
+          - eth1
         parameters:
           router_id: 192.0.1.1
           opaque_lsa: true
           rfc1583_compatibility: true
           abr_type: cisco
         areas:
-        - area_id: '2'
-          area_type:
-            normal: true
-          authentication: plaintext-password
-          shortcut: enable
-        - area_id: '4'
-          area_type:
-            stub:
-              default_cost: 20
-          network:
-          - address: 192.0.2.0/24
-          - address: 192.0.12.0/24
-          - address: 192.0.22.0/24
-          - address: 192.0.32.0/24
-          range:
-          - address: 192.0.42.0/24
-            cost: 10
+          - area_id: '2'
+            area_type:
+              normal: true
+            authentication: plaintext-password
+            shortcut: enable
+          - area_id: '4'
+            area_type:
+              stub:
+                default_cost: 20
+            network:
+              - address: 192.0.2.0/24
+              - address: 192.0.12.0/24
+              - address: 192.0.22.0/24
+              - address: 192.0.32.0/24
+            range:
+              - address: 192.0.42.0/24
+                cost: 10
     state: replaced
+
 #
 #
 # -------------------------
@@ -1213,42 +1215,42 @@ EXAMPLES = """
         auto_cost:
           reference_bandwidth: 2
         neighbor:
-        - neighbor_id: 192.0.11.12
-          poll_interval: 10
-          priority: 2
+          - neighbor_id: 192.0.11.12
+            poll_interval: 10
+            priority: 2
         redistribute:
-        - route_type: bgp
-          metric: 10
-          metric_type: 2
+          - route_type: bgp
+            metric: 10
+            metric_type: 2
         passive_interface:
-        - eth1
-        - eth2
+          - eth1
+          - eth2
         parameters:
           router_id: 192.0.1.1
           opaque_lsa: true
           rfc1583_compatibility: true
           abr_type: cisco
         areas:
-        - area_id: '2'
-          area_type:
-            normal: true
-          authentication: plaintext-password
-          shortcut: enable
-        - area_id: '3'
-          area_type:
-            nssa:
-              set: true
-        - area_id: '4'
-          area_type:
-            stub:
-              default_cost: 20
-          network:
-          - address: 192.0.2.0/24
-          range:
-          - address: 192.0.3.0/24
-            cost: 10
-          - address: 192.0.4.0/24
-            cost: 12
+          - area_id: '2'
+            area_type:
+              normal: true
+            authentication: plaintext-password
+            shortcut: enable
+          - area_id: '3'
+            area_type:
+              nssa:
+                set: true
+          - area_id: '4'
+            area_type:
+              stub:
+                default_cost: 20
+            network:
+              - address: 192.0.2.0/24
+            range:
+              - address: 192.0.3.0/24
+                cost: 10
+              - address: 192.0.4.0/24
+                cost: 12
     state: rendered
 #
 #
@@ -1754,7 +1756,6 @@ EXAMPLES = """
 # ------------
 # vyos@192# run show configuration commands | grep ospf
 #
-
 """
 RETURN = """
 before:
@@ -1782,7 +1783,6 @@ commands:
 
 
 from ansible.module_utils.basic import AnsibleModule
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv2.ospfv2 import (
     Ospfv2Args,
 )

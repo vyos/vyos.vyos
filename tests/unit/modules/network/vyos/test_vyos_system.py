@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -35,12 +36,12 @@ class TestVyosSystemModule(TestVyosModule):
         super(TestVyosSystemModule, self).setUp()
 
         self.mock_get_config = patch(
-            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.get_config"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.load_config"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.load_config",
         )
         self.load_config = self.mock_load_config.start()
 
@@ -97,7 +98,7 @@ class TestVyosSystemModule(TestVyosModule):
                 host_name="router",
                 domain_name="example.com",
                 name_server=["8.8.8.8", "8.8.4.4"],
-            )
+            ),
         )
         result = self.execute_module()
         self.assertEqual([], result["commands"])

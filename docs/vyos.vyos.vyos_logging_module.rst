@@ -274,16 +274,29 @@ Examples
     - name: Add logging aggregate
       vyos.vyos.vyos_logging:
         aggregate:
-        - {dest: file, name: test1, facility: all, level: info}
-        - {dest: file, name: test2, facility: news, level: debug}
+          - dest: file
+            name: test1
+            facility: all
+            level: info
+          - dest: file
+            name: test2
+            facility: news
+            level: debug
         state: present
 
     - name: Remove logging aggregate
       vyos.vyos.vyos_logging:
         aggregate:
-        - {dest: console, facility: all, level: info}
-        - {dest: console, facility: daemon, level: warning}
-        - {dest: file, name: test2, facility: news, level: debug}
+          - dest: console
+            facility: all
+            level: info
+          - dest: console
+            facility: daemon
+            level: warning
+          - dest: file
+            name: test2
+            facility: news
+            level: debug
         state: absent
 
 

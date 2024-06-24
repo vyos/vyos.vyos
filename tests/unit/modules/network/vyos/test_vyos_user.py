@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -35,12 +36,12 @@ class TestVyosUserModule(TestVyosModule):
         super(TestVyosUserModule, self).setUp()
 
         self.mock_get_config = patch(
-            "ansible_collections.vyos.vyos.plugins.modules.vyos_user.get_config"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_user.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.vyos.vyos.plugins.modules.vyos_user.load_config"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_user.load_config",
         )
         self.load_config = self.mock_load_config.start()
 
@@ -87,7 +88,7 @@ class TestVyosUserModule(TestVyosModule):
                 [
                     "delete system login user ansible",
                     "delete system login user admin",
-                ]
+                ],
             ),
         )
 
@@ -97,7 +98,7 @@ class TestVyosUserModule(TestVyosModule):
                 name="test",
                 configured_password="test",
                 update_password="on_create",
-            )
+            ),
         )
         result = self.execute_module(changed=True)
         self.assertEqual(
@@ -111,7 +112,7 @@ class TestVyosUserModule(TestVyosModule):
                 name="ansible",
                 configured_password="test",
                 update_password="on_create",
-            )
+            ),
         )
         self.execute_module()
 
@@ -121,7 +122,7 @@ class TestVyosUserModule(TestVyosModule):
                 name="ansible",
                 configured_password="test",
                 update_password="always",
-            )
+            ),
         )
         result = self.execute_module(changed=True)
         self.assertEqual(

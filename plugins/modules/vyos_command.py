@@ -17,6 +17,7 @@
 #
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -97,26 +98,26 @@ EXAMPLES = """
 - name: show configuration on ethernet devices eth0 and eth1
   vyos.vyos.vyos_command:
     commands:
-    - show interfaces ethernet {{ item }}
+      - show interfaces ethernet {{ item }}
   with_items:
-  - eth0
-  - eth1
+    - eth0
+    - eth1
 
 - name: run multiple commands and check if version output contains specific version
     string
   vyos.vyos.vyos_command:
     commands:
-    - show version
-    - show hardware cpu
+      - show version
+      - show hardware cpu
     wait_for:
-    - result[0] contains 'VyOS 1.1.7'
+      - result[0] contains 'VyOS 1.1.7'
 
 - name: run command that requires answering a prompt
   vyos.vyos.vyos_command:
     commands:
-    - command: rollback 1
-      prompt: Proceed with reboot? [confirm][y]
-      answer: y
+      - command: rollback 1
+        prompt: Proceed with reboot? [confirm][y]
+        answer: y
 """
 
 RETURN = """
@@ -152,7 +153,6 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
     to_lines,
     transform_commands,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import run_commands
 
 
@@ -164,7 +164,7 @@ def parse_commands(module, warnings):
             if not item["command"].startswith("show"):
                 warnings.append(
                     "Only show commands are supported when using check mode, not "
-                    "executing %s" % item["command"]
+                    "executing %s" % item["command"],
                 )
                 commands.remove(item)
 

@@ -232,34 +232,34 @@ Examples
     - name: Merge the provided configuration with the existing running configuration
       vyos.vyos.vyos_firewall_interfaces:
         config:
-        - access_rules:
-          - afi: ipv4
-            rules:
-            - name: INBOUND
-              direction: in
-            - name: OUTBOUND
-              direction: out
-            - name: LOCAL
-              direction: local
-          - afi: ipv6
-            rules:
-            - name: V6-LOCAL
-              direction: local
-          name: eth1
-        - access_rules:
-          - afi: ipv4
-            rules:
-            - name: INBOUND
-              direction: in
-            - name: OUTBOUND
-              direction: out
-            - name: LOCAL
-              direction: local
-          - afi: ipv6
-            rules:
-            - name: V6-LOCAL
-              direction: local
-          name: eth3
+          - access_rules:
+              - afi: ipv4
+                rules:
+                  - name: INBOUND
+                    direction: in
+                  - name: OUTBOUND
+                    direction: out
+                  - name: LOCAL
+                    direction: local
+              - afi: ipv6
+                rules:
+                  - name: V6-LOCAL
+                    direction: local
+            name: eth1
+          - access_rules:
+              - afi: ipv4
+                rules:
+                  - name: INBOUND
+                    direction: in
+                  - name: OUTBOUND
+                    direction: out
+                  - name: LOCAL
+                    direction: local
+              - afi: ipv6
+                rules:
+                  - name: V6-LOCAL
+                    direction: local
+            name: eth3
         state: merged
     #
     #
@@ -404,15 +404,16 @@ Examples
     - name: Merge the provided configuration with the existing running configuration
       vyos.vyos.vyos_firewall_interfaces:
         config:
-        - access_rules:
-          - afi: ipv4
-            rules:
-            - name: OUTBOUND
-              direction: in
-            - name: INBOUND
-              direction: out
-          name: eth1
+          - access_rules:
+              - afi: ipv4
+                rules:
+                  - name: OUTBOUND
+                    direction: in
+                  - name: INBOUND
+                    direction: out
+            name: eth1
         state: merged
+
     #
     #
     # -------------------------
@@ -603,27 +604,29 @@ Examples
     # set interfaces ethernet eth3 firewall local name 'LOCAL'
     # set interfaces ethernet eth3 firewall out name 'OUTBOUND'
     #
-    - name: Replace device configurations of listed firewall interfaces with provided
+    - name: >-
+        Replace device configurations of listed firewall interfaces with provided
         configurations
       vyos.vyos.vyos_firewall_interfaces:
         config:
-        - name: eth1
-          access_rules:
-          - afi: ipv4
-            rules:
-            - name: OUTBOUND
-              direction: out
-          - afi: ipv6
-            rules:
-            - name: V6-LOCAL
-              direction: local
-        - name: eth3
-          access_rules:
-          - afi: ipv4
-            rules:
-            - name: INBOUND
-              direction: in
+          - name: eth1
+            access_rules:
+              - afi: ipv4
+                rules:
+                  - name: OUTBOUND
+                    direction: out
+              - afi: ipv6
+                rules:
+                  - name: V6-LOCAL
+                    direction: local
+          - name: eth3
+            access_rules:
+              - afi: ipv4
+                rules:
+                  - name: INBOUND
+                    direction: in
         state: replaced
+
     #
     #
     # -------------------------
@@ -791,12 +794,12 @@ Examples
     - name: Overrides all device configuration with provided configuration
       vyos.vyos.vyos_firewall_interfaces:
         config:
-        - name: eth3
-          access_rules:
-          - afi: ipv4
-            rules:
-            - name: INBOUND
-              direction: out
+          - name: eth3
+            access_rules:
+              - afi: ipv4
+                rules:
+                  - name: INBOUND
+                    direction: out
         state: overridden
     #
     #
@@ -918,8 +921,8 @@ Examples
     - name: Delete firewall interfaces based on interface name.
       vyos.vyos.vyos_firewall_interfaces:
         config:
-        - name: eth1
-        - name: eth3
+          - name: eth1
+          - name: eth3
         state: deleted
     #
     #
@@ -1047,10 +1050,10 @@ Examples
     - name: Delete firewall interfaces config per afi.
       vyos.vyos.vyos_firewall_interfaces:
         config:
-        - name: eth1
-          access_rules:
-          - afi: ipv4
-          - afi: ipv6
+          - name: eth1
+            access_rules:
+              - afi: ipv4
+              - afi: ipv6
         state: deleted
     #
     #
@@ -1073,7 +1076,6 @@ Examples
     # set firewall name 'LOCAL'
     # set firewall name 'OUTBOUND'
 
-
     # Using deleted without config
     #
     # Before state
@@ -1095,7 +1097,6 @@ Examples
     #
     - name: Delete firewall interfaces config when empty config provided.
       vyos.vyos.vyos_firewall_interfaces:
-        config:
         state: deleted
     #
     #
@@ -1118,7 +1119,6 @@ Examples
 
 
     # Using parsed
-    #
     #
     - name: Parse the provided  configuration
       vyos.vyos.vyos_firewall_interfaces:
@@ -1230,7 +1230,6 @@ Examples
     #
     - name: Gather listed firewall interfaces.
       vyos.vyos.vyos_firewall_interfaces:
-        config:
         state: gathered
     #
     #
@@ -1307,17 +1306,18 @@ Examples
     - name: Render the commands for provided  configuration
       vyos.vyos.vyos_firewall_interfaces:
         config:
-        - name: eth2
-          access_rules:
-          - afi: ipv4
-            rules:
-            - direction: in
-              name: INGRESS
-            - direction: out
-              name: OUTGRESS
-            - direction: local
-              name: DROP
+          - name: eth2
+            access_rules:
+              - afi: ipv4
+                rules:
+                  - direction: in
+                    name: INGRESS
+                  - direction: out
+                    name: OUTGRESS
+                  - direction: local
+                    name: DROP
         state: rendered
+
     #
     #
     # -------------------------

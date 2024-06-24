@@ -57,8 +57,8 @@
 - name: Remove interface description and delete temp user
   vyos.vyos.config: &cleanup
     lines:
-      - "delete interfaces ethernet eth0 description TEST-INTF"
-      - "delete system login user test_user"
+      - delete interfaces ethernet eth0 description TEST-INTF
+      - delete system login user test_user
 
 - name: Use src with module alias
   register: result
@@ -71,7 +71,7 @@
       - '"set interfaces ethernet eth0 description TEST-INTF" in result.commands'
       - '"set system login user test_user" in result.commands'
 
-- name: "Restore hostname to {{ inventory_hostname }} and delete temp user"
+- name: Restore hostname to {{ inventory_hostname }} and delete temp user
   vyos.vyos.config: *cleanup
 
 - name: use module alias to take configuration backup

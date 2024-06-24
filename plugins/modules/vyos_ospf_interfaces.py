@@ -28,6 +28,7 @@ The module file for vyos_ospf_interfaces
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -58,7 +59,7 @@ options:
             - Address Family Identifier (AFI) for OSPF settings on the interfaces.
             type: str
             choices: ['ipv4', 'ipv6']
-            required: True
+            required: true
           authentication:
             description:
             - Authentication settings on the interface.
@@ -161,29 +162,29 @@ EXAMPLES = """
 
 # @vyos:~$ show configuration commands | match "ospf"
 
-  - name: Merge provided configuration with device configuration
-    vyos.vyos.vyos_ospf_interfaces:
-      config:
-        - name: "eth1"
-          address_family:
-            - afi: "ipv4"
-              transmit_delay: 50
-              priority: 26
-              network: "point-to-point"
-            - afi: "ipv6"
-              dead_interval: 39
-        - name: "bond2"
-          address_family:
-            - afi: "ipv4"
-              transmit_delay: 45
-              bandwidth: 70
-              authentication:
-                md5_key:
-                  key_id: 10
-                  key: "1111111111232345"
-            - afi: "ipv6"
-              passive: True
-      state: merged
+- name: Merge provided configuration with device configuration
+  vyos.vyos.vyos_ospf_interfaces:
+    config:
+      - name: "eth1"
+        address_family:
+          - afi: "ipv4"
+            transmit_delay: 50
+            priority: 26
+            network: "point-to-point"
+          - afi: "ipv6"
+            dead_interval: 39
+      - name: "bond2"
+        address_family:
+          - afi: "ipv4"
+            transmit_delay: 45
+            bandwidth: 70
+            authentication:
+              md5_key:
+                key_id: 10
+                key: "1111111111232345"
+          - afi: "ipv6"
+            passive: true
+    state: merged
 
 # After State:
 # --------------
@@ -270,9 +271,6 @@ EXAMPLES = """
 #        "set interfaces bonding bond2 ipv6 ospfv3 passive"
 #    ],
 
-
-
-
 # Using replaced:
 
 # Before State:
@@ -288,22 +286,22 @@ EXAMPLES = """
 # set interfaces ethernet eth1 ip ospf transmit-delay '50'
 # set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
 
-  - name: Replace provided configuration with device configuration
-    vyos.vyos.vyos_ospf_interfaces:
-      config:
-        - name: "eth1"
-          address_family:
-            - afi: "ipv4"
-              cost: 100
-            - afi: "ipv6"
-              ifmtu: 33
-        - name: "bond2"
-          address_family:
-            - afi: "ipv4"
-              transmit_delay: 45
-            - afi: "ipv6"
-              passive: True
-      state: replaced
+- name: Replace provided configuration with device configuration
+  vyos.vyos.vyos_ospf_interfaces:
+    config:
+      - name: "eth1"
+        address_family:
+          - afi: "ipv4"
+            cost: 100
+          - afi: "ipv6"
+            ifmtu: 33
+      - name: "bond2"
+        address_family:
+          - afi: "ipv4"
+            transmit_delay: 45
+          - afi: "ipv6"
+            passive: true
+    state: replaced
 
 # After State:
 # -----------
@@ -432,17 +430,18 @@ EXAMPLES = """
 # set interfaces ethernet eth1 ipv6 ospfv3 ifmtu '33'
 # vyos@vyos:~$
 
-  - name: Override device configuration with provided configuration
-    vyos.vyos.vyos_ospf_interfaces:
-      config:
-        - name: "eth0"
-          address_family:
-            - afi: "ipv4"
-              cost: 100
-            - afi: "ipv6"
-              ifmtu: 33
-              passive: True
-      state: overridden
+- name: Override device configuration with provided configuration
+  vyos.vyos.vyos_ospf_interfaces:
+    config:
+      - name: "eth0"
+        address_family:
+          - afi: "ipv4"
+            cost: 100
+          - afi: "ipv6"
+            ifmtu: 33
+            passive: true
+    state: overridden
+
 # After State:
 # -----------
 
@@ -561,11 +560,11 @@ EXAMPLES = """
 # set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
 # vyos@vyos:~$
 
-  - name: Delete device configuration
-    vyos.vyos.vyos_ospf_interfaces:
-      config:
-        - name: "eth0"
-      state: deleted
+- name: Delete device configuration
+  vyos.vyos.vyos_ospf_interfaces:
+    config:
+      - name: "eth0"
+    state: deleted
 
 # After State:
 # -----------
@@ -708,10 +707,10 @@ EXAMPLES = """
 # set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
 #
 
-  - name: parse configs
-    vyos.vyos.vyos_ospf_interfaces:
-      running_config: "{{ lookup('file', './parsed.cfg') }}"
-      state: parsed
+- name: parse configs
+  vyos.vyos.vyos_ospf_interfaces:
+    running_config: "{{ lookup('file', './parsed.cfg') }}"
+    state: parsed
 
 # Module Execution:
 # ----------------
@@ -772,29 +771,29 @@ EXAMPLES = """
 # Using rendered:
 # --------------
 
-  - name: Render
-    vyos.vyos.vyos_ospf_interfaces:
-      config:
-        - name: "eth1"
-          address_family:
-            - afi: "ipv4"
-              transmit_delay: 50
-              priority: 26
-              network: "point-to-point"
-            - afi: "ipv6"
-              dead_interval: 39
-        - name: "bond2"
-          address_family:
-            - afi: "ipv4"
-              transmit_delay: 45
-              bandwidth: 70
-              authentication:
-                md5_key:
-                  key_id: 10
-                  key: "1111111111232345"
-            - afi: "ipv6"
-              passive: True
-      state: rendered
+- name: Render
+  vyos.vyos.vyos_ospf_interfaces:
+    config:
+      - name: "eth1"
+        address_family:
+          - afi: "ipv4"
+            transmit_delay: 50
+            priority: 26
+            network: "point-to-point"
+          - afi: "ipv6"
+            dead_interval: 39
+      - name: "bond2"
+        address_family:
+          - afi: "ipv4"
+            transmit_delay: 45
+            bandwidth: 70
+            authentication:
+              md5_key:
+                key_id: 10
+                key: "1111111111232345"
+          - afi: "ipv6"
+            passive: true
+    state: rendered
 
 # Module Execution:
 # ----------------
@@ -827,9 +826,9 @@ EXAMPLES = """
 # set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
 # vyos@vyos:~$
 
-  - name: gather configs
-    vyos.vyos.vyos_ospf_interfaces:
-      state: gathered
+- name: gather configs
+  vyos.vyos.vyos_ospf_interfaces:
+    state: gathered
 
 # Module Execution:
 # -----------------
@@ -880,15 +879,9 @@ EXAMPLES = """
 #            "name": "eth3"
 #        }
 #    ],
-
-
-
-
-
 """
 
 from ansible.module_utils.basic import AnsibleModule
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospf_interfaces.ospf_interfaces import (
     Ospf_interfacesArgs,
 )

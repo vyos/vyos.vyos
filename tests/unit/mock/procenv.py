@@ -19,16 +19,17 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 import json
 import sys
+
 from contextlib import contextmanager
 from io import BytesIO, StringIO
 
 from ansible.module_utils._text import to_bytes
 from ansible.module_utils.six import PY3
-
 from ansible_collections.vyos.vyos.tests.unit.compat import unittest
 
 

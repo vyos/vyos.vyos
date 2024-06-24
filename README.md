@@ -1,10 +1,8 @@
 
-
 # VyOS Collection
-[![CI](https://zuul-ci.org/gated.svg)](https://dashboard.zuul.ansible.com/t/ansible/project/github.com/ansible-collections/vyos.vyos) <!--[![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/vyos)](https://codecov.io/gh/ansible-collections/vyos)-->
-[![Codecov](https://codecov.io/gh/ansible-collections/vyos.vyos/branch/main/graph/badge.svg)](https://codecov.io/gh/ansible-collections/vyos.vyos)
 
-⚠️ **The vyos.vyos collection has been [deprecated](https://forum.ansible.com/t/the-bullhorn-123/2568#project-updates-8) and will reach it's end-of-life on December, 2025. We are no longer accepting new pull requests, except for ones that fix critical bugs or security vulnerabilities. This collection is not supported with ansible-core>2.17.**
+[![Codecov](https://codecov.io/gh/ansible-collections/vyos.vyos/branch/main/graph/badge.svg)](https://codecov.io/gh/ansible-collections/vyos.vyos)
+[![CI](https://github.com/ansible-collections/vyos.vyos/actions/workflows/tests.yml/badge.svg?branch=main&event=schedule)](https://github.com/ansible-collections/vyos.vyos/actions/workflows/tests.yml)
 
 The Ansible VyOS collection includes a variety of Ansible content to help automate the management of VyOS network appliances.
 
@@ -13,7 +11,7 @@ This collection has been tested against VyOS 1.1.8 (helium).
 <!--start requires_ansible-->
 ## Ansible version compatibility
 
-This collection has been tested against following Ansible versions: **<2.18.0,>=2.15.0**.
+This collection has been tested against following Ansible versions: **>=2.15.0**.
 
 For collections that support Ansible 2.9, please ensure you update your `network_os` to use the
 fully qualified collection name (for example, `cisco.ios.ios`).

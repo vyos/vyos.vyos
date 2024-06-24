@@ -77,7 +77,6 @@ deleted:
   commands:
     - delete system syslog
   after: {}
-
 parsed:
   after:
     console:

@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -17,7 +18,6 @@ based on the configuration.
 import re
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospf_interfaces.ospf_interfaces import (
     Ospf_interfacesArgs,
 )
@@ -76,7 +76,8 @@ class Ospf_interfacesFacts(object):
         resources = self.get_config_set(data)
         for resource in resources:
             ospf_interfaces_parser = Ospf_interfacesTemplate(
-                lines=resource.split("\n"), module=self._module
+                lines=resource.split("\n"),
+                module=self._module,
             )
             objs = ospf_interfaces_parser.parse()
             for key, sortv in [("address_family", "afi")]:
@@ -91,7 +92,7 @@ class Ospf_interfacesFacts(object):
                 self.argument_spec,
                 {"config": ospf_interfaces_facts},
                 redact=True,
-            )
+            ),
         )
         if params.get("config"):
             for cfg in params["config"]:

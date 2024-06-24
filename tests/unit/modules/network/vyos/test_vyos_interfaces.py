@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -34,28 +35,28 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
     def setUp(self):
         super(TestVyosFirewallInterfacesModule, self).setUp()
         self.mock_get_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config",
         )
         self.load_config = self.mock_load_config.start()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection",
         )
         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
         self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos."
-            "facts.interfaces.interfaces.InterfacesFacts.get_device_data"
+            "facts.interfaces.interfaces.InterfacesFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
 
@@ -82,7 +83,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                     dict(name="wg01", description="wg - 1", enabled=True),
                 ],
                 state="merged",
-            )
+            ),
         )
 
         commands = [
@@ -103,7 +104,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="merged",
-            )
+            ),
         )
 
         self.execute_module(changed=False, commands=[])
@@ -122,7 +123,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                     dict(name="eth1", description="Configured by Ansible"),
                 ],
                 state="merged",
-            )
+            ),
         )
 
         commands = [
@@ -147,7 +148,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                     dict(name="eth1", description="Configured by Ansible"),
                 ],
                 state="replaced",
-            )
+            ),
         )
 
         commands = [
@@ -172,7 +173,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                     dict(name="eth1", description="Configured by Ansible"),
                 ],
                 state="overridden",
-            )
+            ),
         )
 
         commands = [

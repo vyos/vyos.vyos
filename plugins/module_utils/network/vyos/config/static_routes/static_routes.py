@@ -13,6 +13,7 @@ created
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 from copy import deepcopy
 
@@ -25,7 +26,6 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
     remove_empties,
     to_list,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     dict_delete,
@@ -54,7 +54,9 @@ class Static_routes(ConfigBase):
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources, data=data
+            self.gather_subset,
+            self.gather_network_resources,
+            data=data,
         )
         static_routes_facts = facts["ansible_network_resources"].get("static_routes")
         if not static_routes_facts:
@@ -95,7 +97,7 @@ class Static_routes(ConfigBase):
             running_config = self._module.params["running_config"]
             if not running_config:
                 self._module.fail_json(
-                    msg="value of running_config parameter must not be empty for state parsed"
+                    msg="value of running_config parameter must not be empty for state parsed",
                 )
             result["parsed"] = self.get_static_routes_facts(data=running_config)
         else:
@@ -136,7 +138,7 @@ class Static_routes(ConfigBase):
         commands = []
         if self.state in ("merged", "replaced", "overridden", "rendered") and not want:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(self.state)
+                msg="value of config parameter must not be empty for state {0}".format(self.state),
             )
         if self.state == "overridden":
             commands.extend(self._state_overridden(want=want, have=have))
@@ -290,7 +292,7 @@ class Static_routes(ConfigBase):
                                 attrib=attrib,
                                 remove=False,
                                 value=str(value),
-                            )
+                            ),
                         )
                     elif attrib == "type":
                         commands.append(self._compute_command(dest=want["dest"], key="blackhole"))
@@ -321,7 +323,7 @@ class Static_routes(ConfigBase):
                                 key="next-hop",
                                 value=hop[element],
                                 opr=opr,
-                            )
+                            ),
                         )
                     elif element == "enabled" and not hop[element]:
                         commands.append(
@@ -331,7 +333,7 @@ class Static_routes(ConfigBase):
                                 attrib=hop["forward_router_address"],
                                 value="disable",
                                 opr=opr,
-                            )
+                            ),
                         )
                     elif element == "admin_distance":
                         commands.append(
@@ -341,7 +343,7 @@ class Static_routes(ConfigBase):
                                 attrib=hop["forward_router_address"] + " " + "distance",
                                 value=str(hop[element]),
                                 opr=opr,
-                            )
+                            ),
                         )
                     elif element == "interface":
                         commands.append(
@@ -351,7 +353,7 @@ class Static_routes(ConfigBase):
                                 attrib=hop["forward_router_address"] + " " + "next-hop-interface",
                                 value=hop[element],
                                 opr=opr,
-                            )
+                            ),
                         )
         return commands
 
@@ -385,11 +387,11 @@ class Static_routes(ConfigBase):
                                 attrib=attrib,
                                 remove=True,
                                 value=str(value),
-                            )
+                            ),
                         )
                     elif attrib == "type" and "distance" not in want_blackhole.keys():
                         commands.append(
-                            self._compute_command(dest=want["dest"], key="blackhole", remove=True)
+                            self._compute_command(dest=want["dest"], key="blackhole", remove=True),
                         )
         return commands
 
@@ -417,7 +419,7 @@ class Static_routes(ConfigBase):
                                 key="next-hop",
                                 value=hop[element],
                                 remove=True,
-                            )
+                            ),
                         )
                     elif element == "enabled":
                         commands.append(
@@ -427,7 +429,7 @@ class Static_routes(ConfigBase):
                                 attrib=hop["forward_router_address"],
                                 value="disable",
                                 remove=True,
-                            )
+                            ),
                         )
                     elif element == "admin_distance":
                         commands.append(
@@ -437,7 +439,7 @@ class Static_routes(ConfigBase):
                                 attrib=hop["forward_router_address"] + " " + "distance",
                                 value=str(hop[element]),
                                 remove=True,
-                            )
+                            ),
                         )
                     elif element == "interface":
                         commands.append(
@@ -447,7 +449,7 @@ class Static_routes(ConfigBase):
                                 attrib=hop["forward_router_address"] + " " + "next-hop-interface",
                                 value=hop[element],
                                 remove=True,
-                            )
+                            ),
                         )
         return commands
 

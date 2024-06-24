@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -26,7 +27,6 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     dict_merge,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_address_family import (
     Bgp_address_familyTemplate,
@@ -143,7 +143,7 @@ class Bgp_address_family(ResourceModule):
                                     },
                                     "address_family",
                                     True,
-                                )
+                                ),
                             )
             for neigh, neigh_entry in iteritems(entry.get("neighbors", {})):
                 if have.get("neighbors"):
@@ -158,7 +158,7 @@ class Bgp_address_family(ResourceModule):
                                         },
                                         "neighbors",
                                         True,
-                                    )
+                                    ),
                                 )
                             else:
                                 for k in neigh_entry["address_family"].keys():
@@ -177,7 +177,7 @@ class Bgp_address_family(ResourceModule):
                                                 },
                                                 "neighbors.address_family",
                                                 True,
-                                            )
+                                            ),
                                         )
 
     def _compare_neighbors(self, want, have):
@@ -248,7 +248,7 @@ class Bgp_address_family(ResourceModule):
                             },
                             "neighbors",
                             True,
-                        )
+                        ),
                     )
                 continue
 
@@ -305,7 +305,7 @@ class Bgp_address_family(ResourceModule):
                     + "address-family "
                     + afi
                     + " "
-                    + attrib
+                    + attrib,
                 )
                 hdict = {}
             for key, entry in iteritems(hdict):

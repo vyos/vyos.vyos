@@ -13,6 +13,7 @@ created
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -26,7 +27,6 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
     remove_empties,
     to_list,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     diff_list_of_dicts,
@@ -59,7 +59,9 @@ class L3_interfaces(ConfigBase):
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources, data=data
+            self.gather_subset,
+            self.gather_network_resources,
+            data=data,
         )
         l3_interfaces_facts = facts["ansible_network_resources"].get("l3_interfaces")
         if not l3_interfaces_facts:
@@ -100,7 +102,7 @@ class L3_interfaces(ConfigBase):
             running_config = self._module.params["running_config"]
             if not running_config:
                 self._module.fail_json(
-                    msg="value of running_config parameter must not be empty for state parsed"
+                    msg="value of running_config parameter must not be empty for state parsed",
                 )
             result["parsed"] = self.get_l3_interfaces_facts(data=running_config)
         else:
@@ -143,7 +145,7 @@ class L3_interfaces(ConfigBase):
 
         if state in ("merged", "replaced", "overridden", "rendered") and not want:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(state)
+                msg="value of config parameter must not be empty for state {0}".format(state),
             )
 
         if state == "overridden":
@@ -225,7 +227,7 @@ class L3_interfaces(ConfigBase):
         for update in self._get_updates(want_copy, have_copy):
             for key, value in iteritems(update):
                 commands.append(
-                    self._compute_commands(key=key, value=value, interface=want_copy["name"])
+                    self._compute_commands(key=key, value=value, interface=want_copy["name"]),
                 )
 
         if want_vifs:
@@ -242,7 +244,7 @@ class L3_interfaces(ConfigBase):
                                 value=value,
                                 interface=want_copy["name"],
                                 vif=want_vif["vlan_id"],
-                            )
+                            ),
                         )
 
         return commands
@@ -269,7 +271,7 @@ class L3_interfaces(ConfigBase):
                         value=value,
                         interface=want_copy["name"],
                         remove=True,
-                    )
+                    ),
                 )
 
         if have_vifs:
@@ -287,7 +289,7 @@ class L3_interfaces(ConfigBase):
                                 value=value,
                                 vif=want_vif["vlan_id"],
                                 remove=True,
-                            )
+                            ),
                         )
 
         return commands

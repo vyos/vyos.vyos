@@ -120,15 +120,15 @@ Examples
     # Collect only the interfaces facts
     - vyos.vyos.vyos_facts:
         gather_subset:
-        - '!all'
-        - '!min'
+          - '!all'
+          - '!min'
         gather_network_resources:
-        - interfaces
+          - interfaces
 
     # Do not collect interfaces facts
     - vyos.vyos.vyos_facts:
         gather_network_resources:
-        - '!interfaces'
+          - '!interfaces'
 
     # Collect interfaces and minimal default facts
     - vyos.vyos.vyos_facts:

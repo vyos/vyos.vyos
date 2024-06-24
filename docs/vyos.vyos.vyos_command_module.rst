@@ -145,26 +145,26 @@ Examples
     - name: show configuration on ethernet devices eth0 and eth1
       vyos.vyos.vyos_command:
         commands:
-        - show interfaces ethernet {{ item }}
+          - show interfaces ethernet {{ item }}
       with_items:
-      - eth0
-      - eth1
+        - eth0
+        - eth1
 
     - name: run multiple commands and check if version output contains specific version
         string
       vyos.vyos.vyos_command:
         commands:
-        - show version
-        - show hardware cpu
+          - show version
+          - show hardware cpu
         wait_for:
-        - result[0] contains 'VyOS 1.1.7'
+          - result[0] contains 'VyOS 1.1.7'
 
     - name: run command that requires answering a prompt
       vyos.vyos.vyos_command:
         commands:
-        - command: rollback 1
-          prompt: Proceed with reboot? [confirm][y]
-          answer: y
+          - command: rollback 1
+            prompt: Proceed with reboot? [confirm][y]
+            answer: y
 
 
 
