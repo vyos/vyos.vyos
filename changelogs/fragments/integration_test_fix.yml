@@ -1,3 +1,0 @@
----
-trivial:
-  - vyos_prefix_lists - fix vyos_prefix_lists in integration tests to resolve issues related to deletion.

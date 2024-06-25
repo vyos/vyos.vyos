@@ -4,6 +4,26 @@ Vyos Collection Release Notes
 
 .. contents:: Topics
 
+v5.0.0
+======
+
+Release Summary
+---------------
+
+Starting from this release, the minimum `ansible-core` version that this collection requires is `2.15.0`. The last known version compatible with ansible-core<2.15 is v4.1.0.
+
+Major Changes
+-------------
+
+- Bumping `requires_ansible` to `>=2.15.0`, since previous ansible-core versions are EoL now.
+
+Minor Changes
+-------------
+
+- All GHA workflows have been updated to use ones from ansible-content-actions.
+- Passes latest ansible-lint with production profile.
+- Removes deprecation notice for vyos.vyos.
+- Uncaps supported ansible-core versions, this collection now supports ansible-core>=2.15.
 
 v4.1.0
 ======
