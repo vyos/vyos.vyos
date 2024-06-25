@@ -411,3 +411,23 @@ releases:
       - l3_interfaces-support.yaml
       - l3_interfaces.yaml
     release_date: "2023-05-30"
+  5.0.0:
+    changes:
+      major_changes:
+        - Bumping `requires_ansible` to `>=2.15.0`, since previous ansible-core versions
+          are EoL now.
+      minor_changes:
+        - All GHA workflows have been updated to use ones from ansible-content-actions.
+        - Passes latest ansible-lint with production profile.
+        - Removes deprecation notice for vyos.vyos.
+        - Uncaps supported ansible-core versions, this collection now supports ansible-core>=2.15.
+      release_summary:
+        Starting from this release, the minimum `ansible-core` version
+        that this collection requires is `2.15.0`. The last known version compatible
+        with ansible-core<2.15 is v4.1.0.
+    fragments:
+      - avoid_unsafe_conditions.yml
+      - integration_test_fix.yml
+      - release_500.yaml
+      - undeprecate.yaml
+    release_date: "2024-06-25"
