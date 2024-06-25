@@ -18,6 +18,7 @@ from copy import deepcopy
 from re import M, findall, search
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv3.ospfv3 import (
     Ospfv3Args,
 )

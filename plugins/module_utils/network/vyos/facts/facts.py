@@ -14,6 +14,7 @@ __metaclass__ = type
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts import (
     FactsBase,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family import (
     Bgp_address_familyFacts,
 )

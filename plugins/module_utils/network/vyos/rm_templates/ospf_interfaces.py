@@ -20,6 +20,7 @@ import re
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     get_interface_type,
 )

@@ -28,6 +28,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
     dict_merge,
     get_from_dict,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.logging_global import (
     Logging_globalTemplate,

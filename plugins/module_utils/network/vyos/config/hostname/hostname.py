@@ -21,6 +21,7 @@ created.
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.hostname import (
     HostnameTemplate,

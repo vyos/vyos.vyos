@@ -18,6 +18,7 @@ from copy import deepcopy
 from re import M, findall, search
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.lag_interfaces.lag_interfaces import (
     Lag_interfacesArgs,
 )

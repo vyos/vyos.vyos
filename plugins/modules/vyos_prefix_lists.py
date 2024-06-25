@@ -1294,6 +1294,7 @@ parsed:
 
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.prefix_lists.prefix_lists import (
     Prefix_listsArgs,
 )

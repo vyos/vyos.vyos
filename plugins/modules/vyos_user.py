@@ -191,6 +191,7 @@ from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     remove_default_spec,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     get_config,
     load_config,

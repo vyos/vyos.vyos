@@ -140,6 +140,7 @@ ansible_net_gather_network_resources:
 """
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.facts.facts import (
     FactsArgs,
 )

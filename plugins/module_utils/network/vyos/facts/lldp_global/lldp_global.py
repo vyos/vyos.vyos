@@ -18,6 +18,7 @@ from copy import deepcopy
 from re import M, findall
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.lldp_global.lldp_global import (
     Lldp_globalArgs,
 )

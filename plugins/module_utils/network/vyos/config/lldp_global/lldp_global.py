@@ -20,6 +20,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
     dict_diff,
     to_list,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     get_lst_diff_for_dicts,

@@ -1088,6 +1088,7 @@ parsed:
 """
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.snmp_server.snmp_server import (
     Snmp_serverArgs,
 )

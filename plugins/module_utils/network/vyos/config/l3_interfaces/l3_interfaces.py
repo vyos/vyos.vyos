@@ -27,6 +27,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
     remove_empties,
     to_list,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     diff_list_of_dicts,

@@ -174,6 +174,7 @@ from ansible.module_utils.common.validation import check_required_one_of
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     remove_default_spec,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     load_config,
     run_commands,

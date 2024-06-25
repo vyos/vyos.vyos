@@ -17,6 +17,7 @@ based on the configuration.
 
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.prefix_lists.prefix_lists import (
     Prefix_listsArgs,
 )

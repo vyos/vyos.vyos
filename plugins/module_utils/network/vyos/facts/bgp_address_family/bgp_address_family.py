@@ -18,6 +18,7 @@ based on the configuration.
 import re
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.bgp_address_family.bgp_address_family import (
     Bgp_address_familyArgs,
 )

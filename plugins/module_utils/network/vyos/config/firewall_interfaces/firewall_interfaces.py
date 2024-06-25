@@ -25,6 +25,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
     search_obj_in_list,
     to_list,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 
 
