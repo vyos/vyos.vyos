@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -34,27 +35,27 @@ class TestVyosFirewallRulesModule(TestVyosModule):
     def setUp(self):
         super(TestVyosFirewallRulesModule, self).setUp()
         self.mock_get_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config",
         )
         self.load_config = self.mock_load_config.start()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection",
         )
         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
         self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_global.firewall_global.Firewall_globalFacts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_global.firewall_global.Firewall_globalFacts.get_device_data",
         )
 
         self.execute_show_command = self.mock_execute_show_command.start()
@@ -96,7 +97,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             afi="ipv4",
                             ip_src_route=True,
                             icmp_redirects=dict(send=True, receive=False),
-                        )
+                        ),
                     ],
                     group=dict(
                         address_group=[
@@ -141,12 +142,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 name="TELNET",
                                 description="This group has the telnet ports",
                                 members=[dict(port="23")],
-                            )
+                            ),
                         ],
                     ),
                 ),
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall group address-group MGMT-HOSTS address 192.0.1.1",
@@ -228,12 +229,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 name="SSH",
                                 description="This group has the ssh ports",
                                 members=[dict(port="22")],
-                            )
+                            ),
                         ],
-                    )
+                    ),
                 ),
                 state="merged",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -282,12 +283,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 name="SSH",
                                 description="This group has the ssh ports",
                                 members=[dict(port="2222")],
-                            )
+                            ),
                         ],
-                    )
+                    ),
                 ),
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "delete firewall group address-group RND-HOSTS address 192.0.2.3",
@@ -346,12 +347,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 name="SSH",
                                 description="This group has the ssh ports",
                                 members=[dict(port="22")],
-                            )
+                            ),
                         ],
-                    )
+                    ),
                 ),
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 

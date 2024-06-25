@@ -17,6 +17,7 @@
 #
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -85,7 +86,8 @@ class Cliconf(CliconfBase):
 
             reply = self.get("show host name")
             device_info["network_os_hostname"] = to_text(
-                reply, errors="surrogate_or_strict"
+                reply,
+                errors="surrogate_or_strict",
             ).strip()
 
             self._device_info = device_info
@@ -98,7 +100,7 @@ class Cliconf(CliconfBase):
             if format not in option_values["format"]:
                 raise ValueError(
                     "'format' value %s is invalid. Valid values of format are %s"
-                    % (format, ", ".join(option_values["format"]))
+                    % (format, ", ".join(option_values["format"])),
                 )
 
         if not flags:
@@ -213,7 +215,7 @@ class Cliconf(CliconfBase):
         if diff_match not in option_values["diff_match"]:
             raise ValueError(
                 "'match' value %s in invalid, valid values are %s"
-                % (diff_match, ", ".join(option_values["diff_match"]))
+                % (diff_match, ", ".join(option_values["diff_match"])),
             )
 
         if diff_replace:

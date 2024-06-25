@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_ntp_global merged integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_ntp_global merged integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -42,9 +41,7 @@
         that:
           - result.before == populate.config
 
-    - name:
-        Merge the provided configuration with the existing running configuration
-        (IDEMPOTENT)
+    - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_ntp_global: *id001
 

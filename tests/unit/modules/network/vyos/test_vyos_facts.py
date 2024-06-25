@@ -17,8 +17,10 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 import json
+
 from unittest.mock import patch
 
 from ansible_collections.vyos.vyos.plugins.modules import vyos_facts
@@ -33,17 +35,17 @@ class TestVyosFactsModule(TestVyosModule):
     def setUp(self):
         super(TestVyosFactsModule, self).setUp()
         self.mock_run_commands = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base.run_commands"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base.run_commands",
         )
         self.run_commands = self.mock_run_commands.start()
 
         self.mock_get_resource_connection = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
         self.get_resource_connection = self.mock_get_resource_connection.start()
 
         self.mock_get_capabilities = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base.get_capabilities"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base.get_capabilities",
         )
         self.get_capabilities = self.mock_get_capabilities.start()
         self.get_capabilities.return_value = {

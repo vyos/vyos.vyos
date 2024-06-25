@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -34,27 +35,27 @@ class TestVyosOspfv3Module(TestVyosModule):
     def setUp(self):
         super(TestVyosOspfv3Module, self).setUp()
         self.mock_get_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config",
         )
         self.load_config = self.mock_load_config.start()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection",
         )
         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
         self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3.Ospfv3Facts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3.Ospfv3Facts.get_device_data",
         )
 
         self.execute_show_command = self.mock_execute_show_command.start()
@@ -101,7 +102,7 @@ class TestVyosOspfv3Module(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set protocols ospfv3 redistribute bgp",
@@ -139,7 +140,7 @@ class TestVyosOspfv3Module(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -170,7 +171,7 @@ class TestVyosOspfv3Module(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set protocols ospfv3 redistribute bgp",
@@ -203,7 +204,7 @@ class TestVyosOspfv3Module(TestVyosModule):
                     ],
                 ),
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "set protocols ospfv3 redistribute bgp",
@@ -238,7 +239,7 @@ class TestVyosOspfv3Module(TestVyosModule):
                     ],
                 ),
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -321,7 +322,7 @@ set protocols ospfv3 redistribute 'bgp'"""
                     ],
                 ),
                 state="rendered",
-            )
+            ),
         )
         commands = [
             "set protocols ospfv3 redistribute bgp",

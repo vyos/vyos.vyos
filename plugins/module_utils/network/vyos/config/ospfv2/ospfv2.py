@@ -12,6 +12,7 @@ created
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from copy import deepcopy
@@ -54,7 +55,9 @@ class Ospfv2(ConfigBase):
         """
 
         (facts, _warnings) = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources, data=data
+            self.gather_subset,
+            self.gather_network_resources,
+            data=data,
         )
         ospfv2_facts = facts["ansible_network_resources"].get("ospfv2", {})
         return ospfv2_facts
@@ -94,7 +97,7 @@ class Ospfv2(ConfigBase):
             running_config = self._module.params["running_config"]
             if not running_config:
                 self._module.fail_json(
-                    msg="value of running_config parameter must not be empty for state parsed"
+                    msg="value of running_config parameter must not be empty for state parsed",
                 )
             result["parsed"] = self.get_ospfv2_facts(data=running_config)
         else:
@@ -137,7 +140,7 @@ class Ospfv2(ConfigBase):
         commands = []
         if self.state in ("merged", "replaced", "overridden", "rendered") and not w:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(self.state)
+                msg="value of config parameter must not be empty for state {0}".format(self.state),
             )
 
         if self.state == "deleted":
@@ -298,7 +301,7 @@ class Ospfv2(ConfigBase):
                         commands.append(self._form_attr_cmd(key=attr, attr=item, opr=opr))
                     else:
                         commands.append(
-                            self._form_attr_cmd(key=attr, attr=item, val=value, opr=opr)
+                            self._form_attr_cmd(key=attr, attr=item, val=value, opr=opr),
                         )
                 elif not opr and item in leaf and not _in_target(h, item):
                     if item == "enabled":
@@ -342,7 +345,7 @@ class Ospfv2(ConfigBase):
                         if attr == "network":
                             if not self.search_obj_in_have(h, member, "address"):
                                 commands.append(
-                                    cmd + attr.replace("_", "-") + " " + member["address"]
+                                    cmd + attr.replace("_", "-") + " " + member["address"],
                                 )
                         elif member not in h:
                             commands.append(cmd + attr.replace("_", "-") + " " + member)
@@ -372,7 +375,7 @@ class Ospfv2(ConfigBase):
                 "transmit_delay",
                 "hello_interval",
                 "retransmit_interval",
-            )
+            ),
         }
         leaf = leaf_dict[attr]
         w = want.get(attr) or []
@@ -398,14 +401,14 @@ class Ospfv2(ConfigBase):
                                 + " "
                                 + key.replace("_", "-")
                                 + " "
-                                + str(val)
+                                + str(val),
                             )
                     elif not opr and key in leaf and not _in_target(h_item, key):
                         if key in "address":
                             commands.append(cmd + attr.replace("_", "-") + " " + str(val))
                         else:
                             commands.append(
-                                cmd + attr.replace("_", "-") + " " + w_item[name[attr]] + " " + key
+                                cmd + attr.replace("_", "-") + " " + w_item[name[attr]] + " " + key,
                             )
                     elif key == "authentication":
                         commands.extend(
@@ -417,7 +420,7 @@ class Ospfv2(ConfigBase):
                                 w_item["address"],
                                 cmd,
                                 opr,
-                            )
+                            ),
                         )
         return commands
 
@@ -504,11 +507,11 @@ class Ospfv2(ConfigBase):
                             commands.append(cmd + attr + " " + str(val))
                         elif key == "cost":
                             commands.append(
-                                cmd + attr + " " + w_item[name[attr]] + " " + key + " " + str(val)
+                                cmd + attr + " " + w_item[name[attr]] + " " + key + " " + str(val),
                             )
                         elif key == "not_advertise":
                             commands.append(
-                                cmd + attr + " " + w_item[name[attr]] + " " + key.replace("_", "-")
+                                cmd + attr + " " + w_item[name[attr]] + " " + key.replace("_", "-"),
                             )
                         elif key == "md5_key":
                             commands.append(
@@ -521,7 +524,7 @@ class Ospfv2(ConfigBase):
                                 + " "
                                 + key.replace("_", "-")
                                 + " "
-                                + w_item[key]
+                                + w_item[key],
                             )
                         else:
                             commands.append(
@@ -532,7 +535,7 @@ class Ospfv2(ConfigBase):
                                 + " "
                                 + key.replace("_", "-")
                                 + " "
-                                + str(val)
+                                + str(val),
                             )
                     elif not opr and key in leaf and not _in_target(h_item, key):
                         if key in (
@@ -596,7 +599,7 @@ class Ospfv2(ConfigBase):
                                 + " "
                                 + key.replace("_", "-")
                                 + " "
-                                + item.replace("_", "-")
+                                + item.replace("_", "-"),
                             )
                         elif item not in ("administrative", "always"):
                             commands.append(
@@ -607,7 +610,7 @@ class Ospfv2(ConfigBase):
                                 + " "
                                 + item.replace("_", "-")
                                 + " "
-                                + str(val)
+                                + str(val),
                             )
                     elif not opr and item in leaf and not _in_target(h_attrib, item):
                         commands.append(cmd + attr + " " + item)
@@ -645,7 +648,7 @@ class Ospfv2(ConfigBase):
                 h_area = self.search_obj_in_have(h_lst, w_area, "area_id")
                 if not opr and not h_area:
                     commands.append(
-                        self._form_attr_cmd(key="area", attr=w_area["area_id"], opr=opr)
+                        self._form_attr_cmd(key="area", attr=w_area["area_id"], opr=opr),
                     )
                 else:
                     for key, val in iteritems(w_area):
@@ -656,11 +659,11 @@ class Ospfv2(ConfigBase):
                                         attr="area",
                                         val=_bool_to_str(val),
                                         opr=opr,
-                                    )
+                                    ),
                                 )
                             else:
                                 commands.append(
-                                    cmd + key + " " + _bool_to_str(val).replace("_", "-")
+                                    cmd + key + " " + _bool_to_str(val).replace("_", "-"),
                                 )
                         elif not opr and key in l_set:
                             if key == "area_id" and not _in_target(h_area, key):
@@ -674,7 +677,7 @@ class Ospfv2(ConfigBase):
                             commands.extend(self._render_list_param(key, w_area, h_area, cmd, opr))
                         elif key == "range":
                             commands.extend(
-                                self._render_list_dict_param(key, w_area, h_area, cmd, opr)
+                                self._render_list_dict_param(key, w_area, h_area, cmd, opr),
                             )
                         elif key == "virtual_link":
                             commands.extend(self._render_vlink(key, w_area, h_area, cmd, opr))
@@ -704,7 +707,7 @@ class Ospfv2(ConfigBase):
             if opr and key in w_type.keys() and not _is_w_same(w_type, h_type, key):
                 if not w_type[key] and h_type and h_type[key]:
                     commands.append(
-                        cmd.replace("set", "delete") + attr.replace("_", "-") + " " + key
+                        cmd.replace("set", "delete") + attr.replace("_", "-") + " " + key,
                     )
                 elif w_type[key]:
                     commands.append(cmd + attr.replace("_", "-") + " " + key)
@@ -734,7 +737,7 @@ class Ospfv2(ConfigBase):
                                     cmd.replace("set", "delete")
                                     + attr.replace("_", "-")
                                     + " "
-                                    + key
+                                    + key,
                                 )
                             elif item != "set":
                                 commands.append(
@@ -745,7 +748,7 @@ class Ospfv2(ConfigBase):
                                     + " "
                                     + item.replace("_", "-")
                                     + " "
-                                    + str(val)
+                                    + str(val),
                                 )
                         elif not opr and item in a_type[key] and not (h_type and key in h_type):
                             if item == "set":
@@ -759,7 +762,7 @@ class Ospfv2(ConfigBase):
                                     + " "
                                     + key
                                     + " "
-                                    + item.replace("_", "-")
+                                    + item.replace("_", "-"),
                                 )
         return commands
 

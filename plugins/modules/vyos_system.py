@@ -18,6 +18,7 @@
 #
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -90,8 +91,8 @@ EXAMPLES = """
 - name: configure domain search suffixes
   vyos.vyos.vyos_system:
     domain_search:
-    - sub1.example.com
-    - sub2.example.com
+      - sub1.example.com
+      - sub2.example.com
 """
 
 from ansible.module_utils.basic import AnsibleModule

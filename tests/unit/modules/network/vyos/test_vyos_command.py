@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -34,7 +35,7 @@ class TestVyosCommandModule(TestVyosModule):
     def setUp(self):
         super(TestVyosCommandModule, self).setUp()
         self.mock_run_commands = patch(
-            "ansible_collections.vyos.vyos.plugins.modules.vyos_command.run_commands"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_command.run_commands",
         )
         self.run_commands = self.mock_run_commands.start()
 

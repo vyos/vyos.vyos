@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 # (c) 2017, Ansible by Red Hat, inc
@@ -154,12 +155,12 @@ EXAMPLES = """
     state: present
 - name: remove all users except admin
   vyos.vyos.vyos_user:
-    purge: yes
+    purge: true
 - name: set multiple users to level operator
   vyos.vyos.vyos_user:
     aggregate:
-    - name: netop
-    - name: netend
+      - name: netop
+      - name: netend
     level: operator
     state: present
 - name: Change Password for User netop
@@ -181,6 +182,7 @@ commands:
 """
 
 import re
+
 from copy import deepcopy
 from functools import partial
 

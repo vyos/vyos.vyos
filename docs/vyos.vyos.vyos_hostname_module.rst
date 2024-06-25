@@ -130,96 +130,104 @@ Examples
 
 .. code-block:: yaml
 
-    # Using state: merged
+    # Using merged
+    #
     # Before state:
     # -------------
     # test#show configuration commands | grep host-name
     # set system host-name 'vyostest'
-    # Merged play:
-    # ------------
+
     - name: Apply the provided configuration
       vyos.vyos.vyos_hostname:
         config:
           hostname: vyos
         state: merged
+
     # Commands Fired:
     # ---------------
     # "commands": [
     #         "hostname vyos",
     # ],
+    #
     # After state:
     # ------------
     # test#show configuration commands | grep host-name
     # set system host-name 'vyos'
 
-    # Using state: deleted
+    # Using deleted
+    #
     # Before state:
     # -------------
     # test#show configuration commands | grep host-name
     # set system host-name 'vyos'
-    # Deleted play:
-    # -------------
+    #
     - name: Remove all existing configuration
       vyos.vyos.vyos_hostname:
         state: deleted
+
     # Commands Fired:
     # ---------------
     # "commands": [
     #     "no hostname vyosTest",
     # ],
+    #
     # After state:
     # ------------
     # test#show configuration commands | grep host-name
 
-    # Using state: overridden
+    # Using overridden
+    #
     # Before state:
     # -------------
     # test#show configuration commands | grep host-name
     # set system host-name 'vyos'
-    # Overridden play:
-    # ----------------
+
     - name: Override commands with provided configuration
       vyos.vyos.vyos_hostname:
         config:
           hostname: vyosTest
         state: overridden
+
     # Commands Fired:
     # ---------------
     # "commands": [
     #       "hostname vyosTest",
     #     ],
+    #
     # After state:
     # ------------
     # test#show configuration commands | grep host-name
     # set system host-name 'vyosTest'
 
-    # Using state: replaced
+    # Using replaced
+    #
     # Before state:
     # -------------
     # test#show configuration commands | grep host-name
     # set system host-name 'vyosTest'
-    # Replaced play:
-    # --------------
+
     - name: Replace commands with provided configuration
       vyos.vyos.vyos_hostname:
         config:
           hostname: vyos
         state: replaced
+
     # After state:
     # ------------
     # test#show configuration commands | grep host-name
     # set system host-name 'vyos'
 
-    # Using state: gathered
+    # Using gathered
+    #
     # Before state:
     # -------------
-    #test#show configuration commands | grep host-name
+    # test#show configuration commands | grep host-name
     # set system host-name 'vyos'
-    # Gathered play:
-    # --------------
+
     - name: Gather listed hostname config
       vyos.vyos.vyos_hostname:
         state: gathered
+
     # Module Execution Result:
     # ------------------------
     #   "gathered": {

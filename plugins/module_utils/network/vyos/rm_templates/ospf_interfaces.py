@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -70,7 +71,7 @@ def _tmplt_ospf_int_auth_password(config_data):
         + " "
         + params[0]
         + " authentication plaintext-password {plaintext_password}".format(
-            **config_data["address_family"]["authentication"]
+            **config_data["address_family"]["authentication"],
         )
     )
     return command
@@ -87,7 +88,7 @@ def _tmplt_ospf_int_auth_md5(config_data):
         + " "
         + params[0]
         + " authentication md5 key-id {key_id} ".format(
-            **config_data["address_family"]["authentication"]["md5_key"]
+            **config_data["address_family"]["authentication"]["md5_key"],
         )
         + "md5-key {key}".format(**config_data["address_family"]["authentication"]["md5_key"])
     )
@@ -291,7 +292,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
         super(Ospf_interfacesTemplate, self).__init__(
-            lines=lines, tmplt=self, prefix=prefix, module=module
+            lines=lines,
+            tmplt=self,
+            prefix=prefix,
+            module=module,
         )
 
     # fmt: off
@@ -316,9 +320,9 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                    }
-                }
-            }
+                    },
+                },
+            },
         },
         {
             "name": "authentication_password",
@@ -344,11 +348,11 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
                         "authentication": {
-                            "plaintext_password": "{{ text }}"
-                        }
-                    }
-                }
-            }
+                            "plaintext_password": "{{ text }}",
+                        },
+                    },
+                },
+            },
         },
         {
             "name": "authentication_md5",
@@ -380,12 +384,12 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                         "authentication": {
                             "md5_key": {
                                 "key_id": "{{ id }}",
-                                "key": "{{ text }}"
-                            }
-                        }
-                    }
-                }
-            }
+                                "key": "{{ text }}",
+                            },
+                        },
+                    },
+                },
+            },
         },
         {
             "name": "bandwidth",
@@ -409,10 +413,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                        "bandwidth": "{{ bw }}"
-                    }
-                }
-            }
+                        "bandwidth": "{{ bw }}",
+                    },
+                },
+            },
         },
         {
             "name": "cost",
@@ -436,10 +440,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                        "cost": "{{ val }}"
-                    }
-                }
-            }
+                        "cost": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "hello_interval",
@@ -463,10 +467,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                        "hello_interval": "{{ val }}"
-                    }
-                }
-            }
+                        "hello_interval": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "dead_interval",
@@ -490,10 +494,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                        "dead_interval": "{{ val }}"
-                    }
-                }
-            }
+                        "dead_interval": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "mtu_ignore",
@@ -516,10 +520,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                        "mtu_ignore": "{{ True if mtu is defined }}"
-                    }
-                }
-            }
+                        "mtu_ignore": "{{ True if mtu is defined }}",
+                    },
+                },
+            },
         },
         {
             "name": "network",
@@ -543,10 +547,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                        "network": "{{ val }}"
-                    }
-                }
-            }
+                        "network": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "priority",
@@ -570,10 +574,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                        "priority": "{{ val }}"
-                    }
-                }
-            }
+                        "priority": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "retransmit_interval",
@@ -597,10 +601,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                        "retransmit_interval": "{{ val }}"
-                    }
-                }
-            }
+                        "retransmit_interval": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "transmit_delay",
@@ -624,10 +628,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                        "transmit_delay": "{{ val }}"
-                    }
-                }
-            }
+                        "transmit_delay": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "ifmtu",
@@ -651,10 +655,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                        "ifmtu": "{{ val }}"
-                    }
-                }
-            }
+                        "ifmtu": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "instance",
@@ -678,10 +682,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                        "instance": "{{ val }}"
-                    }
-                }
-            }
+                        "instance": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "passive",
@@ -704,10 +708,10 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
-                        "passive": "{{ True if pass is defined }}"
-                    }
-                }
-            }
+                        "passive": "{{ True if pass is defined }}",
+                    },
+                },
+            },
         },
         {
             "name": "interface_name",
@@ -723,7 +727,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": "set interface {{ type }} {{ name }}",
             "result": {
                 "name": "{{ name }}",
-            }
+            },
         },
     ]
     # fmt: on

@@ -148,8 +148,8 @@ Examples
     - name: configure domain search suffixes
       vyos.vyos.vyos_system:
         domain_search:
-        - sub1.example.com
-        - sub2.example.com
+          - sub1.example.com
+          - sub2.example.com
 
 
 

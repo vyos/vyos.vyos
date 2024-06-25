@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -68,7 +69,8 @@ class Bgp_address_familyFacts(object):
                         af["networks"] = sorted(af["networks"], key=lambda k: k["prefix"])
                     if "aggregate_address" in af:
                         af["aggregate_address"] = sorted(
-                            af["aggregate_address"], key=lambda k: k["prefix"]
+                            af["aggregate_address"],
+                            key=lambda k: k["prefix"],
                         )
             if "neighbors" in objs:
                 objs["neighbors"] = list(objs["neighbors"].values())

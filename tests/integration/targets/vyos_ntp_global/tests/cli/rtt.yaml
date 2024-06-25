@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_ntp_global rtt integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_ntp_global rtt integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 

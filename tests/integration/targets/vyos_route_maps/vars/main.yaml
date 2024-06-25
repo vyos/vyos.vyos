@@ -17,26 +17,26 @@ merged:
     - set policy route-map test3 rule 1 match peer 192.0.2.32
 
   after:
-    - route_map: "test3"
+    - route_map: test3
       entries:
         - sequence: 1
-          action: "permit"
+          action: permit
           match:
             metric: 1
-            peer: "192.0.2.32"
+            peer: 192.0.2.32
           set:
             local_preference: "4"
             metric: "5"
-            metric_type: "type-1"
+            metric_type: type-1
             origin: egp
-            originator_id: "192.0.2.34"
+            originator_id: 192.0.2.34
             tag: "5"
             weight: "4"
-    - route_map: "test1"
+    - route_map: test1
       entries:
         - sequence: 1
-          description: "test"
-          action: "permit"
+          description: test
+          action: permit
           continue_sequence: 2
 
 replaced:
@@ -53,7 +53,7 @@ replaced:
     - route_map: test2
       entries:
         - sequence: 1
-          description: "test"
+          description: test
           action: permit
         - sequence: 1
           action: permit
@@ -69,7 +69,7 @@ replaced:
           set:
             local_preference: 6
             metric: 4
-            metric_type: "type-1"
+            metric_type: type-1
             origin: egp
             originator_id: 192.0.2.34
             tag: 4
@@ -97,7 +97,7 @@ overridden:
           set:
             local_preference: 6
             metric: 4
-            metric_type: "type-1"
+            metric_type: type-1
             origin: egp
             originator_id: 192.0.2.34
             tag: 4

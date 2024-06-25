@@ -1,8 +1,6 @@
 ---
 - debug:
-    msg:
-      START vyos_lldp_global round trip integration tests on connection={{ ansible_connection
-      }}
+    msg: START vyos_lldp_global round trip integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 

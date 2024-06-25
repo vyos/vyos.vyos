@@ -16,6 +16,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -33,12 +34,12 @@ class TestVyosBannerModule(TestVyosModule):
         super(TestVyosBannerModule, self).setUp()
 
         self.mock_get_config = patch(
-            "ansible_collections.vyos.vyos.plugins.modules.vyos_banner.get_config"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_banner.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.vyos.vyos.plugins.modules.vyos_banner.load_config"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_banner.load_config",
         )
         self.load_config = self.mock_load_config.start()
 

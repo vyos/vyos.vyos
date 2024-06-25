@@ -1,8 +1,6 @@
 ---
 - name: Remove Config
   vars:
-    lines:
-      "delete service lldp legacy-protocols\ndelete service lldp management-address\n\
-      delete service lldp\n"
+    lines: "delete service lldp legacy-protocols\ndelete service lldp management-address\ndelete service lldp\n"
   ansible.netcommon.cli_config:
     config: "{{ lines }}"

@@ -12,9 +12,11 @@ created
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 import re
+
 from copy import deepcopy
 
 from ansible.module_utils.six import iteritems
@@ -56,7 +58,9 @@ class Firewall_rules(ConfigBase):
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources, data=data
+            self.gather_subset,
+            self.gather_network_resources,
+            data=data,
         )
         firewall_rules_facts = facts["ansible_network_resources"].get("firewall_rules")
         if not firewall_rules_facts:
@@ -97,7 +101,7 @@ class Firewall_rules(ConfigBase):
             running_config = self._module.params["running_config"]
             if not running_config:
                 self._module.fail_json(
-                    msg="value of running_config parameter must not be empty for state parsed"
+                    msg="value of running_config parameter must not be empty for state parsed",
                 )
             result["parsed"] = self.get_firewall_rules_facts(data=running_config)
         else:
@@ -138,7 +142,7 @@ class Firewall_rules(ConfigBase):
         commands = []
         if self.state in ("merged", "replaced", "overridden", "rendered") and not w:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(self.state)
+                msg="value of config parameter must not be empty for state {0}".format(self.state),
             )
         if self.state == "overridden":
             commands.extend(self._state_overridden(w, h))
@@ -168,7 +172,10 @@ class Firewall_rules(ConfigBase):
                     # already have (to be replaced by our desired
                     # configuration's rule set).
                     wanted_rule_set = self.search_r_sets_in_have(
-                        want, rs["name"], "r_list", h["afi"]
+                        want,
+                        rs["name"],
+                        "r_list",
+                        h["afi"],
                     )
                     if wanted_rule_set is not None:
                         # Remove the rules that we already have if the wanted
@@ -179,7 +186,7 @@ class Firewall_rules(ConfigBase):
                                 want=rs,
                                 have=wanted_rule_set,
                                 opr=False,
-                            )
+                            ),
                         )
         # Merge the desired configuration into what we already have.
         commands.extend(self._state_merged(want, have))
@@ -467,7 +474,7 @@ class Firewall_rules(ConfigBase):
                             commands.append(cmd + (" " + "icmpv6" + " " + param_name + " " + val))
                         else:
                             commands.append(
-                                cmd + (" " + attr + " " + item.replace("_", "-") + " " + val)
+                                cmd + (" " + attr + " " + item.replace("_", "-") + " " + val),
                             )
                     else:
                         commands.append(cmd + (" " + attr + " " + item + " " + str(val)))
@@ -588,7 +595,7 @@ class Firewall_rules(ConfigBase):
                                 + str(rate["number"])
                                 + "/"
                                 + rate["unit"]
-                            )
+                            ),
                         )
                     if not opr and not (
                         h_limit
@@ -619,7 +626,7 @@ class Firewall_rules(ConfigBase):
                     and not (h and attr in h.keys() and self._is_w_same(w[attr], h[attr], key))
                 ):
                     commands.append(
-                        cmd + (" " + attr + " " + key.replace("_", "-") + " " + w[attr].get(key))
+                        cmd + (" " + attr + " " + key.replace("_", "-") + " " + w[attr].get(key)),
                     )
                 elif (
                     not opr
@@ -652,7 +659,7 @@ class Firewall_rules(ConfigBase):
                                     + item.replace("_", "-")
                                     + " "
                                     + val
-                                )
+                                ),
                             )
                         elif (
                             not opr
@@ -660,7 +667,7 @@ class Firewall_rules(ConfigBase):
                             and not (h_group and self._in_target(h_group, item))
                         ):
                             commands.append(
-                                cmd + (" " + attr + " " + key + " " + item.replace("_", "-"))
+                                cmd + (" " + attr + " " + key + " " + item.replace("_", "-")),
                             )
         return commands
 
@@ -779,7 +786,11 @@ class Firewall_rules(ConfigBase):
         :return: generated command.
         """
         command = self._compute_command(
-            afi=afi, name=name, attrib=attrib, value=rule[attrib], opr=opr
+            afi=afi,
+            name=name,
+            attrib=attrib,
+            value=rule[attrib],
+            opr=opr,
         )
         return command
 

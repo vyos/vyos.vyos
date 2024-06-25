@@ -1,9 +1,10 @@
 ---
 - name: Setup
   vars:
-    lines:
-      "set service lldp interface eth2\nset service lldp interface eth2 location\
-      \ civic-based country-code US\nset service lldp interface eth2 location civic-based\
-      \ ca-type 0 ca-value ENGLISH\nset service lldp interface eth2 disable\n"
+    lines: >-
+      "set service lldp interface eth2
+      \nset service lldp interface eth2 location civic-based country-code US
+      \nset service lldp interface eth2 location civic-based ca-type 0 ca-value ENGLISH
+      \nset service lldp interface eth2 disable"
   ansible.netcommon.cli_config:
     config: "{{ lines }}"

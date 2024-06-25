@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -35,17 +36,17 @@ class TestVyosNTPModule(TestVyosModule):
         super(TestVyosNTPModule, self).setUp()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
         self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ntp_global.ntp_global.Ntp_globalFacts.get_config"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ntp_global.ntp_global.Ntp_globalFacts.get_config",
         )
 
         self.execute_show_command = self.mock_execute_show_command.start()
@@ -81,7 +82,7 @@ class TestVyosNTPModule(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -105,7 +106,7 @@ class TestVyosNTPModule(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
 
         commands = [
@@ -146,7 +147,7 @@ class TestVyosNTPModule(TestVyosModule):
                     ],
                 ),
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "delete system ntp allow-clients address 10.1.1.0/24",
@@ -183,7 +184,7 @@ class TestVyosNTPModule(TestVyosModule):
                     ],
                 ),
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -202,7 +203,7 @@ class TestVyosNTPModule(TestVyosModule):
                     ],
                 ),
                 state="overridden",
-            )
+            ),
         )
         commands = [
             "delete system ntp allow-clients address 10.1.1.0/24",
@@ -234,7 +235,7 @@ class TestVyosNTPModule(TestVyosModule):
                     ],
                 ),
                 state="overridden",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -253,7 +254,7 @@ class TestVyosNTPModule(TestVyosModule):
                     ],
                 ),
                 state="rendered",
-            )
+            ),
         )
         rendered_commands = [
             "set system ntp allow-clients address 10.7.7.0/24",
@@ -334,7 +335,7 @@ class TestVyosNTPModule(TestVyosModule):
                     ],
                 ),
                 state="deleted",
-            )
+            ),
         )
         commands = [
             "delete system ntp allow-clients",

@@ -1,8 +1,6 @@
 ---
 - debug:
-    msg:
-      START vyos_firewall_global parsed integration tests on connection={{ ansible_connection
-      }}
+    msg: START vyos_firewall_global parsed integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
@@ -23,9 +21,7 @@
 
     - name: Assert that correct parsing done
       assert:
-        that:
-          "{{ ansible_facts['network_resources']['firewall_global'] == result['parsed']\
-          \ }}"
+        that: "{{ ansible_facts['network_resources']['firewall_global'] == result['parsed'] }}"
 
     - name: Gather the existing running configuration (IDEMPOTENT)
       register: result

@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_lldp_global deleted integration tests ansible_connection={{
-      ansible_connection }}
+    msg: START vyos_lldp_global deleted integration tests ansible_connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
@@ -20,8 +19,7 @@
     - name: Assert that the correct set of commands were generated
       assert:
         that:
-          - "{{ deleted['commands'] | symmetric_difference(result['commands']) |length\
-            \ == 0 }}"
+          - "{{ deleted['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
     - name: Assert that the after dicts were correctly generated
       assert:

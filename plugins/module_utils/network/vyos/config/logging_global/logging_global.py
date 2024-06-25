@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -173,7 +174,7 @@ class Logging_global(ResourceModule):
                                 element: {
                                     "facilities": dat,
                                     self.pkey.get(element): v.get(self.pkey.get(element)),
-                                }
+                                },
                             }
                         del v["facilities"]
                         if len(list(v.keys())) > 1:

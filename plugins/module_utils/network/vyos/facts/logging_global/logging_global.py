@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -87,7 +88,11 @@ class Logging_globalFacts(object):
         objs = self.process_facts(objs)
 
         params = utils.remove_empties(
-            logging_global_parser.validate_config(self.argument_spec, {"config": objs}, redact=True)
+            logging_global_parser.validate_config(
+                self.argument_spec,
+                {"config": objs},
+                redact=True,
+            ),
         )
 
         facts["logging_global"] = params.get("config", {})

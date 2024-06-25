@@ -1,5 +1,9 @@
-/tests/output/
-/changelogs/.plugin-cache.yaml
+# CML/virl lab cache
+.virl/
+
+# A collection directory, resulting from the use of the pytest-ansible-units plugin
+collections/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -54,10 +58,6 @@ coverage.xml
 *.mo
 *.pot
 
-#ide
-.vscode
-*.swp
-
 # Django stuff:
 *.log
 local_settings.py
@@ -109,3 +109,10 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# ide
+*.code-workspace
+.vscode/
+.DS_Store
+
+changelogs/.plugin-cache.yaml

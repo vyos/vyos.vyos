@@ -362,21 +362,22 @@ Examples
       vyos.vyos.vyos_ospfv3:
         config:
           redistribute:
-          - route_type: bgp
+            - route_type: bgp
           parameters:
             router_id: 192.0.2.10
           areas:
-          - area_id: '2'
-            export_list: export1
-            import_list: import1
-            range:
-            - address: 2001:db10::/32
-            - address: 2001:db20::/32
-            - address: 2001:db30::/32
-          - area_id: '3'
-            range:
-            - address: 2001:db40::/32
+            - area_id: '2'
+              export_list: export1
+              import_list: import1
+              range:
+                - address: '2001:db10::/32'
+                - address: '2001:db20::/32'
+                - address: '2001:db30::/32'
+            - area_id: '3'
+              range:
+                - address: '2001:db40::/32'
         state: merged
+
     #
     #
     # -------------------------
@@ -468,21 +469,22 @@ Examples
       vyos.vyos.vyos_ospfv3:
         config:
           redistribute:
-          - route_type: bgp
+            - route_type: bgp
           parameters:
             router_id: 192.0.2.10
           areas:
-          - area_id: '2'
-            export_list: export1
-            import_list: import1
-            range:
-            - address: 2001:db10::/32
-            - address: 2001:db30::/32
-            - address: 2001:db50::/32
-          - area_id: '4'
-            range:
-            - address: 2001:db60::/32
+            - area_id: '2'
+              export_list: export1
+              import_list: import1
+              range:
+                - address: '2001:db10::/32'
+                - address: '2001:db30::/32'
+                - address: '2001:db50::/32'
+            - area_id: '4'
+              range:
+                - address: '2001:db60::/32'
         state: replaced
+
     #
     #
     # -------------------------
@@ -592,21 +594,22 @@ Examples
       vyos.vyos.vyos_ospfv3:
         config:
           redistribute:
-          - route_type: bgp
+            - route_type: bgp
           parameters:
             router_id: 192.0.2.10
           areas:
-          - area_id: '2'
-            export_list: export1
-            import_list: import1
-            range:
-            - address: 2001:db10::/32
-            - address: 2001:db20::/32
-            - address: 2001:db30::/32
-          - area_id: '3'
-            range:
-            - address: 2001:db40::/32
+            - area_id: '2'
+              export_list: export1
+              import_list: import1
+              range:
+                - address: '2001:db10::/32'
+                - address: '2001:db20::/32'
+                - address: '2001:db30::/32'
+            - area_id: '3'
+              range:
+                - address: '2001:db40::/32'
         state: rendered
+
     #
     #
     # -------------------------

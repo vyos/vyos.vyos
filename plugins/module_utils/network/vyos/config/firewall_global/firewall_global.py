@@ -12,6 +12,7 @@ created
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from copy import deepcopy
@@ -50,7 +51,9 @@ class Firewall_global(ConfigBase):
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources, data=data
+            self.gather_subset,
+            self.gather_network_resources,
+            data=data,
         )
         firewall_global_facts = facts["ansible_network_resources"].get("firewall_global")
         if not firewall_global_facts:
@@ -91,7 +94,7 @@ class Firewall_global(ConfigBase):
             running_config = self._module.params["running_config"]
             if not running_config:
                 self._module.fail_json(
-                    msg="value of running_config parameter must not be empty for state parsed"
+                    msg="value of running_config parameter must not be empty for state parsed",
                 )
             result["parsed"] = self.get_firewall_global_facts(data=running_config)
         else:
@@ -132,7 +135,7 @@ class Firewall_global(ConfigBase):
         commands = []
         if self.state in ("merged", "replaced", "rendered") and not w:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(self.state)
+                msg="value of config parameter must not be empty for state {0}".format(self.state),
             )
         if self.state == "deleted":
             commands.extend(self._state_deleted(want=None, have=h))
@@ -242,12 +245,12 @@ class Firewall_global(ConfigBase):
             for key, val in iteritems(w_fg):
                 if opr and key in l_set and not (h and self._is_w_same(w_fg, h, key)):
                     commands.append(
-                        self._form_attr_cmd(attr=key, val=self._bool_to_str(val), opr=opr)
+                        self._form_attr_cmd(attr=key, val=self._bool_to_str(val), opr=opr),
                     )
                 elif not opr:
                     if key and self._is_del(l_set, h):
                         commands.append(
-                            self._form_attr_cmd(attr=key, key=self._bool_to_str(val), opr=opr)
+                            self._form_attr_cmd(attr=key, key=self._bool_to_str(val), opr=opr),
                         )
                         continue
                     if (
@@ -256,7 +259,7 @@ class Firewall_global(ConfigBase):
                         and not self._is_del(l_set, h)
                     ):
                         commands.append(
-                            self._form_attr_cmd(attr=key, val=self._bool_to_str(val), opr=opr)
+                            self._form_attr_cmd(attr=key, val=self._bool_to_str(val), opr=opr),
                         )
                 else:
                     commands.extend(self._render_attr_config(w_fg, h, key, opr))
@@ -290,7 +293,7 @@ class Firewall_global(ConfigBase):
                     and not (h_ping and self._is_w_same(w[attr], h_ping, item))
                 ):
                     commands.append(
-                        self._form_attr_cmd(attr=item, val=self._bool_to_str(value), opr=opr)
+                        self._form_attr_cmd(attr=item, val=self._bool_to_str(value), opr=opr),
                     )
                 elif (
                     not opr
@@ -361,19 +364,29 @@ class Firewall_global(ConfigBase):
                                     + key
                                     + " '"
                                     + str(want[key])
-                                    + "'"
+                                    + "'",
                                 )
                         elif not opr and key in l_set:
                             if key == "name" and self._is_grp_del(h, want, key):
                                 commands.append(cmd + " " + want["name"])
                                 continue
                             if not (h and self._in_target(h, key)) and not self._is_grp_del(
-                                h, want, key
+                                h,
+                                want,
+                                key,
                             ):
                                 commands.append(cmd + " " + want["name"] + " " + key)
                         elif key == "members":
                             commands.extend(
-                                self._render_ports_addrs(key, want, h, opr, cmd, want["name"], attr)
+                                self._render_ports_addrs(
+                                    key,
+                                    want,
+                                    h,
+                                    opr,
+                                    cmd,
+                                    want["name"],
+                                    attr,
+                                ),
                             )
         return commands
 
@@ -407,7 +420,7 @@ class Firewall_global(ConfigBase):
                         + " "
                         + self._grp_type(type)
                         + " "
-                        + member[self._get_mem_type(type)]
+                        + member[self._get_mem_type(type)],
                     )
             elif not opr and have:
                 members = list_diff_want_only(want, have)
@@ -419,7 +432,7 @@ class Firewall_global(ConfigBase):
                         + " "
                         + self._grp_type(type)
                         + " "
-                        + member[self._get_mem_type(type)]
+                        + member[self._get_mem_type(type)],
                     )
         return commands
 
@@ -462,18 +475,19 @@ class Firewall_global(ConfigBase):
                                         attr=key,
                                         val=self._bool_to_str(val),
                                         opr=opr,
-                                    )
+                                    ),
                                 )
                             elif not opr and key in l_set:
                                 if not (h and self._in_target(h, key)) and not self._is_del(
-                                    l_set, h
+                                    l_set,
+                                    h,
                                 ):
                                     if key == "action":
                                         commands.append(
                                             self._form_attr_cmd(
                                                 attr=attr + " " + w["connection_type"],
                                                 opr=opr,
-                                            )
+                                            ),
                                         )
                                     else:
                                         commands.append(
@@ -481,7 +495,7 @@ class Firewall_global(ConfigBase):
                                                 attr=attr + " " + w["connection_type"],
                                                 val=self._bool_to_str(val),
                                                 opr=opr,
-                                            )
+                                            ),
                                         )
         return commands
 
@@ -514,7 +528,7 @@ class Firewall_global(ConfigBase):
                                     attr=key,
                                     val=self._bool_to_str(val),
                                     opr=opr,
-                                )
+                                ),
                             )
                         elif not opr and key in l_set:
                             if self._is_del(l_set, h):
@@ -523,7 +537,7 @@ class Firewall_global(ConfigBase):
                                         attr=key,
                                         val=self._bool_to_str(val),
                                         opr=opr,
-                                    )
+                                    ),
                                 )
                                 continue
                             if not (h and self._in_target(h, key)) and not self._is_del(l_set, h):
@@ -532,7 +546,7 @@ class Firewall_global(ConfigBase):
                                         attr=key,
                                         val=self._bool_to_str(val),
                                         opr=opr,
-                                    )
+                                    ),
                                 )
                         elif key == "icmp_redirects":
                             commands.extend(self._render_icmp_redirects(key, w, h, opr))
@@ -557,7 +571,7 @@ class Firewall_global(ConfigBase):
             for item, value in iteritems(w[attr]):
                 if opr and item in l_set and not (h_red and self._is_w_same(w[attr], h_red, item)):
                     commands.append(
-                        self._form_attr_cmd(attr=item, val=self._bool_to_str(value), opr=opr)
+                        self._form_attr_cmd(attr=item, val=self._bool_to_str(value), opr=opr),
                     )
                 elif (
                     not opr

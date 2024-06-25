@@ -343,21 +343,21 @@ Examples
     - name: Merge provided configuration with device configuration
       vyos.vyos.vyos_interfaces:
         config:
-        - name: eth2
-          description: Configured by Ansible
-          enabled: true
-          vifs:
-          - vlan_id: 200
-            description: VIF 200 - ETH2
-        - name: eth3
-          description: Configured by Ansible
-          mtu: 1500
-        - name: bond1
-          description: Bond - 1
-          mtu: 1200
-        - name: vti2
-          description: VTI - 2
-          enabled: false
+          - name: eth2
+            description: Configured by Ansible
+            enabled: true
+            vifs:
+              - vlan_id: 200
+                description: VIF 200 - ETH2
+          - name: eth3
+            description: Configured by Ansible
+            mtu: 1500
+          - name: bond1
+            description: Bond - 1
+            mtu: 1200
+          - name: vti2
+            description: VTI - 2
+            enabled: false
         state: merged
 
     # Task Output
@@ -475,12 +475,12 @@ Examples
     - name: Replace device configurations of listed interfaces with provided configurations
       vyos.vyos.vyos_interfaces:
         config:
-        - name: eth2
-          description: Replaced by Ansible
-        - name: eth3
-          description: Replaced by Ansible
-        - name: eth1
-          description: Replaced by Ansible
+          - name: eth2
+            description: Replaced by Ansible
+          - name: eth3
+            description: Replaced by Ansible
+          - name: eth1
+            description: Replaced by Ansible
         state: replaced
 
     # Task Output
@@ -613,15 +613,15 @@ Examples
     - name: Overrides all device configuration with provided configuration
       vyos.vyos.vyos_interfaces:
         config:
-        - name: eth0
-          description: Outbound Interface For The Appliance
-          speed: auto
-          duplex: auto
-        - name: eth2
-          speed: auto
-          duplex: auto
-        - name: eth3
-          mtu: 1200
+          - name: eth0
+            description: Outbound Interface For The Appliance
+            speed: auto
+            duplex: auto
+          - name: eth2
+            speed: auto
+            duplex: auto
+          - name: eth3
+            mtu: 1200
         state: overridden
 
     # Task Output
@@ -752,10 +752,10 @@ Examples
         themselves)
       vyos.vyos.vyos_interfaces:
         config:
-        - name: bond1
-        - name: eth1
-        - name: eth2
-        - name: eth3
+          - name: bond1
+          - name: eth1
+          - name: eth2
+          - name: eth3
         state: deleted
 
     # Task Output
@@ -869,7 +869,6 @@ Examples
     #
     - name: Gather listed interfaces with provided configurations
       vyos.vyos.vyos_interfaces:
-        config:
         state: gathered
 
     # Task output
@@ -906,29 +905,30 @@ Examples
     - name: Render the commands for provided  configuration
       vyos.vyos.vyos_interfaces:
         config:
-        - name: eth0
-          enabled: true
-          duplex: auto
-          speed: auto
-        - name: eth1
-          description: Configured by Ansible - Interface 1
-          mtu: 1500
-          speed: auto
-          duplex: auto
-          enabled: true
-          vifs:
-          - vlan_id: 100
-            description: Eth1 - VIF 100
-            mtu: 400
+          - name: eth0
             enabled: true
-          - vlan_id: 101
-            description: Eth1 - VIF 101
+            duplex: auto
+            speed: auto
+          - name: eth1
+            description: Configured by Ansible - Interface 1
+            mtu: 1500
+            speed: auto
+            duplex: auto
             enabled: true
-        - name: eth2
-          description: Configured by Ansible - Interface 2 (ADMIN DOWN)
-          mtu: 600
-          enabled: false
+            vifs:
+              - vlan_id: 100
+                description: Eth1 - VIF 100
+                mtu: 400
+                enabled: true
+              - vlan_id: 101
+                description: Eth1 - VIF 101
+                enabled: true
+          - name: eth2
+            description: Configured by Ansible - Interface 2 (ADMIN DOWN)
+            mtu: 600
+            enabled: false
         state: rendered
+
 
     # Task Output
     # -----------

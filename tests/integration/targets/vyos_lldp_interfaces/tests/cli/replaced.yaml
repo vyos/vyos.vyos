@@ -1,14 +1,11 @@
 ---
 - debug:
-    msg: START vyos_lldp_interfaces replaced integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_lldp_interfaces replaced integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-    - name:
-        Replace device configurations of listed LLDP interfaces with provided
-        configurations
+    - name: Replace device configurations of listed LLDP interfaces with provided configurations
       register: result
       vyos.vyos.vyos_lldp_interfaces: &id001
         config:
@@ -34,8 +31,7 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ replaced['commands'] | symmetric_difference(result['commands'])\
-            \ |length == 0 }}"
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
     - name: Assert that before dicts are correctly generated
       assert:
@@ -45,12 +41,9 @@
     - name: Assert that after dict is correctly generated
       assert:
         that:
-          - "{{ replaced['after'] | symmetric_difference(result['after']) |length\
-            \ == 0 }}"
+          - "{{ replaced['after'] | symmetric_difference(result['after']) |length == 0 }}"
 
-    - name:
-        Replace device configurations of listed LLDP interfaces with provided
-        configurarions (IDEMPOTENT)
+    - name: Replace device configurations of listed LLDP interfaces with provided configurarions (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_lldp_interfaces: *id001
 
@@ -62,7 +55,6 @@
     - name: Assert that before dict is correctly generated
       assert:
         that:
-          - "{{ replaced['after'] | symmetric_difference(result['before']) |length\
-            \ == 0 }}"
+          - "{{ replaced['after'] | symmetric_difference(result['before']) |length == 0 }}"
   always:
     - include_tasks: _remove_config.yaml

@@ -331,8 +331,8 @@ Examples
       vyos.vyos.vyos_vlan:
         vlan_id: 100
         interfaces:
-        - eth1
-        - eth2
+          - eth1
+          - eth2
 
     - name: Configure virtual interface address
       vyos.vyos.vyos_vlan:
@@ -345,14 +345,14 @@ Examples
         vlan_id: 100
         interfaces: eth0
         associated_interfaces:
-        - eth0
+          - eth0
 
     - name: vlan intent check
       vyos.vyos.vyos_vlan:
         vlan_id: 100
         associated_interfaces:
-        - eth3
-        - eth4
+          - eth3
+          - eth4
 
     - name: Delete vlan
       vyos.vyos.vyos_vlan:

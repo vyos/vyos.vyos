@@ -11,6 +11,7 @@ created
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from copy import deepcopy
@@ -55,7 +56,9 @@ class Interfaces(ConfigBase):
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources, data=data
+            self.gather_subset,
+            self.gather_network_resources,
+            data=data,
         )
         interfaces_facts = facts["ansible_network_resources"].get("interfaces")
         if not interfaces_facts:
@@ -95,7 +98,7 @@ class Interfaces(ConfigBase):
             running_config = self._module.params["running_config"]
             if not running_config:
                 self._module.fail_json(
-                    msg="value of running_config parameter must not be empty for state parsed"
+                    msg="value of running_config parameter must not be empty for state parsed",
                 )
             result["parsed"] = self.get_interfaces_facts(data=running_config)
         else:
@@ -137,7 +140,7 @@ class Interfaces(ConfigBase):
 
         if self.state in ("merged", "replaced", "overridden", "rendered") and not want:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(self.state)
+                msg="value of config parameter must not be empty for state {0}".format(self.state),
             )
 
         if self.state == "overridden":
@@ -226,7 +229,7 @@ class Interfaces(ConfigBase):
         if updates:
             for key, value in iteritems(updates):
                 commands.append(
-                    self._compute_commands(key=key, value=value, interface=want_copy["name"])
+                    self._compute_commands(key=key, value=value, interface=want_copy["name"]),
                 )
 
         if want_vifs:
@@ -247,7 +250,7 @@ class Interfaces(ConfigBase):
                                 value=value,
                                 interface=want_copy["name"],
                                 vif=want_vif["vlan_id"],
-                            )
+                            ),
                         )
 
         return commands
@@ -270,11 +273,11 @@ class Interfaces(ConfigBase):
             if key == "enabled":
                 continue
             commands.append(
-                self._compute_commands(key=key, interface=want_copy["name"], remove=True)
+                self._compute_commands(key=key, interface=want_copy["name"], remove=True),
             )
         if have_copy["enabled"] is False:
             commands.append(
-                self._compute_commands(key="enabled", value=True, interface=want_copy["name"])
+                self._compute_commands(key="enabled", value=True, interface=want_copy["name"]),
             )
 
         if have_vifs:
@@ -295,7 +298,7 @@ class Interfaces(ConfigBase):
                             interface=want_copy["name"],
                             vif=want_vif["vlan_id"],
                             remove=True,
-                        )
+                        ),
                     )
                 if have_vif["enabled"] is False:
                     commands.append(
@@ -304,7 +307,7 @@ class Interfaces(ConfigBase):
                             value=True,
                             interface=want_copy["name"],
                             vif=want_vif["vlan_id"],
-                        )
+                        ),
                     )
         return commands
 
