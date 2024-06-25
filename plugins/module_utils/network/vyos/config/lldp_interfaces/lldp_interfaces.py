@@ -13,6 +13,7 @@ created
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from ansible.module_utils.six import iteritems
@@ -59,7 +60,9 @@ class Lldp_interfaces(ConfigBase):
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources, data=data
+            self.gather_subset,
+            self.gather_network_resources,
+            data=data,
         )
         lldp_interfaces_facts = facts["ansible_network_resources"].get("lldp_interfaces")
         if not lldp_interfaces_facts:
@@ -100,7 +103,7 @@ class Lldp_interfaces(ConfigBase):
             running_config = self._module.params["running_config"]
             if not running_config:
                 self._module.fail_json(
-                    msg="value of running_config parameter must not be empty for state parsed"
+                    msg="value of running_config parameter must not be empty for state parsed",
                 )
             result["parsed"] = self.get_lldp_interfaces_facts(data=running_config)
         else:
@@ -141,7 +144,7 @@ class Lldp_interfaces(ConfigBase):
         commands = []
         if self.state in ("merged", "replaced", "overridden", "rendered") and not want:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(self.state)
+                msg="value of config parameter must not be empty for state {0}".format(self.state),
             )
         if self.state == "overridden":
             commands.extend(self._state_overridden(want=want, have=have))
@@ -300,7 +303,7 @@ class Lldp_interfaces(ConfigBase):
                             set_cmd + location_type,
                             "country-code",
                             str(want_dict["country_code"]),
-                        )
+                        ),
                     )
             else:
                 commands.append(
@@ -308,7 +311,7 @@ class Lldp_interfaces(ConfigBase):
                         set_cmd + location_type,
                         "country-code",
                         str(want_dict["country_code"]),
-                    )
+                    ),
                 )
             commands.extend(self._add_civic_address(name, want_ca, have_ca))
 
@@ -320,14 +323,14 @@ class Lldp_interfaces(ConfigBase):
                         self._compute_command(
                             set_cmd + location_type,
                             value=str(want_location_type["elin"]),
-                        )
+                        ),
                     )
             else:
                 commands.append(
                     self._compute_command(
                         set_cmd + location_type,
                         value=str(want_location_type["elin"]),
-                    )
+                    ),
                 )
         return commands
 
@@ -346,7 +349,7 @@ class Lldp_interfaces(ConfigBase):
                     only_in_have = key_value_in_dict(key, value, want_dict)
                     if not only_in_have:
                         commands.append(
-                            self._compute_command(del_cmd + location_type, key, str(value), True)
+                            self._compute_command(del_cmd + location_type, key, str(value), True),
                         )
             else:
                 commands.append(self._compute_command(del_cmd, remove=True))
@@ -381,7 +384,7 @@ class Lldp_interfaces(ConfigBase):
                         key=name + " location civic-based ca-type",
                         attrib=str(ca_type) + " ca-value",
                         value=ca_value,
-                    )
+                    ),
                 )
         return commands
 
@@ -398,7 +401,7 @@ class Lldp_interfaces(ConfigBase):
                         "location civic-based ca-type",
                         str(ca_type),
                         remove=True,
-                    )
+                    ),
                 )
         return commands
 

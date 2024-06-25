@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -76,7 +77,8 @@ class Ospf_interfacesFacts(object):
         resources = self.get_config_set(data)
         for resource in resources:
             ospf_interfaces_parser = Ospf_interfacesTemplate(
-                lines=resource.split("\n"), module=self._module
+                lines=resource.split("\n"),
+                module=self._module,
             )
             objs = ospf_interfaces_parser.parse()
             for key, sortv in [("address_family", "afi")]:
@@ -91,7 +93,7 @@ class Ospf_interfacesFacts(object):
                 self.argument_spec,
                 {"config": ospf_interfaces_facts},
                 redact=True,
-            )
+            ),
         )
         if params.get("config"):
             for cfg in params["config"]:

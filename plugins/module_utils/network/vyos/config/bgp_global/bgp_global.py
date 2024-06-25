@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -201,12 +202,12 @@ class Bgp_global(ResourceModule):
             if name not in wneigh.keys():
                 if self._check_af(name):
                     msg = "Use the _bgp_address_family module to delete the address_family under neighbor {0}, before replacing/deleting the neighbor.".format(
-                        name
+                        name,
                     )
                     self._module.fail_json(msg=msg)
                 else:
                     self.commands.append(
-                        "delete protocols bgp " + str(have["as_number"]) + " neighbor " + name
+                        "delete protocols bgp " + str(have["as_number"]) + " neighbor " + name,
                     )
                     continue
             for k, v in entry.items():
@@ -291,7 +292,7 @@ class Bgp_global(ResourceModule):
         for name, entry in iteritems(hbgp):
             if name == "confederation":
                 self.commands.append(
-                    "delete protocols bgp " + str(have["as_number"]) + " parameters confederation"
+                    "delete protocols bgp " + str(have["as_number"]) + " parameters confederation",
                 )
             elif name == "distance":
                 distance_parsers = [
@@ -339,7 +340,7 @@ class Bgp_global(ResourceModule):
             if not wdict and hdict:
                 attrib = re.sub("_", "-", attrib)
                 self.commands.append(
-                    "delete protocols bgp " + str(have["as_number"]) + " " + attrib
+                    "delete protocols bgp " + str(have["as_number"]) + " " + attrib,
                 )
                 hdict = {}
             for key, entry in iteritems(hdict):
@@ -402,5 +403,5 @@ class Bgp_global(ResourceModule):
 
     def _get_config(self, connection):
         return connection.get(
-            'show configuration commands |  match "set protocols bgp .* neighbor"'
+            'show configuration commands |  match "set protocols bgp .* neighbor"',
         )

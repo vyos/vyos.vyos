@@ -193,8 +193,8 @@ Examples
       vyos.vyos.vyos_lldp_global:
         config:
           legacy_protocols:
-          - fdp
-          - cdp
+            - fdp
+            - cdp
           snmp: enable
           address: 192.0.2.11
         state: merged
@@ -255,9 +255,9 @@ Examples
       vyos.vyos.vyos_lldp_global:
         config:
           legacy_protocols:
-          - edp
-          - sonmp
-          - cdp
+            - edp
+            - sonmp
+            - cdp
           address: 192.0.2.14
         state: replaced
     #
@@ -484,7 +484,7 @@ Examples
           address: 192.0.2.17
           enable: true
           legacy_protocols:
-          - cdp
+            - cdp
         state: rendered
     #
     #

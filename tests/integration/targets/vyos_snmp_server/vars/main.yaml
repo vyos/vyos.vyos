@@ -17,23 +17,23 @@ merged:
       - clients:
           - 1.1.1.1
           - 12.1.1.10
-        name: "bridges"
-      - authorization_type: "rw"
-        name: "switches"
-    contact: "admin2@ex.com"
+        name: bridges
+      - authorization_type: rw
+        name: switches
+    contact: admin2@ex.com
     listen_addresses:
-      - address: "100.1.2.1"
+      - address: 100.1.2.1
         port: 33
-      - address: "20.1.1.1"
+      - address: 20.1.1.1
     snmp_v3:
       users:
         - authentication:
-            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
-            type: "sha"
+            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            type: sha
           privacy:
-            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
-            type: "aes"
-          user: "adminuser"
+            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            type: aes
+          user: adminuser
 
 overridden:
   commands:
@@ -53,74 +53,73 @@ overridden:
 
   after:
     communities:
-      - name: "bridges"
+      - name: bridges
         networks:
-          - "1.1.1.0/24"
-          - "12.1.1.0/24"
-      - name: "switches"
+          - 1.1.1.0/24
+          - 12.1.1.0/24
+      - name: switches
     listen_addresses:
-      - address: "100.1.2.1"
+      - address: 100.1.2.1
         port: 33
-    location: "RDU, NC"
+    location: RDU, NC
     snmp_v3:
       users:
         - authentication:
-            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
-            type: "sha"
+            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            type: sha
           privacy:
-            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
-            type: "aes"
-          user: "adminuser"
+            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            type: aes
+          user: adminuser
         - authentication:
-            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
-            type: "sha"
+            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            type: sha
           privacy:
-            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
-            type: "aes"
-          user: "guestuser2"
+            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            type: aes
+          user: guestuser2
       views:
         - oid: 1
-          view: "default"
+          view: default
 
 deleted:
   commands:
     - delete service snmp
   after: {}
-
 parsed:
   after:
     communities:
-      - authorization_type: "ro"
+      - authorization_type: ro
         clients:
           - 203.0.113.10
           - 203.0.113.20
-        name: "routers"
+        name: routers
         networks:
           - 192.0.2.0/24
           - 2001::/64
-    contact: "admin@example.com"
+    contact: admin@example.com
     listen_addresses:
-      - address: "172.16.254.36"
+      - address: 172.16.254.36
         port: 161
-      - address: "2001::1"
-    location: "UK, London"
+      - address: 2001::1
+    location: UK, London
     snmp_v3:
       engine_id: "000000000000000000000002"
       groups:
-        - group: "default"
-          mode: "ro"
-          view: "default"
+        - group: default
+          mode: ro
+          view: default
       users:
         - authentication:
-            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
-            type: "sha"
-          group: "default"
+            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            type: sha
+          group: default
           privacy:
-            plaintext_key: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
-            type: "aes"
-          user: "vyos"
+            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            type: aes
+          user: vyos
       views:
         - oid: "1"
-          view: "default"
+          view: default
     trap_target:
-      address: "203.0.113.10"
+      address: 203.0.113.10

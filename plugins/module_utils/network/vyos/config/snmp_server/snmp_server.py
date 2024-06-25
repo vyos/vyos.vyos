@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -137,7 +138,7 @@ class Snmp_server(ResourceModule):
                                     "communities": {
                                         k: hdict[key].pop(k, ""),
                                         "name": key,
-                                    }
+                                    },
                                 }
                             self.compare(
                                 parsers="communities",
@@ -200,8 +201,8 @@ class Snmp_server(ResourceModule):
                                         attribute_dict[attrib]: hattrib[key][
                                             attribute_dict[attrib]
                                         ],
-                                    }
-                                }
+                                    },
+                                },
                             }
                         self.compare(
                             parsers=parsers,
@@ -210,8 +211,8 @@ class Snmp_server(ResourceModule):
                                     attrib: {
                                         k: v,
                                         attribute_dict[attrib]: entry[attribute_dict[attrib]],
-                                    }
-                                }
+                                    },
+                                },
                             },
                             have=h,
                         )
@@ -252,16 +253,16 @@ class Snmp_server(ResourceModule):
                                 attrib: {
                                     key: entry,
                                     primary_key: wattrib[primary_key],
-                                }
-                            }
+                                },
+                            },
                         },
                         have={
                             "snmp_v3": {
                                 attrib: {
                                     key: hattrib.pop(key, {}),
                                     primary_key: wattrib[primary_key],
-                                }
-                            }
+                                },
+                            },
                         },
                     )
             for key, entry in iteritems(hattrib):
@@ -274,8 +275,8 @@ class Snmp_server(ResourceModule):
                                 attrib: {
                                     key: entry,
                                     primary_key: hattrib[primary_key],
-                                }
-                            }
+                                },
+                            },
                         },
                     )
 

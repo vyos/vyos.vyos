@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_firewall_rules round trip integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_firewall_rules round trip integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -74,9 +73,7 @@
 
     - name: Assert that changes were applied
       assert:
-        that:
-          "{{ round_trip['after'] | symmetric_difference(result['after']) |length\
-          \ == 0 }}"
+        that: "{{ round_trip['after'] | symmetric_difference(result['after']) |length == 0 }}"
 
     - name: Revert back to base config using facts round trip
       register: revert
@@ -86,8 +83,6 @@
 
     - name: Assert that config was reverted
       assert:
-        that:
-          "{{ base_config['after'] | symmetric_difference(revert['after']) |length\
-          \ == 0 }}"
+        that: "{{ base_config['after'] | symmetric_difference(revert['after']) |length == 0 }}"
   always:
     - include_tasks: _remove_config.yaml

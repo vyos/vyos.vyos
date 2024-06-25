@@ -17,6 +17,7 @@
 #
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -128,14 +129,14 @@ EXAMPLES = """
 - name: configure the remote device
   vyos.vyos.vyos_config:
     lines:
-    - set system host-name {{ inventory_hostname }}
-    - set service lldp
-    - delete service dhcp-server
+      - set system host-name {{ inventory_hostname }}
+      - set service lldp
+      - delete service dhcp-server
 
 - name: backup and load from file
   vyos.vyos.vyos_config:
     src: vyos.cfg
-    backup: yes
+    backup: true
 
 - name: render a Jinja2 template onto the VyOS router
   vyos.vyos.vyos_config:
@@ -145,11 +146,11 @@ EXAMPLES = """
   vyos.vyos.vyos_config:
     lines:
       # - set int eth eth2 description 'OUTSIDE'
-    - set interface ethernet eth2 description 'OUTSIDE'
+      - set interface ethernet eth2 description 'OUTSIDE'
 
 - name: configurable backup path
   vyos.vyos.vyos_config:
-    backup: yes
+    backup: true
     backup_options:
       filename: backup.cfg
       dir_path: /home/user
@@ -205,9 +206,12 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
     run_commands,
 )
 
+
 DEFAULT_COMMENT = "configured by vyos_config"
 
-CONFIG_FILTERS = [re.compile(r"set system login user \S+ authentication encrypted-password")]
+CONFIG_FILTERS = [
+    re.compile(r"set system login user \S+ authentication encrypted-password"),
+]
 
 
 def get_candidate(module):
@@ -312,7 +316,7 @@ def run(module, result):
 
         if result.get("filtered"):
             result["warnings"].append(
-                "Some configuration commands were removed, please see the filtered key"
+                "Some configuration commands were removed, please see the filtered key",
             )
 
         result["changed"] = True

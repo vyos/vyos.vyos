@@ -11,6 +11,7 @@ based on the configuration.
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from copy import deepcopy
@@ -101,7 +102,8 @@ class Ospfv2Facts(object):
         config["passive_interface"] = self.parse_leaf_list(conf, "passive-interface")
         config["redistribute"] = self.parse_attrib_list(conf, "redistribute", "route_type")
         config["passive_interface_exclude"] = self.parse_leaf_list(
-            conf, "passive-interface-exclude"
+            conf,
+            "passive-interface-exclude",
         )
         return config
 

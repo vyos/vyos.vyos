@@ -28,6 +28,7 @@ The module file for vyos_lag_interfaces
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -136,21 +137,21 @@ EXAMPLES = """
 - name: Merge provided configuration with device configuration
   vyos.vyos.vyos_lag_interfaces:
     config:
-    - name: bond2
-      mode: active-backup
-      members:
-      - member: eth2
-      - member: eth1
-      hash_policy: layer2
-      primary: eth2
-
-    - name: bond3
-      mode: active-backup
-      hash_policy: layer2+3
-      members:
-      - member: eth3
-      primary: eth3
+      - name: bond2
+        mode: active-backup
+        members:
+          - member: eth2
+          - member: eth1
+        hash_policy: layer2
+        primary: eth2
+      - name: bond3
+        mode: active-backup
+        hash_policy: layer2+3
+        members:
+          - member: eth3
+        primary: eth3
     state: merged
+
 #
 #
 # -------------------------
@@ -240,11 +241,11 @@ EXAMPLES = """
 - name: Replace device configurations of listed LAGs with provided configurations
   vyos.vyos.vyos_lag_interfaces:
     config:
-    - name: bond3
-      mode: 802.3ad
-      hash_policy: layer2
-      members:
-      - member: eth3
+      - name: bond3
+        mode: 802.3ad
+        hash_policy: layer2
+        members:
+          - member: eth3
     state: replaced
 #
 #
@@ -345,14 +346,14 @@ EXAMPLES = """
 - name: Overrides all device configuration with provided configuration
   vyos.vyos.vyos_lag_interfaces:
     config:
-    - name: bond3
-      mode: active-backup
-      members:
-      - member: eth1
-      - member: eth2
-      - member: eth3
-      primary: eth3
-      hash_policy: layer2
+      - name: bond3
+        mode: active-backup
+        members:
+          - member: eth1
+          - member: eth2
+          - member: eth3
+        primary: eth3
+        hash_policy: layer2
     state: overridden
 #
 #
@@ -456,8 +457,8 @@ EXAMPLES = """
     itself)
   vyos.vyos.vyos_lag_interfaces:
     config:
-    - name: bond2
-    - name: bond3
+      - name: bond2
+      - name: bond3
     state: deleted
 #
 #
@@ -535,9 +536,8 @@ EXAMPLES = """
 # set interfaces ethernet eth1 bond-group 'bond0'
 # set interfaces ethernet eth2 bond-group 'bond1'
 #
-- name: Gather listed  lag interfaces with provided configurations
+- name: Gather listed lag interfaces with provided configurations
   vyos.vyos.vyos_lag_interfaces:
-    config:
     state: gathered
 #
 #
@@ -636,19 +636,20 @@ EXAMPLES = """
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_lag_interfaces:
     config:
-    - name: bond0
-      hash_policy: layer2
-      members:
-      - member: eth1
-      mode: active-backup
-      primary: eth1
-    - name: bond1
-      hash_policy: layer2+3
-      members:
-      - member: eth2
-      mode: active-backup
-      primary: eth2
+      - name: bond0
+        hash_policy: layer2
+        members:
+          - member: eth1
+        mode: active-backup
+        primary: eth1
+      - name: bond1
+        hash_policy: layer2+3
+        members:
+          - member: eth2
+        mode: active-backup
+        primary: eth2
     state: rendered
+
 #
 #
 # -------------------------
@@ -714,8 +715,6 @@ EXAMPLES = """
 #             "primary": "eth2"
 #         }
 #     ]
-
-
 """
 RETURN = """
 before:

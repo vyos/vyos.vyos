@@ -6,9 +6,11 @@
 # utils
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 from ansible.module_utils.basic import missing_required_lib
 from ansible.module_utils.six import iteritems
+
 
 try:
     import ipaddress

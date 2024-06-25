@@ -382,22 +382,22 @@ Examples
     - name: Merge provided configuration with device configuration
       vyos.vyos.vyos_lldp_interfaces:
         config:
-        - name: eth1
-          location:
-            civic_based:
-              country_code: US
-              ca_info:
-              - ca_type: 0
-                ca_value: ENGLISH
-
-        - name: eth2
-          location:
-            coordinate_based:
-              altitude: 2200
-              datum: WGS84
-              longitude: 222.267255W
-              latitude: 33.524449N
+          - name: eth1
+            location:
+              civic_based:
+                country_code: US
+                ca_info:
+                  - ca_type: 0
+                    ca_value: ENGLISH
+          - name: eth2
+            location:
+              coordinate_based:
+                altitude: 2200
+                datum: WGS84
+                longitude: 222.267255W
+                latitude: 33.524449N
         state: merged
+
     #
     #
     # -------------------------
@@ -473,24 +473,25 @@ Examples
     # set service lldp interface eth2 location coordinate-based latitude '33.524449N'
     # set service lldp interface eth2 location coordinate-based longitude '222.267255W'
     #
-    - name: Replace device configurations of listed LLDP interfaces with provided configurations
+    - name: >-
+        Replace device configurations of listed LLDP interfaces with provided
+        configurations
       vyos.vyos.vyos_lldp_interfaces:
         config:
-        - name: eth2
-          location:
-            civic_based:
-              country_code: US
-              ca_info:
-              - ca_type: 0
-                ca_value: ENGLISH
-
-        - name: eth1
-          location:
-            coordinate_based:
-              altitude: 2200
-              datum: WGS84
-              longitude: 222.267255W
-              latitude: 33.524449N
+          - name: eth2
+            location:
+              civic_based:
+                country_code: US
+                ca_info:
+                  - ca_type: 0
+                    ca_value: ENGLISH
+          - name: eth1
+            location:
+              coordinate_based:
+                altitude: 2200
+                datum: WGS84
+                longitude: 222.267255W
+                latitude: 33.524449N
         state: replaced
     #
     #
@@ -599,9 +600,9 @@ Examples
     - name: Overrides all device configuration with provided configuration
       vyos.vyos.vyos_lldp_interfaces:
         config:
-        - name: eth2
-          location:
-            elin: 0000000911
+          - name: eth2
+            location:
+              elin: 0000000911
 
         state: overridden
     #
@@ -674,7 +675,7 @@ Examples
     - name: Delete lldp  interface attributes of given interfaces.
       vyos.vyos.vyos_lldp_interfaces:
         config:
-        - name: eth2
+          - name: eth2
         state: deleted
     #
     #
@@ -765,21 +766,22 @@ Examples
     - name: Render the commands for provided  configuration
       vyos.vyos.vyos_lldp_interfaces:
         config:
-        - name: eth1
-          location:
-            civic_based:
-              country_code: US
-              ca_info:
-              - ca_type: 0
-                ca_value: ENGLISH
-        - name: eth2
-          location:
-            coordinate_based:
-              altitude: 2200
-              datum: WGS84
-              longitude: 222.267255W
-              latitude: 33.524449N
+          - name: eth1
+            location:
+              civic_based:
+                country_code: US
+                ca_info:
+                  - ca_type: 0
+                    ca_value: ENGLISH
+          - name: eth2
+            location:
+              coordinate_based:
+                altitude: 2200
+                datum: WGS84
+                longitude: 222.267255W
+                latitude: 33.524449N
         state: rendered
+
     #
     #
     # -------------------------

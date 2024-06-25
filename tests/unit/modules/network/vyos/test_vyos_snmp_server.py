@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -35,17 +36,17 @@ class TestVyosSnmpServerModule(TestVyosModule):
         super(TestVyosSnmpServerModule, self).setUp()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
         self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.snmp_server.snmp_server.Snmp_serverFacts.get_config"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.snmp_server.snmp_server.Snmp_serverFacts.get_config",
         )
 
         self.execute_show_command = self.mock_execute_show_command.start()
@@ -74,7 +75,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                         dict(
                             name="bridges",
                             networks=["12.1.1.0/24", "1.1.1.0/24"],
-                        )
+                        ),
                     ],
                     listen_addresses=[
                         dict(address="100.1.2.1", port=33),
@@ -92,11 +93,11 @@ class TestVyosSnmpServerModule(TestVyosModule):
                                 authentication=dict(type="sha", plaintext_key="opq1234567"),
                                 privacy=dict(type="aes", plaintext_key="opq1234567"),
                             ),
-                        ]
+                        ],
                     ),
                 ),
                 state="merged",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -108,7 +109,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                         dict(
                             name="bridges",
                             networks=["12.1.1.0/24", "1.1.1.0/24"],
-                        )
+                        ),
                     ],
                     listen_addresses=[
                         dict(address="100.1.2.1", port=33),
@@ -126,11 +127,11 @@ class TestVyosSnmpServerModule(TestVyosModule):
                                 authentication=dict(type="sha", plaintext_key="opq1234567"),
                                 privacy=dict(type="aes", plaintext_key="opq1234567"),
                             ),
-                        ]
+                        ],
                     ),
                 ),
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -142,7 +143,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                         dict(
                             name="bridges",
                             networks=["12.1.1.0/24", "1.1.1.0/24"],
-                        )
+                        ),
                     ],
                     listen_addresses=[
                         dict(address="100.1.2.1", port=33),
@@ -160,11 +161,11 @@ class TestVyosSnmpServerModule(TestVyosModule):
                                 authentication=dict(type="sha", plaintext_key="opq1234567"),
                                 privacy=dict(type="aes", plaintext_key="opq1234567"),
                             ),
-                        ]
+                        ],
                     ),
                 ),
                 state="overridden",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -193,7 +194,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                                 mode="rw",
                                 seclevel="priv",
                                 view="view1",
-                            )
+                            ),
                         ],
                         trap_targets=[
                             dict(
@@ -205,7 +206,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                     ),
                 ),
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set service snmp community routers client 1.1.1.0/24",
@@ -249,7 +250,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                                 mode="rw",
                                 seclevel="priv",
                                 view="view1",
-                            )
+                            ),
                         ],
                         trap_targets=[
                             dict(
@@ -261,7 +262,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                     ),
                 ),
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "set service snmp community routers client 1.1.1.0/24",
@@ -318,7 +319,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                                 mode="rw",
                                 seclevel="priv",
                                 view="view1",
-                            )
+                            ),
                         ],
                         trap_targets=[
                             dict(
@@ -330,7 +331,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                     ),
                 ),
                 state="overridden",
-            )
+            ),
         )
         commands = [
             "set service snmp community routers client 1.1.1.0/24",
@@ -366,7 +367,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
         set_module_args(
             dict(
                 state="deleted",
-            )
+            ),
         )
         commands = ["delete service snmp"]
         self.execute_module(changed=True, commands=commands)
@@ -396,7 +397,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                                 mode="rw",
                                 seclevel="priv",
                                 view="view1",
-                            )
+                            ),
                         ],
                         trap_targets=[
                             dict(
@@ -408,7 +409,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                     ),
                 ),
                 state="rendered",
-            )
+            ),
         )
         commands = [
             "set service snmp community routers client 1.1.1.0/24",
@@ -471,7 +472,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                         "mode": "rw",
                         "seclevel": "priv",
                         "view": "view1",
-                    }
+                    },
                 ],
             },
             "trap_source": "1.1.1.1",
@@ -512,7 +513,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                         },
                         "user": "guest_user",
                     },
-                ]
+                ],
             },
         }
         self.assertEqual(gathered_list, result["gathered"])

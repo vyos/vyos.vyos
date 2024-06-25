@@ -24,9 +24,7 @@
         that:
           - result.after == {}
 
-    - name:
-        Delete the existing configuration with the provided running configuration
-        (IDEMPOTENT)
+    - name: Delete the existing configuration with the provided running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_hostname: *id001
 

@@ -1,8 +1,6 @@
 ---
 - name: Remove Config
   vars:
-    lines:
-      "delete interfaces ethernet eth1 firewall\ndelete interfaces ethernet\
-      \ eth2 firewall\n"
+    lines: "delete interfaces ethernet eth1 firewall\ndelete interfaces ethernet eth2 firewall\n"
   ansible.netcommon.cli_config:
     config: "{{ lines }}"

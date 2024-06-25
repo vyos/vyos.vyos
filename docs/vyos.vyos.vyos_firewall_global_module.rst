@@ -849,30 +849,30 @@ Examples
             all: true
             broadcast: true
           state_policy:
-          - connection_type: established
-            action: accept
-            log: true
-          - connection_type: invalid
-            action: reject
+            - connection_type: established
+              action: accept
+              log: true
+            - connection_type: invalid
+              action: reject
           route_redirects:
-          - afi: ipv4
-            ip_src_route: true
-            icmp_redirects:
-              send: true
-              receive: false
+            - afi: ipv4
+              ip_src_route: true
+              icmp_redirects:
+                send: true
+                receive: false
           group:
             address_group:
-            - name: MGMT-HOSTS
-              description: This group has the Management hosts address list
-              members:
-              - address: 192.0.1.1
-              - address: 192.0.1.3
-              - address: 192.0.1.5
+              - name: MGMT-HOSTS
+                description: This group has the Management hosts address list
+                members:
+                  - address: 192.0.1.1
+                  - address: 192.0.1.3
+                  - address: 192.0.1.5
             network_group:
-            - name: MGMT
-              description: This group has the Management network addresses
-              members:
-              - address: 192.0.1.0/24
+              - name: MGMT
+                description: This group has the Management network addresses
+                members:
+                  - address: 192.0.1.0/24
         state: merged
     #
     #
@@ -1228,6 +1228,7 @@ Examples
     #    ]
     #
     # "after": []
+    #
     # After state
     # ------------
     # vyos@192# run show configuration commands | grep firewall
@@ -1259,7 +1260,7 @@ Examples
     # set firewall state-policy invalid action 'reject'
     # set firewall syn-cookies 'enable'
     # set firewall twa-hazards-protection 'enable'
-    #
+
     - name: Replace firewall global attributes configuration.
       vyos.vyos.vyos_firewall_global:
         config:
@@ -1268,39 +1269,39 @@ Examples
           log_martians: true
           syn_cookies: true
           twa_hazards_protection: true
-          ping:
+          ping: null
           all: true
           broadcast: true
           state_policy:
-          - connection_type: established
-            action: accept
-            log: true
-          - connection_type: invalid
-            action: reject
+            - connection_type: established
+              action: accept
+              log: true
+            - connection_type: invalid
+              action: reject
           route_redirects:
-          - afi: ipv4
-            ip_src_route: true
-            icmp_redirects:
-              send: true
-              receive: false
+            - afi: ipv4
+              ip_src_route: true
+              icmp_redirects:
+                send: true
+                receive: false
           group:
             address_group:
-            - name: SALES-HOSTS
-              description: Sales office hosts address list
-              members:
-              - address: 192.0.2.1
-              - address: 192.0.2.2
-              - address: 192.0.2.3
-            - name: ENG-HOSTS
-              description: Sales office hosts address list
-              members:
-              - address: 192.0.3.1
-              - address: 192.0.3.2
+              - name: SALES-HOSTS
+                description: Sales office hosts address list
+                members:
+                  - address: 192.0.2.1
+                  - address: 192.0.2.2
+                  - address: 192.0.2.3
+              - name: ENG-HOSTS
+                description: Sales office hosts address list
+                members:
+                  - address: 192.0.3.1
+                  - address: 192.0.3.2
             network_group:
-            - name: MGMT
-              description: This group has the Management network addresses
-              members:
-              - address: 192.0.1.0/24
+              - name: MGMT
+                description: This group has the Management network addresses
+                members:
+                  - address: 192.0.1.0/24
         state: replaced
     #
     #
@@ -1518,7 +1519,6 @@ Examples
     #
     - name: Gather firewall global config with provided configurations
       vyos.vyos.vyos_firewall_global:
-        config:
         state: gathered
     #
     #
@@ -1641,40 +1641,41 @@ Examples
           log_martians: true
           syn_cookies: true
           twa_hazards_protection: true
-          ping:
+          ping: null
           all: true
           broadcast: true
           state_policy:
-          - connection_type: established
-            action: accept
-            log: true
-          - connection_type: invalid
-            action: reject
+            - connection_type: established
+              action: accept
+              log: true
+            - connection_type: invalid
+              action: reject
           route_redirects:
-          - afi: ipv4
-            ip_src_route: true
-            icmp_redirects:
-            send: true
-            receive: false
+            - afi: ipv4
+              ip_src_route: true
+              icmp_redirects: null
+              send: true
+              receive: false
           group:
             address_group:
-            - name: SALES-HOSTS
-              description: Sales office hosts address list
-              members:
-              - address: 192.0.2.1
-              - address: 192.0.2.2
-              - address: 192.0.2.3
-            - name: ENG-HOSTS
-              description: Sales office hosts address list
-              members:
-              - address: 192.0.3.1
-              - address: 192.0.3.2
+              - name: SALES-HOSTS
+                description: Sales office hosts address list
+                members:
+                  - address: 192.0.2.1
+                  - address: 192.0.2.2
+                  - address: 192.0.2.3
+              - name: ENG-HOSTS
+                description: Sales office hosts address list
+                members:
+                  - address: 192.0.3.1
+                  - address: 192.0.3.2
             network_group:
-            - name: MGMT
-              description: This group has the Management network addresses
-              members:
-              - address: 192.0.1.0/24
+              - name: MGMT
+                description: This group has the Management network addresses
+                members:
+                  - address: 192.0.1.0/24
         state: rendered
+
     #
     #
     # -------------------------

@@ -21,6 +21,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -217,10 +218,10 @@ def build_ping(dest, count, size=None, interval=None, source=None, ttl=None):
 
 def parse_rate(rate_info):
     rate_re = re.compile(
-        r"(?P<tx>\d+) (?:\w+) (?:\w+), (?P<rx>\d+) (?:\w+), (?P<pkt_loss>\d+)% (?:\w+) (?:\w+), (?:\w+) (?P<time>\d+)"
+        r"(?P<tx>\d+) (?:\w+) (?:\w+), (?P<rx>\d+) (?:\w+), (?P<pkt_loss>\d+)% (?:\w+) (?:\w+), (?:\w+) (?P<time>\d+)",
     )
     rate_err_re = re.compile(
-        r"(?P<tx>\d+) (?:\w+) (?:\w+), (?P<rx>\d+) (?:\w+), (?:[+-])(?P<err>\d+) (?:\w+), (?P<pkt_loss>\d+)% (?:\w+) (?:\w+), (?:\w+) (?P<time>\d+)"
+        r"(?P<tx>\d+) (?:\w+) (?:\w+), (?P<rx>\d+) (?:\w+), (?:[+-])(?P<err>\d+) (?:\w+), (?P<pkt_loss>\d+)% (?:\w+) (?:\w+), (?:\w+) (?P<time>\d+)",
     )
 
     if rate_re.match(rate_info):
@@ -233,7 +234,7 @@ def parse_rate(rate_info):
 
 def parse_rtt(rtt_info):
     rtt_re = re.compile(
-        r"rtt (?:.*)=(?:\s*)(?P<min>\d*).(?:\d*)/(?P<avg>\d*).(?:\d*)/(?P<max>\d+).(?:\d*)/(?P<mdev>\d*)"
+        r"rtt (?:.*)=(?:\s*)(?P<min>\d*).(?:\d*)/(?P<avg>\d*).(?:\d*)/(?P<max>\d+).(?:\d*)/(?P<mdev>\d*)",
     )
     rtt = rtt_re.match(rtt_info)
 

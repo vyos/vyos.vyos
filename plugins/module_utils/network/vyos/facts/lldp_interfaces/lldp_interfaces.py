@@ -12,6 +12,7 @@ based on the configuration.
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -90,7 +91,8 @@ class Lldp_interfacesFacts(object):
         disable = "\n".join(filter(lambda x: ("disable" in x), conf))
 
         coordinate_based_conf = self.parse_attribs(
-            ["altitude", "datum", "longitude", "latitude"], coordinate_conf
+            ["altitude", "datum", "longitude", "latitude"],
+            coordinate_conf,
         )
         elin_based_conf = self.parse_lldp_elin_based(elin_conf)
         civic_based_conf = self.parse_lldp_civic_based(civic_conf)

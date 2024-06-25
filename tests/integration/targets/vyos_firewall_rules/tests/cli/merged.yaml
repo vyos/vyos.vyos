@@ -1,8 +1,6 @@
 ---
 - debug:
-    msg:
-      START vyos_firewall_rules merged integration tests on connection={{ ansible_connection
-      }}
+    msg: START vyos_firewall_rules merged integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
@@ -67,31 +65,24 @@
 
     - name: Assert that before dicts were correctly generated
       assert:
-        that:
-          "{{ merged['before'] | symmetric_difference(result['before']) |length\
-          \ == 0 }}"
+        that: "{{ merged['before'] | symmetric_difference(result['before']) |length == 0 }}"
 
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ merged['commands'] | symmetric_difference(result['commands']) |length\
-            \ == 0 }}"
+          - "{{ merged['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
     - name: Assert that fact was correctly generated
       assert:
         that:
-          - "{{ merged['after'] | symmetric_difference(ansible_facts['network_resources']['firewall_rules']) |length\
-            \ == 0 }}"
+          - "{{ merged['after'] | symmetric_difference(ansible_facts['network_resources']['firewall_rules']) |length == 0 }}"
 
     - name: Assert that after dicts was correctly generated
       assert:
         that:
-          - "{{ merged['after'] | symmetric_difference(result['after']) |length\
-            \ == 0 }}"
+          - "{{ merged['after'] | symmetric_difference(result['after']) |length == 0 }}"
 
-    - name:
-        Merge the provided configuration with the existing running configuration
-        (IDEMPOTENT)
+    - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_firewall_rules: *id001
 
@@ -103,7 +94,6 @@
     - name: Assert that before dicts were correctly generated
       assert:
         that:
-          - "{{ merged['after'] | symmetric_difference(result['before']) |length\
-            \ == 0 }}"
+          - "{{ merged['after'] | symmetric_difference(result['before']) |length == 0 }}"
   always:
     - include_tasks: _remove_config.yaml

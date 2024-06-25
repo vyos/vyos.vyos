@@ -301,12 +301,12 @@ Examples
         state: present
     - name: remove all users except admin
       vyos.vyos.vyos_user:
-        purge: yes
+        purge: true
     - name: set multiple users to level operator
       vyos.vyos.vyos_user:
         aggregate:
-        - name: netop
-        - name: netend
+          - name: netop
+          - name: netend
         level: operator
         state: present
     - name: Change Password for User netop

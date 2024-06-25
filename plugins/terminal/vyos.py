@@ -18,6 +18,7 @@
 #
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 import os
@@ -61,7 +62,7 @@ class TerminalModule(TerminalBase):
     except ValueError:
         raise AnsibleConnectionFailure(
             "Invalid value set for vyos terminal length '%s', value should be a valid integer string"
-            % terminal_length
+            % terminal_length,
         )
 
     def on_open_shell(self):

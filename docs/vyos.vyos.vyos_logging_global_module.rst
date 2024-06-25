@@ -1046,15 +1046,15 @@ Examples
           users:
             - username: vyos
               facilities:
-              - facility: local7
-                severity: debug
+                - facility: local7
+                  severity: debug
           global_params:
             archive:
               file_num: 2
               size: 111
             facilities:
-            - facility: cron
-              severity: debug
+              - facility: cron
+                severity: debug
             marker_interval: 111
             preserve_fqdn: true
         state: merged
@@ -1222,9 +1222,10 @@ Examples
           users:
             - username: paul
               facilities:
-              - facility: local7
-                severity: err
+                - facility: local7
+                  severity: err
         state: replaced
+
 
     # Commands Fired:
     # ---------------

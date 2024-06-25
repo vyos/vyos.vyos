@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from textwrap import dedent
@@ -47,12 +48,12 @@ class TestVyosPrefixListsModule(TestVyosModule):
         super(TestVyosPrefixListsModule, self).setUp()
 
         self.mock_get_resource_connection = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
         self.get_resource_connection = self.mock_get_resource_connection.start()
 
         self.mock_get_config = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.prefix_lists.prefix_lists.Prefix_listsFacts.get_config"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.prefix_lists.prefix_lists.Prefix_listsFacts.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
@@ -65,7 +66,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
     def test_vyos_prefix_lists_linear_merged(self):
         self.get_config.return_value = dedent(
             """\
-            """
+            """,
         )
         set_module_args(
             dict(
@@ -151,7 +152,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                     ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set policy prefix-list plist1",
@@ -236,7 +237,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                 set policy prefix-list6 plist4 rule 50
                 set policy prefix-list6 plist4 rule 50 action 'deny'
                 set policy prefix-list6 plist4 rule 50 prefix '2001:db8:4000::/36'
-            """
+            """,
         )
         set_module_args(
             dict(
@@ -322,7 +323,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                     ),
                 ],
                 state="merged",
-            )
+            ),
         )
         result = self.execute_module(changed=False)
         self.assertEqual(result["commands"], [])
@@ -368,7 +369,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                 set policy prefix-list6 plist4 rule 50
                 set policy prefix-list6 plist4 rule 50 action 'deny'
                 set policy prefix-list6 plist4 rule 50 prefix '2001:db8:4000::/36'
-            """
+            """,
         )
         set_module_args(
             dict(
@@ -392,12 +393,12 @@ class TestVyosPrefixListsModule(TestVyosModule):
                                         prefix="72.168.2.0/24",
                                     ),
                                 ],
-                            )
+                            ),
                         ],
-                    )
+                    ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "delete policy prefix-list plist1 rule 10 description 'Test rule 10'",
@@ -447,7 +448,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                 set policy prefix-list6 plist4 rule 50
                 set policy prefix-list6 plist4 rule 50 action 'deny'
                 set policy prefix-list6 plist4 rule 50 prefix '2001:db8:4000::/36'
-            """
+            """,
         )
         set_module_args(
             dict(
@@ -462,14 +463,14 @@ class TestVyosPrefixListsModule(TestVyosModule):
                                         sequence=10,
                                         action="permit",
                                         prefix="82.168.10.0/26",
-                                    )
+                                    ),
                                 ],
-                            )
+                            ),
                         ],
-                    )
+                    ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "delete policy prefix-list plist1 description 'Test plist1'",
@@ -521,7 +522,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                 set policy prefix-list6 plist4 rule 50
                 set policy prefix-list6 plist4 rule 50 action 'deny'
                 set policy prefix-list6 plist4 rule 50 prefix '2001:db8:4000::/36'
-            """
+            """,
         )
         set_module_args(
             dict(
@@ -536,14 +537,14 @@ class TestVyosPrefixListsModule(TestVyosModule):
                                         sequence=10,
                                         action="deny",
                                         prefix="102.168.10.0/26",
-                                    )
+                                    ),
                                 ],
-                            )
+                            ),
                         ],
-                    )
+                    ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         commands = [
             "delete policy prefix-list plist1 description 'Test plist1'",
@@ -599,7 +600,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                 set policy prefix-list6 plist4 rule 50
                 set policy prefix-list6 plist4 rule 50 action 'deny'
                 set policy prefix-list6 plist4 rule 50 prefix '2001:db8:4000::/36'
-            """
+            """,
         )
         set_module_args(
             dict(
@@ -614,14 +615,14 @@ class TestVyosPrefixListsModule(TestVyosModule):
                                         sequence=50,
                                         action="permit",
                                         prefix="102.168.10.0/26",
-                                    )
+                                    ),
                                 ],
-                            )
+                            ),
                         ],
-                    )
+                    ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         commands = [
             "set policy prefix-list plist5",
@@ -677,7 +678,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                 set policy prefix-list6 plist4 rule 50
                 set policy prefix-list6 plist4 rule 50 action 'deny'
                 set policy prefix-list6 plist4 rule 50 prefix '2001:db8:4000::/36'
-            """
+            """,
         )
         set_module_args(dict(state="deleted"))
         commands = [
@@ -730,7 +731,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                 set policy prefix-list6 plist4 rule 50
                 set policy prefix-list6 plist4 rule 50 action 'deny'
                 set policy prefix-list6 plist4 rule 50 prefix '2001:db8:4000::/36'
-            """
+            """,
         )
         set_module_args(dict(config=[dict(afi="ipv4")], state="deleted"))
         commands = [
@@ -781,13 +782,13 @@ class TestVyosPrefixListsModule(TestVyosModule):
                 set policy prefix-list6 plist4 rule 50
                 set policy prefix-list6 plist4 rule 50 action 'deny'
                 set policy prefix-list6 plist4 rule 50 prefix '2001:db8:4000::/36'
-            """
+            """,
         )
         set_module_args(
             dict(
                 config=[dict(afi="ipv6", prefix_lists=[dict(name="plist3")])],
                 state="deleted",
-            )
+            ),
         )
         commands = ["delete policy prefix-list6 plist3"]
         result = self.execute_module(changed=True)
@@ -834,7 +835,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                 set policy prefix-list6 plist4 rule 50
                 set policy prefix-list6 plist4 rule 50 action 'deny'
                 set policy prefix-list6 plist4 rule 50 prefix '2001:db8:4000::/36'
-            """
+            """,
         )
         set_module_args(
             dict(
@@ -843,7 +844,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                     dict(afi="ipv6", prefix_lists=[dict(name="plist3")]),
                 ],
                 state="deleted",
-            )
+            ),
         )
         commands = [
             "delete policy prefix-list plist2",
@@ -893,7 +894,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                 set policy prefix-list6 plist4 rule 50
                 set policy prefix-list6 plist4 rule 50 action 'deny'
                 set policy prefix-list6 plist4 rule 50 prefix '2001:db8:4000::/36'
-            """
+            """,
         )
         set_module_args(dict(running_config=cfg, state="parsed"))
         parsed = [
@@ -1066,7 +1067,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                     ),
                 ],
                 state="rendered",
-            )
+            ),
         )
         rendered = [
             "set policy prefix-list plist1",
@@ -1151,7 +1152,7 @@ class TestVyosPrefixListsModule(TestVyosModule):
                 set policy prefix-list6 plist4 rule 50
                 set policy prefix-list6 plist4 rule 50 action 'deny'
                 set policy prefix-list6 plist4 rule 50 prefix '2001:db8:4000::/36'
-            """
+            """,
         )
         set_module_args(dict(state="gathered"))
         gathered = [

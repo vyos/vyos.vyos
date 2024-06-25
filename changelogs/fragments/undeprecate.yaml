@@ -1,0 +1,6 @@
+---
+minor_changes:
+  - "Removes deprecation notice for vyos.vyos."
+  - "All GHA workflows have been updated to use ones from ansible-content-actions."
+  - "Passes latest ansible-lint with production profile."
+  - "Uncaps supported ansible-core versions, this collection now supports ansible-core>=2.15."

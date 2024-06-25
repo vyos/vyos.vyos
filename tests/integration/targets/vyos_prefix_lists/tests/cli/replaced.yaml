@@ -9,17 +9,17 @@
 - block:
     - name: Replace prefix-lists configurations of listed prefix-lists with provided configurations
       register: result
-      vyos.vyos.vyos_prefix_lists: &id002
+      vyos.vyos.vyos_prefix_lists: &id001
         config:
-          - afi: "ipv4"
+          - afi: ipv4
             prefix_lists:
-              - name: "AnsibleIPv4PrefixList"
-                description: "Configuration replaced by ansible"
+              - name: AnsibleIPv4PrefixList
+                description: Configuration replaced by ansible
                 entries:
                   - sequence: 3
-                    description: "Rule 3 replaced by ansible"
-                    action: "permit"
-                    prefix: "82.168.2.0/24"
+                    description: Rule 3 replaced by ansible
+                    action: permit
+                    prefix: 82.168.2.0/24
                     ge: 26
         state: replaced
 
@@ -33,8 +33,7 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length\
-            \ == 0 }}"
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
     - name: Assert that after dicts were correctly generated
       assert:
@@ -45,7 +44,7 @@
 
     - name: Replace prefix-lists configurations of listed prefix-lists with provided configurations (IDEMPOTENT)
       register: result
-      vyos.vyos.vyos_prefix_lists: *id002
+      vyos.vyos.vyos_prefix_lists: *id001
 
     - name: Assert that task was idempotent
       assert:

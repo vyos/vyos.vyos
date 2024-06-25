@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -34,13 +35,13 @@ class TestVyosBgpafModule(TestVyosModule):
     def setUp(self):
         super(TestVyosBgpafModule, self).setUp()
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_execute_show_command = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts."
-            + "bgp_address_family.bgp_address_family.Bgp_address_familyFacts.get_device_data"
+            + "bgp_address_family.bgp_address_family.Bgp_address_familyFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
 
@@ -95,12 +96,12 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(
                                     afi="ipv6",
                                     attribute_unchanged=dict(next_hop=True),
-                                )
+                                ),
                             ],
                         ),
                     ],
-                )
-            )
+                ),
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -142,12 +143,12 @@ class TestVyosBgpafModule(TestVyosModule):
                                         dict(action="export", path_list="list01"),
                                     ],
                                     capability=dict(orf="send"),
-                                )
+                                ),
                             ],
                         ),
                     ],
-                )
-            )
+                ),
+            ),
         )
         commands = [
             "set protocols bgp 65536 address-family ipv4-unicast aggregate-address 192.0.2.0/24 as-setipv4-unicast aggregate-address 192.0.2.0/24 summary-only",
@@ -196,12 +197,12 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(
                                     afi="ipv6",
                                     attribute_unchanged=dict(next_hop=True),
-                                )
+                                ),
                             ],
                         ),
                     ],
                 ),
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -257,12 +258,12 @@ class TestVyosBgpafModule(TestVyosModule):
                                         dict(action="export", path_list="list01"),
                                     ],
                                     capability=dict(orf="send"),
-                                )
+                                ),
                             ],
                         ),
                     ],
                 ),
-            )
+            ),
         )
         commands = [
             "delete protocols bgp 65536 neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged",
@@ -316,12 +317,12 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(
                                     afi="ipv6",
                                     attribute_unchanged=dict(next_hop=True),
-                                )
+                                ),
                             ],
                         ),
                     ],
                 ),
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -360,7 +361,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         ),
                     ],
                 ),
-            )
+            ),
         )
         commands = [
             "delete protocols bgp 65536 neighbor 203.0.113.5 address-family",
@@ -400,7 +401,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         ),
                     ],
                 ),
-            )
+            ),
         )
         commands = [
             "delete protocols bgp 65536 address-family ipv4-unicast",
@@ -445,7 +446,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         ),
                     ],
                 ),
-            )
+            ),
         )
         result = self.execute_module(failed=True)
         self.assertIn("Only one bgp instance is allowed per device", result["msg"])
@@ -487,12 +488,12 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(
                                     afi="ipv6",
                                     attribute_unchanged=dict(next_hop=True),
-                                )
+                                ),
                             ],
                         ),
                     ],
                 ),
-            )
+            ),
         )
 
         rendered_cmds = [
@@ -554,7 +555,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         {
                             "afi": "ipv6",
                             "attribute_unchanged": {"next_hop": True},
-                        }
+                        },
                     ],
                 },
             ],
@@ -593,7 +594,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         {
                             "afi": "ipv6",
                             "attribute_unchanged": {"next_hop": True},
-                        }
+                        },
                     ],
                 },
             ],

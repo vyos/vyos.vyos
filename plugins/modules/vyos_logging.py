@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 # (c) 2017, Ansible by Red Hat, inc
@@ -130,16 +131,29 @@ EXAMPLES = """
 - name: Add logging aggregate
   vyos.vyos.vyos_logging:
     aggregate:
-    - {dest: file, name: test1, facility: all, level: info}
-    - {dest: file, name: test2, facility: news, level: debug}
+      - dest: file
+        name: test1
+        facility: all
+        level: info
+      - dest: file
+        name: test2
+        facility: news
+        level: debug
     state: present
 
 - name: Remove logging aggregate
   vyos.vyos.vyos_logging:
     aggregate:
-    - {dest: console, facility: all, level: info}
-    - {dest: console, facility: daemon, level: warning}
-    - {dest: file, name: test2, facility: news, level: debug}
+      - dest: console
+        facility: all
+        level: info
+      - dest: console
+        facility: daemon
+        level: warning
+      - dest: file
+        name: test2
+        facility: news
+        level: debug
     state: absent
 """
 
@@ -153,6 +167,7 @@ commands:
 """
 
 import re
+
 from copy import deepcopy
 
 from ansible.module_utils._text import to_text
@@ -184,23 +199,37 @@ def spec_to_commands(updates, module):
             if w["name"]:
                 commands.append(
                     "delete system syslog {0} {1} facility {2} level {3}".format(
-                        dest, name, facility, level
-                    )
+                        dest,
+                        name,
+                        facility,
+                        level,
+                    ),
                 )
             else:
                 commands.append(
-                    "delete system syslog {0} facility {1} level {2}".format(dest, facility, level)
+                    "delete system syslog {0} facility {1} level {2}".format(
+                        dest,
+                        facility,
+                        level,
+                    ),
                 )
         elif state == "present" and w not in have:
             if w["name"]:
                 commands.append(
                     "set system syslog {0} {1} facility {2} level {3}".format(
-                        dest, name, facility, level
-                    )
+                        dest,
+                        name,
+                        facility,
+                        level,
+                    ),
                 )
             else:
                 commands.append(
-                    "set system syslog {0} facility {1} level {2}".format(dest, facility, level)
+                    "set system syslog {0} facility {1} level {2}".format(
+                        dest,
+                        facility,
+                        level,
+                    ),
                 )
 
     return commands
@@ -239,7 +268,7 @@ def config_to_dict(module):
                         "name": name,
                         "facility": facility,
                         "level": level,
-                    }
+                    },
                 )
 
     return obj
@@ -272,7 +301,7 @@ def map_params_to_obj(module, required_if=None):
                 "facility": module.params["facility"],
                 "level": module.params["level"],
                 "state": module.params["state"],
-            }
+            },
         )
 
     return obj
@@ -293,7 +322,9 @@ def main():
     # remove default in aggregate spec, to handle common arguments
     remove_default_spec(aggregate_spec)
 
-    argument_spec = dict(aggregate=dict(type="list", elements="dict", options=aggregate_spec))
+    argument_spec = dict(
+        aggregate=dict(type="list", elements="dict", options=aggregate_spec),
+    )
 
     argument_spec.update(element_spec)
 

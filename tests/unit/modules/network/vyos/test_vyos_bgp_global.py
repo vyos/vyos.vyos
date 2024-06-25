@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -35,22 +36,22 @@ class TestVyosBgpglobalModule(TestVyosModule):
         super(TestVyosBgpglobalModule, self).setUp()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_execute_show_command_config = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global.Bgp_global._get_config"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global.Bgp_global._get_config",
         )
         self.execute_show_command_config = self.mock_execute_show_command_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
         self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global.Bgp_globalFacts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global.Bgp_globalFacts.get_device_data",
         )
 
         self.execute_show_command = self.mock_execute_show_command.start()
@@ -117,7 +118,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -141,7 +142,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                                 dict(action="export", acl=31),
                                 dict(action="import", acl=9),
                             ],
-                        )
+                        ),
                     ],
                     bgp_params=dict(
                         confederation=[dict(peers=20), dict(identifier=66)],
@@ -149,7 +150,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ),
                 ),
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set protocols bgp 65536 neighbor 2001:db8::2 distribute-list export 31",
@@ -205,7 +206,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ],
                 ),
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -242,7 +243,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ),
                 ),
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "delete protocols bgp 65536 parameters default",
@@ -308,7 +309,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ),
                 ),
                 state="replaced",
-            )
+            ),
         )
         result = self.execute_module(failed=True)
         self.assertIn("Only one bgp instance is allowed per device", result["msg"])
@@ -345,7 +346,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ),
                 ),
                 state="replaced",
-            )
+            ),
         )
         result = self.execute_module(failed=True, filename="vyos_bgp_global_af_config.cfg")
         self.assertIn(
@@ -397,7 +398,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ],
                 ),
                 state="rendered",
-            )
+            ),
         )
         rendered_cmds = [
             "set protocols bgp 65536 neighbor 10.0.0.4 disable-connected-check",

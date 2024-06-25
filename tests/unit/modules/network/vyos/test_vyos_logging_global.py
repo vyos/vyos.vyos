@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from textwrap import dedent
@@ -23,17 +24,17 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         super(TestVyosLoggingGlobalModule, self).setUp()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
         self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.logging_global.logging_global.Logging_globalFacts.get_logging_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.logging_global.logging_global.Logging_globalFacts.get_logging_data",
         )
 
         self.execute_show_command = self.mock_execute_show_command.start()
@@ -68,7 +69,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
             set system syslog user paul facility local7 level 'err'
             set system syslog user vyos facility local6 level 'alert'
             set system syslog user vyos facility local7 level 'debug'
-            """
+            """,
         )
         playbook = dict(
             config=dict(
@@ -77,7 +78,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                         dict(facility="all"),
                         dict(facility="local7", severity="err"),
                         dict(facility="news", severity="debug"),
-                    ]
+                    ],
                 ),
                 files=[
                     dict(path="xyz"),
@@ -127,7 +128,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                         dict(facility="local7", severity="debug"),
                     ],
                 ),
-            )
+            ),
         )
         compare_cmds = []
         playbook["state"] = "merged"
@@ -140,7 +141,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
     def test_vyos_logging_global_merged(self):
         self.execute_show_command.return_value = dedent(
             """\
-            """
+            """,
         )
         playbook = dict(
             config=dict(
@@ -149,7 +150,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                         dict(facility="all"),
                         dict(facility="local7", severity="err"),
                         dict(facility="news", severity="debug"),
-                    ]
+                    ],
                 ),
                 files=[
                     dict(path="xyz"),
@@ -199,7 +200,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                         dict(facility="local7", severity="debug"),
                     ],
                 ),
-            )
+            ),
         )
         compare_cmds = [
             "set system syslog user paul facility local7 level err",
@@ -254,7 +255,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
             set system syslog user paul facility local7 level 'err'
             set system syslog user vyos facility local6 level 'alert'
             set system syslog user vyos facility local7 level 'debug'
-            """
+            """,
         )
         playbook = dict(config=dict())
         compare_cmds = ["delete system syslog"]
@@ -291,7 +292,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
             set system syslog user paul facility local7 level 'err'
             set system syslog user vyos facility local6 level 'alert'
             set system syslog user vyos facility local7 level 'debug'
-            """
+            """,
         )
         playbook = dict(
             config=dict(
@@ -304,9 +305,9 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                             dict(facility="local6", severity="err"),
                             dict(facility="local7", severity="emerg"),
                         ],
-                    )
+                    ),
                 ],
-            )
+            ),
         )
         compare_cmds = [
             "delete system syslog console facility all",
@@ -344,7 +345,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         self.execute_show_command.return_value = dedent(
             """\
             set system syslog console facility local6
-            """
+            """,
         )
         playbook = dict(config=dict(console=dict(facilities=[dict(facility="local6")])))
         compare_cmds = []
@@ -359,7 +360,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
             """\
             set system syslog console
             set system syslog global
-            """
+            """,
         )
         playbook = dict(
             config=dict(
@@ -372,9 +373,9 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                             dict(facility="local6", severity="err"),
                             dict(facility="local7", severity="emerg"),
                         ],
-                    )
+                    ),
                 ],
-            )
+            ),
         )
         compare_cmds = [
             "set system syslog console facility local7 level emerg",
@@ -397,13 +398,13 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                     dict(
                         hostname="10.0.2.16",
                         facilities=[dict(facility="local6")],
-                    )
+                    ),
                 ],
                 users=[
                     dict(username="vyos"),
                     dict(username="paul", facilities=[dict(facility="local7")]),
                 ],
-            )
+            ),
         )
         compare_cmds = [
             "set system syslog console facility all",
@@ -424,10 +425,10 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                     """\
                     set system syslog console facility all
                     set system syslog file xyz
-                    """
+                    """,
                 ),
                 state="parsed",
-            )
+            ),
         )
         parsed = dict(
             console=dict(facilities=[dict(facility="all")]),
@@ -441,7 +442,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         self.execute_show_command.return_value = dedent(
             """\
             set system syslog console facility all
-            """
+            """,
         )
         set_module_args(dict(state="gathered"))
         gathered = dict(console=dict(facilities=[dict(facility="all")]))

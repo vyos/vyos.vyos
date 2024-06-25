@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_route_maps overridden integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_route_maps overridden integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
@@ -20,7 +19,7 @@
                 set:
                   local_preference: 6
                   metric: 4
-                  metric_type: "type-1"
+                  metric_type: type-1
                   origin: egp
                   originator_id: 192.0.2.34
                   tag: 4
@@ -37,9 +36,7 @@
           - result.commands|symmetric_difference(overridden.commands) == []
           - result.after|symmetric_difference(ansible_facts['network_resources']['route_maps']) == []
 
-    - name:
-        Override the existing configuration with the provided running configuration
-        (IDEMPOTENT)
+    - name: Override the existing configuration with the provided running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_route_maps: *id001
 

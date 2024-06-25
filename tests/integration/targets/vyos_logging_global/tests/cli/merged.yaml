@@ -1,8 +1,6 @@
 ---
 - debug:
-    msg:
-      START vyos_logging_global merged integration tests on connection={{ ansible_connection
-      }}
+    msg: START vyos_logging_global merged integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -44,12 +42,9 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ merged['commands'] | symmetric_difference(result['commands']) |length\
-            \ == 0 }}"
+          - "{{ merged['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
-    - name:
-        Merge the provided configuration with the existing running configuration
-        (IDEMPOTENT)
+    - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_logging_global: *id001
 

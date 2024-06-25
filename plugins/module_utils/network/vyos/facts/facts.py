@@ -8,6 +8,7 @@ calls the appropriate facts gathering function
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts import (
@@ -79,6 +80,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.snmp_
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes import (
     Static_routesFacts,
 )
+
 
 FACT_LEGACY_SUBSETS = dict(default=Default, neighbors=Neighbors, config=Config)
 FACT_RESOURCE_SUBSETS = dict(

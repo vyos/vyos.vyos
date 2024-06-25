@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_snmp_server replaced integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_snmp_server replaced integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -13,31 +12,31 @@
       vyos.vyos.vyos_snmp_server: &id001
         config:
           communities:
-            - name: "bridges"
-              networks: ["1.1.1.0/24", "12.1.1.0/24"]
-          location: "RDU"
+            - name: bridges
+              networks: [1.1.1.0/24, 12.1.1.0/24]
+          location: RDU
           listen_addresses:
-            - address: "100.1.2.1"
+            - address: 100.1.2.1
               port: 33
           snmp_v3:
             users:
               - user: adminuser
                 engine_id: "33"
                 authentication:
-                  plaintext_key: "abc1234567"
-                  type: "sha"
+                  plaintext_key: abc1234567
+                  type: sha
                 privacy:
-                  plaintext_key: "abc1234567"
-                  type: "aes"
+                  plaintext_key: abc1234567
+                  type: aes
               - user: guestuser2
                 authentication:
-                  plaintext_key: "opq1234567"
-                  type: "sha"
+                  plaintext_key: opq1234567
+                  type: sha
                 privacy:
-                  plaintext_key: "opq1234567"
-                  type: "aes"
+                  plaintext_key: opq1234567
+                  type: aes
             views:
-              - view: "default"
+              - view: default
                 oid: 1
         state: replaced
 
@@ -50,9 +49,7 @@
           - result.after == ansible_facts['network_resources']['snmp_server']
           - result.commands|length == 13
 
-    - name:
-        Replace the existing configuration with the provided running configuration
-        (IDEMPOTENT)
+    - name: Replace the existing configuration with the provided running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_snmp_server: *id001
 

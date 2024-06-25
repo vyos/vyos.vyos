@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -34,35 +35,35 @@ class TestVyosFirewallRulesModule(TestVyosModule):
     def setUp(self):
         super(TestVyosFirewallRulesModule, self).setUp()
         self.mock_get_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config",
         )
         self.load_config = self.mock_load_config.start()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection",
         )
         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
         self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes.Static_routesFacts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes.Static_routesFacts.get_device_data",
         )
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_rules.firewall_rules.Firewall_rulesFacts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_rules.firewall_rules.Firewall_rulesFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
 
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_rules.firewall_rules.Firewall_rules._get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_rules.firewall_rules.Firewall_rules._get_os_version",
         )
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = "Vyos 1.2"
@@ -126,7 +127,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                     ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall ipv6-name V6-INBOUND default-action 'reject'",
@@ -186,7 +187,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                     ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall ipv6-name V6-INBOUND default-action 'reject'",
@@ -224,14 +225,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         protocol="icmp",
                                         fragment="match-frag",
                                         disable=True,
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall name INBOUND default-action 'accept'",
@@ -278,14 +279,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                             invalid=True,
                                             new=True,
                                         ),
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall name INBOUND rule 101 protocol 'tcp'",
@@ -323,23 +324,23 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                                 address_group="OUT-ADDR-GROUP",
                                                 network_group="OUT-NET-GROUP",
                                                 port_group="OUT-PORT-GROUP",
-                                            )
+                                            ),
                                         ),
                                         source=dict(
                                             group=dict(
                                                 address_group="IN-ADDR-GROUP",
                                                 network_group="IN-NET-GROUP",
                                                 port_group="IN-PORT-GROUP",
-                                            )
+                                            ),
                                         ),
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall name INBOUND rule 101 source group address-group IN-ADDR-GROUP",
@@ -374,14 +375,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                             utc=True,
                                         ),
                                         tcp=dict(flags="ALL"),
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall name INBOUND rule 101",
@@ -417,14 +418,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         protocol="icmp",
                                         disabled=True,
                                         icmp=dict(type_name="echo-request"),
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall ipv6-name INBOUND default-action 'accept'",
@@ -470,14 +471,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                             invalid=True,
                                             new=True,
                                         ),
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall ipv6-name INBOUND rule 101 protocol 'tcp'",
@@ -515,23 +516,23 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                                 address_group="OUT-ADDR-GROUP",
                                                 network_group="OUT-NET-GROUP",
                                                 port_group="OUT-PORT-GROUP",
-                                            )
+                                            ),
                                         ),
                                         source=dict(
                                             group=dict(
                                                 address_group="IN-ADDR-GROUP",
                                                 network_group="IN-NET-GROUP",
                                                 port_group="IN-PORT-GROUP",
-                                            )
+                                            ),
                                         ),
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall ipv6-name INBOUND rule 101 source group address-group IN-ADDR-GROUP",
@@ -566,14 +567,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                             utc=True,
                                         ),
                                         tcp=dict(flags="ALL"),
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall ipv6-name INBOUND rule 101",
@@ -602,14 +603,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         number="101",
                                         protocol="icmp",
                                         icmp=dict(type_name="port-unreachable"),
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall ipv6-name INBOUND rule 101 icmpv6 type port-unreachable",
@@ -632,14 +633,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         number="101",
                                         protocol="icmp",
                                         icmp=dict(type=1, code=1),
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall name INBOUND rule 101 icmp type 1",
@@ -663,14 +664,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         number="101",
                                         protocol="icmp",
                                         icmp=dict(type_name="echo-request"),
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall name INBOUND rule 101 icmp type-name echo-request",
@@ -684,7 +685,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             dict(
                 config=[dict(afi="ipv4", rule_sets=[dict(name="V4-INGRESS")])],
                 state="deleted",
-            )
+            ),
         )
         commands = ["delete firewall name V4-INGRESS"]
         self.execute_module(changed=True, commands=commands)
@@ -697,7 +698,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                     dict(afi="ipv6", rule_sets=[dict(name="V6-INGRESS")]),
                 ],
                 state="deleted",
-            )
+            ),
         )
         commands = [
             "delete firewall name V4-INGRESS",
@@ -718,7 +719,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                     dict(afi="ipv6", rule_sets=[dict(name="V6-ING")]),
                 ],
                 state="deleted",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -771,14 +772,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                     dict(
                                         icmp=dict(type_name="echo-request"),
                                         number=20,
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "delete firewall name V4-INGRESS rule 101 disable",
@@ -836,14 +837,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                     dict(
                                         icmp=dict(type_name="echo-request"),
                                         number=20,
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "delete firewall name V4-INGRESS enable-default-log",
@@ -871,7 +872,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         protocol="icmp",
                                         fragment="match-frag",
                                         disabled=True,
-                                    )
+                                    ),
                                 ],
                             ),
                             dict(
@@ -894,14 +895,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                     dict(
                                         icmp=dict(type_name="echo-request"),
                                         number=20,
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -933,7 +934,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -958,7 +959,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         protocol="icmp",
                                         fragment="match-frag",
                                         disabled=True,
-                                    )
+                                    ),
                                 ],
                             ),
                             dict(
@@ -981,14 +982,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                     dict(
                                         icmp=dict(type_name="echo-request"),
                                         number=20,
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
                     ),
                 ],
                 state="merged",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -1019,7 +1020,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                                 address_group="IN-ADDR-GROUP",
                                                 network_group="IN-NET-GROUP",
                                                 port_group="IN-PORT-GROUP",
-                                            )
+                                            ),
                                         ),
                                     ),
                                     dict(
@@ -1050,7 +1051,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                     ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         commands = [
             "delete firewall ipv6-name V6-INGRESS",
@@ -1103,7 +1104,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         protocol="icmp",
                                         fragment="match-frag",
                                         disabled=True,
-                                    )
+                                    ),
                                 ],
                             ),
                             dict(
@@ -1126,14 +1127,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                     dict(
                                         icmp=dict(type_name="echo-request"),
                                         number=20,
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
                     ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -1159,14 +1160,14 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         protocol="icmp",
                                         disabled=True,
                                         icmp=dict(type_name="echo-request"),
-                                    )
+                                    ),
                                 ],
                             ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall ipv6-name INBOUND default-action 'accept'",

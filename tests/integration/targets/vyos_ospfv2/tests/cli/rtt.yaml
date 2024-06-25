@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_ospfv2 round trip integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_ospfv2 round trip integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -10,7 +9,7 @@
       register: base_config
       vyos.vyos.vyos_ospfv2:
         config:
-          log_adjacency_changes: "detail"
+          log_adjacency_changes: detail
           max_metric:
             router_lsa:
               administrative: true
@@ -21,34 +20,34 @@
               always: true
               metric: 10
               metric_type: 2
-              route_map: "ingress"
+              route_map: ingress
           mpls_te:
             enabled: true
-            router_address: "192.0.11.11"
+            router_address: 192.0.11.11
           auto_cost:
             reference_bandwidth: 2
           neighbor:
-            - neighbor_id: "192.0.11.12"
+            - neighbor_id: 192.0.11.12
               poll_interval: 10
               priority: 2
           redistribute:
-            - route_type: "bgp"
+            - route_type: bgp
               metric: 10
               metric_type: 2
           passive_interface:
-            - "eth1"
-            - "eth2"
+            - eth1
+            - eth2
           parameters:
-            router_id: "192.0.1.1"
+            router_id: 192.0.1.1
             opaque_lsa: true
             rfc1583_compatibility: true
-            abr_type: "cisco"
+            abr_type: cisco
           areas:
             - area_id: "2"
               area_type:
                 normal: true
-              authentication: "plaintext-password"
-              shortcut: "enable"
+              authentication: plaintext-password
+              shortcut: enable
             - area_id: "3"
               area_type:
                 nssa:
@@ -58,11 +57,11 @@
                 stub:
                   default_cost: 20
               network:
-                - address: "192.0.2.0/24"
+                - address: 192.0.2.0/24
               range:
-                - address: "192.0.3.0/24"
+                - address: 192.0.3.0/24
                   cost: 10
-                - address: "192.0.4.0/24"
+                - address: 192.0.4.0/24
                   cost: 12
         state: merged
 
@@ -81,20 +80,20 @@
             - area_id: "2"
               area_type:
                 normal: true
-              authentication: "plaintext-password"
-              shortcut: "enable"
+              authentication: plaintext-password
+              shortcut: enable
             - area_id: "4"
               area_type:
                 stub:
                   default_cost: 20
                   set: true
               network:
-                - address: "192.0.12.0/24"
-                - address: "192.0.2.0/24"
-                - address: "192.0.22.0/24"
-                - address: "192.0.32.0/24"
+                - address: 192.0.12.0/24
+                - address: 192.0.2.0/24
+                - address: 192.0.22.0/24
+                - address: 192.0.32.0/24
               range:
-                - address: "1.1.2.0/24"
+                - address: 1.1.2.0/24
                   cost: 10
           auto_cost:
             reference_bandwidth: 2
@@ -103,8 +102,8 @@
               always: true
               metric: 10
               metric_type: 2
-              route_map: "ingress"
-          log_adjacency_changes: "detail"
+              route_map: ingress
+          log_adjacency_changes: detail
           max_metric:
             router_lsa:
               administrative: true
@@ -112,22 +111,22 @@
               on_startup: 10
           mpls_te:
             enabled: true
-            router_address: "192.0.22.22"
+            router_address: 192.0.22.22
           neighbor:
-            - neighbor_id: "192.0.11.12"
+            - neighbor_id: 192.0.11.12
               poll_interval: 10
               priority: 2
           parameters:
-            abr_type: "cisco"
+            abr_type: cisco
             opaque_lsa: true
             rfc1583_compatibility: true
-            router_id: "192.0.1.1"
+            router_id: 192.0.1.1
           passive_interface:
-            - "eth1"
+            - eth1
           redistribute:
             - metric: 10
               metric_type: 2
-              route_type: "bgp"
+              route_type: bgp
         state: replaced
 
     - name: Assert that changes were applied
