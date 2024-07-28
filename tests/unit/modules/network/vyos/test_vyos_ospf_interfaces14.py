@@ -27,6 +27,7 @@ from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_ar
 
 from .vyos_module import TestVyosModule, load_fixture
 
+
 class TestVyosOspfInterfacesModule14(TestVyosModule):
     module = vyos_ospf_interfaces
 

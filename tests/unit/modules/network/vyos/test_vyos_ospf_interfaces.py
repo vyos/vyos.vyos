@@ -450,4 +450,3 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
         result_list = self.sort_address_family(result["gathered"])
         given_list = self.sort_address_family(gathered_list)
         self.assertEqual(result_list, given_list)
-

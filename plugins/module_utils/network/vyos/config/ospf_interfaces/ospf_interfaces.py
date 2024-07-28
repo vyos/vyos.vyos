@@ -34,6 +34,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_template
     Ospf_interfacesTemplate14
 )
 
+
 class Ospf_interfaces(ResourceModule):
     """
     The vyos_ospf_interfaces config class

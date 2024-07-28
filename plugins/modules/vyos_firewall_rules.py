@@ -93,10 +93,6 @@ options:
               - Only valid in 1.4 and later.
               - Only valid when default_action = jump.
             type: str
-            choices:
-            - drop
-            - reject
-            - accept
           description:
             description:
             - Rule set description.
@@ -271,9 +267,6 @@ options:
                   - Only valid in 1.4 and later.
                   - Only valid when action = jump.
                 type: str
-                choices:
-                - disable
-                - enable
               limit:
                 description:
                 - Rate limit using a token bucket filter.
@@ -403,7 +396,7 @@ options:
                   time:
                     description:
                     - Source addresses seen in the last N seconds.
-                      - Since 1.4, this is a string of second/minute/hour
+                    - Since 1.4, this is a string of second/minute/hour
                     type: str
               source:
                 description:

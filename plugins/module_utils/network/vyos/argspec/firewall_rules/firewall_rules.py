@@ -53,7 +53,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                             "choices": ["drop", "reject", "accept", "jump"],
                             "type": "str",
                         },
-                        "default_jump_target": { "type": "str" },
+                        "default_jump_target": {"type": "str"},
                         "description": {"type": "str"},
                         "enable_default_log": {"type": "bool"},
                         "filter": {
@@ -216,8 +216,8 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                                 "edonkey",
                                                 "gnutella",
                                                 "kazaa",
-                                             ],
-                                             "type": "str",
+                                            ],
+                                            "type": "str",
                                         },
                                     },
                                     "type": "list"
@@ -241,22 +241,13 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     "type": "list",
                                 },
                                 "packet_type": {
-                                	"choices": [
-                                		"broadcast",
+                                    "choices": [
+                                        "broadcast",
                                         "multicast",
                                         "host",
                                         "other"
                                     ],
                                     "type": "str"
-                                },
-                                "protocol": { "type": "str" },
-                                "queue": { "type": "str" },
-                                "queue_options": {
-                                    "choices": [
-                                        "bypass",
-                                        "fanout",
-                                    ],
-                                    "type": "str",
                                 },
                                 "protocol": {"type": "str"},
                                 "queue": {"type": "str"},
@@ -267,7 +258,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                 "recent": {
                                     "options": {
                                         "count": {"type": "int"},
-                                        "time": {"type": "int"},
+                                        "time": {"type": "str"},
                                     },
                                     "type": "dict",
                                 },
@@ -323,7 +314,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                                     ],
                                                     "type": "str"
                                                 },
-                                                "invert": { "type": "bool" }
+                                                "invert": {"type": "bool"}
                                             },
                                             "type": "list"
                                         }
@@ -351,7 +342,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
             },
             "type": "list",
         },
-        "running_config": { "type": "str" },
+        "running_config": {"type": "str"},
         "state": {
             "choices": [
                 "merged",
