@@ -46,7 +46,7 @@ class Ospf_interfaces(ResourceModule):
             facts_module=Facts(module),
             module=module,
             resource="ospf_interfaces",
-            tmplt=Ospf_interfacesTemplate14(),
+            tmplt=Ospf_interfacesTemplate(),
         )
         self.parsers = [
             "authentication_password",
@@ -65,12 +65,36 @@ class Ospf_interfaces(ResourceModule):
             "passive",
         ]
 
+    def _validate_template(self):
+        if self._module.params.get("version") == "detect":
+            try:
+                version = self._module._connection.get_device_info()["network_os_major_version"]
+            except (KeyError, AttributeError) as e:
+                version = "1.2"  # default to 1.2 if no connection
+        else:
+            version = self._module.params.get("version")
+        if version >= "1.4":
+            self._tmplt = Ospf_interfacesTemplate14()
+        else:
+            self._tmplt = Ospf_interfacesTemplate()
+
+    def parse(self):
+        """ override parse to check template """
+        self._validate_template()
+        return super().parse()
+
+    def get_parser(self, name):
+        """get_parsers"""
+        self._validate_template()
+        return super().get_parser(name)
+
     def execute_module(self):
         """Execute the module
 
         :rtype: A dictionary
         :returns: The result from module execution
         """
+        self._validate_template()
         if self.state not in ["parsed", "gathered"]:
             self.generate_commands()
             self.run_commands()

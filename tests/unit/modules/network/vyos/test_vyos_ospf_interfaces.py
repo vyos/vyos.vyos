@@ -21,7 +21,6 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from unittest import skip
 from unittest.mock import patch
 
 from ansible_collections.vyos.vyos.plugins.modules import vyos_ospf_interfaces
@@ -30,7 +29,6 @@ from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_ar
 from .vyos_module import TestVyosModule, load_fixture
 
 
-@skip("Skip until the module is refactored")
 class TestVyosOspfInterfacesModule(TestVyosModule):
     module = vyos_ospf_interfaces
 
@@ -50,11 +48,13 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
         )
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = "1.2"
+        self.maxDiff = None
 
     def tearDown(self):
         super(TestVyosOspfInterfacesModule, self).tearDown()
         self.mock_get_resource_connection_config.stop()
         self.mock_execute_show_command.stop()
+        self.mock_get_os_version.stop()
 
     def load_fixtures(self, commands=None, filename=None):
         if filename is None:
