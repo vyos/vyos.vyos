@@ -275,7 +275,7 @@ class Interfaces(ConfigBase):
             commands.append(
                 self._compute_commands(key=key, interface=want_copy["name"], remove=True),
             )
-        if have_copy["enabled"] is False:
+        if have_copy["enabled"] is False and not ('enabled' in want_copy and want_copy["enabled"] is False):
             commands.append(
                 self._compute_commands(key="enabled", value=True, interface=want_copy["name"]),
             )

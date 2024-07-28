@@ -39,6 +39,11 @@ description:
 - This module manages OSPF configuration of interfaces on devices running VYOS.
 author: Gomathi Selvi Srinivasan (@GomathiselviS)
 options:
+  version:
+    description: Version of VyOS for configuration (used mostly for testing and offline-config).
+    type: str
+    default: detect
+    required: false
   config:
     description: A list of OSPF configuration for interfaces.
     type: list
@@ -901,7 +906,7 @@ def main():
         argument_spec=Ospf_interfacesArgs.argument_spec,
         mutually_exclusive=[],
         required_if=[],
-        supports_check_mode=False,
+        supports_check_mode=True,
     )
 
     result = Ospf_interfaces(module).execute_module()

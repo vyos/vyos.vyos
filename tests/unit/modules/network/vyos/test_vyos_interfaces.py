@@ -183,5 +183,40 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
             "set interfaces ethernet eth4 speed 'auto'",
             "delete interfaces wireguard wg02 description",
             "delete interfaces ethernet eth3 description",
+            "delete interfaces ethernet eth3 disable",
         ]
         self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_idempotent_disable(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth3",
+                        description="Ethernet 3",
+                        enabled=False,
+                    ),
+                ],
+                state="merged",
+            )
+        )
+
+        commands = []
+        self.execute_module(changed=False, commands=commands)
+
+    def test_vyos_interfaces_idempotent_disable_replace(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth3",
+                        description="Ethernet 3",
+                        enabled=False,
+                    ),
+                ],
+                state="replaced",
+            )
+        )
+
+        commands = []
+        self.execute_module(changed=False, commands=commands)
