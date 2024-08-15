@@ -39,6 +39,11 @@ class Ospf_interfacesArgs(object):  # pylint: disable=R0903
 
     argument_spec = {
         "running_config": {},
+        "version": {
+            "type": "str",
+            "default": "detect",
+            "required": False,
+        },
         "state": {
             "default": "merged",
             "type": "str",
