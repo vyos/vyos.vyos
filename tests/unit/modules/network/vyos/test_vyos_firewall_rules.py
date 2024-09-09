@@ -1182,3 +1182,51 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall ipv6-name INBOUND rule 101 icmpv6 type-name echo-request",
         ]
         self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_new_afi_syntax_v6_rule_sets_rule_merged_01_version(self):
+        self.get_os_version.return_value = "VyOS 1.4-rolling-202308040557"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="INBOUND",
+                                description="This is IPv6 INBOUND rule set",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="accept",
+                                        description="Rule 101 is configured by Ansible",
+                                        state=dict(
+                                            established=True,
+                                            related=True,
+                                            invalid=True,
+                                            new=True,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+        commands = [
+            "set firewall ipv6 name INBOUND default-action 'accept'",
+            "set firewall ipv6 name INBOUND description 'This is IPv6 INBOUND rule set'",
+            "set firewall ipv6 name INBOUND default-log",
+            "set firewall ipv6 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
+            "set firewall ipv6 name INBOUND rule 101",
+            "set firewall ipv6 name INBOUND rule 101 action 'accept'",
+            "set firewall ipv6 name INBOUND rule 101 state established",
+            "set firewall ipv6 name INBOUND rule 101 state invalid",
+            "set firewall ipv6 name INBOUND rule 101 state new",
+            "set firewall ipv6 name INBOUND rule 101 state related",
+        ]
+        self.execute_module(changed=True, commands=commands)
+

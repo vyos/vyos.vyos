@@ -1,0 +1,4 @@
+---
+major_changes:
+  - firewall_rules - support some new firewall syntax that was added in 1.4-rolling-202308040557 (non-exhaustive)
+

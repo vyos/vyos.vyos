@@ -317,6 +317,13 @@ class Firewall_rules(ConfigBase):
             "description",
             "log",
         )
+        os_version = self._get_os_version()
+        ver = re.search(
+            r"^vyos (?P<major_version>[\d]+?)\.(?P<minor_version>[\d]+?)(\.(?P<patch_version>[\d]+?))?(-rolling-(?P<rolling_version>\d+?))?$",
+            os_version,
+            re.IGNORECASE,
+        )
+        is_rolling = ver.group("rolling_version") is not None
         if w_rules:
             for w in w_rules:
                 cmd = self._compute_command(afi, name, w["number"], opr=opr)
@@ -393,6 +400,13 @@ class Firewall_rules(ConfigBase):
         :param cmd: commands to be prepend.
         :return: generated list of commands.
         """
+        os_version = self._get_os_version()
+        ver = re.search(
+            r"^vyos (?P<major_version>[\d]+?)\.(?P<minor_version>[\d]+?)(\.(?P<patch_version>[\d]+?))?(-rolling-(?P<rolling_version>\d+?))?$",
+            os_version,
+            re.IGNORECASE,
+        )
+        is_rolling = ver.group("rolling_version") is not None
         h_state = {}
         commands = []
         l_set = ("new", "invalid", "related", "established")
@@ -405,7 +419,13 @@ class Firewall_rules(ConfigBase):
                     and item in l_set
                     and not (h_state and self._is_w_same(w[attr], h_state, item))
                 ):
-                    commands.append(cmd + (" " + attr + " " + item + " " + self._bool_to_str(val)))
+                    if (
+                        is_rolling and int(ver.group("rolling_version")) > 202308040557 or
+                        not is_rolling and int(ver.group("major_version")) >= 1 and int(ver.group("minor_version")) >= 4
+                    ):
+                        commands.append(cmd + (" " + attr + " " + item))
+                    else:
+                        commands.append(cmd + (" " + attr + " " + item + " " + self._bool_to_str(val)))
                 elif not opr and item in l_set and not (h_state and self._in_target(h_state, item)):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
@@ -802,12 +822,24 @@ class Firewall_rules(ConfigBase):
         """
         return "enable" if val else "disable"
 
-    def _get_fw_type(self, afi):
+    def _get_fw_type(self, afi: str) -> str:
         """
         This function returns the firewall rule-set type based on IP address.
         :param afi: address type
         :return: rule-set type.
         """
+        os_version = self._get_os_version()
+        ver = re.search(
+            r"^vyos (?P<major_version>[\d]+?)\.(?P<minor_version>[\d]+?)(\.(?P<patch_version>[\d]+?))?(-rolling-(?P<rolling_version>\d+?))?$",
+            os_version,
+            re.IGNORECASE,
+        )
+        is_rolling = ver.group("rolling_version") is not None
+        if (
+            is_rolling and int(ver.group("rolling_version")) > 202308040557 or
+            not is_rolling and int(ver.group("major_version")) >= 1 and int(ver.group("minor_version")) >= 4
+        ):
+            return afi + " name"
         return "ipv6-name" if afi == "ipv6" else "name"
 
     def _is_del(self, l_set, h, key="number"):
@@ -863,7 +895,7 @@ class Firewall_rules(ConfigBase):
         )
         return True if key in r_set else False
 
-    def _get_os_version(self):
+    def _get_os_version(self) -> str:
         os_version = "1.2"
         if self._connection:
             os_version = self._connection.get_device_info()["network_os_version"]
