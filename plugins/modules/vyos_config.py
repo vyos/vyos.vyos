@@ -359,8 +359,8 @@ def main():
     if module.params["save"]:
         diff = run_commands(module, commands=["configure", "compare saved"])[1]
         if diff not in {
-          "[edit]",
-          'No changes between working and saved configurations.\n\n[edit]'
+            "[edit]",
+            "No changes between working and saved configurations.\n\n[edit]"
         }:
             if not module.check_mode:
                 run_commands(module, commands=["save"])
