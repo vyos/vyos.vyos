@@ -46,7 +46,7 @@ class Ospf_interfacesFacts(object):
 
     def get_device_data(self, connection):
         # if self._get_os_version(connection) >= "1.4":
-        if LooseVersion(os_version) >= LooseVersion('1.4'):
+        if LooseVersion(os_version) >= LooseVersion("1.4"):
             # use set protocols ospf in order to get both ospf and ospfv3
             return connection.get("show configuration commands |  match 'set protocols ospf'")
         return connection.get('show configuration commands |  match "set interfaces"')
@@ -90,7 +90,7 @@ class Ospf_interfacesFacts(object):
     def get_config_set(self, data, connection):
         """To classify the configurations beased on interface"""
         # if self._get_os_version(connection) >= "1.4":
-        if LooseVersion(os_version) >= LooseVersion('1.4'):
+        if LooseVersion(os_version) >= LooseVersion("1.4"):
             return self.get_config_set_1_4(data)
         return self.get_config_set_1_2(data)
 
@@ -107,7 +107,7 @@ class Ospf_interfacesFacts(object):
         facts = {}
         objs = []
         # if self._get_os_version(connection) >= "1.4":
-        if LooseVersion(os_version) >= LooseVersion('1.4'):
+        if LooseVersion(os_version) >= LooseVersion("1.4"):
             ospf_interface_class = Ospf_interfacesTemplate14
         else:
             ospf_interface_class = Ospf_interfacesTemplate

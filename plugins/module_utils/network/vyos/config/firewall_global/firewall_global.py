@@ -646,7 +646,7 @@ class Firewall_global(ConfigBase):
             cmd = "delete firewall "
         else:
             cmd = "set firewall "
-        if key != "group" and LooseVersion(os_version) >= LooseVersion('1.4'):
+        if key != "group" and LooseVersion(os_version) >= LooseVersion("1.4"):
             cmd += "global-options "
         if key:
             cmd += key.replace("_", "-") + " "

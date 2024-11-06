@@ -79,7 +79,7 @@ class Ospf_interfaces(ResourceModule):
         else:
             version = self._module.params.get("version")
         # if version >= "1.4":
-        if LooseVersion(os_version) >= LooseVersion('1.4'):
+        if LooseVersion(os_version) >= LooseVersion("1.4"):
             self._tmplt = Ospf_interfacesTemplate14()
         else:
             self._tmplt = Ospf_interfacesTemplate()
