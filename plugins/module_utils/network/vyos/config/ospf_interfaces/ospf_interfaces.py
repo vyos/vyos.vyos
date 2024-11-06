@@ -34,6 +34,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_template
     Ospf_interfacesTemplate14
 )
 
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 class Ospf_interfaces(ResourceModule):
     """
@@ -41,6 +44,7 @@ class Ospf_interfaces(ResourceModule):
     """
 
     def __init__(self, module):
+        global os_version
         super(Ospf_interfaces, self).__init__(
             empty_fact_val={},
             facts_module=Facts(module),
@@ -64,6 +68,7 @@ class Ospf_interfaces(ResourceModule):
             "instance",
             "passive",
         ]
+        os_version =  get_os_version(self._module)
 
     def _validate_template(self):
         if self._module.params.get("version") == "detect":
@@ -73,7 +78,8 @@ class Ospf_interfaces(ResourceModule):
                 version = "1.2"  # default to 1.2 if no connection
         else:
             version = self._module.params.get("version")
-        if version >= "1.4":
+        # if version >= "1.4":
+        if LooseVersion(os_version) >= LooseVersion('1.4'):
             self._tmplt = Ospf_interfacesTemplate14()
         else:
             self._tmplt = Ospf_interfacesTemplate()

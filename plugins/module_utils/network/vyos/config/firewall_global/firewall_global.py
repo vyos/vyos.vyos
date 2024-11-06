@@ -31,6 +31,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils
     list_diff_want_only,
 )
 
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
+
 
 class Firewall_global(ConfigBase):
     """
@@ -42,7 +46,9 @@ class Firewall_global(ConfigBase):
     gather_network_resources = ["firewall_global"]
 
     def __init__(self, module):
+        global os_version
         super(Firewall_global, self).__init__(module)
+        os_version =  get_os_version(self._module)
 
     def get_firewall_global_facts(self, data=None):
         """Get the 'facts' (the current configuration)
@@ -640,7 +646,7 @@ class Firewall_global(ConfigBase):
             cmd = "delete firewall "
         else:
             cmd = "set firewall "
-        if key != "group" and self._get_os_version() >= '1.4':
+        if key != "group" and LooseVersion(os_version) >= LooseVersion('1.4'):
             cmd += "global-options "
         if key:
             cmd += key.replace("_", "-") + " "
@@ -751,12 +757,3 @@ class Firewall_global(ConfigBase):
         elif attrib == "validation":
             regex = "source-validation"
         return regex
-
-    def _get_os_version(self):
-        """
-        Get the base version number before the '-' in the version string.
-        """
-        os_version = "1.2"
-        if self._connection:
-            os_version = self._connection.get_device_info()["network_os_major_version"]
-        return os_version
