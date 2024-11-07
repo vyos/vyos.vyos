@@ -46,9 +46,9 @@ class Firewall_global(ConfigBase):
     gather_network_resources = ["firewall_global"]
 
     def __init__(self, module):
-        global os_version
+        # global os_version
         super(Firewall_global, self).__init__(module)
-        os_version =  get_os_version(self._module)
+        # os_version =  get_os_version(self._module)
 
     def get_firewall_global_facts(self, data=None):
         """Get the 'facts' (the current configuration)
@@ -646,7 +646,7 @@ class Firewall_global(ConfigBase):
             cmd = "delete firewall "
         else:
             cmd = "set firewall "
-        if key != "group" and LooseVersion(os_version) >= LooseVersion("1.4"):
+        if key != "group" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             cmd += "global-options "
         if key:
             cmd += key.replace("_", "-") + " "

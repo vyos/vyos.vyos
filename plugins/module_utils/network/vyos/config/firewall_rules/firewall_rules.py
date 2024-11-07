@@ -51,9 +51,9 @@ class Firewall_rules(ConfigBase):
     ]
 
     def __init__(self, module):
-        global os_version
+        # global os_version
         super(Firewall_rules, self).__init__(module)
-        os_version =  get_os_version(self._module)
+        # os_version =  get_os_version(self._module)
 
     def get_firewall_rules_facts(self, data=None):
         """Get the 'facts' (the current configuration)
@@ -497,7 +497,7 @@ class Firewall_rules(ConfigBase):
                     and not (h_icmp and self._is_w_same(w[attr], h_icmp, item))
                 ):
                     if item == "type_name":
-                        if LooseVersion(os_version) >= LooseVersion("1.4"):
+                        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
                             param_name = "type-name"
                         else:
                             param_name = "type"
@@ -682,7 +682,7 @@ class Firewall_rules(ConfigBase):
         :param cmd: commands to be prepend.
         :return: generated list of commands.
         """
-        if LooseVersion(os_version) >= LooseVersion("1.4"):
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             return self._add_tcp_1_4(attr, w, h, cmd, opr)
         h_tcp = {}
         commands = []
@@ -916,7 +916,7 @@ class Firewall_rules(ConfigBase):
             cmd = "delete firewall " + self._get_fw_type(rs_id["afi"])
         else:
             cmd = "set firewall " + self._get_fw_type(rs_id["afi"])
-        if LooseVersion(os_version) >= LooseVersion("1.4"):
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             if rs_id["name"]:
                 cmd += " name " + rs_id["name"]
             elif rs_id["filter"]:
@@ -926,7 +926,7 @@ class Firewall_rules(ConfigBase):
         if number:
             cmd += " rule " + str(number)
         if attrib:
-            if LooseVersion(os_version) >= LooseVersion("1.4")  and attrib == "enable_default_log": 
+            if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")  and attrib == "enable_default_log": 
                 cmd += " " + "default-log"
             else:
                 cmd += " " + attrib.replace("_", "-")
@@ -1024,7 +1024,7 @@ class Firewall_rules(ConfigBase):
         :param afi: address type
         :return: rule-set type.
         """
-        if LooseVersion(os_version) >= LooseVersion("1.4"):
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             return "ipv6" if afi == "ipv6" else "ipv4"
         return "ipv6-name" if afi == "ipv6" else "name"
 
