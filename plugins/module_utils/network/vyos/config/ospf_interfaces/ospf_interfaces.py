@@ -69,18 +69,16 @@ class Ospf_interfaces(ResourceModule):
             "instance",
             "passive",
         ]
-        # os_version =  get_os_version(self._module)
 
     def _validate_template(self):
         if self._module.params.get("version") == "detect":
             try:
-                version = self._module._connection.get_device_info()["network_os_major_version"]
+                version = get_os_version(self._module)
             except (KeyError, AttributeError) as e:
                 version = "1.2"  # default to 1.2 if no connection
         else:
             version = self._module.params.get("version")
-        # if version >= "1.4":
-        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+        if LooseVersion(version) >= LooseVersion("1.4"):
             self._tmplt = Ospf_interfacesTemplate14()
         else:
             self._tmplt = Ospf_interfacesTemplate()

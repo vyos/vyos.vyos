@@ -44,10 +44,15 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
         )
         self.execute_show_command = self.mock_execute_show_command.start()
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.Ospf_interfacesFacts._get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospf_interfaces.ospf_interfaces.get_os_version"
         )
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = "1.2"
+        self.mock_facts_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.get_os_version"
+        )
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = "1.2"
         self.maxDiff = None
 
     def tearDown(self):
@@ -55,6 +60,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
         self.mock_get_resource_connection_config.stop()
         self.mock_execute_show_command.stop()
         self.mock_get_os_version.stop()
+        self.mock_facts_get_os_version.stop()
 
     def load_fixtures(self, commands=None, filename=None):
         if filename is None:

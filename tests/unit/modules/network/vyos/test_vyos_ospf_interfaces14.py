@@ -43,7 +43,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
         )
         self.execute_show_command = self.mock_execute_show_command.start()
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.Ospf_interfacesFacts._get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.get_os_version"
         )
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = "1.4"
