@@ -46,9 +46,7 @@ class Firewall_global(ConfigBase):
     gather_network_resources = ["firewall_global"]
 
     def __init__(self, module):
-        # global os_version
         super(Firewall_global, self).__init__(module)
-        # os_version =  get_os_version(self._module)
 
     def get_firewall_global_facts(self, data=None):
         """Get the 'facts' (the current configuration)

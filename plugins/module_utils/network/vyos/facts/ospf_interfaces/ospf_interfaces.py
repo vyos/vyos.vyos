@@ -39,13 +39,10 @@ class Ospf_interfacesFacts(object):
     """The vyos ospf_interfaces facts class"""
 
     def __init__(self, module, subspec="config", options="options"):
-        # global os_version
         self._module = module
         self.argument_spec = Ospf_interfacesArgs.argument_spec
-        # os_version =  get_os_version(self._module)
 
     def get_device_data(self, connection):
-        # if self._get_os_version(connection) >= "1.4":
         if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             # use set protocols ospf in order to get both ospf and ospfv3
             return connection.get("show configuration commands |  match 'set protocols ospf'")
@@ -89,7 +86,6 @@ class Ospf_interfacesFacts(object):
 
     def get_config_set(self, data, connection):
         """To classify the configurations beased on interface"""
-        # if self._get_os_version(connection) >= "1.4":
         if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             return self.get_config_set_1_4(data)
         return self.get_config_set_1_2(data)
@@ -106,7 +102,6 @@ class Ospf_interfacesFacts(object):
         """
         facts = {}
         objs = []
-        # if self._get_os_version(connection) >= "1.4":
         if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             ospf_interface_class = Ospf_interfacesTemplate14
         else:
@@ -145,12 +140,3 @@ class Ospf_interfacesFacts(object):
         ansible_facts["ansible_network_resources"].update(facts)
 
         return ansible_facts
-
-    # def _get_os_version(self, connection):
-    #     """
-    #     Get the base version number before the '-' in the version string.
-    #     """
-    #     os_version = "1.2"
-    #     if connection:
-    #         os_version = connection.get_device_info()["network_os_major_version"]
-    #     return os_version

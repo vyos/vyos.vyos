@@ -51,9 +51,7 @@ class Firewall_rules(ConfigBase):
     ]
 
     def __init__(self, module):
-        # global os_version
         super(Firewall_rules, self).__init__(module)
-        # os_version =  get_os_version(self._module)
 
     def get_firewall_rules_facts(self, data=None):
         """Get the 'facts' (the current configuration)

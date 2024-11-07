@@ -45,7 +45,6 @@ class Ospf_interfaces(ResourceModule):
     """
 
     def __init__(self, module):
-        # global os_version
         super(Ospf_interfaces, self).__init__(
             empty_fact_val={},
             facts_module=Facts(module),

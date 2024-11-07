@@ -499,13 +499,3 @@ class Firewall_rulesFacts(object):
         """
         num_set = ("time", "code", "type", "count", "burst", "number")
         return True if attrib in num_set else False
-
-    def _get_os_version(self):
-        """
-        Get the base version number before the '-' in the version string.
-        """
-        os_version = "1.2"
-        if self._connection:
-            os_version = self.get_device_data(self._connection)["network_os_version"]
-            os_version = self._connection.get_device_info()["network_os_major_version"]
-        return os_version
