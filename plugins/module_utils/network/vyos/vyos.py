@@ -100,6 +100,7 @@ def load_config(module, commands, commit=False, comment=None):
 
     return response.get("diff")
 
+
 def get_os_version(module):
     connection = get_connection(module)
     if connection.get_device_info():

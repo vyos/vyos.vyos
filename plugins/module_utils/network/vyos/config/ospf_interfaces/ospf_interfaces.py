@@ -38,6 +38,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
+
 class Ospf_interfaces(ResourceModule):
     """
     The vyos_ospf_interfaces config class

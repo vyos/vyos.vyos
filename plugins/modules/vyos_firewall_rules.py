@@ -261,6 +261,10 @@ options:
                 choices:
                 - match-ipsec
                 - match-none
+                - match-ipsec-in
+                - match-ipsec-out
+                - match-none-in
+                - match-none-out
               jump_target:
                 description:
                   - Jump target if the action is jump.

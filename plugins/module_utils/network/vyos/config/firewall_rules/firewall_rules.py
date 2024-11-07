@@ -926,7 +926,7 @@ class Firewall_rules(ConfigBase):
         if number:
             cmd += " rule " + str(number)
         if attrib:
-            if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")  and attrib == "enable_default_log": 
+            if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4") and attrib == "enable_default_log":
                 cmd += " " + "default-log"
             else:
                 cmd += " " + attrib.replace("_", "-")
