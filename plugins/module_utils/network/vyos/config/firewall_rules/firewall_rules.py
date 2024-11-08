@@ -596,6 +596,7 @@ class Firewall_rules(ConfigBase):
         commands = []
         have = []
         key = "flags"
+        want = []
 
         if w:
             if w.get(attr):
@@ -632,6 +633,7 @@ class Firewall_rules(ConfigBase):
         """
         commands = []
         have = []
+        want = []
 
         if w:
             if w.get(attr):
