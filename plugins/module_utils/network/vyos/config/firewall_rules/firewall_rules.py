@@ -354,6 +354,20 @@ class Firewall_rules(ConfigBase):
                             ):
                                 commands.extend(self._add_tcp(key, w, h, cmd, opr))
                             if (
+                                key == "state"
+                                and val
+                                and h
+                                and (key not in h or not h[key] or h[key] != w[key])
+                            ):
+                                commands.extend(self._add_state(key, w, h, cmd, opr))
+                            if (
+                                key == "icmp"
+                                and val
+                                and h
+                                and (key not in h or not h[key] or h[key] != w[key])
+                            ):
+                                commands.extend(self._add_icmp(key, w, h, cmd, opr))
+                            if (
                                 key in ("packet_length", "packet_length_exclude")
                                 and val
                                 and h
@@ -440,8 +454,11 @@ class Firewall_rules(ConfigBase):
                     and item in l_set
                     and not (h_state and self._is_w_same(w[attr], h_state, item))
                 ):
-                    commands.append(cmd + (" " + attr + " " + item + " " + self._bool_to_str(val)))
-                elif not opr and item in l_set and not (h_state and self._in_target(h_state, item)):
+                    if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                        commands.append(cmd + (" " + attr + " " + item))
+                    else:
+                        commands.append(cmd + (" " + attr + " " + item + " " + self._bool_to_str(val)))
+                elif not opr and item in l_set and not self._in_target(h_state, item):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
 
@@ -495,7 +512,7 @@ class Firewall_rules(ConfigBase):
                     and not (h_icmp and self._is_w_same(w[attr], h_icmp, item))
                 ):
                     if item == "type_name":
-                        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.3"):
                             param_name = "type-name"
                         else:
                             param_name = "type"
@@ -510,8 +527,8 @@ class Firewall_rules(ConfigBase):
                             commands.append(cmd + (" " + "icmpv6" + " " + item + " " + str(val)))
                         else:
                             commands.append(cmd + (" " + attr + " " + item + " " + str(val)))
-                elif not opr and item in l_set and not (h_icmp and self._in_target(h_icmp, item)):
-                    commands.append(cmd + (" " + attr + " " + item))
+                elif not opr and item in l_set and not self._in_target(h_icmp, item):
+                    commands.append(cmd + (" " + attr + " " + item.replace("_", "-") + " " + str(val)))
         return commands
 
     def _add_interface(self, attr, w, h, cmd, opr):

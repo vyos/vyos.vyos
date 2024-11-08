@@ -386,7 +386,6 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
         playbook["state"] = "overridden"
         set_module_args(playbook)
         result = self.execute_module(changed=True)
-        print(result["commands"])
         self.maxDiff = None
         self.assertEqual(sorted(result["commands"]), sorted(compare_cmds))
 

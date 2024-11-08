@@ -1528,8 +1528,107 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "set firewall ipv4 name IF-TEST rule 10 description 'Rule 10 is configured by Ansible'",
             'set firewall ipv4 name IF-TEST rule 10 inbound-interface name eth1',
             "delete firewall ipv4 name IF-TEST rule 10 outbound-interface group",
+            "delete firewall ipv4 name IF-TEST rule 10 disable",
+            "delete firewall ipv4 name IF-TEST rule 10 state related",
+            "delete firewall ipv4 name IF-TEST rule 10 icmp type-name echo-request",
         ]
         self.maxDiff = None
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_v4_rule_sets_rule_merged_02(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="INBOUND",
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        protocol="tcp",
+                                        source=dict(
+                                            address="192.0.2.0",
+                                            mac_address="38:00:25:19:76:0c",
+                                            port=2127,
+                                        ),
+                                        destination=dict(address="192.0.1.0", port=2124),
+                                        limit=dict(
+                                            burst=10,
+                                            rate=dict(number=20, unit="second"),
+                                        ),
+                                        recent=dict(count=10, time=20),
+                                        state=dict(
+                                            established=True,
+                                            related=True,
+                                            invalid=True,
+                                            new=True,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+        commands = [
+            "set firewall ipv4 name INBOUND rule 101 protocol 'tcp'",
+            "set firewall ipv4 name INBOUND rule 101 destination port 2124",
+            "set firewall ipv4 name INBOUND rule 101",
+            "set firewall ipv4 name INBOUND rule 101 destination address 192.0.1.0",
+            "set firewall ipv4 name INBOUND rule 101 source address 192.0.2.0",
+            "set firewall ipv4 name INBOUND rule 101 source mac-address 38:00:25:19:76:0c",
+            "set firewall ipv4 name INBOUND rule 101 source port 2127",
+            "set firewall ipv4 name INBOUND rule 101 state new",
+            "set firewall ipv4 name INBOUND rule 101 state invalid",
+            "set firewall ipv4 name INBOUND rule 101 state related",
+            "set firewall ipv4 name INBOUND rule 101 state established",
+            "set firewall ipv4 name INBOUND rule 101 limit burst 10",
+            "set firewall ipv4 name INBOUND rule 101 limit rate 20/second",
+            "set firewall ipv4 name INBOUND rule 101 recent count 10",
+            "set firewall ipv4 name INBOUND rule 101 recent time 20",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_v4_rule_sets_change_state_01(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="IF-TEST",
+                                rules=[
+                                    dict(
+                                        number="10",
+                                        disable=False,
+                                        action="accept",
+                                        state=dict(
+                                            established=True,
+                                            new=True,
+                                        ),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+                state="replaced",
+            ),
+        )
+        commands = [
+            "delete firewall ipv4 name IF-TEST rule 10 disable",
+            "delete firewall ipv4 name IF-TEST rule 10 inbound-interface name",
+            "delete firewall ipv4 name IF-TEST rule 10 icmp type-name echo-request",
+            "delete firewall ipv4 name IF-TEST rule 10 outbound-interface group",
+            "delete firewall ipv4 name IF-TEST rule 10 state related",
+            "set firewall ipv4 name IF-TEST rule 10 state established",
+            "set firewall ipv4 name IF-TEST rule 10 state new",
+        ]
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_v4v6_rule_sets_del_03(self):

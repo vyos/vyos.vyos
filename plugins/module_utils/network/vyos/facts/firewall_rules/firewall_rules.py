@@ -388,6 +388,44 @@ class Firewall_rulesFacts(object):
         cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
         return cfg_dict
 
+    def parse_icmp_attr(self, conf, match):
+        """
+        This function peforms the following:
+        - parse ICMP arguemnts for firewall rules
+        - consider that older versions may need numbers or letters
+          in type, newer ones are more specific
+        :param conf: configuration.
+        :param match: parent node/attribute name.
+        :return: generated config dictionary.
+        """
+        config = {}
+        if not conf:
+            return config
+
+        for attrib in ("code", "type", "type-name"):
+            regex = self.map_regex(attrib)
+            if match:
+                regex = match + " " + regex
+            out = search(r"^.*" + regex + " (.+)", conf, M)
+            if out:
+                val = out.group(1).strip("'")
+                if attrib == 'type-name':
+                    config['type_name'] = val
+                if attrib == 'code':
+                    config['code'] = int(val)
+                if attrib == 'type':
+                    # <1.3 could be # (type), #/# (type/code) or 'type' (type_name)
+                    # recent this is only for strings
+                    if "/" in val: # type/code
+                        (type_no, code) = val.split(".")
+                        config['type'] = type_no
+                        config['code'] = code
+                    elif val.isnumeric():
+                        config['type'] = type_no
+                    else:
+                        config['type_name'] = val
+        return config
+
     def parse_icmp(self, conf, attrib=None):
         """
         This function triggers the parsing of 'icmp' attributes.
@@ -395,11 +433,9 @@ class Firewall_rulesFacts(object):
         :param attrib: 'icmp'.
         :return: generated config dictionary.
         """
-        a_lst = ["code", "type", "type_name"]
-        if attrib == "icmp":
-            attrib = "icmpv6"
-        conf = re.sub("icmpv6 type", "icmpv6 type-name", conf)
-        cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
+        cfg_dict = self.parse_icmp_attr(conf, "icmp")
+        if (len(cfg_dict) == 0):
+            cfg_dict = self.parse_icmp_attr(conf, "icmpv6")
         return cfg_dict
 
     def parse_limit(self, conf, attrib=None):
@@ -442,7 +478,6 @@ class Firewall_rulesFacts(object):
             if conf:
                 if self.is_bool(attrib):
                     out = conf.find(attrib.replace("_", "-"))
-
                     dis = conf.find(attrib.replace("_", "-") + " 'disable'")
                     if out >= 1:
                         if dis >= 1:
