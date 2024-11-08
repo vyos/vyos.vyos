@@ -14,8 +14,6 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-import re
-
 from copy import deepcopy
 from re import M, findall, search
 
@@ -416,7 +414,7 @@ class Firewall_rulesFacts(object):
                 if attrib == 'type':
                     # <1.3 could be # (type), #/# (type/code) or 'type' (type_name)
                     # recent this is only for strings
-                    if "/" in val: # type/code
+                    if "/" in val:  # type/code
                         (type_no, code) = val.split(".")
                         config['type'] = type_no
                         config['code'] = code

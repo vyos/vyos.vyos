@@ -808,6 +808,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall name V4-INGRESS rule 101 protocol 'tcp'",
             "set firewall name V4-INGRESS rule 101 description 'Rule 101 is configured by Ansible RM'",
             "set firewall name V4-INGRESS rule 101 action 'reject'",
+            "delete firewall name V4-INGRESS rule 101 log",
             "set firewall name V4-INGRESS rule 102 disable",
             "set firewall name V4-INGRESS rule 102 action 'accept'",
             "set firewall name V4-INGRESS rule 102 protocol 'icmp'",
@@ -869,6 +870,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         )
         commands = [
             "delete firewall name V4-INGRESS enable-default-log",
+            "delete firewall name V4-INGRESS rule 101 log",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -893,6 +895,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         protocol="icmp",
                                         fragment="match-frag",
                                         disable=True,
+                                        log="enable",
                                     )
                                 ],
                             ),
@@ -948,6 +951,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         protocol="icmp",
                                         fragment="match-frag",
                                         disable=True,
+                                        log="enable"
                                     ),
                                 ],
                             ),
@@ -1125,6 +1129,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         protocol="icmp",
                                         fragment="match-frag",
                                         disable=True,
+                                        log="enable",
                                     )
                                 ],
                             ),
@@ -1181,6 +1186,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                         protocol="icmp",
                                         disable=True,
                                         icmp=dict(type_name="echo-request"),
+                                        log="enable",
                                     ),
                                     dict(
                                         number="102",
@@ -1208,6 +1214,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall ipv6 name INBOUND rule 101 action 'accept'",
             "set firewall ipv6 name INBOUND rule 101 ipsec 'match-ipsec'",
             "set firewall ipv6 name INBOUND rule 101 icmpv6 type-name echo-request",
+            "set firewall ipv6 name INBOUND rule 101 log 'enable'",
             "set firewall ipv6 name INBOUND rule 102",
             "set firewall ipv6 name INBOUND rule 102 action 'reject'",
             "set firewall ipv6 name INBOUND rule 102 description 'Rule 102 is configured by Ansible'",
