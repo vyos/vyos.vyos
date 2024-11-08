@@ -577,6 +577,16 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                             ]
                                         ),
                                     ),
+                                    dict(
+                                        number="102",
+                                        tcp=dict(
+                                            flags=[
+                                                dict(flag="ack"),
+                                                dict(flag="syn"),
+                                                dict(flag="fin", invert=True),
+                                            ],
+                                        )
+                                    )
                                 ],
                             ),
                         ],
@@ -595,6 +605,8 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall ipv6-name INBOUND rule 101 time weekdays !Sat,Sun",
             "set firewall ipv6-name INBOUND rule 101 time stoptime 13:30:00",
             "set firewall ipv6-name INBOUND rule 101 time starttime 13:20:00",
+            "set firewall ipv6-name INBOUND rule 102",
+            "set firewall ipv6-name INBOUND rule 102 tcp flags ACK,SYN,!FIN",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -1303,6 +1315,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         )
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = "1.4"
+        self.maxDiff = None
 
     def tearDown(self):
         super(TestVyosFirewallRulesModule14, self).tearDown()
@@ -1522,4 +1535,66 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
     def test_vyos_firewall_v4v6_rule_sets_del_03(self):
         set_module_args(dict(config=[], state="deleted"))
         commands = ["delete firewall ipv4", "delete firewall ipv6"]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_v6_rule_sets_rule_merged_04(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="INBOUND",
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        time=dict(
+                                            monthdays="2",
+                                            startdate="2020-01-24",
+                                            starttime="13:20:00",
+                                            stopdate="2020-01-28",
+                                            stoptime="13:30:00",
+                                            weekdays="!Sat,Sun",
+                                            utc=True,
+                                        ),
+                                        tcp=dict(
+                                            flags=[
+                                                dict(flag="all"),
+                                            ]
+                                        ),
+                                    ),
+                                    dict(
+                                        number="102",
+                                        tcp=dict(
+                                            flags=[
+                                                dict(flag="ack"),
+                                                dict(flag="syn"),
+                                                dict(flag="fin", invert=True),
+                                            ],
+                                        )
+                                    )
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+        commands = [
+            "set firewall ipv6 name INBOUND rule 101",
+            "set firewall ipv6 name INBOUND rule 101 tcp flags all",
+            "set firewall ipv6 name INBOUND rule 101 time utc",
+            "set firewall ipv6 name INBOUND rule 101 time monthdays 2",
+            "set firewall ipv6 name INBOUND rule 101 time startdate 2020-01-24",
+            "set firewall ipv6 name INBOUND rule 101 time stopdate 2020-01-28",
+            "set firewall ipv6 name INBOUND rule 101 time weekdays !Sat,Sun",
+            "set firewall ipv6 name INBOUND rule 101 time stoptime 13:30:00",
+            "set firewall ipv6 name INBOUND rule 101 time starttime 13:20:00",
+            "set firewall ipv6 name INBOUND rule 102",
+            "set firewall ipv6 name INBOUND rule 102 tcp flags ack",
+            "set firewall ipv6 name INBOUND rule 102 tcp flags not fin",
+            "set firewall ipv6 name INBOUND rule 102 tcp flags syn",
+        ]
         self.execute_module(changed=True, commands=commands)

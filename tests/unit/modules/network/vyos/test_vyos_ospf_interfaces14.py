@@ -55,7 +55,6 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
         self.get_facts_os_version.return_value = self.test_version
         self.maxDiff = None
 
-
     def tearDown(self):
         super(TestVyosOspfInterfacesModule14, self).tearDown()
         self.mock_get_resource_connection_config.stop()
