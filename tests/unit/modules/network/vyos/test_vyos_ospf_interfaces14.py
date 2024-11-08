@@ -43,10 +43,18 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
         )
         self.execute_show_command = self.mock_execute_show_command.start()
         self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospf_interfaces.ospf_interfaces.get_os_version"
+        )
+        self.test_version = "1.4"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
+        self.mock_facts_get_os_version = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.get_os_version"
         )
-        self.get_os_version = self.mock_get_os_version.start()
-        self.get_os_version.return_value = "1.4"
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = self.test_version
+        self.maxDiff = None
+
 
     def tearDown(self):
         super(TestVyosOspfInterfacesModule14, self).tearDown()
@@ -72,7 +80,6 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
     def test_vyos_ospf_interfaces_merged_new_config(self):
         set_module_args(
             dict(
-                version="1.4",
                 config=[
                     dict(
                         name="eth0",
@@ -113,7 +120,6 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
     def test_vyos_ospf_interfaces_merged_idempotent(self):
         set_module_args(
             dict(
-                version="1.4",
                 config=[
                     dict(
                         name="eth0",
@@ -139,7 +145,6 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
     def test_vyos_ospf_interfaces_existing_config_merged(self):
         set_module_args(
             dict(
-                version="1.4",
                 config=[
                     dict(
                         name="eth0",
@@ -170,7 +175,6 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
     def test_vyos_ospf_interfaces_replaced(self):
         set_module_args(
             dict(
-                version="1.4",
                 config=[
                     dict(
                         name="eth0",
@@ -211,7 +215,6 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
     def test_vyos_ospf_passive_interfaces_replaced(self):
         set_module_args(
             dict(
-                version="1.4",
                 config=[
                     dict(
                         name="eth0",
@@ -266,7 +269,6 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
     def test_vyos_ospf_interfaces_replaced_idempotent(self):
         set_module_args(
             dict(
-                version="1.4",
                 config=[
                     dict(
                         name="eth0",
@@ -293,7 +295,6 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
     def test_vyos_ospf_interfaces_overridden(self):
         set_module_args(
             dict(
-                version="1.4",
                 config=[
                     dict(
                         name="eth0",
@@ -336,7 +337,6 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
     def test_vyos_ospf_interfaces_overridden_idempotent(self):
         set_module_args(
             dict(
-                version="1.4",
                 config=[
                     dict(
                         name="eth0",
@@ -363,7 +363,6 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
     def test_vyos_ospf_interfaces_deleted(self):
         set_module_args(
             dict(
-                version="1.4",
                 config=[
                     dict(
                         name="eth0",
@@ -378,7 +377,6 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
     def test_vyos_ospf_interfaces_notpresent_deleted(self):
         set_module_args(
             dict(
-                version="1.4",
                 config=[
                     dict(
                         name="eth3",
@@ -392,7 +390,6 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
     def test_vyos_ospf_interfaces_rendered(self):
         set_module_args(
             dict(
-                version="1.4",
                 config=[
                     dict(
                         name="eth0",
@@ -449,7 +446,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
         ]
 
         parsed_str = "\n".join(commands)
-        set_module_args(dict(running_config=parsed_str, state="parsed", version="1.4"))
+        set_module_args(dict(running_config=parsed_str, state="parsed"))
         result = self.execute_module(changed=False)
         parsed_list = [
             {
@@ -494,7 +491,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
         self.assertEqual(result_list, given_list)
 
     def test_vyos_ospf_interfaces_gathered(self):
-        set_module_args(dict(state="gathered", version="1.4"))
+        set_module_args(dict(state="gathered"))
         result = self.execute_module(changed=False, filename="vyos_ospf_interfaces_config.cfg")
         gathered_list = [
             {
