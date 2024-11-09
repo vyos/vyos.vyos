@@ -3,6 +3,6 @@ breaking_changes:
   - firewall_rules - tcp.flags is now a list with an inversion flag to support 1.4+ firewall rules, but still supports 1.3-
 
 minor_changes:
-  - firewall_rules - Added support for 1.4+ firewall rules 
+  - firewall_rules - Added support for 1.4+ firewall rules
   - fix tests for 1.4+ firewall rules (ICMP V6 code and type)
   - added support for 1.5+ firewall `match-ipsec-in`, `match-ipsec-out`, `match-none-in`, `match-none-out`
