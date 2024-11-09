@@ -253,6 +253,19 @@ options:
             description:
             - Enable logging of packets part of an established connection.
             type: bool
+          log_level:
+            description:
+            - Only available in 1.4+
+            type: str
+            choices:
+            - emerg
+            - alert
+            - crit
+            - err
+            - warn
+            - notice
+            - info
+            - debug
   running_config:
     description:
     - The module, by default, will connect to the remote device and retrieve the current

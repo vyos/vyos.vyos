@@ -852,6 +852,7 @@ Examples
             - connection_type: established
               action: accept
               log: true
+              log_level: emer
             - connection_type: invalid
               action: reject
           route_redirects:
@@ -897,6 +898,7 @@ Examples
     #        "set firewall config-trap 'enable'",
     #        "set firewall state-policy established action 'accept'",
     #        "set firewall state-policy established log 'enable'",
+    #        "set firewall state-policy established log-level 'emer'",
     #        "set firewall state-policy invalid action 'reject'",
     #        "set firewall broadcast-ping 'enable'",
     #        "set firewall all-ping 'enable'",

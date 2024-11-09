@@ -174,9 +174,8 @@ class Firewall_globalFacts(object):
         :return: generated rule list configuration.
         """
         sp_lst = []
-        attrib = "state-policy"
-        policies = findall(r"^set firewall " + attrib + " (\\S+)", conf, M)
-
+        policies = findall(r"^set firewall (?:global-options )state-policy (\S+)", conf, M)
+        policies = list(set(policies))  # remove redundancies
         if policies:
             rules_lst = []
             for sp in set(policies):
@@ -197,7 +196,7 @@ class Firewall_globalFacts(object):
         :param attrib: connection type.
         :return: generated rule configuration dictionary.
         """
-        a_lst = ["action", "log"]
+        a_lst = ["action", "log", "log_level"]
         cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
         return cfg_dict
 
@@ -304,16 +303,15 @@ class Firewall_globalFacts(object):
                 regex = match + " " + regex
             if conf:
                 if self.is_bool(attrib):
-                    attr = self.map_regex(attrib, type)
-                    out = conf.find(attr.replace("_", "-"))
-                    dis = conf.find(attr.replace("_", "-") + " 'disable'")
-                    if out >= 1:
-                        if dis >= 1:
+                    # fancy regex to make sure we don't get a substring
+                    out = search(r"^.*" + regex + r"( 'disable')?(?=\s|$)", conf, M)
+                    if out:
+                        if out.group(1):
                             config[attrib] = False
                         else:
                             config[attrib] = True
                 else:
-                    out = search(r"^.*" + regex + " (.+)", conf, M)
+                    out = search(r"^.*" + regex + r" (.+)", conf, M)
                     if out:
                         val = out.group(1).strip("'")
                         if self.is_num(attrib):

@@ -134,6 +134,9 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                             "type": "str",
                         },
                         "log": {"type": "bool"},
+                        "log_level": {
+                            "choices": ["emerg", "alert", "crit", "err", "warn", "notice", "info", "debug"]
+                        }
                     },
                     "type": "list",
                 },

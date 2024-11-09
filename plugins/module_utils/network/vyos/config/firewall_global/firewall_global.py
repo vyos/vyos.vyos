@@ -259,7 +259,7 @@ class Firewall_global(ConfigBase):
                         continue
                     if (
                         key in l_set
-                        and not (h and self._in_target(h, key))
+                        and not self._in_target(h, key)
                         and not self._is_del(l_set, h)
                     ):
                         commands.append(
@@ -459,7 +459,10 @@ class Firewall_global(ConfigBase):
         """
         commands = []
         have = []
-        l_set = ("log", "action", "connection_type")
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            l_set = ("log", "action", "connection_type", "log_level")
+        else:
+            l_set = ("log", "action", "connection_type")
         if not opr and self._is_root_del(h, w, attr):
             commands.append(self._form_attr_cmd(attr=attr, opr=opr))
         else:
@@ -482,25 +485,23 @@ class Firewall_global(ConfigBase):
                                     ),
                                 )
                             elif not opr and key in l_set:
-                                if not (h and self._in_target(h, key)) and not self._is_del(
-                                    l_set,
-                                    h,
-                                ):
-                                    if key == "action":
-                                        commands.append(
-                                            self._form_attr_cmd(
-                                                attr=attr + " " + w["connection_type"],
-                                                opr=opr,
-                                            ),
-                                        )
-                                    else:
-                                        commands.append(
-                                            self._form_attr_cmd(
-                                                attr=attr + " " + w["connection_type"],
-                                                val=self._bool_to_str(val),
-                                                opr=opr,
-                                            ),
-                                        )
+                                if not h:
+                                    commands.append(
+                                        self._form_attr_cmd(
+                                            attr=attr + " " + w["connection_type"],
+                                            opr=opr,
+                                        ),
+                                    )
+                                    break  # delete the whole thing and move on
+                                if (not self._in_target(h, key) or h[key] is None) and (self._in_target(w, key) and w[key]):
+                                    # delete if not being replaced and value currently exists
+                                    commands.append(
+                                        self._form_attr_cmd(
+                                            attr=attr + " " + w["connection_type"] + " " + key,
+                                            val=self._bool_to_str(val),
+                                            opr=opr,
+                                        ),
+                                    )
         return commands
 
     def _render_route_redirects(self, attr, w, h, opr):
@@ -652,7 +653,7 @@ class Firewall_global(ConfigBase):
             cmd += attr.replace("_", "-")
         if val and opr:
             cmd += " '" + str(val) + "'"
-        return cmd
+        return cmd.strip()
 
     def _bool_to_str(self, val):
         """
@@ -723,7 +724,7 @@ class Firewall_global(ConfigBase):
         :param key: number.
         :return: True/False.
         """
-        return key in b_set and not (h and self._in_target(h, key))
+        return key in b_set and not self._in_target(h, key)
 
     def _map_attrib(self, attrib, type=None):
         """
