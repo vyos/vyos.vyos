@@ -5,3 +5,5 @@ minor_changes:
   - added tests for verifying both of these
   - fixed over-zealous handling of disable, which could catch other interface
     items that are disabled.
+  - enable support for 1.4 firewall 
+  - support for 1.4 ospf

@@ -1,6 +1,7 @@
 ---
 minor_changes:
   - with 1.4+, use the the global keyword to define global firewall rules
-  - Added tests for above change
   - Fixed ipv6 route-redirects and tests
   - Added support for input, output, and forward chains (1.4+)
+  - Fixed state-policy deletion (partial and full)
+  - Added support for log-level in state-policy (1.4+)

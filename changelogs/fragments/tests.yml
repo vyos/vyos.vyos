@@ -1,0 +1,3 @@
+---
+trivial:
+  - ignore 2.19 sanity tests for now
