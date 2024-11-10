@@ -37,34 +37,18 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
         "config": {
             "elements": "dict",
             "options": {
-                "afi": {
-                    "choices": ["ipv4", "ipv6"],
-                    "required": True,
-                    "type": "str",
-                },
+                "afi": {"choices": ["ipv4", "ipv6"], "required": True, "type": "str"},
                 "rule_sets": {
                     "elements": "dict",
                     "options": {
                         "default_action": {
-                            "choices": [
-                                "drop",
-                                "reject",
-                                "accept",
-                                "jump",
-                            ],
+                            "choices": ["drop", "reject", "accept", "jump"],
                             "type": "str",
                         },
                         "default_jump_target": {"type": "str"},
                         "description": {"type": "str"},
                         "enable_default_log": {"type": "bool"},
-                        "filter": {
-                            "choices": [
-                                "input",
-                                "output",
-                                "forward",
-                            ],
-                            "type": "str",
-                        },
+                        "filter": {"choices": ["input", "output", "forward"], "type": "str"},
                         "name": {"type": "str"},
                         "rules": {
                             "elements": "dict",
@@ -99,12 +83,9 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     },
                                     "type": "dict",
                                 },
-                                "disable": {"type": "bool"},
+                                "disable": {"aliases": ["disabled"], "type": "bool"},
                                 "fragment": {
-                                    "choices": [
-                                        "match-frag",
-                                        "match-non-frag",
-                                    ],
+                                    "choices": ["match-frag", "match-non-frag"],
                                     "type": "str",
                                 },
                                 "icmp": {
@@ -160,10 +141,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     "type": "dict",
                                 },
                                 "inbound_interface": {
-                                    "options": {
-                                        "group": {"type": "str"},
-                                        "name": {"type": "str"},
-                                    },
+                                    "options": {"group": {"type": "str"}, "name": {"type": "str"}},
                                     "type": "dict",
                                 },
                                 "ipsec": {
@@ -191,22 +169,10 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     },
                                     "type": "dict",
                                 },
-                                "log": {
-                                    "choices": [
-                                        "disable",
-                                        "enable",
-                                    ],
-                                    "type": "str",
-                                },
-                                "number": {
-                                    "required": True,
-                                    "type": "int",
-                                },
+                                "log": {"choices": ["disable", "enable"], "type": "str"},
+                                "number": {"required": True, "type": "int"},
                                 "outbound_interface": {
-                                    "options": {
-                                        "group": {"type": "str"},
-                                        "name": {"type": "str"},
-                                    },
+                                    "options": {"group": {"type": "str"}, "name": {"type": "str"}},
                                     "type": "dict",
                                 },
                                 "p2p": {
@@ -238,28 +204,14 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     "type": "list",
                                 },
                                 "packet_type": {
-                                    "choices": [
-                                        "broadcast",
-                                        "multicast",
-                                        "host",
-                                        "other",
-                                    ],
+                                    "choices": ["broadcast", "multicast", "host", "other"],
                                     "type": "str",
                                 },
                                 "protocol": {"type": "str"},
                                 "queue": {"type": "str"},
-                                "queue_options": {
-                                    "choices": [
-                                        "bypass",
-                                        "fanout",
-                                    ],
-                                    "type": "str",
-                                },
+                                "queue_options": {"choices": ["bypass", "fanout"], "type": "str"},
                                 "recent": {
-                                    "options": {
-                                        "count": {"type": "int"},
-                                        "time": {"type": "str"},
-                                    },
+                                    "options": {"count": {"type": "int"}, "time": {"type": "str"}},
                                     "type": "dict",
                                 },
                                 "source": {

@@ -45,7 +45,7 @@ short_description: FIREWALL rules resource module
 description: This module manages firewall rule-set attributes on VyOS devices
 author:
 - Rohit Thakur (@rohitthakur2590)
-- Gaige B. Paulsen
+- Gaige B. Paulsen (@gaige)
 notes:
 - Tested against VyOS 1.3.8.
 - This module works with connection C(ansible.netcommon.network_cli).
@@ -177,8 +177,7 @@ options:
                 - Option to disable firewall rule.
                 - aliased to disabled
                 type: bool
-                aliases:
-                - disabled
+                aliases: ["disabled"]
               fragment:
                 description:
                 - IP fragment match.

@@ -2997,4 +2997,4 @@ Authors
 ~~~~~~~
 
 - Rohit Thakur (@rohitthakur2590)
-- Gaige B. Paulsen
+- Gaige B. Paulsen (@gaige)

@@ -157,7 +157,7 @@ Please read and familiarize yourself with this document.
 
 ### Updating from resource module models
 
-Last build was with a slightly-modified version of resource_module_builder. 
+Last build was with a slightly-modified version of resource_module_builder.
 This changes the calling parameters for the resources.
 
 To update the collection from the resource module models, run the following command:
