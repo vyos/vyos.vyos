@@ -53,12 +53,12 @@ Name | Description
 [vyos.vyos.vyos_command](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_command_module.rst)|Run one or more commands on VyOS devices
 [vyos.vyos.vyos_config](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_config_module.rst)|Manage VyOS configuration on remote device
 [vyos.vyos.vyos_facts](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_facts_module.rst)|Get facts about vyos devices.
-[vyos.vyos.vyos_firewall_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_global_module.rst)|FIREWALL global resource module
-[vyos.vyos.vyos_firewall_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_interfaces_module.rst)|Manage firewall rules attributes of interfaces on VyOS devices
-[vyos.vyos.vyos_firewall_rules](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_rules_module.rst)|FIREWALL rules resource module
+[vyos.vyos.vyos_firewall_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_global_module.rst)|Firewall global resource module
+[vyos.vyos.vyos_firewall_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_interfaces_module.rst)|Firewall interfaces resource module
+[vyos.vyos.vyos_firewall_rules](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_rules_module.rst)|Firewall rules resource module
 [vyos.vyos.vyos_hostname](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_hostname_module.rst)|Manages hostname resource module
-[vyos.vyos.vyos_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_interfaces_module.rst)|Interfaces resource module
-[vyos.vyos.vyos_l3_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_l3_interfaces_module.rst)|L3 interfaces resource module
+[vyos.vyos.vyos_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_interfaces_module.rst)|Manages interface attributes of VyOS network devices.
+[vyos.vyos.vyos_l3_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_l3_interfaces_module.rst)|Layer 3 interfaces resource module.
 [vyos.vyos.vyos_lag_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lag_interfaces_module.rst)|LAG interfaces resource module
 [vyos.vyos.vyos_lldp_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_global_module.rst)|LLDP global resource module
 [vyos.vyos.vyos_lldp_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_interfaces_module.rst)|LLDP interfaces resource module
@@ -67,7 +67,7 @@ Name | Description
 [vyos.vyos.vyos_ntp_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ntp_global_module.rst)|Manages ntp modules of Vyos network devices
 [vyos.vyos.vyos_ospf_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospf_interfaces_module.rst)|OSPF Interfaces Resource Module.
 [vyos.vyos.vyos_ospfv2](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospfv2_module.rst)|OSPFv2 resource module
-[vyos.vyos.vyos_ospfv3](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospfv3_module.rst)|OSPFV3 resource module
+[vyos.vyos.vyos_ospfv3](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospfv3_module.rst)|OSPFv3 resource module
 [vyos.vyos.vyos_ping](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ping_module.rst)|Tests reachability using ping from VyOS network devices
 [vyos.vyos.vyos_prefix_lists](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_prefix_lists_module.rst)|Prefix-Lists resource module for VyOS
 [vyos.vyos.vyos_route_maps](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_route_maps_module.rst)|Route Map Resource Module.
@@ -155,6 +155,37 @@ This collection follows the Ansible project's
 [Code of Conduct](https://docs.ansible.com/ansible/devel/community/code_of_conduct.html).
 Please read and familiarize yourself with this document.
 
+### Updating from resource module models
+
+Some of our modules were templated using `resource_module_builder`, but some use
+the newer [`cli_rm_builder`](https://github.com/ansible-network/cli_rm_builder)
+which tempaltes baed on in-place device information, but also uses a new network
+parsing engine designed to simplify and standardize the parsing of network
+configuration.
+
+#### Using older *resource_module_builder* modules
+
+Last build was with a slightly-modified version of resource_module_builder.
+This changes the calling parameters for the resources.
+
+To update the collection from the resource module models, run the following command:
+
+```bash
+ansible-playbook -e rm_dest=`pwd` -e structure=collection -e collection_org=vyos -e collection_name=vyos -e model=../../../resource_module_models/models/vyos/firewall_rules/vyos_firewall_rules.yaml ../../../resource_module_builder/site.yml
+```
+
+#### Using *cli_rm_builder* modules
+
+The newer `cli_rm_builder` is more of a one-time template and works within the
+existing collection structure. It is also easier to maintain as it doesn't
+involve duplicating data across multiple locations and using a second repository.
+
+### Testing playbooks
+
+You can use `ANSIBLE_COLLECTIONS_PATH` to test the collection locally. For example:
+```
+ANSIBLE_COLLECTIONS_PATHS=~/my_dev_path ansible-playbook -i inventory.network test.yml
+```
 
 ## Changelogs
 <!--Add a link to a changelog.md file or an external docsite to cover this information. -->

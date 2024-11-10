@@ -265,7 +265,7 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.1.8 (helium).
+   - Tested against VyOS 1.3.8.
    - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
@@ -603,8 +603,7 @@ Examples
     # set interfaces ethernet eth2 bond-group 'bond2'
     # set interfaces ethernet eth3 bond-group 'bond3'
     #
-    - name: Delete LAG attributes of given interfaces (Note This won't delete the interface
-        itself)
+    - name: Delete LAG attributes of given interfaces (Note- This won't delete the interface itself)
       vyos.vyos.vyos_lag_interfaces:
         config:
           - name: bond2
@@ -891,11 +890,10 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>when changed</td>
                 <td>
-                            <div>The configuration as structured data after module completion.</div>
+                            <div>The resulting configuration module invocation.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format
-     of the parameters above.</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format of the parameters above.</div>
                 </td>
             </tr>
             <tr>
@@ -909,11 +907,10 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>always</td>
                 <td>
-                            <div>The configuration as structured data prior to module invocation.</div>
+                            <div>The configuration prior to the module invocation.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format
-     of the parameters above.</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format of the parameters above.</div>
                 </td>
             </tr>
             <tr>

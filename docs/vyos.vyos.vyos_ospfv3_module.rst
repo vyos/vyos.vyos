@@ -5,7 +5,7 @@
 vyos.vyos.vyos_ospfv3
 *********************
 
-**OSPFV3 resource module**
+**OSPFv3 resource module**
 
 
 Version added: 1.0.0
@@ -340,7 +340,7 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.1.8 (helium).
+   - Tested against VyOS 1.3.8
    - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
@@ -366,18 +366,18 @@ Examples
           parameters:
             router_id: 192.0.2.10
           areas:
-            - area_id: '2'
+            - area_id: 2
               export_list: export1
               import_list: import1
+
               range:
                 - address: '2001:db10::/32'
                 - address: '2001:db20::/32'
                 - address: '2001:db30::/32'
-            - area_id: '3'
+            - area_id: 3
               range:
                 - address: '2001:db40::/32'
         state: merged
-
     #
     #
     # -------------------------
@@ -473,18 +473,18 @@ Examples
           parameters:
             router_id: 192.0.2.10
           areas:
-            - area_id: '2'
+            - area_id: 2
               export_list: export1
               import_list: import1
+
               range:
                 - address: '2001:db10::/32'
                 - address: '2001:db30::/32'
                 - address: '2001:db50::/32'
-            - area_id: '4'
+            - area_id: 4
               range:
                 - address: '2001:db60::/32'
         state: replaced
-
     #
     #
     # -------------------------
@@ -598,18 +598,18 @@ Examples
           parameters:
             router_id: 192.0.2.10
           areas:
-            - area_id: '2'
+            - area_id: 2
               export_list: export1
               import_list: import1
+
               range:
                 - address: '2001:db10::/32'
                 - address: '2001:db20::/32'
                 - address: '2001:db30::/32'
-            - area_id: '3'
+            - area_id: 3
               range:
                 - address: '2001:db40::/32'
         state: rendered
-
     #
     #
     # -------------------------
@@ -635,17 +635,17 @@ Examples
     # Using parsed
     #
     #
-    - name: Parse the commands to provide structured configuration.
+    - name: Parse the commands from the provided configuration
       vyos.vyos.vyos_ospfv3:
-        running_config:
-          "set protocols ospfv3 area 2 export-list 'export1'
-           set protocols ospfv3 area 2 import-list 'import1'
-           set protocols ospfv3 area 2 range '2001:db10::/32'
-           set protocols ospfv3 area 2 range '2001:db20::/32'
-           set protocols ospfv3 area 2 range '2001:db30::/32'
-           set protocols ospfv3 area 3 range '2001:db40::/32'
-           set protocols ospfv3 parameters router-id '192.0.2.10'
-           set protocols ospfv3 redistribute 'bgp'"
+        running_config: |
+          set protocols ospfv3 area 2 export-list 'export1'
+          set protocols ospfv3 area 2 import-list 'import1'
+          set protocols ospfv3 area 2 range '2001:db10::/32'
+          set protocols ospfv3 area 2 range '2001:db20::/32'
+          set protocols ospfv3 area 2 range '2001:db30::/32'
+          set protocols ospfv3 area 3 range '2001:db40::/32'
+          set protocols ospfv3 parameters router-id '192.0.2.10'
+          set protocols ospfv3 redistribute 'bgp'
         state: parsed
     #
     #
@@ -902,7 +902,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The set of commands pushed to the remote device.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set protocols ospf parameters router-id 192.0.1.1&#x27;, &quot;set protocols ospfv3 area 2 range &#x27;2001:db10::/32&#x27;&quot;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set protocols ospfv3 parameters router-id &#x27;192.0.2.10&#x27;&quot;, &quot;set protocols ospfv3 redistribute &#x27;bgp&#x27;&quot;]</div>
                 </td>
             </tr>
     </table>

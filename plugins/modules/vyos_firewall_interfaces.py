@@ -40,8 +40,8 @@ ANSIBLE_METADATA = {
 DOCUMENTATION = """
 ---
 module: vyos_firewall_interfaces
-version_added: '2.10.0'
-short_description: Manage firewall rules attributes of interfaces on VyOS devices
+version_added: '1.0.0'
+short_description: Firewall interfaces resource module
 description: Manage firewall rules of interfaces on VyOS network devices. (1.3-)
 author:
 - Rohit Thakur (@rohitthakur2590)

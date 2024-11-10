@@ -5,7 +5,7 @@
 vyos.vyos.vyos_l3_interfaces
 ****************************
 
-**L3 interfaces resource module**
+**Layer 3 interfaces resource module.**
 
 
 Version added: 1.0.0
@@ -116,6 +116,7 @@ Parameters
                 </td>
                 <td>
                         <div>IPv6 address of the interface.</div>
+                        <div><code>auto-config</code> to use SLAAC to chose an address.</div>
                 </td>
             </tr>
 
@@ -150,7 +151,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Virtual sub-interfaces L3 configurations.</div>
+                        <div>List of virtual sub-interfaces (VIFs) of the interface.</div>
                 </td>
             </tr>
                                 <tr>
@@ -168,7 +169,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>List of IPv4 addresses of the virtual interface.</div>
+                        <div>List of IPv4 addresses of the VIF.</div>
                 </td>
             </tr>
                                 <tr>
@@ -186,7 +187,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>IPv4 address of the virtual interface.</div>
+                        <div>IPv4 address of the VIF.</div>
                 </td>
             </tr>
 
@@ -205,7 +206,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>List of IPv6 addresses of the virtual interface.</div>
+                        <div>List of IPv6 addresses of the VIF.</div>
                 </td>
             </tr>
                                 <tr>
@@ -223,7 +224,8 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>IPv6 address of the virtual interface.</div>
+                        <div>IPv6 address of the virtual VIF</div>
+                        <div><code>auto-config</code> to use SLAAC to chose an address.</div>
                 </td>
             </tr>
 
@@ -241,7 +243,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Identifier for the virtual sub-interface.</div>
+                        <div>Identifier for the VIF.</div>
                 </td>
             </tr>
 
@@ -278,9 +280,9 @@ Parameters
                                     <li>replaced</li>
                                     <li>overridden</li>
                                     <li>deleted</li>
-                                    <li>parsed</li>
-                                    <li>gathered</li>
                                     <li>rendered</li>
+                                    <li>gathered</li>
+                                    <li>parsed</li>
                         </ul>
                 </td>
                 <td>
@@ -295,7 +297,7 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.1.8 (helium).
+   - Tested against VyOS 1.3.
    - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
@@ -339,7 +341,6 @@ Examples
                   - address: '2001:db8:1000::5/38'
                   - address: '2001:db8:1400::3/38'
         state: merged
-
 
     # After state:
     # -------------
@@ -393,7 +394,7 @@ Examples
 
           - name: eth3
             ipv6:
-              - address: 2001:db8::11/32
+              - address: '2001:db8::11/32'
         state: replaced
 
     # After state:
@@ -450,7 +451,6 @@ Examples
               - address: dhcpv6
         state: overridden
 
-
     # After state
     # ------------
     #
@@ -492,8 +492,7 @@ Examples
     # set interfaces ethernet eth3 vif 102 address '2001:db8:4000::3/34'
     # set interfaces ethernet eth3 vif 102 address '2001:db8:4000::2/34'
 
-    - name: Delete L3 attributes of given interfaces (Note - This won't delete the interface
-        itself)
+    - name: Delete L3 attributes of given interfaces (Note- This won't delete the interface itself)
       vyos.vyos.vyos_l3_interfaces:
         config:
           - name: eth1
@@ -715,11 +714,10 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>when changed</td>
                 <td>
-                            <div>The configuration as structured data after module completion.</div>
+                            <div>The resulting configuration module invocation.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format
-     of the parameters above.</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format of the parameters above.</div>
                 </td>
             </tr>
             <tr>
@@ -733,11 +731,10 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>always</td>
                 <td>
-                            <div>The configuration as structured data prior to module invocation.</div>
+                            <div>The configuration prior to the module invocation.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format
-     of the parameters above.</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format of the parameters above.</div>
                 </td>
             </tr>
             <tr>
@@ -768,5 +765,5 @@ Status
 Authors
 ~~~~~~~
 
-- Nilashish Chakraborty (@NilashishC)
 - Rohit Thakur (@rohitthakur2590)
+- Nilashish Chakraborty (@nilashishc)

@@ -31,16 +31,24 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
+---
 module: vyos_firewall_global
-short_description: FIREWALL global resource module
-description: This module manage global policies or configurations for firewall on
+short_description: Firewall global resource module
+description:
+- This module manage global policies or configurations for firewall on
   VyOS devices.
-version_added: 1.0.0
+version_added: '1.0.0'
 notes:
-- Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- Tested against VyOS 1.3.8.
+- This module works with connection C(ansible.netcommon.network_cli).
+  See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Rohit Thakur (@rohitthakur2590)
 options:
@@ -50,7 +58,8 @@ options:
     type: dict
     suboptions:
       route_redirects:
-        description: -A dictionary of Firewall icmp redirect and source route global
+        description:
+        - A dictionary of Firewall icmp redirect and source route global
           configuration options.
         type: list
         elements: dict
@@ -151,7 +160,8 @@ options:
                 elements: dict
                 suboptions:
                   address:
-                    description: IP address.
+                    description:
+                    - IP address.
                     type: str
           network_group:
             description:
@@ -185,7 +195,8 @@ options:
                 elements: dict
                 suboptions:
                   address:
-                    description: IP address.
+                    description:
+                    - IP address.
                     type: str
           port_group:
             description:
@@ -200,7 +211,7 @@ options:
                 required: true
               description:
                 description:
-                - Allows you to specify a brief description for the port group.
+                - A  brief description for the port group.
                 type: str
               members:
                 description:
@@ -209,7 +220,8 @@ options:
                 elements: dict
                 suboptions:
                   port:
-                    description: Defines the number.
+                    description:
+                    - Specified port.
                     type: str
       log_martians:
         description:
@@ -235,7 +247,8 @@ options:
         elements: dict
         suboptions:
           connection_type:
-            description: Specifies connection type.
+            description:
+            - Specifies connection type.
             type: str
             choices:
             - established
@@ -255,6 +268,7 @@ options:
             type: bool
           log_level:
             description:
+            - Specify log level for packets logged.
             - Only available in 1.4+
             type: str
             choices:
@@ -268,7 +282,8 @@ options:
             - debug
   running_config:
     description:
-    - The module, by default, will connect to the remote device and retrieve the current
+    - >
+      The module, by default, will connect to the remote device and retrieve the current
       running-config to use as a base for comparing against the contents of source.
       There are times when it is not desirable to have the task get the current running-config
       for every task in a playbook.  The I(running_config) argument allows the implementer
@@ -288,7 +303,6 @@ options:
     - rendered
     - parsed
     default: merged
-
 """
 EXAMPLES = """
 # Using merged
@@ -314,6 +328,7 @@ EXAMPLES = """
         - connection_type: established
           action: accept
           log: true
+          log_level: emerg
         - connection_type: invalid
           action: reject
       route_redirects:
@@ -359,6 +374,7 @@ EXAMPLES = """
 #        "set firewall config-trap 'enable'",
 #        "set firewall state-policy established action 'accept'",
 #        "set firewall state-policy established log 'enable'",
+#        "set firewall state-policy established log-level 'emerg'",
 #        "set firewall state-policy invalid action 'reject'",
 #        "set firewall broadcast-ping 'enable'",
 #        "set firewall all-ping 'enable'",
@@ -456,6 +472,8 @@ EXAMPLES = """
 # set firewall twa-hazards-protection 'enable'
 #
 #
+
+
 # Using parsed
 #
 #
@@ -568,6 +586,8 @@ EXAMPLES = """
 #    }
 # }
 #
+
+
 #
 # Using deleted
 #
@@ -696,6 +716,8 @@ EXAMPLES = """
 # vyos@192# run show configuration commands | grep firewall
 # set  'firewall'
 #
+
+
 #
 # Using replaced
 #
@@ -950,6 +972,8 @@ EXAMPLES = """
 # set firewall twa-hazards-protection 'enable'
 #
 #
+
+
 # Using gathered
 #
 # Before state:
@@ -1177,25 +1201,48 @@ EXAMPLES = """
 """
 RETURN = """
 before:
-  description: The configuration prior to the model invocation.
-  returned: always
-  type: list
+  description: The configuration prior to the module execution.
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
+  type: dict
   sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
+    This output will always be in the same format as the
+    module argspec.
 after:
-  description: The resulting configuration model invocation.
+  description: The resulting configuration after module execution.
   returned: when changed
-  type: list
+  type: dict
   sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
+    This output will always be in the same format as the
+    module argspec.
 commands:
   description: The set of commands pushed to the remote device.
   returned: always
   type: list
-  sample: ['set firewall group address-group ENG-HOSTS',
-           'set firewall group address-group ENG-HOSTS address 192.0.3.1']
+  sample:
+    - "set firewall group address-group ENG-HOSTS"
+    - "set firewall group address-group ENG-HOSTS address 192.0.3.1"
+rendered:
+  description: The provided configuration in the task rendered in device-native format (offline).
+  returned: when I(state) is C(rendered)
+  type: list
+  sample:
+    - "set firewall group address-group ENG-HOSTS"
+    - "set firewall group address-group ENG-HOSTS address 192.0.3.1"
+gathered:
+  description: Facts about the network resource gathered from the remote device as structured data.
+  returned: when I(state) is C(gathered)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+parsed:
+  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
+  returned: when I(state) is C(parsed)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+
 """
 
 
@@ -1218,9 +1265,12 @@ def main():
     required_if = [
         ("state", "merged", ("config",)),
         ("state", "replaced", ("config",)),
+        ("state", "rendered", ("config",)),
+        ("state", "overridden", ("config",)),
         ("state", "parsed", ("running_config",)),
     ]
     mutually_exclusive = [("config", "running_config")]
+
     module = AnsibleModule(
         argument_spec=Firewall_globalArgs.argument_spec,
         required_if=required_if,

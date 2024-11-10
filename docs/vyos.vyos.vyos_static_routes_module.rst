@@ -335,7 +335,7 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.1.8 (helium).
+   - Tested against VyOS 1.3.8.
    - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
@@ -356,25 +356,24 @@ Examples
       vyos.vyos.vyos_static_routes:
         config:
           - address_families:
-              - afi: ipv4
-                routes:
-                  - dest: 192.0.2.32/28
-                    blackhole_config:
-                      type: blackhole
-                    next_hops:
-                      - forward_router_address: 192.0.2.6
-                      - forward_router_address: 192.0.2.7
+            - afi: ipv4
+              routes:
+                - dest: 192.0.2.32/28
+                  blackhole_config:
+                    type: blackhole
+                  next_hops:
+                    - forward_router_address: 192.0.2.6
+                    - forward_router_address: 192.0.2.7
           - address_families:
-              - afi: ipv6
-                routes:
-                  - dest: '2001:db8:1000::/36'
-                    blackhole_config:
-                      distance: 2
-                    next_hops:
-                      - forward_router_address: '2001:db8:2000:2::1'
-                      - forward_router_address: '2001:db8:2000:2::2'
+            - afi: ipv6
+              routes:
+                - dest: '2001:db8:1000::/36'
+                  blackhole_config:
+                    distance: 2
+                  next_hops:
+                    - forward_router_address: '2001:db8:2000:2::1'
+                    - forward_router_address: '2001:db8:2000:2::2'
         state: merged
-
     #
     #
     # -------------------------
@@ -471,15 +470,15 @@ Examples
       vyos.vyos.vyos_static_routes:
         config:
           - address_families:
-              - afi: ipv4
-                routes:
-                  - dest: 192.0.2.32/28
-                    blackhole_config:
-                      distance: 2
-                    next_hops:
-                      - forward_router_address: 192.0.2.7
-                        enabled: false
-                      - forward_router_address: 192.0.2.9
+            - afi: ipv4
+              routes:
+                - dest: 192.0.2.32/28
+                  blackhole_config:
+                    distance: 2
+                  next_hops:
+                    - forward_router_address: 192.0.2.7
+                      enabled: false
+                    - forward_router_address: 192.0.2.9
         state: replaced
     #
     #
@@ -647,11 +646,11 @@ Examples
       vyos.vyos.vyos_static_routes:
         config:
           - address_families:
-              - afi: ipv4
-                routes:
-                  - dest: 198.0.2.48/28
-                    next_hops:
-                      - forward_router_address: 192.0.2.18
+            - afi: ipv4
+              routes:
+                - dest: 198.0.2.48/28
+                  next_hops:
+                    - forward_router_address: 192.0.2.18
         state: overridden
     #
     #
@@ -757,8 +756,8 @@ Examples
       vyos.vyos.vyos_static_routes:
         config:
           - address_families:
-              - afi: ipv4
-              - afi: ipv6
+            - afi: ipv4
+            - afi: ipv6
         state: deleted
     #
     #
@@ -908,23 +907,23 @@ Examples
       vyos.vyos.vyos_static_routes:
         config:
           - address_families:
-              - afi: ipv4
-                routes:
-                  - dest: 192.0.2.32/28
-                    blackhole_config:
-                      type: blackhole
-                    next_hops:
-                      - forward_router_address: 192.0.2.6
-                      - forward_router_address: 192.0.2.7
+            - afi: ipv4
+              routes:
+                - dest: 192.0.2.32/28
+                  blackhole_config:
+                    type: blackhole
+                  next_hops:
+                    - forward_router_address: 192.0.2.6
+                    - forward_router_address: 192.0.2.7
           - address_families:
-              - afi: ipv6
-                routes:
-                  - dest: 2001:db8:1000::/36
-                    blackhole_config:
-                      distance: 2
-                    next_hops:
-                      - forward_router_address: 2001:db8:2000:2::1
-                      - forward_router_address: 2001:db8:2000:2::2
+            - afi: ipv6
+              routes:
+                - dest: '2001:db8:1000::/36'
+                  blackhole_config:
+                    distance: 2
+                  next_hops:
+                    - forward_router_address: '2001:db8:2000:2::1'
+                    - forward_router_address: '2001:db8:2000:2::2'
         state: rendered
     #
     #
@@ -950,13 +949,13 @@ Examples
     #
     - name: Parse the provided running configuration
       vyos.vyos.vyos_static_routes:
-        running_config:
-          "set protocols static route 192.0.2.32/28 'blackhole'
-           set protocols static route 192.0.2.32/28 next-hop '192.0.2.6'
-           set protocols static route 192.0.2.32/28 next-hop '192.0.2.7'
-           set protocols static route6 2001:db8:1000::/36 blackhole distance '2'
-           set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::1'
-           set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'"
+        running_config: |
+          set protocols static route 192.0.2.32/28 'blackhole'
+          set protocols static route 192.0.2.32/28 next-hop '192.0.2.6'
+          set protocols static route 192.0.2.32/28 next-hop '192.0.2.7'
+          set protocols static route6 2001:db8:1000::/36 blackhole distance '2'
+          set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::1'
+          set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'
         state: parsed
     #
     #
@@ -1105,7 +1104,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>after</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
-                      <span style="color: purple">list</span>
+                      <span style="color: purple">dictionary</span>
                     </div>
                 </td>
                 <td>when changed</td>
@@ -1123,7 +1122,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>before</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
-                      <span style="color: purple">list</span>
+                      <span style="color: purple">dictionary</span>
                     </div>
                 </td>
                 <td>always</td>
