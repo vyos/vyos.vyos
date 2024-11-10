@@ -155,6 +155,22 @@ This collection follows the Ansible project's
 [Code of Conduct](https://docs.ansible.com/ansible/devel/community/code_of_conduct.html).
 Please read and familiarize yourself with this document.
 
+### Updating from resource module models
+
+Last build was with a slightly-modified version of resource_module_builder. 
+This changes the calling parameters for the resources.
+
+To update the collection from the resource module models, run the following command:
+```
+ansible-playbook -e rm_dest=`pwd` -e structure=collection -e collection_org=vyos -e collection_name=vyos -e model=../../../resource_module_models/models/vyos/firewall_rules/vyos_firewall_rules.yaml ../../../resource_module_builder/site.yml
+```
+
+### Testing playbooks
+
+You can use `ANSIBLE_COLLECTIONS_PATH` to test the collection locally. For example:
+```
+ANSIBLE_COLLECTIONS_PATHS=~/my_dev_path ansible-playbook -i inventory.network test.yml
+```
 
 ## Changelogs
 <!--Add a link to a changelog.md file or an external docsite to cover this information. -->
