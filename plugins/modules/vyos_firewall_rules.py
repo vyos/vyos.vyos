@@ -31,6 +31,11 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    'metadata_version': '1.1',
+    'status': ['preview'],
+    'supported_by': 'network'
+}
 
 DOCUMENTATION = """
 module: vyos_firewall_rules
@@ -62,9 +67,16 @@ options:
         type: list
         elements: dict
         suboptions:
+          filter:
+            description:
+              - Filter type (exclusive to "name").
+              - Supported in 1.4 and later.
+            type: str
+            choices: ['input', 'output', 'forward']
           name:
             description:
             - Firewall rule set name.
+            - Required for 1.3- and optional for 1.4+.
             type: str
           default_action:
             description:
@@ -72,11 +84,15 @@ options:
             - drop (Drop if no prior rules are hit (default))
             - reject (Drop and notify source if no prior rules are hit)
             - accept (Accept if no prior rules are hit)
+              - jump (Jump to another rule-set, 1.4+)
             type: str
-            choices:
-            - drop
-            - reject
-            - accept
+            choices: ['drop', 'reject', 'accept', 'jump']
+          default_jump_target:
+            description:
+              - Default jump target if the default action is jump.
+              - Only valid in 1.4 and later.
+              - Only valid when default_action = jump.
+            type: str
           description:
             description:
             - Rule set description.
@@ -103,12 +119,19 @@ options:
               action:
                 description:
                 - Specifying the action.
+                - inspect is available  < 1.4
+                - continue, return, jump, queue, synproxy are available >= 1.4
                 type: str
                 choices:
                 - drop
                 - reject
                 - accept
                 - inspect
+                - continue
+                - return
+                - jump
+                - queue
+                - synproxy
               destination:
                 description:
                 - Specifying the destination parameters.
@@ -148,6 +171,7 @@ options:
               disable:
                 description:
                 - Option to disable firewall rule.
+                - aliased to disabled
                 type: bool
                 aliases: ["disabled"]
               fragment:
@@ -215,6 +239,21 @@ options:
                     description:
                     - ICMP type.
                     type: int
+              inbound_interface:
+                description:
+                  - Inbound interface.
+                  - Only valid in 1.4 and later.
+                type: dict
+                suboptions:
+                  name:
+                    description:
+                      - Interface name.
+                      - Can have wildcards
+                    type: str
+                  group:
+                    description:
+                      - Interface group.
+                    type: str
               ipsec:
                 description:
                 - Inbound ip sec packets.
@@ -222,13 +261,16 @@ options:
                 choices:
                 - match-ipsec
                 - match-none
-              log:
+                - match-ipsec-in
+                - match-ipsec-out
+                - match-none-in
+                - match-none-out
+              jump_target:
                 description:
-                - Option to log packets matching rule
+                  - Jump target if the action is jump.
+                  - Only valid in 1.4 and later.
+                  - Only valid when action = jump.
                 type: str
-                choices:
-                - disable
-                - enable
               limit:
                 description:
                 - Rate limit using a token bucket filter.
@@ -255,6 +297,55 @@ options:
                         description:
                         - This is the time unit.
                         type: str
+              log:
+                description:
+                  - Log matching packets.
+                type: str
+                choices: ['disable', 'enable']
+              outbound_interface:
+                description:
+                  - Match outbound interface.
+                  - Only valid in 1.4 and later.
+                type: dict
+                suboptions:
+                  name:
+                    description:
+                      - Interface name.
+                      - Can have wildcards
+                    type: str
+                  group:
+                    description:
+                      - Interface group.
+                    type: str
+              packet_length:
+                description:
+                  - Packet length match.
+                  - Only valid in 1.4 and later.
+                  - Multiple values from 1 to 65535 and ranges are supported
+                type: list
+                elements: dict
+                suboptions:
+                  length:
+                    description:
+                      - Packet length or range.
+                    type: str
+              packet_length_exclude:
+                description:
+                  - Packet length match.
+                  - Only valid in 1.4 and later.
+                  - Multiple values from 1 to 65535 and ranges are supported
+                type: list
+                elements: dict
+                suboptions:
+                  length:
+                    description:
+                      - Packet length or range.
+                    type: str
+              packet_type:
+                description:
+                  - Packet type match.
+                type: str
+                choices: ['broadcast', 'multicast', 'host', 'other']
               p2p:
                 description:
                 - P2P application packets.
@@ -283,6 +374,20 @@ options:
                 - all All IP protocols.
                 - (!)All IP protocols except for the specified name or number.
                 type: str
+              queue:
+                description:
+                  - Queue options.
+                  - Only valid in 1.4 and later.
+                  - Only valid when action = queue.
+                  - Can be a queue number or range.
+                type: str
+              queue_options:
+                description:
+                  - Queue options.
+                  - Only valid in 1.4 and later.
+                  - Only valid when action = queue.
+                type: str
+                choices: ['bypass', 'fanout']
               recent:
                 description:
                 - Parameters for matching recently seen sources.
@@ -295,7 +400,8 @@ options:
                   time:
                     description:
                     - Source addresses seen in the last N seconds.
-                    type: int
+                    - Since 1.4, this is a string of second/minute/hour
+                    type: str
               source:
                 description:
                 - Source parameters.
@@ -337,6 +443,12 @@ options:
                     - <MAC address> MAC address to match.
                     - <!MAC address> Match everything except the specified MAC address.
                     type: str
+                  fqdn:
+                    description:
+                      - Fully qualified domain name.
+                      - Available in 1.4 and later.
+                    type: str
+
               state:
                 description:
                 - Session state.
@@ -358,6 +470,21 @@ options:
                     description:
                     - Related state.
                     type: bool
+              synproxy:
+                description:
+                  - SYN proxy options.
+                  - Only valid in 1.4 and later.
+                  - Only valid when action = synproxy.
+                type: dict
+                suboptions:
+                  mss:
+                    description:
+                      - Adjust MSS (501-65535)
+                    type: int
+                  window_scale:
+                    description:
+                      - Window scale (1-14).
+                    type: int
               tcp:
                 description:
                 - TCP flags to match.
@@ -365,8 +492,22 @@ options:
                 suboptions:
                   flags:
                     description:
-                    - TCP flags to be matched.
-                    type: str
+                      - list of tcp flags to be matched
+                      - 5.0 breaking change to support 1.4+ and 1.3-
+                    type: list
+                    elements: dict
+                    suboptions:
+                      flag:
+                        description:
+                          - TCP flag to be matched.
+                          - syn, ack, fin, rst, urg, psh, all (1.3-)
+                          - syn, ack, fin, rst, urg, psh, cwr, ecn (1.4+)
+                        type: str
+                        choices: ['ack', 'cwr', 'ecn', 'fin', 'psh', 'rst', 'syn', 'urg', 'all']
+                      invert:
+                        description:
+                          - Invert the match.
+                        type: bool
               time:
                 description:
                 - Time to match rule.
@@ -1460,14 +1601,14 @@ RETURN = """
 before:
   description: The configuration prior to the model invocation.
   returned: always
-  type: list
+  type: dict
   sample: >
     The configuration returned will always be in the same format
      of the parameters above.
 after:
   description: The resulting configuration model invocation.
   returned: when changed
-  type: list
+  type: dict
   sample: >
     The configuration returned will always be in the same format
      of the parameters above.
@@ -1486,17 +1627,14 @@ commands:
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_rules.firewall_rules import (
-    Firewall_rulesArgs,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_rules.firewall_rules import (
-    Firewall_rules,
-)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_rules.firewall_rules import Firewall_rulesArgs
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_rules.firewall_rules import Firewall_rules
 
 
 def main():
     """
     Main entry point for module execution
+
     :returns: the result form module invocation
     """
     required_if = [
@@ -1518,5 +1656,5 @@ def main():
     module.exit_json(**result)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

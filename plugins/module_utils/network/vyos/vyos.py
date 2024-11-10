@@ -34,7 +34,6 @@ import json
 from ansible.module_utils._text import to_text
 from ansible.module_utils.connection import Connection, ConnectionError
 
-
 _DEVICE_CONFIGS = {}
 
 
@@ -100,3 +99,10 @@ def load_config(module, commands, commit=False, comment=None):
         module.fail_json(msg=to_text(exc, errors="surrogate_then_replace"))
 
     return response.get("diff")
+
+
+def get_os_version(module):
+    connection = get_connection(module)
+    if connection.get_device_info():
+        os_version = connection.get_device_info()["network_os_major_version"]
+    return os_version

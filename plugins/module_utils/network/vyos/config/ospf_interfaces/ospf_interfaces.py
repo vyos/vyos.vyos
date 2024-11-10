@@ -27,8 +27,16 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ospf_interfaces import (
-    Ospf_interfacesTemplate,
+    Ospf_interfacesTemplate
 )
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ospf_interfaces_14 import (
+    Ospf_interfacesTemplate14
+)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Ospf_interfaces(ResourceModule):
@@ -61,12 +69,30 @@ class Ospf_interfaces(ResourceModule):
             "passive",
         ]
 
+    def _validate_template(self):
+        version = get_os_version(self._module)
+        if LooseVersion(version) >= LooseVersion("1.4"):
+            self._tmplt = Ospf_interfacesTemplate14()
+        else:
+            self._tmplt = Ospf_interfacesTemplate()
+
+    def parse(self):
+        """ override parse to check template """
+        self._validate_template()
+        return super().parse()
+
+    def get_parser(self, name):
+        """get_parsers"""
+        self._validate_template()
+        return super().get_parser(name)
+
     def execute_module(self):
         """Execute the module
 
         :rtype: A dictionary
         :returns: The result from module execution
         """
+        self._validate_template()
         if self.state not in ["parsed", "gathered"]:
             self.generate_commands()
             self.run_commands()

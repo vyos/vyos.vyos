@@ -31,6 +31,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils
     list_diff_want_only,
 )
 
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
+
 
 class Firewall_global(ConfigBase):
     """
@@ -255,7 +259,7 @@ class Firewall_global(ConfigBase):
                         continue
                     if (
                         key in l_set
-                        and not (h and self._in_target(h, key))
+                        and not self._in_target(h, key)
                         and not self._is_del(l_set, h)
                     ):
                         commands.append(
@@ -455,7 +459,10 @@ class Firewall_global(ConfigBase):
         """
         commands = []
         have = []
-        l_set = ("log", "action", "connection_type")
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            l_set = ("log", "action", "connection_type", "log_level")
+        else:
+            l_set = ("log", "action", "connection_type")
         if not opr and self._is_root_del(h, w, attr):
             commands.append(self._form_attr_cmd(attr=attr, opr=opr))
         else:
@@ -478,25 +485,23 @@ class Firewall_global(ConfigBase):
                                     ),
                                 )
                             elif not opr and key in l_set:
-                                if not (h and self._in_target(h, key)) and not self._is_del(
-                                    l_set,
-                                    h,
-                                ):
-                                    if key == "action":
-                                        commands.append(
-                                            self._form_attr_cmd(
-                                                attr=attr + " " + w["connection_type"],
-                                                opr=opr,
-                                            ),
-                                        )
-                                    else:
-                                        commands.append(
-                                            self._form_attr_cmd(
-                                                attr=attr + " " + w["connection_type"],
-                                                val=self._bool_to_str(val),
-                                                opr=opr,
-                                            ),
-                                        )
+                                if not h:
+                                    commands.append(
+                                        self._form_attr_cmd(
+                                            attr=attr + " " + w["connection_type"],
+                                            opr=opr,
+                                        ),
+                                    )
+                                    break  # delete the whole thing and move on
+                                if (not self._in_target(h, key) or h[key] is None) and (self._in_target(w, key) and w[key]):
+                                    # delete if not being replaced and value currently exists
+                                    commands.append(
+                                        self._form_attr_cmd(
+                                            attr=attr + " " + w["connection_type"] + " " + key,
+                                            val=self._bool_to_str(val),
+                                            opr=opr,
+                                        ),
+                                    )
         return commands
 
     def _render_route_redirects(self, attr, w, h, opr):
@@ -520,6 +525,14 @@ class Firewall_global(ConfigBase):
         if want:
             for w in want:
                 h = self.search_attrib_in_have(have, w, "afi")
+                if 'afi' in w:
+                    afi = w['afi']
+                else:
+                    if h and 'afi' in h:
+                        afi = h['afi']
+                    else:
+                        afi = None
+                    afi = None
                 for key, val in iteritems(w):
                     if val and key != "afi":
                         if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
@@ -528,6 +541,7 @@ class Firewall_global(ConfigBase):
                                     attr=key,
                                     val=self._bool_to_str(val),
                                     opr=opr,
+                                    type=afi
                                 ),
                             )
                         elif not opr and key in l_set:
@@ -537,6 +551,7 @@ class Firewall_global(ConfigBase):
                                         attr=key,
                                         val=self._bool_to_str(val),
                                         opr=opr,
+                                        type=afi
                                     ),
                                 )
                                 continue
@@ -546,6 +561,7 @@ class Firewall_global(ConfigBase):
                                         attr=key,
                                         val=self._bool_to_str(val),
                                         opr=opr,
+                                        type=afi
                                     ),
                                 )
                         elif key == "icmp_redirects":
@@ -565,20 +581,27 @@ class Firewall_global(ConfigBase):
         commands = []
         h_red = {}
         l_set = ("send", "receive")
+        if w and 'afi' in w:
+            afi = w['afi']
+        else:
+            if h and 'afi' in h:
+                afi = h['afi']
+            else:
+                afi = None
         if w[attr]:
             if h and attr in h.keys():
                 h_red = h.get(attr) or {}
             for item, value in iteritems(w[attr]):
                 if opr and item in l_set and not (h_red and self._is_w_same(w[attr], h_red, item)):
                     commands.append(
-                        self._form_attr_cmd(attr=item, val=self._bool_to_str(value), opr=opr),
+                        self._form_attr_cmd(attr=item, val=self._bool_to_str(value), opr=opr, type=afi)
                     )
                 elif (
                     not opr
                     and item in l_set
                     and not (h_red and self._is_w_same(w[attr], h_red, item))
                 ):
-                    commands.append(self._form_attr_cmd(attr=item, opr=opr))
+                    commands.append(self._form_attr_cmd(attr=item, opr=opr, type=afi))
         return commands
 
     def search_attrib_in_have(self, have, want, attr):
@@ -595,16 +618,17 @@ class Firewall_global(ConfigBase):
                     return h
         return None
 
-    def _form_attr_cmd(self, key=None, attr=None, val=None, opr=True):
+    def _form_attr_cmd(self, key=None, attr=None, val=None, opr=True, type=None):
         """
         This function forms the command for leaf attribute.
         :param key: parent key.
         :param attr: attribute name
         :param value: value
         :param opr: True/False.
+        :param type: AF type of attribute.
         :return: generated command.
         """
-        command = self._compute_command(key=key, attr=self._map_attrib(attr), val=val, opr=opr)
+        command = self._compute_command(key=key, attr=self._map_attrib(attr, type=type), val=val, opr=opr)
         return command
 
     def _compute_command(self, key=None, attr=None, val=None, remove=False, opr=True):
@@ -621,13 +645,15 @@ class Firewall_global(ConfigBase):
             cmd = "delete firewall "
         else:
             cmd = "set firewall "
+        if key != "group" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            cmd += "global-options "
         if key:
             cmd += key.replace("_", "-") + " "
         if attr:
             cmd += attr.replace("_", "-")
         if val and opr:
             cmd += " '" + str(val) + "'"
-        return cmd
+        return cmd.strip()
 
     def _bool_to_str(self, val):
         """
@@ -698,7 +724,7 @@ class Firewall_global(ConfigBase):
         :param key: number.
         :return: True/False.
         """
-        return key in b_set and not (h and self._in_target(h, key))
+        return key in b_set and not self._in_target(h, key)
 
     def _map_attrib(self, attrib, type=None):
         """

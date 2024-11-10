@@ -54,6 +54,7 @@ class TestVyosFactsModule(TestVyosModule):
                 "network_os_hostname": "vyos01",
                 "network_os_model": "VMware",
                 "network_os_version": "VyOS 1.1.7",
+                "network_os_major_version": "1.1",
             },
             "network_api": "cliconf",
         }

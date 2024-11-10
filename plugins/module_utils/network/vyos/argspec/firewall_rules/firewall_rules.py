@@ -50,11 +50,16 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                     "elements": "dict",
                     "options": {
                         "default_action": {
-                            "choices": ["drop", "reject", "accept"],
+                            "choices": ["drop", "reject", "accept", "jump"],
                             "type": "str",
                         },
+                        "default_jump_target": {"type": "str"},
                         "description": {"type": "str"},
                         "enable_default_log": {"type": "bool"},
+                        "filter": {
+                            "choices": ["input", "output", "forward"],
+                            "type": "str"
+                        },
                         "name": {"type": "str"},
                         "rules": {
                             "elements": "dict",
@@ -65,6 +70,11 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                         "reject",
                                         "accept",
                                         "inspect",
+                                        "continue",
+                                        "return",
+                                        "jump",
+                                        "queue",
+                                        "synproxy",
                                     ],
                                     "type": "str",
                                 },
@@ -147,9 +157,23 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     },
                                     "type": "dict",
                                 },
+                                "inbound_interface": {
+                                    "options": {
+                                        "group": {
+                                            "type": "str",
+                                        },
+                                        "name": {
+                                            "type": "str",
+                                        },
+                                    },
+                                    "type": "dict",
+                                },
                                 "ipsec": {
-                                    "choices": ["match-ipsec", "match-none"],
-                                    "type": "str",
+                                    "choices": ["match-ipsec", "match-none", "match-ipsec-in", "match-ipsec-out", "match-none-in", "match-none-out"],
+                                    "type": "str"
+                                },
+                                "jump_target": {
+                                    "type": "str"
                                 },
                                 "limit": {
                                     "options": {
@@ -169,6 +193,17 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     "choices": ["enable", "disable"],
                                 },
                                 "number": {"required": True, "type": "int"},
+                                "outbound_interface": {
+                                    "options": {
+                                        "group": {
+                                            "type": "str",
+                                        },
+                                        "name": {
+                                            "type": "str",
+                                        },
+                                    },
+                                    "type": "dict",
+                                },
                                 "p2p": {
                                     "elements": "dict",
                                     "options": {
@@ -185,19 +220,52 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                             "type": "str",
                                         },
                                     },
+                                    "type": "list"
+                                },
+                                "packet_length": {
+                                    "elements": "dict",
+                                    "options": {
+                                        "length": {
+                                            "type": "str",
+                                        },
+                                    },
+                                    "type": "list"
+                                },
+                                "packet_length_exclude": {
+                                    "elements": "dict",
+                                    "options": {
+                                        "length": {
+                                            "type": "str",
+                                        }
+                                    },
                                     "type": "list",
                                 },
+                                "packet_type": {
+                                    "choices": [
+                                        "broadcast",
+                                        "multicast",
+                                        "host",
+                                        "other"
+                                    ],
+                                    "type": "str"
+                                },
                                 "protocol": {"type": "str"},
+                                "queue": {"type": "str"},
+                                "queue_options": {
+                                    "choices": ["bypass", "fanout"],
+                                    "type": "str"
+                                },
                                 "recent": {
                                     "options": {
                                         "count": {"type": "int"},
-                                        "time": {"type": "int"},
+                                        "time": {"type": "str"},
                                     },
                                     "type": "dict",
                                 },
                                 "source": {
                                     "options": {
                                         "address": {"type": "str"},
+                                        "fqdn": {"type": "str"},
                                         "group": {
                                             "options": {
                                                 "address_group": {"type": "str"},
@@ -220,8 +288,37 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     },
                                     "type": "dict",
                                 },
+                                "synproxy": {
+                                    "options": {
+                                        "mss": {"type": "int"},
+                                        "window_scale": {"type": "int"},
+                                    },
+                                    "type": "dict",
+                                },
                                 "tcp": {
-                                    "options": {"flags": {"type": "str"}},
+                                    "options": {
+                                        "flags": {
+                                            "elements": "dict",
+                                            "options": {
+                                                "flag": {
+                                                    "choices": [
+                                                        "ack",
+                                                        "cwr",
+                                                        "ecn",
+                                                        "fin",
+                                                        "psh",
+                                                        "rst",
+                                                        "syn",
+                                                        "urg",
+                                                        "all",
+                                                    ],
+                                                    "type": "str"
+                                                },
+                                                "invert": {"type": "bool"}
+                                            },
+                                            "type": "list"
+                                        }
+                                    },
                                     "type": "dict",
                                 },
                                 "time": {

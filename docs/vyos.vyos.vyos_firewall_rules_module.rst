@@ -546,8 +546,14 @@ Parameters
                 </td>
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                <br><i>VyOS 1.4 & older:</i><br>
                                     <li>match-ipsec</li>
                                     <li>match-none</li>
+                                <br><i>VyOS 1.5+ :</i><br>
+                                    <li>match-ipsec-in</li>
+                                    <li>match-ipsec-out</li>
+                                    <li>match-none-in</li>
+                                    <li>match-none-out</li>
                         </ul>
                 </td>
                 <td>

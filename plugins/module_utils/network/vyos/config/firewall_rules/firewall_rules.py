@@ -15,8 +15,6 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-import re
-
 from copy import deepcopy
 
 from ansible.module_utils.six import iteritems
@@ -32,6 +30,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     list_diff_want_only,
 )
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Firewall_rules(ConfigBase):
@@ -171,12 +173,8 @@ class Firewall_rules(ConfigBase):
                     # In the desired configuration, search for the rule set we
                     # already have (to be replaced by our desired
                     # configuration's rule set).
-                    wanted_rule_set = self.search_r_sets_in_have(
-                        want,
-                        rs["name"],
-                        "r_list",
-                        h["afi"],
-                    )
+                    rs_id = self._rs_id(rs, h["afi"])
+                    wanted_rule_set = self.search_r_sets_in_have(want, rs_id, "r_list")
                     if wanted_rule_set is not None:
                         # Remove the rules that we already have if the wanted
                         # rules exist under the same name.
@@ -202,11 +200,12 @@ class Firewall_rules(ConfigBase):
         commands = []
         if have:
             for h in have:
-                r_sets = self._get_r_sets(h)
-                for rs in r_sets:
-                    w = self.search_r_sets_in_have(want, rs["name"], "r_list", h["afi"])
+                have_r_sets = self._get_r_sets(h)
+                for rs in have_r_sets:
+                    rs_id = self._rs_id(rs, h["afi"])
+                    w = self.search_r_sets_in_have(want, rs_id, "r_list")
                     if not w:
-                        commands.append(self._compute_command(h["afi"], rs["name"], remove=True))
+                        commands.append(self._compute_command(rs_id, remove=True))
                     else:
                         commands.extend(self._add_r_sets(h["afi"], rs, w, opr=False))
         commands.extend(self._state_merged(want, have))
@@ -223,7 +222,8 @@ class Firewall_rules(ConfigBase):
         for w in want:
             r_sets = self._get_r_sets(w)
             for rs in r_sets:
-                h = self.search_r_sets_in_have(have, rs["name"], "r_list", w["afi"])
+                rs_id = self._rs_id(rs, w["afi"])
+                h = self.search_r_sets_in_have(have, rs_id, "r_list")
                 commands.extend(self._add_r_sets(w["afi"], rs, h))
         return commands
 
@@ -240,18 +240,21 @@ class Firewall_rules(ConfigBase):
                 r_sets = self._get_r_sets(w)
                 if r_sets:
                     for rs in r_sets:
-                        h = self.search_r_sets_in_have(have, rs["name"], "r_list", w["afi"])
+                        rs_id = self._rs_id(rs, w["afi"])
+                        h = self.search_r_sets_in_have(have, rs_id, "r_list")
                         if h:
-                            commands.append(self._compute_command(w["afi"], h["name"], remove=True))
+                            commands.append(self._compute_command(rs_id, remove=True))
                 elif have:
                     for h in have:
                         if h["afi"] == w["afi"]:
-                            commands.append(self._compute_command(w["afi"], remove=True))
+                            commands.append(
+                                self._compute_command(self._rs_id(None, w["afi"]), remove=True)
+                            )
         elif have:
             for h in have:
                 r_sets = self._get_r_sets(h)
                 if r_sets:
-                    commands.append(self._compute_command(afi=h["afi"], remove=True))
+                    commands.append(self._compute_command(self._rs_id(None, h["afi"]), remove=True))
         return commands
 
     def _add_r_sets(self, afi, want, have, opr=True):
@@ -265,11 +268,12 @@ class Firewall_rules(ConfigBase):
         :return: generated commands list.
         """
         commands = []
-        l_set = ("description", "default_action", "enable_default_log")
+        l_set = ("description", "default_action", "default_jump_target", "enable_default_log")
         h_rs = {}
         h_rules = {}
         w_rs = deepcopy(remove_empties(want))
         w_rules = w_rs.pop("rules", None)
+        rs_id = self._rs_id(want, afi=afi)
         if have:
             h_rs = deepcopy(remove_empties(have))
             h_rules = h_rs.pop("rules", None)
@@ -278,9 +282,9 @@ class Firewall_rules(ConfigBase):
                 if opr and key in l_set and not (h_rs and self._is_w_same(w_rs, h_rs, key)):
                     if key == "enable_default_log":
                         if val and (not h_rs or key not in h_rs or not h_rs[key]):
-                            commands.append(self._add_rs_base_attrib(afi, want["name"], key, w_rs))
+                            commands.append(self._add_rs_base_attrib(rs_id, key, w_rs))
                     else:
-                        commands.append(self._add_rs_base_attrib(afi, want["name"], key, w_rs))
+                        commands.append(self._add_rs_base_attrib(rs_id, key, w_rs))
                 elif not opr and key in l_set:
                     if (
                         key == "enable_default_log"
@@ -288,22 +292,24 @@ class Firewall_rules(ConfigBase):
                         and h_rs
                         and (key not in h_rs or not h_rs[key])
                     ):
-                        commands.append(self._add_rs_base_attrib(afi, want["name"], key, w_rs, opr))
+                        commands.append(self._add_rs_base_attrib(rs_id, key, w_rs, opr))
                     elif not (h_rs and self._in_target(h_rs, key)):
-                        commands.append(self._add_rs_base_attrib(afi, want["name"], key, w_rs, opr))
-            commands.extend(self._add_rules(afi, want["name"], w_rules, h_rules, opr))
+                        commands.append(self._add_rs_base_attrib(rs_id, key, w_rs, opr))
+            commands.extend(self._add_rules(rs_id, w_rules, h_rules, opr))
         if h_rules:
             have["rules"] = h_rules
         if w_rules:
             want["rules"] = w_rules
         return commands
 
-    def _add_rules(self, afi, name, w_rules, h_rules, opr=True):
+    def _add_rules(self, rs_id, w_rules, h_rules, opr=True):
         """
         This function forms the set/delete commands based on the 'opr' type
         for rules attributes.
-        :param want: desired config.
-        :param have: target config.
+        :param rs_id: rule-set identifier.
+        :param w_rules: desired config.
+        :param h_rules: target config.
+        :param opr: True/False.
         :return: generated commands list.
         """
         commands = []
@@ -316,31 +322,70 @@ class Firewall_rules(ConfigBase):
             "disable",
             "description",
             "log",
+            "jump_target",
         )
         if w_rules:
             for w in w_rules:
-                cmd = self._compute_command(afi, name, w["number"], opr=opr)
-                h = self.search_r_sets_in_have(h_rules, w["number"], type="rules")
+                cmd = self._compute_command(rs_id, w["number"], opr=opr)
+                h = self.search_rules_in_have_rs(h_rules, w["number"])
                 for key, val in iteritems(w):
                     if val:
                         if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
                             if key == "disable":
                                 if not (not val and (not h or key not in h or not h[key])):
-                                    commands.append(self._add_r_base_attrib(afi, name, key, w))
+                                    commands.append(self._add_r_base_attrib(rs_id, key, w))
                             else:
-                                commands.append(self._add_r_base_attrib(afi, name, key, w))
+                                commands.append(self._add_r_base_attrib(rs_id, key, w))
                         elif not opr:
+                            # Note: if you are experiencing sticky configuration on replace
+                            # you may need to add an explicit check for the key here. Anything that
+                            # doesn't have a custom operation is taken care of by the `l_set` check
+                            # below, but I'm not sure how any of the others work.
+                            # It's possible that historically the delete was forced (but now it's
+                            # checked).
                             if key == "number" and self._is_del(l_set, h):
-                                commands.append(self._add_r_base_attrib(afi, name, key, w, opr=opr))
+                                commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
                                 continue
-                            if key == "disable" and val and h and (key not in h or not h[key]):
-                                commands.append(self._add_r_base_attrib(afi, name, key, w, opr=opr))
+                            if (
+                                key == "tcp"
+                                and val
+                                and h
+                                and (key not in h or not h[key] or h[key] != w[key])
+                            ):
+                                commands.extend(self._add_tcp(key, w, h, cmd, opr))
+                            if (
+                                key == "state"
+                                and val
+                                and h
+                                and (key not in h or not h[key] or h[key] != w[key])
+                            ):
+                                commands.extend(self._add_state(key, w, h, cmd, opr))
+                            if (
+                                key == "icmp"
+                                and val
+                                and h
+                                and (key not in h or not h[key] or h[key] != w[key])
+                            ):
+                                commands.extend(self._add_icmp(key, w, h, cmd, opr))
+                            if (
+                                key in ("packet_length", "packet_length_exclude")
+                                and val
+                                and h
+                                and (key not in h or not h[key] or h[key] != w[key])
+                            ):
+                                commands.extend(self._add_packet_length(key, w, h, cmd, opr))
+                            elif key == "disable" and val and h and (key not in h or not h[key]):
+                                commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
+                            elif key in ("inbound_interface", "outbound_interface") and not (
+                                h and self._is_w_same(w, h, key)
+                            ):
+                                commands.extend(self._add_interface(key, w, h, cmd, opr))
                             elif (
                                 key in l_set
                                 and not (h and self._in_target(h, key))
                                 and not self._is_del(l_set, h)
                             ):
-                                commands.append(self._add_r_base_attrib(afi, name, key, w, opr=opr))
+                                commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
                         elif key == "p2p":
                             commands.extend(self._add_p2p(key, w, h, cmd, opr))
                         elif key == "tcp":
@@ -357,6 +402,10 @@ class Firewall_rules(ConfigBase):
                             commands.extend(self._add_recent(key, w, h, cmd, opr))
                         elif key == "destination" or key == "source":
                             commands.extend(self._add_src_or_dest(key, w, h, cmd, opr))
+                        elif key in ("packet_length", "packet_length_exclude"):
+                            commands.extend(self._add_packet_length(key, w, h, cmd, opr))
+                        elif key in ("inbound_interface", "outbound_interface"):
+                            commands.extend(self._add_interface(key, w, h, cmd, opr))
         return commands
 
     def _add_p2p(self, attr, w, h, cmd, opr):
@@ -405,8 +454,11 @@ class Firewall_rules(ConfigBase):
                     and item in l_set
                     and not (h_state and self._is_w_same(w[attr], h_state, item))
                 ):
-                    commands.append(cmd + (" " + attr + " " + item + " " + self._bool_to_str(val)))
-                elif not opr and item in l_set and not (h_state and self._in_target(h_state, item)):
+                    if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                        commands.append(cmd + (" " + attr + " " + item))
+                    else:
+                        commands.append(cmd + (" " + attr + " " + item + " " + self._bool_to_str(val)))
+                elif not opr and item in l_set and not self._in_target(h_state, item):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
 
@@ -460,26 +512,50 @@ class Firewall_rules(ConfigBase):
                     and not (h_icmp and self._is_w_same(w[attr], h_icmp, item))
                 ):
                     if item == "type_name":
-                        os_version = self._get_os_version()
-                        ver = re.search(
-                            "vyos ([\\d\\.]+)-?.*",  # noqa: W605
-                            os_version,
-                            re.IGNORECASE,
-                        )
-                        if ver.group(1) >= "1.4":
+                        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.3"):
                             param_name = "type-name"
                         else:
                             param_name = "type"
-                        if "ipv6-name" in cmd:
+                        if "ipv6" in cmd:  # ipv6-name or ipv6
                             commands.append(cmd + (" " + "icmpv6" + " " + param_name + " " + val))
                         else:
                             commands.append(
                                 cmd + (" " + attr + " " + item.replace("_", "-") + " " + val),
                             )
                     else:
-                        commands.append(cmd + (" " + attr + " " + item + " " + str(val)))
-                elif not opr and item in l_set and not (h_icmp and self._in_target(h_icmp, item)):
-                    commands.append(cmd + (" " + attr + " " + item))
+                        if "ipv6" in cmd:  # ipv6-name or ipv6
+                            commands.append(cmd + (" " + "icmpv6" + " " + item + " " + str(val)))
+                        else:
+                            commands.append(cmd + (" " + attr + " " + item + " " + str(val)))
+                elif not opr and item in l_set and not self._in_target(h_icmp, item):
+                    commands.append(cmd + (" " + attr + " " + item.replace("_", "-") + " " + str(val)))
+        return commands
+
+    def _add_interface(self, attr, w, h, cmd, opr):
+        """
+        This function forms the commands for 'interface' attributes based on the 'opr'.
+        :param attr: attribute name.
+        :param w: base config.
+        :param h: target config.
+        :param cmd: commands to be prepend.
+        :return: generated list of commands.
+        """
+        commands = []
+        h_if = {}
+        l_set = ("name", "group")
+        if w[attr]:
+            if h and attr in h.keys():
+                h_if = h.get(attr) or {}
+            for item, val in iteritems(w[attr]):
+                if opr and item in l_set and not (h_if and self._is_w_same(w[attr], h_if, item)):
+                    commands.append(
+                        cmd
+                        + (" " + attr.replace("_", "-") + " " + item.replace("_", "-") + " " + val)
+                    )
+                elif not opr and item in l_set and not (h_if and self._in_target(h_if, item)):
+                    commands.append(
+                        cmd + (" " + attr.replace("_", "-") + " " + item.replace("_", "-"))
+                    )
         return commands
 
     def _add_time(self, attr, w, h, cmd, opr):
@@ -524,15 +600,107 @@ class Firewall_rules(ConfigBase):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
 
-    def _add_tcp(self, attr, w, h, cmd, opr):
+    def _add_tcp_1_4(self, attr, w, h, cmd, opr):
         """
         This function forms the commands for 'tcp' attributes based on the 'opr'.
+        Version 1.4+
         :param attr: attribute name.
         :param w: base config.
         :param h: target config.
         :param cmd: commands to be prepend.
         :return: generated list of commands.
         """
+        commands = []
+        have = []
+        key = "flags"
+        want = []
+
+        if w:
+            if w.get(attr):
+                want = w.get(attr).get(key) or []
+        if h:
+            if h.get(attr):
+                have = h.get(attr).get(key) or []
+        if want:
+            if opr:
+                flags = list_diff_want_only(want, have)
+                for flag in flags:
+                    invert = flag.get("invert", False)
+                    commands.append(
+                        cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"])
+                    )
+            elif not opr:
+                flags = list_diff_want_only(want, have)
+                for flag in flags:
+                    invert = flag.get("invert", False)
+                    commands.append(
+                        cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"])
+                    )
+        return commands
+
+    def _add_packet_length(self, attr, w, h, cmd, opr):
+        """
+        This function forms the commands for 'packet_length[_exclude]' attributes based on the 'opr'.
+        If < 1.4, handle tcp attributes.
+        :param attr: attribute name.
+        :param w: base config.
+        :param h: target config.
+        :param cmd: commands to be prepend.
+        :return: generated list of commands.
+        """
+        commands = []
+        have = []
+        want = []
+
+        if w:
+            if w.get(attr):
+                want = w.get(attr) or []
+        if h:
+            if h.get(attr):
+                have = h.get(attr) or []
+        attr = attr.replace("_", "-")
+        if want:
+            if opr:
+                lengths = list_diff_want_only(want, have)
+                for l_rec in lengths:
+                    commands.append(cmd + " " + attr + " " + str(l_rec["length"]))
+            elif not opr:
+                lengths = list_diff_want_only(want, have)
+                for l_rec in lengths:
+                    commands.append(cmd + " " + attr + " " + str(l_rec["length"]))
+        return commands
+
+    def _tcp_flags_string(self, flags):
+        """
+        This function forms the tcp flags string.
+        :param flags: flags list.
+        :return: flags string or None.
+        """
+        if not flags:
+            return ""
+        flag_str = ""
+        for flag in flags:
+            this_flag = flag["flag"].upper()
+            if flag.get("invert", False):
+                this_flag = "!" + this_flag
+            if len(flag_str) > 0:
+                flag_str = ",".join([flag_str, this_flag])
+            else:
+                flag_str = this_flag
+        return flag_str
+
+    def _add_tcp(self, attr, w, h, cmd, opr):
+        """
+        This function forms the commands for 'tcp' attributes based on the 'opr'.
+        If < 1.4, handle tcp attributes.
+        :param attr: attribute name.
+        :param w: base config.
+        :param h: target config.
+        :param cmd: commands to be prepend.
+        :return: generated list of commands.
+        """
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            return self._add_tcp_1_4(attr, w, h, cmd, opr)
         h_tcp = {}
         commands = []
         if w[attr]:
@@ -542,10 +710,11 @@ class Firewall_rules(ConfigBase):
                 if h and key in h[attr].keys():
                     h_tcp = h[attr].get(key) or {}
                 if flags:
-                    if opr and not (h_tcp and self._is_w_same(w[attr], h[attr], key)):
-                        commands.append(cmd + (" " + attr + " " + key + " " + flags))
-                    if not opr and not (h_tcp and self._is_w_same(w[attr], h[attr], key)):
-                        commands.append(cmd + (" " + attr + " " + key + " " + flags))
+                    flag_str = self._tcp_flags_string(flags)
+                    if opr and not (h_tcp and flags == h_tcp):
+                        commands.append(cmd + (" " + attr + " " + "flags" + " " + flag_str))
+                    if not opr and not (h_tcp and flags == h_tcp):
+                        commands.append(cmd + (" " + attr + " " + "flags" + " " + flag_str))
         return commands
 
     def _add_limit(self, attr, w, h, cmd, opr):
@@ -671,43 +840,68 @@ class Firewall_rules(ConfigBase):
                             )
         return commands
 
-    def search_r_sets_in_have(self, have, w_name, type="rule_sets", afi=None):
+    def search_rules_in_have_rs(self, have_rules, r_number):
+        """
+        This function returns the rule if it is present in target config.
+        :param have: target config.
+        :param rs_id: rule-set identifier.
+        :param r_number: rule-number.
+        :return: rule.
+        """
+        if have_rules:
+            for h in have_rules:
+                key = "number"
+                for r in have_rules:
+                    if key in r and r[key] == r_number:
+                        return r
+        return None
+
+    def search_r_sets_in_have(self, have, rs_id, type="rule_sets"):
         """
         This function  returns the rule-set/rule if it is present in target config.
         :param have: target config.
-        :param w_name: rule-set name.
-        :param type: rule_sets/rule/r_list.
-        :param afi: address family (when type is r_list).
+        :param rs_id: rule-identifier.
+        :param type: rule_sets if searching a rule_set and r_list if searching from a rule_list.
         :return: rule-set/rule.
         """
-        if have:
+        if "afi" in rs_id:
+            afi = rs_id["afi"]
+        else:
+            afi = None
+        if rs_id["filter"]:
+            key = "filter"
+            w_value = rs_id["filter"]
+        elif rs_id["name"]:
             key = "name"
-            if type == "rules":
-                key = "number"
-                for r in have:
-                    if r[key] == w_name:
-                        return r
-            elif type == "r_list":
+            w_value = rs_id["name"]
+        else:
+            raise ValueError("id must be specific to name or filter")
+
+        if type not in ("r_list", "rule_sets"):
+            raise ValueError("type must be rule_sets or r_list")
+        if have:
+            if type == "r_list":
                 for h in have:
                     if h["afi"] == afi:
                         r_sets = self._get_r_sets(h)
                         for rs in r_sets:
-                            if rs[key] == w_name:
+                            if key in rs and rs[key] == w_value:
                                 return rs
             else:
+                # searching a ruleset
                 for rs in have:
-                    if rs[key] == w_name:
+                    if key in rs and rs[key] == w_value:
                         return rs
         return None
 
-    def _get_r_sets(self, item, type="rule_sets"):
+    def _get_r_sets(self, item):
         """
-        This function returns the list of rule-sets/rules.
+        This function returns the list of rule-sets.
         :param item: config dictionary.
-        :param type: rule_sets/rule/r_list.
         :return: list of rule-sets/rules.
         """
         rs_list = []
+        type = "rule_sets"
         r_sets = item[type]
         if r_sets:
             for rs in r_sets:
@@ -716,8 +910,7 @@ class Firewall_rules(ConfigBase):
 
     def _compute_command(
         self,
-        afi,
-        name=None,
+        rs_id,
         number=None,
         attrib=None,
         value=None,
@@ -726,46 +919,53 @@ class Firewall_rules(ConfigBase):
     ):
         """
         This function construct the add/delete command based on passed attributes.
-        :param afi:  address type.
-        :param name:  rule-set name.
+        :param rs_id: rule-set identifier.
         :param number: rule-number.
         :param attrib: attribute name.
         :param value: value.
         :param remove: True if delete command needed to be construct.
-        :param opr: opeeration flag.
+        :param opr: operation flag.
         :return: generated command.
         """
+        if rs_id["name"] and rs_id["filter"]:
+            raise ValueError("name and filter cannot be used together")
         if remove or not opr:
-            cmd = "delete firewall " + self._get_fw_type(afi)
+            cmd = "delete firewall " + self._get_fw_type(rs_id["afi"])
         else:
-            cmd = "set firewall " + self._get_fw_type(afi)
-        if name:
-            cmd += " " + name
+            cmd = "set firewall " + self._get_fw_type(rs_id["afi"])
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            if rs_id["name"]:
+                cmd += " name " + rs_id["name"]
+            elif rs_id["filter"]:
+                cmd += " " + rs_id["filter"] + " filter"
+        elif rs_id["name"]:
+            cmd += " " + rs_id["name"]
         if number:
             cmd += " rule " + str(number)
         if attrib:
-            cmd += " " + attrib.replace("_", "-")
+            if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4") and attrib == "enable_default_log":
+                cmd += " " + "default-log"
+            else:
+                cmd += " " + attrib.replace("_", "-")
         if value and opr and attrib != "enable_default_log" and attrib != "disable":
             cmd += " '" + str(value) + "'"
         return cmd
 
-    def _add_r_base_attrib(self, afi, name, attr, rule, opr=True):
+    def _add_r_base_attrib(self, rs_id, attr, rule, opr=True):
         """
         This function forms the command for 'rules' attributes which doesn't
         have further sub attributes.
-        :param afi: address type.
-        :param name: rule-set name
+        :param rs_id: rule-set identifier.
         :param attrib: attribute name
         :param rule: rule config dictionary.
         :param opr: True/False.
         :return: generated command.
         """
         if attr == "number":
-            command = self._compute_command(afi=afi, name=name, number=rule["number"], opr=opr)
+            command = self._compute_command(rs_id, number=rule["number"], opr=opr)
         else:
             command = self._compute_command(
-                afi=afi,
-                name=name,
+                rs_id=rs_id,
                 number=rule["number"],
                 attrib=attr,
                 value=rule[attr],
@@ -773,21 +973,54 @@ class Firewall_rules(ConfigBase):
             )
         return command
 
-    def _add_rs_base_attrib(self, afi, name, attrib, rule, opr=True):
+    def _rs_id(self, have, afi, name=None, filter=None):
+        """
+        This function returns the rule-set identifier based on
+        the example rule, overriding the components as specified.
+
+        :param have: example rule.
+        :param afi: address type.
+        :param name: rule-set name.
+        :param filter: filter name.
+        :return: rule-set identifier.
+        """
+        identifier = {"name": None, "filter": None}
+        if afi:
+            identifier["afi"] = afi
+        else:
+            raise ValueError("afi must be provided")
+
+        if name:
+            identifier["name"] = name
+            return identifier
+        elif filter:
+            identifier["filter"] = filter
+            return identifier
+        if have:
+            if "name" in have and have["name"]:
+                identifier["name"] = have["name"]
+                return identifier
+            if "filter" in have and have["filter"]:
+                identifier["filter"] = have["filter"]
+                return identifier
+        # raise ValueError("name or filter must be provided or present in have")
+        # unless we want a wildcard
+        return identifier
+
+    def _add_rs_base_attrib(self, rs_id, attrib, rule, opr=True):
         """
 
-        This function forms the command for 'rule-sets' attributes which doesn't
+        This function forms the command for 'rule-sets' attributes which don't
         have further sub attributes.
-        :param afi: address type.
-        :param name: rule-set name
+
+        :param rs_id: rule-set identifier.
         :param attrib: attribute name
         :param rule: rule config dictionary.
         :param opr: True/False.
         :return: generated command.
         """
         command = self._compute_command(
-            afi=afi,
-            name=name,
+            rs_id=rs_id,
             attrib=attrib,
             value=rule[attrib],
             opr=opr,
@@ -808,6 +1041,8 @@ class Firewall_rules(ConfigBase):
         :param afi: address type
         :return: rule-set type.
         """
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            return "ipv6" if afi == "ipv6" else "ipv4"
         return "ipv6-name" if afi == "ipv6" else "name"
 
     def _is_del(self, l_set, h, key="number"):
@@ -834,37 +1069,9 @@ class Firewall_rules(ConfigBase):
 
     def _in_target(self, h, key):
         """
-        This function checks whether the target nexist and key present in target config.
+        This function checks whether the target exists and key present in target config.
         :param h: target config.
         :param key: attribute name.
         :return: True/False.
         """
         return True if h and key in h else False
-
-    def _is_base_attrib(self, key):
-        """
-        This function checks whether key is present in predefined
-        based attribute set.
-        :param key:
-        :return: True/False.
-        """
-        r_set = (
-            "p2p",
-            "ipsec",
-            "log",
-            "action",
-            "fragment",
-            "protocol",
-            "disable",
-            "description",
-            "mac_address",
-            "default_action",
-            "enable_default_log",
-        )
-        return True if key in r_set else False
-
-    def _get_os_version(self):
-        os_version = "1.2"
-        if self._connection:
-            os_version = self._connection.get_device_info()["network_os_version"]
-        return os_version

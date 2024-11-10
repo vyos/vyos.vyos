@@ -14,8 +14,6 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-import re
-
 from copy import deepcopy
 from re import M, findall, search
 
@@ -61,15 +59,31 @@ class Firewall_rulesFacts(object):
             data = self.get_device_data(connection)
         # split the config into instances of the resource
         objs = []
-        v6_rules = findall(r"^set firewall ipv6-name (?:\'*)(\S+)(?:\'*)", data, M)
-        v4_rules = findall(r"^set firewall name (?:\'*)(\S+)(?:\'*)", data, M)
+        # check 1.4+ first
+        new_rules = True
+        v6_rules = findall(r"^set firewall ipv6 (name|forward|input|output) (?:\'*)(\S+)(?:\'*)", data, M)
+        if not v6_rules:
+            v6_rules = findall(r"^set firewall ipv6-name (?:\'*)(\S+)(?:\'*)", data, M)
+            if v6_rules:
+                new_rules = False
+        v4_rules = findall(r"^set firewall ipv4 (name|forward|input|output) (?:\'*)(\S+)(?:\'*)", data, M)
+        if not v4_rules:
+            v4_rules = findall(r"^set firewall name (?:\'*)(\S+)(?:\'*)", data, M)
+            if v4_rules:
+                new_rules = False
         if v6_rules:
-            config = self.get_rules(data, v6_rules, type="ipv6")
+            if new_rules:
+                config = self.get_rules_post_1_4(data, v6_rules, type="ipv6")
+            else:
+                config = self.get_rules(data, v6_rules, type="ipv6")
             if config:
                 config = utils.remove_empties(config)
                 objs.append(config)
         if v4_rules:
-            config = self.get_rules(data, v4_rules, type="ipv4")
+            if new_rules:
+                config = self.get_rules_post_1_4(data, v4_rules, type="ipv4")
+            else:
+                config = self.get_rules(data, v4_rules, type="ipv4")
             if config:
                 config = utils.remove_empties(config)
                 objs.append(config)
@@ -113,6 +127,39 @@ class Firewall_rulesFacts(object):
             config = {"afi": "ipv6", "rule_sets": r_v6}
         return config
 
+    def get_rules_post_1_4(self, data, rules, type):
+        """
+        This function performs following:
+        - Form regex to fetch 'rule-sets' specific config from data.
+        - Form the rule-set list based on ip address.
+        Specifically for v1.4+ version.
+        :param data: configuration.
+        :param rules: list of rule-sets.
+        :param type: ip address type.
+        :return: generated rule-sets configuration.
+        """
+        r_v4 = []
+        r_v6 = []
+        for kind, name in set(rules):
+            rule_regex = r" %s %s %s .+$" % (type, kind, name.strip("'"))
+            cfg = findall(rule_regex, data, M)
+            fr = self.render_config(cfg, name.strip("'"))
+            if kind == "name":
+                fr["name"] = name.strip("'")
+            elif kind in ("forward", "input", "output"):
+                fr["filter"] = kind
+            else:
+                raise ValueError("Unknown rule kind: %s %s" % kind, name)
+            if type == "ipv6":
+                r_v6.append(fr)
+            else:
+                r_v4.append(fr)
+        if r_v4:
+            config = {"afi": "ipv4", "rule_sets": r_v4}
+        if r_v6:
+            config = {"afi": "ipv6", "rule_sets": r_v6}
+        return config
+
     def render_config(self, conf, match):
         """
         Render config as dictionary structure and delete keys
@@ -124,10 +171,12 @@ class Firewall_rulesFacts(object):
         :returns: The generated config
         """
         conf = "\n".join(filter(lambda x: x, conf))
-        a_lst = ["description", "default_action", "enable_default_log"]
+        a_lst = ["description", "default_action", "default_jump_target", "enable_default_log", "default_log"]
         config = self.parse_attr(conf, a_lst, match)
         if not config:
             config = {}
+        if 'default_log' in config:
+            config['enable_default_log'] = config.pop('default_log')
         config["rules"] = self.parse_rules_lst(conf)
         return config
 
@@ -169,11 +218,14 @@ class Firewall_rulesFacts(object):
             "disable",
             "description",
             "icmp",
+            "jump_target",
+            "queue",
+            "queue_options",
         ]
         rule = self.parse_attr(conf, a_lst)
         r_sub = {
             "p2p": self.parse_p2p(conf),
-            "tcp": self.parse_tcp(conf, "tcp"),
+            "tcp": self.parse_tcp(conf),
             "icmp": self.parse_icmp(conf, "icmp"),
             "time": self.parse_time(conf, "time"),
             "limit": self.parse_limit(conf, "limit"),
@@ -181,9 +233,41 @@ class Firewall_rulesFacts(object):
             "recent": self.parse_recent(conf, "recent"),
             "source": self.parse_src_or_dest(conf, "source"),
             "destination": self.parse_src_or_dest(conf, "destination"),
+            "inbound_interface": self.parse_interface(conf, "inbound-interface"),
+            "outbound_interface": self.parse_interface(conf, "outbound-interface"),
+            "packet_length": self.parse_packet_length(conf, "packet-length"),
+            "packet_length_exclude": self.parse_packet_length(conf, "packet-length-exclude"),
         }
         rule.update(r_sub)
         return rule
+
+    def parse_interface(self, conf, attrib):
+        """
+        This function triggers the parsing of 'interface' attributes.
+        :param conf: configuration.
+        :param attrib: 'interface'.
+        :return: generated config dictionary.
+        """
+        a_lst = ["name", "group"]
+        cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
+        return cfg_dict
+
+    def parse_packet_length(self, conf, attrib=None):
+        """
+        This function triggers the parsing of 'packet-length' attributes.
+        :param conf: configuration.
+        :param attrib: 'packet-length'.
+        :return: generated config dictionary.
+        """
+        lengths = []
+        rule_regex = r"%s (\d+)" % attrib
+        found_lengths = findall(rule_regex, conf, M)
+        if found_lengths:
+            lengths = []
+            for l in set(found_lengths):
+                obj = {"length": l.strip("'")}
+                lengths.append(obj)
+        return lengths
 
     def parse_p2p(self, conf):
         """
@@ -226,15 +310,41 @@ class Firewall_rulesFacts(object):
         cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
         return cfg_dict
 
-    def parse_tcp(self, conf, attrib=None):
+    def parse_tcp(self, conf):
         """
         This function triggers the parsing of 'tcp' attributes.
         :param conf: configuration.
         :param attrib: 'tcp'.
         :return: generated config dictionary.
         """
-        cfg_dict = self.parse_attr(conf, ["flags"], match=attrib)
-        return cfg_dict
+        f_lst = []
+        flags = findall(r"tcp flags (not )?(?:\'*)([\w!,]+)(?:\'*)", conf, M)
+        # for pre 1.4, this is a string including possible commas
+        # and ! as an inverter. For 1.4+ this is a single flag per
+        # command and 'not' as the inverter
+        if flags:
+            flag_lst = []
+            for n, f in set(flags):
+                f = f.strip("'").lower()
+                if "," in f:
+                    # pre 1.4 version with multiple flags
+                    fs = f.split(",")
+                    for f in fs:
+                        if "!" in f:
+                            obj = {"flag": f.strip("'!"), "invert": True}
+                        else:
+                            obj = {"flag": f.strip("'")}
+                        flag_lst.append(obj)
+                elif "!" in f:
+                    obj = {"flag": f.strip("'!"), "invert": True}
+                    flag_lst.append(obj)
+                else:
+                    obj = {"flag": f.strip("'")}
+                    if n:
+                        obj["invert"] = True
+                    flag_lst.append(obj)
+            f_lst = sorted(flag_lst, key=lambda i: i["flag"])
+        return {"flags": f_lst}
 
     def parse_time(self, conf, attrib=None):
         """
@@ -276,6 +386,44 @@ class Firewall_rulesFacts(object):
         cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
         return cfg_dict
 
+    def parse_icmp_attr(self, conf, match):
+        """
+        This function peforms the following:
+        - parse ICMP arguemnts for firewall rules
+        - consider that older versions may need numbers or letters
+          in type, newer ones are more specific
+        :param conf: configuration.
+        :param match: parent node/attribute name.
+        :return: generated config dictionary.
+        """
+        config = {}
+        if not conf:
+            return config
+
+        for attrib in ("code", "type", "type-name"):
+            regex = self.map_regex(attrib)
+            if match:
+                regex = match + " " + regex
+            out = search(r"^.*" + regex + " (.+)", conf, M)
+            if out:
+                val = out.group(1).strip("'")
+                if attrib == 'type-name':
+                    config['type_name'] = val
+                if attrib == 'code':
+                    config['code'] = int(val)
+                if attrib == 'type':
+                    # <1.3 could be # (type), #/# (type/code) or 'type' (type_name)
+                    # recent this is only for strings
+                    if "/" in val:  # type/code
+                        (type_no, code) = val.split(".")
+                        config['type'] = type_no
+                        config['code'] = code
+                    elif val.isnumeric():
+                        config['type'] = type_no
+                    else:
+                        config['type_name'] = val
+        return config
+
     def parse_icmp(self, conf, attrib=None):
         """
         This function triggers the parsing of 'icmp' attributes.
@@ -283,11 +431,9 @@ class Firewall_rulesFacts(object):
         :param attrib: 'icmp'.
         :return: generated config dictionary.
         """
-        a_lst = ["code", "type", "type_name"]
-        if attrib == "icmp":
-            attrib = "icmpv6"
-        conf = re.sub("icmpv6 type", "icmpv6 type-name", conf)
-        cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
+        cfg_dict = self.parse_icmp_attr(conf, "icmp")
+        if (len(cfg_dict) == 0):
+            cfg_dict = self.parse_icmp_attr(conf, "icmpv6")
         return cfg_dict
 
     def parse_limit(self, conf, attrib=None):
@@ -330,7 +476,6 @@ class Firewall_rulesFacts(object):
             if conf:
                 if self.is_bool(attrib):
                     out = conf.find(attrib.replace("_", "-"))
-
                     dis = conf.find(attrib.replace("_", "-") + " 'disable'")
                     if out >= 1:
                         if dis >= 1:
@@ -375,6 +520,7 @@ class Firewall_rulesFacts(object):
             "disabled",
             "established",
             "enable_default_log",
+            "default_log",
         )
         return True if attrib in bool_set else False
 
