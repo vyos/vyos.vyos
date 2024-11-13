@@ -35,11 +35,11 @@ class NtpTemplate(NetworkTemplate):
             "name": "allow_clients",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\sallow-clients\saddress (\s(?P<ipaddress>\S+))?
+                ^set\s(?P<path>system|service)?\sntp\sallow-clients\saddress (\s(?P<ipaddress>\S+))?
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "system ntp allow-clients address {{allow_clients}}",
+            "setval": "path ntp allow-clients address {{allow_clients}}",
             "result": {
                 "allow_clients": ["{{ipaddress}}"],
             },
@@ -50,11 +50,11 @@ class NtpTemplate(NetworkTemplate):
             "name": "allow_clients_delete",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\sallow-clients
+                ^set\sservice\sntp\sallow-clients
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "system ntp allow-clients",
+            "setval": "path ntp allow-clients",
             "result": {
 
             },
@@ -66,11 +66,11 @@ class NtpTemplate(NetworkTemplate):
             "name": "listen_addresses",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\slisten-address (\s(?P<ip_address>\S+))?
+                ^set\s(?P<path>system|service)?\sntp\slisten-address (\s(?P<ip_address>\S+))?
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "system ntp listen-address {{listen_addresses}}",
+            "setval": "path ntp listen-address {{listen_addresses}}",
             "result": {
                 "listen_addresses": ["{{ip_address}}"],
             },
@@ -81,11 +81,11 @@ class NtpTemplate(NetworkTemplate):
             "name": "listen_addresses_delete",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\slisten-address
+                ^set\s(?P<path>system|service)?\sntp\slisten-address
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "system ntp listen-address",
+            "setval": "path ntp listen-address",
             "result": {
             },
         },
@@ -95,11 +95,11 @@ class NtpTemplate(NetworkTemplate):
             "name": "server",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\sserver (\s(?P<name>\S+))?
+                ^set\s(?P<path>system|service)?\sntp\sserver (\s(?P<name>\S+))?
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "system ntp server {{server}}",
+            "setval": "path ntp server {{server}}",
             "result": {
                 "servers": {
                     "{{name}}": {
@@ -115,13 +115,13 @@ class NtpTemplate(NetworkTemplate):
             "name": "options",
             "getval": re.compile(
                 r"""
-                ^set\ssystem\sntp\sserver
+                ^set\s(?P<path>system|service)?\sntp\sserver
                 \s(?P<name>\S+)
                 \s(?P<options>noselect|dynamic|pool|preempt|prefer)?
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "system ntp server {{server}} {{options}}",
+            "setval": "path ntp server {{server}} {{options}}",
             "result": {
                 "servers": {
                     "{{name}}": {
