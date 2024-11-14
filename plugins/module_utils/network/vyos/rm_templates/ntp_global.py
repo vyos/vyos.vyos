@@ -39,7 +39,7 @@ class NtpTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "path ntp allow-clients address {{allow_clients}}",
+            "setval": "%%path%% ntp allow-clients address {{allow_clients}}",
             "result": {
                 "allow_clients": ["{{ipaddress}}"],
             },
@@ -54,7 +54,7 @@ class NtpTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "path ntp allow-clients",
+            "setval": "%%path%% ntp allow-clients",
             "result": {
 
             },
@@ -70,7 +70,7 @@ class NtpTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "path ntp listen-address {{listen_addresses}}",
+            "setval": "%%path%% ntp listen-address {{listen_addresses}}",
             "result": {
                 "listen_addresses": ["{{ip_address}}"],
             },
@@ -85,7 +85,7 @@ class NtpTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "path ntp listen-address",
+            "setval": "%%path%% ntp listen-address",
             "result": {
             },
         },
@@ -99,7 +99,7 @@ class NtpTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "path ntp server {{server}}",
+            "setval": "%%path%% ntp server {{server}}",
             "result": {
                 "servers": {
                     "{{name}}": {
@@ -121,7 +121,7 @@ class NtpTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "path ntp server {{server}} {{options}}",
+            "setval": "%%path%% ntp server {{server}} {{options}}",
             "result": {
                 "servers": {
                     "{{name}}": {

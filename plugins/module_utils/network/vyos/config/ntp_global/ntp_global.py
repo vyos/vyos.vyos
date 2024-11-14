@@ -130,7 +130,7 @@ class Ntp_global(ResourceModule):
             path = "system"
 
         if self.commands:
-            self.commands = [cl.replace('path', path) for cl in self.commands]
+            self.commands = [cl.replace('%%path%%', path) for cl in self.commands]
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
