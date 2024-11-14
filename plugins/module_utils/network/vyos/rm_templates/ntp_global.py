@@ -50,7 +50,7 @@ class NtpTemplate(NetworkTemplate):
             "name": "allow_clients_delete",
             "getval": re.compile(
                 r"""
-                ^set\sservice\sntp\sallow-clients
+                ^set\s(?P<path>system|service)?\sntp\sallow-clients
                 $""",
                 re.VERBOSE,
             ),
