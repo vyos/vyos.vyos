@@ -35,11 +35,11 @@ class NtpTemplate(NetworkTemplate):
             "name": "allow_clients",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)?\sntp\sallow-clients\saddress (\s(?P<ipaddress>\S+))?
+                ^set\s(?P<path>system|service)?\sntp\s(?P<ac>allow-clients|allow-client)?\saddress (\s(?P<ipaddress>\S+))?
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "%%path%% ntp allow-clients address {{allow_clients}}",
+            "setval": "%%path%% ntp %%ac%% address {{allow_clients}}",
             "result": {
                 "allow_clients": ["{{ipaddress}}"],
             },
@@ -50,11 +50,11 @@ class NtpTemplate(NetworkTemplate):
             "name": "allow_clients_delete",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)?\sntp\sallow-clients
+                ^set\s(?P<path>system|service)?\sntp\s(?P<ac>allow-clients|allow-client)?
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "%%path%% ntp allow-clients",
+            "setval": "%%path%% ntp %%ac%%",
             "result": {
 
             },

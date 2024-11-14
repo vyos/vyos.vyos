@@ -126,11 +126,14 @@ class Ntp_global(ResourceModule):
 
         if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             path = "service"
+            ac = "allow-client"
         else:
             path = "system"
+            ac = "allow-clients"
 
         if self.commands:
             self.commands = [cl.replace('%%path%%', path) for cl in self.commands]
+            self.commands = [nc.replace('%%ac%%', ac) for nc in self.commands]
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
