@@ -18,39 +18,35 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from unittest.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_ntp_global
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosNTPModule(TestVyosModule):
-
     module = vyos_ntp_global
 
     def setUp(self):
         super(TestVyosNTPModule, self).setUp()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
-        self.get_resource_connection_facts = (
-            self.mock_get_resource_connection_facts.start()
-        )
+        self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ntp_global.ntp_global.Ntp_globalFacts.get_config"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ntp_global.ntp_global.Ntp_globalFacts.get_config",
         )
 
         self.execute_show_command = self.mock_execute_show_command.start()
@@ -61,7 +57,7 @@ class TestVyosNTPModule(TestVyosModule):
         self.mock_get_resource_connection_facts.stop()
         self.mock_execute_show_command.stop()
 
-    def load_fixtures(self, commands=None, transport="cli", filename=None):
+    def load_fixtures(self, commands=None, filename=None):
         if filename is None:
             filename = "vyos_ntp_config.cfg"
 
@@ -79,16 +75,14 @@ class TestVyosNTPModule(TestVyosModule):
                     listen_addresses=["10.2.3.1", "10.4.3.1"],
                     servers=[
                         dict(server="server1"),
-                        dict(
-                            server="server3", options=["noselect", "dynamic"]
-                        ),
+                        dict(server="server3", options=["noselect", "dynamic"]),
                         dict(server="time1.vyos.net"),
                         dict(server="time2.vyos.net"),
                         dict(server="time3.vyos.net"),
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -112,7 +106,7 @@ class TestVyosNTPModule(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
 
         commands = [
@@ -153,7 +147,7 @@ class TestVyosNTPModule(TestVyosModule):
                     ],
                 ),
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "delete system ntp allow-clients address 10.1.1.0/24",
@@ -183,16 +177,14 @@ class TestVyosNTPModule(TestVyosModule):
                     listen_addresses=["10.2.3.1", "10.4.3.1"],
                     servers=[
                         dict(server="server1"),
-                        dict(
-                            server="server3", options=["noselect", "dynamic"]
-                        ),
+                        dict(server="server3", options=["noselect", "dynamic"]),
                         dict(server="time1.vyos.net"),
                         dict(server="time2.vyos.net"),
                         dict(server="time3.vyos.net"),
                     ],
                 ),
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -204,16 +196,14 @@ class TestVyosNTPModule(TestVyosModule):
                     listen_addresses=["10.9.9.1"],
                     servers=[
                         dict(server="server9"),
-                        dict(
-                            server="server6", options=["noselect", "dynamic"]
-                        ),
+                        dict(server="server6", options=["noselect", "dynamic"]),
                         dict(server="time1.vyos.net"),
                         dict(server="time2.vyos.net"),
                         dict(server="time3.vyos.net"),
                     ],
                 ),
                 state="overridden",
-            )
+            ),
         )
         commands = [
             "delete system ntp allow-clients address 10.1.1.0/24",
@@ -238,16 +228,14 @@ class TestVyosNTPModule(TestVyosModule):
                     listen_addresses=["10.2.3.1", "10.4.3.1"],
                     servers=[
                         dict(server="server1"),
-                        dict(
-                            server="server3", options=["noselect", "dynamic"]
-                        ),
+                        dict(server="server3", options=["noselect", "dynamic"]),
                         dict(server="time1.vyos.net"),
                         dict(server="time2.vyos.net"),
                         dict(server="time3.vyos.net"),
                     ],
                 ),
                 state="overridden",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -259,16 +247,14 @@ class TestVyosNTPModule(TestVyosModule):
                     listen_addresses=["10.7.9.1"],
                     servers=[
                         dict(server="server79"),
-                        dict(
-                            server="server46", options=["noselect", "dynamic"]
-                        ),
+                        dict(server="server46", options=["noselect", "dynamic"]),
                         dict(server="time1.vyos.net"),
                         dict(server="time2.vyos.net"),
                         dict(server="time3.vyos.net"),
                     ],
                 ),
                 state="rendered",
-            )
+            ),
         )
         rendered_commands = [
             "set system ntp allow-clients address 10.7.7.0/24",
@@ -289,7 +275,6 @@ class TestVyosNTPModule(TestVyosModule):
         )
 
     def test_ntp_parsed(self):
-
         commands = (
             "set system ntp allow-clients address 10.7.7.0/24",
             "set system ntp allow-clients address 10.6.7.0/24",
@@ -350,7 +335,7 @@ class TestVyosNTPModule(TestVyosModule):
                     ],
                 ),
                 state="deleted",
-            )
+            ),
         )
         commands = [
             "delete system ntp allow-clients",

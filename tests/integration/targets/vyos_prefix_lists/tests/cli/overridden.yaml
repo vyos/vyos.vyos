@@ -9,24 +9,24 @@
 - block:
     - name: Override all prefix-lists configuration with provided configuration
       register: result
-      vyos.vyos.vyos_prefix_lists: &id003
+      vyos.vyos.vyos_prefix_lists: &id001
         config:
-          - afi: "ipv4"
+          - afi: ipv4
             prefix_lists:
-              - name: "AnsibleIPv4PrefixList"
+              - name: AnsibleIPv4PrefixList
                 description: Rule 3 overridden by ansible
                 entries:
                   - sequence: 2
-                    action: "deny"
+                    action: deny
                     ge: 26
-                    prefix: "82.168.2.0/24"
+                    prefix: 82.168.2.0/24
 
-              - name: "OverriddenPrefixList"
+              - name: OverriddenPrefixList
                 description: Configuration overridden by ansible
                 entries:
                   - sequence: 10
                     action: permit
-                    prefix: "203.0.113.96/27"
+                    prefix: 203.0.113.96/27
                     le: 32
         state: overridden
 
@@ -40,8 +40,7 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ overridden['commands'] | symmetric_difference(result['commands']) |length\
-            \ == 0 }}"
+          - "{{ overridden['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
     - name: Assert that after dicts were correctly generated
       assert:
@@ -50,7 +49,7 @@
 
     - name: Override all prefix-lists configuration with provided configuration (IDEMPOTENT)
       register: result
-      vyos.vyos.vyos_prefix_lists: *id003
+      vyos.vyos.vyos_prefix_lists: *id001
 
     - name: Assert that task was idempotent
       assert:

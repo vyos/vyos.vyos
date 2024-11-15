@@ -1,17 +1,32 @@
 
-
 # VyOS Collection
-[![CI](https://zuul-ci.org/gated.svg)](https://dashboard.zuul.ansible.com/t/ansible/project/github.com/ansible-collections/vyos.vyos) <!--[![Codecov](https://img.shields.io/codecov/c/github/ansible-collections/vyos)](https://codecov.io/gh/ansible-collections/vyos)-->
+
+[![Codecov](https://codecov.io/gh/ansible-collections/vyos.vyos/branch/main/graph/badge.svg)](https://codecov.io/gh/ansible-collections/vyos.vyos)
+[![CI](https://github.com/ansible-collections/vyos.vyos/actions/workflows/tests.yml/badge.svg?branch=main&event=schedule)](https://github.com/ansible-collections/vyos.vyos/actions/workflows/tests.yml)
 
 The Ansible VyOS collection includes a variety of Ansible content to help automate the management of VyOS network appliances.
 
 This collection has been tested against VyOS 1.1.8 (helium).
 
+## Communication
+
+* Join the Ansible forum:
+  * [Get Help](https://forum.ansible.com/c/help/6): get help or help others.
+  * [Posts tagged with 'vyos'](https://forum.ansible.com/tag/vyos): subscribe to participate in collection-related conversations.
+  * [Social Spaces](https://forum.ansible.com/c/chat/4): gather and interact with fellow enthusiasts.
+  * [News & Announcements](https://forum.ansible.com/c/news/5): track project-wide announcements including social events.
+
+* The Ansible [Bullhorn newsletter](https://docs.ansible.com/ansible/devel/community/communication.html#the-bullhorn): used to announce releases and important changes.
+
+For more information about communication, see the [Ansible communication guide](https://docs.ansible.com/ansible/devel/community/communication.html).
+
 <!--start requires_ansible-->
 ## Ansible version compatibility
 
-This collection has been tested against following Ansible versions: **>=2.9.10**.
+This collection has been tested against following Ansible versions: **>=2.15.0**.
 
+For collections that support Ansible 2.9, please ensure you update your `network_os` to use the
+fully qualified collection name (for example, `cisco.ios.ios`).
 Plugins and modules within a collection may be tested with only specific Ansible versions.
 A collection may contain metadata that identifies these versions.
 PEP440 is the schema used to describe the versions of Ansible.
@@ -42,15 +57,10 @@ Name | Description
 [vyos.vyos.vyos_firewall_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_interfaces_module.rst)|FIREWALL interfaces resource module
 [vyos.vyos.vyos_firewall_rules](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_rules_module.rst)|FIREWALL rules resource module
 [vyos.vyos.vyos_hostname](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_hostname_module.rst)|Manages hostname resource module
-[vyos.vyos.vyos_interface](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_interface_module.rst)|(deprecated, removed after 2022-06-01) Manage Interface on VyOS network devices
 [vyos.vyos.vyos_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_interfaces_module.rst)|Interfaces resource module
-[vyos.vyos.vyos_l3_interface](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_l3_interface_module.rst)|(deprecated, removed after 2022-06-01) Manage L3 interfaces on VyOS network devices
 [vyos.vyos.vyos_l3_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_l3_interfaces_module.rst)|L3 interfaces resource module
 [vyos.vyos.vyos_lag_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lag_interfaces_module.rst)|LAG interfaces resource module
-[vyos.vyos.vyos_linkagg](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_linkagg_module.rst)|(deprecated, removed after 2022-06-01) Manage link aggregation groups on VyOS network devices
-[vyos.vyos.vyos_lldp](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_module.rst)|(deprecated, removed after 2022-06-01) Manage LLDP configuration on VyOS network devices
 [vyos.vyos.vyos_lldp_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_global_module.rst)|LLDP global resource module
-[vyos.vyos.vyos_lldp_interface](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_interface_module.rst)|(deprecated, removed after 2022-06-01) Manage LLDP interfaces configuration on VyOS network devices
 [vyos.vyos.vyos_lldp_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_interfaces_module.rst)|LLDP interfaces resource module
 [vyos.vyos.vyos_logging](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_logging_module.rst)|Manage logging on network devices
 [vyos.vyos.vyos_logging_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_logging_global_module.rst)|Logging resource module
@@ -62,7 +72,6 @@ Name | Description
 [vyos.vyos.vyos_prefix_lists](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_prefix_lists_module.rst)|Prefix-Lists resource module for VyOS
 [vyos.vyos.vyos_route_maps](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_route_maps_module.rst)|Route Map Resource Module.
 [vyos.vyos.vyos_snmp_server](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_snmp_server_module.rst)|Manages snmp_server resource module
-[vyos.vyos.vyos_static_route](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_static_route_module.rst)|(deprecated, removed after 2022-06-01) Manage static IP routes on Vyatta VyOS network devices
 [vyos.vyos.vyos_static_routes](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_static_routes_module.rst)|Static routes resource module
 [vyos.vyos.vyos_system](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_system_module.rst)|Run `set system` commands on VyOS devices
 [vyos.vyos.vyos_user](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_user_module.rst)|Manage the collection of local users on VyOS device

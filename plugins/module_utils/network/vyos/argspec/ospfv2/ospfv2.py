@@ -6,6 +6,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 #############################################
@@ -53,7 +54,7 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                                 "route_map": {"type": "str"},
                             },
                             "type": "dict",
-                        }
+                        },
                     },
                     "type": "dict",
                 },
@@ -85,7 +86,7 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                                 "on_startup": {"type": "int"},
                             },
                             "type": "dict",
-                        }
+                        },
                     },
                     "type": "dict",
                 },
@@ -145,9 +146,7 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                         },
                         "network": {
                             "elements": "dict",
-                            "options": {
-                                "address": {"required": True, "type": "str"}
-                            },
+                            "options": {"address": {"required": True, "type": "str"}},
                             "type": "list",
                         },
                         "range": {
@@ -255,7 +254,7 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                                         "max_holdtime": {"type": "int"},
                                     },
                                     "type": "dict",
-                                }
+                                },
                             },
                             "type": "dict",
                         },

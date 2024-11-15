@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_hostname replaced integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_hostname replaced integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -12,7 +11,7 @@
       register: result
       vyos.vyos.vyos_hostname: &id001
         config:
-          hostname: "vyosTest"
+          hostname: vyosTest
         state: replaced
 
     - vyos.vyos.vyos_facts:
@@ -26,10 +25,7 @@
           - result.after == ansible_facts['network_resources']['hostname']
           - result.after == merged.after
 
-
-    - name:
-        Replace the provided configuration with the existing running configuration
-        (IDEMPOTENT)
+    - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_hostname: *id001
 

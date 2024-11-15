@@ -1642,7 +1642,7 @@ Notes
 
 .. note::
    - Tested against VyOS 1.1.8 (helium).
-   - This module works with connection ``network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
+   - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
 
@@ -1680,42 +1680,42 @@ Examples
             auto_cost:
               reference_bandwidth: 2
             neighbor:
-            - neighbor_id: 192.0.11.12
-              poll_interval: 10
-              priority: 2
+              - neighbor_id: 192.0.11.12
+                poll_interval: 10
+                priority: 2
             redistribute:
-            - route_type: bgp
-              metric: 10
-              metric_type: 2
+              - route_type: bgp
+                metric: 10
+                metric_type: 2
             passive_interface:
-            - eth1
-            - eth2
+              - eth1
+              - eth2
             parameters:
               router_id: 192.0.1.1
               opaque_lsa: true
               rfc1583_compatibility: true
               abr_type: cisco
             areas:
-            - area_id: '2'
-              area_type:
-                normal: true
-                authentication: plaintext-password
-                shortcut: enable
-            - area_id: '3'
-              area_type:
-                nssa:
-                  set: true
-            - area_id: '4'
-              area_type:
-                stub:
-                  default_cost: 20
-              network:
-              - address: 192.0.2.0/24
-              range:
-              - address: 192.0.3.0/24
-                cost: 10
-              - address: 192.0.4.0/24
-              cost: 12
+              - area_id: '2'
+                area_type:
+                  normal: true
+                  authentication: plaintext-password
+                  shortcut: enable
+              - area_id: '3'
+                area_type:
+                  nssa:
+                    set: true
+              - area_id: '4'
+                area_type:
+                  stub:
+                    default_cost: 20
+                network:
+                  - address: 192.0.2.0/24
+                range:
+                  - address: 192.0.3.0/24
+                    cost: 10
+                  - address: 192.0.4.0/24
+                cost: 12
         state: merged
     #
     #
@@ -1903,23 +1903,23 @@ Examples
       vyos.vyos.vyos_ospfv2:
         config:
           areas:
-          - area_id: '2'
-            area_type:
-              normal: true
-            authentication: plaintext-password
-            shortcut: enable
-          - area_id: '3'
-            area_type:
-              nssa:
-                set: false
-          - area_id: '4'
-            area_type:
-              stub:
-                default_cost: 20
-            network:
-            - address: 192.0.2.0/24
-            - address: 192.0.22.0/24
-            - address: 192.0.32.0/24
+            - area_id: '2'
+              area_type:
+                normal: true
+              authentication: plaintext-password
+              shortcut: enable
+            - area_id: '3'
+              area_type:
+                nssa:
+                  set: false
+            - area_id: '4'
+              area_type:
+                stub:
+                  default_cost: 20
+              network:
+                - address: 192.0.2.0/24
+                - address: 192.0.22.0/24
+                - address: 192.0.32.0/24
         state: merged
     #
     #
@@ -2211,39 +2211,40 @@ Examples
             auto_cost:
               reference_bandwidth: 2
             neighbor:
-            - neighbor_id: 192.0.11.12
-              poll_interval: 10
-              priority: 2
+              - neighbor_id: 192.0.11.12
+                poll_interval: 10
+                priority: 2
             redistribute:
-            - route_type: bgp
-              metric: 10
-              metric_type: 2
+              - route_type: bgp
+                metric: 10
+                metric_type: 2
             passive_interface:
-            - eth1
+              - eth1
             parameters:
               router_id: 192.0.1.1
               opaque_lsa: true
               rfc1583_compatibility: true
               abr_type: cisco
             areas:
-            - area_id: '2'
-              area_type:
-                normal: true
-              authentication: plaintext-password
-              shortcut: enable
-            - area_id: '4'
-              area_type:
-                stub:
-                  default_cost: 20
-              network:
-              - address: 192.0.2.0/24
-              - address: 192.0.12.0/24
-              - address: 192.0.22.0/24
-              - address: 192.0.32.0/24
-              range:
-              - address: 192.0.42.0/24
-                cost: 10
+              - area_id: '2'
+                area_type:
+                  normal: true
+                authentication: plaintext-password
+                shortcut: enable
+              - area_id: '4'
+                area_type:
+                  stub:
+                    default_cost: 20
+                network:
+                  - address: 192.0.2.0/24
+                  - address: 192.0.12.0/24
+                  - address: 192.0.22.0/24
+                  - address: 192.0.32.0/24
+                range:
+                  - address: 192.0.42.0/24
+                    cost: 10
         state: replaced
+
     #
     #
     # -------------------------
@@ -2504,42 +2505,42 @@ Examples
             auto_cost:
               reference_bandwidth: 2
             neighbor:
-            - neighbor_id: 192.0.11.12
-              poll_interval: 10
-              priority: 2
+              - neighbor_id: 192.0.11.12
+                poll_interval: 10
+                priority: 2
             redistribute:
-            - route_type: bgp
-              metric: 10
-              metric_type: 2
+              - route_type: bgp
+                metric: 10
+                metric_type: 2
             passive_interface:
-            - eth1
-            - eth2
+              - eth1
+              - eth2
             parameters:
               router_id: 192.0.1.1
               opaque_lsa: true
               rfc1583_compatibility: true
               abr_type: cisco
             areas:
-            - area_id: '2'
-              area_type:
-                normal: true
-              authentication: plaintext-password
-              shortcut: enable
-            - area_id: '3'
-              area_type:
-                nssa:
-                  set: true
-            - area_id: '4'
-              area_type:
-                stub:
-                  default_cost: 20
-              network:
-              - address: 192.0.2.0/24
-              range:
-              - address: 192.0.3.0/24
-                cost: 10
-              - address: 192.0.4.0/24
-                cost: 12
+              - area_id: '2'
+                area_type:
+                  normal: true
+                authentication: plaintext-password
+                shortcut: enable
+              - area_id: '3'
+                area_type:
+                  nssa:
+                    set: true
+              - area_id: '4'
+                area_type:
+                  stub:
+                    default_cost: 20
+                network:
+                  - address: 192.0.2.0/24
+                range:
+                  - address: 192.0.3.0/24
+                    cost: 10
+                  - address: 192.0.4.0/24
+                    cost: 12
         state: rendered
     #
     #

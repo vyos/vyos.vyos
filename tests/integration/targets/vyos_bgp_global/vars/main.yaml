@@ -15,31 +15,31 @@ merged:
     - set protocols bgp 65536 timers keepalive 35
   after:
     aggregate_address:
-      - prefix: "192.0.2.0/24"
+      - prefix: 192.0.2.0/24
         summary_only: true
-      - prefix: "203.0.113.0/24"
+      - prefix: 203.0.113.0/24
         as_set: true
     as_number: 65536
     bgp_params:
       bestpath:
-        as_path: "confed"
+        as_path: confed
         compare_routerid: true
       default:
         no_ipv4_unicast: true
-      router_id: "192.1.2.9"
+      router_id: 192.1.2.9
     maximum_paths:
       - count: 20
-        path: "ebgp"
+        path: ebgp
       - count: 55
-        path: "ibgp"
+        path: ibgp
     network:
-      - address: "192.1.13.0/24"
+      - address: 192.1.13.0/24
         backdoor: true
     redistribute:
-      - protocol: "connected"
-        route_map: "map01"
+      - protocol: connected
+        route_map: map01
       - metric: 45
-        protocol: "kernel"
+        protocol: kernel
     timers:
       keepalive: 35
 
@@ -96,14 +96,14 @@ rendered:
 populate:
   global:
     aggregate_address:
-      - prefix: "192.0.2.0/24"
+      - prefix: 192.0.2.0/24
         summary_only: true
-      - prefix: "203.0.113.0/24"
+      - prefix: 203.0.113.0/24
         as_set: true
     as_number: 65536
     bgp_params:
       bestpath:
-        as_path: "confed"
+        as_path: confed
         compare_routerid: true
       confederation:
         - identifier: 66
@@ -111,40 +111,40 @@ populate:
         - peers: 55
       default:
         no_ipv4_unicast: true
-      router_id: "192.1.2.9"
+      router_id: 192.1.2.9
     maximum_paths:
       - count: 20
-        path: "ebgp"
+        path: ebgp
       - count: 55
-        path: "ibgp"
+        path: ibgp
     neighbor:
-      - address: "192.0.2.25"
+      - address: 192.0.2.25
         disable_connected_check: true
         timers:
           holdtime: 30
           keepalive: 10
-      - address: "203.0.113.5"
+      - address: 203.0.113.5
         attribute_unchanged:
           as_path: true
           med: true
           next_hop: true
         ebgp_multihop: 2
         remote_as: 101
-        update_source: "192.0.2.25"
-      - address: "5001::64"
+        update_source: 192.0.2.25
+      - address: 5001::64
         distribute_list:
           - acl: 20
-            action: "export"
+            action: export
           - acl: 40
-            action: "import"
+            action: import
         maximum_prefix: 34
     network:
-      - address: "192.1.13.0/24"
+      - address: 192.1.13.0/24
         backdoor: true
     redistribute:
-      - protocol: "connected"
-        route_map: "map01"
+      - protocol: connected
+        route_map: map01
       - metric: 45
-        protocol: "kernel"
+        protocol: kernel
     timers:
       keepalive: 35

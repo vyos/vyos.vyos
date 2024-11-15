@@ -1,17 +1,13 @@
 ---
 - debug:
-    msg: START vyos_logging_global rendered integration tests on connection={{ ansible_connection
-      }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_logging_global rendered integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Structure provided configuration into device specific commands
       register: result
-      vyos.vyos.vyos_logging_global: &id001
+      vyos.vyos.vyos_logging_global:
         config:
           console:
             facilities:
@@ -42,9 +38,7 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ rendered['commands'] | symmetric_difference(result['rendered'])\
-            \ |length == 0 }}"
+          - "{{ rendered['commands'] | symmetric_difference(result['rendered']) |length == 0 }}"
 
   always:
-
     - include_tasks: _remove_config.yaml

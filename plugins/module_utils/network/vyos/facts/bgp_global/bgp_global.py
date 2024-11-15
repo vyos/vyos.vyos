@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -14,16 +15,16 @@ for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
+import re
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.bgp_global.bgp_global import (
+    Bgp_globalArgs,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_global import (
     Bgp_globalTemplate,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.bgp_global.bgp_global import (
-    Bgp_globalArgs,
-)
-import re
 
 
 class Bgp_globalFacts(object):
@@ -34,9 +35,7 @@ class Bgp_globalFacts(object):
         self.argument_spec = Bgp_globalArgs.argument_spec
 
     def get_device_data(self, connection):
-        return connection.get(
-            'show configuration commands |  match "set protocols bgp"'
-        )
+        return connection.get('show configuration commands |  match "set protocols bgp"')
 
     def populate_facts(self, connection, ansible_facts, data=None):
         """Populate the facts for Bgp_global network resource
@@ -59,31 +58,21 @@ class Bgp_globalFacts(object):
             if "address-family" not in resource:
                 config_lines.append(re.sub("'", "", resource))
 
-        bgp_global_parser = Bgp_globalTemplate(
-            lines=config_lines, module=self._module
-        )
+        bgp_global_parser = Bgp_globalTemplate(lines=config_lines, module=self._module)
         objs = bgp_global_parser.parse()
 
         if "neighbor" in objs:
             objs["neighbor"] = list(objs["neighbor"].values())
-            objs["neighbor"] = sorted(
-                objs["neighbor"], key=lambda k: k["address"]
-            )
+            objs["neighbor"] = sorted(objs["neighbor"], key=lambda k: k["address"])
         if "network" in objs:
-            objs["network"] = sorted(
-                objs["network"], key=lambda k: k["address"]
-            )
+            objs["network"] = sorted(objs["network"], key=lambda k: k["address"])
         if "aggregate_address" in objs:
-            objs["aggregate_address"] = sorted(
-                objs["aggregate_address"], key=lambda k: k["prefix"]
-            )
+            objs["aggregate_address"] = sorted(objs["aggregate_address"], key=lambda k: k["prefix"])
 
         ansible_facts["ansible_network_resources"].pop("bgp_global", None)
 
         params = utils.remove_empties(
-            bgp_global_parser.validate_config(
-                self.argument_spec, {"config": objs}, redact=True
-            )
+            bgp_global_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
         )
 
         facts["bgp_global"] = params.get("config", [])

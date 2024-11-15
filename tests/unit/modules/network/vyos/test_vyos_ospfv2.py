@@ -18,48 +18,44 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from unittest.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_ospfv2
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosOspfv2Module(TestVyosModule):
-
     module = vyos_ospfv2
 
     def setUp(self):
         super(TestVyosOspfv2Module, self).setUp()
         self.mock_get_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config",
         )
         self.load_config = self.mock_load_config.start()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection",
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
-        self.get_resource_connection_facts = (
-            self.mock_get_resource_connection_facts.start()
-        )
+        self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv2.ospfv2.Ospfv2Facts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv2.ospfv2.Ospfv2Facts.get_device_data",
         )
 
         self.execute_show_command = self.mock_execute_show_command.start()
@@ -72,7 +68,7 @@ class TestVyosOspfv2Module(TestVyosModule):
         self.mock_load_config.stop()
         self.mock_execute_show_command.stop()
 
-    def load_fixtures(self, commands=None, transport="cli", filename=None):
+    def load_fixtures(self, commands=None, filename=None):
         if filename is None:
             filename = "vyos_ospfv2_config.cfg"
 
@@ -108,7 +104,7 @@ class TestVyosOspfv2Module(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set protocols ospf mpls-te enable",
@@ -152,7 +148,7 @@ class TestVyosOspfv2Module(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -182,7 +178,7 @@ class TestVyosOspfv2Module(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         commands = [
             "delete protocols ospf area 14 area-type stub",
@@ -217,7 +213,7 @@ class TestVyosOspfv2Module(TestVyosModule):
                     ],
                 ),
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "set protocols ospf mpls-te enable",
@@ -260,7 +256,7 @@ class TestVyosOspfv2Module(TestVyosModule):
                     ],
                 ),
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -271,9 +267,7 @@ class TestVyosOspfv2Module(TestVyosModule):
 
     def test_vyos_ospfv2_gathered(self):
         set_module_args(dict(state="gathered"))
-        result = self.execute_module(
-            changed=False, filename="vyos_ospfv2_config.cfg"
-        )
+        result = self.execute_module(changed=False, filename="vyos_ospfv2_config.cfg")
         gather_dict = {
             "areas": [
                 {
@@ -353,7 +347,7 @@ set protocols ospf redistribute bgp metric-type '2'"""
                     "metric": 10,
                     "metric_type": 2,
                     "route_map": "ingress",
-                }
+                },
             },
             "log_adjacency_changes": "detail",
             "max_metric": {
@@ -361,7 +355,7 @@ set protocols ospf redistribute bgp metric-type '2'"""
                     "administrative": True,
                     "on_shutdown": 10,
                     "on_startup": 10,
-                }
+                },
             },
             "mpls_te": {"enabled": True, "router_address": "192.0.11.11"},
             "neighbor": [
@@ -369,7 +363,7 @@ set protocols ospf redistribute bgp metric-type '2'"""
                     "neighbor_id": "192.0.11.12",
                     "poll_interval": 10,
                     "priority": 2,
-                }
+                },
             ],
             "parameters": {
                 "abr_type": "cisco",
@@ -378,9 +372,7 @@ set protocols ospf redistribute bgp metric-type '2'"""
                 "router_id": "192.0.1.1",
             },
             "passive_interface": ["eth2", "eth1"],
-            "redistribute": [
-                {"metric": 10, "metric_type": 2, "route_type": "bgp"}
-            ],
+            "redistribute": [{"metric": 10, "metric_type": 2, "route_type": "bgp"}],
         }
         self.assertEqual(sorted(parsed_list), sorted(result["parsed"]))
 
@@ -410,7 +402,7 @@ set protocols ospf redistribute bgp metric-type '2'"""
                     ],
                 ),
                 state="rendered",
-            )
+            ),
         )
         commands = [
             "set protocols ospf mpls-te enable",
@@ -430,6 +422,4 @@ set protocols ospf redistribute bgp metric-type '2'"""
             "set protocols ospf area 4 network 192.0.2.0/24",
         ]
         result = self.execute_module(changed=False)
-        self.assertEqual(
-            sorted(result["rendered"]), sorted(commands), result["rendered"]
-        )
+        self.assertEqual(sorted(result["rendered"]), sorted(commands), result["rendered"])

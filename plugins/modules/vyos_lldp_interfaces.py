@@ -28,6 +28,7 @@ The module file for vyos_lldp_interfaces
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -38,7 +39,7 @@ description: This module manages attributes of lldp interfaces on VyOS network d
 version_added: 1.0.0
 notes:
 - Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Rohit Thakur (@rohitthakur2590)
 options:
@@ -110,25 +111,25 @@ options:
             type: str
   running_config:
     description:
-    - This option is used only with state I(parsed).
-    - The value of this option should be the output received from the VyOS device
-      by executing the command B(show configuration commands | grep lldp).
-    - The state I(parsed) reads the configuration from C(running_config) option and
-      transforms it into Ansible structured data as per the resource module's argspec
-      and the value is then returned in the I(parsed) key within the result.
+      - This option is used only with state I(parsed).
+      - The value of this option should be the output received from the VyOS device
+        by executing the command B(show configuration commands | grep lldp).
+      - The state I(parsed) reads the configuration from C(running_config) option and
+        transforms it into Ansible structured data as per the resource module's argspec
+        and the value is then returned in the I(parsed) key within the result.
     type: str
   state:
     description:
-    - The state of the configuration after module completion.
+      - The state of the configuration after module completion.
     type: str
     choices:
-    - merged
-    - replaced
-    - overridden
-    - deleted
-    - rendered
-    - parsed
-    - gathered
+      - merged
+      - replaced
+      - overridden
+      - deleted
+      - rendered
+      - parsed
+      - gathered
     default: merged
 """
 EXAMPLES = """
@@ -142,22 +143,22 @@ EXAMPLES = """
 - name: Merge provided configuration with device configuration
   vyos.vyos.vyos_lldp_interfaces:
     config:
-    - name: eth1
-      location:
-        civic_based:
-          country_code: US
-          ca_info:
-          - ca_type: 0
-            ca_value: ENGLISH
-
-    - name: eth2
-      location:
-        coordinate_based:
-          altitude: 2200
-          datum: WGS84
-          longitude: 222.267255W
-          latitude: 33.524449N
+      - name: eth1
+        location:
+          civic_based:
+            country_code: US
+            ca_info:
+              - ca_type: 0
+                ca_value: ENGLISH
+      - name: eth2
+        location:
+          coordinate_based:
+            altitude: 2200
+            datum: WGS84
+            longitude: 222.267255W
+            latitude: 33.524449N
     state: merged
+
 #
 #
 # -------------------------
@@ -233,24 +234,25 @@ EXAMPLES = """
 # set service lldp interface eth2 location coordinate-based latitude '33.524449N'
 # set service lldp interface eth2 location coordinate-based longitude '222.267255W'
 #
-- name: Replace device configurations of listed LLDP interfaces with provided configurations
+- name: >-
+    Replace device configurations of listed LLDP interfaces with provided
+    configurations
   vyos.vyos.vyos_lldp_interfaces:
     config:
-    - name: eth2
-      location:
-        civic_based:
-          country_code: US
-          ca_info:
-          - ca_type: 0
-            ca_value: ENGLISH
-
-    - name: eth1
-      location:
-        coordinate_based:
-          altitude: 2200
-          datum: WGS84
-          longitude: 222.267255W
-          latitude: 33.524449N
+      - name: eth2
+        location:
+          civic_based:
+            country_code: US
+            ca_info:
+              - ca_type: 0
+                ca_value: ENGLISH
+      - name: eth1
+        location:
+          coordinate_based:
+            altitude: 2200
+            datum: WGS84
+            longitude: 222.267255W
+            latitude: 33.524449N
     state: replaced
 #
 #
@@ -359,9 +361,9 @@ EXAMPLES = """
 - name: Overrides all device configuration with provided configuration
   vyos.vyos.vyos_lldp_interfaces:
     config:
-    - name: eth2
-      location:
-        elin: 0000000911
+      - name: eth2
+        location:
+          elin: 0000000911
 
     state: overridden
 #
@@ -434,7 +436,7 @@ EXAMPLES = """
 - name: Delete lldp  interface attributes of given interfaces.
   vyos.vyos.vyos_lldp_interfaces:
     config:
-    - name: eth2
+      - name: eth2
     state: deleted
 #
 #
@@ -525,21 +527,22 @@ EXAMPLES = """
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_lldp_interfaces:
     config:
-    - name: eth1
-      location:
-        civic_based:
-          country_code: US
-          ca_info:
-          - ca_type: 0
-            ca_value: ENGLISH
-    - name: eth2
-      location:
-        coordinate_based:
-          altitude: 2200
-          datum: WGS84
-          longitude: 222.267255W
-          latitude: 33.524449N
+      - name: eth1
+        location:
+          civic_based:
+            country_code: US
+            ca_info:
+              - ca_type: 0
+                ca_value: ENGLISH
+      - name: eth2
+        location:
+          coordinate_based:
+            altitude: 2200
+            datum: WGS84
+            longitude: 222.267255W
+            latitude: 33.524449N
     state: rendered
+
 #
 #
 # -------------------------
@@ -606,8 +609,6 @@ EXAMPLES = """
 #             "name": "eth1"
 #         }
 #     ]
-
-
 """
 RETURN = """
 before:
@@ -635,6 +636,7 @@ commands:
 
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.lldp_interfaces.lldp_interfaces import (
     Lldp_interfacesArgs,
 )

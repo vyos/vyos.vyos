@@ -1,12 +1,11 @@
 ---
 - name: Remove Config
   vars:
-    lines: "delete interfaces ethernet \"{{ intf }}\" address\ndelete interfaces\
-      \ ethernet \"{{ intf }}\" vif\n"
+    lines: "delete interfaces ethernet \"{{ intf }}\" address\ndelete interfaces ethernet \"{{ intf }}\" vif\n"
   loop:
     - eth1
     - eth2
   loop_control:
     loop_var: intf
   ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    config: "{{ lines }}"

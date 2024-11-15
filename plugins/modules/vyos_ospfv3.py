@@ -28,6 +28,7 @@ The module file for vyos_ospfv3
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -39,7 +40,7 @@ description: This resource module configures and manages attributes of OSPFv3 ro
 version_added: 1.0.0
 notes:
 - Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Rohit Thakur (@rohitthakur2590)
 options:
@@ -130,21 +131,22 @@ EXAMPLES = """
   vyos.vyos.vyos_ospfv3:
     config:
       redistribute:
-      - route_type: bgp
+        - route_type: bgp
       parameters:
         router_id: 192.0.2.10
       areas:
-      - area_id: '2'
-        export_list: export1
-        import_list: import1
-        range:
-        - address: 2001:db10::/32
-        - address: 2001:db20::/32
-        - address: 2001:db30::/32
-      - area_id: '3'
-        range:
-        - address: 2001:db40::/32
+        - area_id: '2'
+          export_list: export1
+          import_list: import1
+          range:
+            - address: '2001:db10::/32'
+            - address: '2001:db20::/32'
+            - address: '2001:db30::/32'
+        - area_id: '3'
+          range:
+            - address: '2001:db40::/32'
     state: merged
+
 #
 #
 # -------------------------
@@ -236,21 +238,22 @@ EXAMPLES = """
   vyos.vyos.vyos_ospfv3:
     config:
       redistribute:
-      - route_type: bgp
+        - route_type: bgp
       parameters:
         router_id: 192.0.2.10
       areas:
-      - area_id: '2'
-        export_list: export1
-        import_list: import1
-        range:
-        - address: 2001:db10::/32
-        - address: 2001:db30::/32
-        - address: 2001:db50::/32
-      - area_id: '4'
-        range:
-        - address: 2001:db60::/32
+        - area_id: '2'
+          export_list: export1
+          import_list: import1
+          range:
+            - address: '2001:db10::/32'
+            - address: '2001:db30::/32'
+            - address: '2001:db50::/32'
+        - area_id: '4'
+          range:
+            - address: '2001:db60::/32'
     state: replaced
+
 #
 #
 # -------------------------
@@ -360,21 +363,22 @@ EXAMPLES = """
   vyos.vyos.vyos_ospfv3:
     config:
       redistribute:
-      - route_type: bgp
+        - route_type: bgp
       parameters:
         router_id: 192.0.2.10
       areas:
-      - area_id: '2'
-        export_list: export1
-        import_list: import1
-        range:
-        - address: 2001:db10::/32
-        - address: 2001:db20::/32
-        - address: 2001:db30::/32
-      - area_id: '3'
-        range:
-        - address: 2001:db40::/32
+        - area_id: '2'
+          export_list: export1
+          import_list: import1
+          range:
+            - address: '2001:db10::/32'
+            - address: '2001:db20::/32'
+            - address: '2001:db30::/32'
+        - area_id: '3'
+          range:
+            - address: '2001:db40::/32'
     state: rendered
+
 #
 #
 # -------------------------
@@ -602,8 +606,6 @@ EXAMPLES = """
 # After state
 # ------------
 # vyos@192# run show configuration commands | grep ospfv3
-
-
 """
 RETURN = """
 before:
@@ -631,6 +633,7 @@ commands:
 
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv3.ospfv3 import (
     Ospfv3Args,
 )

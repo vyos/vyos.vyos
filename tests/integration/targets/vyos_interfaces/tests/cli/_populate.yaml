@@ -1,15 +1,19 @@
 ---
+- ansible.builtin.include_tasks: _remove_config.yaml
+
 - name: Setup
   vars:
-    lines: "set interfaces ethernet \"{{ intf }}\" description 'Configured by Ansible'\n\
-      set interfaces ethernet \"{{ intf }}\" speed 'auto'\nset interfaces ethernet\
-      \ \"{{ intf }}\" duplex 'auto'\nset interfaces ethernet \"{{ intf }}\" mtu\
-      \ '1500'\nset interfaces ethernet \"{{ intf }}\" vif 200\nset interfaces ethernet\
-      \ \"{{ intf }}\" vif 200 description 'VIF - 200'\n"
+    lines: |-
+      set interfaces ethernet "{{ intf }}" description 'Configured by Ansible'
+      set interfaces ethernet "{{ intf }}" speed 'auto'
+      set interfaces ethernet "{{ intf }}" duplex 'auto'
+      set interfaces ethernet "{{ intf }}" mtu '1500'
+      set interfaces ethernet "{{ intf }}" vif 200
+      set interfaces ethernet "{{ intf }}" vif 200 description 'VIF - 200'
   loop:
     - eth1
     - eth2
   loop_control:
     loop_var: intf
   ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    config: "{{ lines }}"

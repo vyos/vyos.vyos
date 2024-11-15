@@ -1,36 +1,32 @@
 ---
 - debug:
-    msg: START vyos_ospf_interfaces replaced integration tests on connection={{
-      ansible_connection }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_ospf_interfaces replaced integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Replace the existing configuration with the provided running configuration
       register: result
       vyos.vyos.vyos_ospf_interfaces: &id001
         config:
-          - name: "eth0"
+          - name: eth0
             address_family:
-              - afi: "ipv4"
+              - afi: ipv4
                 transmit_delay: 50
                 priority: 26
-                network: "point-to-point"
-              - afi: "ipv6"
+                network: point-to-point
+              - afi: ipv6
                 dead_interval: 39
-          - name: "bond2"
+          - name: bond2
             address_family:
-              - afi: "ipv4"
+              - afi: ipv4
                 transmit_delay: 45
                 bandwidth: 70
                 authentication:
                   md5_key:
                     key_id: 10
                     key: "1111111111232345"
-              - afi: "ipv6"
+              - afi: ipv6
                 passive: true
         state: replaced
 
@@ -44,8 +40,7 @@
           - result.commands|symmetric_difference(replaced.commands) == []
           - result.after|symmetric_difference(ansible_facts['network_resources']['ospf_interfaces']) == []
 
-    - name: Replace the existing configuration with the provided running configuration
-        (IDEMPOTENT)
+    - name: Replace the existing configuration with the provided running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_ospf_interfaces: *id001
 
@@ -55,5 +50,4 @@
           - result['changed'] == false
 
   always:
-
     - include_tasks: _remove_config.yaml

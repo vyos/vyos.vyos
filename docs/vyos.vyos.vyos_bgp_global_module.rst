@@ -2091,63 +2091,62 @@ Examples
     # vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
     # vyos@vyos:~$
 
-      - name: Merge provided configuration with device configuration
-        vyos.vyos.vyos_bgp_global:
-          config:
-            as_number: "65536"
-            aggregate_address:
-              - prefix: "203.0.113.0/24"
-                as_set: true
-              - prefix: "192.0.2.0/24"
-                summary_only: true
-            network:
-              - address: "192.1.13.0/24"
-                backdoor: true
-            redistribute:
-              - protocol: "kernel"
-                metric: 45
-              - protocol: "connected"
-                route_map: "map01"
-            maximum_paths:
-              - path: "ebgp"
-                count: 20
-              - path: "ibgp"
-                count: 55
-            timers:
-              keepalive: 35
-            bgp_params:
-              bestpath:
-                as_path: "confed"
-                compare_routerid: true
-              default:
-                no_ipv4_unicast: true
-              router_id: "192.1.2.9"
-              confederation:
-                - peers: 20
-                - peers: 55
-                - identifier: 66
-            neighbor:
-              - address: "192.0.2.25"
-                disable_connected_check: true
-                timers:
-                  holdtime: 30
-                  keepalive: 10
-              - address: "203.0.113.5"
-                attribute_unchanged:
-                  as_path: true
-                  med: true
-                ebgp_multihop: 2
-                remote_as: 101
-                update_source: "192.0.2.25"
-              - address: "5001::64"
-                maximum_prefix: 34
-                distribute_list:
-                  - acl: 20
-                    action: "export"
-                  - acl: 40
-                    action: "import"
-
-          state: merged
+    - name: Merge provided configuration with device configuration
+      vyos.vyos.vyos_bgp_global:
+        config:
+          as_number: "65536"
+          aggregate_address:
+            - prefix: "203.0.113.0/24"
+              as_set: true
+            - prefix: "192.0.2.0/24"
+              summary_only: true
+          network:
+            - address: "192.1.13.0/24"
+              backdoor: true
+          redistribute:
+            - protocol: "kernel"
+              metric: 45
+            - protocol: "connected"
+              route_map: "map01"
+          maximum_paths:
+            - path: "ebgp"
+              count: 20
+            - path: "ibgp"
+              count: 55
+          timers:
+            keepalive: 35
+          bgp_params:
+            bestpath:
+              as_path: "confed"
+              compare_routerid: true
+            default:
+              no_ipv4_unicast: true
+            router_id: "192.1.2.9"
+            confederation:
+              - peers: 20
+              - peers: 55
+              - identifier: 66
+          neighbor:
+            - address: "192.0.2.25"
+              disable_connected_check: true
+              timers:
+                holdtime: 30
+                keepalive: 10
+            - address: "203.0.113.5"
+              attribute_unchanged:
+                as_path: true
+                med: true
+              ebgp_multihop: 2
+              remote_as: 101
+              update_source: "192.0.2.25"
+            - address: "5001::64"
+              maximum_prefix: 34
+              distribute_list:
+                - acl: 20
+                  action: "export"
+                - acl: 40
+                  action: "import"
+        state: merged
 
     # After State
     # vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
@@ -2347,26 +2346,25 @@ Examples
     # set protocols bgp 65536 timers keepalive '35'
     # vyos@vyos:~$
 
-      - name: Replace
-        vyos.vyos.vyos_bgp_global:
-          config:
-            as_number: "65536"
-            network:
-              - address: "203.0.113.0/24"
-                route_map: map01
-            redistribute:
-              - protocol: "static"
-                route_map: "map01"
-            neighbor:
-              - address: "192.0.2.40"
-                advertisement_interval: 72
-                capability:
-                  orf: "receive"
-            bgp_params:
-              bestpath:
-                as_path: "confed"
-
-          state: replaced
+    - name: Replace
+      vyos.vyos.vyos_bgp_global:
+        config:
+          as_number: "65536"
+          network:
+            - address: "203.0.113.0/24"
+              route_map: map01
+          redistribute:
+            - protocol: "static"
+              route_map: "map01"
+          neighbor:
+            - address: "192.0.2.40"
+              advertisement_interval: 72
+              capability:
+                orf: "receive"
+          bgp_params:
+            bestpath:
+              as_path: "confed"
+        state: replaced
     # After state:
 
     # vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
@@ -2544,11 +2542,11 @@ Examples
     # set protocols bgp 65536 redistribute static route-map 'map01'
     # vyos@vyos:~$
 
-      - name: Delete configuration
-        vyos.vyos.vyos_bgp_global:
-          config:
-            as_number: "65536"
-          state: deleted
+    - name: Delete configuration
+      vyos.vyos.vyos_bgp_global:
+        config:
+          as_number: "65536"
+        state: deleted
 
     # After state:
 
@@ -2634,11 +2632,11 @@ Examples
     # vyos@vyos:~$
 
 
-      - name: Purge configuration
-        vyos.vyos.vyos_bgp_global:
-          config:
-            as_number: "65536"
-          state: purged
+    - name: Purge configuration
+      vyos.vyos.vyos_bgp_global:
+        config:
+          as_number: "65536"
+        state: purged
 
     # After state:
 
@@ -2779,12 +2777,11 @@ Examples
     # vyos@vyos:~$ ^C
     # vyos@vyos:~$
 
-
-      - name: Delete configuration
-        vyos.vyos.vyos_bgp_global:
-          config:
-            as_number: "65536"
-          state: deleted
+    - name: Delete configuration
+      vyos.vyos.vyos_bgp_global:
+        config:
+          as_number: "65536"
+        state: deleted
 
     # Module Execution:
     #
@@ -2835,9 +2832,9 @@ Examples
     # set protocols bgp 65536 redistribute static route-map 'map01'
     # vyos@vyos:~$ ^C
 
-      - name: gather configs
-        vyos.vyos.vyos_bgp_global:
-          state: gathered
+    - name: gather configs
+      vyos.vyos.vyos_bgp_global:
+        state: gathered
 
     # Module Execution:
     # "gathered": {
@@ -2927,12 +2924,12 @@ Examples
     # set protocols bgp 65536 parameters distance global local '10'
     # set protocols bgp 65536 redistribute static route-map 'map01'
 
-      - name: parse configs
-        vyos.vyos.vyos_bgp_global:
-          running_config: "{{ lookup('file', './parsed.cfg') }}"
-          state: parsed
-        tags:
-          - parsed
+    - name: parse configs
+      vyos.vyos.vyos_bgp_global:
+        running_config: "{{ lookup('file', './parsed.cfg') }}"
+        state: parsed
+      tags:
+        - parsed
 
     # Module execution:
     # "parsed": {
@@ -2999,49 +2996,48 @@ Examples
     # Using rendered:
     # --------------
 
-      - name: Render
-        vyos.vyos.vyos_bgp_global:
-          config:
-            as_number: "65536"
-            network:
-              - address: "203.0.113.0/24"
-                route_map: map01
-            redistribute:
-              - protocol: "static"
-                route_map: "map01"
-            bgp_params:
-              always_compare_med: true
-              dampening:
-                start_suppress_time: 5
-                max_suppress_time: 20
-                half_life: 33
-                re_use: 60
-              distance:
-                - type: "internal"
-                  value: 20
-                - type: "local"
-                  value: 10
-                - type: "external"
-                  value: 66
-              bestpath:
-                as_path: "confed"
-                compare_routerid: true
-              default:
-                no_ipv4_unicast: true
-            neighbor:
-              - address: "192.0.2.43"
-                disable_connected_check: true
-                advertisement_interval: 72
-                capability:
-                  dynamic: true
-                timers:
-                  holdtime: 30
-                  keepalive: 10
-              - address: "203.0.113.0"
-                capability:
-                  orf: "receive"
-
-          state: rendered
+    - name: Render
+      vyos.vyos.vyos_bgp_global:
+        config:
+          as_number: "65536"
+          network:
+            - address: "203.0.113.0/24"
+              route_map: map01
+          redistribute:
+            - protocol: "static"
+              route_map: "map01"
+          bgp_params:
+            always_compare_med: true
+            dampening:
+              start_suppress_time: 5
+              max_suppress_time: 20
+              half_life: 33
+              re_use: 60
+            distance:
+              - type: "internal"
+                value: 20
+              - type: "local"
+                value: 10
+              - type: "external"
+                value: 66
+            bestpath:
+              as_path: "confed"
+              compare_routerid: true
+            default:
+              no_ipv4_unicast: true
+          neighbor:
+            - address: "192.0.2.43"
+              disable_connected_check: true
+              advertisement_interval: 72
+              capability:
+                dynamic: true
+              timers:
+                holdtime: 30
+                keepalive: 10
+            - address: "203.0.113.0"
+              capability:
+                orf: "receive"
+        state: rendered
 
     # Module Execution:
     # "rendered": [

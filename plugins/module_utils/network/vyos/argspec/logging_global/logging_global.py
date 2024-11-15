@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 #############################################
@@ -293,7 +294,7 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                         "state": {
                             "type": "str",
                             "choices": ["enabled", "disabled"],
-                        }
+                        },
                     },
                 },
                 "users": {

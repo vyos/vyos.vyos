@@ -17,13 +17,15 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 import json
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+
+from unittest.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_facts
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
@@ -33,19 +35,17 @@ class TestVyosFactsModule(TestVyosModule):
     def setUp(self):
         super(TestVyosFactsModule, self).setUp()
         self.mock_run_commands = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base.run_commands"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base.run_commands",
         )
         self.run_commands = self.mock_run_commands.start()
 
         self.mock_get_resource_connection = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
-        self.get_resource_connection = (
-            self.mock_get_resource_connection.start()
-        )
+        self.get_resource_connection = self.mock_get_resource_connection.start()
 
         self.mock_get_capabilities = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base.get_capabilities"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base.get_capabilities",
         )
         self.get_capabilities = self.mock_get_capabilities.start()
         self.get_capabilities.return_value = {
@@ -54,6 +54,7 @@ class TestVyosFactsModule(TestVyosModule):
                 "network_os_hostname": "vyos01",
                 "network_os_model": "VMware",
                 "network_os_version": "VyOS 1.1.7",
+                "network_os_major_version": "1.1",
             },
             "network_api": "cliconf",
         }
@@ -64,7 +65,7 @@ class TestVyosFactsModule(TestVyosModule):
         self.mock_get_capabilities.stop()
         self.mock_get_resource_connection.stop()
 
-    def load_fixtures(self, commands=None):
+    def load_fixtures(self, commands=None, filename=None):
         def load_from_file(*args, **kwargs):
             module, commands = args
             output = list()

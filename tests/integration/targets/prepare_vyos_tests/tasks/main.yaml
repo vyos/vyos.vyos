@@ -1,9 +1,14 @@
 ---
 - name: Ensure required interfaces are present in running-config
   vars:
-    lines: "set interfaces ethernet eth0 address dhcp\nset interfaces ethernet eth0\
-      \ speed auto\nset interfaces ethernet eth0 duplex auto\nset interfaces ethernet\
-      \ eth1\nset interfaces ethernet eth2\ndelete interfaces loopback lo\n"
-  ignore_errors: true
+    lines: |-
+      set interfaces ethernet eth0 address dhcp
+      set interfaces ethernet eth0 speed auto
+      set interfaces ethernet eth0 duplex auto
+      set interfaces ethernet eth1
+      set interfaces ethernet eth2
+      delete interfaces loopback lo
+  ignore_errors: "{{ result.failed }}"
+  register: result
   ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    config: "{{ lines }}"

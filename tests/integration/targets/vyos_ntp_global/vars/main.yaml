@@ -62,7 +62,6 @@ overridden:
     - set system ntp server server2 preempt
     - set system ntp server server_add preempt
 
-
   after:
     servers:
       - server: 0.pool.ntp.org

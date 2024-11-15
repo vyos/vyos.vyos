@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -15,14 +16,13 @@ based on the configuration.
 """
 
 from ansible.module_utils.six import iteritems
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.logging_global.logging_global import (
+    Logging_globalArgs,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.logging_global import (
     Logging_globalTemplate,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.logging_global.logging_global import (
-    Logging_globalArgs,
 )
 
 
@@ -44,25 +44,19 @@ class Logging_globalFacts(object):
                     for k, v in vl.items():
                         _files.append(v)
                     objFinal[ke] = _files
-                    objFinal[ke] = sorted(
-                        objFinal[ke], key=lambda item: item["path"]
-                    )
+                    objFinal[ke] = sorted(objFinal[ke], key=lambda item: item["path"])
                 elif ke == "hosts":
                     _hosts = []
                     for k, v in vl.items():
                         _hosts.append(v)
                     objFinal[ke] = _hosts
-                    objFinal[ke] = sorted(
-                        objFinal[ke], key=lambda item: item["hostname"]
-                    )
+                    objFinal[ke] = sorted(objFinal[ke], key=lambda item: item["hostname"])
                 elif ke == "users":
                     _users = []
                     for k, v in vl.items():
                         _users.append(v)
                     objFinal[ke] = _users
-                    objFinal[ke] = sorted(
-                        objFinal[ke], key=lambda item: item["username"]
-                    )
+                    objFinal[ke] = sorted(objFinal[ke], key=lambda item: item["username"])
                 elif ke == "console" or ke == "global_params":
                     if objFinal[ke].get("facilities"):
                         objFinal[ke]["facilities"] = sorted(
@@ -88,17 +82,17 @@ class Logging_globalFacts(object):
             data = self.get_logging_data(connection)
 
         # parse native config using the Logging_global template
-        logging_global_parser = Logging_globalTemplate(
-            lines=data.splitlines(), module=self._module
-        )
+        logging_global_parser = Logging_globalTemplate(lines=data.splitlines(), module=self._module)
         objs = logging_global_parser.parse()
         ansible_facts["ansible_network_resources"].pop("logging_global", None)
         objs = self.process_facts(objs)
 
         params = utils.remove_empties(
             logging_global_parser.validate_config(
-                self.argument_spec, {"config": objs}, redact=True
-            )
+                self.argument_spec,
+                {"config": objs},
+                redact=True,
+            ),
         )
 
         facts["logging_global"] = params.get("config", {})

@@ -1,29 +1,27 @@
 ---
 - debug:
-    msg: START vyos_ospf_interfaces rendered integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_ospf_interfaces rendered integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
-
     - name: Structure provided configuration into device specific commands
       register: result
       vyos.vyos.vyos_ospf_interfaces:
         config:
-          - name: "eth0"
+          - name: eth0
             address_family:
-              - afi: "ipv4"
+              - afi: ipv4
                 cost: 50
                 priority: 26
-              - afi: "ipv6"
+              - afi: ipv6
                 mtu_ignore: true
                 instance: 33
-          - name: "bond2"
+          - name: bond2
             address_family:
-              - afi: "ipv4"
+              - afi: ipv4
                 transmit_delay: 45
-              - afi: "ipv6"
+              - afi: ipv6
                 passive: true
         state: rendered
 

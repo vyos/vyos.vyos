@@ -18,40 +18,52 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from unittest.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_ospf_interfaces
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosOspfInterfacesModule(TestVyosModule):
-
     module = vyos_ospf_interfaces
 
     def setUp(self):
         super(TestVyosOspfInterfacesModule, self).setUp()
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.Ospf_interfacesFacts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.Ospf_interfacesFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospf_interfaces.ospf_interfaces.get_os_version"
+        )
+        self.test_version = "1.2"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
+        self.mock_facts_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.get_os_version"
+        )
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = self.test_version
+        self.maxDiff = None
 
     def tearDown(self):
         super(TestVyosOspfInterfacesModule, self).tearDown()
         self.mock_get_resource_connection_config.stop()
         self.mock_execute_show_command.stop()
+        self.mock_get_os_version.stop()
+        self.mock_facts_get_os_version.stop()
 
-    def load_fixtures(self, commands=None, transport="cli", filename=None):
+    def load_fixtures(self, commands=None, filename=None):
         if filename is None:
             filename = "vyos_ospf_interfaces_config.cfg"
 
@@ -76,9 +88,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                             dict(
                                 afi="ipv4",
                                 cost=100,
-                                authentication=dict(
-                                    plaintext_password="abcdefg!"
-                                ),
+                                authentication=dict(plaintext_password="abcdefg!"),
                                 priority=55,
                             ),
                             dict(afi="ipv6", mtu_ignore=True, instance=20),
@@ -96,7 +106,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set interfaces bonding bond2 ip ospf transmit-delay 9",
@@ -129,7 +139,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                         ],
                     ),
                 ],
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -154,7 +164,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                         ],
                     ),
                 ],
-            )
+            ),
         )
         commands = [
             "set interfaces ethernet eth0 ipv6 ospfv3 cost 500",
@@ -173,9 +183,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                             dict(
                                 afi="ipv4",
                                 cost=100,
-                                authentication=dict(
-                                    plaintext_password="abcdefg!"
-                                ),
+                                authentication=dict(plaintext_password="abcdefg!"),
                                 priority=55,
                             ),
                         ],
@@ -192,7 +200,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "set interfaces bonding bond2 ip ospf transmit-delay 9",
@@ -227,7 +235,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -241,9 +249,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                             dict(
                                 afi="ipv4",
                                 cost=100,
-                                authentication=dict(
-                                    plaintext_password="abcdefg!"
-                                ),
+                                authentication=dict(plaintext_password="abcdefg!"),
                                 priority=55,
                             ),
                         ],
@@ -260,7 +266,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         commands = [
             "set interfaces bonding bond2 ip ospf transmit-delay 9",
@@ -297,7 +303,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -310,7 +316,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="deleted",
-            )
+            ),
         )
         commands = ["delete interfaces ethernet eth0 ipv6 ospfv3"]
         self.execute_module(changed=True, commands=commands)
@@ -324,7 +330,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="deleted",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -338,9 +344,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                             dict(
                                 afi="ipv4",
                                 cost=100,
-                                authentication=dict(
-                                    plaintext_password="abcdefg!"
-                                ),
+                                authentication=dict(plaintext_password="abcdefg!"),
                                 priority=55,
                             ),
                             dict(afi="ipv6", mtu_ignore=True, instance=20),
@@ -358,7 +362,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="rendered",
-            )
+            ),
         )
         commands = [
             "set interfaces ethernet eth0 ip ospf cost 100",
@@ -370,9 +374,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
             "set interfaces bonding bond2 ipv6 ospfv3 passive",
         ]
         result = self.execute_module(changed=False)
-        self.assertEqual(
-            sorted(result["rendered"]), sorted(commands), result["rendered"]
-        )
+        self.assertEqual(sorted(result["rendered"]), sorted(commands), result["rendered"])
 
     def test_vyos_ospf_interfaces_parsed(self):
         commands = [
@@ -402,7 +404,7 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
                             "md5_key": {
                                 "key": "1111111111232345",
                                 "key_id": 10,
-                            }
+                            },
                         },
                         "bandwidth": 70,
                         "transmit_delay": 45,
@@ -437,14 +439,10 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
 
     def test_vyos_ospf_interfaces_gathered(self):
         set_module_args(dict(state="gathered"))
-        result = self.execute_module(
-            changed=False, filename="vyos_ospf_interfaces_config.cfg"
-        )
+        result = self.execute_module(changed=False, filename="vyos_ospf_interfaces_config.cfg")
         gathered_list = [
             {
-                "address_family": [
-                    {"afi": "ipv6", "instance": "33", "mtu_ignore": True}
-                ],
+                "address_family": [{"afi": "ipv6", "instance": "33", "mtu_ignore": True}],
                 "name": "eth0",
             },
             {

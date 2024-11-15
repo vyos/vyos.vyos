@@ -1,28 +1,27 @@
 ---
 - debug:
-    msg: START vyos_ospf_interfaces rtt integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_ospf_interfaces rtt integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
 - block:
     - name: Merge the provided configuration with the existing running configuration
       register: baseconfig
-      vyos.vyos.vyos_ospf_interfaces: &id001
+      vyos.vyos.vyos_ospf_interfaces:
         config:
-          - name: "eth0"
+          - name: eth0
             address_family:
-              - afi: "ipv4"
+              - afi: ipv4
                 cost: 50
                 priority: 26
-              - afi: "ipv6"
+              - afi: ipv6
                 mtu_ignore: true
                 instance: 33
-          - name: "bond2"
+          - name: bond2
             address_family:
-              - afi: "ipv4"
+              - afi: ipv4
                 transmit_delay: 45
-              - afi: "ipv6"
+              - afi: ipv6
                 passive: true
         state: merged
 
@@ -40,13 +39,13 @@
       register: result
       vyos.vyos.vyos_ospf_interfaces:
         config:
-          - name: "eth0"
+          - name: eth0
             address_family:
-              - afi: "ipv4"
+              - afi: ipv4
                 transmit_delay: 50
                 priority: 26
-                network: "point-to-point"
-              - afi: "ipv6"
+                network: point-to-point
+              - afi: ipv6
                 dead_interval: 39
 
     - name: Revert back to base config using facts round trip

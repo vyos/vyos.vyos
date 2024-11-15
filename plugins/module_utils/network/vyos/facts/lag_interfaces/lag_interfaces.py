@@ -11,14 +11,14 @@ based on the configuration.
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from re import findall, search, M
 from copy import deepcopy
+from re import M, findall, search
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.lag_interfaces.lag_interfaces import (
     Lag_interfacesArgs,
 )
@@ -77,9 +77,7 @@ class Lag_interfacesFacts(object):
         facts = {}
         if objs:
             facts["lag_interfaces"] = []
-            params = utils.validate_config(
-                self.argument_spec, {"config": objs}
-            )
+            params = utils.validate_config(self.argument_spec, {"config": objs})
             for cfg in params["config"]:
                 facts["lag_interfaces"].append(utils.remove_empties(cfg))
 
@@ -96,12 +94,8 @@ class Lag_interfacesFacts(object):
         :rtype: dictionary
         :returns: The generated config
         """
-        arp_monitor_conf = "\n".join(
-            filter(lambda x: ("arp-monitor" in x), conf)
-        )
-        hash_policy_conf = "\n".join(
-            filter(lambda x: ("hash-policy" in x), conf)
-        )
+        arp_monitor_conf = "\n".join(filter(lambda x: ("arp-monitor" in x), conf))
+        hash_policy_conf = "\n".join(filter(lambda x: ("hash-policy" in x), conf))
         lag_conf = "\n".join(filter(lambda x: ("bond" in x), conf))
         config = self.parse_attribs(["mode", "primary"], lag_conf)
         config["arp_monitor"] = self.parse_arp_monitor(arp_monitor_conf)

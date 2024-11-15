@@ -1,10 +1,6 @@
 ---
 - debug:
-    msg:
-      START vyos_ospfv3 merged integration tests on connection={{ ansible_connection
-      }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_ospfv3 merged integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
@@ -16,15 +12,15 @@
           areas:
             - area_id: "2"
               range:
-                - address: "2001:db10::/32"
+                - address: 2001:db10::/32
             - area_id: "3"
               range:
-                - address: "2001:db40::/32"
-                - address: "2001:db70::/32"
+                - address: 2001:db40::/32
+                - address: 2001:db70::/32
           parameters:
-            router_id: "192.0.2.10"
+            router_id: 192.0.2.10
           redistribute:
-            - route_type: "bgp"
+            - route_type: bgp
         state: merged
 
     - name: Assert that before dicts were correctly generated
@@ -34,17 +30,14 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ merged_update['commands'] | symmetric_difference(result['commands']) |length\
-            \ == 0 }}"
+          - "{{ merged_update['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
     - name: Assert that after dicts was correctly generated
       assert:
         that:
           - "{{ merged_update['after'] == result['after'] }}"
 
-    - name:
-        Merge the provided configuration with the existing running configuration
-        (IDEMPOTENT)
+    - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_ospfv3: *id001
 

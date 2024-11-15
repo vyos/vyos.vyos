@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 # (c) 2017, Ansible by Red Hat, inc
@@ -36,7 +37,7 @@ deprecated:
     removed_at_date: '2023-08-01'
 notes:
 - Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 options:
   dest:
     description:
@@ -130,16 +131,29 @@ EXAMPLES = """
 - name: Add logging aggregate
   vyos.vyos.vyos_logging:
     aggregate:
-    - {dest: file, name: test1, facility: all, level: info}
-    - {dest: file, name: test2, facility: news, level: debug}
+      - dest: file
+        name: test1
+        facility: all
+        level: info
+      - dest: file
+        name: test2
+        facility: news
+        level: debug
     state: present
 
 - name: Remove logging aggregate
   vyos.vyos.vyos_logging:
     aggregate:
-    - {dest: console, facility: all, level: info}
-    - {dest: console, facility: daemon, level: warning}
-    - {dest: file, name: test2, facility: news, level: debug}
+      - dest: console
+        facility: all
+        level: info
+      - dest: console
+        facility: daemon
+        level: warning
+      - dest: file
+        name: test2
+        facility: news
+        level: debug
     state: absent
 """
 
@@ -162,12 +176,10 @@ from ansible.module_utils.common.validation import check_required_if
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     remove_default_spec,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     get_config,
     load_config,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
 )
 
 
@@ -187,27 +199,37 @@ def spec_to_commands(updates, module):
             if w["name"]:
                 commands.append(
                     "delete system syslog {0} {1} facility {2} level {3}".format(
-                        dest, name, facility, level
-                    )
+                        dest,
+                        name,
+                        facility,
+                        level,
+                    ),
                 )
             else:
                 commands.append(
                     "delete system syslog {0} facility {1} level {2}".format(
-                        dest, facility, level
-                    )
+                        dest,
+                        facility,
+                        level,
+                    ),
                 )
         elif state == "present" and w not in have:
             if w["name"]:
                 commands.append(
                     "set system syslog {0} {1} facility {2} level {3}".format(
-                        dest, name, facility, level
-                    )
+                        dest,
+                        name,
+                        facility,
+                        level,
+                    ),
                 )
             else:
                 commands.append(
                     "set system syslog {0} facility {1} level {2}".format(
-                        dest, facility, level
-                    )
+                        dest,
+                        facility,
+                        level,
+                    ),
                 )
 
     return commands
@@ -246,7 +268,7 @@ def config_to_dict(module):
                         "name": name,
                         "facility": facility,
                         "level": level,
-                    }
+                    },
                 )
 
     return obj
@@ -279,7 +301,7 @@ def map_params_to_obj(module, required_if=None):
                 "facility": module.params["facility"],
                 "level": module.params["level"],
                 "state": module.params["state"],
-            }
+            },
         )
 
     return obj
@@ -288,9 +310,7 @@ def map_params_to_obj(module, required_if=None):
 def main():
     """main entry point for module execution"""
     element_spec = dict(
-        dest=dict(
-            type="str", choices=["console", "file", "global", "host", "user"]
-        ),
+        dest=dict(type="str", choices=["console", "file", "global", "host", "user"]),
         name=dict(type="str"),
         facility=dict(type="str"),
         level=dict(type="str"),
@@ -303,12 +323,11 @@ def main():
     remove_default_spec(aggregate_spec)
 
     argument_spec = dict(
-        aggregate=dict(type="list", elements="dict", options=aggregate_spec)
+        aggregate=dict(type="list", elements="dict", options=aggregate_spec),
     )
 
     argument_spec.update(element_spec)
 
-    argument_spec.update(vyos_argument_spec)
     required_if = [
         ("dest", "host", ["name", "facility", "level"]),
         ("dest", "file", ["name", "facility", "level"]),

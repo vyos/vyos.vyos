@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_hostname rendered integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_hostname rendered integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -10,7 +9,7 @@
       register: result
       vyos.vyos.vyos_hostname:
         config:
-          hostname: 'vyosTest'
+          hostname: vyosTest
         state: rendered
 
     - assert:

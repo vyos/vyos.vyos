@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -20,16 +21,15 @@ created.
 from copy import deepcopy
 
 from ansible.module_utils.six import iteritems
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
+    ResourceModule,
+)
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     dict_merge,
     get_from_dict,
 )
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
-    ResourceModule,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
-)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.logging_global import (
     Logging_globalTemplate,
 )
@@ -173,10 +173,8 @@ class Logging_global(ResourceModule):
                             temp_param[pk + k] = {
                                 element: {
                                     "facilities": dat,
-                                    self.pkey.get(element): v.get(
-                                        self.pkey.get(element)
-                                    ),
-                                }
+                                    self.pkey.get(element): v.get(self.pkey.get(element)),
+                                },
                             }
                         del v["facilities"]
                         if len(list(v.keys())) > 1:
@@ -202,19 +200,9 @@ class Logging_global(ResourceModule):
                     _tem_par = {}
                     for par in val:
                         if par.get("facility") and par.get("severity"):
-                            _tem_par.update(
-                                {
-                                    par.get("facility")
-                                    + par.get("severity"): par
-                                }
-                            )
+                            _tem_par.update({par.get("facility") + par.get("severity"): par})
                         elif par.get("facility") and par.get("protocol"):
-                            _tem_par.update(
-                                {
-                                    par.get("facility")
-                                    + par.get("protocol"): par
-                                }
-                            )
+                            _tem_par.update({par.get("facility") + par.get("protocol"): par})
                         else:
                             _tem_par.update({par.get("facility"): par})
                     return _tem_par
@@ -227,11 +215,7 @@ class Logging_global(ResourceModule):
                         if v.get("facilities"):
                             v["facilities"] = self.list_to_dict(v)
                         if updated_param.get(element):
-                            updated_param[element].update(
-                                {v.get(self.pkey.get(element)): v}
-                            )
+                            updated_param[element].update({v.get(self.pkey.get(element)): v})
                         else:
-                            updated_param[element] = {
-                                v.get(self.pkey.get(element)): v
-                            }
+                            updated_param[element] = {v.get(self.pkey.get(element)): v}
             return updated_param

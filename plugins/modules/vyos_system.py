@@ -18,6 +18,7 @@
 #
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -33,7 +34,7 @@ extends_documentation_fragment:
 - vyos.vyos.vyos
 notes:
 - Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 options:
   host_name:
     description:
@@ -90,17 +91,15 @@ EXAMPLES = """
 - name: configure domain search suffixes
   vyos.vyos.vyos_system:
     domain_search:
-    - sub1.example.com
-    - sub2.example.com
+      - sub1.example.com
+      - sub2.example.com
 """
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     get_config,
     load_config,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
 )
 
 
@@ -158,13 +157,9 @@ def spec_to_commands(want, have):
                 commands.append("delete system %s" % device_key)
             for config in proposed:
                 if state == "absent" and config in current:
-                    commands.append(
-                        "delete system %s '%s'" % (device_key, config)
-                    )
+                    commands.append("delete system %s '%s'" % (device_key, config))
                 elif state == "present" and config not in current:
-                    commands.append(
-                        "set system %s '%s'" % (device_key, config)
-                    )
+                    commands.append("set system %s '%s'" % (device_key, config))
         else:
             if state == "absent" and current and proposed:
                 commands.append("delete system %s" % device_key)
@@ -189,15 +184,9 @@ def main():
         host_name=dict(type="str"),
         domain_name=dict(type="str"),
         domain_search=dict(type="list", elements="str"),
-        name_server=dict(
-            type="list", aliases=["name_servers"], elements="str"
-        ),
-        state=dict(
-            type="str", default="present", choices=["present", "absent"]
-        ),
+        name_server=dict(type="list", aliases=["name_servers"], elements="str"),
+        state=dict(type="str", default="present", choices=["present", "absent"]),
     )
-
-    argument_spec.update(vyos_argument_spec)
 
     module = AnsibleModule(
         argument_spec=argument_spec,

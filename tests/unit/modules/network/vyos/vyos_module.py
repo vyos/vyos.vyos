@@ -18,10 +18,11 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-import os
 import json
+import os
 
 from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
     AnsibleExitJson,
@@ -62,7 +63,6 @@ class TestVyosModule(ModuleTestCase):
         defaults=False,
         filename=None,
     ):
-
         if filename is None:
             self.load_fixtures(commands)
         else:
@@ -83,9 +83,7 @@ class TestVyosModule(ModuleTestCase):
                     result["commands"],
                 )
             else:
-                self.assertEqual(
-                    commands, result["commands"], result["commands"]
-                )
+                self.assertEqual(commands, result["commands"], result["commands"])
 
         return result
 
