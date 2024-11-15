@@ -32,21 +32,25 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 ANSIBLE_METADATA = {
-    'metadata_version': '1.1',
-    'status': ['preview'],
-    'supported_by': 'network'
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
 }
 
 DOCUMENTATION = """
+---
 module: vyos_firewall_rules
+version_added: '2.10.0'
 short_description: FIREWALL rules resource module
 description: This module manages firewall rule-set attributes on VyOS devices
-version_added: 1.0.0
-notes:
-- Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Rohit Thakur (@rohitthakur2590)
+- Gaige B. Paulsen (@gaige)
+notes:
+- Tested against VyOS 1.3.8.
+- This module works with connection C(ansible.netcommon.network_cli).
+  See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+
 options:
   config:
     description: A dictionary of Firewall rule-set options.
@@ -69,8 +73,8 @@ options:
         suboptions:
           filter:
             description:
-              - Filter type (exclusive to "name").
-              - Supported in 1.4 and later.
+            - Filter type (exclusive to "name").
+            - Supported in 1.4 and later.
             type: str
             choices: ['input', 'output', 'forward']
           name:
@@ -84,14 +88,14 @@ options:
             - drop (Drop if no prior rules are hit (default))
             - reject (Drop and notify source if no prior rules are hit)
             - accept (Accept if no prior rules are hit)
-              - jump (Jump to another rule-set, 1.4+)
+            - jump (Jump to another rule-set, 1.4+)
             type: str
             choices: ['drop', 'reject', 'accept', 'jump']
           default_jump_target:
             description:
-              - Default jump target if the default action is jump.
-              - Only valid in 1.4 and later.
-              - Only valid when default_action = jump.
+            - Default jump target if the default action is jump.
+            - Only valid in 1.4 and later.
+            - Only valid when default_action = jump.
             type: str
           description:
             description:
@@ -257,6 +261,8 @@ options:
               ipsec:
                 description:
                 - Inbound ip sec packets.
+                - VyOS 1.4 and older match-ipsec/match-none
+                - VyOS 1.5 and later require -in/-out suffixes
                 type: str
                 choices:
                 - match-ipsec
@@ -299,7 +305,7 @@ options:
                         type: str
               log:
                 description:
-                  - Log matching packets.
+                  - Option to log packets matching rule.
                 type: str
                 choices: ['disable', 'enable']
               outbound_interface:
@@ -503,7 +509,16 @@ options:
                           - syn, ack, fin, rst, urg, psh, all (1.3-)
                           - syn, ack, fin, rst, urg, psh, cwr, ecn (1.4+)
                         type: str
-                        choices: ['ack', 'cwr', 'ecn', 'fin', 'psh', 'rst', 'syn', 'urg', 'all']
+                        choices:
+                        - ack
+                        - cwr
+                        - ecn
+                        - fin
+                        - psh
+                        - rst
+                        - syn
+                        - urg
+                        - all
                       invert:
                         description:
                           - Invert the match.
@@ -564,7 +579,6 @@ options:
     - rendered
     - parsed
     default: merged
-
 """
 EXAMPLES = """
 # Using deleted to delete firewall rules based on rule-set name
@@ -810,7 +824,7 @@ EXAMPLES = """
 # vyos@vyos# run show  configuration commands | grep firewall
 # set firewall group address-group 'inbound'
 #
-- name: Merge the provided configuration with the existing running configuration
+- name: Merge the provided configuration with the exisiting running configuration
   vyos.vyos.vyos_firewall_rules:
     config:
       - afi: ipv6
@@ -1033,25 +1047,25 @@ EXAMPLES = """
     configurations
   vyos.vyos.vyos_firewall_rules:
     config:
-      - afi: ipv6
+      - afi: 'ipv6'
         rule_sets:
-          - name: UPLINK
-            description: This is ipv6 specific rule-set
-            default_action: accept
-      - afi: ipv4
+          - name: 'UPLINK'
+            description: 'This is ipv6 specific rule-set'
+            default_action: 'accept'
+      - afi: 'ipv4'
         rule_sets:
-          - name: INBOUND
-            description: IPv4 INBOUND rule set
-            default_action: accept
+          - name: 'INBOUND'
+            description: 'IPv4 INBOUND rule set'
+            default_action: 'accept'
             rules:
               - number: 101
-                action: accept
-                description: Rule 101 is configured by Ansible
-                ipsec: match-ipsec
+                action: 'accept'
+                description: 'Rule 101 is configured by Ansible'
+                ipsec: 'match-ipsec'
               - number: 104
-                action: reject
-                description: Rule 104 is configured by Ansible
-                ipsec: match-none
+                action: 'reject'
+                description: 'Rule 104 is configured by Ansible'
+                ipsec: 'match-none'
     state: replaced
 #
 #
@@ -1215,22 +1229,21 @@ EXAMPLES = """
 - name: Overrides all device configuration with provided configuration
   vyos.vyos.vyos_firewall_rules:
     config:
-      - afi: ipv4
+      - afi: 'ipv4'
         rule_sets:
-          - name: Downlink
-            description: IPv4 INBOUND rule set
-            default_action: accept
+          - name: 'Downlink'
+            description: 'IPv4 INBOUND rule set'
+            default_action: 'accept'
             rules:
               - number: 501
-                action: accept
-                description: Rule 501 is configured by Ansible
-                ipsec: match-ipsec
+                action: 'accept'
+                description: 'Rule 501 is configured by Ansible'
+                ipsec: 'match-ipsec'
               - number: 502
-                action: reject
-                description: Rule 502 is configured by Ansible
-                ipsec: match-ipsec
+                action: 'reject'
+                description: 'Rule 502 is configured by Ansible'
+                ipsec: 'match-ipsec'
     state: overridden
-
 #
 #
 # -------------------------
@@ -1366,6 +1379,7 @@ EXAMPLES = """
 #
 - name: Gather listed firewall rules with provided configurations
   vyos.vyos.vyos_firewall_rules:
+    config:
     state: gathered
 #
 #
@@ -1481,40 +1495,39 @@ EXAMPLES = """
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_firewall_rules:
     config:
-      - afi: ipv6
+      - afi: 'ipv6'
         rule_sets:
-          - name: UPLINK
-            description: This is ipv6 specific rule-set
-            default_action: accept
-      - afi: ipv4
+          - name: 'UPLINK'
+            description: 'This is ipv6 specific rule-set'
+            default_action: 'accept'
+      - afi: 'ipv4'
         rule_sets:
-          - name: INBOUND
-            description: IPv4 INBOUND rule set
-            default_action: accept
+          - name: 'INBOUND'
+            description: 'IPv4 INBOUND rule set'
+            default_action: 'accept'
             rules:
               - number: 101
-                action: accept
-                description: Rule 101 is configured by Ansible
-                ipsec: match-ipsec
+                action: 'accept'
+                description: 'Rule 101 is configured by Ansible'
+                ipsec: 'match-ipsec'
               - number: 102
-                action: reject
-                description: Rule 102 is configured by Ansible
-                ipsec: match-ipsec
+                action: 'reject'
+                description: 'Rule 102 is configured by Ansible'
+                ipsec: 'match-ipsec'
               - number: 103
-                action: accept
-                description: Rule 103 is configured by Ansible
+                action: 'accept'
+                description: 'Rule 103 is configured by Ansible'
                 destination:
                   group:
-                    address_group: inbound
+                    address_group: 'inbound'
                 source:
-                  address: 192.0.2.0
+                  address: '192.0.2.0'
                 state:
                   established: true
                   new: false
                   invalid: false
                   related: true
     state: rendered
-
 #
 #
 # -------------------------
@@ -1550,7 +1563,7 @@ EXAMPLES = """
 # Using parsed
 #
 #
-- name: Parsed the provided input commands.
+- name: Render the commands for provided  configuration
   vyos.vyos.vyos_firewall_rules:
     running_config:
       "set firewall group address-group 'inbound'
@@ -1596,22 +1609,24 @@ EXAMPLES = """
 #            ]
 #        }
 #    ]
+
+
 """
 RETURN = """
 before:
-  description: The configuration prior to the model invocation.
-  returned: always
+  description: The configuration prior to the module execution.
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
   type: dict
   sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
+    This output will always be in the same format as the
+    module argspec.
 after:
-  description: The resulting configuration model invocation.
+  description: The resulting configuration after module execution.
   returned: when changed
   type: dict
   sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
+    This output will always be in the same format as the
+    module argspec.
 commands:
   description: The set of commands pushed to the remote device.
   returned: always
@@ -1622,13 +1637,42 @@ commands:
     - "set firewall name Downlink rule 501 action 'accept'"
     - "set firewall name Downlink rule 502 description 'Rule 502 is configured by Ansible'"
     - "set firewall name Downlink rule 502 ipsec 'match-ipsec'"
+rendered:
+  description: The provided configuration in the task rendered in device-native format (offline).
+  returned: when I(state) is C(rendered)
+  type: list
+  sample:
+    - "set firewall name Downlink default-action 'accept'"
+    - "set firewall name Downlink description 'IPv4 INBOUND rule set'"
+    - "set firewall name Downlink rule 501 action 'accept'"
+    - "set firewall name Downlink rule 502 description 'Rule 502 is configured by Ansible'"
+    - "set firewall name Downlink rule 502 ipsec 'match-ipsec'"
+gathered:
+  description: Facts about the network resource gathered from the remote device as structured data.
+  returned: when I(state) is C(gathered)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+parsed:
+  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
+  returned: when I(state) is C(parsed)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+
 """
 
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_rules.firewall_rules import Firewall_rulesArgs
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_rules.firewall_rules import Firewall_rules
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_rules.firewall_rules import (
+    Firewall_rulesArgs,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_rules.firewall_rules import (
+    Firewall_rules,
+)
 
 
 def main():
@@ -1656,5 +1700,5 @@ def main():
     module.exit_json(**result)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

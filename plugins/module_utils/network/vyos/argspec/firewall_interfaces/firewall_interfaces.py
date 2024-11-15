@@ -21,14 +21,10 @@
 #   builder template.
 #
 #############################################
+
 """
 The arg spec for the vyos_firewall_interfaces module
 """
-
-from __future__ import absolute_import, division, print_function
-
-
-__metaclass__ = type
 
 
 class Firewall_interfacesArgs(object):  # pylint: disable=R0903
@@ -44,11 +40,7 @@ class Firewall_interfacesArgs(object):  # pylint: disable=R0903
                 "access_rules": {
                     "elements": "dict",
                     "options": {
-                        "afi": {
-                            "choices": ["ipv4", "ipv6"],
-                            "required": True,
-                            "type": "str",
-                        },
+                        "afi": {"choices": ["ipv4", "ipv6"], "required": True, "type": "str"},
                         "rules": {
                             "elements": "dict",
                             "options": {
