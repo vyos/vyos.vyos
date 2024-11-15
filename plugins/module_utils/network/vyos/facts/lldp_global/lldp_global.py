@@ -11,14 +11,14 @@ based on the configuration.
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from re import findall, M
 from copy import deepcopy
+from re import M, findall
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.lldp_global.lldp_global import (
     Lldp_globalArgs,
 )
@@ -84,12 +84,8 @@ class Lldp_globalFacts(object):
         :rtype: dictionary
         :returns: The generated config
         """
-        protocol_conf = "\n".join(
-            filter(lambda x: ("legacy-protocols" in x), conf)
-        )
-        att_conf = "\n".join(
-            filter(lambda x: ("legacy-protocols" not in x), conf)
-        )
+        protocol_conf = "\n".join(filter(lambda x: ("legacy-protocols" in x), conf))
+        att_conf = "\n".join(filter(lambda x: ("legacy-protocols" not in x), conf))
         config = self.parse_attribs(["snmp", "address"], att_conf)
         config["legacy_protocols"] = self.parse_protocols(protocol_conf)
         return utils.remove_empties(config)

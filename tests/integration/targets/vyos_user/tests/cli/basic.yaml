@@ -25,7 +25,6 @@
   register: result
   vyos.vyos.vyos_user:
     aggregate:
-
       - name: ansibletest2
 
       - name: ansibletest3
@@ -35,8 +34,7 @@
 - assert:
     that:
       - result.changed == true
-      - result.commands == ["set system login user ansibletest2 level operator",
-        "set system login user ansibletest3 level operator"]
+      - result.commands == ["set system login user ansibletest2 level operator", "set system login user ansibletest3 level operator"]
 
 - name: Add user again (Idempotent)
   register: result
@@ -55,7 +53,6 @@
   register: result
   vyos.vyos.vyos_user:
     aggregate:
-
       - name: ansibletest2
 
       - name: ansibletest3
@@ -71,7 +68,6 @@
   register: result
   vyos.vyos.vyos_user:
     users:
-
       - name: ansibletest1
 
       - name: ansibletest2
@@ -82,5 +78,4 @@
 - assert:
     that:
       - result.changed == true
-      - result.commands == ["delete system login user ansibletest1", "delete system
-        login user ansibletest2", "delete system login user ansibletest3"]
+      - result.commands == ["delete system login user ansibletest1", "delete system login user ansibletest2", "delete system login user ansibletest3"]

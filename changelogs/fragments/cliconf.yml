@@ -1,0 +1,4 @@
+---
+
+minor_changes:
+  - added `network_os_major_version` to facts

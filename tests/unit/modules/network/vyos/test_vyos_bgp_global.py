@@ -18,46 +18,40 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from unittest.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_bgp_global
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosBgpglobalModule(TestVyosModule):
-
     module = vyos_bgp_global
 
     def setUp(self):
         super(TestVyosBgpglobalModule, self).setUp()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_execute_show_command_config = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global.Bgp_global._get_config"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global.Bgp_global._get_config",
         )
-        self.execute_show_command_config = (
-            self.mock_execute_show_command_config.start()
-        )
+        self.execute_show_command_config = self.mock_execute_show_command_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
-        self.get_resource_connection_facts = (
-            self.mock_get_resource_connection_facts.start()
-        )
+        self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global.Bgp_globalFacts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global.Bgp_globalFacts.get_device_data",
         )
 
         self.execute_show_command = self.mock_execute_show_command.start()
@@ -69,7 +63,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
         self.mock_execute_show_command.stop()
         self.mock_execute_show_command_config.stop()
 
-    def load_fixtures(self, commands=None, transport="cli", filename=None):
+    def load_fixtures(self, commands=None, filename=None):
         if filename is None:
             filename = "vyos_bgp_global_config.cfg"
 
@@ -124,7 +118,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -148,7 +142,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                                 dict(action="export", acl=31),
                                 dict(action="import", acl=9),
                             ],
-                        )
+                        ),
                     ],
                     bgp_params=dict(
                         confederation=[dict(peers=20), dict(identifier=66)],
@@ -156,7 +150,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ),
                 ),
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set protocols bgp 65536 neighbor 2001:db8::2 distribute-list export 31",
@@ -212,7 +206,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ],
                 ),
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -249,7 +243,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ),
                 ),
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "delete protocols bgp 65536 parameters default",
@@ -315,12 +309,10 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ),
                 ),
                 state="replaced",
-            )
+            ),
         )
         result = self.execute_module(failed=True)
-        self.assertIn(
-            "Only one bgp instance is allowed per device", result["msg"]
-        )
+        self.assertIn("Only one bgp instance is allowed per device", result["msg"])
 
     def test_vyos_bgp_global_replaced_af(self):
         set_module_args(
@@ -354,11 +346,9 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ),
                 ),
                 state="replaced",
-            )
+            ),
         )
-        result = self.execute_module(
-            failed=True, filename="vyos_bgp_global_af_config.cfg"
-        )
+        result = self.execute_module(failed=True, filename="vyos_bgp_global_af_config.cfg")
         self.assertIn(
             "Use the _bgp_address_family module to delete the address_family under neighbor 5001::64, before replacing/deleting the neighbor.",
             result["msg"],
@@ -408,7 +398,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     ],
                 ),
                 state="rendered",
-            )
+            ),
         )
         rendered_cmds = [
             "set protocols bgp 65536 neighbor 10.0.0.4 disable-connected-check",
@@ -443,7 +433,6 @@ class TestVyosBgpglobalModule(TestVyosModule):
         )
 
     def test_vyos_bgp_global_parsed(self):
-
         commands = [
             "set protocols bgp 65536 neighbor 10.0.0.4 disable-connected-check",
             "set protocols bgp 65536 neighbor 10.0.0.4 timers holdtime 30",

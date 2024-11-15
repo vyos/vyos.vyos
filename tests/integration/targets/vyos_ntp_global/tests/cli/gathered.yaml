@@ -1,14 +1,12 @@
 ---
 - debug:
-    msg: START vyos_ntp_global gathered integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_ntp_global gathered integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
 - include_tasks: _populate_config.yaml
 
 - block:
-
     - name: Gather config from the device in structured format.
       register: result
       vyos.vyos.vyos_ntp_global:

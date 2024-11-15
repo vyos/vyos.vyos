@@ -1,5 +1,7 @@
 ---
-- name: setup
+- ansible.builtin.include_tasks: _remove_config.yaml
+
+- name: Setup
   vyos.vyos.vyos_config:
     lines:
       - set interfaces ethernet eth0 ip ospf cost 50
@@ -8,6 +10,5 @@
       - set interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
       - set interfaces bonding bond2 ip ospf transmit-delay 45
       - set interfaces bonding bond2 ipv6 ospfv3 passive
-  ignore_errors: true
   vars:
     ansible_connection: ansible.netcommon.network_cli

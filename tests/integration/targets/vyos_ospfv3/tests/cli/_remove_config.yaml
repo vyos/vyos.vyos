@@ -3,4 +3,4 @@
   vars:
     lines: "delete protocols ospfv3\n"
   ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    config: "{{ lines }}"

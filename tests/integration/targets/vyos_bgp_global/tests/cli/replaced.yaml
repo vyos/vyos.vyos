@@ -1,25 +1,21 @@
 ---
 - debug:
-    msg: START vyos_bgp_global replaced integration tests on connection={{
-      ansible_connection }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_bgp_global replaced integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Replace the existing configuration with the provided running configuration
       register: result
       vyos.vyos.vyos_bgp_global: &id001
         config:
           as_number: "65536"
           network:
-            - address: "203.0.113.0/24"
+            - address: 203.0.113.0/24
               route_map: map01
           redistribute:
-            - protocol: "static"
-              route_map: "map01"
+            - protocol: static
+              route_map: map01
           bgp_params:
             always_compare_med: true
             dampening:
@@ -28,12 +24,12 @@
               half_life: 33
               re_use: 60
             bestpath:
-              as_path: "confed"
+              as_path: confed
               compare_routerid: true
             default:
               no_ipv4_unicast: true
           neighbor:
-            - address: "192.0.2.43"
+            - address: 192.0.2.43
               disable_connected_check: true
               advertisement_interval: 72
               capability:
@@ -41,9 +37,9 @@
               timers:
                 holdtime: 30
                 keepalive: 10
-            - address: "203.0.113.0"
+            - address: 203.0.113.0
               capability:
-                orf: "receive"
+                orf: receive
         state: replaced
 
     - vyos.vyos.vyos_facts:
@@ -56,8 +52,7 @@
           - result.commands|symmetric_difference(replaced.commands) == []
           - result.after == ansible_facts['network_resources']['bgp_global']
 
-    - name: Replace the existing configuration with the provided running configuration
-        (IDEMPOTENT)
+    - name: Replace the existing configuration with the provided running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_bgp_global: *id001
 
@@ -67,5 +62,4 @@
           - result['changed'] == false
 
   always:
-
     - include_tasks: _remove_config.yaml

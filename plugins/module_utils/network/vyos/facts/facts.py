@@ -8,10 +8,30 @@ calls the appropriate facts gathering function
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts import (
     FactsBase,
+)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family import (
+    Bgp_address_familyFacts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global import (
+    Bgp_globalFacts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_global.firewall_global import (
+    Firewall_globalFacts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_interfaces.firewall_interfaces import (
+    Firewall_interfacesFacts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_rules.firewall_rules import (
+    Firewall_rulesFacts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.hostname.hostname import (
+    HostnameFacts,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.interfaces.interfaces import (
     InterfacesFacts,
@@ -22,44 +42,16 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.l3_in
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.lag_interfaces.lag_interfaces import (
     Lag_interfacesFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
+    Config,
+    Default,
+    Neighbors,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.lldp_global.lldp_global import (
     Lldp_globalFacts,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.lldp_interfaces.lldp_interfaces import (
     Lldp_interfacesFacts,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_rules.firewall_rules import (
-    Firewall_rulesFacts,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes import (
-    Static_routesFacts,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_global.firewall_global import (
-    Firewall_globalFacts,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.firewall_interfaces.firewall_interfaces import (
-    Firewall_interfacesFacts,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3 import (
-    Ospfv3Facts,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv2.ospfv2 import (
-    Ospfv2Facts,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces import (
-    Ospf_interfacesFacts,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global import (
-    Bgp_globalFacts,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family import (
-    Bgp_address_familyFacts,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.route_maps.route_maps import (
-    Route_mapsFacts,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.prefix_lists.prefix_lists import (
-    Prefix_listsFacts,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.logging_global.logging_global import (
     Logging_globalFacts,
@@ -67,16 +59,26 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.loggi
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ntp_global.ntp_global import (
     Ntp_globalFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces import (
+    Ospf_interfacesFacts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv2.ospfv2 import (
+    Ospfv2Facts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3 import (
+    Ospfv3Facts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.prefix_lists.prefix_lists import (
+    Prefix_listsFacts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.route_maps.route_maps import (
+    Route_mapsFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.snmp_server.snmp_server import (
     Snmp_serverFacts,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.hostname.hostname import (
-    HostnameFacts,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.legacy.base import (
-    Default,
-    Neighbors,
-    Config,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes import (
+    Static_routesFacts,
 )
 
 
@@ -114,9 +116,7 @@ class Facts(FactsBase):
     def __init__(self, module):
         super(Facts, self).__init__(module)
 
-    def get_facts(
-        self, legacy_facts_type=None, resource_facts_type=None, data=None
-    ):
+    def get_facts(self, legacy_facts_type=None, resource_facts_type=None, data=None):
         """Collect the facts for vyos
         :param legacy_facts_type: List of legacy facts types
         :param resource_facts_type: List of resource fact types
@@ -125,11 +125,7 @@ class Facts(FactsBase):
         :return: the facts gathered
         """
         if self.VALID_RESOURCE_SUBSETS:
-            self.get_network_resources_facts(
-                FACT_RESOURCE_SUBSETS, resource_facts_type, data
-            )
+            self.get_network_resources_facts(FACT_RESOURCE_SUBSETS, resource_facts_type, data)
         if self.VALID_LEGACY_GATHER_SUBSETS:
-            self.get_network_legacy_facts(
-                FACT_LEGACY_SUBSETS, legacy_facts_type
-            )
+            self.get_network_legacy_facts(FACT_LEGACY_SUBSETS, legacy_facts_type)
         return self.ansible_facts, self._warnings

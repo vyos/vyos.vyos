@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -15,6 +16,7 @@ the given network resource.
 """
 
 import re
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
@@ -24,7 +26,10 @@ class Prefix_listsTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
         super(Prefix_listsTemplate, self).__init__(
-            lines=lines, tmplt=self, module=module, prefix=prefix
+            lines=lines,
+            tmplt=self,
+            module=module,
+            prefix=prefix,
         )
 
     # fmt: off
@@ -38,7 +43,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \spolicy
                 \sprefix-(?P<afi>\S+)
                 \s(?P<name>\S+)
-                $""", re.VERBOSE),
+                $""", re.VERBOSE,
+            ),
             "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }}",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
@@ -46,9 +52,9 @@ class Prefix_listsTemplate(NetworkTemplate):
                     "prefix_lists": {
                         "{{ name }}": {
                             "name": "{{ name }}",
-                        }
-                    }
-                }
+                        },
+                    },
+                },
             },
         },
 
@@ -62,7 +68,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \sprefix-(?P<afi>\S+)
                 \s(?P<name>\S+)
                 \sdescription\s'(?P<description>.+)'
-                $""", re.VERBOSE),
+                $""", re.VERBOSE,
+            ),
             "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} description '{{ description }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
@@ -70,10 +77,10 @@ class Prefix_listsTemplate(NetworkTemplate):
                     "prefix_lists": {
                         "{{ name }}": {
                             "name": "{{ name }}",
-                            "description": "{{ description }}"
-                        }
-                    }
-                }
+                            "description": "{{ description }}",
+                        },
+                    },
+                },
             },
         },
 
@@ -87,7 +94,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \sprefix-(?P<afi>\S+)
                 \s(?P<name>\S+)
                 \srule\s(?P<sequence>\d+)
-                $""", re.VERBOSE),
+                $""", re.VERBOSE,
+            ),
             "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ sequence }}",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
@@ -97,12 +105,12 @@ class Prefix_listsTemplate(NetworkTemplate):
                             "name": "{{ name }}",
                             "entries": {
                                 "{{ sequence }}": {
-                                    "sequence": "{{ sequence }}"
-                                }
-                            }
-                        }
-                    }
-                }
+                                    "sequence": "{{ sequence }}",
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
 
@@ -117,7 +125,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \s(?P<name>\S+)
                 \srule\s(?P<sequence>\d+)
                 \saction\s'(?P<action>permit|deny)'
-                $""", re.VERBOSE),
+                $""", re.VERBOSE,
+            ),
             "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ sequence }} action '{{ action }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
@@ -128,12 +137,12 @@ class Prefix_listsTemplate(NetworkTemplate):
                             "entries": {
                                 "{{ sequence }}": {
                                     "sequence": "{{ sequence }}",
-                                    "action": "{{ action }}"
-                                }
-                            }
-                        }
-                    }
-                }
+                                    "action": "{{ action }}",
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
 
@@ -148,7 +157,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \s(?P<name>\S+)
                 \srule\s(?P<sequence>\d+)
                 \sdescription\s'(?P<rule_description>.+)'
-                $""", re.VERBOSE),
+                $""", re.VERBOSE,
+            ),
             "compval": "description",
             "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ sequence }} description '{{ description }}'",
             "result": {
@@ -160,12 +170,12 @@ class Prefix_listsTemplate(NetworkTemplate):
                             "entries": {
                                 "{{ sequence }}": {
                                     "sequence": "{{ sequence }}",
-                                    "description": "{{ rule_description }}"
-                                }
-                            }
-                        }
-                    }
-                }
+                                    "description": "{{ rule_description }}",
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
 
@@ -180,7 +190,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \s(?P<name>\S+)
                 \srule\s(?P<sequence>\d+)
                 \sge\s'(?P<ge>\d+)'
-                $""", re.VERBOSE),
+                $""", re.VERBOSE,
+            ),
             "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ sequence }} ge '{{ ge }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
@@ -191,12 +202,12 @@ class Prefix_listsTemplate(NetworkTemplate):
                             "entries": {
                                 "{{ sequence }}": {
                                     "sequence": "{{ sequence }}",
-                                    "ge": "{{ ge }}"
-                                }
-                            }
-                        }
-                    }
-                }
+                                    "ge": "{{ ge }}",
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
 
@@ -211,7 +222,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \s(?P<name>\S+)
                 \srule\s(?P<sequence>\d+)
                 \sle\s'(?P<le>\d+)'
-                $""", re.VERBOSE),
+                $""", re.VERBOSE,
+            ),
             "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ sequence }} le '{{ le }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
@@ -222,12 +234,12 @@ class Prefix_listsTemplate(NetworkTemplate):
                             "entries": {
                                 "{{ sequence }}": {
                                     "sequence": "{{ sequence }}",
-                                    "le": "{{ le }}"
-                                }
-                            }
-                        }
-                    }
-                }
+                                    "le": "{{ le }}",
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
 
@@ -242,7 +254,8 @@ class Prefix_listsTemplate(NetworkTemplate):
                 \s(?P<name>\S+)
                 \srule\s(?P<sequence>\d+)
                 \sprefix\s'(?P<prefix>\S+)'
-                $""", re.VERBOSE),
+                $""", re.VERBOSE,
+            ),
             "setval": "policy prefix-{{ 'list' if afi == 'ipv4' else 'list6' }} {{ name }} rule {{ sequence }} prefix '{{ prefix }}'",
             "result": {
                 "{{ 'ipv4' if afi == 'list' else 'ipv6' }}": {
@@ -253,12 +266,12 @@ class Prefix_listsTemplate(NetworkTemplate):
                             "entries": {
                                 "{{ sequence }}": {
                                     "sequence": "{{ sequence }}",
-                                    "prefix": "{{ prefix }}"
-                                }
-                            }
-                        }
-                    }
-                }
+                                    "prefix": "{{ prefix }}",
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
     ]

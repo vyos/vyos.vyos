@@ -10,6 +10,6 @@
       - delete interfaces bonding bond1 ipv6 ospfv3
       - delete interfaces bonding bond2 ip ospf
       - delete interfaces bonding bond2 ipv6 ospfv3
-  ignore_errors: true
+      - delete interfaces bonding bond2
   vars:
     ansible_connection: ansible.netcommon.network_cli

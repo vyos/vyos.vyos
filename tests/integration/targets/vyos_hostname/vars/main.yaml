@@ -4,7 +4,7 @@ merged:
   commands:
     - set system host-name vyosTest
   after:
-    hostname: 'vyosTest'
+    hostname: vyosTest
 
 deleted:
   commands:

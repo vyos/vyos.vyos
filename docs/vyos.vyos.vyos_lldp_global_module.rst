@@ -173,7 +173,7 @@ Notes
 
 .. note::
    - Tested against VyOS 1.1.8 (helium).
-   - This module works with connection ``network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
+   - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
 
@@ -193,8 +193,8 @@ Examples
       vyos.vyos.vyos_lldp_global:
         config:
           legacy_protocols:
-          - fdp
-          - cdp
+            - fdp
+            - cdp
           snmp: enable
           address: 192.0.2.11
         state: merged
@@ -255,9 +255,9 @@ Examples
       vyos.vyos.vyos_lldp_global:
         config:
           legacy_protocols:
-          - edp
-          - sonmp
-          - cdp
+            - edp
+            - sonmp
+            - cdp
           address: 192.0.2.14
         state: replaced
     #
@@ -484,7 +484,7 @@ Examples
           address: 192.0.2.17
           enable: true
           legacy_protocols:
-          - cdp
+            - cdp
         state: rendered
     #
     #

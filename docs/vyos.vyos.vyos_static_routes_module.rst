@@ -336,7 +336,7 @@ Notes
 
 .. note::
    - Tested against VyOS 1.1.8 (helium).
-   - This module works with connection ``network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
+   - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
 
@@ -355,25 +355,26 @@ Examples
     - name: Merge the provided configuration with the existing running configuration
       vyos.vyos.vyos_static_routes:
         config:
-        - address_families:
-          - afi: ipv4
-            routes:
-            - dest: 192.0.2.32/28
-              blackhole_config:
-                type: blackhole
-              next_hops:
-              - forward_router_address: 192.0.2.6
-              - forward_router_address: 192.0.2.7
-        - address_families:
-          - afi: ipv6
-            routes:
-            - dest: 2001:db8:1000::/36
-              blackhole_config:
-                distance: 2
-              next_hops:
-              - forward_router_address: 2001:db8:2000:2::1
-              - forward_router_address: 2001:db8:2000:2::2
+          - address_families:
+              - afi: ipv4
+                routes:
+                  - dest: 192.0.2.32/28
+                    blackhole_config:
+                      type: blackhole
+                    next_hops:
+                      - forward_router_address: 192.0.2.6
+                      - forward_router_address: 192.0.2.7
+          - address_families:
+              - afi: ipv6
+                routes:
+                  - dest: '2001:db8:1000::/36'
+                    blackhole_config:
+                      distance: 2
+                    next_hops:
+                      - forward_router_address: '2001:db8:2000:2::1'
+                      - forward_router_address: '2001:db8:2000:2::2'
         state: merged
+
     #
     #
     # -------------------------
@@ -469,16 +470,16 @@ Examples
     - name: Replace device configurations of listed static routes with provided configurations
       vyos.vyos.vyos_static_routes:
         config:
-        - address_families:
-          - afi: ipv4
-            routes:
-            - dest: 192.0.2.32/28
-              blackhole_config:
-                distance: 2
-              next_hops:
-              - forward_router_address: 192.0.2.7
-                enabled: false
-              - forward_router_address: 192.0.2.9
+          - address_families:
+              - afi: ipv4
+                routes:
+                  - dest: 192.0.2.32/28
+                    blackhole_config:
+                      distance: 2
+                    next_hops:
+                      - forward_router_address: 192.0.2.7
+                        enabled: false
+                      - forward_router_address: 192.0.2.9
         state: replaced
     #
     #
@@ -645,12 +646,12 @@ Examples
     - name: Overrides all device configuration with provided configuration
       vyos.vyos.vyos_static_routes:
         config:
-        - address_families:
-          - afi: ipv4
-            routes:
-            - dest: 198.0.2.48/28
-              next_hops:
-              - forward_router_address: 192.0.2.18
+          - address_families:
+              - afi: ipv4
+                routes:
+                  - dest: 198.0.2.48/28
+                    next_hops:
+                      - forward_router_address: 192.0.2.18
         state: overridden
     #
     #
@@ -755,9 +756,9 @@ Examples
     - name: Delete static route based on afi.
       vyos.vyos.vyos_static_routes:
         config:
-        - address_families:
-          - afi: ipv4
-          - afi: ipv6
+          - address_families:
+              - afi: ipv4
+              - afi: ipv6
         state: deleted
     #
     #
@@ -906,24 +907,24 @@ Examples
     - name: Render the commands for provided  configuration
       vyos.vyos.vyos_static_routes:
         config:
-        - address_families:
-          - afi: ipv4
-            routes:
-            - dest: 192.0.2.32/28
-              blackhole_config:
-                type: blackhole
-              next_hops:
-              - forward_router_address: 192.0.2.6
-              - forward_router_address: 192.0.2.7
-        - address_families:
-          - afi: ipv6
-            routes:
-            - dest: 2001:db8:1000::/36
-              blackhole_config:
-                distance: 2
-              next_hops:
-              - forward_router_address: 2001:db8:2000:2::1
-              - forward_router_address: 2001:db8:2000:2::2
+          - address_families:
+              - afi: ipv4
+                routes:
+                  - dest: 192.0.2.32/28
+                    blackhole_config:
+                      type: blackhole
+                    next_hops:
+                      - forward_router_address: 192.0.2.6
+                      - forward_router_address: 192.0.2.7
+          - address_families:
+              - afi: ipv6
+                routes:
+                  - dest: 2001:db8:1000::/36
+                    blackhole_config:
+                      distance: 2
+                    next_hops:
+                      - forward_router_address: 2001:db8:2000:2::1
+                      - forward_router_address: 2001:db8:2000:2::2
         state: rendered
     #
     #

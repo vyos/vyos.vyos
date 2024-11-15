@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -15,6 +16,7 @@ the given network resource.
 """
 
 import re
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
@@ -24,7 +26,10 @@ class HostnameTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
         super(HostnameTemplate, self).__init__(
-            lines=lines, tmplt=self, prefix=prefix, module=module
+            lines=lines,
+            tmplt=self,
+            prefix=prefix,
+            module=module,
         )
 
     # fmt: off
@@ -37,11 +42,12 @@ class HostnameTemplate(NetworkTemplate):
                 ^set\ssystem\shost-name
                 \s+(?P<name>\S+)
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "system host-name {{ hostname }}",
             "result": {
-                "hostname": "{{ name }}"
-            }
+                "hostname": "{{ name }}",
+            },
         },
     ]
     # fmt: on

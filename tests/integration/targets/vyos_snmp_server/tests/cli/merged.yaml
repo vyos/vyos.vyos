@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_snmp_server merged integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_snmp_server merged integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -11,24 +10,24 @@
       vyos.vyos.vyos_snmp_server: &id001
         config:
           communities:
-            - name: "switches"
-              authorization_type: "rw"
-            - name: "bridges"
-              clients: ["1.1.1.1", "12.1.1.10"]
-          contact: "admin2@ex.com"
+            - name: switches
+              authorization_type: rw
+            - name: bridges
+              clients: [1.1.1.1, 12.1.1.10]
+          contact: admin2@ex.com
           listen_addresses:
-            - address: "20.1.1.1"
-            - address: "100.1.2.1"
+            - address: 20.1.1.1
+            - address: 100.1.2.1
               port: 33
           snmp_v3:
             users:
               - user: adminuser
                 authentication:
-                  plaintext_key: "abc1234567"
-                  type: "sha"
+                  plaintext_key: abc1234567
+                  type: sha
                 privacy:
-                  plaintext_key: "abc1234567"
-                  type: "aes"
+                  plaintext_key: abc1234567
+                  type: aes
         state: merged
 
     - vyos.vyos.vyos_facts:
@@ -42,15 +41,12 @@
           - result.after == ansible_facts['network_resources']['snmp_server']
           - result.after == merged.after
 
-
     - name: Assert that before dicts were correctly generated
       assert:
         that:
           - result.before == {}
 
-    - name:
-        Merge the provided configuration with the existing running configuration
-        (IDEMPOTENT)
+    - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_snmp_server: *id001
 

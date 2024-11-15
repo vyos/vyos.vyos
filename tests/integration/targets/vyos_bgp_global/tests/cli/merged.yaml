@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_bgp_global merged integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_bgp_global merged integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -14,32 +13,32 @@
         config:
           as_number: "65536"
           aggregate_address:
-            - prefix: "203.0.113.0/24"
+            - prefix: 203.0.113.0/24
               as_set: true
-            - prefix: "192.0.2.0/24"
+            - prefix: 192.0.2.0/24
               summary_only: true
           network:
-            - address: "192.1.13.0/24"
+            - address: 192.1.13.0/24
               backdoor: true
           redistribute:
-            - protocol: "kernel"
+            - protocol: kernel
               metric: 45
-            - protocol: "connected"
-              route_map: "map01"
+            - protocol: connected
+              route_map: map01
           maximum_paths:
-            - path: "ebgp"
+            - path: ebgp
               count: 20
-            - path: "ibgp"
+            - path: ibgp
               count: 55
           timers:
             keepalive: 35
           bgp_params:
             bestpath:
-              as_path: "confed"
+              as_path: confed
               compare_routerid: true
             default:
               no_ipv4_unicast: true
-            router_id: "192.1.2.9"
+            router_id: 192.1.2.9
         state: merged
 
     - vyos.vyos.vyos_facts:
@@ -54,9 +53,7 @@
           - result.before == {}
           - result.after == merged.after
 
-    - name:
-        Merge the provided configuration with the existing running configuration
-        (IDEMPOTENT)
+    - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_bgp_global: *id001
 

@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -16,15 +17,22 @@ based on the configuration.
 
 import re
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ospf_interfaces import (
-    Ospf_interfacesTemplate,
-)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospf_interfaces.ospf_interfaces import (
     Ospf_interfacesArgs,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ospf_interfaces import (
+    Ospf_interfacesTemplate
+)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ospf_interfaces_14 import (
+    Ospf_interfacesTemplate14
+)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Ospf_interfacesFacts(object):
@@ -35,11 +43,30 @@ class Ospf_interfacesFacts(object):
         self.argument_spec = Ospf_interfacesArgs.argument_spec
 
     def get_device_data(self, connection):
-        return connection.get(
-            'show configuration commands |  match "set interfaces"'
-        )
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            # use set protocols ospf in order to get both ospf and ospfv3
+            return connection.get("show configuration commands |  match 'set protocols ospf'")
+        return connection.get('show configuration commands |  match "set interfaces"')
 
-    def get_config_set(self, data):
+    def get_config_set_1_4(self, data):
+        """To classify the configurations beased on interface"""
+        interface_list = []
+        config_set = []
+        int_string = ""
+        for config_line in data.splitlines():
+            ospf_int = re.search(r"set protocols (?:ospf|ospfv3) interface (\S+) .*", config_line)
+            if ospf_int:
+                if ospf_int.group(1) not in interface_list:
+                    if int_string:
+                        config_set.append(int_string)
+                    interface_list.append(ospf_int.group(1))
+                    int_string = ""
+                int_string = int_string + config_line + "\n"
+        if int_string:
+            config_set.append(int_string)
+        return config_set
+
+    def get_config_set_1_2(self, data):
         """To classify the configurations beased on interface"""
         interface_list = []
         config_set = []
@@ -57,6 +84,12 @@ class Ospf_interfacesFacts(object):
             config_set.append(int_string)
         return config_set
 
+    def get_config_set(self, data, connection):
+        """To classify the configurations beased on interface"""
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            return self.get_config_set_1_4(data)
+        return self.get_config_set_1_2(data)
+
     def populate_facts(self, connection, ansible_facts, data=None):
         """Populate the facts for Ospf_interfaces network resource
 
@@ -69,19 +102,22 @@ class Ospf_interfacesFacts(object):
         """
         facts = {}
         objs = []
-        ospf_interfaces_parser = Ospf_interfacesTemplate(
-            lines=[], module=self._module
-        )
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            ospf_interface_class = Ospf_interfacesTemplate14
+        else:
+            ospf_interface_class = Ospf_interfacesTemplate
+        ospf_interfaces_parser = ospf_interface_class(lines=[], module=self._module)
 
         if not data:
             data = self.get_device_data(connection)
 
         # parse native config using the Ospf_interfaces template
         ospf_interfaces_facts = []
-        resources = self.get_config_set(data)
+        resources = self.get_config_set(data, connection)
         for resource in resources:
-            ospf_interfaces_parser = Ospf_interfacesTemplate(
-                lines=resource.split("\n"), module=self._module
+            ospf_interfaces_parser = ospf_interface_class(
+                lines=resource.split("\n"),
+                module=self._module,
             )
             objs = ospf_interfaces_parser.parse()
             for key, sortv in [("address_family", "afi")]:

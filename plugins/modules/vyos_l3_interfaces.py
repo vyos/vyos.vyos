@@ -28,6 +28,7 @@ The module file for vyos_l3_interfaces
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -38,7 +39,7 @@ description: This module manages the L3 interface attributes on VyOS network dev
 version_added: 1.0.0
 notes:
 - Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Nilashish Chakraborty (@NilashishC)
 - Rohit Thakur (@rohitthakur2590)
@@ -141,27 +142,27 @@ EXAMPLES = """
 - name: Merge provided configuration with device configuration
   vyos.vyos.vyos_l3_interfaces:
     config:
-    - name: eth2
-      ipv4:
-      - address: 192.0.2.10/28
-      - address: 198.51.100.40/27
-      ipv6:
-      - address: 2001:db8:100::2/32
-      - address: 2001:db8:400::10/32
-
-    - name: eth3
-      ipv4:
-      - address: 203.0.113.65/26
-      vifs:
-      - vlan_id: 101
+      - name: eth2
         ipv4:
-        - address: 192.0.2.71/28
-        - address: 198.51.100.131/25
-      - vlan_id: 102
+          - address: 192.0.2.10/28
+          - address: 198.51.100.40/27
         ipv6:
-        - address: 2001:db8:1000::5/38
-        - address: 2001:db8:1400::3/38
+          - address: '2001:db8:100::2/32'
+          - address: '2001:db8:400::10/32'
+      - name: eth3
+        ipv4:
+          - address: 203.0.113.65/26
+        vifs:
+          - vlan_id: 101
+            ipv4:
+              - address: 192.0.2.71/28
+              - address: 198.51.100.131/25
+          - vlan_id: 102
+            ipv6:
+              - address: '2001:db8:1000::5/38'
+              - address: '2001:db8:1400::3/38'
     state: merged
+
 
 # After state:
 # -------------
@@ -209,13 +210,13 @@ EXAMPLES = """
 - name: Replace device configurations of listed interfaces with provided configurations
   vyos.vyos.vyos_l3_interfaces:
     config:
-    - name: eth2
-      ipv4:
-      - address: 192.0.2.10/24
+      - name: eth2
+        ipv4:
+          - address: 192.0.2.10/24
 
-    - name: eth3
-      ipv6:
-      - address: 2001:db8::11/32
+      - name: eth3
+        ipv6:
+          - address: 2001:db8::11/32
     state: replaced
 
 # After state:
@@ -265,12 +266,13 @@ EXAMPLES = """
 - name: Overrides all device configuration with provided configuration
   vyos.vyos.vyos_l3_interfaces:
     config:
-    - name: eth0
-      ipv4:
-      - address: dhcp
-      ipv6:
-      - address: dhcpv6
+      - name: eth0
+        ipv4:
+          - address: dhcp
+        ipv6:
+          - address: dhcpv6
     state: overridden
+
 
 # After state
 # ------------
@@ -317,9 +319,9 @@ EXAMPLES = """
     itself)
   vyos.vyos.vyos_l3_interfaces:
     config:
-    - name: eth1
-    - name: eth2
-    - name: eth3
+      - name: eth1
+      - name: eth2
+      - name: eth3
     state: deleted
 
 # After state
@@ -357,7 +359,6 @@ EXAMPLES = """
 #
 - name: Gather listed l3 interfaces with provided configurations
   vyos.vyos.vyos_l3_interfaces:
-    config:
     state: gathered
 #
 #
@@ -426,17 +427,18 @@ EXAMPLES = """
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_l3_interfaces:
     config:
-    - name: eth1
-      ipv4:
-      - address: 192.0.2.14/24
-    - name: eth2
-      ipv4:
-      - address: 192.0.2.10/24
-      - address: 192.0.2.11/24
-      ipv6:
-      - address: 2001:db8::10/32
-      - address: 2001:db8::12/32
+      - name: eth1
+        ipv4:
+          - address: 192.0.2.14/24
+      - name: eth2
+        ipv4:
+          - address: 192.0.2.10/24
+          - address: 192.0.2.11/24
+        ipv6:
+          - address: '2001:db8::10/32'
+          - address: '2001:db8::12/32'
     state: rendered
+
 #
 #
 # -------------------------
@@ -510,8 +512,6 @@ EXAMPLES = """
 #             "name": "eth0"
 #         }
 #     ]
-
-
 """
 RETURN = """
 before:
@@ -537,6 +537,7 @@ commands:
 
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.l3_interfaces.l3_interfaces import (
     L3_interfacesArgs,
 )

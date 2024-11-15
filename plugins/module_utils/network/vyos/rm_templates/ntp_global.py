@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -15,6 +16,7 @@ the given network resource.
 """
 
 import re
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
@@ -23,9 +25,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 class NtpTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
-        super(NtpTemplate, self).__init__(
-            lines=lines, tmplt=self, prefix=prefix, module=module
-        )
+        super(NtpTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix, module=module)
 
     # fmt: off
     PARSERS = [
@@ -37,11 +37,12 @@ class NtpTemplate(NetworkTemplate):
                 r"""
                 ^set\ssystem\sntp\sallow-clients\saddress (\s(?P<ipaddress>\S+))?
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "system ntp allow-clients address {{allow_clients}}",
             "result": {
-                "allow_clients": ["{{ipaddress}}"]
-            }
+                "allow_clients": ["{{ipaddress}}"],
+            },
         },
 
         # set system ntp allow_clients
@@ -51,11 +52,12 @@ class NtpTemplate(NetworkTemplate):
                 r"""
                 ^set\ssystem\sntp\sallow-clients
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "system ntp allow-clients",
             "result": {
 
-            }
+            },
 
         },
 
@@ -66,11 +68,12 @@ class NtpTemplate(NetworkTemplate):
                 r"""
                 ^set\ssystem\sntp\slisten-address (\s(?P<ip_address>\S+))?
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "system ntp listen-address {{listen_addresses}}",
             "result": {
-                "listen_addresses": ["{{ip_address}}"]
-            }
+                "listen_addresses": ["{{ip_address}}"],
+            },
         },
 
         # set system ntp listen_address
@@ -80,10 +83,11 @@ class NtpTemplate(NetworkTemplate):
                 r"""
                 ^set\ssystem\sntp\slisten-address
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "system ntp listen-address",
             "result": {
-            }
+            },
         },
 
         # set system ntp server <name>
@@ -93,16 +97,17 @@ class NtpTemplate(NetworkTemplate):
                 r"""
                 ^set\ssystem\sntp\sserver (\s(?P<name>\S+))?
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "system ntp server {{server}}",
             "result": {
                 "servers": {
                     "{{name}}": {
-                        "server": "{{name}}"
-                    }
-                }
+                        "server": "{{name}}",
+                    },
+                },
 
-            }
+            },
         },
 
         # set system ntp server <name> <options>
@@ -114,16 +119,17 @@ class NtpTemplate(NetworkTemplate):
                 \s(?P<name>\S+)
                 \s(?P<options>noselect|dynamic|pool|preempt|prefer)?
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "system ntp server {{server}} {{options}}",
             "result": {
                 "servers": {
                     "{{name}}": {
                         "server": "{{name}}",
-                        "options": ["{{options}}"]
-                    }
-                }
-            }
-        }
+                        "options": ["{{options}}"],
+                    },
+                },
+            },
+        },
     ]
     # fmt: on

@@ -1,14 +1,12 @@
 ---
 - debug:
-    msg: START vyos_ntp_global overridden integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_ntp_global overridden integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
 - include_tasks: _populate_config.yaml
 
 - block:
-
     - name: Override the existing configuration with the provided running configuration
       register: result
       vyos.vyos.vyos_ntp_global: &id001
@@ -38,8 +36,7 @@
           - result.after == ansible_facts['network_resources']['ntp_global']
           - result.after == overridden.after
 
-    - name: Override the existing configuration with the provided running configuration
-        (IDEMPOTENT)
+    - name: Override the existing configuration with the provided running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_ntp_global: *id001
 
@@ -49,5 +46,4 @@
           - result['changed'] == false
 
   always:
-
     - include_tasks: _remove_config.yaml

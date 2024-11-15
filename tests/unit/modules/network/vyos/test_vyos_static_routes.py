@@ -18,48 +18,44 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from unittest.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_static_routes
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosStaticRoutesModule(TestVyosModule):
-
     module = vyos_static_routes
 
     def setUp(self):
         super(TestVyosStaticRoutesModule, self).setUp()
         self.mock_get_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config",
         )
         self.load_config = self.mock_load_config.start()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection",
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
-        self.get_resource_connection_facts = (
-            self.mock_get_resource_connection_facts.start()
-        )
+        self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes.Static_routesFacts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes.Static_routesFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
 
@@ -71,7 +67,7 @@ class TestVyosStaticRoutesModule(TestVyosModule):
         self.mock_load_config.stop()
         self.mock_execute_show_command.stop()
 
-    def load_fixtures(self, commands=None):
+    def load_fixtures(self, commands=None, filename=None):
         def load_from_file(*args, **kwargs):
             return load_fixture("vyos_static_routes_config.cfg")
 
@@ -98,14 +94,14 @@ class TestVyosStaticRoutesModule(TestVyosModule):
                                                 interface="eth0",
                                             ),
                                         ],
-                                    )
+                                    ),
                                 ],
-                            )
-                        ]
-                    )
+                            ),
+                        ],
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set protocols static route 192.0.2.48/28",
@@ -128,21 +124,17 @@ class TestVyosStaticRoutesModule(TestVyosModule):
                                     dict(
                                         dest="192.0.2.32/28",
                                         next_hops=[
-                                            dict(
-                                                forward_router_address="192.0.2.9"
-                                            ),
-                                            dict(
-                                                forward_router_address="192.0.2.10"
-                                            ),
+                                            dict(forward_router_address="192.0.2.9"),
+                                            dict(forward_router_address="192.0.2.10"),
                                         ],
-                                    )
+                                    ),
                                 ],
-                            )
-                        ]
-                    )
+                            ),
+                        ],
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -167,14 +159,14 @@ class TestVyosStaticRoutesModule(TestVyosModule):
                                                 admin_distance=10,
                                             ),
                                         ],
-                                    )
+                                    ),
                                 ],
-                            )
-                        ]
-                    )
+                            ),
+                        ],
+                    ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "set protocols static route 192.0.2.48/28",
@@ -197,21 +189,17 @@ class TestVyosStaticRoutesModule(TestVyosModule):
                                     dict(
                                         dest="192.0.2.32/28",
                                         next_hops=[
-                                            dict(
-                                                forward_router_address="192.0.2.9"
-                                            ),
-                                            dict(
-                                                forward_router_address="192.0.2.10"
-                                            ),
+                                            dict(forward_router_address="192.0.2.9"),
+                                            dict(forward_router_address="192.0.2.10"),
                                         ],
-                                    )
+                                    ),
                                 ],
-                            )
-                        ]
-                    )
+                            ),
+                        ],
+                    ),
                 ],
                 state="replaced",
-            )
+            ),
         )
 
         self.execute_module(changed=False, commands=[])
@@ -228,21 +216,17 @@ class TestVyosStaticRoutesModule(TestVyosModule):
                                     dict(
                                         dest="192.0.2.48/28",
                                         next_hops=[
-                                            dict(
-                                                forward_router_address="192.0.2.9"
-                                            ),
-                                            dict(
-                                                forward_router_address="192.0.2.10"
-                                            ),
+                                            dict(forward_router_address="192.0.2.9"),
+                                            dict(forward_router_address="192.0.2.10"),
                                         ],
-                                    )
+                                    ),
                                 ],
-                            )
-                        ]
-                    )
+                            ),
+                        ],
+                    ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         commands = [
             "delete protocols static route 192.0.2.32/28",
@@ -264,21 +248,17 @@ class TestVyosStaticRoutesModule(TestVyosModule):
                                     dict(
                                         dest="192.0.2.32/28",
                                         next_hops=[
-                                            dict(
-                                                forward_router_address="192.0.2.9"
-                                            ),
-                                            dict(
-                                                forward_router_address="192.0.2.10"
-                                            ),
+                                            dict(forward_router_address="192.0.2.9"),
+                                            dict(forward_router_address="192.0.2.10"),
                                         ],
-                                    )
+                                    ),
                                 ],
-                            )
-                        ]
-                    )
+                            ),
+                        ],
+                    ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -287,7 +267,7 @@ class TestVyosStaticRoutesModule(TestVyosModule):
             dict(
                 config=[dict(address_families=[dict(afi="ipv4")])],
                 state="deleted",
-            )
+            ),
         )
         commands = ["delete protocols static route"]
         self.execute_module(changed=True, commands=commands)

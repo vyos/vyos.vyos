@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -15,6 +16,7 @@ the given network resource.
 """
 
 import re
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
@@ -25,9 +27,7 @@ def _tmplt_snmp_server_communities(config_data):
     command = []
     cmd = "service snmp community {name}".format(**config_data)
     if "authorization_type" in config_data:
-        auth_cmd = cmd + " authorization {authorization_type}".format(
-            **config_data
-        )
+        auth_cmd = cmd + " authorization {authorization_type}".format(**config_data)
         command.append(auth_cmd)
     if "clients" in config_data:
         for c in config_data["clients"]:
@@ -103,18 +103,10 @@ def _tmplt_snmp_server_v3_user(config_data):
                 type_cmd = cmd + val + " type {type}".format(**config)
                 command.append(type_cmd)
             if "encrypted_key" in config:
-                enc_cmd = (
-                    cmd
-                    + val
-                    + " encrypted-key {encrypted_key}".format(**config)
-                )
+                enc_cmd = cmd + val + " encrypted-key {encrypted_key}".format(**config)
                 command.append(enc_cmd)
             if "plaintext_key" in config:
-                plain_cmd = (
-                    cmd
-                    + val
-                    + " plaintext-key {plaintext_key}".format(**config)
-                )
+                plain_cmd = cmd + val + " plaintext-key {plaintext_key}".format(**config)
                 command.append(plain_cmd)
     return command
 
@@ -133,7 +125,10 @@ class Snmp_serverTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
         super(Snmp_serverTemplate, self).__init__(
-            lines=lines, tmplt=self, prefix=prefix, module=module
+            lines=lines,
+            tmplt=self,
+            prefix=prefix,
+            module=module,
         )
 
     # fmt: off
@@ -149,7 +144,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s*(client\s(?P<client>\S+))*
                 \s*(network\s(?P<network>\S+))*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": _tmplt_snmp_server_communities,
             "result": {
                 "communities": {
@@ -157,10 +153,10 @@ class Snmp_serverTemplate(NetworkTemplate):
                         "name": "{{ name }}",
                         "clients": ['{{ client if client is defined else "None" }}'],
                         "networks": ['{{ network if network is defined else "None" }}'],
-                        "authorization_type": '{{ auth.split(" ")[1] if auth is defined else None }}'
-                    }
-                }
-            }
+                        "authorization_type": '{{ auth.split(" ")[1] if auth is defined else None }}',
+                    },
+                },
+            },
         },
         # service snmp contact <>
         {
@@ -170,11 +166,12 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\scontact
                 \s+(?P<name>\S+)
                 *$""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp contact {{ contact }}",
             "result": {
-                "contact": "{{ name }}"
-            }
+                "contact": "{{ name }}",
+            },
         },
         # service snmp description <>
         {
@@ -184,11 +181,12 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\sdescription
                 \s+(?P<name>\S+)
                 *$""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp description {{ description }}",
             "result": {
-                "description": "{{ name }}"
-            }
+                "description": "{{ name }}",
+            },
         },
         # service snmp listen-address <> port <>
         {
@@ -200,17 +198,18 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s*(port)*
                 \s*(?P<port>\d+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp listen-address {{ listen_addresses.address }}"
                       "{{ (' port ' + listen_addresses.port|string) if listen_addresses.port is defined else '' }}",
             "result": {
                 "listen_addresses": {
                     "{{ addr }}": {
                         "address": "{{ addr }}",
-                        "port": "{{ port }}"
-                    }
-                }
-            }
+                        "port": "{{ port }}",
+                    },
+                },
+            },
         },
         # service snmp location <>
         {
@@ -220,11 +219,12 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\slocation
                 \s(?P<name>.*)
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp location {{ '\\'' + location + '\\''}}",
             "result": {
-                "location": "{{ name }}"
-            }
+                "location": "{{ name }}",
+            },
         },
         # service snmp smux-peer <>
         {
@@ -234,11 +234,12 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\ssmux-peer
                 \s+(?P<name>\S+)
                 *$""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp smux-peer {{ smux_peer }}",
             "result": {
-                "smux_peer": "{{ name }}"
-            }
+                "smux_peer": "{{ name }}",
+            },
         },
         # service snmp trap-source <>
         {
@@ -248,11 +249,12 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\strap-source
                 \s+(?P<name>\S+)
                 *$""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp trap-source {{ trap_source }}",
             "result": {
-                "trap_source": "{{ name }}"
-            }
+                "trap_source": "{{ name }}",
+            },
         },
         # service snmp trap-target <>
         {
@@ -264,15 +266,16 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s*(?P<comm>community\s\S+)*
                 \s*(?P<port>port\s\d+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": _tmplt_snmp_server_trap_target,
             "result": {
                 "trap_target": {
                     "address": "{{ name }}",
                     "community": "{{ comm.split(" ")[1] if comm is defined else None }}",
                     "port": "{{ port.split(" ")[1] if port is defined else None }}",
-                }
-            }
+                },
+            },
         },
         # service snmp v3 engineid <>
         {
@@ -282,13 +285,14 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\sv3\sengineid
                 \s+(?P<name>\S+)
                 *$""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp v3 engineid {{ snmp_v3.engine_id }}",
             "result": {
                 "snmp_v3": {
                     "engine_id": "{{ name }}",
-                }
-            }
+                },
+            },
         },
         # service snmp v3 group <>
         {
@@ -301,7 +305,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s*(?P<sec>seclevel\s\S+)*
                 \s*(?P<view>view\s\S+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": _tmplt_snmp_server_v3_groups,
             "result": {
                 "snmp_v3": {
@@ -311,10 +316,10 @@ class Snmp_serverTemplate(NetworkTemplate):
                             "mode": '{{ mode.split(" ")[1] if mode is defined else None }}',
                             "seclevel": '{{ sec.split(" ")[1] if sec is defined else None }}',
                             "view": '{{ view.split(" ")[1] if view is defined else None }}',
-                        }
-                    }
-                }
-            }
+                        },
+                    },
+                },
+            },
         },
         # service snmp v3 trap-target <> auth <>
         {
@@ -328,7 +333,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s*(?P<plain>plaintext-key\s\S+)*
                 \s*(?P<type>type\s\S+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": _tmplt_snmp_server_v3_trap_target,
             "result": {
                 "snmp_v3": {
@@ -339,11 +345,11 @@ class Snmp_serverTemplate(NetworkTemplate):
                                 "encrypted_key": '{{ enc.split(" ")[1] if enc is defined else None }}',
                                 "plaintext_key": '{{ plain.split(" ")[1] if plain is defined else None }}',
                                 "type": '{{ type.split(" ")[1] if type is defined else None }}',
-                            }
-                        }
-                    }
-                }
-            }
+                            },
+                        },
+                    },
+                },
+            },
         },
         # service snmp v3 trap-target <> port <>
         {
@@ -354,18 +360,19 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s+(?P<name>\S+)
                 \s+(?P<port>port\s\d+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp v3 trap-target port {{ snmp_v3.trap_targets.port }}",
             "result": {
                 "snmp_v3": {
                     "trap_targets": {
                         "{{ name }}": {
                             "address": "{{ name }}",
-                            "port": "{{ port }}"
-                        }
-                    }
-                }
-            }
+                            "port": "{{ port }}",
+                        },
+                    },
+                },
+            },
         },
         # service snmp v3 trap-target <> protocol <>
         {
@@ -376,18 +383,19 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s+(?P<name>\S+)
                 \s+(?P<protocol>protocol\s\S+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp v3 trap-target protocol {{ snmp_v3.trap_targets.protocol }}",
             "result": {
                 "snmp_v3": {
                     "trap_targets": {
                         "{{ name }}": {
                             "address": "{{ name }}",
-                            "protocol": "{{ protocol }}"
-                        }
-                    }
-                }
-            }
+                            "protocol": "{{ protocol }}",
+                        },
+                    },
+                },
+            },
         },
         # service snmp v3 trap-target <> type <>
         {
@@ -398,18 +406,19 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s+(?P<name>\S+)
                 \s+(?P<type>type\s\S+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp v3 trap-target type {{ snmp_v3.trap_targets.type }}",
             "result": {
                 "snmp_v3": {
                     "trap_targets": {
                         "{{ name }}": {
                             "address": "{{ name }}",
-                            "type": "{{ type }}"
-                        }
-                    }
-                }
-            }
+                            "type": "{{ type }}",
+                        },
+                    },
+                },
+            },
         },
         # service snmp v3 trap-target <> user <>
         {
@@ -420,18 +429,19 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s+(?P<name>\S+)
                 \s+(?P<user>user\s\S+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp v3 trap-target user {{ snmp_v3.trap_targets.user }}",
             "result": {
                 "snmp_v3": {
                     "trap_targets": {
                         "{{ name }}": {
                             "address": "{{ name }}",
-                            "user": "{{ user }}"
-                        }
-                    }
-                }
-            }
+                            "user": "{{ user }}",
+                        },
+                    },
+                },
+            },
         },
         # service snmp v3 trap-target <> privacy <>
         {
@@ -445,7 +455,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s*(?P<plain>plaintext-key\s\S+)*
                 \s*(?P<type>type\s\S+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": _tmplt_snmp_server_v3_trap_target,
             "result": {
                 "snmp_v3": {
@@ -456,11 +467,11 @@ class Snmp_serverTemplate(NetworkTemplate):
                                 "encrypted_key": '{{ enc.split(" ")[1] if enc is defined else None }}',
                                 "plaintext_key": '{{ plain.split(" ")[1] if plain is defined else None }}',
                                 "type": '{{ type.split(" ")[1] if type is defined else None }}',
-                            }
-                        }
-                    }
-                }
-            }
+                            },
+                        },
+                    },
+                },
+            },
         },
         # service snmp v3 user <> auth <>
         {
@@ -474,7 +485,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s*(?P<plain>plaintext-key\s\S+)*
                 \s*(?P<type>type\s\S+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": _tmplt_snmp_server_v3_user,
             "result": {
                 "snmp_v3": {
@@ -485,11 +497,11 @@ class Snmp_serverTemplate(NetworkTemplate):
                                 "encrypted_key": '{{ enc.split(" ")[1] if enc is defined else None }}',
                                 "plaintext_key": '{{ plain.split(" ")[1] if plain is defined else None }}',
                                 "type": '{{ type.split(" ")[1] if type is defined else None }}',
-                            }
-                        }
-                    }
-                }
-            }
+                            },
+                        },
+                    },
+                },
+            },
         },
         # service snmp v3 user <> privacy <>
         {
@@ -503,7 +515,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s*(?P<plain>plaintext-key\s\S+)*
                 \s*(?P<type>type\s\S+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": _tmplt_snmp_server_v3_user,
             "result": {
                 "snmp_v3": {
@@ -514,11 +527,11 @@ class Snmp_serverTemplate(NetworkTemplate):
                                 "encrypted_key": '{{ enc.split(" ")[1] if enc is defined else None }}',
                                 "plaintext_key": '{{ plain.split(" ")[1] if plain is defined else None }}',
                                 "type": '{{ type.split(" ")[1] if type is defined else None }}',
-                            }
-                        }
-                    }
-                }
-            }
+                            },
+                        },
+                    },
+                },
+            },
         },
         # service snmp v3 user <> group <>
         {
@@ -529,18 +542,19 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s+(?P<name>\S+)
                 \s+(?P<group>group\s.+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp v3 user {{ snmp_v3.users.user }} group {{ snmp_v3.users.group }}",
             "result": {
                 "snmp_v3": {
                     "users": {
                         "{{ name }}": {
                             "user": "{{ name }}",
-                            "group": "{{ group.split(" ")[1] if group is defined else None }}"
-                        }
-                    }
-                }
-            }
+                            "group": "{{ group.split(" ")[1] if group is defined else None }}",
+                        },
+                    },
+                },
+            },
         },
         # service snmp v3  user <> mode <>
         {
@@ -551,18 +565,19 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s+(?P<name>\S+)
                 \s+(?P<mode>mode\s\S+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": "service snmp v3 user {{ snmp_v3.users.user }} mode {{ snmp_v3.users.mode }}",
             "result": {
                 "snmp_v3": {
                     "users": {
                         "{{ name }}": {
                             "user": "{{ name }}",
-                            "mode": "{{ mode }}"
-                        }
-                    }
-                }
-            }
+                            "mode": "{{ mode }}",
+                        },
+                    },
+                },
+            },
         },
         # service snmp v3 view <>
         {
@@ -575,7 +590,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 \s*(?P<ex>exclude\s\S+)*
                 \s*(?P<mask>mask\s\S+)*
                 $""",
-                re.VERBOSE),
+                re.VERBOSE,
+            ),
             "setval": _tmplt_snmp_server_v3_views,
             "result": {
                 "snmp_v3": {
@@ -585,10 +601,10 @@ class Snmp_serverTemplate(NetworkTemplate):
                             "oid": '{{ oid.split(" ")[1] if oid is defined else None }}',
                             "exclude": '{{ ex.split(" ")[1] if ex is defined else None }}',
                             "mask": '{{ mask.split(" ")[1] if mask is defined else None }}',
-                        }
-                    }
-                }
-            }
+                        },
+                    },
+                },
+            },
         },
     ]
     # fmt: on

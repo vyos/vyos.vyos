@@ -11,13 +11,14 @@ based on the configuration.
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from re import findall, search, M
 from copy import deepcopy
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from re import M, findall, search
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv3.ospfv3 import (
     Ospfv3Args,
 )
@@ -75,13 +76,9 @@ class Ospfv3Facts(object):
         """
         conf = "\n".join(filter(lambda x: x, conf))
         config = {}
-        config["parameters"] = self.parse_attrib(
-            conf, "parameters", "parameters"
-        )
+        config["parameters"] = self.parse_attrib(conf, "parameters", "parameters")
         config["areas"] = self.parse_attrib_list(conf, "area", "area_id")
-        config["redistribute"] = self.parse_attrib_list(
-            conf, "redistribute", "route_type"
-        )
+        config["redistribute"] = self.parse_attrib_list(conf, "redistribute", "route_type")
         return config
 
     def parse_attrib_list(self, conf, attrib, param):
@@ -188,9 +185,7 @@ class Ospfv3Facts(object):
         return (
             "disable"
             if attrib == "disabled"
-            else "enable"
-            if attrib == "enabled"
-            else attrib.replace("_", "-")
+            else "enable" if attrib == "enabled" else attrib.replace("_", "-")
         )
 
     def is_bool(self, attrib):

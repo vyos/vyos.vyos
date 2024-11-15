@@ -18,51 +18,45 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
-from ansible_collections.vyos.vyos.plugins.modules import (
-    vyos_interfaces,
-)
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from unittest.mock import patch
+
+from ansible_collections.vyos.vyos.plugins.modules import vyos_interfaces
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosFirewallInterfacesModule(TestVyosModule):
-
     module = vyos_interfaces
 
     def setUp(self):
         super(TestVyosFirewallInterfacesModule, self).setUp()
         self.mock_get_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config",
         )
         self.load_config = self.mock_load_config.start()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection",
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
-        self.get_resource_connection_facts = (
-            self.mock_get_resource_connection_facts.start()
-        )
+        self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos."
-            "facts.interfaces.interfaces.InterfacesFacts.get_device_data"
+            "facts.interfaces.interfaces.InterfacesFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
 
@@ -74,7 +68,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         self.mock_load_config.stop()
         self.mock_execute_show_command.stop()
 
-    def load_fixtures(self, commands=None):
+    def load_fixtures(self, commands=None, filename=None):
         def load_from_file(*args, **kwargs):
             return load_fixture("vyos_interfaces_config.cfg")
 
@@ -89,7 +83,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                     dict(name="wg01", description="wg - 1", enabled=True),
                 ],
                 state="merged",
-            )
+            ),
         )
 
         commands = [
@@ -110,7 +104,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="merged",
-            )
+            ),
         )
 
         self.execute_module(changed=False, commands=[])
@@ -129,7 +123,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                     dict(name="eth1", description="Configured by Ansible"),
                 ],
                 state="merged",
-            )
+            ),
         )
 
         commands = [
@@ -154,7 +148,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                     dict(name="eth1", description="Configured by Ansible"),
                 ],
                 state="replaced",
-            )
+            ),
         )
 
         commands = [
@@ -179,7 +173,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                     dict(name="eth1", description="Configured by Ansible"),
                 ],
                 state="overridden",
-            )
+            ),
         )
 
         commands = [
@@ -189,5 +183,40 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
             "set interfaces ethernet eth4 speed 'auto'",
             "delete interfaces wireguard wg02 description",
             "delete interfaces ethernet eth3 description",
+            "delete interfaces ethernet eth3 disable",
         ]
         self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_idempotent_disable(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth3",
+                        description="Ethernet 3",
+                        enabled=False,
+                    ),
+                ],
+                state="merged",
+            )
+        )
+
+        commands = []
+        self.execute_module(changed=False, commands=commands)
+
+    def test_vyos_interfaces_idempotent_disable_replace(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth3",
+                        description="Ethernet 3",
+                        enabled=False,
+                    ),
+                ],
+                state="replaced",
+            )
+        )
+
+        commands = []
+        self.execute_module(changed=False, commands=commands)

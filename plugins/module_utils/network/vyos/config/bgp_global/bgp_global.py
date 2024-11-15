@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -17,16 +18,16 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 import re
+
 from ansible.module_utils.six import iteritems
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
+    ResourceModule,
+)
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     dict_merge,
 )
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.resource_module import (
-    ResourceModule,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
-)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_global import (
     Bgp_globalTemplate,
 )
@@ -65,18 +66,13 @@ class Bgp_global(ResourceModule):
         wantd = {}
         haved = {}
 
-        if (
-            self.want.get("as_number") == self.have.get("as_number")
-            or not self.have
-        ):
+        if self.want.get("as_number") == self.have.get("as_number") or not self.have:
             if self.want:
                 wantd = {self.want["as_number"]: self.want}
             if self.have:
                 haved = {self.have["as_number"]: self.have}
         else:
-            self._module.fail_json(
-                msg="Only one bgp instance is allowed per device"
-            )
+            self._module.fail_json(msg="Only one bgp instance is allowed per device")
 
         # turn all lists of dicts into dicts prior to merge
         for entry in wantd, haved:
@@ -93,9 +89,7 @@ class Bgp_global(ResourceModule):
                 if k in wantd or not wantd:
                     h_del.update({k: v})
             for num, entry in iteritems(h_del):
-                self.commands.append(
-                    self._tmplt.render({"as_number": num}, "router", True)
-                )
+                self.commands.append(self._tmplt.render({"as_number": num}, "router", True))
             wantd = {}
 
         if self.state == "deleted":
@@ -143,7 +137,6 @@ class Bgp_global(ResourceModule):
         self.commands = command_set
 
     def _compare_neighbor(self, want, have):
-
         parsers = [
             "neighbor.advertisement_interval",
             "neighbor.allowas_in",
@@ -209,15 +202,12 @@ class Bgp_global(ResourceModule):
             if name not in wneigh.keys():
                 if self._check_af(name):
                     msg = "Use the _bgp_address_family module to delete the address_family under neighbor {0}, before replacing/deleting the neighbor.".format(
-                        name
+                        name,
                     )
                     self._module.fail_json(msg=msg)
                 else:
                     self.commands.append(
-                        "delete protocols bgp "
-                        + str(have["as_number"])
-                        + " neighbor "
-                        + name
+                        "delete protocols bgp " + str(have["as_number"]) + " neighbor " + name,
                     )
                     continue
             for k, v in entry.items():
@@ -297,18 +287,12 @@ class Bgp_global(ResourceModule):
                     },
                 )
         if not wbgp and hbgp:
-            self.commands.append(
-                "delete protocols bgp "
-                + str(have["as_number"])
-                + " parameters"
-            )
+            self.commands.append("delete protocols bgp " + str(have["as_number"]) + " parameters")
             hbgp = {}
         for name, entry in iteritems(hbgp):
             if name == "confederation":
                 self.commands.append(
-                    "delete protocols bgp "
-                    + str(have["as_number"])
-                    + " parameters confederation"
+                    "delete protocols bgp " + str(have["as_number"]) + " parameters confederation",
                 )
             elif name == "distance":
                 distance_parsers = [
@@ -356,10 +340,7 @@ class Bgp_global(ResourceModule):
             if not wdict and hdict:
                 attrib = re.sub("_", "-", attrib)
                 self.commands.append(
-                    "delete protocols bgp "
-                    + str(have["as_number"])
-                    + " "
-                    + attrib
+                    "delete protocols bgp " + str(have["as_number"]) + " " + attrib,
                 )
                 hdict = {}
             for key, entry in iteritems(hdict):
@@ -422,5 +403,5 @@ class Bgp_global(ResourceModule):
 
     def _get_config(self, connection):
         return connection.get(
-            'show configuration commands |  match "set protocols bgp .* neighbor"'
+            'show configuration commands |  match "set protocols bgp .* neighbor"',
         )

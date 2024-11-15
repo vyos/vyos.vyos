@@ -27,6 +27,7 @@ The arg spec for the vyos_firewall_global module
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -133,6 +134,9 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                             "type": "str",
                         },
                         "log": {"type": "bool"},
+                        "log_level": {
+                            "choices": ["emerg", "alert", "crit", "err", "warn", "notice", "info", "debug"]
+                        }
                     },
                     "type": "list",
                 },
