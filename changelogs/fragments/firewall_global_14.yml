@@ -5,4 +5,3 @@ minor_changes:
   - Added support for input, output, and forward chains (1.4+)
   - Fixed state-policy deletion (partial and full)
   - Added support for log-level in state-policy (1.4+)
-  - Fixed parsing of global-options (1.4+)
