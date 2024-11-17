@@ -40,13 +40,55 @@ like this
 ```
 -->
 
-## Smoketest result
-<!-- Provide the output of the smoketest
+## Test results
+<!--
+Provide the output of the unit tests and confirmation of the sanity tests
+along with a description of which versions of VyOS you have tested against.
+
+Tests will be run before the PR is accepted, but do not run automatically
+on forks, so please run all of the tests with each modification of your PR
+to ensure they will pass.
+
+Unit test information can be found in the [Ansible Unit Tests](https://docs.ansible.com/ansible/latest/dev_guide/testing_units.html#testing-units)
+section of the documentation.
+
+Sanity test information can be found in the [Ansible Sanity Tests](https://docs.ansible.com/ansible/latest/dev_guide/testing_sanity.html#testing-sanity)
+section of the Ansible documentation.
+
 ```
-$ /usr/libexec/vyos/tests/smoke/cli/test_xxx_feature.py
-test_01_simple_options (__main__.TestFeature.test_01_simple_options) ... ok
+Example:
+
+$ ansible-tests units
+============================= test session starts ==============================
+platform linux -- Python 3.12.2, pytest-8.1.1, pluggy-1.4.0
+rootdir: /root/ansible_collections/vyos/vyos
+configfile: ../../../ansible/test/lib/ansible_test/_data/pytest/config/default.ini
+plugins: xdist-3.5.0, mock-3.14.0
+created: 24/24 workers
+24 workers [244 items]
+
+........................................................................ [ 29%]
+........................................................................ [ 59%]
+........................................................................ [ 88%]
+............................                                             [100%]
+- generated xml file: /root/ansible_collections/vyos/vyos/tests/output/junit/python3.12-controller-units.xml -
+============================= 244 passed in 1.55s ==============================
+
+Describe the versions of VyOS that you have tested your changes
+against.
+
 ```
 -->
+- [ ] Sanity tests passed
+- [ ] Unit tests passed
+
+Tested against VyOS versions:
+<!-- examples, add or delete as appropriate; if using rolling versions, please specify
+    fully
+-->
+- 1.3.8
+- 1.4-rolling-202201010100
+
 
 ## Checklist:
 <!--- Go over all the following points, and put an `x` in all the boxes that apply. -->
@@ -54,7 +96,10 @@ test_01_simple_options (__main__.TestFeature.test_01_simple_options) ... ok
 <!--- The entire development process is outlined here: https://docs.vyos.io/en/latest/contributing/development.html -->
 - [ ] I have read the [**CONTRIBUTING**](https://github.com/vyos/vyos-1x/blob/current/CONTRIBUTING.md) document
 - [ ] I have linked this PR to one or more Phabricator Task(s)
-- [ ] I have run the components [**SMOKETESTS**](https://github.com/vyos/vyos-1x/tree/current/smoketest/scripts/cli) if applicable
+- [ ] I have run the ansible sanity and unit tests
 - [ ] My commit headlines contain a valid Task id
 - [ ] My change requires a change to the documentation
 - [ ] I have updated the documentation accordingly
+- [ ] I have added unit tests to cover my changes
+- [ ] I have added a file to `changelogs/fragments` to describe the changes
+
