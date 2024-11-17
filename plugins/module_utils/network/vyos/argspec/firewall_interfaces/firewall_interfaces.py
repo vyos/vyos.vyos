@@ -25,6 +25,7 @@
 The arg spec for the vyos_firewall_interfaces module
 """
 
+
 from __future__ import absolute_import, division, print_function
 
 
@@ -45,7 +46,10 @@ class Firewall_interfacesArgs(object):  # pylint: disable=R0903
                     "elements": "dict",
                     "options": {
                         "afi": {
-                            "choices": ["ipv4", "ipv6"],
+                            "choices": [
+                                "ipv4",
+                                "ipv6",
+                            ],
                             "required": True,
                             "type": "str",
                         },
@@ -53,7 +57,11 @@ class Firewall_interfacesArgs(object):  # pylint: disable=R0903
                             "elements": "dict",
                             "options": {
                                 "direction": {
-                                    "choices": ["in", "local", "out"],
+                                    "choices": [
+                                        "in",
+                                        "local",
+                                        "out",
+                                    ],
                                     "required": True,
                                     "type": "str",
                                 },
