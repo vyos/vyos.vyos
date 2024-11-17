@@ -223,9 +223,6 @@ class Cliconf(CliconfBase):
                 % (diff_match, ", ".join(option_values["diff_match"])),
             )
 
-        # if diff_replace:
-        #     raise ValueError("'replace' in diff is not supported")
-
         if diff_ignore_lines:
             raise ValueError("'diff_ignore_lines' in diff is not supported")
 
