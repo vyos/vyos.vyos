@@ -27,6 +27,9 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 )
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
+    get_interface_type,
+)
 
 
 class Firewall_interfaces(ConfigBase):
@@ -394,25 +397,22 @@ class Firewall_interfaces(ConfigBase):
         :return: generated command.
         """
 
-        #Append vif if interface contains a dot
-        vlan = None 
+        # Append vif if interface contains a dot
+        vlan = None
         interface_real = name
-        if '.' in name: 
-            interface_real, vlan = name.split('.')
+        if "." in name:
+            interface_real, vlan = name.split(".")
 
         if vlan is not None:
             interface_real = interface_real + " vif " + vlan
 
-        #if interface name is bondX, then it's a bonding interface. Everything else is an ethernet
-        if 'bond' in interface_real:
-            iftype = 'bonding'
-        else:
-            iftype = 'ethernet'
+        # if interface name is bondX, then it's a bonding interface. Everything else is an ethernet
+        iftype = get_interface_type(interface_real)
 
         if not opr:
-            cmd = "delete interfaces " + iftype  + " " + interface_real + " firewall"
+            cmd = "delete interfaces " + iftype + " " + interface_real + " firewall"
         else:
-            cmd = "set interfaces " + iftype  + " " + interface_real + " firewall"
+            cmd = "set interfaces " + iftype + " " + interface_real + " firewall"
 
         if attrib:
             cmd += " " + attrib
