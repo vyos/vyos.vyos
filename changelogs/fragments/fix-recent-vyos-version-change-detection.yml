@@ -1,0 +1,3 @@
+---
+trivial:
+  - Fix change detection for recent Vyos versions
