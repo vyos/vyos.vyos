@@ -49,6 +49,12 @@ Tests will be run before the PR is accepted, but do not run automatically
 on forks, so please run all of the tests with each modification of your PR
 to ensure they will pass.
 
+Unit test information can be found in the [Ansible Unit Tests](https://docs.ansible.com/ansible/latest/dev_guide/testing_units.html#testing-units)
+section of the documentation.
+
+Sanity test information can be found in the [Ansible Sanity Tests](https://docs.ansible.com/ansible/latest/dev_guide/testing_sanity.html#testing-sanity)
+section of the Ansible documentation.
+
 ```
 Example:
 
@@ -90,7 +96,7 @@ Tested against VyOS versions:
 <!--- The entire development process is outlined here: https://docs.vyos.io/en/latest/contributing/development.html -->
 - [ ] I have read the [**CONTRIBUTING**](https://github.com/vyos/vyos-1x/blob/current/CONTRIBUTING.md) document
 - [ ] I have linked this PR to one or more Phabricator Task(s)
-- [ ] I have run the components [**SMOKETESTS**](https://github.com/vyos/vyos-1x/tree/current/smoketest/scripts/cli) if applicable
+- [ ] I have run the ansible sanity and unit tests
 - [ ] My commit headlines contain a valid Task id
 - [ ] My change requires a change to the documentation
 - [ ] I have updated the documentation accordingly
