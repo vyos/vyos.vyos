@@ -355,6 +355,7 @@ class TestVyosNTPModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+
 class TestVyosNTPModule14(TestVyosModule):
     module = vyos_ntp_global
 

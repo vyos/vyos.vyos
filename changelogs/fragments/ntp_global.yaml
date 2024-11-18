@@ -1,0 +1,5 @@
+---
+minor_changes:
+  - Added support for VyOS 1.4+ (chronyd vs ntpd)
+  - Fixed syntax for allow_client in 1.4+
+  - Added test suite for ntp_global and 1.4+
