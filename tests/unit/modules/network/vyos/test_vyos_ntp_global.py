@@ -105,7 +105,7 @@ class TestVyosNTPModule(TestVyosModule):
                             server="server5",
                             options=[
                                 "noselect",
-                                "pool",
+                                "dynamic",
                                 "preempt",
                                 "prefer",
                             ],
@@ -123,7 +123,7 @@ class TestVyosNTPModule(TestVyosModule):
             "set system ntp listen-address 10.4.5.1",
             "set system ntp server server4 dynamic",
             "set system ntp server server4 preempt",
-            "set system ntp server server5 pool",
+            "set system ntp server server5 dynamic",
             "set system ntp server server5 noselect",
             "set system ntp server server5 preempt",
             "set system ntp server server5 prefer",
@@ -409,7 +409,7 @@ class TestVyosNTPModule14(TestVyosModule):
                     listen_addresses=["10.2.3.1", "10.4.3.1"],
                     servers=[
                         dict(server="server1"),
-                        dict(server="server3", options=["noselect", "dynamic"]),
+                        dict(server="server3", options=["noselect", "pool"]),
                         dict(server="time1.vyos.net"),
                         dict(server="time2.vyos.net"),
                         dict(server="time3.vyos.net"),
@@ -427,7 +427,7 @@ class TestVyosNTPModule14(TestVyosModule):
                     allow_clients=["10.2.2.0/24", "10.3.3.0/24"],
                     listen_addresses=["10.3.4.1", "10.4.5.1"],
                     servers=[
-                        dict(server="server4", options=["dynamic", "preempt"]),
+                        dict(server="server4", options=["pool", "preempt"]),
                         dict(
                             server="server5",
                             options=[
@@ -448,7 +448,7 @@ class TestVyosNTPModule14(TestVyosModule):
             "set service ntp allow-client address 10.3.3.0/24",
             "set service ntp listen-address 10.3.4.1",
             "set service ntp listen-address 10.4.5.1",
-            "set service ntp server server4 dynamic",
+            "set service ntp server server4 pool",
             "set service ntp server server4 preempt",
             "set service ntp server server5 pool",
             "set service ntp server server5 noselect",
@@ -470,7 +470,7 @@ class TestVyosNTPModule14(TestVyosModule):
                             server="server6",
                             options=[
                                 "noselect",
-                                "dynamic",
+                                "pool",
                                 "prefer",
                                 "preempt",
                             ],
@@ -497,7 +497,7 @@ class TestVyosNTPModule14(TestVyosModule):
             "set service ntp server server4 noselect",
             "set service ntp server server4 prefer",
             "set service ntp server server6 noselect",
-            "set service ntp server server6 dynamic",
+            "set service ntp server server6 pool",
             "set service ntp server server6 prefer",
             "set service ntp server server6 preempt",
         ]
@@ -511,7 +511,7 @@ class TestVyosNTPModule14(TestVyosModule):
                     listen_addresses=["10.2.3.1", "10.4.3.1"],
                     servers=[
                         dict(server="server1"),
-                        dict(server="server3", options=["noselect", "dynamic"]),
+                        dict(server="server3", options=["noselect", "pool"]),
                         dict(server="time1.vyos.net"),
                         dict(server="time2.vyos.net"),
                         dict(server="time3.vyos.net"),
@@ -530,7 +530,7 @@ class TestVyosNTPModule14(TestVyosModule):
                     listen_addresses=["10.9.9.1"],
                     servers=[
                         dict(server="server9"),
-                        dict(server="server6", options=["noselect", "dynamic"]),
+                        dict(server="server6", options=["noselect", "pool"]),
                         dict(server="time1.vyos.net"),
                         dict(server="time2.vyos.net"),
                         dict(server="time3.vyos.net"),
@@ -550,7 +550,7 @@ class TestVyosNTPModule14(TestVyosModule):
             "set service ntp listen-address 10.9.9.1",
             "set service ntp server server9",
             "set service ntp server server6 noselect",
-            "set service ntp server server6 dynamic",
+            "set service ntp server server6 pool",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -562,7 +562,7 @@ class TestVyosNTPModule14(TestVyosModule):
                     listen_addresses=["10.2.3.1", "10.4.3.1"],
                     servers=[
                         dict(server="server1"),
-                        dict(server="server3", options=["noselect", "dynamic"]),
+                        dict(server="server3", options=["noselect", "pool"]),
                         dict(server="time1.vyos.net"),
                         dict(server="time2.vyos.net"),
                         dict(server="time3.vyos.net"),
@@ -581,7 +581,7 @@ class TestVyosNTPModule14(TestVyosModule):
                     listen_addresses=["10.7.9.1"],
                     servers=[
                         dict(server="server79"),
-                        dict(server="server46", options=["noselect", "dynamic"]),
+                        dict(server="server46", options=["noselect", "pool"]),
                         dict(server="time1.vyos.net"),
                         dict(server="time2.vyos.net"),
                         dict(server="time3.vyos.net"),
@@ -596,7 +596,7 @@ class TestVyosNTPModule14(TestVyosModule):
             "set service ntp listen-address 10.7.9.1",
             "set service ntp server server79",
             "set service ntp server server46 noselect",
-            "set service ntp server server46 dynamic",
+            "set service ntp server server46 pool",
             "set service ntp server time1.vyos.net",
             "set service ntp server time2.vyos.net",
             "set service ntp server time3.vyos.net",
@@ -645,7 +645,7 @@ class TestVyosNTPModule14(TestVyosModule):
             "listen_addresses": ["10.2.3.1", "10.4.3.1"],
             "servers": [
                 {"server": "server1"},
-                {"server": "server3", "options": ["dynamic", "noselect"]},
+                {"server": "server3", "options": ["noselect", "pool"]},
                 {"server": "time1.vyos.net"},
                 {"server": "time2.vyos.net"},
                 {"server": "time3.vyos.net"},
