@@ -29,11 +29,11 @@ from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_ar
 from .vyos_module import TestVyosModule, load_fixture
 
 
-class TestVyosFirewallRulesModule(TestVyosModule):
+class TestVyosFirewallGlobalModule(TestVyosModule):
     module = vyos_firewall_global
 
     def setUp(self):
-        super(TestVyosFirewallRulesModule, self).setUp()
+        super(TestVyosFirewallGlobalModule, self).setUp()
         self.mock_get_config = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
         )
@@ -59,15 +59,16 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         )
 
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_global.firewall_global.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_global.firewall_global.get_os_version",
         )
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = "1.2"
 
         self.execute_show_command = self.mock_execute_show_command.start()
+        self.maxDiff = None
 
     def tearDown(self):
-        super(TestVyosFirewallRulesModule, self).tearDown()
+        super(TestVyosFirewallGlobalModule, self).tearDown()
         self.mock_get_resource_connection_config.stop()
         self.mock_get_resource_connection_facts.stop()
         self.mock_get_config.stop()
@@ -101,6 +102,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                         dict(connection_type="invalid", action="reject"),
                     ],
                     route_redirects=[
+                        dict(ip_src_route=True, afi="ipv6"),
                         dict(
                             afi="ipv4",
                             ip_src_route=True,
@@ -177,6 +179,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
             "set firewall group port-group TELNET description 'This group has the telnet ports'",
             "set firewall group port-group TELNET",
             "set firewall ip-src-route 'enable'",
+            "set firewall ipv6-src-route 'enable'",
             "set firewall receive-redirects 'disable'",
             "set firewall send-redirects 'enable'",
             "set firewall config-trap 'enable'",
@@ -369,7 +372,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         commands = ["delete firewall"]
         self.execute_module(changed=True, commands=commands)
 
-    def test_vyos_firewall_global_set_01_replaced_version(self):
+    def test_vyos_firewall_global_set_01_merged_version14(self):
         self.get_os_version.return_value = "1.4"
         set_module_args(
             dict(
@@ -398,7 +401,7 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                             afi="ipv6",
                             ip_src_route=True,
                             icmp_redirects=dict(receive=False),
-                        )
+                        ),
                     ],
                     group=dict(
                         address_group=[
@@ -443,12 +446,12 @@ class TestVyosFirewallRulesModule(TestVyosModule):
                                 name="TELNET",
                                 description="This group has the telnet ports",
                                 members=[dict(port="23")],
-                            )
+                            ),
                         ],
                     ),
                 ),
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall group address-group MGMT-HOSTS address 192.0.1.1",
