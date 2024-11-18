@@ -705,6 +705,33 @@ Parameters
                         <div>Enable logging of packets part of an established connection.</div>
                 </td>
             </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>log_level</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>emerg</li>
+                                    <li>alert</li>
+                                    <li>crit</li>
+                                    <li>err</li>
+                                    <li>warn</li>
+                                    <li>notice</li>
+                                    <li>info</li>
+                                    <li>debug</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Only available in 1.4+</div>
+                </td>
+            </tr>
 
             <tr>
                     <td class="elbow-placeholder"></td>
@@ -852,7 +879,6 @@ Examples
             - connection_type: established
               action: accept
               log: true
-              log_level: emer
             - connection_type: invalid
               action: reject
           route_redirects:
@@ -898,7 +924,6 @@ Examples
     #        "set firewall config-trap 'enable'",
     #        "set firewall state-policy established action 'accept'",
     #        "set firewall state-policy established log 'enable'",
-    #        "set firewall state-policy established log-level 'emer'",
     #        "set firewall state-policy invalid action 'reject'",
     #        "set firewall broadcast-ping 'enable'",
     #        "set firewall all-ping 'enable'",
