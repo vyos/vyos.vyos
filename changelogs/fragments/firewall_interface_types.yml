@@ -1,0 +1,4 @@
+---
+minor_changes:
+  - added support for VIF interfaces
+  - expanded firewall interface types to match existing types
