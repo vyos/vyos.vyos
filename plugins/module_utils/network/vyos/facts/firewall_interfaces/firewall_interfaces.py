@@ -58,9 +58,9 @@ class Firewall_interfacesFacts(object):
             # using mock data instead
             data = self.get_device_data(connection)
         objs = []
-        #Search all set from configuration with set interface, including ethernet and bonding
-        interfaces_raw = findall(r"^set interfaces (?:ethernet|bonding) (\S+) firewall (?:\'*)", data, M)
-        interfaces_vif = findall(r"^set interfaces (?:ethernet|bonding) (\S+) vif (\d+)* firewall (?:\'*)", data, M)
+        # Search all set from configuration with set interface, including ethernet and bonding
+        interfaces_raw = findall(r"^set interfaces \S+ (\S+) firewall (?:\'*)", data, M)
+        interfaces_vif = findall(r"^set interfaces \S+ (\S+) vif (\d+)* firewall (?:\'*)", data, M)
         interfaces = interfaces_raw + interfaces_vif
         if interfaces:
             objs = self.get_names(data, interfaces)
@@ -91,12 +91,12 @@ class Firewall_interfacesFacts(object):
                 myinterface, myvif = r
             else:
                 myinterface = r
-            #Parse interfaces that contains string or tuple when the interface is in a vlan
+            # Parse interfaces that contains string or tuple when the interface is in a vlan
             if myvif is not None:
                 int_regex = r" %s vif \d+ firewall .+$" % myinterface
                 cfg = findall(int_regex, data, M)
                 fi = self.render_config(cfg)
-                fi["name"] = myinterface + '.' + myvif
+                fi["name"] = myinterface + "." + myvif
             else:
                 int_regex = r" %s firewall .+$" % myinterface
                 cfg = findall(int_regex, data, M)
