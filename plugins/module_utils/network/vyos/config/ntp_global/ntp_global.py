@@ -31,6 +31,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_template
     NtpTemplate,
 )
 
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
+
 
 class Ntp_global(ResourceModule):
     """
@@ -119,6 +123,17 @@ class Ntp_global(ResourceModule):
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
+
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            path = "service"
+            ac = "allow-client"
+        else:
+            path = "system"
+            ac = "allow-clients"
+
+        if self.commands:
+            self.commands = [cl.replace('%%path%%', path) for cl in self.commands]
+            self.commands = [nc.replace('%%ac%%', ac) for nc in self.commands]
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
