@@ -342,6 +342,38 @@ class Bgp_address_familyTemplate(NetworkTemplate):
             },
         },
         {
+            "name": "network.generic",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+(?P<as_num>\d+)
+                \s+address-family
+                \s+(?P<afi>\S+)-unicast
+                \s+network
+                \s+(?P<address>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "setval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
+            "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
+            "compval": "address_family.networks.generuc",
+            "result": {
+                "as_number": "{{ as_num }}",
+                "address_family": {
+                    "{{ afi }}": {
+                        "afi": "{{ afi }}",
+                        "networks": [
+                            {
+                                "prefix": "{{ address }}",
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        {
             "name": "network.path_limit",
             "getval": re.compile(
                 r"""

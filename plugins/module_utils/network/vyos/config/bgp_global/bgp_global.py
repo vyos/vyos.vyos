@@ -176,6 +176,7 @@ class Bgp_global(ResourceModule):
             "neighbor.weight",
             "neighbor.ttl_security",
             "neighbor.timers",
+            "network.generic",
             "network.backdoor",
             "network.route_map",
         ]
@@ -319,6 +320,7 @@ class Bgp_global(ResourceModule):
 
     def _compare_lists(self, want, have):
         parsers = [
+            "network.generic",
             "network.backdoor",
             "network.route_map",
             "redistribute.metric",
