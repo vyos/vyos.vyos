@@ -272,8 +272,8 @@ class Bgp_address_family(ResourceModule):
             "network.backdoor",
             "network.path_limit",
             "network.route_map",
-            "redistribute.generic",
             "redistribute.metric",
+            "redistribute.generic",
             "redistribute.route_map",
             "redistribute.table",
         ]
