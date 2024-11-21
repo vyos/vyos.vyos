@@ -446,6 +446,38 @@ class Bgp_address_familyTemplate(NetworkTemplate):
             },
         },
         {
+            "name": "redistribute.generic",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+(?P<as_num>\d+)
+                \s+address-family
+                \s+(?P<afi>\S+)-unicast
+                \s+redistribute
+                \s+(?P<proto>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "setval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast redistribute {{ address_family.redistribute.protocol }}",
+            "remval": _tmplt_bgp_af_delete_redistribute,
+            "compval": "address_family.redistribute.protocol",
+            "result": {
+                "as_number": "{{ as_num }}",
+                "address_family": {
+                    "{{ afi }}": {
+                        "afi": "{{ afi }}",
+                        "redistribute": [
+                            {
+                                "protocol": "{{ proto }}",
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        {
             "name": "redistribute.metric",
             "getval": re.compile(
                 r"""
