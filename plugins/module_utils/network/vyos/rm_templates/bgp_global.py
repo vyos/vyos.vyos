@@ -1345,15 +1345,14 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} network {{ network.address }} backdoor",
+            "setval": "protocols bgp {{ as_number }} network {{ network.address }}",
             "remval": "protocols bgp {{ as_number }} network {{ network.address }}",
-            "compval": "network.backdoor",
+            "compval": "network.address",
             "result": {
                 "as_number": "{{ as_num }}",
                 "network": [
                     {
                         "address": "{{ address }}",
-                        "backdoor": "{{ True }}",
                     },
                 ],
             },
