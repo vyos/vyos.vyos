@@ -319,7 +319,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 \s+(?P<afi>\S+)-unicast
                 \s+network
                 \s+(?P<address>\S+)
-                *$""",
+                $""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
@@ -356,7 +356,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }} backdoor",
-            "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
+            "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }} backdoor",
             "compval": "address_family.networks.backdoor",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -457,7 +457,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 \s+(?P<afi>\S+)-unicast
                 \s+redistribute
                 \s+(?P<proto>\S+)
-                *$""",
+                $""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast redistribute {{ address_family.redistribute.protocol }}",
