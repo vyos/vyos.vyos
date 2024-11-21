@@ -177,7 +177,7 @@ class Bgp_global(ResourceModule):
             "neighbor.ttl_security",
             "neighbor.timers",
             "network.generic",
-            "network.backdoor",
+            # "network.backdoor",
             "network.route_map",
         ]
         wneigh = want.pop("neighbor", {})
@@ -321,7 +321,7 @@ class Bgp_global(ResourceModule):
     def _compare_lists(self, want, have):
         parsers = [
             "network.generic",
-            "network.backdoor",
+            # "network.backdoor",
             "network.route_map",
             "redistribute.metric",
             "redistribute.route_map",
