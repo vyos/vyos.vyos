@@ -495,7 +495,8 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_redistribute_metric,
-            "remval": _tmplt_bgp_af_delete_redistribute,
+            # "remval": _tmplt_bgp_af_delete_redistribute,
+            "revmal": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast redistribute {{ proto }} metric {{ val }}",
             "compval": "address_family.redistribute.metric",
             "result": {
                 "as_number": "{{ as_num }}",
