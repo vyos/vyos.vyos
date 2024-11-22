@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright 2022 Red Hat
+# Copyright 2024 Red Hat
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
@@ -15,12 +15,12 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 module: vyos_snmp_server
-version_added: 2.7.0
+version_added: "1.0.0"
 short_description: Manages snmp_server resource module
 description: This module manages the snmp server attributes of Vyos network devices
 author: Gomathi Selvi Srinivasan (@GomathiselviS)
 notes:
-  - Tested against vyos 1.1.8
+  - Tested against vyos 1.3.8
   - This module works with connection C(network_cli).
   - The Configuration defaults of the Vyos network devices
     are supposed to hinder idempotent behavior of plays
@@ -261,8 +261,8 @@ options:
       - The state the configuration should be left in
     type: str
 """
-EXAMPLES = """
 
+EXAMPLES = """
 # Using merged
 # Before State:
 
@@ -1058,19 +1058,17 @@ commands:
   returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
   type: list
   sample:
-     set service snmp community routers authorization 'ro'
-     set service snmp community routers client '203.0.113.10'
-     set service snmp community routers client '203.0.113.20'
-     set service snmp community routers network '192.0.2.0/24'
+   - "set service snmp community routers authorization 'ro'"
+   - "set service snmp community routers client '203.0.113.10'"
+   - "set service snmp community routers network '192.0.2.0/24'"
 rendered:
   description: The provided configuration in the task rendered in device-native format (offline).
   returned: when I(state) is C(rendered)
   type: list
   sample:
-     set service snmp community routers authorization 'ro'
-     set service snmp community routers client '203.0.113.10'
-     set service snmp community routers client '203.0.113.20'
-     set service snmp community routers network '192.0.2.0/24'
+   - "set service snmp community routers authorization 'ro'"
+   - "set service snmp community routers client '203.0.113.10'"
+   - "set service snmp community routers network '192.0.2.0/24'"
 gathered:
   description: Facts about the network resource gathered from the remote device as structured data.
   returned: when I(state) is C(gathered)

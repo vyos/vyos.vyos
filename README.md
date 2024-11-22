@@ -48,8 +48,8 @@ Name | Description
 Name | Description
 --- | ---
 [vyos.vyos.vyos_banner](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_banner_module.rst)|Manage multiline banners on VyOS devices
-[vyos.vyos.vyos_bgp_address_family](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_bgp_address_family_module.rst)|BGP Address Family Resource Module.
-[vyos.vyos.vyos_bgp_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_bgp_global_module.rst)|BGP Global Resource Module.
+[vyos.vyos.vyos_bgp_address_family](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_bgp_address_family_module.rst)|BGP Address Family resource module
+[vyos.vyos.vyos_bgp_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_bgp_global_module.rst)|BGP global resource module
 [vyos.vyos.vyos_command](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_command_module.rst)|Run one or more commands on VyOS devices
 [vyos.vyos.vyos_config](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_config_module.rst)|Manage VyOS configuration on remote device
 [vyos.vyos.vyos_facts](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_facts_module.rst)|Get facts about vyos devices.
@@ -64,13 +64,13 @@ Name | Description
 [vyos.vyos.vyos_lldp_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_interfaces_module.rst)|LLDP interfaces resource module
 [vyos.vyos.vyos_logging](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_logging_module.rst)|Manage logging on network devices
 [vyos.vyos.vyos_logging_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_logging_global_module.rst)|Logging resource module
-[vyos.vyos.vyos_ntp_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ntp_global_module.rst)|Manages ntp modules of Vyos network devices
+[vyos.vyos.vyos_ntp_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ntp_global_module.rst)|NTP global resource module
 [vyos.vyos.vyos_ospf_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospf_interfaces_module.rst)|OSPF Interfaces Resource Module.
 [vyos.vyos.vyos_ospfv2](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospfv2_module.rst)|OSPFv2 resource module
 [vyos.vyos.vyos_ospfv3](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospfv3_module.rst)|OSPFv3 resource module
 [vyos.vyos.vyos_ping](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ping_module.rst)|Tests reachability using ping from VyOS network devices
 [vyos.vyos.vyos_prefix_lists](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_prefix_lists_module.rst)|Prefix-Lists resource module for VyOS
-[vyos.vyos.vyos_route_maps](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_route_maps_module.rst)|Route Map Resource Module.
+[vyos.vyos.vyos_route_maps](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_route_maps_module.rst)|Route Map resource module
 [vyos.vyos.vyos_snmp_server](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_snmp_server_module.rst)|Manages snmp_server resource module
 [vyos.vyos.vyos_static_routes](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_static_routes_module.rst)|Static routes resource module
 [vyos.vyos.vyos_system](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_system_module.rst)|Run `set system` commands on VyOS devices
@@ -171,14 +171,33 @@ This changes the calling parameters for the resources.
 To update the collection from the resource module models, run the following command:
 
 ```bash
-ansible-playbook -e rm_dest=`pwd` -e structure=collection -e collection_org=vyos -e collection_name=vyos -e model=../../../resource_module_models/models/vyos/firewall_rules/vyos_firewall_rules.yaml ../../../resource_module_builder/site.yml
+ansible-playbook -e rm_dest=`pwd` \
+                 -e structure=collection \
+                 -e collection_org=vyos \
+                 -e collection_name=vyos \
+                 -e model=../../../resource_module_models/models/vyos/firewall_rules/vyos_firewall_rules.yaml
+                 ../../../resource_module_builder/site.yml
 ```
 
 #### Using *cli_rm_builder* modules
 
-The newer `cli_rm_builder` is more of a one-time template and works within the
-existing collection structure. It is also easier to maintain as it doesn't
-involve duplicating data across multiple locations and using a second repository.
+The newer `cli_rm_builder` works similarly to the older `resource_module_builder`, but
+pulls the information directly from the `DOCUMENTATION`, `EXAMPLES` and `RETURN`
+blocks in the module itself.
+
+To update the collection from the `cli_rm_builder` models, run the following command:
+
+```bash
+ansible-playbook -e rm_dest=`pwd` \
+                     -e collection_org=vyos \
+                     -e collection_name=vyos \
+                     -e resource=bgp_address_family \
+                     -../../../cli_rm_builder/run.yml
+```
+
+Unlike the `resource_module_builder`, the `cli_rm_builder` does not require the `model` parameter. Instead, it uses the `resource` parameter to specify the resource to build.
+
+
 
 ### Testing playbooks
 
