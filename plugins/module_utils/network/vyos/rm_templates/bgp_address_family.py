@@ -428,7 +428,8 @@ class Bgp_address_familyTemplate(NetworkTemplate):
             ),
             "setval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network" +
                       " {{ address_family.networks.prefix }} route-map {{ address_family.networks.route_map }}",
-            "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
+            "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network" +
+                      " {{ address_family.networks.prefix }} route-map {{ address_family.networks.route_map }}",
             "compval": "address_family.networks.route_map",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -531,7 +532,8 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_redistribute_route_map,
-            "remval": _tmplt_bgp_af_delete_redistribute,
+            # "remval": _tmplt_bgp_af_delete_redistribute,
+            "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast redistribute {{ proto }} route-map {{ map }}",
             "compval": "address_family.redistribute.route_map",
             "result": {
                 "as_number": "{{ as_num }}",
