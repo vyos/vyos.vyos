@@ -496,7 +496,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_redistribute_metric,
-            # "remval": _tmplt_bgp_af_delete_redistribute,
             "revmal": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast redistribute {{ proto }} metric {{ val }}",
             "compval": "address_family.redistribute.metric",
             "result": {
@@ -532,7 +531,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_redistribute_route_map,
-            # "remval": _tmplt_bgp_af_delete_redistribute,
             "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast redistribute {{ proto }} route-map {{ map }}",
             "compval": "address_family.redistribute.route_map",
             "result": {
