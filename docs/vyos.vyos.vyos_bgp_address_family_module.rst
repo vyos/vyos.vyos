@@ -222,7 +222,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>AS path hop count limit</div>
+                        <div>AS path hop count limit (DEPRECATED)</div>
                 </td>
             </tr>
             <tr>
