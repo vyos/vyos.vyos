@@ -14,7 +14,7 @@
           servers:
             - server: server1
               options:
-                - dynamic
+                - pool
                 - prefer
 
             - server: server2

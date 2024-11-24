@@ -1,5 +1,19 @@
 ---
 rtt:
+  config:
+    servers:
+      - server: 10.3.6.5
+        options:
+          - noselect
+          - pool
+          - preempt
+          - prefer
+
+      - server: server4
+        options:
+          - noselect
+          - pool
+
   commands:
     - set system ntp server server4 pool
     - set system ntp server 10.3.6.5 noselect

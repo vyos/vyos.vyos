@@ -8,26 +8,7 @@
     - name: Merge the provided configuration with the existing running configuration
       register: baseconfig
       vyos.vyos.vyos_ntp_global:
-        config:
-          servers:
-            - server: 10.3.6.5
-              options:
-                - noselect
-                - dynamic
-                - preempt
-                - prefer
-
-            - server: server4
-              options:
-                - noselect
-                - dynamic
-
-            - server: 0.pool.ntp.org
-
-            - server: 1.pool.ntp.org
-
-            - server: 2.pool.ntp.org
-
+        config: "{{ rtt.config }}"
         state: merged
 
     - vyos.vyos.vyos_facts:
@@ -35,7 +16,7 @@
 
     - assert:
         that:
-          - baseconfig.commands|length == 6
+          - (baseconfig.commands|length) == (rtt.commands|length)
           - baseconfig.changed == true
           - baseconfig.commands|symmetric_difference(rtt.commands) == []
           - baseconfig.after == ansible_facts['network_resources']['ntp_global']
@@ -47,7 +28,7 @@
           servers:
             - server: server1
               options:
-                - dynamic
+                - pool
                 - prefer
 
             - server: server2

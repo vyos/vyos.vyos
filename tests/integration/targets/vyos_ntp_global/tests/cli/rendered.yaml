@@ -15,13 +15,13 @@
             - server: server4
               options:
                 - noselect
-                - dynamic
+                - pool
 
             - server: 10.3.6.5
               options:
                 - noselect
+                - pool
                 - preempt
-                - dynamic
                 - prefer
         state: rendered
 
