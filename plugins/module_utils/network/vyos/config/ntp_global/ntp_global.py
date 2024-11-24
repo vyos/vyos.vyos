@@ -193,11 +193,6 @@ class Ntp_global(ResourceModule):
         servernames = []
         for k, have in iteritems(haved):
             for sk, sval in iteritems(have):
-                if sk == "server" and sval not in [
-                    "0.pool.ntp.org",
-                    "1.pool.ntp.org",
-                    "2.pool.ntp.org",
-                ]:
-                    if sval not in servernames:
-                        servernames.append(sval)
+                if sval not in servernames:
+                    servernames.append(sval)
         return servernames

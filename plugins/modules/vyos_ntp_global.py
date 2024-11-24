@@ -47,12 +47,18 @@ options:
             description: server name for NTP
             type: str
           options:
-            description:
-            - server options for NTP
-            - "`dynamic` changed to `pool` after v1.3"
+          description:
+          - server options for NTP
+          - `dynamic` - Allow the server to be used as a synchronization source (before 1.3)
+          - `noselect` - marks the server as unused, except for display purposes
+          - `nts` - Enable Network Time Security (NTS) for the server (1.4+)
+          - `pool` - mobilizes persistent client mode association with a number of remote servers
+          - `preempt` - a preemptable association is expendable (before 1.4)
+          - `prefer` - marks the server as preferred
             type: list
             elements: str
             choices:
+            - dynamic
             - noselect
             - dynamic
             - pool
