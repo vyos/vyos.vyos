@@ -1,5 +1,19 @@
 ---
 rtt:
+  config:
+    servers:
+      - server: 10.3.6.5
+        options:
+          - noselect
+          - nts
+          - pool
+          - prefer
+
+      - server: server4
+        options:
+          - noselect
+          - pool
+
   commands:
     - set service ntp server server4 pool
     - set service ntp server 10.3.6.5 noselect
@@ -57,9 +71,6 @@ replaced:
 
   after:
     servers:
-      - server: 0.pool.ntp.org
-      - server: 1.pool.ntp.org
-      - server: 2.pool.ntp.org
       - options:
           - prefer
         server: server_new
@@ -75,9 +86,6 @@ overridden:
 
   after:
     servers:
-      - server: 0.pool.ntp.org
-      - server: 1.pool.ntp.org
-      - server: 2.pool.ntp.org
       - server: server1
         options:
           - pool
