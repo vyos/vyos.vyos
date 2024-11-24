@@ -55,7 +55,7 @@ class NtpTemplate(NetworkTemplate):
             "name": "allow_clients",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)\sntp\s(?P<ac>allow-clients|allow-client)?\saddress (\s(?P<ipaddress>\S+))?
+                ^set\s(?P<path>system|service)\sntp\s(?P<ac>allow-clients|allow-client)\saddress (\s(?P<ipaddress>\S+))?
                 $""",
                 re.VERBOSE,
             ),
@@ -110,12 +110,26 @@ class NtpTemplate(NetworkTemplate):
             },
         },
 
+        # set {{path}} ntp - for deleting the ntp configuration
+        {
+            "name": "service_delete",
+            "getval": re.compile(
+                r"""
+                ^set\s(?P<path>system|service)\sntp$
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "{{_path}} ntp",
+            "result": {
+            },
+        },
+
         # set system ntp server <name>
         {
             "name": "server",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)\sntp\sserver (\s(?P<name>\S+))?
+                ^set\s(?P<path>system|service)\sntp\sserver (\s(?P<name>\S+))
                 $""",
                 re.VERBOSE,
             ),
@@ -137,7 +151,7 @@ class NtpTemplate(NetworkTemplate):
                 r"""
                 ^set\s(?P<path>system|service)\sntp\sserver
                 \s(?P<name>\S+)
-                \s(?P<options>dynamic|preempt|pool|noselect|prefer|nts|interleave|ptp)?
+                \s(?P<options>dynamic|preempt|pool|noselect|prefer|nts|interleave|ptp)
                 $""",
                 re.VERBOSE,
             ),

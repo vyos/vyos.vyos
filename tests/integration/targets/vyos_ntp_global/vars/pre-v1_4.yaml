@@ -80,8 +80,8 @@ overridden:
     - set system ntp server server1.example.com pool
     - set system ntp server server1.example.com prefer
     - set system ntp server server2.example.com noselect
-    - set system ntp server server2.example.com preempt
-    - set system ntp server server_add.example.com preempt
+    - set system ntp server server2.example.com prefer
+    - set system ntp server server-add.example.com prefer
 
   after:
     servers:
@@ -89,12 +89,11 @@ overridden:
         options:
           - pool
           - prefer
-
       - server: server2.example.com
         options:
           - noselect
           - prefer
-      - server: server_add.example.com
+      - server: server-add.example.com
         options:
           - prefer
 

@@ -99,6 +99,7 @@ class Ntp_global(ResourceModule):
             commandlist = self._commandlist(haved)
             servernames = self._servernames(haved)
             # removing the servername and commandlist from the list after deleting it from haved
+            # iterate through the top-level items to delete
             for k, have in iteritems(haved):
                 if k not in wantd:
                     for hk, hval in iteritems(have):
@@ -115,8 +116,14 @@ class Ntp_global(ResourceModule):
                         elif hk == "server" and have["server"] in servernames:
                             self._compareoverride(want={}, have=have)
                             servernames.remove(have["server"])
+            # if everything is deleted add the delete command for {path} ntp
+            # this should be equiv: servernames == [] and commandlist == ["server"]:
+            if wantd == {}:
+                self.commands.append(
+                    self._tmplt.render({}, "service_delete", True),
+                )
 
-        # remove existing config for overridden,replaced and deleted
+        # remove existing config for overridden and replaced
         # Getting the list of the server names from haved
         #   to avoid the duplication of overridding/replacing the servers
         if self.state in ["overridden", "replaced"]:
@@ -124,12 +131,13 @@ class Ntp_global(ResourceModule):
             servernames = self._servernames(haved)
 
             for k, have in iteritems(haved):
-                if k not in wantd and "server" not in have:
-                    self._compareoverride(want={}, have=have)
-                    # removing the servername from the list after deleting it from haved
-                elif k not in wantd and have["server"] in servernames:
-                    self._compareoverride(want={}, have=have)
-                    servernames.remove(have["server"])
+                if k not in wantd:
+                    if "server" not in have:
+                        self._compareoverride(want={}, have=have)
+                        # removing the servername from the list after deleting it from haved
+                    elif have["server"] in servernames:
+                        self._compareoverride(want={}, have=have)
+                        servernames.remove(have["server"])
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
@@ -192,6 +200,6 @@ class Ntp_global(ResourceModule):
         servernames = []
         for k, have in iteritems(haved):
             for sk, sval in iteritems(have):
-                if sval not in servernames:
+                if sk != "options" and sval not in servernames:
                     servernames.append(sval)
         return servernames

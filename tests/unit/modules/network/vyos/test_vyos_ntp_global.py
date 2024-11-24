@@ -328,6 +328,7 @@ class TestVyosNTPModule(TestVyosModule):
         self.assertEqual(gathered_list, result["gathered"])
 
     def test_ntp_deleted(self):
+        # Delete the subsections that we include (listen_addresses and servers)
         set_module_args(
             dict(
                 config=dict(
@@ -345,6 +346,25 @@ class TestVyosNTPModule(TestVyosModule):
             ),
         )
         commands = [
+            "delete system ntp allow-clients",  # 10.1.1.0/24",
+            "delete system ntp listen-address",  # 10.2.3.1",
+            "delete system ntp server server1",
+            "delete system ntp server server3",
+            "delete system ntp server time1.vyos.net",
+            "delete system ntp server time2.vyos.net",
+            "delete system ntp server time3.vyos.net",
+            "delete system ntp",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_ntp__all_deleted(self):
+        set_module_args(
+            dict(
+                config=dict(),
+                state="deleted",
+            ),
+        )
+        commands = [
             "delete system ntp allow-clients",
             "delete system ntp listen-address",
             "delete system ntp server server1",
@@ -352,6 +372,7 @@ class TestVyosNTPModule(TestVyosModule):
             "delete system ntp server time1.vyos.net",
             "delete system ntp server time2.vyos.net",
             "delete system ntp server time3.vyos.net",
+            "delete system ntp",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -679,5 +700,6 @@ class TestVyosNTPModule14(TestVyosModule):
             "delete service ntp server time1.vyos.net",
             "delete service ntp server time2.vyos.net",
             "delete service ntp server time3.vyos.net",
+            "delete service ntp",
         ]
         self.execute_module(changed=True, commands=commands)

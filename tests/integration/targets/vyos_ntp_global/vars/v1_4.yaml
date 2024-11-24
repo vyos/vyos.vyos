@@ -81,11 +81,15 @@ overridden:
     - set service ntp server server1.example.com pool
     - set service ntp server server1.example.com prefer
     - set service ntp server server2.example.com noselect
-    - set service ntp server server2.example.com nts
-    - set service ntp server server_add.example.com nts
+    - set service ntp server server2.example.com prefer
+    - set service ntp server server-add.example.com prefer
 
   after:
     servers:
+      - server: server-add.example.com
+        options:
+          - prefer
+
       - server: server1.example.com
         options:
           - pool
@@ -94,10 +98,7 @@ overridden:
       - server: server2.example.com
         options:
           - noselect
-          - nts
-      - server: server_add.example.com
-        options:
-          - nts
+          - prefer
 
 deleted:
   commands:
