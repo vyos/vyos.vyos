@@ -5,3 +5,4 @@ minor_changes:
   - Added test suite for ntp_global and 1.4+
   - Added ntp options for 1.5+ (interleave, ptp)
   - Synchronized argspec and docs with core module
+  - Fix integration tests for 1.3+

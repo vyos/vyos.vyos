@@ -5,11 +5,11 @@
 - name: setup before 1.4
   vyos.vyos.vyos_config:
     lines:
-      - set system ntp server server4 pool
-      - set system ntp server server5 preempt
+      - set system ntp server server4.example.com pool
+      - set system ntp server server5.example.com preempt
       - set system ntp server 10.3.6.5 noselect
       - set system ntp server 10.3.6.5 preempt
-      - set system ntp server server4 noselect
+      - set system ntp server server4.example.com noselect
       - set system ntp server 10.3.6.5 prefer
   ignore_errors: true
   vars:
@@ -18,11 +18,11 @@
 - name: setup 1.4+
   vyos.vyos.vyos_config:
     lines:
-      - set service ntp server server4 pool
-      - set service ntp server server5 nts
+      - set service ntp server server4.example.com pool
+      - set service ntp server server5.example.com nts
       - set service ntp server 10.3.6.5 noselect
-      - set service ntp server 10.3.6.5 preempt
-      - set service ntp server server4 nts
+      - set service ntp server 10.3.6.5 nts
+      - set service ntp server server4.example.com noselect
       - set service ntp server 10.3.6.5 prefer
   ignore_errors: true
   vars:

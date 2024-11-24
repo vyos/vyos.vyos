@@ -9,24 +9,24 @@ rtt:
           - preempt
           - prefer
 
-      - server: server4
+      - server: server4.example.com
         options:
           - noselect
           - pool
 
   commands:
-    - set system ntp server server4 pool
+    - set system ntp server server4.example.com pool
     - set system ntp server 10.3.6.5 noselect
     - set system ntp server 10.3.6.5 pool
     - set system ntp server 10.3.6.5 preempt
-    - set system ntp server server4 noselect
+    - set system ntp server server4.example.com noselect
     - set system ntp server 10.3.6.5 prefer
 
 merged:
   config:
     servers:
-      - server: server5
-      - server: server4
+      - server: server5.example.com
+      - server: server4.example.com
         options:
           - noselect
           - pool
@@ -38,12 +38,12 @@ merged:
           - prefer
 
   commands:
-    - set system ntp server server5
-    - set system ntp server server4 pool
+    - set system ntp server server5.example.com
+    - set system ntp server server4.example.com pool
     - set system ntp server 10.3.6.5 noselect
     - set system ntp server 10.3.6.5 pool
     - set system ntp server 10.3.6.5 preempt
-    - set system ntp server server4 noselect
+    - set system ntp server server4.example.com noselect
     - set system ntp server 10.3.6.5 prefer
 
   after:
@@ -54,55 +54,55 @@ merged:
           - pool
           - preempt
           - prefer
-      - server: server4
+      - server: server4.example.com
         options:
           - noselect
           - pool
 
-      - server: server5
+      - server: server5.example.com
 
 replaced:
   commands:
     - delete system ntp server 10.3.6.5
-    - delete system ntp server server4
-    - delete system ntp server server5
-    - set system ntp server server_new prefer
+    - delete system ntp server server4.example.com
+    - delete system ntp server server5.example.com
+    - set system ntp server server-new.example.com prefer
 
   after:
     servers:
       - options:
           - prefer
-        server: server_new
+        server: server-new.example.com
 
 overridden:
   commands:
-    - delete system ntp server server_new
-    - set system ntp server server1 pool
-    - set system ntp server server1 prefer
-    - set system ntp server server2 noselect
-    - set system ntp server server2 preempt
-    - set system ntp server server_add preempt
+    - delete system ntp server server-new.example.com
+    - set system ntp server server1.example.com pool
+    - set system ntp server server1.example.com prefer
+    - set system ntp server server2.example.com noselect
+    - set system ntp server server2.example.com preempt
+    - set system ntp server server_add.example.com preempt
 
   after:
     servers:
-      - server: server1
+      - server: server1.example.com
         options:
           - pool
           - prefer
 
-      - server: server2
+      - server: server2.example.com
         options:
           - noselect
-          - preempt
-      - server: server_add
+          - prefer
+      - server: server_add.example.com
         options:
-          - preempt
+          - prefer
 
 deleted:
   commands:
     - delete system ntp server 10.3.6.5
-    - delete system ntp server server4
-    - delete system ntp server server5
+    - delete system ntp server server4.example.com
+    - delete system ntp server server5.example.com
 
 parsed:
   config: |
@@ -125,10 +125,10 @@ parsed:
 populate:
   config:
     servers:
-      - server: server5
+      - server: server5.example.com
         options:
           - preempt
-      - server: server4
+      - server: server4.example.com
         options:
           - noselect
           - pool

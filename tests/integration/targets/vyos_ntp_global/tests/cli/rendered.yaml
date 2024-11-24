@@ -8,21 +8,7 @@
     - name: Structure provided configuration into device specific commands
       register: result
       vyos.vyos.vyos_ntp_global:
-        config:
-          servers:
-            - server: server5
-
-            - server: server4
-              options:
-                - noselect
-                - pool
-
-            - server: 10.3.6.5
-              options:
-                - noselect
-                - pool
-                - preempt
-                - prefer
+        config: "{{ merged.config }}"
         state: rendered
 
     - assert:

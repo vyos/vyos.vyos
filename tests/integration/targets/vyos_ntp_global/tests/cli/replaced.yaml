@@ -12,7 +12,7 @@
       vyos.vyos.vyos_ntp_global: &id001
         config:
           servers:
-            - server: server_new
+            - server: server-new.example.com
               options:
                 - prefer
         state: replaced
