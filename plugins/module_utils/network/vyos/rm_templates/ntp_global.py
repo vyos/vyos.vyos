@@ -25,7 +25,27 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 class NtpTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
+        self._overrides = {  # 1.4+ by default
+            "_path": "service",  # 1.4 or greater, "system" for 1.3 or less
+            "_ac": "allow-client",  # 1.4 or greater, "allow-clients" for 1.3 or less
+        }
         super(NtpTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix, module=module)
+
+    def set_ntp_path(self, path: str):
+        """set_ntp_path"""
+        self._overrides["_path"] = path
+
+    def set_ntp_ac(self, ac: str):
+        """set_ntp_ac"""
+        self._overrides["_ac"] = ac
+
+    def render(self, data, parser_name, negate=False):
+        """render"""
+        # add path to the data before rendering
+        data = data.copy()
+        data.update(self._overrides)
+        # call the original method
+        return super(NtpTemplate, self).render(data, parser_name, negate)
 
     # fmt: off
     PARSERS = [
@@ -35,11 +55,11 @@ class NtpTemplate(NetworkTemplate):
             "name": "allow_clients",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)?\sntp\s(?P<ac>allow-clients|allow-client)?\saddress (\s(?P<ipaddress>\S+))?
+                ^set\s(?P<path>system|service)\sntp\s(?P<ac>allow-clients|allow-client)?\saddress (\s(?P<ipaddress>\S+))?
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "%%path%% ntp %%ac%% address {{allow_clients}}",
+            "setval": "{{_path}} ntp {{_ac}} address {{allow_clients}}",
             "result": {
                 "allow_clients": ["{{ipaddress}}"],
             },
@@ -50,11 +70,11 @@ class NtpTemplate(NetworkTemplate):
             "name": "allow_clients_delete",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)?\sntp\s(?P<ac>allow-clients|allow-client)?
+                ^set\s(?P<path>system|service)\sntp\s(?P<ac>allow-clients|allow-client)
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "%%path%% ntp %%ac%%",
+            "setval": "{{_path}} ntp {{_ac}}",
             "result": {
 
             },
@@ -66,11 +86,11 @@ class NtpTemplate(NetworkTemplate):
             "name": "listen_addresses",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)?\sntp\slisten-address (\s(?P<ip_address>\S+))?
+                ^set\s(?P<path>system|service)\sntp\slisten-address (\s(?P<ip_address>\S+))?
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "%%path%% ntp listen-address {{listen_addresses}}",
+            "setval": "{{_path}} ntp listen-address {{listen_addresses}}",
             "result": {
                 "listen_addresses": ["{{ip_address}}"],
             },
@@ -81,11 +101,11 @@ class NtpTemplate(NetworkTemplate):
             "name": "listen_addresses_delete",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)?\sntp\slisten-address
+                ^set\s(?P<path>system|service)\sntp\slisten-address
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "%%path%% ntp listen-address",
+            "setval": "{{_path}} ntp listen-address",
             "result": {
             },
         },
@@ -95,11 +115,11 @@ class NtpTemplate(NetworkTemplate):
             "name": "server",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)?\sntp\sserver (\s(?P<name>\S+))?
+                ^set\s(?P<path>system|service)\sntp\sserver (\s(?P<name>\S+))?
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "%%path%% ntp server {{server}}",
+            "setval": "{{_path}} ntp server {{server}}",
             "result": {
                 "servers": {
                     "{{name}}": {
@@ -115,13 +135,13 @@ class NtpTemplate(NetworkTemplate):
             "name": "options",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)?\sntp\sserver
+                ^set\s(?P<path>system|service)\sntp\sserver
                 \s(?P<name>\S+)
-                \s(?P<options>noselect|dynamic|pool|preempt|prefer)?
+                \s(?P<options>dynamic|preempt|pool|noselect|prefer|nts|interleave|ptp)?
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "%%path%% ntp server {{server}} {{options}}",
+            "setval": "{{_path}} ntp server {{server}} {{options}}",
             "result": {
                 "servers": {
                     "{{name}}": {

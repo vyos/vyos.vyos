@@ -22,7 +22,7 @@ description:
 author:
 - Varshitha Yataluru (@YVarshitha)
 notes:
-- Tested against vyos 1.3
+- Tested against vyos 1.3.8
 - This module works with connection C(network_cli).
 - "VyOS v.1.4+ uses chronyd, and path changes from `system` to `service`"
 options:
@@ -44,17 +44,15 @@ options:
         elements: dict
         suboptions:
           server:
-            description: server name for NTP
+            description: server name or address for NTP
             type: str
           options:
-          description:
-          - server options for NTP
-          - `dynamic` - Allow the server to be used as a synchronization source (before 1.3)
-          - `noselect` - marks the server as unused, except for display purposes
-          - `nts` - Enable Network Time Security (NTS) for the server (1.4+)
-          - `pool` - mobilizes persistent client mode association with a number of remote servers
-          - `preempt` - a preemptable association is expendable (before 1.4)
-          - `prefer` - marks the server as preferred
+            description:
+            - "server options for NTP"
+            - "`pool` replaces `dynamic` in Vyos 1.3"
+            - "`preempt` is only available in Vyos 1.3 and earlier"
+            - "`nts` was added in Vyos 1.4"
+            - "`ptp` and `interleave` were added in Vyos 1.5"
             type: list
             elements: str
             choices:
@@ -64,6 +62,9 @@ options:
             - pool
             - preempt
             - prefer
+            - nts
+            - ptp
+            - interleave
   running_config:
     description:
     - This option is used only with state I(parsed).
