@@ -31,16 +31,23 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
+---
 module: vyos_ospfv2
+version_added: '1.0.0'
 short_description: OSPFv2 resource module
 description: This resource module configures and manages attributes of OSPFv2 routes
   on VyOS network devices.
-version_added: 1.0.0
 notes:
-- Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- Tested against VyOS 1.3.8
+- This module works with connection C(ansible.netcommon.network_cli).
+  See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Rohit Thakur (@rohitthakur2590)
 options:
@@ -358,7 +365,6 @@ options:
     - gathered
     - rendered
     default: merged
-
 """
 EXAMPLES = """
 # Using merged
@@ -378,54 +384,54 @@ EXAMPLES = """
           administrative: true
           on_shutdown: 10
           on_startup: 10
-        default_information:
-          originate:
-            always: true
-            metric: 10
-            metric_type: 2
-            route_map: ingress
-        mpls_te:
-          enabled: true
-          router_address: 192.0.11.11
-        auto_cost:
-          reference_bandwidth: 2
-        neighbor:
-          - neighbor_id: 192.0.11.12
-            poll_interval: 10
-            priority: 2
-        redistribute:
-          - route_type: bgp
-            metric: 10
-            metric_type: 2
-        passive_interface:
-          - eth1
-          - eth2
-        parameters:
-          router_id: 192.0.1.1
-          opaque_lsa: true
-          rfc1583_compatibility: true
-          abr_type: cisco
-        areas:
-          - area_id: '2'
-            area_type:
-              normal: true
-              authentication: plaintext-password
-              shortcut: enable
-          - area_id: '3'
-            area_type:
-              nssa:
-                set: true
-          - area_id: '4'
-            area_type:
-              stub:
-                default_cost: 20
-            network:
-              - address: 192.0.2.0/24
-            range:
-              - address: 192.0.3.0/24
-                cost: 10
-              - address: 192.0.4.0/24
-            cost: 12
+      default_information:
+        originate:
+          always: true
+          metric: 10
+          metric_type: 2
+          route_map: ingress
+      mpls_te:
+        enabled: true
+        router_address: 192.0.11.11
+      auto_cost:
+        reference_bandwidth: 2
+      neighbor:
+        - neighbor_id: 192.0.11.12
+          poll_interval: 10
+          priority: 2
+      redistribute:
+        - route_type: bgp
+          metric: 10
+          metric_type: 2
+      passive_interface:
+        - eth1
+        - eth2
+      parameters:
+        router_id: 192.0.1.1
+        opaque_lsa: true
+        rfc1583_compatibility: true
+        abr_type: cisco
+      areas:
+        - area_id: 2
+          area_type:
+            normal: true
+          authentication: plaintext-password
+          shortcut: enable
+        - area_id: 3
+          area_type:
+            nssa:
+            set: true
+        - area_id: 4
+          area_type:
+            stub:
+            default_cost: 20
+          network:
+            - address: 192.0.2.0/24
+          range:
+            - address: 192.0.3.0/24
+              cost: 10
+            - address: 192.0.4.0/24
+              cost: 12
     state: merged
 #
 #
@@ -909,52 +915,51 @@ EXAMPLES = """
           administrative: true
           on_shutdown: 10
           on_startup: 10
-        default_information:
-          originate:
-            always: true
-            metric: 10
-            metric_type: 2
-            route_map: ingress
-        mpls_te:
-          enabled: true
-          router_address: 192.0.22.22
-        auto_cost:
-          reference_bandwidth: 2
-        neighbor:
-          - neighbor_id: 192.0.11.12
-            poll_interval: 10
-            priority: 2
-        redistribute:
-          - route_type: bgp
-            metric: 10
-            metric_type: 2
-        passive_interface:
-          - eth1
-        parameters:
-          router_id: 192.0.1.1
-          opaque_lsa: true
-          rfc1583_compatibility: true
-          abr_type: cisco
-        areas:
-          - area_id: '2'
-            area_type:
-              normal: true
-            authentication: plaintext-password
-            shortcut: enable
-          - area_id: '4'
-            area_type:
-              stub:
-                default_cost: 20
-            network:
-              - address: 192.0.2.0/24
-              - address: 192.0.12.0/24
-              - address: 192.0.22.0/24
-              - address: 192.0.32.0/24
-            range:
-              - address: 192.0.42.0/24
-                cost: 10
+      default_information:
+        originate:
+          always: true
+          metric: 10
+          metric_type: 2
+          route_map: ingress
+      mpls_te:
+        enabled: true
+        router_address: 192.0.22.22
+      auto_cost:
+        reference_bandwidth: 2
+      neighbor:
+        - neighbor_id: 192.0.11.12
+          poll_interval: 10
+          priority: 2
+      redistribute:
+        - route_type: bgp
+          metric: 10
+          metric_type: 2
+      passive_interface:
+        - 'eth1'
+      parameters:
+        router_id: 192.0.1.1
+        opaque_lsa: true
+        rfc1583_compatibility: true
+        abr_type: cisco
+      areas:
+        - area_id: 2
+          area_type:
+            normal: true
+          authentication: "plaintext-password"
+          shortcut: 'enable'
+        - area_id: 4
+          area_type:
+            stub:
+            default_cost: 20
+          network:
+            - address: 192.0.2.0/24
+            - address: 192.0.12.0/24
+            - address: 192.0.22.0/24
+            - address: 192.0.32.0/24
+          range:
+            - address: 1.1.2.0/24
+              cost: 10
     state: replaced
-
 #
 #
 # -------------------------
@@ -1061,8 +1066,8 @@ EXAMPLES = """
 #     "delete protocols ospf area 4 range 192.0.4.0/24 cost",
 #     "delete protocols ospf area 4 range 192.0.4.0/24",
 #     "set protocols ospf mpls-te router-address '192.0.22.22'",
-#     "set protocols ospf area 4 range 192.0.42.0/24 cost 10",
-#     "set protocols ospf area 4 range 192.0.42.0/24",
+#     "set protocols ospf area 4 range 1.1.2.0/24 cost 10",
+#     "set protocols ospf area 4 range 1.1.2.0/24",
 #     "set protocols ospf area 4 network 192.0.12.0/24",
 #     "set protocols ospf area 4 network 192.0.22.0/24",
 #     "set protocols ospf area 4 network 192.0.32.0/24"
@@ -1102,7 +1107,7 @@ EXAMPLES = """
 #                ],
 #                "range": [
 #                    {
-#                        "address": "192.0.42.0/24",
+#                        "address": "1.1.2.0/24",
 #                        "cost": 10
 #                    }
 #                ]
@@ -1168,7 +1173,7 @@ EXAMPLES = """
 # set protocols ospf area 4 network '192.0.12.0/24'
 # set protocols ospf area 4 network '192.0.22.0/24'
 # set protocols ospf area 4 network '192.0.32.0/24'
-# set protocols ospf area 4 range 192.0.42.0/24 cost '10'
+# set protocols ospf area 4 range 1.1.2.0/24 cost '10'
 # set protocols ospf auto-cost reference-bandwidth '2'
 # set protocols ospf default-information originate 'always'
 # set protocols ospf default-information originate metric '10'
@@ -1203,54 +1208,54 @@ EXAMPLES = """
           administrative: true
           on_shutdown: 10
           on_startup: 10
-        default_information:
-          originate:
-            always: true
-            metric: 10
-            metric_type: 2
-            route_map: ingress
-        mpls_te:
-          enabled: true
-          router_address: 192.0.11.11
-        auto_cost:
-          reference_bandwidth: 2
-        neighbor:
-          - neighbor_id: 192.0.11.12
-            poll_interval: 10
-            priority: 2
-        redistribute:
-          - route_type: bgp
-            metric: 10
-            metric_type: 2
-        passive_interface:
-          - eth1
-          - eth2
-        parameters:
-          router_id: 192.0.1.1
-          opaque_lsa: true
-          rfc1583_compatibility: true
-          abr_type: cisco
-        areas:
-          - area_id: '2'
-            area_type:
-              normal: true
-            authentication: plaintext-password
-            shortcut: enable
-          - area_id: '3'
-            area_type:
-              nssa:
-                set: true
-          - area_id: '4'
-            area_type:
-              stub:
-                default_cost: 20
-            network:
-              - address: 192.0.2.0/24
-            range:
-              - address: 192.0.3.0/24
-                cost: 10
-              - address: 192.0.4.0/24
-                cost: 12
+      default_information:
+        originate:
+          always: true
+          metric: 10
+          metric_type: 2
+          route_map: ingress
+      mpls_te:
+        enabled: true
+        router_address: 192.0.11.11
+      auto_cost:
+        reference_bandwidth: 2
+      neighbor:
+        - neighbor_id: 192.0.11.12
+          poll_interval: 10
+          priority: 2
+      redistribute:
+        - route_type: bgp
+          metric: 10
+          metric_type: 2
+      passive_interface:
+        - 'eth1'
+        - 'eth2'
+      parameters:
+        router_id: 192.0.1.1
+        opaque_lsa: true
+        rfc1583_compatibility: true
+        abr_type: cisco
+      areas:
+        - area_id: 2
+          area_type:
+            normal: true
+          authentication: "plaintext-password"
+          shortcut: enable
+        - area_id: 3
+          area_type:
+            nssa:
+            set: true
+        - area_id: 4
+          area_type:
+            stub:
+            default_cost: 20
+          network:
+            - address: 192.0.2.0/24
+          range:
+            - address: 192.0.3.0/24
+              cost: 10
+            - address: 192.0.4.0/24
+              cost: 12
     state: rendered
 #
 #
@@ -1260,7 +1265,6 @@ EXAMPLES = """
 #
 #
 # "rendered": [
-#        [
 #       "set protocols ospf mpls-te enable",
 #       "set protocols ospf mpls-te router-address '192.0.11.11'",
 #       "set protocols ospf redistribute bgp",
@@ -1303,38 +1307,38 @@ EXAMPLES = """
 # Using parsed
 #
 #
-- name: Parse the commands for provided  structured configuration
+- name: Parse the commands for provided configuration
   vyos.vyos.vyos_ospfv2:
-    running_config:
-      "set protocols ospf area 2 area-type 'normal'
-       set protocols ospf area 2 authentication 'plaintext-password'
-       set protocols ospf area 2 shortcut 'enable'
-       set protocols ospf area 3 area-type 'nssa'
-       set protocols ospf area 4 area-type stub default-cost '20'
-       set protocols ospf area 4 network '192.0.2.0/24'
-       set protocols ospf area 4 range 192.0.3.0/24 cost '10'
-       set protocols ospf area 4 range 192.0.4.0/24 cost '12'
-       set protocols ospf auto-cost reference-bandwidth '2'
-       set protocols ospf default-information originate 'always'
-       set protocols ospf default-information originate metric '10'
-       set protocols ospf default-information originate metric-type '2'
-       set protocols ospf default-information originate route-map 'ingress'
-       set protocols ospf log-adjacency-changes 'detail'
-       set protocols ospf max-metric router-lsa 'administrative'
-       set protocols ospf max-metric router-lsa on-shutdown '10'
-       set protocols ospf max-metric router-lsa on-startup '10'
-       set protocols ospf mpls-te 'enable'
-       set protocols ospf mpls-te router-address '192.0.11.11'
-       set protocols ospf neighbor 192.0.11.12 poll-interval '10'
-       set protocols ospf neighbor 192.0.11.12 priority '2'
-       set protocols ospf parameters abr-type 'cisco'
-       set protocols ospf parameters 'opaque-lsa'
-       set protocols ospf parameters 'rfc1583-compatibility'
-       set protocols ospf parameters router-id '192.0.1.1'
-       set protocols ospf passive-interface 'eth1'
-       set protocols ospf passive-interface 'eth2'
-       set protocols ospf redistribute bgp metric '10'
-       set protocols ospf redistribute bgp metric-type '2'"
+    running_config: |
+      set protocols ospf area 2 area-type 'normal'
+      set protocols ospf area 2 authentication 'plaintext-password'
+      set protocols ospf area 2 shortcut 'enable'
+      set protocols ospf area 3 area-type 'nssa'
+      set protocols ospf area 4 area-type stub default-cost '20'
+      set protocols ospf area 4 network '192.0.2.0/24'
+      set protocols ospf area 4 range 192.0.3.0/24 cost '10'
+      set protocols ospf area 4 range 192.0.4.0/24 cost '12'
+      set protocols ospf auto-cost reference-bandwidth '2'
+      set protocols ospf default-information originate 'always'
+      set protocols ospf default-information originate metric '10'
+      set protocols ospf default-information originate metric-type '2'
+      set protocols ospf default-information originate route-map 'ingress'
+      set protocols ospf log-adjacency-changes 'detail'
+      set protocols ospf max-metric router-lsa 'administrative'
+      set protocols ospf max-metric router-lsa on-shutdown '10'
+      set protocols ospf max-metric router-lsa on-startup '10'
+      set protocols ospf mpls-te 'enable'
+      set protocols ospf mpls-te router-address '192.0.11.11'
+      set protocols ospf neighbor 192.0.11.12 poll-interval '10'
+      set protocols ospf neighbor 192.0.11.12 priority '2'
+      set protocols ospf parameters abr-type 'cisco'
+      set protocols ospf parameters 'opaque-lsa'
+      set protocols ospf parameters 'rfc1583-compatibility'
+      set protocols ospf parameters router-id '192.0.1.1'
+      set protocols ospf passive-interface 'eth1'
+      set protocols ospf passive-interface 'eth2'
+      set protocols ospf redistribute bgp metric '10'
+      set protocols ospf redistribute bgp metric-type '2'
     state: parsed
 #
 #
@@ -1755,7 +1759,6 @@ EXAMPLES = """
 # After state
 # ------------
 # vyos@192# run show configuration commands | grep ospf
-#
 """
 RETURN = """
 before:
@@ -1779,6 +1782,7 @@ commands:
   sample:
     - "set protocols ospf parameters router-id 192.0.1.1"
     - "set protocols ospf passive-interface 'eth1'"
+
 """
 
 
@@ -1802,9 +1806,11 @@ def main():
         ("state", "merged", ("config",)),
         ("state", "replaced", ("config",)),
         ("state", "rendered", ("config",)),
+        ("state", "overridden", ("config",)),
         ("state", "parsed", ("running_config",)),
     ]
     mutually_exclusive = [("config", "running_config")]
+
     module = AnsibleModule(
         argument_spec=Ospfv2Args.argument_spec,
         required_if=required_if,

@@ -31,17 +31,23 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
+---
 module: vyos_lag_interfaces
+version_added: '1.0.0'
 short_description: LAG interfaces resource module
-description: This module manages attributes of link aggregation groups on VyOS network
-  devices.
-version_added: 1.0.0
+description: This module manages attributes of link aggregation groups on VyOS network devices.
+author:
+- Rohit Thakur (@rohitthakur2590)
 notes:
-- Tested against VyOS 1.1.8 (helium).
+- Tested against VyOS 1.3.8.
 - This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
-author: Rohit Thakur (@rohitthakur2590)
 options:
   config:
     description: A list of link aggregation group configurations.
@@ -453,8 +459,7 @@ EXAMPLES = """
 # set interfaces ethernet eth2 bond-group 'bond2'
 # set interfaces ethernet eth3 bond-group 'bond3'
 #
-- name: Delete LAG attributes of given interfaces (Note This won't delete the interface
-    itself)
+- name: Delete LAG attributes of given interfaces (Note - This won't delete the interface itself)
   vyos.vyos.vyos_lag_interfaces:
     config:
       - name: bond2
@@ -718,19 +723,19 @@ EXAMPLES = """
 """
 RETURN = """
 before:
-  description: The configuration as structured data prior to module invocation.
+  description: The configuration prior to the module invocation.
   returned: always
   type: list
   sample: >
     The configuration returned will always be in the same format
-     of the parameters above.
+    of the parameters above.
 after:
-  description: The configuration as structured data after module completion.
+  description: The resulting configuration module invocation.
   returned: when changed
   type: list
   sample: >
     The configuration returned will always be in the same format
-     of the parameters above.
+    of the parameters above.
 commands:
   description: The set of commands pushed to the remote device.
   returned: always
@@ -738,6 +743,7 @@ commands:
   sample:
     - 'set interfaces bonding bond2'
     - 'set interfaces bonding bond2 hash-policy layer2'
+
 """
 
 

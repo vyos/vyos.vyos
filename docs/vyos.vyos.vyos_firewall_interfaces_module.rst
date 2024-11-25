@@ -5,10 +5,10 @@
 vyos.vyos.vyos_firewall_interfaces
 **********************************
 
-**Manage firewall rules attributes of interfaces on VyOS devices**
+**Firewall interfaces resource module**
 
 
-Version added: 2.10.0
+Version added: 1.0.0
 
 .. contents::
    :local:
