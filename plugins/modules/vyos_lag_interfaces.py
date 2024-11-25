@@ -459,7 +459,7 @@ EXAMPLES = """
 # set interfaces ethernet eth2 bond-group 'bond2'
 # set interfaces ethernet eth3 bond-group 'bond3'
 #
-- name: Delete LAG attributes of given interfaces (Note- This won't delete the interface itself)
+- name: Delete LAG attributes of given interfaces (Note - This won't delete the interface itself)
   vyos.vyos.vyos_lag_interfaces:
     config:
       - name: bond2

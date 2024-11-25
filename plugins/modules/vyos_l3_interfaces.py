@@ -322,7 +322,7 @@ EXAMPLES = """
 # set interfaces ethernet eth3 vif 102 address '2001:db8:4000::3/34'
 # set interfaces ethernet eth3 vif 102 address '2001:db8:4000::2/34'
 
-- name: Delete L3 attributes of given interfaces (Note- This won't delete the interface itself)
+- name: Delete L3 attributes of given interfaces (Note - This won't delete the interface itself)
   vyos.vyos.vyos_l3_interfaces:
     config:
       - name: eth1

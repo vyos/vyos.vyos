@@ -175,7 +175,7 @@ ansible-playbook -e rm_dest=`pwd` \
                  -e structure=collection \
                  -e collection_org=vyos \
                  -e collection_name=vyos \
-                 -e model=../../../resource_module_models/models/vyos/firewall_rules/vyos_firewall_rules.yaml
+                 -e model=../../../resource_module_models/models/vyos/firewall_rules/vyos_firewall_rules.yaml \
                  ../../../resource_module_builder/site.yml
 ```
 
@@ -192,7 +192,7 @@ ansible-playbook -e rm_dest=`pwd` \
                      -e collection_org=vyos \
                      -e collection_name=vyos \
                      -e resource=bgp_address_family \
-                     -../../../cli_rm_builder/run.yml
+                     ../../../cli_rm_builder/run.yml
 ```
 
 Unlike the `resource_module_builder`, the `cli_rm_builder` does not require the `model` parameter. Instead, it uses the `resource` parameter to specify the resource to build.
