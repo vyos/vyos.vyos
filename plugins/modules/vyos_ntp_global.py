@@ -58,7 +58,6 @@ options:
             choices:
             - dynamic
             - noselect
-            - dynamic
             - pool
             - preempt
             - prefer
