@@ -479,8 +479,8 @@ EXAMPLES = """
 #
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_firewall_global:
-    running_config:
-      "set firewall global-options all-ping 'enable'
+    running_config: |
+       set firewall global-options all-ping 'enable'
        set firewall global-options broadcast-ping 'enable'
        set firewall global-options config-trap 'enable'
        set firewall global-options ip-src-route 'enable'
