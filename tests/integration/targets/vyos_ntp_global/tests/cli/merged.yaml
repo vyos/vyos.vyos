@@ -8,21 +8,7 @@
     - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_ntp_global: &id001
-        config:
-          servers:
-            - server: server5
-
-            - server: server4
-              options:
-                - noselect
-                - dynamic
-
-            - server: 10.3.6.5
-              options:
-                - noselect
-                - preempt
-                - dynamic
-                - prefer
+        config: "{{ merged.config }}"
         state: merged
 
     - vyos.vyos.vyos_facts:
@@ -39,7 +25,7 @@
     - name: Assert that before dicts were correctly generated
       assert:
         that:
-          - result.before == populate.config
+          - result.before == {}
 
     - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
@@ -49,6 +35,8 @@
       assert:
         that:
           - result['changed'] == false
+          - result['commands'] == []
+          - result['before'] == ansible_facts['network_resources']['ntp_global']
 
   always:
     - include_tasks: _remove_config.yaml

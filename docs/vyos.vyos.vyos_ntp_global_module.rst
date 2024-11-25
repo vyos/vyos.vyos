@@ -113,16 +113,22 @@ Parameters
                 </td>
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>noselect</li>
                                     <li>dynamic</li>
+                                    <li>noselect</li>
                                     <li>pool</li>
                                     <li>preempt</li>
                                     <li>prefer</li>
+                                    <li>nts</li>
+                                    <li>ptp</li>
+                                    <li>interleave</li>
                         </ul>
                 </td>
                 <td>
                         <div>server options for NTP</div>
-                        <div>`dynamic` changed to `pool` after v1.3</div>
+                        <div>`pool` replaces `dynamic` in Vyos 1.3</div>
+                        <div>`preempt` is only available in Vyos 1.3 and earlier</div>
+                        <div>`nts` was added in Vyos 1.4</div>
+                        <div>`ptp` and `interleave` were added in Vyos 1.5</div>
                 </td>
             </tr>
             <tr>
@@ -139,7 +145,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>server name for NTP</div>
+                        <div>server name or address for NTP</div>
                 </td>
             </tr>
 
@@ -194,7 +200,7 @@ Notes
 -----
 
 .. note::
-   - Tested against vyos 1.3
+   - Tested against vyos 1.3.8
    - This module works with connection ``network_cli``.
    - VyOS v.1.4+ uses chronyd, and path changes from `system` to `service`
 

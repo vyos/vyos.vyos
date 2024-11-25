@@ -22,7 +22,7 @@
     - name: Assert that the after dicts were correctly generated
       assert:
         that:
-          - result.after == populate.config
+          - result.after == {}
 
     - name: Delete the existing configuration with the provided running configuration (IDEMPOTENT)
       register: result
