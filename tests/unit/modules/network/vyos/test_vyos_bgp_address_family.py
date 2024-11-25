@@ -73,6 +73,8 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(prefix="192.1.13.0/24", route_map="map01"),
                                 dict(prefix="192.2.13.0/24", backdoor=True),
                             ],
+                            redistribute=[dict(protocol="rip", metric=15),
+                                          dict(protocol="ospf")],
                         ),
                         dict(
                             afi="ipv6",
@@ -120,7 +122,8 @@ class TestVyosBgpafModule(TestVyosModule):
                         ),
                         dict(
                             afi="ipv6",
-                            redistribute=[dict(protocol="ospfv3", metric=20)],
+                            redistribute=[dict(protocol="ospfv3", metric=20),
+                                          dict(protocol="static")],
                         ),
                     ],
                     neighbors=[
@@ -152,7 +155,7 @@ class TestVyosBgpafModule(TestVyosModule):
         )
         commands = [
             "set protocols bgp 65536 address-family ipv4-unicast aggregate-address 192.0.2.0/24 as-setipv4-unicast aggregate-address 192.0.2.0/24 summary-only",
-            # "set protocols bgp 65536 address-family ipv6-unicast redistribute ospfv3",
+            "set protocols bgp 65536 address-family ipv6-unicast redistribute static",
             "set protocols bgp 65536 address-family ipv6-unicast redistribute ospfv3 metric 20",
             "set protocols bgp 65536 neighbor 203.0.113.5 address-family ipv4-unicast filter-list export list01",
             "set protocols bgp 65536 neighbor 203.0.113.5 address-family ipv4-unicast capability  prefix-list send",
@@ -175,6 +178,8 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(prefix="192.1.13.0/24", route_map="map01"),
                                 dict(prefix="192.2.13.0/24", backdoor=True),
                             ],
+                            redistribute=[dict(protocol="rip", metric=15),
+                                          dict(protocol="ospf")],
                         ),
                         dict(
                             afi="ipv6",
@@ -220,6 +225,8 @@ class TestVyosBgpafModule(TestVyosModule):
                             networks=[
                                 dict(prefix="192.1.13.0/24", route_map="map01"),
                             ],
+                            redistribute=[dict(protocol="ospf", metric=25),
+                                          dict(protocol="rip")]
                         ),
                         dict(
                             afi="ipv6",
@@ -270,9 +277,11 @@ class TestVyosBgpafModule(TestVyosModule):
             "delete protocols bgp 65536 neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged",
             "delete protocols bgp 65536 neighbor 192.0.2.25 address-family ipv4-unicast soft-reconfiguration",
             "delete protocols bgp 65536 address-family ipv6-unicast redistribute ripng",
+            "delete protocols bgp 65536 address-family ipv4-unicast redistribute rip",
             "delete protocols bgp 65536 address-family ipv4-unicast network 192.2.13.0/24",
             "set protocols bgp 65536 address-family ipv4-unicast aggregate-address 192.0.2.0/24 summary-only",
             "set protocols bgp 65536 address-family ipv6-unicast redistribute ospfv3 metric 20",
+            "set protocols bgp 65536 address-family ipv4-unicast redistribute ospf metric 25",
             "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv4-unicast route-map import map01",
             "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv6-unicast distribute-list export 10",
             "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv6-unicast route-server-client",
@@ -295,6 +304,8 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(prefix="192.1.13.0/24", route_map="map01"),
                                 dict(prefix="192.2.13.0/24", backdoor=True),
                             ],
+                            redistribute=[dict(protocol="rip", metric=15),
+                                          dict(protocol="ospf")],
                         ),
                         dict(
                             afi="ipv6",
@@ -338,6 +349,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             afi="ipv4",
                             networks=[
                                 dict(prefix="192.1.13.0/24", route_map="map01"),
+                                dict(prefix="192.2.13.0/24"),                                
                             ],
                         ),
                         dict(
@@ -368,8 +380,9 @@ class TestVyosBgpafModule(TestVyosModule):
             "delete protocols bgp 65536 neighbor 203.0.113.5 address-family",
             "delete protocols bgp 65536 neighbor 192.0.2.25 address-family",
             "delete protocols bgp 65536 address-family ipv6-unicast redistribute ripng",
+            "delete protocols bgp 65536 address-family ipv4 redistribute",
             "delete protocols bgp 65536 address-family ipv4 aggregate-address",
-            "delete protocols bgp 65536 address-family ipv4-unicast network 192.2.13.0/24",
+            "delete protocols bgp 65536 address-family ipv4-unicast network 192.2.13.0/24 backdoor",
             "set protocols bgp 65536 address-family ipv6-unicast redistribute ospfv3 metric 20",
             "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv4-unicast route-map import map01",
             "set protocols bgp 65536 neighbor 192.10.21.25 address-family ipv6-unicast distribute-list export 10",
