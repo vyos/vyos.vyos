@@ -276,8 +276,12 @@ def _tmplt_bgp_af_network_generic(config_data):
 def _tmplt_bgp_af_delete_network(config_data):
     afi = config_data["address_family"]["afi"] + "-unicast"
     command = "protocols bgp {as_number} address-family ".format(**config_data)
-    config_data = config_data["address_family"]
     command += afi + " network {prefix}".format(**config_data["networks"])
+    config_data = config_data["address_family"]["networks"]
+    if config_data.get("backdoor"):
+        command += " backdoor"
+    elif config_data.get("route_map"):
+        command += " route_map"  
     return command
 
 
