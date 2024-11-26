@@ -278,6 +278,7 @@ class TestVyosBgpafModule(TestVyosModule):
             "delete protocols bgp 65536 neighbor 192.0.2.25 address-family ipv4-unicast soft-reconfiguration",
             "delete protocols bgp 65536 address-family ipv6-unicast redistribute ripng",
             "delete protocols bgp 65536 address-family ipv4-unicast redistribute rip",
+            "delete protocols bgp 65536 address-family ipv4-unicast network 192.2.13.0/24 backdoor",
             "delete protocols bgp 65536 address-family ipv4-unicast network 192.2.13.0/24",
             "set protocols bgp 65536 address-family ipv4-unicast aggregate-address 192.0.2.0/24 summary-only",
             "set protocols bgp 65536 address-family ipv6-unicast redistribute ospfv3 metric 20",
@@ -349,7 +350,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             afi="ipv4",
                             networks=[
                                 dict(prefix="192.1.13.0/24", route_map="map01"),
-                                dict(prefix="192.2.13.0/24"),                                
+                                dict(prefix="192.2.13.0/24"),
                             ],
                         ),
                         dict(
