@@ -31,25 +31,31 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
+---
 module: vyos_interfaces
-short_description: Interfaces resource module
+version_added: '2.9.0'
+short_description: Manages interface attributes of VyOS network devices.
 description:
 - This module manages the interface attributes on VyOS network devices.
-- This module supports managing base attributes of Ethernet, Bonding, VXLAN, Loopback
-  and Virtual Tunnel Interfaces.
-version_added: 1.0.0
+- This module supports managing base attributes of Ethernet, Bonding,
+  VXLAN, Loopback and Virtual Tunnel Interfaces.
 notes:
-- Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
-- The examples use the stdout_callback as yaml to produce task outputs.
+- Tested against VyOS 1.3.8
+- This module works with connection C(ansible.netcommon.network_cli).
+  See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Nilashish Chakraborty (@nilashishc)
 - Rohit Thakur (@rohitthakur2590)
 options:
   config:
-    description: The provided interfaces configuration.
+    description: The provided interface configuration.
     type: list
     elements: dict
     suboptions:
@@ -75,9 +81,9 @@ options:
         default: true
         description:
         - Administrative state of the interface.
-        - Set the value to C(true) to administratively enable the interface or C(false)
-          to disable it.
+        - Set the value to C(true) to administratively enable the interface or C(false) to disable it.
         type: bool
+        aliases: ['enable']
       mtu:
         description:
         - MTU for a specific interface. Refer to vendor documentation for valid values.
@@ -117,6 +123,7 @@ options:
               C(false) to disable it.
             type: bool
             default: true
+            aliases: ['enable']
           mtu:
             description:
             - MTU for the virtual sub-interface.
@@ -145,7 +152,6 @@ options:
     - parsed
     default: merged
 """
-
 EXAMPLES = """
 # Using merged
 
@@ -825,29 +831,50 @@ EXAMPLES = """
 #   name: eth0
 #   speed: auto
 """
-
 RETURN = """
 before:
-  description: The configuration as structured data prior to module invocation.
-  returned: always
-  sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
+  description: The configuration prior to the module execution.
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
   type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
 after:
-  description: The configuration as structured data after module completion.
+  description: The resulting configuration after module execution.
   returned: when changed
-  sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
   type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
 commands:
   description: The set of commands pushed to the remote device.
   returned: always
   type: list
   sample:
-    - 'set interfaces ethernet eth1 mtu 1200'
-    - 'set interfaces ethernet eth2 vif 100 description VIF 100'
+  - 'set interfaces ethernet eth1 mtu 1200'
+  - 'set interfaces ethernet eth2 vif 100 description VIF 100'
+rendered:
+  description: The provided configuration in the task rendered in device-native format (offline).
+  returned: when I(state) is C(rendered)
+  type: list
+  sample:
+  - 'set interfaces ethernet eth1 mtu 1200'
+  - 'set interfaces ethernet eth2 vif 100 description VIF 100'
+gathered:
+  description: Facts about the network resource gathered from the remote device as structured data.
+  returned: when I(state) is C(gathered)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+parsed:
+  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
+  returned: when I(state) is C(parsed)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+
 """
 
 
@@ -875,6 +902,7 @@ def main():
         ("state", "parsed", ("running_config",)),
     ]
     mutually_exclusive = [("config", "running_config")]
+
     module = AnsibleModule(
         argument_spec=InterfacesArgs.argument_spec,
         required_if=required_if,

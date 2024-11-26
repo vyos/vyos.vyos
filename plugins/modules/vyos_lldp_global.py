@@ -31,15 +31,21 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
+---
 module: vyos_lldp_global
+version_added: '1.0.0'
 short_description: LLDP global resource module
 description: This module manages link layer discovery protocol (LLDP) attributes on
   VyOS devices.
-version_added: 1.0.0
 notes:
-- Tested against VyOS 1.1.8 (helium).
+- Tested against VyOS 1.3.8
 - This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Rohit Thakur (@rohitthakur2590)
@@ -91,7 +97,6 @@ options:
     - rendered
     - parsed
     default: merged
-
 """
 EXAMPLES = """
 # Using merged
@@ -116,32 +121,24 @@ EXAMPLES = """
 # Module Execution Results
 # ------------------------
 #
-# "before": []
+#  before": {}
 #
-# "commands": [
-#        "set service lldp legacy-protocols fdp",
-#        "set service lldp legacy-protocols cdp",
-#        "set service lldp snmp enable",
-#        "set service lldp management-address '192.0.2.11'"
-#    ]
+#  commands": [
+#    "set service lldp legacy-protocols fdp",
+#    "set service lldp legacy-protocols cdp",
+#    "set service lldp snmp enable",
+#    "set service lldp management-address '192.0.2.11'"
+#  ]
 #
-# "after": [
-#        {
-#            "snmp": "enable"
-#        },
-#        {
-#            "address": "192.0.2.11"
-#        },
-#        {
-#            "legacy_protocols": [
-#                "cdp",
-#                "fdp"
-#            ]
-#        }
-#        {
-#            "enable": true
-#        }
+#  after": {
+#    "snmp": "enable"
+#    "address": "192.0.2.11"
+#    "legacy_protocols": [
+#        "cdp",
+#        "fdp"
 #    ]
+#    "enable": true
+#  }
 #
 # After state:
 # -------------
@@ -179,23 +176,16 @@ EXAMPLES = """
 # ------------------------
 #
 #
-# "before": [
-#        {
-#            "snmp": "enable"
-#        },
-#        {
-#            "address": "192.0.2.11"
-#        },
-#        {
-#            "legacy_protocols": [
-#                "cdp",
-#                "fdp"
-#            ]
-#        }
-#        {
-#            "enable": true
-#        }
+# "before": {
+#    "snmp": "enable"
+#    "address": "192.0.2.11"
+#    "legacy_protocols": [
+#        "cdp",
+#        "fdp"
 #    ]
+#    "enable": true
+#  }
+#
 # "commands": [
 #        "delete service lldp snmp",
 #        "delete service lldp legacy-protocols fdp",
@@ -204,21 +194,15 @@ EXAMPLES = """
 #        "set service lldp legacy-protocols sonmp"
 #    ]
 #
-# "after": [
-#        {
-#            "address": "192.0.2.14"
-#        },
-#        {
-#            "legacy_protocols": [
-#                "cdp",
-#                "edp",
-#                "sonmp"
-#            ]
-#        }
-#        {
-#            "enable": true
-#        }
+# "after": {
+#    "address": "192.0.2.14"
+#    "legacy_protocols": [
+#        "cdp",
+#        "edp",
+#        "sonmp"
 #    ]
+#    "enable": true
+#  }
 #
 # After state:
 # -------------
@@ -251,32 +235,24 @@ EXAMPLES = """
 # Module Execution Results
 # ------------------------
 #
-# "before": [
-#        {
-#            "address": "192.0.2.14"
-#        },
-#        {
-#            "legacy_protocols": [
-#                "cdp",
-#                "edp",
-#                "sonmp"
-#            ]
-#        }
-#        {
-#            "enable": true
-#        }
+# "before": {
+#    "address": "192.0.2.14"
+#    "legacy_protocols": [
+#       "cdp",
+#       "edp",
+#       "sonmp"
 #    ]
+#    "enable": true
+#  }
 #
 #  "commands": [
-#       "delete service lldp management-address",
-#        "delete service lldp legacy-protocols"
-#    ]
+#     "delete service lldp management-address",
+#     "delete service lldp legacy-protocols"
+#  ]
 #
-# "after": [
-#        {
-#            "enable": true
-#        }
-#          ]
+# "after": {
+#    "enable": true
+#  }
 #
 # After state
 # ------------
@@ -303,8 +279,7 @@ EXAMPLES = """
 # Module Execution Result
 # -------------------------
 #
-#    "gathered": [
-# {
+#    "gathered": {
 #        "config_trap": true,
 #        "group": {
 #            "address_group": [
@@ -406,10 +381,10 @@ EXAMPLES = """
 #
 #
 # "rendered": [
-#         "set service lldp legacy-protocols 'cdp'",
-#         "set service lldp",
-#         "set service lldp management-address '192.0.2.17'"
-#     ]
+#    "set service lldp legacy-protocols 'cdp'",
+#    "set service lldp",
+#    "set service lldp management-address '192.0.2.17'"
+#  ]
 #
 
 
@@ -431,30 +406,29 @@ EXAMPLES = """
 #
 #
 # "parsed": {
-#         "address": "192.0.2.11",
-#         "enable": true,
-#         "legacy_protocols": [
-#             "cdp",
-#             "fdp"
-#         ]
-#     }
-#
+#    "address": "192.0.2.11",
+#    "enable": true,
+#    "legacy_protocols": [
+#       "cdp",
+#       "fdp"
+#    ]
+#  }
 """
 RETURN = """
 before:
-  description: The configuration as structured data prior to module invocation.
+  description: The configuration prior to the module invocation.
   returned: always
-  type: list
+  type: dict
   sample: >
     The configuration returned will always be in the same format
-     of the parameters above.
+    of the parameters above.
 after:
-  description: The configuration as structured data after module completion.
+  description: The resulting configuration after module invocation.
   returned: when changed
-  type: list
+  type: dict
   sample: >
     The configuration returned will always be in the same format
-     of the parameters above.
+    of the parameters above.
 commands:
   description: The set of commands pushed to the remote device.
   returned: always
@@ -462,6 +436,7 @@ commands:
   sample:
     - set service lldp legacy-protocols sonmp
     - set service lldp management-address '192.0.2.14'
+
 """
 
 
@@ -485,15 +460,18 @@ def main():
         ("state", "merged", ("config",)),
         ("state", "replaced", ("config",)),
         ("state", "rendered", ("config",)),
+        ("state", "overridden", ("config",)),
         ("state", "parsed", ("running_config",)),
     ]
     mutually_exclusive = [("config", "running_config")]
+
     module = AnsibleModule(
         argument_spec=Lldp_globalArgs.argument_spec,
         required_if=required_if,
         supports_check_mode=True,
         mutually_exclusive=mutually_exclusive,
     )
+
     result = Lldp_global(module).execute_module()
     module.exit_json(**result)
 

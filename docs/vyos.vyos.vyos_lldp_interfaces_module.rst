@@ -46,7 +46,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>A list of lldp interfaces configurations.</div>
+                        <div>A list of LLDP interfaces configurations.</div>
                 </td>
             </tr>
                                 <tr>
@@ -66,7 +66,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>to disable lldp on the interface.</div>
+                        <div>Disable LLDP on the interfaces.</div>
                 </td>
             </tr>
             <tr>
@@ -132,6 +132,7 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">integer</span>
+                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -151,6 +152,7 @@ Parameters
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
+                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
@@ -309,7 +311,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Name of the  lldp interface.</div>
+                        <div>Name of the LLDP interface.</div>
                 </td>
             </tr>
 
@@ -362,7 +364,7 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.1.8 (helium).
+   - Tested against VyOS 1.3.8
    - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
@@ -397,16 +399,17 @@ Examples
                 longitude: 222.267255W
                 latitude: 33.524449N
         state: merged
-
     #
     #
     # -------------------------
     # Module Execution Result
     # -------------------------
     #
-    # before": []
+    # before": {}
     #
     #    "commands": [
+    #        "set service lldp interface eth1 location civic-based country-code 'US'",
+    #        "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'",
     #        "set service lldp interface eth1 location civic-based country-code 'US'",
     #        "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'",
     #        "set service lldp interface eth1",
@@ -419,34 +422,33 @@ Examples
     #        "set service lldp interface eth2 location coordinate-based datum 'WGS84'",
     #        "set service lldp interface eth2 location coordinate-based longitude '222.267255W'",
     #        "set service lldp interface eth2"
+    #    ]
     #
-    # "after": [
-    #        {
-    #            "location": {
-    #                "coordinate_based": {
-    #                    "altitude": 2200,
-    #                    "datum": "WGS84",
-    #                    "latitude": "33.524449N",
-    #                    "longitude": "222.267255W"
-    #                }
-    #            },
-    #            "name": "eth2"
-    #        },
-    #        {
-    #            "location": {
-    #                "civic_based": {
-    #                    "ca_info": [
-    #                        {
-    #                            "ca_type": 0,
-    #                            "ca_value": "ENGLISH"
-    #                        }
-    #                    ],
-    #                    "country_code": "US"
-    #                }
-    #            },
-    #            "name": "eth1"
-    #        }
-    #    ],
+    # "after": {
+    #      "location": {
+    #          "coordinate_based": {
+    #              "altitude": 2200,
+    #              "datum": "WGS84",
+    #              "latitude": "33.524449N",
+    #              "longitude": "222.267255W"
+    #          }
+    #      },
+    #      "name": "eth2"
+    #  },
+    #  {
+    #      "location": {
+    #          "civic_based": {
+    #              "ca_info": [
+    #                  {
+    #                      "ca_type": 0,
+    #                      "ca_value": "ENGLISH"
+    #                  }
+    #              ],
+    #              "country_code": "US"
+    #          }
+    #      },
+    #      "name": "eth1"
+    #  }
     #
     # After state:
     # -------------
@@ -540,33 +542,31 @@ Examples
     #        "set service lldp interface eth1 location coordinate-based longitude '222.267255W'"
     #    ]
     #
-    #    "after": [
-    #        {
-    #            "location": {
-    #                "civic_based": {
-    #                    "ca_info": [
-    #                        {
-    #                            "ca_type": 0,
-    #                            "ca_value": "ENGLISH"
-    #                        }
-    #                    ],
-    #                    "country_code": "US"
-    #                }
-    #            },
-    #            "name": "eth2"
+    #    "after": {
+    #        "location": {
+    #            "civic_based": {
+    #                "ca_info": [
+    #                    {
+    #                        "ca_type": 0,
+    #                        "ca_value": "ENGLISH"
+    #                    }
+    #                ],
+    #                "country_code": "US"
+    #            }
     #        },
-    #        {
-    #            "location": {
-    #                "coordinate_based": {
-    #                    "altitude": 2200,
-    #                    "datum": "WGS84",
-    #                    "latitude": "33.524449N",
-    #                    "longitude": "222.267255W"
-    #                }
-    #            },
-    #            "name": "eth1"
-    #        }
-    #    ]
+    #        "name": "eth2"
+    #    },
+    #    {
+    #        "location": {
+    #            "coordinate_based": {
+    #                "altitude": 2200,
+    #                "datum": "WGS84",
+    #                "latitude": "33.524449N",
+    #                "longitude": "222.267255W"
+    #            }
+    #        },
+    #        "name": "eth1"
+    #    }
     #
     # After state:
     # -------------
@@ -612,49 +612,49 @@ Examples
     # -------------------------
     #
     # "before": [
-    #        {
-    #            "enable": false,
-    #            "location": {
-    #                "civic_based": {
-    #                    "ca_info": [
-    #                        {
-    #                            "ca_type": 0,
-    #                            "ca_value": "ENGLISH"
-    #                        }
-    #                    ],
-    #                    "country_code": "US"
-    #                }
-    #            },
-    #            "name": "eth2"
-    #        },
-    #        {
-    #            "enable": false,
-    #            "location": {
-    #                "coordinate_based": {
-    #                    "altitude": 2200,
-    #                    "datum": "WGS84",
-    #                    "latitude": "33.524449N",
-    #                    "longitude": "222.267255W"
-    #                }
-    #            },
-    #            "name": "eth1"
+    #    {
+    #      "enable": false,
+    #      "location": {
+    #        "civic_based": {
+    #          "ca_info": [
+    #            {
+    #              "ca_type": 0,
+    #              "ca_value": "ENGLISH"
+    #            }
+    #          ],
+    #          "country_code": "US"
     #        }
-    #    ]
-    #
-    #    "commands": [
-    #        "delete service lldp interface eth2 location",
-    #        "delete service lldp interface eth2 disable",
-    #        "set service lldp interface eth2 location elin 0000000911"
-    #
-    #
-    #    "after": [
-    #        {
-    #            "location": {
-    #                "elin": 0000000911
-    #            },
-    #            "name": "eth2"
+    #      },
+    #      "name": "eth2"
+    #    },
+    #    {
+    #      "enable": false,
+    #      "location": {
+    #        "coordinate_based": {
+    #          "altitude": 2200,
+    #          "datum": "WGS84",
+    #          "latitude": "33.524449N",
+    #          "longitude": "222.267255W"
     #        }
-    #    ]
+    #      },
+    #      "name": "eth1"
+    #    }
+    #  ]
+    #
+    # "commands": [
+    #    "delete service lldp interface eth2 location",
+    #    "delete service lldp interface eth2 disable",
+    #    "set service lldp interface eth2 location elin 0000000911"
+    #  ]
+    #
+    # "after": [
+    #    {
+    #      "location": {
+    #        "elin": 0000000911
+    #      },
+    #      "name": "eth2"
+    #    }
+    #  ]
     #
     #
     # After state
@@ -672,7 +672,7 @@ Examples
     # vyos@vyos# run show configuration commands | grep lldp
     # set service lldp interface eth2 location elin '0000000911'
     #
-    - name: Delete lldp  interface attributes of given interfaces.
+    - name: Delete LLDP interface attributes of given interfaces.
       vyos.vyos.vyos_lldp_interfaces:
         config:
           - name: eth2
@@ -683,11 +683,17 @@ Examples
     # Module Execution Results
     # ------------------------
     #
-        before: [{location: {elin: 0000000911}, name: eth2}]
-    # "commands": [
-    #    "commands": [
-    #        "delete service lldp interface eth2"
-    #    ]
+    #  "before": [
+    #       {
+    #          "location": {
+    #              "elin": 0000000911
+    #          },
+    #          "name": "eth2"
+    #      }
+    #  ]
+    #  "commands": [
+    #      "delete service lldp interface eth2"
+    #  ]
     #
     # "after": []
     # After state
@@ -877,8 +883,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The configuration as structured data after module completion.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format
-     of the parameters above.</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format of the parameters above.</div>
                 </td>
             </tr>
             <tr>
@@ -895,8 +900,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The configuration as structured data prior to module invocation.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format
-     of the parameters above.</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format of the parameters above.</div>
                 </td>
             </tr>
             <tr>

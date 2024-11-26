@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Red Hat
+# Copyright 2024 Red Hat
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
@@ -78,10 +78,7 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                             "elements": "dict",
                             "options": {
                                 "group": {"type": "str"},
-                                "mode": {
-                                    "type": "str",
-                                    "choices": ["ro", "rw"],
-                                },
+                                "mode": {"type": "str", "choices": ["ro", "rw"]},
                                 "seclevel": {
                                     "type": "str",
                                     "choices": ["auth", "priv"],
@@ -171,10 +168,7 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                                 },
                                 "engine_id": {"type": "str"},
                                 "group": {"type": "str"},
-                                "mode": {
-                                    "type": "str",
-                                    "choices": ["ro", "rw"],
-                                },
+                                "mode": {"type": "str", "choices": ["ro", "rw"]},
                                 "privacy": {
                                     "type": "dict",
                                     "options": {

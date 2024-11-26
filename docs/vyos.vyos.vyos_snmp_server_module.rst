@@ -8,7 +8,7 @@ vyos.vyos.vyos_snmp_server
 **Manages snmp_server resource module**
 
 
-Version added: 2.7.0
+Version added: 1.0.0
 
 .. contents::
    :local:
@@ -1218,7 +1218,7 @@ Notes
 -----
 
 .. note::
-   - Tested against vyos 1.1.8
+   - Tested against vyos 1.3.8
    - This module works with connection ``network_cli``.
    - The Configuration defaults of the Vyos network devices are supposed to hinder idempotent behavior of plays
 
@@ -2065,7 +2065,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The set of commands pushed to the remote device.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">set service snmp community routers authorization &#x27;ro&#x27; set service snmp community routers client &#x27;203.0.113.10&#x27; set service snmp community routers client &#x27;203.0.113.20&#x27; set service snmp community routers network &#x27;192.0.2.0/24&#x27;</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set service snmp community routers authorization &#x27;ro&#x27;&quot;, &quot;set service snmp community routers client &#x27;203.0.113.10&#x27;&quot;, &quot;set service snmp community routers network &#x27;192.0.2.0/24&#x27;&quot;]</div>
                 </td>
             </tr>
             <tr>
@@ -2116,7 +2116,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The provided configuration in the task rendered in device-native format (offline).</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">set service snmp community routers authorization &#x27;ro&#x27; set service snmp community routers client &#x27;203.0.113.10&#x27; set service snmp community routers client &#x27;203.0.113.20&#x27; set service snmp community routers network &#x27;192.0.2.0/24&#x27;</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set service snmp community routers authorization &#x27;ro&#x27;&quot;, &quot;set service snmp community routers client &#x27;203.0.113.10&#x27;&quot;, &quot;set service snmp community routers network &#x27;192.0.2.0/24&#x27;&quot;]</div>
                 </td>
             </tr>
     </table>

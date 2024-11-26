@@ -5,10 +5,10 @@
 vyos.vyos.vyos_ntp_global
 *************************
 
-**Manages ntp modules of Vyos network devices**
+**NTP global resource module**
 
 
-Version added: 2.4.0
+Version added: 1.0.0
 
 .. contents::
    :local:
@@ -122,6 +122,7 @@ Parameters
                 </td>
                 <td>
                         <div>server options for NTP</div>
+                        <div>`dynamic` changed to `pool` after v1.3</div>
                 </td>
             </tr>
             <tr>
@@ -195,6 +196,7 @@ Notes
 .. note::
    - Tested against vyos 1.3
    - This module works with connection ``network_cli``.
+   - VyOS v.1.4+ uses chronyd, and path changes from `system` to `service`
 
 
 
@@ -210,9 +212,9 @@ Examples
     # # Before state:
     # # -------------
     #   vyos@vyos:~$ show configuration commands | grep ntp
-    #     set system ntp server time1.vyos.net
-    #     set system ntp server time2.vyos.net
-    #     set system ntp server time3.vyos.net
+    #     set service ntp server time1.vyos.net
+    #     set service ntp server time2.vyos.net
+    #     set service ntp server time3.vyos.net
     #   vyos@vyos:~$
 
     # # Task
@@ -261,20 +263,20 @@ Examples
     #    },
     #    "changed": true,
     #    "commands": [
-    #        "set system ntp allow-clients address 10.6.6.0/24",
-    #        "set system ntp listen-address 10.1.3.1",
-    #        "set system ntp server 203.0.113.0 prefer"
+    #        "set service ntp allow-clients address 10.6.6.0/24",
+    #        "set service ntp listen-address 10.1.3.1",
+    #        "set service ntp server 203.0.113.0 prefer"
     #    ]
 
     # After state:
     # # -------------
     #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set system ntp allow-clients address '10.6.6.0/24'
-    #        set system ntp listen-address '10.1.3.1'
-    #        set system ntp server 203.0.113.0 prefer,
-    #        set system ntp server time1.vyos.net
-    #        set system ntp server time2.vyos.net
-    #        set system ntp server time3.vyos.net
+    #        set service ntp allow-clients address '10.6.6.0/24'
+    #        set service ntp listen-address '10.1.3.1'
+    #        set service ntp server 203.0.113.0 prefer,
+    #        set service ntp server time1.vyos.net
+    #        set service ntp server time2.vyos.net
+    #        set service ntp server time3.vyos.net
     #        vyos@vyos:~$
 
 
@@ -285,25 +287,25 @@ Examples
     # # Before state:
     # # -------------
     #    vyos@vyos:~$ show configuration commands | grep ntp
-    #    set system ntp allow-clients address '10.4.9.0/24'
-    #    set system ntp allow-clients address '10.4.7.0/24'
-    #    set system ntp allow-clients address '10.1.2.0/24'
-    #    set system ntp allow-clients address '10.2.3.0/24'
-    #    set system ntp listen-address '10.1.9.16'
-    #    set system ntp listen-address '10.5.3.2'
-    #    set system ntp listen-address '10.7.9.21'
-    #    set system ntp listen-address '10.8.9.4'
-    #    set system ntp listen-address '10.4.5.1'
-    #    set system ntp server 10.3.6.5 noselect
-    #    set system ntp server 10.3.6.5 dynamic
-    #    set system ntp server 10.3.6.5 preempt
-    #    set system ntp server 10.3.6.5 prefer
-    #    set system ntp server server4 noselect
-    #    set system ntp server server4 dynamic
-    #    set system ntp server server5
-    #    set system ntp server time1.vyos.net
-    #    set system ntp server time2.vyos.net
-    #    set system ntp server time3.vyos.net
+    #    set service ntp allow-clients address '10.4.9.0/24'
+    #    set service ntp allow-clients address '10.4.7.0/24'
+    #    set service ntp allow-clients address '10.1.2.0/24'
+    #    set service ntp allow-clients address '10.2.3.0/24'
+    #    set service ntp listen-address '10.1.9.16'
+    #    set service ntp listen-address '10.5.3.2'
+    #    set service ntp listen-address '10.7.9.21'
+    #    set service ntp listen-address '10.8.9.4'
+    #    set service ntp listen-address '10.4.5.1'
+    #    set service ntp server 10.3.6.5 noselect
+    #    set service ntp server 10.3.6.5 dynamic
+    #    set service ntp server 10.3.6.5 preempt
+    #    set service ntp server 10.3.6.5 prefer
+    #    set service ntp server server4 noselect
+    #    set service ntp server server4 dynamic
+    #    set service ntp server server5
+    #    set service ntp server time1.vyos.net
+    #    set service ntp server time2.vyos.net
+    #    set service ntp server time3.vyos.net
     #    vyos@vyos:~$
 
     # # Task
@@ -396,32 +398,32 @@ Examples
     #    },
     #    "changed": true,
     #    "commands": [
-    #        "delete system ntp allow-clients address 10.4.7.0/24",
-    #        "delete system ntp allow-clients address 10.2.3.0/24",
-    #        "delete system ntp allow-clients address 10.1.2.0/24",
-    #        "delete system ntp allow-clients address 10.4.9.0/24",
-    #        "delete system ntp listen-address 10.7.9.21",
-    #        "delete system ntp listen-address 10.4.5.1",
-    #        "delete system ntp listen-address 10.5.3.2",
-    #        "delete system ntp listen-address 10.8.9.4",
-    #        "delete system ntp listen-address 10.1.9.16",
-    #        "delete system ntp server 10.3.6.5",
-    #        "delete system ntp server server4",
-    #        "delete system ntp server server5",
-    #        "set system ntp allow-clients address 10.6.6.0/24",
-    #        "set system ntp listen-address 10.1.3.1",
-    #        "set system ntp server 203.0.113.0 prefer"
+    #        "delete service ntp allow-clients address 10.4.7.0/24",
+    #        "delete service ntp allow-clients address 10.2.3.0/24",
+    #        "delete service ntp allow-clients address 10.1.2.0/24",
+    #        "delete service ntp allow-clients address 10.4.9.0/24",
+    #        "delete service ntp listen-address 10.7.9.21",
+    #        "delete service ntp listen-address 10.4.5.1",
+    #        "delete service ntp listen-address 10.5.3.2",
+    #        "delete service ntp listen-address 10.8.9.4",
+    #        "delete service ntp listen-address 10.1.9.16",
+    #        "delete service ntp server 10.3.6.5",
+    #        "delete service ntp server server4",
+    #        "delete service ntp server server5",
+    #        "set service ntp allow-clients address 10.6.6.0/24",
+    #        "set service ntp listen-address 10.1.3.1",
+    #        "set service ntp server 203.0.113.0 prefer"
     #    ]
 
     # After state:
     # # -------------
     #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set system ntp allow-clients address '10.6.6.0/24'
-    #        set system ntp listen-address '10.1.3.1'
-    #        set system ntp server 203.0.113.0 prefer,
-    #        set system ntp server time1.vyos.net
-    #        set system ntp server time2.vyos.net
-    #        set system ntp server time3.vyos.net
+    #        set service ntp allow-clients address '10.6.6.0/24'
+    #        set service ntp listen-address '10.1.3.1'
+    #        set service ntp server 203.0.113.0 prefer,
+    #        set service ntp server time1.vyos.net
+    #        set service ntp server time2.vyos.net
+    #        set service ntp server time3.vyos.net
     #        vyos@vyos:~$
 
     # # -------------------
@@ -431,12 +433,12 @@ Examples
     # # Before state:
     # # -------------
     #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set system ntp allow-clients address '10.6.6.0/24'
-    #        set system ntp listen-address '10.1.3.1'
-    #        set system ntp server 203.0.113.0 prefer,
-    #        set system ntp server time1.vyos.net
-    #        set system ntp server time2.vyos.net
-    #        set system ntp server time3.vyos.net
+    #        set service ntp allow-clients address '10.6.6.0/24'
+    #        set service ntp listen-address '10.1.3.1'
+    #        set service ntp server 203.0.113.0 prefer,
+    #        set service ntp server time1.vyos.net
+    #        set service ntp server time2.vyos.net
+    #        set service ntp server time3.vyos.net
     #        vyos@vyos:~$
 
     # Task
