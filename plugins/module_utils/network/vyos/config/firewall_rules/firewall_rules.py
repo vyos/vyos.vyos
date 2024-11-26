@@ -386,6 +386,8 @@ class Firewall_rules(ConfigBase):
                                 and not self._is_del(l_set, h)
                             ):
                                 commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
+                            elif key == "destination" or key == "source":
+                                commands.extend(self._add_src_or_dest(key, w, h, cmd, opr))
                         elif key == "p2p":
                             commands.extend(self._add_p2p(key, w, h, cmd, opr))
                         elif key == "tcp":
@@ -764,7 +766,7 @@ class Firewall_rules(ConfigBase):
                                 + str(rate["number"])
                                 + "/"
                                 + rate["unit"]
-                            ),
+                            )
                         )
                     if not opr and not (
                         h_limit
