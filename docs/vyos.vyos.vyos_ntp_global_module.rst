@@ -529,31 +529,31 @@ Examples
     #            },
     #            "changed": true,
     #            "commands": [
-    #                "delete system ntp allow-clients address 10.6.6.0/24",
-    #                "delete system ntp listen-address 10.1.3.1",
-    #                "delete system ntp server ser",
-    #                "set system ntp allow-clients address 10.3.3.0/24",
-    #                "set system ntp listen-address 10.7.8.1",
-    #                "set system ntp server server1 dynamic",
-    #                "set system ntp server server1 prefer",
-    #                "set system ntp server server2 noselect",
-    #                "set system ntp server server2 preempt",
-    #                "set system ntp server serv"
+    #                "delete service ntp allow-clients address 10.6.6.0/24",
+    #                "delete service ntp listen-address 10.1.3.1",
+    #                "delete service ntp server ser",
+    #                "set service ntp allow-clients address 10.3.3.0/24",
+    #                "set service ntp listen-address 10.7.8.1",
+    #                "set service ntp server server1 dynamic",
+    #                "set service ntp server server1 prefer",
+    #                "set service ntp server server2 noselect",
+    #                "set service ntp server server2 preempt",
+    #                "set service ntp server serv"
     #            ]
 
     # After state:
     # # -------------
     #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set system ntp allow-clients address '10.3.3.0/24'
-    #        set system ntp listen-address '10.7.8.1'
-    #        set system ntp server serv
-    #        set system ntp server server1 dynamic
-    #        set system ntp server server1 prefer
-    #        set system ntp server server2 noselect
-    #        set system ntp server server2 preempt
-    #        set system ntp server time1.vyos.net
-    #        set system ntp server time2.vyos.net
-    #        set system ntp server time3.vyos.net
+    #        set service ntp allow-clients address '10.3.3.0/24'
+    #        set service ntp listen-address '10.7.8.1'
+    #        set service ntp server serv
+    #        set service ntp server server1 dynamic
+    #        set service ntp server server1 prefer
+    #        set service ntp server server2 noselect
+    #        set service ntp server server2 preempt
+    #        set service ntp server time1.vyos.net
+    #        set service ntp server time2.vyos.net
+    #        set service ntp server time3.vyos.net
     #        vyos@vyos:~$
 
     # 4. Using gathered
@@ -562,16 +562,16 @@ Examples
     # # Before state:
     # # -------------
     #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set system ntp allow-clients address '10.3.3.0/24'
-    #        set system ntp listen-address '10.7.8.1'
-    #        set system ntp server serv
-    #        set system ntp server server1 dynamic
-    #        set system ntp server server1 prefer
-    #        set system ntp server server2 noselect
-    #        set system ntp server server2 preempt
-    #        set system ntp server time1.vyos.net
-    #        set system ntp server time2.vyos.net
-    #        set system ntp server time3.vyos.net
+    #        set service ntp allow-clients address '10.3.3.0/24'
+    #        set service ntp listen-address '10.7.8.1'
+    #        set service ntp server serv
+    #        set service ntp server server1 dynamic
+    #        set service ntp server server1 prefer
+    #        set service ntp server server2 noselect
+    #        set service ntp server server2 preempt
+    #        set service ntp server time1.vyos.net
+    #        set service ntp server time2.vyos.net
+    #        set service ntp server time3.vyos.net
     #        vyos@vyos:~$
 
     # Task
@@ -622,16 +622,16 @@ Examples
     # After state:
     # # -------------
     #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set system ntp allow-clients address '10.3.3.0/24'
-    #        set system ntp listen-address '10.7.8.1'
-    #        set system ntp server serv
-    #        set system ntp server server1 dynamic
-    #        set system ntp server server1 prefer
-    #        set system ntp server server2 noselect
-    #        set system ntp server server2 preempt
-    #        set system ntp server time1.vyos.net
-    #        set system ntp server time2.vyos.net
-    #        set system ntp server time3.vyos.net
+    #        set service ntp allow-clients address '10.3.3.0/24'
+    #        set service ntp listen-address '10.7.8.1'
+    #        set service ntp server serv
+    #        set service ntp server server1 dynamic
+    #        set service ntp server server1 prefer
+    #        set service ntp server server2 noselect
+    #        set service ntp server server2 preempt
+    #        set service ntp server time1.vyos.net
+    #        set service ntp server time2.vyos.net
+    #        set service ntp server time3.vyos.net
     #        vyos@vyos:~$
 
 
@@ -642,16 +642,16 @@ Examples
     # # Before state:
     # # -------------
     #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set system ntp allow-clients address '10.3.3.0/24'
-    #        set system ntp listen-address '10.7.8.1'
-    #        set system ntp server serv
-    #        set system ntp server server1 dynamic
-    #        set system ntp server server1 prefer
-    #        set system ntp server server2 noselect
-    #        set system ntp server server2 preempt
-    #        set system ntp server time1.vyos.net
-    #        set system ntp server time2.vyos.net
-    #        set system ntp server time3.vyos.net
+    #        set service ntp allow-clients address '10.3.3.0/24'
+    #        set service ntp listen-address '10.7.8.1'
+    #        set service ntp server serv
+    #        set service ntp server server1 dynamic
+    #        set service ntp server server1 prefer
+    #        set service ntp server server2 noselect
+    #        set service ntp server server2 preempt
+    #        set service ntp server time1.vyos.net
+    #        set service ntp server time2.vyos.net
+    #        set service ntp server time3.vyos.net
     #        vyos@vyos:~$
 
     # # Task
@@ -714,20 +714,20 @@ Examples
     #            },
     #            "changed": true,
     #            "commands": [
-    #                "delete system ntp allow-clients",
-    #                "delete system ntp listen-address",
-    #                "delete system ntp server serv",
-    #                "delete system ntp server server1",
-    #                "delete system ntp server server2"
+    #                "delete service ntp allow-clients",
+    #                "delete service ntp listen-address",
+    #                "delete service ntp server serv",
+    #                "delete service ntp server server1",
+    #                "delete service ntp server server2"
     #
     #            ]
 
     # After state:
     # # -------------
     #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set system ntp server time1.vyos.net
-    #        set system ntp server time2.vyos.net
-    #        set system ntp server time3.vyos.net
+    #        set service ntp server time1.vyos.net
+    #        set service ntp server time2.vyos.net
+    #        set service ntp server time3.vyos.net
     #        vyos@vyos:~$
 
 
@@ -738,9 +738,9 @@ Examples
     # # Before state:
     # # -------------
     #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set system ntp server time1.vyos.net
-    #        set system ntp server time2.vyos.net
-    #        set system ntp server time3.vyos.net
+    #        set service ntp server time1.vyos.net
+    #        set service ntp server time2.vyos.net
+    #        set service ntp server time3.vyos.net
     #        vyos@vyos:~$
 
     # Task
@@ -768,16 +768,16 @@ Examples
     # # Task output:
     # # -------------
     #           "rendered": [
-    #                "set system ntp allow-clients address 10.7.7.0/24",
-    #                "set system ntp allow-clients address 10.8.8.0/24",
-    #                "set system ntp listen-address 10.7.9.1",
-    #                "set system ntp server server7",
-    #                "set system ntp server server45 noselect",
-    #                "set system ntp server server45 prefer",
-    #                "set system ntp server server45 pool",
-    #                "set system ntp server time1.vyos.net",
-    #                "set system ntp server time2.vyos.net",
-    #                "set system ntp server time3.vyos.net"
+    #                "set service ntp allow-clients address 10.7.7.0/24",
+    #                "set service ntp allow-clients address 10.8.8.0/24",
+    #                "set service ntp listen-address 10.7.9.1",
+    #                "set service ntp server server7",
+    #                "set service ntp server server45 noselect",
+    #                "set service ntp server server45 prefer",
+    #                "set service ntp server server45 pool",
+    #                "set service ntp server time1.vyos.net",
+    #                "set service ntp server time2.vyos.net",
+    #                "set service ntp server time3.vyos.net"
     #            ]
 
 
@@ -787,15 +787,15 @@ Examples
 
     # # sample_config.cfg:
     # # -------------
-    #           "set system ntp allow-clients address 10.7.7.0/24",
-    #           "set system ntp listen-address 10.7.9.1",
-    #           "set system ntp server server45 noselect",
-    #           "set system ntp allow-clients addres 10.8.6.0/24",
-    #           "set system ntp listen-address 10.5.4.1",
-    #           "set system ntp server server45 dynamic",
-    #           "set system ntp server time1.vyos.net",
-    #           "set system ntp server time2.vyos.net",
-    #           "set system ntp server time3.vyos.net"
+    #           "set service ntp allow-clients address 10.7.7.0/24",
+    #           "set service ntp listen-address 10.7.9.1",
+    #           "set service ntp server server45 noselect",
+    #           "set service ntp allow-clients addres 10.8.6.0/24",
+    #           "set service ntp listen-address 10.5.4.1",
+    #           "set service ntp server server45 dynamic",
+    #           "set service ntp server time1.vyos.net",
+    #           "set service ntp server time2.vyos.net",
+    #           "set service ntp server time3.vyos.net"
 
     # Task:
     # -------------
@@ -899,7 +899,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The set of commands pushed to the remote device.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set system ntp server server1 dynamic&#x27;, &#x27;set system ntp server server1 prefer&#x27;, &#x27;set system ntp server server2 noselect&#x27;, &#x27;set system ntp server server2 preempt&#x27;, &#x27;set system ntp server server_add preempt&#x27;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set service ntp server server1 dynamic&#x27;, &#x27;set service ntp server server1 prefer&#x27;, &#x27;set service ntp server server2 noselect&#x27;, &#x27;set service ntp server server2 preempt&#x27;, &#x27;set service ntp server server_add preempt&#x27;]</div>
                 </td>
             </tr>
             <tr>
@@ -950,7 +950,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The provided configuration in the task rendered in device-native format (offline).</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set system ntp server server1 dynamic&#x27;, &#x27;set system ntp server server1 prefer&#x27;, &#x27;set system ntp server server2 noselect&#x27;, &#x27;set system ntp server server2 preempt&#x27;, &#x27;set system ntp server server_add preempt&#x27;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set service ntp server server1 dynamic&#x27;, &#x27;set service ntp server server1 prefer&#x27;, &#x27;set service ntp server server2 noselect&#x27;, &#x27;set service ntp server server2 preempt&#x27;, &#x27;set service ntp server server_add preempt&#x27;]</div>
                 </td>
             </tr>
     </table>
