@@ -1333,6 +1333,31 @@ class Bgp_globalTemplate(NetworkTemplate):
             },
         },
         {
+            "name": "network.generic",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+(?P<as_num>\d+)
+                \s+network
+                \s+(?P<address>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "setval": "protocols bgp {{ as_number }} network {{ network.address }}",
+            "remval": "protocols bgp {{ as_number }} network {{ network.address }}",
+            "compval": "network.address",
+            "result": {
+                "as_number": "{{ as_num }}",
+                "network": [
+                    {
+                        "address": "{{ address }}",
+                    },
+                ],
+            },
+        },
+        {
             "name": "network.backdoor",
             "getval": re.compile(
                 r"""
