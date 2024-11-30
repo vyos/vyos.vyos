@@ -25,6 +25,13 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.bgp
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_address_family import (
     Bgp_address_familyTemplate,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_address_family_14 import (
+    Bgp_address_familyTemplate14,
+)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Bgp_address_familyFacts(object):
@@ -58,8 +65,11 @@ class Bgp_address_familyFacts(object):
             if "address-family" in resource:
                 config_lines.append(re.sub("'", "", resource))
 
-        # parse native config using the Bgp_address_family template
-        bgp_address_family_parser = Bgp_address_familyTemplate(lines=config_lines)
+        # parse native config using the Bgp_address_family template based on version
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            bgp_address_family_parser = Bgp_address_familyTemplate14(lines=config_lines)
+        else:
+            bgp_address_family_parser = Bgp_address_familyTemplate(lines=config_lines)
         objs = bgp_address_family_parser.parse()
         if objs:
             if "address_family" in objs:

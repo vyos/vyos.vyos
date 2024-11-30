@@ -34,7 +34,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_template
 )
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_address_family_14 import (
-    Bgp_address_familyTemplate14
+    Bgp_address_familyTemplate14,
 )
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
@@ -93,13 +93,16 @@ class Bgp_address_family(ResourceModule):
         wantd = {}
         haved = {}
 
+        # if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+        #     self._tmplt.set_as_number(self.want.get("as_number"))
+
         if self.want.get("as_number") == self.have.get("as_number") or not self.have:
             if self.want:
                 wantd = {self.want["as_number"]: self.want}
             if self.have:
                 haved = {self.have["as_number"]: self.have}
         else:
-            self._module.fail_json(msg="Only one bgp instance is allowed per device")
+            self._module.fail_json(msg="Only one bgp instance is allowed per device" + str(self.have))
 
         # turn all lists of dicts into dicts prior to merge
         for entry in wantd, haved:

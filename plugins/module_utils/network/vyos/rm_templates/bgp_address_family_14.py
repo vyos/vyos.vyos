@@ -237,12 +237,27 @@ def _tmplt_bgp_af_neighbor(config_data):
 class Bgp_address_familyTemplate14(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
+        # self._overrides = {  # 1.4+ injection to re-use the scanners
+        #     "as_num": "",  # Deafult is empty
+        # }        
         super(Bgp_address_familyTemplate14, self).__init__(
             lines=lines,
             tmplt=self,
             prefix=prefix,
             module=module,
         )
+
+    # def setas_num(self, as_number: str):
+    #     """set_system_as"""
+    #     self._overrides["as_num"] = as_number
+
+    # def render(self, data, parser_name, negate=False):
+    #     """render"""
+    #     # add path to the data before rendering
+    #     data = data.copy()
+    #     data.update(self._overrides)
+    #     # call the original method
+    #     return super(Bgp_address_familyTemplate14, self).render(data, parser_name, negate)
 
     # fmt: off
     PARSERS = [
@@ -258,7 +273,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp system-as {{ as_number}}",
+            "setval": "protocols bgp system-as {{ as_num }}",
             "compval": "as_number",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -271,6 +286,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 *$""",
@@ -279,6 +300,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "setval": "protocols bgp address-family {{ address_family.afi }}-unicast",
             "compval": "as_number",
             "result": {
+                "as_number": "{{ as_num }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": "{{ afi }}",
@@ -290,6 +312,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "aggregate_address",
             "getval": re.compile(
                 r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -307,6 +335,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                       " {{ address_family.aggregate_address.prefix }}",
             "compval": "address_family.aggregate_address",
             "result": {
+                "as_number": "{{ as_num }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": "{{ afi }}",
@@ -328,6 +357,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+network
@@ -340,6 +375,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": "protocols bgp address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
             "compval": "address_family.networks.backdoor",
             "result": {
+                "as_number": "{{ as_num }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": "{{ afi }}",
@@ -360,6 +396,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+network
@@ -374,6 +416,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": "protocols bgp address-family {{ address_family.afi }}-unicast network {{ address_family.networks.address }}",
             "compval": "address_family.networks.path_limit",
             "result": {
+                "as_number": "{{ as_num }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": "{{ afi }}",
@@ -394,6 +437,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+network
@@ -408,6 +457,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": "protocols bgp address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
             "compval": "address_family.networks.route_map",
             "result": {
+                "as_number": "{{ as_num }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": "{{ afi }}",
@@ -432,8 +482,13 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+(?P<afi>\S+)-unicast
                 \s+redistribute
                 \s+(?P<proto>\S+)
-                \s+metric
-                \s+(?P<val>\S+)
+                \s+metric\s+(?P<val>\S+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
                 *$""",
                 re.VERBOSE,
             ),
@@ -441,13 +496,14 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_delete_redistribute,
             "compval": "address_family.redistribute.metric",
             "result": {
+                "as_number": "{{ as_num }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": "{{ afi }}",
                         "redistribute": [
                             {
                                 "protocol": "{{ proto }}",
-                                "metric": "{{ val|int }}",
+                                "metric": "{{ val }}",
                             },
                         ],
                     },
@@ -458,6 +514,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "redistribute.route_map",
             "getval": re.compile(
                 r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -474,6 +536,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_delete_redistribute,
             "compval": "address_family.redistribute.route_map",
             "result": {
+                "as_number": "{{ as_num }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": "{{ afi }}",
@@ -494,6 +557,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+redistribute
@@ -506,6 +575,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_delete_redistribute,
             "compval": "address_family.redistribute.table",
             "result": {
+                "as_number": "{{ as_num }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": "{{ afi }}",
@@ -525,6 +595,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -534,6 +610,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "setval": "protocols bgp neighbor {{ neighbors.neighbor_address }} address-family",
             "compval": "neighbors",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -548,6 +625,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -558,6 +641,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "setval": "protocols bgp neighbor {{ neighbors.neighbor_address }} address-family {{ neighbors.address_family.afi }}-unicast",
             "compval": "neighbors",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -577,6 +661,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -591,6 +681,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.allowas_in",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -611,6 +702,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -623,6 +720,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.as_override",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -643,6 +741,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -656,6 +760,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.attribute_unchanged.as_path",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -678,6 +783,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -691,6 +802,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.attribute_unchanged.med",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -713,6 +825,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -726,6 +844,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.attribute_unchanged.next_hop",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -748,6 +867,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -761,6 +886,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.capability.dynamic",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -783,6 +909,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -797,6 +929,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.capability.orf",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -819,6 +952,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -833,6 +972,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.default_originate",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -853,6 +993,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -867,6 +1013,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.distribute_list",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -892,6 +1039,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -906,6 +1059,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.prefix_list",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -931,6 +1085,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -945,6 +1105,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.filter_list",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -970,6 +1131,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -983,6 +1150,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.maximum_prefix",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -1003,6 +1171,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1015,6 +1189,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.nexthop_local",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -1035,6 +1210,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1047,6 +1228,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.nexthop_self",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -1067,6 +1249,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1080,6 +1268,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.peer_group",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -1100,6 +1289,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1112,6 +1307,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.remove_private_as",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -1132,6 +1328,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1146,6 +1348,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.route_map",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -1171,6 +1374,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1183,6 +1392,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.route_reflector_client",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -1203,6 +1413,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1215,6 +1431,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.route_server_client",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -1235,6 +1452,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1248,6 +1471,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.soft_reconfiguration",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -1268,6 +1492,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1281,6 +1511,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.unsuppress_map",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
@@ -1301,6 +1532,12 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$|
+                ^set
+                \s+protocols
+                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1314,6 +1551,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "remval": _tmplt_bgp_af_neighbor_delete,
             "compval": "neighbors.address_family.weight",
             "result": {
+                "as_number": "{{ as_num }}",
                 "neighbors": {
                     "{{ address }}": {
                         "neighbor_address": "{{ address }}",
