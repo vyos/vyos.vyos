@@ -358,12 +358,10 @@ class Bgp_address_family(ResourceModule):
                 )
 
     def _compare_asn(self, want, have):
-        parsers = [
-            "system_as",
-        ]
+ 
         wasn = want.get("as_number")
         hasn = have.get("as_number")
-        # self._module.fail_json(msg=str(self.))
+        # self._module.fail_json(msg=str(hasn))
         # for name, entry in iteritems(waf):
         #     self._compare_lists(
         #         entry,

@@ -286,12 +286,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 *$""",
@@ -312,12 +306,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "aggregate_address",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -357,12 +345,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+network
@@ -393,12 +375,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "network.path_limit",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -434,12 +410,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "network.route_map",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -483,12 +453,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+redistribute
                 \s+(?P<proto>\S+)
                 \s+metric\s+(?P<val>\S+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
                 *$""",
                 re.VERBOSE,
             ),
@@ -514,12 +478,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "redistribute.route_map",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -557,12 +515,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+redistribute
@@ -595,12 +547,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -622,12 +568,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "neighbors.address_family",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -658,12 +598,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "neighbors.allowas_in",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -702,12 +636,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -738,12 +666,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "neighbors.attribute_unchanged.as_path",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -783,12 +705,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -822,12 +738,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "neighbors.attribute_unchanged.next_hop",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -867,12 +777,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -906,12 +810,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "neighbors.capability_orf",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -952,12 +850,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -990,12 +882,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "neighbors.distribute_list",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -1039,12 +925,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1082,12 +962,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "neighbors.filter_list",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -1131,12 +1005,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1168,12 +1036,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "neighbors.nexthop_local",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -1210,12 +1072,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1246,12 +1102,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "neighbors.peer_group",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -1289,12 +1139,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1325,12 +1169,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "neighbors.route_map",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -1374,12 +1212,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1413,12 +1245,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1449,12 +1275,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "neighbors.soft_reconfiguration",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
@@ -1492,12 +1312,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
-                ^set
-                \s+protocols
-                \s+bgp
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1529,12 +1343,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             "name": "neighbors.weight",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+system-as
-                \s+(?P<as_num>\d+)
-                *$|
                 ^set
                 \s+protocols
                 \s+bgp
