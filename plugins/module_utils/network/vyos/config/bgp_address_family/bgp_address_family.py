@@ -133,7 +133,7 @@ class Bgp_address_family(ResourceModule):
         for the Bgp_address_family network resource.
         """
         if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-            self._compare_asn(want,have)
+            self._compare_asn(want, have)
 
         self._compare_af(want, have)
         self._compare_neighbors(want, have)
@@ -358,7 +358,6 @@ class Bgp_address_family(ResourceModule):
                 )
 
     def _compare_asn(self, want, have):
- 
         if want.get("as_number") and not have.get("as_number"):
             self.commands.append(
                 "set protocols bgp "
@@ -366,7 +365,6 @@ class Bgp_address_family(ResourceModule):
                 + " "
                 + str(want.get("as_number")),
             )
-
 
     def _bgp_af_list_to_dict(self, entry):
         for name, proc in iteritems(entry):

@@ -239,7 +239,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
         prefix = {"set": "set", "remove": "delete"}
         # self._overrides = {  # 1.4+ injection to re-use the scanners
         #     "as_num": "",  # Deafult is empty
-        # }        
+        # }
         super(Bgp_address_familyTemplate14, self).__init__(
             lines=lines,
             tmplt=self,
