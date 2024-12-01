@@ -273,7 +273,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp system-as {{ as_num }}",
+            "setval": "protocols bgp system-as {{ as_number }}",
             "compval": "as_number",
             "result": {
                 "as_number": "{{ as_num }}",

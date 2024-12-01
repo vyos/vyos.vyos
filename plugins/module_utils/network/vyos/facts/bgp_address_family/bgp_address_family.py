@@ -62,7 +62,7 @@ class Bgp_address_familyFacts(object):
             data = self.get_device_data(connection)
 
         for resource in data.splitlines():
-            if "address-family" in resource:
+            if "address-family" in resource or "system-as" in resource:
                 config_lines.append(re.sub("'", "", resource))
 
         # parse native config using the Bgp_address_family template based on version

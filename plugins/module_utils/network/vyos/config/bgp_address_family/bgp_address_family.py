@@ -102,7 +102,7 @@ class Bgp_address_family(ResourceModule):
             if self.have:
                 haved = {self.have["as_number"]: self.have}
         else:
-            self._module.fail_json(msg="Only one bgp instance is allowed per device" + str(self.have))
+            self._module.fail_json(msg="Only one bgp instance is allowed per device")
 
         # turn all lists of dicts into dicts prior to merge
         for entry in wantd, haved:
@@ -132,6 +132,9 @@ class Bgp_address_family(ResourceModule):
         the `want` and `have` data with the `parsers` defined
         for the Bgp_address_family network resource.
         """
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            self._compare_asn(want,have)
+
         self._compare_af(want, have)
         self._compare_neighbors(want, have)
         # Do the negation first
@@ -296,7 +299,6 @@ class Bgp_address_family(ResourceModule):
 
     def _compare_lists(self, want, have, as_number, afi):
         parsers = [
-            "system_as",
             "aggregate_address",
             "network.backdoor",
             "network.path_limit",
@@ -305,6 +307,12 @@ class Bgp_address_family(ResourceModule):
             "redistribute.route_map",
             "redistribute.table",
         ]
+
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            delete_asn = ""
+        else:
+            delete_asn = str(as_number)
+
         for attrib in ["redistribute", "networks", "aggregate_address"]:
             wdict = want.pop(attrib, {})
             hdict = have.pop(attrib, {})
@@ -331,7 +339,7 @@ class Bgp_address_family(ResourceModule):
                 attrib = re.sub("networks", "network", attrib)
                 self.commands.append(
                     "delete protocols bgp "
-                    + str(as_number)
+                    + delete_asn
                     + " "
                     + "address-family "
                     + afi
@@ -348,6 +356,25 @@ class Bgp_address_family(ResourceModule):
                         "address_family": {"afi": afi, attrib: entry},
                     },
                 )
+
+    def _compare_asn(self, want, have):
+        parsers = [
+            "system_as",
+        ]
+        wasn = want.get("as_number")
+        hasn = have.get("as_number")
+        # self._module.fail_json(msg=str(self.))
+        # for name, entry in iteritems(waf):
+        #     self._compare_lists(
+        #         entry,
+        #         have=haf.get(name, {}),
+        #         as_number=want["as_number"],
+        #         afi=name,
+        #     )
+        # for name, entry in iteritems(haf):
+        #     if name not in waf.keys() and self.state == "replaced":
+        #         continue
+        #     self._compare_lists({}, entry, as_number=have["as_number"], afi=name)
 
     def _bgp_af_list_to_dict(self, entry):
         for name, proc in iteritems(entry):
