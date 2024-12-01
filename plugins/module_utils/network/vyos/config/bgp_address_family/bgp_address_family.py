@@ -359,20 +359,14 @@ class Bgp_address_family(ResourceModule):
 
     def _compare_asn(self, want, have):
  
-        wasn = want.get("as_number")
-        hasn = have.get("as_number")
-        # self._module.fail_json(msg=str(hasn))
-        # for name, entry in iteritems(waf):
-        #     self._compare_lists(
-        #         entry,
-        #         have=haf.get(name, {}),
-        #         as_number=want["as_number"],
-        #         afi=name,
-        #     )
-        # for name, entry in iteritems(haf):
-        #     if name not in waf.keys() and self.state == "replaced":
-        #         continue
-        #     self._compare_lists({}, entry, as_number=have["as_number"], afi=name)
+        if want.get("as_number") and not have.get("as_number"):
+            self.commands.append(
+                "set protocols bgp "
+                + "system-as "
+                + " "
+                + str(want.get("as_number")),
+            )
+
 
     def _bgp_af_list_to_dict(self, entry):
         for name, proc in iteritems(entry):
