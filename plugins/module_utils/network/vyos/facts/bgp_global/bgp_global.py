@@ -63,7 +63,7 @@ class Bgp_globalFacts(object):
             data = self.get_device_data(connection)
 
         for resource in data.splitlines():
-            if "address-family" not in resource or "system-as" in resource:
+            if "address-family" not in resource in resource:
                 config_lines.append(re.sub("'", "", resource))
 
         if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):

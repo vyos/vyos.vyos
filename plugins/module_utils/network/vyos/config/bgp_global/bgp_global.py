@@ -61,7 +61,7 @@ class Bgp_global(ResourceModule):
         if LooseVersion(version) >= LooseVersion("1.4"):
             self._tmplt = Bgp_globalTemplate14()
         else:
-            self._tmplt = Bgp_globalTemplate()
+             self._tmplt = Bgp_globalTemplate()
 
     def parse(self):
         """ override parse to check template """
@@ -70,6 +70,7 @@ class Bgp_global(ResourceModule):
 
     def get_parser(self, name):
         """get_parsers"""
+        self._module.fail_json(msg="#2")
         self._validate_template()
         return super().get_parser(name)
 
@@ -79,6 +80,8 @@ class Bgp_global(ResourceModule):
         :rtype: A dictionary
         :returns: The result from module execution
         """
+
+        self._validate_template()
         if self.state not in ["parsed", "gathered"]:
             self.generate_commands()
             self.run_commands()
@@ -124,6 +127,7 @@ class Bgp_global(ResourceModule):
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
 
+        
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
         populates the list of commands to be run by comparing
@@ -216,6 +220,7 @@ class Bgp_global(ResourceModule):
         wneigh = want.pop("neighbor", {})
         hneigh = have.pop("neighbor", {})
         self._compare_neigh_lists(wneigh, hneigh)
+
         for name, entry in iteritems(wneigh):
             for k, v in entry.items():
                 if k == "address":
@@ -439,11 +444,10 @@ class Bgp_global(ResourceModule):
                 proc["redistribute"] = redis_dict
 
     def _compare_asn(self, want, have):
-        self._module.fail_json(msg="Have is " + str(want))
         if want.get("as_number") and not have.get("as_number"):
             self.commands.append(
                 "set protocols bgp "
-                + "system-as "
+                + "system-as"
                 + " "
                 + str(want.get("as_number")),
             )

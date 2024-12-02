@@ -200,6 +200,24 @@ class Bgp_globalTemplate14(NetworkTemplate):
 
     # fmt: off
     PARSERS = [
+        # {
+        #     "name": "system_as",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set
+        #         \s+protocols
+        #         \s+bgp
+        #         \s+system-as
+        #         \s+(?P<as_num>\d+)
+        #         *$""",
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": "protocols bgp system-as {{ as_number }}",
+        #     "compval": "as_number",
+        #     "result": {
+        #         "as_number": "{{ as_num }}",
+        #     },
+        # },
         {
             "name": "router",
             "getval": re.compile(
@@ -950,32 +968,32 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 },
             },
         },
-        {
-            "name": "neighbor.remote_as",
-            "getval": re.compile(
-                r"""
-                ^set
-                \s+protocols
-                \s+bgp
-                \s+neighbor
-                \s+(?P<address>\S+)
-                \s+remote-as
-                \s+(?P<num>\S+)
-                *$""",
-                re.VERBOSE,
-            ),
-            "setval": "protocols bgp neighbor {{ neighbor.address }} remote-as {{ neighbor.remote_as }}",
-            "compval": "neighbor.remote_as",
-            "result": {
-                "as_number": "{{ as_num }}",
-                "neighbor": {
-                    "{{ address }}": {
-                        "address": "{{ address }}",
-                        "remote_as": "{{ num|int }}",
-                    },
-                },
-            },
-        },
+        # {
+        #     "name": "neighbor.remote_as",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set
+        #         \s+protocols
+        #         \s+bgp
+        #         \s+neighbor
+        #         \s+(?P<address>\S+)
+        #         \s+remote-as
+        #         \s+(?P<num>\S+)
+        #         *$""",
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": "protocols bgp neighbor {{ neighbor.address }} remote-as {{ neighbor.remote_as }}",
+        #     "compval": "neighbor.remote_as",
+        #     "result": {
+        #         "as_number": "{{ as_num }}",
+        #         "neighbor": {
+        #             "{{ address }}": {
+        #                 "address": "{{ address }}",
+        #                 "remote_as": "{{ num|int }}",
+        #             },
+        #         },
+        #     },
+        # },
         {
             "name": "neighbor.remove_private_as",
             "getval": re.compile(
@@ -1946,5 +1964,6 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 },
             },
         },
+
     ]
     # fmt: on
