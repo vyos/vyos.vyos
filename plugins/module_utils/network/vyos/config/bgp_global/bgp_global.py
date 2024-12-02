@@ -32,6 +32,14 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_template
     Bgp_globalTemplate,
 )
 
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_global_14 import (
+    Bgp_globalTemplate14,
+)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
+
 
 class Bgp_global(ResourceModule):
     """
@@ -47,6 +55,23 @@ class Bgp_global(ResourceModule):
             tmplt=Bgp_globalTemplate(),
         )
         self.parsers = []
+
+    def _validate_template(self):
+        version = get_os_version(self._module)
+        if LooseVersion(version) >= LooseVersion("1.4"):
+            self._tmplt = Bgp_globalTemplate14()
+        else:
+            self._tmplt = Bgp_globalTemplate()
+
+    def parse(self):
+        """ override parse to check template """
+        self._validate_template()
+        return super().parse()
+
+    def get_parser(self, name):
+        """get_parsers"""
+        self._validate_template()
+        return super().get_parser(name)
 
     def execute_module(self):
         """Execute the module
@@ -105,6 +130,9 @@ class Bgp_global(ResourceModule):
         the `want` and `have` data with the `parsers` defined
         for the Bgp_global network resource.
         """
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            self._compare_asn(want, have)
+
         parsers = ["maximum_paths", "timers"]
         self._compare_neighbor(want, have)
         self._compare_lists(want, have)
@@ -179,6 +207,12 @@ class Bgp_global(ResourceModule):
             "network.backdoor",
             "network.route_map",
         ]
+
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            delete_asn = ""
+        else:
+            delete_asn = str(have["as_number"])
+
         wneigh = want.pop("neighbor", {})
         hneigh = have.pop("neighbor", {})
         self._compare_neigh_lists(wneigh, hneigh)
@@ -207,7 +241,7 @@ class Bgp_global(ResourceModule):
                     self._module.fail_json(msg=msg)
                 else:
                     self.commands.append(
-                        "delete protocols bgp " + str(have["as_number"]) + " neighbor " + name,
+                        "delete protocols bgp " + delete_asn + " neighbor " + name,
                     )
                     continue
             for k, v in entry.items():
@@ -243,6 +277,12 @@ class Bgp_global(ResourceModule):
             "bgp_params.routerid",
             "bgp_params.scan_time",
         ]
+
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            delete_asn = ""
+        else:
+            delete_asn = str(have["as_number"])
+
         wbgp = want.pop("bgp_params", {})
         hbgp = have.pop("bgp_params", {})
         for name, entry in iteritems(wbgp):
@@ -287,12 +327,12 @@ class Bgp_global(ResourceModule):
                     },
                 )
         if not wbgp and hbgp:
-            self.commands.append("delete protocols bgp " + str(have["as_number"]) + " parameters")
+            self.commands.append("delete protocols bgp " + delete_asn + " parameters")
             hbgp = {}
         for name, entry in iteritems(hbgp):
             if name == "confederation":
                 self.commands.append(
-                    "delete protocols bgp " + str(have["as_number"]) + " parameters confederation",
+                    "delete protocols bgp " + delete_asn + " parameters confederation",
                 )
             elif name == "distance":
                 distance_parsers = [
@@ -325,6 +365,12 @@ class Bgp_global(ResourceModule):
             "redistribute.route_map",
             "aggregate_address",
         ]
+
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            delete_asn = ""
+        else:
+            delete_asn = str(have["as_number"])
+
         for attrib in ["redistribute", "network", "aggregate_address"]:
             wdict = want.pop(attrib, {})
             hdict = have.pop(attrib, {})
@@ -340,7 +386,7 @@ class Bgp_global(ResourceModule):
             if not wdict and hdict:
                 attrib = re.sub("_", "-", attrib)
                 self.commands.append(
-                    "delete protocols bgp " + str(have["as_number"]) + " " + attrib,
+                    "delete protocols bgp " + delete_asn + " " + attrib,
                 )
                 hdict = {}
             for key, entry in iteritems(hdict):
@@ -391,6 +437,16 @@ class Bgp_global(ResourceModule):
                 for entry in proc.get("redistribute", []):
                     redis_dict.update({entry["protocol"]: entry})
                 proc["redistribute"] = redis_dict
+
+    def _compare_asn(self, want, have):
+        self._module.fail_json(msg="Have is " + str(want))
+        if want.get("as_number") and not have.get("as_number"):
+            self.commands.append(
+                "set protocols bgp "
+                + "system-as "
+                + " "
+                + str(want.get("as_number")),
+            )
 
     def _check_af(self, neighbor):
         af_present = False

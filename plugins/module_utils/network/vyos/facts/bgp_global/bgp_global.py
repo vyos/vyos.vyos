@@ -26,6 +26,14 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_template
     Bgp_globalTemplate,
 )
 
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_global_14 import (
+    Bgp_globalTemplate14,
+)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
+
 
 class Bgp_globalFacts(object):
     """The vyos bgp_global facts class"""
@@ -55,10 +63,14 @@ class Bgp_globalFacts(object):
             data = self.get_device_data(connection)
 
         for resource in data.splitlines():
-            if "address-family" not in resource:
+            if "address-family" not in resource or "system-as" in resource:
                 config_lines.append(re.sub("'", "", resource))
 
-        bgp_global_parser = Bgp_globalTemplate(lines=config_lines, module=self._module)
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            bgp_global_parser = Bgp_globalTemplate14(lines=config_lines, module=self._module)
+        else:
+            bgp_global_parser = Bgp_globalTemplate(lines=config_lines, module=self._module)
+
         objs = bgp_global_parser.parse()
 
         if "neighbor" in objs:
