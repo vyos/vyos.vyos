@@ -61,7 +61,7 @@ class Bgp_global(ResourceModule):
         if LooseVersion(version) >= LooseVersion("1.4"):
             self._tmplt = Bgp_globalTemplate14()
         else:
-             self._tmplt = Bgp_globalTemplate()
+            self._tmplt = Bgp_globalTemplate()
 
     def parse(self):
         """ override parse to check template """
@@ -127,7 +127,6 @@ class Bgp_global(ResourceModule):
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
 
-        
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
         populates the list of commands to be run by comparing
