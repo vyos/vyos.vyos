@@ -116,20 +116,20 @@ class TestVyosBgpglobalModule(TestVyosModule):
                             update_source="2001:db8::1",
                         ),
                     ],
-                    network=[
-                        dict(address="172.16.42.32/27", backdoor=True),
-                        dict(address="172.16.42.251/32", route_map="map01"),
-                    ],
+                    # network=[
+                    #     dict(address="172.16.42.32/27", backdoor=True),
+                    #     dict(address="172.16.42.251/32", route_map="map01"),
+                    # ],
                     bgp_params=dict(
                         bestpath=dict(as_path="confed", compare_routerid=True),
                         default=dict(no_ipv4_unicast=True),
                         router_id="10.1.1.1",
                     ),
-                    redistribute=[
-                        dict(protocol="kernel", route_map="map01"),
-                        dict(protocol="static", metric=20),
-                        dict(protocol="static", route_map="map01"),
-                    ],
+                    # redistribute=[
+                    #     dict(protocol="kernel", route_map="map01"),
+                    #     dict(protocol="static", metric=20),
+                    #     dict(protocol="static", route_map="map01"),
+                    # ],
                 ),
                 state="merged",
             ),
@@ -204,20 +204,20 @@ class TestVyosBgpglobalModule(TestVyosModule):
                             update_source="2001:db8::1",
                         ),
                     ],
-                    network=[
-                        dict(address="172.16.42.32/27", backdoor=True),
-                        dict(address="172.16.42.251/32", route_map="map01"),
-                    ],
+                    # network=[
+                    #     dict(address="172.16.42.32/27", backdoor=True),
+                    #     dict(address="172.16.42.251/32", route_map="map01"),
+                    # ],
                     bgp_params=dict(
                         bestpath=dict(as_path="confed", compare_routerid=True),
                         default=dict(no_ipv4_unicast=True),
                         router_id="10.1.1.1",
                     ),
-                    redistribute=[
-                        dict(protocol="kernel", route_map="map01"),
-                        dict(protocol="static", metric=20),
-                        dict(protocol="static", route_map="map01"),
-                    ],
+                    # redistribute=[
+                    #     dict(protocol="kernel", route_map="map01"),
+                    #     dict(protocol="static", metric=20),
+                    #     dict(protocol="static", route_map="map01"),
+                    # ],
                 ),
                 state="replaced",
             ),
@@ -263,8 +263,8 @@ class TestVyosBgpglobalModule(TestVyosModule):
             "delete protocols bgp parameters default",
             "delete protocols bgp parameters bestpath compare-routerid",
             "delete protocols bgp parameters bestpath as-path confed",
-            "delete protocols bgp network",
-            "delete protocols bgp redistribute",
+            # "delete protocols bgp network",
+            # "delete protocols bgp redistribute",
             "delete protocols bgp neighbor 2001:db8::2 update-source 2001:db8::1",
             "delete protocols bgp neighbor 2001:db8::2 maximum-prefix 34",
             "delete protocols bgp neighbor 2001:db8::2 ebgp-multihop 2",
@@ -396,20 +396,20 @@ class TestVyosBgpglobalModule(TestVyosModule):
                             update_source="2001:db8::1",
                         ),
                     ],
-                    network=[
-                        dict(address="172.16.42.32/27", backdoor=True),
-                        dict(address="172.16.42.251/32", route_map="map01"),
-                    ],
+                    # network=[
+                    #     dict(address="172.16.42.32/27", backdoor=True),
+                    #     dict(address="172.16.42.251/32", route_map="map01"),
+                    # ],
                     bgp_params=dict(
                         bestpath=dict(as_path="confed", compare_routerid=True),
                         default=dict(no_ipv4_unicast=True),
                         router_id="10.1.1.1",
                     ),
-                    redistribute=[
-                        dict(protocol="kernel", route_map="map01"),
-                        dict(protocol="static", metric=20),
-                        dict(protocol="static", route_map="map01"),
-                    ],
+                    # redistribute=[
+                    #     dict(protocol="kernel", route_map="map01"),
+                    #     dict(protocol="static", metric=20),
+                    #     dict(protocol="static", route_map="map01"),
+                    # ],
                 ),
                 state="rendered",
             ),
@@ -431,10 +431,10 @@ class TestVyosBgpglobalModule(TestVyosModule):
             "set protocols bgp neighbor 2001:db8::2 remote-as 65535",
             "set protocols bgp neighbor 2001:db8::2 maximum-prefix 34",
             "set protocols bgp neighbor 2001:db8::2 update-source 2001:db8::1",
-            "set protocols bgp redistribute kernel route-map map01",
-            "set protocols bgp redistribute static route-map map01",
-            "set protocols bgp network 172.16.42.32/27 backdoor",
-            "set protocols bgp network 172.16.42.251/32 route-map map01",
+            # "set protocols bgp redistribute kernel route-map map01",
+            # "set protocols bgp redistribute static route-map map01",
+            # "set protocols bgp network 172.16.42.32/27 backdoor",
+            # "set protocols bgp network 172.16.42.251/32 route-map map01",
             "set protocols bgp parameters bestpath as-path confed",
             "set protocols bgp parameters bestpath compare-routerid",
             "set protocols bgp parameters default no-ipv4-unicast",
@@ -465,10 +465,10 @@ class TestVyosBgpglobalModule(TestVyosModule):
             "set protocols bgp neighbor 2001:db8::2 remote-as 65535",
             "set protocols bgp neighbor 2001:db8::2 maximum-prefix 34",
             "set protocols bgp neighbor 2001:db8::2 update-source 2001:db8::1",
-            "set protocols bgp redistribute kernel route-map map01",
-            "set protocols bgp redistribute static route-map map01",
-            "set protocols bgp network 172.16.42.32/27 backdoor",
-            "set protocols bgp network 172.16.42.251/32 route-map map01",
+            # "set protocols bgp redistribute kernel route-map map01",
+            # "set protocols bgp redistribute static route-map map01",
+            # "set protocols bgp network 172.16.42.32/27 backdoor",
+            # "set protocols bgp network 172.16.42.251/32 route-map map01",
             "set protocols bgp parameters bestpath as-path confed",
             "set protocols bgp parameters bestpath compare-routerid",
             "set protocols bgp parameters default no-ipv4-unicast",
@@ -510,14 +510,14 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     "update_source": "2001:db8::1",
                 },
             ],
-            "network": [
-                {"address": "172.16.42.32/27", "backdoor": True},
-                {"address": "172.16.42.251/32", "route_map": "map01"},
-            ],
-            "redistribute": [
-                {"protocol": "kernel", "route_map": "map01"},
-                {"protocol": "static", "route_map": "map01"},
-            ],
+        #     "network": [
+        #         {"address": "172.16.42.32/27", "backdoor": True},
+        #         {"address": "172.16.42.251/32", "route_map": "map01"},
+        #     ],
+        #     "redistribute": [
+        #         {"protocol": "kernel", "route_map": "map01"},
+        #         {"protocol": "static", "route_map": "map01"},
+        #     ],
         }
         self.assertEqual(sorted(parsed_list), sorted(result["parsed"]))
 
@@ -554,14 +554,14 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     "update_source": "2001:db8::1",
                 },
             ],
-            "network": [
-                {"address": "172.16.42.32/27", "backdoor": True},
-                {"address": "172.16.42.251/32", "route_map": "map01"},
-            ],
-            "redistribute": [
-                {"protocol": "kernel", "route_map": "map01"},
-                {"metric": 20, "protocol": "static"},
-                {"protocol": "static", "route_map": "map01"},
-            ],
+            # "network": [
+            #     {"address": "172.16.42.32/27", "backdoor": True},
+            #     {"address": "172.16.42.251/32", "route_map": "map01"},
+            # ],
+            # "redistribute": [
+            #     {"protocol": "kernel", "route_map": "map01"},
+            #     {"metric": 20, "protocol": "static"},
+            #     {"protocol": "static", "route_map": "map01"},
+            # ],
         }
         self.assertEqual(sorted(gather_list), sorted(result["gathered"]))

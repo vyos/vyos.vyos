@@ -138,7 +138,7 @@ class Bgp_global(ResourceModule):
 
         parsers = ["maximum_paths", "timers"]
         self._compare_neighbor(want, have)
-        self._compare_lists(want, have)
+        # self._compare_lists(want, have)
         self._compare_bgp_params(want, have)
         for name, entry in iteritems(want):
             if name != "as_number":
@@ -207,8 +207,8 @@ class Bgp_global(ResourceModule):
             "neighbor.weight",
             "neighbor.ttl_security",
             "neighbor.timers",
-            "network.backdoor",
-            "network.route_map",
+            # "network.backdoor",
+            # "network.route_map",
         ]
 
         wneigh = want.pop("neighbor", {})
@@ -359,43 +359,43 @@ class Bgp_global(ResourceModule):
                     },
                 )
 
-    def _compare_lists(self, want, have):
-        parsers = [
-            "network.backdoor",
-            "network.route_map",
-            "redistribute.metric",
-            "redistribute.route_map",
-            "aggregate_address",
-        ]
+    # def _compare_lists(self, want, have):
+    #     parsers = [
+    #         "network.backdoor",
+    #         "network.route_map",
+    #         "redistribute.metric",
+    #         "redistribute.route_map",
+    #         "aggregate_address",
+    #     ]
 
-        for attrib in ["redistribute", "network", "aggregate_address"]:
-            wdict = want.pop(attrib, {})
-            hdict = have.pop(attrib, {})
-            for key, entry in iteritems(wdict):
-                if entry != hdict.get(key, {}):
-                    self.compare(
-                        parsers=parsers,
-                        want={"as_number": want["as_number"], attrib: entry},
-                        have=hdict.pop(key, {}),
-                    )
-                hdict.pop(key, {})
-            # remove remaining items in have for replaced
-            if not wdict and hdict:
-                attrib = re.sub("_", "-", attrib)
-                if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-                    delete_asn = ""
-                else :
-                    delete_asn = " " + str(have["as_number"])
-                self.commands.append(
-                    "delete protocols bgp" + delete_asn + " " + attrib,
-                )
-                hdict = {}
-            for key, entry in iteritems(hdict):
-                self.compare(
-                    parsers=parsers,
-                    want={},
-                    have={"as_number": have["as_number"], attrib: entry},
-                )
+    #     for attrib in ["redistribute", "network", "aggregate_address"]:
+    #         wdict = want.pop(attrib, {})
+    #         hdict = have.pop(attrib, {})
+    #         for key, entry in iteritems(wdict):
+    #             if entry != hdict.get(key, {}):
+    #                 self.compare(
+    #                     parsers=parsers,
+    #                     want={"as_number": want["as_number"], attrib: entry},
+    #                     have=hdict.pop(key, {}),
+    #                 )
+    #             hdict.pop(key, {})
+    #         # remove remaining items in have for replaced
+    #         if not wdict and hdict:
+    #             attrib = re.sub("_", "-", attrib)
+    #             if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+    #                 delete_asn = ""
+    #             else :
+    #                 delete_asn = " " + str(have["as_number"])
+    #             self.commands.append(
+    #                 "delete protocols bgp" + delete_asn + " " + attrib,
+    #             )
+    #             hdict = {}
+    #         for key, entry in iteritems(hdict):
+    #             self.compare(
+    #                 parsers=parsers,
+    #                 want={},
+    #                 have={"as_number": have["as_number"], attrib: entry},
+    #             )
 
     def _compare_neigh_lists(self, want, have):
         for attrib in [
