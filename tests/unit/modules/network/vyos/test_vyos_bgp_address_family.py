@@ -44,11 +44,25 @@ class TestVyosBgpafModule(TestVyosModule):
             + "bgp_address_family.bgp_address_family.Bgp_address_familyFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_address_family.bgp_address_family.get_os_version"
+        )
+        self.test_version = "1.2"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
+        self.mock_facts_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family.get_os_version"
+        )
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = self.test_version
+        self.maxDiff = None
 
     def tearDown(self):
         super(TestVyosBgpafModule, self).tearDown()
         self.mock_get_resource_connection_config.stop()
         self.mock_execute_show_command.stop()
+        self.mock_get_os_version.stop()
+        self.mock_facts_get_os_version.stop()
 
     def load_fixtures(self, commands=None, filename=None):
         if filename is None:

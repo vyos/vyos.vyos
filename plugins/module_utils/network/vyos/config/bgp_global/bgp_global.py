@@ -211,11 +211,6 @@ class Bgp_global(ResourceModule):
             "network.route_map",
         ]
 
-        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-            delete_asn = ""
-        else:
-            delete_asn = str(have["as_number"])
-
         wneigh = want.pop("neighbor", {})
         hneigh = have.pop("neighbor", {})
         self._compare_neigh_lists(wneigh, hneigh)
@@ -244,6 +239,10 @@ class Bgp_global(ResourceModule):
                     )
                     self._module.fail_json(msg=msg)
                 else:
+                    if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                        delete_asn = ""
+                    else :
+                        delete_asn = str(have["as_number"])
                     self.commands.append(
                         "delete protocols bgp " + delete_asn + " neighbor " + name,
                     )
@@ -281,11 +280,6 @@ class Bgp_global(ResourceModule):
             "bgp_params.routerid",
             "bgp_params.scan_time",
         ]
-
-        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-            delete_asn = ""
-        else:
-            delete_asn = str(have["as_number"])
 
         wbgp = want.pop("bgp_params", {})
         hbgp = have.pop("bgp_params", {})
@@ -331,6 +325,10 @@ class Bgp_global(ResourceModule):
                     },
                 )
         if not wbgp and hbgp:
+            if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                delete_asn = ""
+            else:
+                delete_asn = str(have["as_number"])
             self.commands.append("delete protocols bgp " + delete_asn + " parameters")
             hbgp = {}
         for name, entry in iteritems(hbgp):
@@ -370,11 +368,6 @@ class Bgp_global(ResourceModule):
             "aggregate_address",
         ]
 
-        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-            delete_asn = ""
-        else:
-            delete_asn = str(have["as_number"])
-
         for attrib in ["redistribute", "network", "aggregate_address"]:
             wdict = want.pop(attrib, {})
             hdict = have.pop(attrib, {})
@@ -389,6 +382,10 @@ class Bgp_global(ResourceModule):
             # remove remaining items in have for replaced
             if not wdict and hdict:
                 attrib = re.sub("_", "-", attrib)
+                if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                    delete_asn = ""
+                else :
+                    delete_asn = str(have["as_number"])
                 self.commands.append(
                     "delete protocols bgp " + delete_asn + " " + attrib,
                 )
