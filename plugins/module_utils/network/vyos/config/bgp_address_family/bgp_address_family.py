@@ -311,7 +311,7 @@ class Bgp_address_family(ResourceModule):
         if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             delete_asn = ""
         else:
-            delete_asn = str(as_number)
+            delete_asn = " " + str(as_number)
 
         for attrib in ["redistribute", "networks", "aggregate_address"]:
             wdict = want.pop(attrib, {})
@@ -338,7 +338,7 @@ class Bgp_address_family(ResourceModule):
                 attrib = re.sub("_", "-", attrib)
                 attrib = re.sub("networks", "network", attrib)
                 self.commands.append(
-                    "delete protocols bgp "
+                    "delete protocols bgp"
                     + delete_asn
                     + " "
                     + "address-family "

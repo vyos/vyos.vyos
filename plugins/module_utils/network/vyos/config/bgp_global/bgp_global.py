@@ -242,9 +242,9 @@ class Bgp_global(ResourceModule):
                     if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
                         delete_asn = ""
                     else :
-                        delete_asn = str(have["as_number"])
+                        delete_asn = " " + str(have["as_number"])
                     self.commands.append(
-                        "delete protocols bgp " + delete_asn + " neighbor " + name,
+                        "delete protocols bgp" + delete_asn + " neighbor " + name,
                     )
                     continue
             for k, v in entry.items():
@@ -328,13 +328,13 @@ class Bgp_global(ResourceModule):
             if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
                 delete_asn = ""
             else:
-                delete_asn = str(have["as_number"])
-            self.commands.append("delete protocols bgp " + delete_asn + " parameters")
+                delete_asn = " " + str(have["as_number"])
+            self.commands.append("delete protocols bgp" + delete_asn + " parameters")
             hbgp = {}
         for name, entry in iteritems(hbgp):
             if name == "confederation":
                 self.commands.append(
-                    "delete protocols bgp " + delete_asn + " parameters confederation",
+                    "delete protocols bgp" + delete_asn + " parameters confederation",
                 )
             elif name == "distance":
                 distance_parsers = [
@@ -385,9 +385,9 @@ class Bgp_global(ResourceModule):
                 if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
                     delete_asn = ""
                 else :
-                    delete_asn = str(have["as_number"])
+                    delete_asn = " " + str(have["as_number"])
                 self.commands.append(
-                    "delete protocols bgp " + delete_asn + " " + attrib,
+                    "delete protocols bgp" + delete_asn + " " + attrib,
                 )
                 hdict = {}
             for key, entry in iteritems(hdict):

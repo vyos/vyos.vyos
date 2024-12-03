@@ -207,12 +207,13 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+system-as
+                \s*system-as
                 \s+(?P<as_num>\d+)
                 *$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp system-as {{ as_number }}",
+            "remval": "protocols bgp",
             "compval": "as_number",
             "result": {
                 "as_number": "{{ as_num }}",
