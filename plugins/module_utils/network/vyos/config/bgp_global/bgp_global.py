@@ -70,7 +70,6 @@ class Bgp_global(ResourceModule):
 
     def get_parser(self, name):
         """get_parsers"""
-        self._module.fail_json(msg="#2")
         self._validate_template()
         return super().get_parser(name)
 
