@@ -62,7 +62,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>BGP aggregate network.</div>
+                        <div>BGP aggregate network. DEPRECATED: Please use _bgp_address_family module</div>
                 </td>
             </tr>
                                 <tr>
@@ -1842,7 +1842,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>BGP network</div>
+                        <div>BGP network. DEPRECATED: Please use _bgp_address_family module</div>
                 </td>
             </tr>
                                 <tr>
@@ -1915,7 +1915,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Redistribute routes from other protocols into BGP</div>
+                        <div>Redistribute routes from other protocols into BGP. DEPRECATED: Please use _bgp_address_family module</div>
                 </td>
             </tr>
                                 <tr>
