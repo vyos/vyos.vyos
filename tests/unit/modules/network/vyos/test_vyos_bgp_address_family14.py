@@ -509,9 +509,8 @@ class TestVyosBgpafModule(TestVyosModule):
                 ),
             ),
         )
-
         rendered_cmds = [
-            "set protocols bgp system-as  65536",
+            "set protocols bgp system-as 65536",
             "set protocols bgp address-family ipv4-unicast network 192.1.13.0/24 route-map map01",
             "set protocols bgp address-family ipv4-unicast network 192.2.13.0/24 backdoor",
             "set protocols bgp address-family ipv4-unicast aggregate-address 192.0.2.0/24 as-set",
@@ -529,7 +528,7 @@ class TestVyosBgpafModule(TestVyosModule):
 
     def test_vyos_bgp_address_family_parsed(self):
         commands = [
-            "set protocols bgp system-as  65536",
+            "set protocols bgp system-as 65536",
             "set protocols bgp address-family ipv4-unicast network 192.1.13.0/24 route-map map01",
             "set protocols bgp address-family ipv4-unicast network 192.2.13.0/24 backdoor",
             "set protocols bgp address-family ipv4-unicast aggregate-address 192.0.2.0/24 as-set",

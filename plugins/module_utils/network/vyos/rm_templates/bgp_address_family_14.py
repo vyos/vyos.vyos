@@ -37,37 +37,26 @@ def _tmplt_bgp_af_aggregate_address(config_data):
     return command
 
 
-def _tmplt_bgp_af_redistribute_metric(config_data):
+def _tmplt_bgp_af_redistribute_generic(config_data):
+    afi = config_data["address_family"]["afi"] + "-unicast"
+    command = "protocols bgp address-family ".format(**config_data)
     if config_data["address_family"]["redistribute"].get("metric"):
-        afi = config_data["address_family"]["afi"] + "-unicast"
-        command = "protocols bgp address-family ".format(**config_data)
-        if config_data["address_family"]["redistribute"].get("metric"):
-            command += afi + " redistribute {protocol} metric {metric}".format(
-                **config_data["address_family"]["redistribute"],
-            )
-        return command
-
-
-def _tmplt_bgp_af_redistribute_route_map(config_data):
-    if config_data["address_family"]["redistribute"].get("route_map"):
-        afi = config_data["address_family"]["afi"] + "-unicast"
-        command = "protocols bgp address-family ".format(**config_data)
-        if config_data["address_family"]["redistribute"].get("route_map"):
-            command += afi + " redistribute {protocol} route-map {route_map}".format(
-                **config_data["address_family"]["redistribute"],
-            )
-        return command
-
-
-def _tmplt_bgp_af_redistribute_table(config_data):
-    if config_data["address_family"]["redistribute"].get("table"):
-        afi = config_data["address_family"]["afi"] + "-unicast"
-        command = "protocols bgp address-family ".format(**config_data)
-        if config_data["address_family"]["redistribute"].get("table"):
-            command += afi + " table {table}".format(
-                **config_data["address_family"]["redistribute"],
-            )
-        return command
+        command += afi + " redistribute {protocol} metric {metric}".format(
+            **config_data["address_family"]["redistribute"],
+        )
+    elif config_data["address_family"]["redistribute"].get("route_map"):
+        command += afi + " redistribute {protocol} route-map {route_map}".format(
+            **config_data["address_family"]["redistribute"],
+        )
+    elif config_data["address_family"]["redistribute"].get("table"):
+        command += afi + " table {table}".format(
+            **config_data["address_family"]["redistribute"],
+        )
+    else:
+        command += afi + " redistribute {protocol}".format(
+            **config_data["address_family"]["redistribute"],
+        )
+    return command
 
 
 def _tmplt_bgp_af_delete_redistribute(config_data):
@@ -234,6 +223,36 @@ def _tmplt_bgp_af_neighbor(config_data):
     return command
 
 
+def _tmplt_bgp_af_network_generic(config_data):
+    afi = config_data["address_family"]["afi"] + "-unicast"
+    command = "protocols bgp address-family ".format(**config_data)
+    if config_data["address_family"]["networks"].get("backdoor"):
+        command += afi + " network {prefix} backdoor".format(
+            **config_data["address_family"]["networks"],
+        )
+    elif config_data["address_family"]["networks"].get("route_map"):
+        command += afi + " network {prefix} route-map {route_map}".format(
+            **config_data["address_family"]["networks"],
+        )
+    else:
+        command += afi + " network {prefix}".format(
+            **config_data["address_family"]["networks"],
+        )
+    return command
+
+
+def _tmplt_bgp_af_delete_network(config_data):
+    afi = config_data["address_family"]["afi"] + "-unicast"
+    command = "protocols bgp address-family ".format(**config_data)
+    command += afi + " network {prefix}".format(**config_data["networks"])
+    config_data = config_data["address_family"]["networks"]
+    if config_data.get("backdoor"):
+        command += " backdoor"
+    elif config_data.get("route_map"):
+        command += " route_map"
+    return command
+
+
 class Bgp_address_familyTemplate14(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
@@ -339,6 +358,37 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             },
         },
         {
+            "name": "network.generic",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+address-family
+                \s+(?P<afi>\S+)-unicast
+                \s+network
+                \s+(?P<address>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_bgp_af_network_generic,
+            "remval": "protocols bgp address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
+            "compval": "address_family.networks.prefix",
+            "result": {
+                "as_number": "{{ as_num }}",
+                "address_family": {
+                    "{{ afi }}": {
+                        "afi": "{{ afi }}",
+                        "networks": [
+                            {
+                                "prefix": "{{ address }}",
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        {
             "name": "network.backdoor",
             "getval": re.compile(
                 r"""
@@ -353,8 +403,8 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }} backdoor",
-            "remval": "protocols bgp address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
+            "setval": _tmplt_bgp_af_network_generic,
+            "remval": "protocols bgp address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }} backdoor",
             "compval": "address_family.networks.backdoor",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -442,6 +492,37 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
             },
         },
         {
+            "name": "redistribute.generic",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+address-family
+                \s+(?P<afi>\S+)-unicast
+                \s+redistribute
+                \s+(?P<proto>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_bgp_af_redistribute_generic,
+            "remval": _tmplt_bgp_af_delete_redistribute,
+            "compval": "address_family.redistribute.protocol",
+            "result": {
+                "as_number": "{{ as_num }}",
+                "address_family": {
+                    "{{ afi }}": {
+                        "afi": "{{ afi }}",
+                        "redistribute": [
+                            {
+                                "protocol": "{{ proto }}",
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        {
             "name": "redistribute.metric",
             "getval": re.compile(
                 r"""
@@ -456,7 +537,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": _tmplt_bgp_af_redistribute_metric,
+            "setval": _tmplt_bgp_af_redistribute_generic,
             "remval": _tmplt_bgp_af_delete_redistribute,
             "compval": "address_family.redistribute.metric",
             "result": {
@@ -490,7 +571,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": _tmplt_bgp_af_redistribute_route_map,
+            "setval": _tmplt_bgp_af_redistribute_generic,
             "remval": _tmplt_bgp_af_delete_redistribute,
             "compval": "address_family.redistribute.route_map",
             "result": {
@@ -523,7 +604,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": _tmplt_bgp_af_redistribute_table,
+            "setval": _tmplt_bgp_af_redistribute_generic,
             "remval": _tmplt_bgp_af_delete_redistribute,
             "compval": "address_family.redistribute.table",
             "result": {

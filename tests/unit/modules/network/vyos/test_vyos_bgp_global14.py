@@ -510,14 +510,14 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     "update_source": "2001:db8::1",
                 },
             ],
-        #     "network": [
-        #         {"address": "172.16.42.32/27", "backdoor": True},
-        #         {"address": "172.16.42.251/32", "route_map": "map01"},
-        #     ],
-        #     "redistribute": [
-        #         {"protocol": "kernel", "route_map": "map01"},
-        #         {"protocol": "static", "route_map": "map01"},
-        #     ],
+            # "network": [
+            #     {"address": "172.16.42.32/27", "backdoor": True},
+            #     {"address": "172.16.42.251/32", "route_map": "map01"},
+            # ],
+            # "redistribute": [
+            #     {"protocol": "kernel", "route_map": "map01"},
+            #     {"protocol": "static", "route_map": "map01"},
+            # ],
         }
         self.assertEqual(sorted(parsed_list), sorted(result["parsed"]))
 

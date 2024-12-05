@@ -300,10 +300,12 @@ class Bgp_address_family(ResourceModule):
     def _compare_lists(self, want, have, as_number, afi):
         parsers = [
             "aggregate_address",
+            "network.generic",
             "network.backdoor",
             "network.path_limit",
             "network.route_map",
             "redistribute.metric",
+            "redistribute.generic",
             "redistribute.route_map",
             "redistribute.table",
         ]
@@ -362,7 +364,6 @@ class Bgp_address_family(ResourceModule):
             self.commands.append(
                 "set protocols bgp "
                 + "system-as "
-                + " "
                 + str(want.get("as_number")),
             )
 
