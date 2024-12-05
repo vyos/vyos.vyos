@@ -404,7 +404,8 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_network_generic,
-            "remval": "protocols bgp address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }} backdoor",
+            "remval": _tmplt_bgp_af_delete_network,
+            # "remval": "protocols bgp address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }} backdoor",
             "compval": "address_family.networks.backdoor",
             "result": {
                 "as_number": "{{ as_num }}",
