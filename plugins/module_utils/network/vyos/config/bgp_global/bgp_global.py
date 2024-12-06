@@ -79,7 +79,11 @@ class Bgp_global(ResourceModule):
         :rtype: A dictionary
         :returns: The result from module execution
         """
-
+        version = get_os_version(self._module)
+        if LooseVersion(version) >= LooseVersion("1.4"):
+            self._asn_mod = ""
+        else:
+            self._asn_mod = " " + str(self.have.get("as_number"))
         self._validate_template()
         if self.state not in ["parsed", "gathered"]:
             self.generate_commands()
@@ -238,12 +242,8 @@ class Bgp_global(ResourceModule):
                     )
                     self._module.fail_json(msg=msg)
                 else:
-                    if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-                        delete_asn = ""
-                    else :
-                        delete_asn = " " + str(have["as_number"])
                     self.commands.append(
-                        "delete protocols bgp" + delete_asn + " neighbor " + name,
+                        "delete protocols bgp" + self._asn_mod + " neighbor " + name,
                     )
                     continue
             for k, v in entry.items():
@@ -324,16 +324,12 @@ class Bgp_global(ResourceModule):
                     },
                 )
         if not wbgp and hbgp:
-            if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-                delete_asn = ""
-            else:
-                delete_asn = " " + str(have["as_number"])
-            self.commands.append("delete protocols bgp" + delete_asn + " parameters")
+            self.commands.append("delete protocols bgp" + self._asn_mod + " parameters")
             hbgp = {}
         for name, entry in iteritems(hbgp):
             if name == "confederation":
                 self.commands.append(
-                    "delete protocols bgp" + delete_asn + " parameters confederation",
+                    "delete protocols bgp" + self._asn_mod + " parameters confederation",
                 )
             elif name == "distance":
                 distance_parsers = [

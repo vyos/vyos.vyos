@@ -29,11 +29,11 @@ from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_ar
 from .vyos_module import TestVyosModule, load_fixture
 
 
-class TestVyosBgpafModule(TestVyosModule):
+class TestVyosBgpafModule14(TestVyosModule):
     module = vyos_bgp_address_family
 
     def setUp(self):
-        super(TestVyosBgpafModule, self).setUp()
+        super(TestVyosBgpafModule14, self).setUp()
         self.mock_get_resource_connection_config = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
@@ -58,7 +58,7 @@ class TestVyosBgpafModule(TestVyosModule):
         self.maxDiff = None
 
     def tearDown(self):
-        super(TestVyosBgpafModule, self).tearDown()
+        super(TestVyosBgpafModule14, self).tearDown()
         self.mock_get_resource_connection_config.stop()
         self.mock_execute_show_command.stop()
         self.mock_get_os_version.stop()
