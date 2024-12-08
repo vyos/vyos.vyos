@@ -30,24 +30,24 @@ options:
         description:
         - AS number.
         type: int
-      aggregate_address:
-        description:
-        - BGP aggregate network.
-        type: list
-        elements: dict
-        suboptions:
-          prefix:
-            description:
-            - BGP aggregate network.
-            type: str
-          as_set:
-            description:
-            - Generate AS-set path information for this aggregate address.
-            type: bool
-          summary_only:
-            description:
-            - Announce the aggregate summary network only.
-            type: bool
+      # aggregate_address:
+      #   description:
+      #   - BGP aggregate network.
+      #   type: list
+      #   elements: dict
+      #   suboptions:
+      #     prefix:
+      #       description:
+      #       - BGP aggregate network.
+      #       type: str
+      #     as_set:
+      #       description:
+      #       - Generate AS-set path information for this aggregate address.
+      #       type: bool
+      #     summary_only:
+      #       description:
+      #       - Announce the aggregate summary network only.
+      #       type: bool
       maximum_paths:
         description: BGP multipaths
         type: list
@@ -258,35 +258,35 @@ options:
               keepalive:
                 description: BGP keepalive interval for this neighbor
                 type: int
-      network:
-        description: BGP network
-        type: list
-        elements: dict
-        suboptions:
-          address:
-            description: BGP network address
-            type: str
-          backdoor:
-            description: Network as a backdoor route
-            type: bool
-          route_map:
-            description: Route-map to modify route attributes
-            type: str
-      redistribute:
-        description: Redistribute routes from other protocols into BGP
-        type: list
-        elements: dict
-        suboptions:
-          protocol:
-            description: types of routes to be redistributed.
-            type: str
-            choices: ['connected', 'kernel', 'ospf', 'rip', 'static']
-          route_map:
-            description: Route map to filter redistributed routes
-            type: str
-          metric:
-            description: Metric for redistributed routes.
-            type: int
+      # network:
+      #   description: BGP network
+      #   type: list
+      #   elements: dict
+      #   suboptions:
+      #     address:
+      #       description: BGP network address
+      #       type: str
+      #     backdoor:
+      #       description: Network as a backdoor route
+      #       type: bool
+      #     route_map:
+      #       description: Route-map to modify route attributes
+      #       type: str
+      # redistribute:
+      #   description: Redistribute routes from other protocols into BGP
+      #   type: list
+      #   elements: dict
+      #   suboptions:
+      #     protocol:
+      #       description: types of routes to be redistributed.
+      #       type: str
+      #       choices: ['connected', 'kernel', 'ospf', 'rip', 'static']
+      #     route_map:
+      #       description: Route map to filter redistributed routes
+      #       type: str
+      #     metric:
+      #       description: Metric for redistributed routes.
+      #       type: int
       timers:
         description: BGP protocol timers
         type: dict

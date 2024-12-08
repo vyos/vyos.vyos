@@ -36,15 +36,15 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
             "type": "dict",
             "options": {
                 "as_number": {"type": "int"},
-                "aggregate_address": {
-                    "type": "list",
-                    "elements": "dict",
-                    "options": {
-                        "prefix": {"type": "str"},
-                        "as_set": {"type": "bool"},
-                        "summary_only": {"type": "bool"},
-                    },
-                },
+                # "aggregate_address": {
+                #     "type": "list",
+                #     "elements": "dict",
+                #     "options": {
+                #         "prefix": {"type": "str"},
+                #         "as_set": {"type": "bool"},
+                #         "summary_only": {"type": "bool"},
+                #     },
+                # },
                 "maximum_paths": {
                     "type": "list",
                     "elements": "dict",
@@ -159,33 +159,33 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                         },
                     },
                 },
-                "network": {
-                    "type": "list",
-                    "elements": "dict",
-                    "options": {
-                        "address": {"type": "str"},
-                        "backdoor": {"type": "bool"},
-                        "route_map": {"type": "str"},
-                    },
-                },
-                "redistribute": {
-                    "type": "list",
-                    "elements": "dict",
-                    "options": {
-                        "protocol": {
-                            "type": "str",
-                            "choices": [
-                                "connected",
-                                "kernel",
-                                "ospf",
-                                "rip",
-                                "static",
-                            ],
-                        },
-                        "route_map": {"type": "str"},
-                        "metric": {"type": "int"},
-                    },
-                },
+                # "network": {
+                #     "type": "list",
+                #     "elements": "dict",
+                #     "options": {
+                #         "address": {"type": "str"},
+                #         "backdoor": {"type": "bool"},
+                #         "route_map": {"type": "str"},
+                #     },
+                # },
+                # "redistribute": {
+                #     "type": "list",
+                #     "elements": "dict",
+                #     "options": {
+                #         "protocol": {
+                #             "type": "str",
+                #             "choices": [
+                #                 "connected",
+                #                 "kernel",
+                #                 "ospf",
+                #                 "rip",
+                #                 "static",
+                #             ],
+                #         },
+                #         "route_map": {"type": "str"},
+                #         "metric": {"type": "int"},
+                #     },
+                # },
                 "timers": {
                     "type": "dict",
                     "options": {

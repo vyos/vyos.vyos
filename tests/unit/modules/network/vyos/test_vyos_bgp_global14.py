@@ -58,7 +58,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
         self.mock_get_os_version = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global.get_os_version"
         )
-        self.test_version = "1.2"
+        self.test_version = "1.4"
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = self.test_version
         self.mock_facts_get_os_version = patch(
@@ -79,7 +79,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
 
     def load_fixtures(self, commands=None, filename=None):
         if filename is None:
-            filename = "vyos_bgp_global_config.cfg"
+            filename = "vyos_bgp_global_config_14.cfg"
 
         def load_from_file(*args, **kwargs):
             output = load_fixture(filename)
@@ -167,12 +167,12 @@ class TestVyosBgpglobalModule(TestVyosModule):
             ),
         )
         commands = [
-            "set protocols bgp 65536 neighbor 2001:db8::2 distribute-list export 31",
-            "set protocols bgp 65536 neighbor 2001:db8::2 distribute-list import 9",
-            "set protocols bgp 65536 parameters confederation peers 20",
-            "set protocols bgp 65536 parameters confederation identifier 66",
-            "set protocols bgp 65536 maximum-paths ebgp 20",
-            "set protocols bgp 65536 maximum-paths ibgp 45",
+            "set protocols bgp neighbor 2001:db8::2 distribute-list export 31",
+            "set protocols bgp neighbor 2001:db8::2 distribute-list import 9",
+            "set protocols bgp parameters confederation peers 20",
+            "set protocols bgp parameters confederation identifier 66",
+            "set protocols bgp maximum-paths ebgp 20",
+            "set protocols bgp maximum-paths ibgp 45",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -260,26 +260,26 @@ class TestVyosBgpglobalModule(TestVyosModule):
             ),
         )
         commands = [
-            "delete protocols bgp 65536 parameters default",
-            "delete protocols bgp 65536 parameters bestpath compare-routerid",
-            "delete protocols bgp 65536 parameters bestpath as-path confed",
-            # "delete protocols bgp 65536 network",
-            # "delete protocols bgp 65536 redistribute",
-            "delete protocols bgp 65536 neighbor 2001:db8::2 update-source 2001:db8::1",
-            "delete protocols bgp 65536 neighbor 2001:db8::2 maximum-prefix 34",
-            "delete protocols bgp 65536 neighbor 2001:db8::2 ebgp-multihop 2",
-            "delete protocols bgp 65536 neighbor 192.168.0.2",
-            "delete protocols bgp 65536 neighbor 10.0.0.4",
-            "set protocols bgp 65536 neighbor 200.11.155.3 prefix-list export 10",
-            "set protocols bgp 65536 neighbor 200.11.155.3 allowas-in number 10",
-            "set protocols bgp 65536 neighbor 2001:db8::2 as-override",
-            "set protocols bgp 65536 neighbor 2001:db8::2 route-map export map01",
-            "set protocols bgp 65536 parameters log-neighbor-changes",
-            "set protocols bgp 65536 parameters no-client-to-client-reflection",
-            "set protocols bgp 65536 parameters confederation peers 20",
-            "set protocols bgp 65536 parameters confederation identifier 66",
-            "set protocols bgp 65536 timers holdtime 30",
-            "set protocols bgp 65536 timers keepalive 10",
+            "delete protocols bgp parameters default",
+            "delete protocols bgp parameters bestpath compare-routerid",
+            "delete protocols bgp parameters bestpath as-path confed",
+            # "delete protocols bgp network",
+            # "delete protocols bgp redistribute",
+            "delete protocols bgp neighbor 2001:db8::2 update-source 2001:db8::1",
+            "delete protocols bgp neighbor 2001:db8::2 maximum-prefix 34",
+            "delete protocols bgp neighbor 2001:db8::2 ebgp-multihop 2",
+            "delete protocols bgp neighbor 192.168.0.2",
+            "delete protocols bgp neighbor 10.0.0.4",
+            "set protocols bgp neighbor 200.11.155.3 prefix-list export 10",
+            "set protocols bgp neighbor 200.11.155.3 allowas-in number 10",
+            "set protocols bgp neighbor 2001:db8::2 as-override",
+            "set protocols bgp neighbor 2001:db8::2 route-map export map01",
+            "set protocols bgp parameters log-neighbor-changes",
+            "set protocols bgp parameters no-client-to-client-reflection",
+            "set protocols bgp parameters confederation peers 20",
+            "set protocols bgp parameters confederation identifier 66",
+            "set protocols bgp timers holdtime 30",
+            "set protocols bgp timers keepalive 10",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -287,7 +287,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
     def test_vyos_bgp_global_purged(self):
         set_module_args(dict(config=dict(as_number="65536"), state="purged"))
         #
-        commands = ["delete protocols bgp 65536"]
+        commands = ["delete protocols bgp"]
         self.execute_module(changed=True, commands=commands)
 
     #
@@ -362,7 +362,7 @@ class TestVyosBgpglobalModule(TestVyosModule):
                 state="replaced",
             ),
         )
-        result = self.execute_module(failed=True, filename="vyos_bgp_global_af_config.cfg")
+        result = self.execute_module(failed=True, filename="vyos_bgp_global_af_config_14.cfg")
         self.assertIn(
             "Use the _bgp_address_family module to delete the address_family under neighbor 5001::64, before replacing/deleting the neighbor.",
             result["msg"],
@@ -415,29 +415,30 @@ class TestVyosBgpglobalModule(TestVyosModule):
             ),
         )
         rendered_cmds = [
-            "set protocols bgp 65536 neighbor 10.0.0.4 disable-connected-check",
-            "set protocols bgp 65536 neighbor 10.0.0.4 timers holdtime 30",
-            "set protocols bgp 65536 neighbor 10.0.0.4 timers keepalive 10",
-            "set protocols bgp 65536 neighbor 10.0.0.4 capability orf prefix-list receive",
-            "set protocols bgp 65536 neighbor 192.168.0.2 attribute-unchanged as-path",
-            "set protocols bgp 65536 neighbor 192.168.0.2 attribute-unchanged med",
-            "set protocols bgp 65536 neighbor 192.168.0.2 attribute-unchanged next-hop",
-            "set protocols bgp 65536 neighbor 192.168.0.2 ebgp-multihop 2",
-            "set protocols bgp 65536 neighbor 192.168.0.2 remote-as 65535",
-            "set protocols bgp 65536 neighbor 192.168.0.2 soft-reconfiguration",
-            "set protocols bgp 65536 neighbor 192.168.0.2 update-source 192.168.0.1",
-            "set protocols bgp 65536 neighbor 2001:db8::2 ebgp-multihop 2",
-            "set protocols bgp 65536 neighbor 2001:db8::2 remote-as 65535",
-            "set protocols bgp 65536 neighbor 2001:db8::2 maximum-prefix 34",
-            "set protocols bgp 65536 neighbor 2001:db8::2 update-source 2001:db8::1",
-            # "set protocols bgp 65536 redistribute kernel route-map map01",
-            # "set protocols bgp 65536 redistribute static route-map map01",
-            # "set protocols bgp 65536 network 172.16.42.32/27 backdoor",
-            # "set protocols bgp 65536 network 172.16.42.251/32 route-map map01",
-            "set protocols bgp 65536 parameters bestpath as-path confed",
-            "set protocols bgp 65536 parameters bestpath compare-routerid",
-            "set protocols bgp 65536 parameters default no-ipv4-unicast",
-            "set protocols bgp 65536 parameters router-id 10.1.1.1",
+            "set protocols bgp system-as 65536",
+            "set protocols bgp neighbor 10.0.0.4 disable-connected-check",
+            "set protocols bgp neighbor 10.0.0.4 timers holdtime 30",
+            "set protocols bgp neighbor 10.0.0.4 timers keepalive 10",
+            "set protocols bgp neighbor 10.0.0.4 capability orf prefix-list receive",
+            "set protocols bgp neighbor 192.168.0.2 attribute-unchanged as-path",
+            "set protocols bgp neighbor 192.168.0.2 attribute-unchanged med",
+            "set protocols bgp neighbor 192.168.0.2 attribute-unchanged next-hop",
+            "set protocols bgp neighbor 192.168.0.2 ebgp-multihop 2",
+            "set protocols bgp neighbor 192.168.0.2 remote-as 65535",
+            "set protocols bgp neighbor 192.168.0.2 soft-reconfiguration",
+            "set protocols bgp neighbor 192.168.0.2 update-source 192.168.0.1",
+            "set protocols bgp neighbor 2001:db8::2 ebgp-multihop 2",
+            "set protocols bgp neighbor 2001:db8::2 remote-as 65535",
+            "set protocols bgp neighbor 2001:db8::2 maximum-prefix 34",
+            "set protocols bgp neighbor 2001:db8::2 update-source 2001:db8::1",
+            # "set protocols bgp redistribute kernel route-map map01",
+            # "set protocols bgp redistribute static route-map map01",
+            # "set protocols bgp network 172.16.42.32/27 backdoor",
+            # "set protocols bgp network 172.16.42.251/32 route-map map01",
+            "set protocols bgp parameters bestpath as-path confed",
+            "set protocols bgp parameters bestpath compare-routerid",
+            "set protocols bgp parameters default no-ipv4-unicast",
+            "set protocols bgp parameters router-id 10.1.1.1",
         ]
         result = self.execute_module(changed=False)
         self.assertEqual(
@@ -448,29 +449,30 @@ class TestVyosBgpglobalModule(TestVyosModule):
 
     def test_vyos_bgp_global_parsed(self):
         commands = [
-            "set protocols bgp 65536 neighbor 10.0.0.4 disable-connected-check",
-            "set protocols bgp 65536 neighbor 10.0.0.4 timers holdtime 30",
-            "set protocols bgp 65536 neighbor 10.0.0.4 timers keepalive 10",
-            "set protocols bgp 65536 neighbor 10.0.0.4 capability orf prefix-list receive",
-            "set protocols bgp 65536 neighbor 192.168.0.2 attribute-unchanged as-path",
-            "set protocols bgp 65536 neighbor 192.168.0.2 attribute-unchanged med",
-            "set protocols bgp 65536 neighbor 192.168.0.2 attribute-unchanged next-hop",
-            "set protocols bgp 65536 neighbor 192.168.0.2 ebgp-multihop 2",
-            "set protocols bgp 65536 neighbor 192.168.0.2 remote-as 65535",
-            "set protocols bgp 65536 neighbor 192.168.0.2 soft-reconfiguration",
-            "set protocols bgp 65536 neighbor 192.168.0.2 update-source 192.168.0.1",
-            "set protocols bgp 65536 neighbor 2001:db8::2 ebgp-multihop 2",
-            "set protocols bgp 65536 neighbor 2001:db8::2 remote-as 65535",
-            "set protocols bgp 65536 neighbor 2001:db8::2 maximum-prefix 34",
-            "set protocols bgp 65536 neighbor 2001:db8::2 update-source 2001:db8::1",
-            # "set protocols bgp 65536 redistribute kernel route-map map01",
-            # "set protocols bgp 65536 redistribute static route-map map01",
-            # "set protocols bgp 65536 network 172.16.42.32/27 backdoor",
-            # "set protocols bgp 65536 network 172.16.42.251/32 route-map map01",
-            "set protocols bgp 65536 parameters bestpath as-path confed",
-            "set protocols bgp 65536 parameters bestpath compare-routerid",
-            "set protocols bgp 65536 parameters default no-ipv4-unicast",
-            "set protocols bgp 65536 parameters router-id 10.1.1.1",
+            "set protocols bgp system-as 65536",
+            "set protocols bgp neighbor 10.0.0.4 disable-connected-check",
+            "set protocols bgp neighbor 10.0.0.4 timers holdtime 30",
+            "set protocols bgp neighbor 10.0.0.4 timers keepalive 10",
+            "set protocols bgp neighbor 10.0.0.4 capability orf prefix-list receive",
+            "set protocols bgp neighbor 192.168.0.2 attribute-unchanged as-path",
+            "set protocols bgp neighbor 192.168.0.2 attribute-unchanged med",
+            "set protocols bgp neighbor 192.168.0.2 attribute-unchanged next-hop",
+            "set protocols bgp neighbor 192.168.0.2 ebgp-multihop 2",
+            "set protocols bgp neighbor 192.168.0.2 remote-as 65535",
+            "set protocols bgp neighbor 192.168.0.2 soft-reconfiguration",
+            "set protocols bgp neighbor 192.168.0.2 update-source 192.168.0.1",
+            "set protocols bgp neighbor 2001:db8::2 ebgp-multihop 2",
+            "set protocols bgp neighbor 2001:db8::2 remote-as 65535",
+            "set protocols bgp neighbor 2001:db8::2 maximum-prefix 34",
+            "set protocols bgp neighbor 2001:db8::2 update-source 2001:db8::1",
+            # "set protocols bgp redistribute kernel route-map map01",
+            # "set protocols bgp redistribute static route-map map01",
+            # "set protocols bgp network 172.16.42.32/27 backdoor",
+            # "set protocols bgp network 172.16.42.251/32 route-map map01",
+            "set protocols bgp parameters bestpath as-path confed",
+            "set protocols bgp parameters bestpath compare-routerid",
+            "set protocols bgp parameters default no-ipv4-unicast",
+            "set protocols bgp parameters router-id 10.1.1.1",
         ]
         parsed_str = "\n".join(commands)
         set_module_args(dict(running_config=parsed_str, state="parsed"))
