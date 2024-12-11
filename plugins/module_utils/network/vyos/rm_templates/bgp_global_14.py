@@ -49,15 +49,6 @@ def _tmplt_bgp_maximum_paths(config_data):
     return command
 
 
-# def _tmplt_bgp_aggregate_address(config_data):
-#     command = "protocols bgp aggregate-address".format(**config_data)
-#     if config_data["aggregate_address"].get("as_set"):
-#         command += " {prefix} as-set".format(**config_data["aggregate_address"])
-#     if config_data["aggregate_address"].get("summary_only"):
-#         command += " {prefix} summary-only".format(**config_data["aggregate_address"])
-#     return command
-
-
 def _tmplt_delete_bgp_maximum_paths(config_data):
     command = "protocols bgp maximum-paths".format(**config_data)
     return command
@@ -70,14 +61,6 @@ def _tmplt_bgp_params_default(config_data):
     if config_data["bgp_params"]["default"].get("local_pref"):
         command += " local-pref {local_pref}".format(**config_data["bgp_params"]["default"])
     return command
-
-
-# def _tmplt_bgp_delete_redistribute(config_data):
-#     command = (
-#         "protocols bgp redistribute ".format(**config_data)
-#         + config_data["redistribute"]["protocol"]
-#     )
-#     return command
 
 
 def _tmplt_bgp_neighbor_timers(config_data):
@@ -219,34 +202,6 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 "as_number": "{{ as_num }}",
             },
         },
-        # {
-        #     "name": "aggregate_address",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \s+protocols
-        #         \s+bgp
-        #         \s+aggregate-address
-        #         \s+(?P<address>\S+)
-        #         \s*(?P<as_set>as-set)*
-        #         \s*(?P<summary_only>summary-only)*
-        #         $""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": _tmplt_bgp_aggregate_address,
-        #     "remval": "protocols bgp aggregate-address {{ aggregate_address.prefix }}",
-        #     "compval": "aggregate_address",
-        #     "result": {
-        #         "as_number": "{{ as_num }}",
-        #         "aggregate_address": [
-        #             {
-        #                 "prefix": "{{ address }}",
-        #                 "as_set": "{{ True if as_set is defined }}",
-        #                 "summary_only": "{{ True if summary_only is defined }}",
-        #             },
-        #         ],
-        #     },
-        # },
         {
             "name": "maximum_paths",
             "getval": re.compile(
@@ -1294,113 +1249,6 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 },
             },
         },
-        # {
-        #     "name": "network.backdoor",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \s+protocols
-        #         \s+bgp
-        #         \s+network
-        #         \s+(?P<address>\S+)
-        #         \s+backdoor
-        #         *$""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "protocols bgp network {{ network.address }} backdoor",
-        #     "remval": "protocols bgp network {{ network.address }}",
-        #     "compval": "network.backdoor",
-        #     "result": {
-        #         "as_number": "{{ as_num }}",
-        #         "network": [
-        #             {
-        #                 "address": "{{ address }}",
-        #                 "backdoor": "{{ True }}",
-        #             },
-        #         ],
-        #     },
-        # },
-        # {
-        #     "name": "network.route_map",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \s+protocols
-        #         \s+bgp
-        #         \s+network
-        #         \s+(?P<address>\S+)
-        #         \s+route-map
-        #         \s+(?P<map>\S+)
-        #         *$""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "protocols bgp network {{ network.address }} route-map {{ network.route_map }}",
-        #     "remval": "protocols bgp network {{ network.address }}",
-        #     "compval": "network.route_map",
-        #     "result": {
-        #         "as_number": "{{ as_num }}",
-        #         "network": [
-        #             {
-        #                 "address": "{{ address }}",
-        #                 "route_map": "{{ map }}",
-        #             },
-        #         ],
-        #     },
-        # },
-        # {
-        #     "name": "redistribute.metric",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \s+protocols
-        #         \s+bgp
-        #         \s+redistribute
-        #         \s+(?P<proto>\S+)
-        #         \s+metric
-        #         \s+(?P<val>\S+)
-        #         *$""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "protocols bgp redistribute {{ redistribute.protocol }} metric {{ redistribute.metric }}",
-        #     "remval": _tmplt_bgp_delete_redistribute,
-        #     "compval": "redistribute",
-        #     "result": {
-        #         "as_number": "{{ as_num }}",
-        #         "redistribute": [
-        #             {
-        #                 "protocol": "{{ proto }}",
-        #                 "metric": "{{ val|int }}",
-        #             },
-        #         ],
-        #     },
-        # },
-        # {
-        #     "name": "redistribute.route_map",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \s+protocols
-        #         \s+bgp
-        #         \s+redistribute
-        #         \s+(?P<proto>\S+)
-        #         \s+route-map
-        #         \s+(?P<val>\S+)
-        #         *$""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "protocols bgp redistribute {{ redistribute.protocol }} route-map {{ redistribute.route_map }}",
-        #     "remval": _tmplt_bgp_delete_redistribute,
-        #     "compval": "redistribute",
-        #     "result": {
-        #         "as_number": "{{ as_num }}",
-        #         "redistribute": [
-        #             {
-        #                 "protocol": "{{ proto }}",
-        #                 "route_map": "{{ val }}",
-        #             },
-        #         ],
-        #     },
-        # },
         {
             "name": "timers",
             "getval": re.compile(

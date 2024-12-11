@@ -358,13 +358,11 @@ class Bgp_address_family(ResourceModule):
                         "address_family": {"afi": afi, attrib: entry},
                     },
                 )
-
+        # de-duplicate child commands if parent command is present
         for val in (self.commands):
             for val2 in self.commands:
                 if val != val2 and val2.startswith(val):
                     self.commands.remove(val2)
-
-        # self._module.fail_json(msg="Commands" + str(self.commands))
 
     def _compare_asn(self, want, have):
         if want.get("as_number") and not have.get("as_number"):

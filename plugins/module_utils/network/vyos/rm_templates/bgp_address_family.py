@@ -401,9 +401,11 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network" +
-                      "{{ address_family.networks.prefix }} path-limit {{ address_family.networks.path_limit }}",
-            "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network {{ address_family.networks.address }}",
+            # "setval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network" +
+            #           "{{ address_family.networks.prefix }} path-limit {{ address_family.networks.path_limit }}",
+            # "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network {{ address_family.networks.address }}",
+            "setval": _tmplt_bgp_af_network,
+            "remval": _tmplt_bgp_af_network_delete,
             "compval": "address_family.networks.path_limit",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -437,9 +439,11 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network" +
-                      " {{ address_family.networks.prefix }} route-map {{ address_family.networks.route_map }}",
-            "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
+            # "setval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network" +
+            #           " {{ address_family.networks.prefix }} route-map {{ address_family.networks.route_map }}",
+            # "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
+            "setval": _tmplt_bgp_af_network,
+            "remval": _tmplt_bgp_af_network_delete,
             "compval": "address_family.networks.route_map",
             "result": {
                 "as_number": "{{ as_num }}",
