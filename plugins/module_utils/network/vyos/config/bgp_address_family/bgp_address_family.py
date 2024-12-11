@@ -300,12 +300,12 @@ class Bgp_address_family(ResourceModule):
     def _compare_lists(self, want, have, as_number, afi):
         parsers = [
             "aggregate_address",
-            "network.generic",
+            "network",
             "network.backdoor",
             "network.path_limit",
             "network.route_map",
+            "redistribute",
             "redistribute.metric",
-            "redistribute.generic",
             "redistribute.route_map",
             "redistribute.table",
         ]
@@ -358,6 +358,13 @@ class Bgp_address_family(ResourceModule):
                         "address_family": {"afi": afi, attrib: entry},
                     },
                 )
+
+        for val in (self.commands):
+            for val2 in self.commands:
+                if val != val2 and val2.startswith(val):
+                    self.commands.remove(val2)
+
+        # self._module.fail_json(msg="Commands" + str(self.commands))
 
     def _compare_asn(self, want, have):
         if want.get("as_number") and not have.get("as_number"):
