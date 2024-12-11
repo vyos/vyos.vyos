@@ -96,7 +96,7 @@ class Bgp_address_family(ResourceModule):
         # if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
         #     self._tmplt.set_as_number(self.want.get("as_number"))
 
-        if self.want.get("as_number") == self.have.get("as_number") or not self.have:
+        if self.want.get("as_number") == self.have.get("as_number") or not self.have or LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             if self.want:
                 wantd = {self.want["as_number"]: self.want}
             if self.have:

@@ -97,7 +97,7 @@ class Bgp_global(ResourceModule):
         wantd = {}
         haved = {}
 
-        if self.want.get("as_number") == self.have.get("as_number") or not self.have:
+        if self.want.get("as_number") == self.have.get("as_number") or not self.have or LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             if self.want:
                 wantd = {self.want["as_number"]: self.want}
             if self.have:

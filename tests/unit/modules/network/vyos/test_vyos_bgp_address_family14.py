@@ -425,45 +425,45 @@ class TestVyosBgpafModule14(TestVyosModule):
 
         self.execute_module(changed=True, commands=commands)
 
-    def test_vyos_bgp_address_family_incorrect_instance(self):
-        set_module_args(
-            dict(
-                state="overridden",
-                config=dict(
-                    as_number=100,
-                    address_family=[
-                        dict(
-                            afi="ipv4",
-                            networks=[
-                                dict(prefix="192.1.13.0/24", route_map="map01"),
-                            ],
-                        ),
-                        dict(
-                            afi="ipv6",
-                            redistribute=[dict(protocol="ospfv3", metric=20)],
-                        ),
-                    ],
-                    neighbors=[
-                        dict(
-                            neighbor_address="192.10.21.25",
-                            address_family=[
-                                dict(
-                                    afi="ipv4",
-                                    route_map=[dict(action="import", route_map="map01")],
-                                ),
-                                dict(
-                                    afi="ipv6",
-                                    distribute_list=[dict(action="export", acl=10)],
-                                    route_server_client=True,
-                                ),
-                            ],
-                        ),
-                    ],
-                ),
-            ),
-        )
-        result = self.execute_module(failed=True)
-        self.assertIn("Only one bgp instance is allowed per device", result["msg"])
+    # def test_vyos_bgp_address_family_incorrect_instance(self):
+    #     set_module_args(
+    #         dict(
+    #             state="overridden",
+    #             config=dict(
+    #                 as_number=100,
+    #                 address_family=[
+    #                     dict(
+    #                         afi="ipv4",
+    #                         networks=[
+    #                             dict(prefix="192.1.13.0/24", route_map="map01"),
+    #                         ],
+    #                     ),
+    #                     dict(
+    #                         afi="ipv6",
+    #                         redistribute=[dict(protocol="ospfv3", metric=20)],
+    #                     ),
+    #                 ],
+    #                 neighbors=[
+    #                     dict(
+    #                         neighbor_address="192.10.21.25",
+    #                         address_family=[
+    #                             dict(
+    #                                 afi="ipv4",
+    #                                 route_map=[dict(action="import", route_map="map01")],
+    #                             ),
+    #                             dict(
+    #                                 afi="ipv6",
+    #                                 distribute_list=[dict(action="export", acl=10)],
+    #                                 route_server_client=True,
+    #                             ),
+    #                         ],
+    #                     ),
+    #                 ],
+    #             ),
+    #         ),
+    #     )
+    #     result = self.execute_module(failed=True)
+    #     self.assertIn("Only one bgp instance is allowed per device", result["msg"])
 
     def test_vyos_bgp_address_family_rendered(self):
         set_module_args(
@@ -615,6 +615,215 @@ class TestVyosBgpafModule14(TestVyosModule):
             ],
         }
         self.assertEqual(sorted(gather_list), sorted(result["gathered"]))
+
+    def test_vyos_bgp_address_family_replaced_asn(self):
+        set_module_args(
+            dict(
+                state="replaced",
+                config=dict(
+                    as_number=65536,
+                    address_family=[
+                        dict(
+                            afi="ipv4",
+                            aggregate_address=[dict(prefix="192.0.2.0/24", as_set=True)],
+                            networks=[
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
+                                dict(prefix="192.2.13.0/24", backdoor=True),
+                            ],
+                        ),
+                        dict(
+                            afi="ipv6",
+                            redistribute=[dict(protocol="ripng", metric=20)],
+                        ),
+                    ],
+                    neighbors=[
+                        dict(
+                            neighbor_address="192.0.2.25",
+                            address_family=[
+                                dict(
+                                    afi="ipv4",
+                                    route_map=[dict(action="export", route_map="map01")],
+                                    soft_reconfiguration=True,
+                                ),
+                            ],
+                        ),
+                        dict(
+                            neighbor_address="203.0.113.5",
+                            address_family=[
+                                dict(
+                                    afi="ipv6",
+                                    attribute_unchanged=dict(next_hop=True),
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        )
+        self.execute_module(changed=False, commands=[])
+
+    def test_vyos_bgp_address_family_overridden_asn(self):
+        set_module_args(
+            dict(
+                state="overridden",
+                config=dict(
+                    as_number=65536,
+                    address_family=[
+                        dict(
+                            afi="ipv4",
+                            aggregate_address=[dict(prefix="192.0.2.0/24", as_set=True)],
+                            networks=[
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
+                                dict(prefix="192.2.13.0/24", backdoor=True),
+                            ],
+                        ),
+                        dict(
+                            afi="ipv6",
+                            redistribute=[dict(protocol="ripng", metric=20)],
+                        ),
+                    ],
+                    neighbors=[
+                        dict(
+                            neighbor_address="192.0.2.25",
+                            address_family=[
+                                dict(
+                                    afi="ipv4",
+                                    route_map=[dict(action="export", route_map="map01")],
+                                    soft_reconfiguration=True,
+                                ),
+                            ],
+                        ),
+                        dict(
+                            neighbor_address="203.0.113.5",
+                            address_family=[
+                                dict(
+                                    afi="ipv6",
+                                    attribute_unchanged=dict(next_hop=True),
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        )
+        self.execute_module(changed=False, commands=[])
+
+    def test_vyos_bgp_address_family_replaced_asn(self):
+        set_module_args(
+            dict(
+                state="replaced",
+                config=dict(
+                    as_number=65540,
+                    address_family=[
+                        dict(
+                            afi="ipv4",
+                            aggregate_address=[dict(prefix="192.0.2.0/24", as_set=True)],
+                            networks=[
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
+                                dict(prefix="192.2.13.0/24", backdoor=True),
+                            ],
+                        ),
+                        dict(
+                            afi="ipv6",
+                            redistribute=[dict(protocol="ripng", metric=20)],
+                        ),
+                    ],
+                    neighbors=[
+                        dict(
+                            neighbor_address="192.0.2.25",
+                            address_family=[
+                                dict(
+                                    afi="ipv4",
+                                    route_map=[dict(action="export", route_map="map01")],
+                                    soft_reconfiguration=True,
+                                ),
+                            ],
+                        ),
+                        dict(
+                            neighbor_address="203.0.113.5",
+                            address_family=[
+                                dict(
+                                    afi="ipv6",
+                                    attribute_unchanged=dict(next_hop=True),
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        )
+        commands = [
+            "set protocols bgp system-as 65540",
+            "set protocols bgp address-family ipv4-unicast aggregate-address 192.0.2.0/24 as-set",
+            "set protocols bgp address-family ipv4-unicast network 192.1.13.0/24 route-map map01",
+            "set protocols bgp address-family ipv4-unicast network 192.2.13.0/24 backdoor",
+            "set protocols bgp address-family ipv6-unicast redistribute ripng metric 20",
+            "set protocols bgp neighbor 192.0.2.25 address-family ipv4-unicast route-map export map01",
+            "set protocols bgp neighbor 192.0.2.25 address-family ipv4-unicast soft-reconfiguration inbound",
+            "set protocols bgp neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged next-hop",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_bgp_address_family_overridden_asn(self):
+        set_module_args(
+            dict(
+                state="overridden",
+                config=dict(
+                    as_number=65540,
+                    address_family=[
+                        dict(
+                            afi="ipv4",
+                            aggregate_address=[dict(prefix="192.0.2.0/24", as_set=True)],
+                            networks=[
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
+                                dict(prefix="192.2.13.0/24", backdoor=True),
+                            ],
+                        ),
+                        dict(
+                            afi="ipv6",
+                            redistribute=[dict(protocol="ripng", metric=20)],
+                        ),
+                    ],
+                    neighbors=[
+                        dict(
+                            neighbor_address="192.0.2.25",
+                            address_family=[
+                                dict(
+                                    afi="ipv4",
+                                    route_map=[dict(action="export", route_map="map01")],
+                                    soft_reconfiguration=True,
+                                ),
+                            ],
+                        ),
+                        dict(
+                            neighbor_address="203.0.113.5",
+                            address_family=[
+                                dict(
+                                    afi="ipv6",
+                                    attribute_unchanged=dict(next_hop=True),
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        )
+        commands = [
+            "delete protocols bgp address-family ipv4 aggregate-address",
+            "delete protocols bgp address-family ipv4 network",
+            "delete protocols bgp address-family ipv6 redistribute",
+            "delete protocols bgp neighbor 192.0.2.25 address-family",
+            "delete protocols bgp neighbor 203.0.113.5 address-family",
+            "set protocols bgp system-as 65540",
+            "set protocols bgp address-family ipv4-unicast aggregate-address 192.0.2.0/24 as-set",
+            "set protocols bgp address-family ipv4-unicast network 192.1.13.0/24 route-map map01",
+            "set protocols bgp address-family ipv4-unicast network 192.2.13.0/24 backdoor",
+            "set protocols bgp address-family ipv6-unicast redistribute ripng metric 20",
+            "set protocols bgp neighbor 192.0.2.25 address-family ipv4-unicast route-map export map01",
+            "set protocols bgp neighbor 192.0.2.25 address-family ipv4-unicast soft-reconfiguration inbound",
+            "set protocols bgp neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged next-hop",
+        ]
+        self.execute_module(changed=True, commands=commands)
 
 
 class TestVyosBgpafOpsModule14(TestVyosModule):

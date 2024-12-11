@@ -291,42 +291,42 @@ class TestVyosBgpglobalModule(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     #
-    def test_vyos_bgp_global_incorrect_instance(self):
-        set_module_args(
-            dict(
-                config=dict(
-                    as_number="100",
-                    timers=dict(holdtime=30, keepalive=10),
-                    neighbor=[
-                        dict(
-                            address="200.11.155.3",
-                            prefix_list=[
-                                dict(action="export", prefix_list=10),
-                            ],
-                            allowas_in=10,
-                        ),
-                        dict(
-                            address="2001:db8::2",
-                            remote_as="65535",
-                            as_override=True,
-                            default_originate="map01",
-                            route_map=[
-                                dict(action="export", route_map="map01"),
-                            ],
-                        ),
-                    ],
-                    bgp_params=dict(
-                        log_neighbor_changes=True,
-                        no_client_to_client_reflection=True,
-                        confederation=[dict(peers=20), dict(identifier=66)],
-                        router_id="10.1.1.1",
-                    ),
-                ),
-                state="replaced",
-            ),
-        )
-        result = self.execute_module(failed=True)
-        self.assertIn("Only one bgp instance is allowed per device", result["msg"])
+    # def test_vyos_bgp_global_incorrect_instance(self):
+    #     set_module_args(
+    #         dict(
+    #             config=dict(
+    #                 as_number="100",
+    #                 timers=dict(holdtime=30, keepalive=10),
+    #                 neighbor=[
+    #                     dict(
+    #                         address="200.11.155.3",
+    #                         prefix_list=[
+    #                             dict(action="export", prefix_list=10),
+    #                         ],
+    #                         allowas_in=10,
+    #                     ),
+    #                     dict(
+    #                         address="2001:db8::2",
+    #                         remote_as="65535",
+    #                         as_override=True,
+    #                         default_originate="map01",
+    #                         route_map=[
+    #                             dict(action="export", route_map="map01"),
+    #                         ],
+    #                     ),
+    #                 ],
+    #                 bgp_params=dict(
+    #                     log_neighbor_changes=True,
+    #                     no_client_to_client_reflection=True,
+    #                     confederation=[dict(peers=20), dict(identifier=66)],
+    #                     router_id="10.1.1.1",
+    #                 ),
+    #             ),
+    #             state="replaced",
+    #         ),
+    #     )
+    #     result = self.execute_module(failed=True)
+    #     self.assertIn("Only one bgp instance is allowed per device", result["msg"])
 
     def test_vyos_bgp_global_replaced_af(self):
         set_module_args(
