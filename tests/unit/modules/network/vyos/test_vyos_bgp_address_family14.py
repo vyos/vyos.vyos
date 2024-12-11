@@ -615,3 +615,177 @@ class TestVyosBgpafModule14(TestVyosModule):
             ],
         }
         self.assertEqual(sorted(gather_list), sorted(result["gathered"]))
+
+
+class TestVyosBgpafOpsModule14(TestVyosModule):
+    module = vyos_bgp_address_family
+
+    def setUp(self):
+        super(TestVyosBgpafOpsModule14, self).setUp()
+        self.mock_get_resource_connection_config = patch(
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
+        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
+
+        self.mock_execute_show_command = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts."
+            + "bgp_address_family.bgp_address_family.Bgp_address_familyFacts.get_device_data",
+        )
+        self.execute_show_command = self.mock_execute_show_command.start()
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_address_family.bgp_address_family.get_os_version"
+        )
+        self.test_version = "1.4"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
+        self.mock_facts_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family.get_os_version"
+        )
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = self.test_version
+        self.maxDiff = None
+
+    def tearDown(self):
+        super(TestVyosBgpafOpsModule14, self).tearDown()
+        self.mock_get_resource_connection_config.stop()
+        self.mock_execute_show_command.stop()
+        self.mock_get_os_version.stop()
+        self.mock_facts_get_os_version.stop()
+
+    def load_fixtures(self, commands=None, filename=None):
+        if filename is None:
+            filename = "vyos_bgp_af_ops_config_14.cfg"
+
+        def load_from_file(*args, **kwargs):
+            output = load_fixture(filename)
+            return output
+
+        self.execute_show_command.side_effect = load_from_file
+
+    def test_vyos_bgp_address_family_merged(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    address_family=[
+                        dict(
+                            afi="ipv4",
+                            networks=[
+                                dict(prefix="192.3.13.0/24", backdoor=True),
+                            ],
+                        ),
+                        dict(
+                            afi="ipv6",
+                            redistribute=[dict(protocol="ospfv3", metric=20)],
+                        ),
+                    ],
+                ),
+            ),
+        )
+        commands = [
+            "set protocols bgp address-family ipv4-unicast network 192.3.13.0/24 backdoor",
+            "set protocols bgp address-family ipv6-unicast redistribute ospfv3 metric 20",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_bgp_address_family_replaced(self):
+        set_module_args(
+            dict(
+                state="replaced",
+                config=dict(
+                    as_number=65536,
+                    address_family=[
+                        dict(
+                            afi="ipv4",
+                            networks=[
+                                dict(prefix="192.1.13.0/24", backdoor=True),
+                            ],
+                            redistribute=[
+                                dict(protocol="ospf", metric=25),
+                            ]
+                        ),
+                        dict(
+                            afi="ipv6",
+                            redistribute=[
+                                dict(protocol="ospfv3", metric=20),
+                                dict(protocol="ripng")
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        )
+        commands = [
+            "delete protocols bgp address-family ipv6-unicast redistribute ripng metric",
+            "delete protocols bgp address-family ipv4-unicast network 192.2.13.0/24",
+            "delete protocols bgp address-family ipv4-unicast redistribute rip",
+            "set protocols bgp address-family ipv4-unicast redistribute ospf metric 25",
+            "set protocols bgp address-family ipv4-unicast network 192.1.13.0/24 backdoor",
+            "set protocols bgp address-family ipv6-unicast redistribute ospfv3 metric 20",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_bgp_address_family_overridden(self):
+        set_module_args(
+            dict(
+                state="overridden",
+                config=dict(
+                    as_number=65536,
+                    address_family=[
+                        dict(
+                            afi="ipv4",
+                            networks=[
+                                dict(prefix="192.1.13.0/24", backdoor=True),
+                            ],
+                            redistribute=[
+                                dict(protocol="ospf", metric=25),
+                            ]
+                        ),
+                        dict(
+                            afi="ipv6",
+                            redistribute=[
+                                dict(protocol="ospfv3", metric=20),
+                                dict(protocol="ripng")
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        )
+        commands = [
+            "delete protocols bgp address-family ipv6-unicast redistribute ripng metric",
+            "delete protocols bgp address-family ipv4-unicast network 192.2.13.0/24",
+            "delete protocols bgp address-family ipv4-unicast redistribute rip",
+            "set protocols bgp address-family ipv4-unicast redistribute ospf metric 25",
+            "set protocols bgp address-family ipv4-unicast network 192.1.13.0/24 backdoor",
+            "set protocols bgp address-family ipv6-unicast redistribute ospfv3 metric 20",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_bgp_address_family_deleted(self):
+        set_module_args(
+            dict(
+                state="deleted",
+                config=dict(
+                    as_number=65536,
+                    address_family=[
+                        dict(
+                            afi="ipv4",
+                            networks=[
+                                dict(prefix="192.2.13.0/24"),
+                            ]
+                        ),
+                        dict(
+                            afi="ipv6",
+                            redistribute=[dict(protocol="ripng")],
+                        ),
+                    ],
+                ),
+            ),
+        )
+        commands = [
+            "delete protocols bgp address-family ipv4-unicast",
+            "delete protocols bgp address-family ipv6-unicast",
+        ]
+
+        self.execute_module(changed=True, commands=commands)
