@@ -1,0 +1,10 @@
+---
+breaking_changes:
+  - obsolete stanzas - aggregate_address, network and redistribute stanzas migrated to bgp address-family module
+  - AS number - starting from 1.4+ as-number is set in the separate command
+  - redistribute, network stanza - added support for modifiers (metric, backdoor etc as per T6829)
+
+minor_changes:
+  - as_number - Added support for 1.4+ "system-as. 1.3 embedded as_number is still supported"
+  - fix tests for 1.4+ bgp_address_family
+  - updated documentation
