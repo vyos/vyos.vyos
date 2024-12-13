@@ -784,7 +784,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp neighbor {{ neighbor.address }} nexthop-self",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} passive",
             "compval": "neighbor.passive",
             "result": {
                 "as_number": "{{ as_num }}",
