@@ -414,9 +414,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            # "setval": "protocols bgp address-family {{ address_family.afi }}-unicast network" +
-            #           "{{ address_family.networks.prefix }} path-limit {{ address_family.networks.path_limit }}",
-            # "remval": "protocols bgp address-family {{ address_family.afi }}-unicast network {{ address_family.networks.address }}",
             "setval": _tmplt_bgp_af_network,
             "remval": _tmplt_bgp_af_network_delete,
             "compval": "address_family.networks.path_limit",
@@ -451,9 +448,6 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            # "setval": "protocols bgp address-family {{ address_family.afi }}-unicast network" +
-            #           " {{ address_family.networks.prefix }} route-map {{ address_family.networks.route_map }}",
-            # "remval": "protocols bgp address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
             "setval": _tmplt_bgp_af_network,
             "remval": _tmplt_bgp_af_network_delete,
             "compval": "address_family.networks.route_map",
