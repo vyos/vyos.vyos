@@ -56,13 +56,13 @@ class TestVyosBgpglobalModule(TestVyosModule):
 
         self.execute_show_command = self.mock_execute_show_command.start()
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global.get_os_version",
         )
         self.test_version = "1.2"
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = self.test_version
         self.mock_facts_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global.get_os_version",
         )
         self.get_facts_os_version = self.mock_facts_get_os_version.start()
         self.get_facts_os_version.return_value = self.test_version
@@ -98,21 +98,17 @@ class TestVyosBgpglobalModule(TestVyosModule):
                             address="10.0.0.4",
                             disable_connected_check=True,
                             timers=dict(holdtime=30, keepalive=10),
-                            capability=dict(orf="receive"),
                         ),
                         dict(
                             address="192.168.0.2",
-                            attribute_unchanged=dict(as_path=True, med=True),
                             ebgp_multihop=2,
                             remote_as="65535",
-                            soft_reconfiguration=True,
                             update_source="192.168.0.1",
                         ),
                         dict(
                             address="2001:db8::2",
                             ebgp_multihop=2,
                             remote_as="65535",
-                            maximum_prefix=34,
                             update_source="2001:db8::1",
                         ),
                     ],
@@ -141,21 +137,12 @@ class TestVyosBgpglobalModule(TestVyosModule):
             dict(
                 config=dict(
                     as_number="65536",
-                    maximum_paths=[
-                        dict(path="ebgp", count=20),
-                        dict(path="ibgp", count=45),
-                    ],
                     neighbor=[
                         dict(
                             address="2001:db8::2",
                             ebgp_multihop=2,
                             remote_as="65535",
-                            maximum_prefix=34,
                             update_source="2001:db8::1",
-                            distribute_list=[
-                                dict(action="export", acl=31),
-                                dict(action="import", acl=9),
-                            ],
                         ),
                     ],
                     bgp_params=dict(
@@ -167,12 +154,8 @@ class TestVyosBgpglobalModule(TestVyosModule):
             ),
         )
         commands = [
-            "set protocols bgp 65536 neighbor 2001:db8::2 distribute-list export 31",
-            "set protocols bgp 65536 neighbor 2001:db8::2 distribute-list import 9",
             "set protocols bgp 65536 parameters confederation peers 20",
             "set protocols bgp 65536 parameters confederation identifier 66",
-            "set protocols bgp 65536 maximum-paths ebgp 20",
-            "set protocols bgp 65536 maximum-paths ibgp 45",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -186,21 +169,17 @@ class TestVyosBgpglobalModule(TestVyosModule):
                             address="10.0.0.4",
                             disable_connected_check=True,
                             timers=dict(holdtime=30, keepalive=10),
-                            capability=dict(orf="receive"),
                         ),
                         dict(
                             address="192.168.0.2",
-                            attribute_unchanged=dict(as_path=True, med=True),
                             ebgp_multihop=2,
                             remote_as="65535",
-                            soft_reconfiguration=True,
                             update_source="192.168.0.1",
                         ),
                         dict(
                             address="2001:db8::2",
                             ebgp_multihop=2,
                             remote_as="65535",
-                            maximum_prefix=34,
                             update_source="2001:db8::1",
                         ),
                     ],
@@ -234,19 +213,11 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     neighbor=[
                         dict(
                             address="200.11.155.3",
-                            prefix_list=[
-                                dict(action="export", prefix_list=10),
-                            ],
-                            allowas_in=10,
                         ),
                         dict(
                             address="2001:db8::2",
                             remote_as="65535",
-                            as_override=True,
                             default_originate="map01",
-                            route_map=[
-                                dict(action="export", route_map="map01"),
-                            ],
                         ),
                     ],
                     bgp_params=dict(
@@ -266,14 +237,9 @@ class TestVyosBgpglobalModule(TestVyosModule):
             # "delete protocols bgp 65536 network",
             # "delete protocols bgp 65536 redistribute",
             "delete protocols bgp 65536 neighbor 2001:db8::2 update-source 2001:db8::1",
-            "delete protocols bgp 65536 neighbor 2001:db8::2 maximum-prefix 34",
             "delete protocols bgp 65536 neighbor 2001:db8::2 ebgp-multihop 2",
             "delete protocols bgp 65536 neighbor 192.168.0.2",
             "delete protocols bgp 65536 neighbor 10.0.0.4",
-            "set protocols bgp 65536 neighbor 200.11.155.3 prefix-list export 10",
-            "set protocols bgp 65536 neighbor 200.11.155.3 allowas-in number 10",
-            "set protocols bgp 65536 neighbor 2001:db8::2 as-override",
-            "set protocols bgp 65536 neighbor 2001:db8::2 route-map export map01",
             "set protocols bgp 65536 parameters log-neighbor-changes",
             "set protocols bgp 65536 parameters no-client-to-client-reflection",
             "set protocols bgp 65536 parameters confederation peers 20",
@@ -300,19 +266,11 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     neighbor=[
                         dict(
                             address="200.11.155.3",
-                            prefix_list=[
-                                dict(action="export", prefix_list=10),
-                            ],
-                            allowas_in=10,
                         ),
                         dict(
                             address="2001:db8::2",
                             remote_as="65535",
-                            as_override=True,
                             default_originate="map01",
-                            route_map=[
-                                dict(action="export", route_map="map01"),
-                            ],
                         ),
                     ],
                     bgp_params=dict(
@@ -337,19 +295,11 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     neighbor=[
                         dict(
                             address="200.11.155.3",
-                            prefix_list=[
-                                dict(action="export", prefix_list=10),
-                            ],
-                            allowas_in=10,
                         ),
                         dict(
                             address="2001:db8::2",
                             remote_as="65535",
-                            as_override=True,
                             default_originate="map01",
-                            route_map=[
-                                dict(action="export", route_map="map01"),
-                            ],
                         ),
                     ],
                     bgp_params=dict(
@@ -378,21 +328,17 @@ class TestVyosBgpglobalModule(TestVyosModule):
                             address="10.0.0.4",
                             disable_connected_check=True,
                             timers=dict(holdtime=30, keepalive=10),
-                            capability=dict(orf="receive"),
                         ),
                         dict(
                             address="192.168.0.2",
-                            attribute_unchanged=dict(as_path=True, med=True),
                             ebgp_multihop=2,
                             remote_as="65535",
-                            soft_reconfiguration=True,
                             update_source="192.168.0.1",
                         ),
                         dict(
                             address="2001:db8::2",
                             ebgp_multihop=2,
                             remote_as="65535",
-                            maximum_prefix=34,
                             update_source="2001:db8::1",
                         ),
                     ],
@@ -418,17 +364,11 @@ class TestVyosBgpglobalModule(TestVyosModule):
             "set protocols bgp 65536 neighbor 10.0.0.4 disable-connected-check",
             "set protocols bgp 65536 neighbor 10.0.0.4 timers holdtime 30",
             "set protocols bgp 65536 neighbor 10.0.0.4 timers keepalive 10",
-            "set protocols bgp 65536 neighbor 10.0.0.4 capability orf prefix-list receive",
-            "set protocols bgp 65536 neighbor 192.168.0.2 attribute-unchanged as-path",
-            "set protocols bgp 65536 neighbor 192.168.0.2 attribute-unchanged med",
-            "set protocols bgp 65536 neighbor 192.168.0.2 attribute-unchanged next-hop",
             "set protocols bgp 65536 neighbor 192.168.0.2 ebgp-multihop 2",
             "set protocols bgp 65536 neighbor 192.168.0.2 remote-as 65535",
-            "set protocols bgp 65536 neighbor 192.168.0.2 soft-reconfiguration",
             "set protocols bgp 65536 neighbor 192.168.0.2 update-source 192.168.0.1",
             "set protocols bgp 65536 neighbor 2001:db8::2 ebgp-multihop 2",
             "set protocols bgp 65536 neighbor 2001:db8::2 remote-as 65535",
-            "set protocols bgp 65536 neighbor 2001:db8::2 maximum-prefix 34",
             "set protocols bgp 65536 neighbor 2001:db8::2 update-source 2001:db8::1",
             # "set protocols bgp 65536 redistribute kernel route-map map01",
             # "set protocols bgp 65536 redistribute static route-map map01",
@@ -451,17 +391,11 @@ class TestVyosBgpglobalModule(TestVyosModule):
             "set protocols bgp 65536 neighbor 10.0.0.4 disable-connected-check",
             "set protocols bgp 65536 neighbor 10.0.0.4 timers holdtime 30",
             "set protocols bgp 65536 neighbor 10.0.0.4 timers keepalive 10",
-            "set protocols bgp 65536 neighbor 10.0.0.4 capability orf prefix-list receive",
-            "set protocols bgp 65536 neighbor 192.168.0.2 attribute-unchanged as-path",
-            "set protocols bgp 65536 neighbor 192.168.0.2 attribute-unchanged med",
-            "set protocols bgp 65536 neighbor 192.168.0.2 attribute-unchanged next-hop",
             "set protocols bgp 65536 neighbor 192.168.0.2 ebgp-multihop 2",
             "set protocols bgp 65536 neighbor 192.168.0.2 remote-as 65535",
-            "set protocols bgp 65536 neighbor 192.168.0.2 soft-reconfiguration",
             "set protocols bgp 65536 neighbor 192.168.0.2 update-source 192.168.0.1",
             "set protocols bgp 65536 neighbor 2001:db8::2 ebgp-multihop 2",
             "set protocols bgp 65536 neighbor 2001:db8::2 remote-as 65535",
-            "set protocols bgp 65536 neighbor 2001:db8::2 maximum-prefix 34",
             "set protocols bgp 65536 neighbor 2001:db8::2 update-source 2001:db8::1",
             # "set protocols bgp 65536 redistribute kernel route-map map01",
             # "set protocols bgp 65536 redistribute static route-map map01",
@@ -485,17 +419,11 @@ class TestVyosBgpglobalModule(TestVyosModule):
             "neighbor": [
                 {
                     "address": "10.0.0.4",
-                    "capability": {"orf": "receive"},
                     "disable_connected_check": True,
                     "timers": {"holdtime": 30, "keepalive": 10},
                 },
                 {
                     "address": "192.168.0.2",
-                    "attribute_unchanged": {
-                        "as_path": True,
-                        "med": True,
-                        "next_hop": True,
-                    },
                     "ebgp_multihop": 2,
                     "remote_as": 65535,
                     "update_source": "192.168.0.1",
@@ -503,7 +431,6 @@ class TestVyosBgpglobalModule(TestVyosModule):
                 {
                     "address": "2001:db8::2",
                     "ebgp_multihop": 2,
-                    "maximum_prefix": 34,
                     "remote_as": 65535,
                     "update_source": "2001:db8::1",
                 },
@@ -532,22 +459,18 @@ class TestVyosBgpglobalModule(TestVyosModule):
             "neighbor": [
                 {
                     "address": "10.0.0.4",
-                    "capability": {"orf": "receive"},
                     "disable_connected_check": True,
                     "timers": {"holdtime": 30, "keepalive": 10},
                 },
                 {
                     "address": "192.168.0.2",
-                    "attribute_unchanged": {"as_path": True, "med": True},
                     "ebgp_multihop": 2,
                     "remote_as": 65535,
-                    "soft_reconfiguration": True,
                     "update_source": "192.168.0.1",
                 },
                 {
                     "address": "2001:db8::2",
                     "ebgp_multihop": 2,
-                    "maximum_prefix": 34,
                     "remote_as": 65535,
                     "update_source": "2001:db8::1",
                 },
