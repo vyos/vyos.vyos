@@ -36,35 +36,17 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
             "type": "dict",
             "options": {
                 "as_number": {"type": "int"},
-                "maximum_paths": {
-                    "type": "list",
-                    "elements": "dict",
-                    "options": {"path": {"type": "str"}, "count": {"type": "int"}},
-                },
                 "neighbor": {
                     "type": "list",
                     "elements": "dict",
                     "options": {
                         "address": {"type": "str"},
                         "advertisement_interval": {"type": "int"},
-                        "allowas_in": {"type": "int"},
-                        "as_override": {"type": "bool"},
-                        "attribute_unchanged": {
-                            "type": "dict",
-                            "options": {
-                                "as_path": {"type": "bool"},
-                                "med": {"type": "bool"},
-                                "next_hop": {"type": "bool"},
-                            },
-                        },
                         "capability": {
                             "type": "dict",
                             "options": {
                                 "dynamic": {"type": "bool"},
-                                "orf": {
-                                    "type": "str",
-                                    "choices": ["send", "receive"],
-                                },
+                                "extended_nexthop": {"type": "bool"},
                             },
                         },
                         "default_originate": {"type": "str"},
@@ -75,71 +57,18 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                             "type": "str",
                             "choices": ["extended", "standard"],
                         },
-                        "distribute_list": {
-                            "type": "list",
-                            "elements": "dict",
-                            "options": {
-                                "action": {
-                                    "type": "str",
-                                    "choices": ["export", "import"],
-                                },
-                                "acl": {"type": "int"},
-                            },
-                        },
                         "ebgp_multihop": {"type": "int"},
-                        "filter_list": {
-                            "type": "list",
-                            "elements": "dict",
-                            "options": {
-                                "action": {
-                                    "type": "str",
-                                    "choices": ["export", "import"],
-                                },
-                                "path_list": {"type": "str"},
-                            },
-                        },
                         "local_as": {"type": "int"},
-                        "maximum_prefix": {"type": "int"},
-                        "nexthop_self": {"type": "bool"},
                         "override_capability": {"type": "bool"},
                         "passive": {"type": "bool"},
                         "password": {"type": "str", "no_log": True},
                         "peer_group_name": {"type": "str"},
                         "peer_group": {"type": "bool"},
                         "port": {"type": "int"},
-                        "prefix_list": {
-                            "type": "list",
-                            "elements": "dict",
-                            "options": {
-                                "action": {
-                                    "type": "str",
-                                    "choices": ["export", "import"],
-                                },
-                                "prefix_list": {"type": "str"},
-                            },
-                        },
                         "remote_as": {"type": "int"},
-                        "remove_private_as": {"type": "bool"},
-                        "route_map": {
-                            "type": "list",
-                            "elements": "dict",
-                            "options": {
-                                "action": {
-                                    "type": "str",
-                                    "choices": ["export", "import"],
-                                },
-                                "route_map": {"type": "str"},
-                            },
-                        },
-                        "route_reflector_client": {"type": "bool"},
-                        "route_server_client": {"type": "bool"},
+                        "solo": {"type": "bool"},
                         "shutdown": {"type": "bool"},
-                        "soft_reconfiguration": {"type": "bool"},
                         "strict_capability_match": {"type": "bool"},
-                        "unsuppress_map": {"type": "str"},
-                        "update_source": {"type": "str"},
-                        "weight": {"type": "int"},
-                        "ttl_security": {"type": "int"},
                         "timers": {
                             "type": "dict",
                             "options": {
@@ -148,6 +77,8 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                                 "keepalive": {"type": "int"},
                             },
                         },
+                        "ttl_security": {"type": "int"},
+                        "update_source": {"type": "str"},
                     },
                 },
                 "timers": {

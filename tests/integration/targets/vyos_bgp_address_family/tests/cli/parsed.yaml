@@ -5,14 +5,6 @@
 - name: ensure facts
   include_tasks: _get_version.yaml
 
-- name: include correct vars
-  include_vars: pre-v1_4.yaml
-  when: vyos_version is version('1.4.0', '<', version_type='semver')
-
-- name: include correct vars
-  include_vars: v1_4.yaml
-  when: vyos_version is version('1.4.0', '>=', version_type='semver')
-
 - name: version 1.3
   block:
     - name: Provide the running configuration for parsing (config to be parsed)
