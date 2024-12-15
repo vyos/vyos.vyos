@@ -15,7 +15,7 @@
               as_path: confed
               compare_routerid: true
             default:
-              no_ipv4_unicast: true
+              local_pref: 100
             router_id: 192.1.2.9
         state: rendered
 

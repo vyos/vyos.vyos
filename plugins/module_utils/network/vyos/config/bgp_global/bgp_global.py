@@ -31,14 +31,13 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_global import (
     Bgp_globalTemplate,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_global_14 import (
     Bgp_globalTemplate14,
 )
-
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Bgp_global(ResourceModule):
@@ -64,7 +63,7 @@ class Bgp_global(ResourceModule):
             self._tmplt = Bgp_globalTemplate()
 
     def parse(self):
-        """ override parse to check template """
+        """override parse to check template"""
         self._validate_template()
         return super().parse()
 
@@ -97,7 +96,11 @@ class Bgp_global(ResourceModule):
         wantd = {}
         haved = {}
 
-        if self.want.get("as_number") == self.have.get("as_number") or not self.have or LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+        if (
+            self.want.get("as_number") == self.have.get("as_number")
+            or not self.have
+            or LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+        ):
             if self.want:
                 wantd = {self.want["as_number"]: self.want}
             if self.have:
@@ -397,10 +400,7 @@ class Bgp_global(ResourceModule):
     def _compare_asn(self, want, have):
         if want.get("as_number") and not have.get("as_number"):
             self.commands.append(
-                "set protocols bgp "
-                + "system-as"
-                + " "
-                + str(want.get("as_number")),
+                "set protocols bgp " + "system-as" + " " + str(want.get("as_number")),
             )
 
     def _check_af(self, neighbor):
@@ -408,11 +408,12 @@ class Bgp_global(ResourceModule):
         if self._connection:
             config_lines = self._get_config(self._connection).splitlines()
             for line in config_lines:
-                if "address-family" in line:
-                    af_present = True
+                if neighbor in line:
+                    if "address-family" in line:
+                        af_present = True
         return af_present
 
     def _get_config(self, connection):
         return connection.get(
-            'show configuration commands |  match "set protocols bgp .* neighbor"',
+            'show configuration commands |  match "set protocols bgp .*neighbor"',
         )

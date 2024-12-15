@@ -4,6 +4,7 @@ merged:
     - set protocols bgp system-as 65536
     - set protocols bgp parameters bestpath as-path confed
     - set protocols bgp parameters bestpath compare-routerid
+    - set protocols bgp parameters default local-pref 100
     - set protocols bgp parameters router-id 192.1.2.9
     - set protocols bgp timers keepalive 35
   after:
@@ -13,7 +14,7 @@ merged:
         as_path: confed
         compare_routerid: true
       default:
-        no_ipv4_unicast: true
+        local_pref: 100
       router_id: 192.1.2.9
     timers:
       keepalive: 35
@@ -22,6 +23,7 @@ replaced:
   commands:
     - delete protocols bgp timers
     - delete protocols bgp parameters router-id 192.1.2.9
+    - delete protocols bgp parameters default
     - delete protocols bgp parameters confederation
     - delete protocols bgp neighbor 5001::64
     - delete protocols bgp neighbor 203.0.113.5
@@ -31,7 +33,9 @@ replaced:
     - set protocols bgp neighbor 192.0.2.43 capability dynamic
     - set protocols bgp neighbor 192.0.2.43 timers holdtime 30
     - set protocols bgp neighbor 192.0.2.43 timers keepalive 10
+    - set protocols bgp neighbor 192.0.2.43 remote-as 102
     - set protocols bgp neighbor 203.0.113.0 capability dynamic
+    - set protocols bgp neighbor 203.0.113.0 remote-as 102
     - set protocols bgp parameters always-compare-med
     - set protocols bgp parameters dampening half-life 33
     - set protocols bgp parameters dampening max-suppress-time 20

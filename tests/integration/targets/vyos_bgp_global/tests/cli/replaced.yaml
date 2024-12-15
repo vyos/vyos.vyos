@@ -29,9 +29,11 @@
               timers:
                 holdtime: 30
                 keepalive: 10
+              remote_as: 102
             - address: 203.0.113.0
               capability:
                 dynamic: true
+              remote_as: 102
         state: replaced
 
     - vyos.vyos.vyos_facts:

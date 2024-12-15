@@ -21,6 +21,15 @@
           - result.changed == true
           - "'delete protocols bgp 65536' in result.commands"
           - ansible_facts.network_resources.bgp_global == []
+      when: vyos_version is version('1.4.0', '<', version_type='semver')
+
+    - assert:
+        that:
+          - result.commands|length == 1
+          - result.changed == true
+          - "'delete protocols bgp' in result.commands"
+          - ansible_facts.network_resources.bgp_global == []
+      when: vyos_version is version('1.4.0', '>=', version_type='semver')
 
   always:
     - include_tasks: _remove_config.yaml
