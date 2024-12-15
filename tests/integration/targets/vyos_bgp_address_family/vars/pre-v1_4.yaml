@@ -1,4 +1,7 @@
 ---
+rendered:
+  commands: "{{ merged.commands }}"
+
 merged:
   commands:
     - set protocols bgp 65536 address-family ipv6-unicast redistribute static metric 50
@@ -10,6 +13,7 @@ merged:
     - set protocols bgp 65536 neighbor 192.0.2.25 address-family ipv6-unicast nexthop-self
     - set protocols bgp 65536 neighbor 192.0.2.25 address-family ipv6-unicast route-map export map01
     - set protocols bgp 65536 neighbor 192.0.2.25 address-family ipv6-unicast route-map import map01
+  before: {}
   after:
     address_family:
       - afi: ipv6
