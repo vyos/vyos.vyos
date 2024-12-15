@@ -118,7 +118,7 @@ class Ntp_global(ResourceModule):
                             servernames.remove(have["server"])
             # if everything is deleted add the delete command for {path} ntp
             # this should be equiv: servernames == [] and commandlist == ["server"]:
-            if wantd == {}:
+            if wantd == {} and haved != {}:
                 self.commands.append(
                     self._tmplt.render({}, "service_delete", True),
                 )

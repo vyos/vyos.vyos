@@ -85,6 +85,9 @@ overridden:
 
   after:
     servers:
+      - server: server-add.example.com
+        options:
+          - prefer
       - server: server1.example.com
         options:
           - pool
@@ -93,15 +96,13 @@ overridden:
         options:
           - noselect
           - prefer
-      - server: server-add.example.com
-        options:
-          - prefer
 
 deleted:
   commands:
     - delete system ntp server 10.3.6.5
     - delete system ntp server server4.example.com
     - delete system ntp server server5.example.com
+    - delete system ntp
 
 parsed:
   config: |

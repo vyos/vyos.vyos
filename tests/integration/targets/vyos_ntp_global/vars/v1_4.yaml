@@ -105,6 +105,7 @@ deleted:
     - delete service ntp server 10.3.6.5
     - delete service ntp server server4.example.com
     - delete service ntp server server5.example.com
+    - delete service ntp
 
 parsed:
   config: |
