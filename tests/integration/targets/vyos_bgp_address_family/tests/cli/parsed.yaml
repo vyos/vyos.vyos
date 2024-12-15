@@ -2,13 +2,42 @@
 - debug:
     msg: START vyos_bgp_address_family parsed integration tests on connection={{ ansible_connection }}
 
-- name: Provide the running configuration for parsing (config to be parsed)
-  register: result
-  vyos.vyos.vyos_bgp_address_family:
-    running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
-    state: parsed
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
+- name: include correct vars
+  include_vars: pre-v1_4.yaml
+  when: vyos_version is version('1.4.0', '<', version_type='semver')
+
+- name: include correct vars
+  include_vars: v1_4.yaml
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+
+- name: version 1.3
+  block:
+    - name: Provide the running configuration for parsing (config to be parsed)
+      register: result
+      vyos.vyos.vyos_bgp_address_family:
+        running_config: "{{ lookup('file', '_parsed_config_1_3.cfg') }}"
+        state: parsed
+    - name: set result
+      set_fact:
+        parsed_result: "{{ result }}"
+  when: vyos_version is version('1.4.0', '<', version_type='semver')
+
+- name: version 1.4+
+  block:
+    - name: Provide the running configuration for parsing (config to be parsed)
+      register: result
+      vyos.vyos.vyos_bgp_address_family:
+        running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
+        state: parsed
+    - name: set result
+      set_fact:
+        parsed_result: "{{ result }}"
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
 
 - assert:
     that:
-      - result.changed == false
-      - result.parsed == populate.config
+      - parsed_result.changed == false
+      - parsed_result.parsed == populate.config

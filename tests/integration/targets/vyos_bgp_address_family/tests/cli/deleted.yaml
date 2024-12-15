@@ -24,7 +24,7 @@
 
     - assert:
         that:
-          - result.commands|length == 3
+          - result.commands|length == deleted.commands|length
           - result.changed == true
           - result.commands|symmetric_difference(deleted.commands) == []
           - result.after == ansible_facts['network_resources']['bgp_address_family']
