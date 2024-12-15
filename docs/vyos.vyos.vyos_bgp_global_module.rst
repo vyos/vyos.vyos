@@ -18,6 +18,7 @@ Version added: 1.0.0
 Synopsis
 --------
 - This module manages BGP global configuration of interfaces on devices running VYOS.
+- Tested against VYOS 1.3, 1.4
 
 
 
