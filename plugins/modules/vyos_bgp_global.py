@@ -112,7 +112,7 @@ options:
                 description:
                 - Advertise dynamic capability to this neighbor.
                 type: bool
-              extended-nexthop:
+              extended_nexthop:
                 description:
                 - Advertise extended nexthop capability to this neighbor.
                 type: bool
@@ -268,9 +268,9 @@ options:
       #    soft_reconfiguration:  --> Moved to address-family before 1.3
       #      description: Soft reconfiguration for neighbor
       #      type: bool
-      #    solo: <-- added in 1.3
-      #      description: Do not send back prefixes learned from the neighbor
-      #      type: bool
+          solo: # <-- added in 1.3
+            description: Do not send back prefixes learned from the neighbor
+            type: bool
           strict_capability_match:
             description: Enable strict capability negotiation
             type: bool
@@ -399,9 +399,9 @@ options:
                 description: Default local preference
                 type: int
               no_ipv4_unicast:
-                description:
-                - Deactivate IPv4 unicast for a peer by default
-                - Deprecated: Unavailable after 1.4
+                description: |
+                  Deactivate IPv4 unicast for a peer by default
+                  Deprecated: Unavailable after 1.4
                 type: bool
           deterministic_med:
             description: Compare MEDs between different peers in the same AS

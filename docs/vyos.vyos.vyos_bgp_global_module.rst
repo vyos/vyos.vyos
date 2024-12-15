@@ -401,8 +401,8 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>Deactivate IPv4 unicast for a peer by default</div>
-                        <div>{&#x27;Deprecated&#x27;: &#x27;Unavailable after 1.4&#x27;}</div>
+                        <div>Deactivate IPv4 unicast for a peer by default
+    Deprecated: Unavailable after 1.4</div>
                 </td>
             </tr>
 
@@ -758,7 +758,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>extended-nexthop</b>
+                    <b>extended_nexthop</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">boolean</span>
@@ -1056,6 +1056,27 @@ Parameters
                 </td>
                 <td>
                         <div>Administratively shut down neighbor</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>solo</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>no</li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Do not send back prefixes learned from the neighbor</div>
                 </td>
             </tr>
             <tr>
