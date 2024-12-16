@@ -1,11 +1,10 @@
 ---
-breaking_changes:
+minor_changes:
+  - Added support for `solo` neighbor attribute
+  - as_number - Added support for 1.4+ "system-as. 1.3 embedded as_number is still supported"
+  - Fixed tests for 1.4+ bgp_global
+  - updated documentation
   - Aligned with version 1.3+ configuration - aggregate_address, maximum_paths, network, and redistribute
-    removed to `bgp_address_family` module.
+    Removed to `bgp_address_family` module.
   - Many configuration attributes moved from `bgp_global` to `bgp_address_family` module.
   - Support for 1.3+ VyOS only
-minor_changes:
-  - added support for `solo` neighbor attribute
-  - as_number - Added support for 1.4+ "system-as. 1.3 embedded as_number is still supported"
-  - fix tests for 1.4+ bgp_global
-  - updated documentation
