@@ -2,6 +2,8 @@
 - debug:
     msg: START vyos_bgp_address_family rtt integration tests on connection={{ ansible_connection }}
 
+- include_tasks: _get_version.yaml
+
 - include_tasks: _remove_config.yaml
 
 - include_tasks: _preconfig.yaml
