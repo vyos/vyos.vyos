@@ -17,7 +17,6 @@ is compared to the provided configuration (as dict) and the command set
 necessary to bring the current configuration to its desired end-state is
 created.
 """
-# import re
 
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
@@ -144,7 +143,6 @@ class Bgp_global(ResourceModule):
 
         parsers = ["maximum_paths", "timers"]
         self._compare_neighbor(want, have)
-        # self._compare_lists(want, have)
         self._compare_bgp_params(want, have)
         for name, entry in iteritems(want):
             if name != "as_number":
