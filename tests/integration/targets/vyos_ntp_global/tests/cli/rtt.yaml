@@ -5,29 +5,10 @@
 - include_tasks: _remove_config.yaml
 
 - block:
-    - name: Merge the provided configuration with the existing running configuration
+    - name: RTT Merge the provided configuration with the existing running configuration
       register: baseconfig
       vyos.vyos.vyos_ntp_global:
-        config:
-          servers:
-            - server: 10.3.6.5
-              options:
-                - noselect
-                - dynamic
-                - preempt
-                - prefer
-
-            - server: server4
-              options:
-                - noselect
-                - dynamic
-
-            - server: 0.pool.ntp.org
-
-            - server: 1.pool.ntp.org
-
-            - server: 2.pool.ntp.org
-
+        config: "{{ rtt.config }}"
         state: merged
 
     - vyos.vyos.vyos_facts:
@@ -35,33 +16,32 @@
 
     - assert:
         that:
-          - baseconfig.commands|length == 6
+          - (baseconfig.commands|length) == (rtt.commands|length)
           - baseconfig.changed == true
           - baseconfig.commands|symmetric_difference(rtt.commands) == []
           - baseconfig.after == ansible_facts['network_resources']['ntp_global']
 
-    - name: Merge the existing configuration with the provided running configuration
+    - name: RTT Merge the existing configuration with the provided running configuration
       register: result
       vyos.vyos.vyos_ntp_global:
         config:
           servers:
             - server: server1
               options:
-                - dynamic
+                - pool
                 - prefer
 
             - server: server2
               options:
                 - noselect
-                - preempt
 
-    - name: Revert back to base config using facts round trip
+    - name: RTT Revert back to base config using facts round trip
       register: revert
       vyos.vyos.vyos_ntp_global:
         config: "{{ ansible_facts['network_resources']['ntp_global'] }}"
         state: overridden
 
-    - name: Assert that config was reverted
+    - name: RTT Assert that config was reverted
       assert:
         that: baseconfig.after == revert.after
 

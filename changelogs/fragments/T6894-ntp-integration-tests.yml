@@ -1,0 +1,5 @@
+---
+minor_changes:
+  - Added ntp options for 1.5+ (interleave, ptp)
+  - Synchronized argspec and docs with core module
+  - Fix integration tests for 1.3+

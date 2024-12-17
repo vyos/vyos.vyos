@@ -328,6 +328,7 @@ class TestVyosNTPModule(TestVyosModule):
         self.assertEqual(gathered_list, result["gathered"])
 
     def test_ntp_deleted(self):
+        # Delete the subsections that we include (listen_addresses and servers)
         set_module_args(
             dict(
                 config=dict(
@@ -345,6 +346,25 @@ class TestVyosNTPModule(TestVyosModule):
             ),
         )
         commands = [
+            "delete system ntp allow-clients",  # 10.1.1.0/24",
+            "delete system ntp listen-address",  # 10.2.3.1",
+            "delete system ntp server server1",
+            "delete system ntp server server3",
+            "delete system ntp server time1.vyos.net",
+            "delete system ntp server time2.vyos.net",
+            "delete system ntp server time3.vyos.net",
+            "delete system ntp",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_ntp__all_deleted(self):
+        set_module_args(
+            dict(
+                config=dict(),
+                state="deleted",
+            ),
+        )
+        commands = [
             "delete system ntp allow-clients",
             "delete system ntp listen-address",
             "delete system ntp server server1",
@@ -352,6 +372,7 @@ class TestVyosNTPModule(TestVyosModule):
             "delete system ntp server time1.vyos.net",
             "delete system ntp server time2.vyos.net",
             "delete system ntp server time3.vyos.net",
+            "delete system ntp",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -427,13 +448,13 @@ class TestVyosNTPModule14(TestVyosModule):
                     allow_clients=["10.2.2.0/24", "10.3.3.0/24"],
                     listen_addresses=["10.3.4.1", "10.4.5.1"],
                     servers=[
-                        dict(server="server4", options=["pool", "preempt"]),
+                        dict(server="server4", options=["pool", "prefer"]),
                         dict(
                             server="server5",
                             options=[
                                 "noselect",
                                 "pool",
-                                "preempt",
+                                "nts",
                                 "prefer",
                             ],
                         ),
@@ -449,10 +470,10 @@ class TestVyosNTPModule14(TestVyosModule):
             "set service ntp listen-address 10.3.4.1",
             "set service ntp listen-address 10.4.5.1",
             "set service ntp server server4 pool",
-            "set service ntp server server4 preempt",
+            "set service ntp server server4 prefer",
             "set service ntp server server5 pool",
             "set service ntp server server5 noselect",
-            "set service ntp server server5 preempt",
+            "set service ntp server server5 nts",
             "set service ntp server server5 prefer",
         ]
 
@@ -472,7 +493,7 @@ class TestVyosNTPModule14(TestVyosModule):
                                 "noselect",
                                 "pool",
                                 "prefer",
-                                "preempt",
+                                "nts",
                             ],
                         ),
                         dict(server="time1.vyos.net"),
@@ -499,7 +520,7 @@ class TestVyosNTPModule14(TestVyosModule):
             "set service ntp server server6 noselect",
             "set service ntp server server6 pool",
             "set service ntp server server6 prefer",
-            "set service ntp server server6 preempt",
+            "set service ntp server server6 nts",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -679,5 +700,6 @@ class TestVyosNTPModule14(TestVyosModule):
             "delete service ntp server time1.vyos.net",
             "delete service ntp server time2.vyos.net",
             "delete service ntp server time3.vyos.net",
+            "delete service ntp",
         ]
         self.execute_module(changed=True, commands=commands)
