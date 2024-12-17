@@ -1,0 +1,7 @@
+---
+minor_changes:
+  - Added additional parsers - network.generic and redistribute.generic to cater for option-less use cases as per T6888
+  - Changed regex expressions for network.route_map, network.backdoor, redistribute.route-map and redistribure.metric to be less greedy
+  - Updated config/vyos_bgp_address_family.py to include new parsers
+  - Added new test commands for bgp_address_family unit testing
+  - Updated documentation by marking some BGP option deprecated

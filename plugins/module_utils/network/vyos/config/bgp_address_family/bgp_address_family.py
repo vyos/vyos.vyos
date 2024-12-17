@@ -268,10 +268,12 @@ class Bgp_address_family(ResourceModule):
     def _compare_lists(self, want, have, as_number, afi):
         parsers = [
             "aggregate_address",
+            "network.generic",
             "network.backdoor",
             "network.path_limit",
             "network.route_map",
             "redistribute.metric",
+            "redistribute.generic",
             "redistribute.route_map",
             "redistribute.table",
         ]

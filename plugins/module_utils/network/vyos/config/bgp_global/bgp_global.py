@@ -176,6 +176,7 @@ class Bgp_global(ResourceModule):
             "neighbor.weight",
             "neighbor.ttl_security",
             "neighbor.timers",
+            "network.generic",
             "network.backdoor",
             "network.route_map",
         ]
