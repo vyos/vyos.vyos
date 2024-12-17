@@ -2,6 +2,8 @@
 - debug:
     msg: START vyos_bgp_address_family rtt integration tests on connection={{ ansible_connection }}
 
+- include_tasks: _get_version.yaml
+
 - include_tasks: _remove_config.yaml
 
 - include_tasks: _preconfig.yaml
@@ -45,7 +47,7 @@
 
     - assert:
         that:
-          - baseconfig.commands|length == 9
+          - baseconfig.commands|length == merged.commands|length
           - baseconfig.changed == true
           - baseconfig.commands|symmetric_difference(merged.commands) == []
           - baseconfig.after == ansible_facts['network_resources']['bgp_address_family']

@@ -1,12 +1,29 @@
 ---
-- name: setup
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
+- name: setup 1.3- AF
   vyos.vyos.vyos_config:
     lines:
       - set protocols bgp 65536 neighbor 5001::64 address-family 'ipv6-unicast'
       - set protocols bgp 65536 neighbor 5001::64 ebgp-multihop '2'
-      - set protocols bgp 65536 neighbor 5001::64 maximum-prefix '34'
-      - set protocols bgp 65536 neighbor 5001::64 remote-as '65535'
+      - set protocols bgp 65536 neighbor 5001::64 remote-as '103'
       - set protocols bgp 65536 neighbor 5001::64 update-source '2001:db8::1'
+
   ignore_errors: true
   vars:
     ansible_connection: ansible.netcommon.network_cli
+  when: vyos_version is version('1.4.0', '<', version_type='semver')
+
+- name: setup 1.4+ AF
+  vyos.vyos.vyos_config:
+    lines:
+      - set protocols bgp system-as 65536
+      - set protocols bgp neighbor 5001::64 address-family 'ipv6-unicast'
+      - set protocols bgp neighbor 5001::64 ebgp-multihop '2'
+      - set protocols bgp neighbor 5001::64 remote-as '103'
+      - set protocols bgp neighbor 5001::64 update-source '2001:db8::1'
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')

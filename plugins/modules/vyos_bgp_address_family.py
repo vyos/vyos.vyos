@@ -19,6 +19,7 @@ version_added: 1.0.0
 short_description: BGP Address Family resource module
 description:
 - This module manages BGP address family configuration of interfaces on devices running VYOS.
+- Tested against VYOS 1.3, 1.4
 author: Gomathi Selvi Srinivasan (@GomathiselviS)
 options:
   config:

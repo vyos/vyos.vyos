@@ -33,7 +33,7 @@
 
     - assert:
         that:
-          - result.commands|length == 10
+          - result.commands|length == overridden.commands|length
           - result.changed == true
           - result.commands|symmetric_difference(overridden.commands) == []
           - result.after == ansible_facts['network_resources']['bgp_address_family']

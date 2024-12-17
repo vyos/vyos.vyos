@@ -24,7 +24,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 
 def _tmplt_bgp_af_aggregate_address(config_data):
     afi = config_data["address_family"]["afi"] + "-unicast"
-    command = "protocols bgp {as_number} address-family ".format(**config_data)
+    command = "protocols bgp address-family ".format(**config_data)
     config_data = config_data["address_family"]
     if config_data["aggregate_address"].get("as_set"):
         command += afi + " aggregate-address {prefix} as-set".format(
@@ -39,7 +39,7 @@ def _tmplt_bgp_af_aggregate_address(config_data):
 
 def _tmplt_bgp_af_redistribute(config_data):
     afi = config_data["address_family"]["afi"] + "-unicast"
-    command = "protocols bgp {as_number} address-family ".format(**config_data)
+    command = "protocols bgp address-family ".format(**config_data)
     config_data = config_data["address_family"]["redistribute"]
     command += afi + " redistribute {protocol}".format(**config_data)
     if config_data.get("metric"):
@@ -53,7 +53,7 @@ def _tmplt_bgp_af_redistribute(config_data):
 
 def _tmplt_bgp_af_redistribute_delete(config_data):
     afi = config_data["address_family"]["afi"] + "-unicast"
-    command = "protocols bgp {as_number} address-family ".format(**config_data)
+    command = "protocols bgp address-family ".format(**config_data)
     config_data = config_data["address_family"]["redistribute"]
     command += afi + " redistribute {protocol}".format(**config_data)
     if config_data.get("metric"):
@@ -68,7 +68,7 @@ def _tmplt_bgp_af_redistribute_delete(config_data):
 def _tmplt_bgp_af_neighbor_distribute_list(config_data):
     command = []
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
-    cmd = "protocols bgp {as_number} neighbor ".format(**config_data)
+    cmd = "protocols bgp neighbor ".format(**config_data)
     cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
     for list_el in config_data["distribute_list"]:
@@ -81,7 +81,7 @@ def _tmplt_bgp_af_neighbor_distribute_list(config_data):
 def _tmplt_bgp_af_neighbor_route_map(config_data):
     command = []
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
-    cmd = "protocols bgp {as_number} neighbor ".format(**config_data)
+    cmd = "protocols bgp neighbor ".format(**config_data)
     cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
     for list_el in config_data["route_map"]:
@@ -94,7 +94,7 @@ def _tmplt_bgp_af_neighbor_route_map(config_data):
 def _tmplt_bgp_af_neighbor_prefix_list(config_data):
     command = []
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
-    cmd = "protocols bgp {as_number} neighbor ".format(**config_data)
+    cmd = "protocols bgp neighbor ".format(**config_data)
     cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
     for list_el in config_data["prefix_list"]:
@@ -107,7 +107,7 @@ def _tmplt_bgp_af_neighbor_prefix_list(config_data):
 def _tmplt_bgp_af_neighbor_filter_list(config_data):
     command = []
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
-    cmd = "protocols bgp {as_number} neighbor ".format(**config_data)
+    cmd = "protocols bgp neighbor ".format(**config_data)
     cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
     for list_el in config_data["filter_list"]:
@@ -120,7 +120,7 @@ def _tmplt_bgp_af_neighbor_filter_list(config_data):
 def _tmplt_bgp_af_neighbor_attribute(config_data):
     command = []
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
-    cmd = "protocols bgp {as_number} neighbor ".format(**config_data)
+    cmd = "protocols bgp neighbor ".format(**config_data)
     cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
     for k in config_data["attribute_unchanged"].keys():
@@ -133,7 +133,7 @@ def _tmplt_bgp_af_neighbor_attribute(config_data):
 
 def _tmplt_bgp_af_neighbor_delete(config_data):
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
-    command = "protocols bgp {as_number} ".format(**config_data)
+    command = "protocols bgp ".format(**config_data)
     command += (
         "neighbor {neighbor_address} address-family ".format(**config_data["neighbors"]) + afi
     )
@@ -181,7 +181,7 @@ def _tmplt_bgp_af_neighbor_delete(config_data):
 
 def _tmplt_bgp_af_neighbor(config_data):
     afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
-    command = "protocols bgp {as_number} ".format(**config_data)
+    command = "protocols bgp ".format(**config_data)
     command += (
         "neighbor {neighbor_address} address-family ".format(**config_data["neighbors"]) + afi
     )
@@ -223,7 +223,7 @@ def _tmplt_bgp_af_neighbor(config_data):
 
 def _tmplt_bgp_af_network(config_data):
     afi = config_data["address_family"]["afi"] + "-unicast"
-    command = "protocols bgp {as_number} address-family ".format(**config_data)
+    command = "protocols bgp address-family ".format(**config_data)
     config_data = config_data["address_family"]["networks"]
     command += afi + " network {prefix}".format(**config_data)
     if config_data.get("backdoor"):
@@ -235,7 +235,7 @@ def _tmplt_bgp_af_network(config_data):
 
 def _tmplt_bgp_af_network_delete(config_data):
     afi = config_data["address_family"]["afi"] + "-unicast"
-    command = "protocols bgp {as_number} address-family ".format(**config_data)
+    command = "protocols bgp address-family ".format(**config_data)
     config_data = config_data["address_family"]["networks"]
     command += afi + " network {prefix}".format(**config_data)
     if config_data.get("backdoor"):
@@ -245,10 +245,10 @@ def _tmplt_bgp_af_network_delete(config_data):
     return command
 
 
-class Bgp_address_familyTemplate(NetworkTemplate):
+class Bgp_address_familyTemplate14(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
-        super(Bgp_address_familyTemplate, self).__init__(
+        super(Bgp_address_familyTemplate14, self).__init__(
             lines=lines,
             tmplt=self,
             prefix=prefix,
@@ -258,19 +258,36 @@ class Bgp_address_familyTemplate(NetworkTemplate):
     # fmt: off
     PARSERS = [
         {
+            "name": "system_as",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+system-as
+                \s+(?P<as_num>\d+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "setval": "protocols bgp system-as {{ as_number }}",
+            "compval": "as_number",
+            "result": {
+                "as_number": "{{ as_num }}",
+            },
+        },
+        {
             "name": "address_family",
             "getval": re.compile(
                 r"""
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast",
+            "setval": "protocols bgp address-family {{ address_family.afi }}-unicast",
             "compval": "as_number",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -288,7 +305,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+aggregate-address
@@ -299,7 +315,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_aggregate_address,
-            "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast aggregate-address" +
+            "remval": "protocols bgp address-family {{ address_family.afi }}-unicast aggregate-address" +
                       " {{ address_family.aggregate_address.prefix }}",
             "compval": "address_family.aggregate_address",
             "result": {
@@ -325,7 +341,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+network
@@ -334,7 +349,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_network,
-            "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
+            "remval": "protocols bgp address-family {{ address_family.afi }}-unicast network {{ address_family.networks.prefix }}",
             "compval": "address_family.networks.prefix",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -357,7 +372,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+network
@@ -391,7 +405,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+network
@@ -426,7 +439,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+network
@@ -461,7 +473,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+redistribute
@@ -470,7 +481,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_redistribute,
-            "remval": "protocols bgp {{ as_number }} address-family {{ address_family.afi }}-unicast redistribute {{ address_family.redistribute.protocol }}",
+            "remval": "protocols bgp address-family {{ address_family.afi }}-unicast redistribute {{ address_family.redistribute.protocol }}",
             "compval": "address_family.redistribute.protocol",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -493,13 +504,11 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+redistribute
                 \s+(?P<proto>\S+)
-                \s+metric
-                \s+(?P<val>\S+)
+                \s+metric\s+(?P<val>\S+)
                 *$""",
                 re.VERBOSE,
             ),
@@ -514,7 +523,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                         "redistribute": [
                             {
                                 "protocol": "{{ proto }}",
-                                "metric": "{{ val|int }}",
+                                "metric": "{{ val }}",
                             },
                         ],
                     },
@@ -528,7 +537,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+redistribute
@@ -563,7 +571,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+redistribute
@@ -596,14 +603,13 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbors.neighbor_address }} address-family",
+            "setval": "protocols bgp neighbor {{ neighbors.neighbor_address }} address-family",
             "compval": "neighbors",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -621,7 +627,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -629,7 +634,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbors.neighbor_address }} address-family {{ neighbors.address_family.afi }}-unicast",
+            "setval": "protocols bgp neighbor {{ neighbors.neighbor_address }} address-family {{ neighbors.address_family.afi }}-unicast",
             "compval": "neighbors",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -652,7 +657,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -688,7 +692,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -722,7 +725,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -759,7 +761,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -796,7 +797,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -833,7 +833,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -870,7 +869,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -908,7 +906,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -944,7 +941,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -985,7 +981,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1026,7 +1021,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1067,7 +1061,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1102,7 +1095,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1136,7 +1128,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1170,7 +1161,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1205,7 +1195,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1239,7 +1228,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1280,7 +1268,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1314,7 +1301,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1348,7 +1334,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1383,7 +1368,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
@@ -1418,7 +1402,6 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family

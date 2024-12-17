@@ -45,11 +45,11 @@
 
     - assert:
         that:
-          - result.commands|length == 9
+          - result.commands|length == merged.commands|length
           - result.changed == true
           - result.commands|symmetric_difference(merged.commands) == []
           - result.after == ansible_facts['network_resources']['bgp_address_family']
-          - result.before == {}
+          - result.before == merged.before
           - result.after == merged.after
 
     - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
