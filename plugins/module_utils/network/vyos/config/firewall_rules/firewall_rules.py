@@ -204,10 +204,11 @@ class Firewall_rules(ConfigBase):
                 for rs in have_r_sets:
                     rs_id = self._rs_id(rs, h["afi"])
                     w = self.search_r_sets_in_have(want, rs_id, "r_list")
-                    if not w:
-                        commands.append(self._compute_command(rs_id, remove=True))
-                    else:
-                        commands.extend(self._add_r_sets(h["afi"], rs, w, opr=False))
+                    # if not w:
+                    commands.append(self._compute_command(rs_id, remove=True))
+                    # else:
+                    # commands.extend(self._add_r_sets(h["afi"], rs, w, opr=False))
+        have = {}
         commands.extend(self._state_merged(want, have))
         return commands
 
