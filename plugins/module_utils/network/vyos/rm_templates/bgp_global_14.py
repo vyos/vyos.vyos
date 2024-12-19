@@ -28,7 +28,7 @@ def _tmplt_bgp_params_confederation(config_data):
     for list_el in config_data["bgp_params"]["confederation"]:
         for k, v in iteritems(list_el):
             command.append(
-                "protocols bgp {as_number} parameters confederation ".format(**config_data)
+                "protocols bgp parameters confederation ".format(**config_data)
                 + k
                 + " "
                 + str(v),
@@ -41,7 +41,7 @@ def _tmplt_bgp_maximum_paths(config_data):
     command = []
     for list_el in config_data["maximum_paths"]:
         command.append(
-            "protocols bgp {as_number} maximum-paths ".format(**config_data)
+            "protocols bgp maximum-paths ".format(**config_data)
             + list_el["path"]
             + " "
             + str(list_el["count"]),
@@ -50,12 +50,12 @@ def _tmplt_bgp_maximum_paths(config_data):
 
 
 def _tmplt_delete_bgp_maximum_paths(config_data):
-    command = "protocols bgp {as_number} maximum-paths".format(**config_data)
+    command = "protocols bgp maximum-paths".format(**config_data)
     return command
 
 
 def _tmplt_bgp_params_default(config_data):
-    command = "protocols bgp {as_number} parameters default".format(**config_data)
+    command = "protocols bgp parameters default".format(**config_data)
     if config_data["bgp_params"]["default"].get("no_ipv4_unicast"):
         command += " no-ipv4-unicast"
     if config_data["bgp_params"]["default"].get("local_pref"):
@@ -67,7 +67,7 @@ def _tmplt_bgp_neighbor_timers(config_data):
     command = []
     for k, v in iteritems(config_data["neighbor"]["timers"]):
         command.append(
-            "protocols bgp {as_number} neighbor ".format(**config_data)
+            "protocols bgp neighbor ".format(**config_data)
             + config_data["neighbor"]["address"]
             + " timers "
             + k
@@ -82,28 +82,28 @@ def _tmplt_bgp_timers(config_data):
     command = []
     for k, v in iteritems(config_data["timers"]):
         command.append(
-            "protocols bgp {as_number} ".format(**config_data) + "timers " + k + " " + str(v),
+            "protocols bgp ".format(**config_data) + "timers " + k + " " + str(v),
         )
 
     return command
 
 
 def _tmplt_bgp_neighbor_attribute_unchanged_as_path(config_data):
-    command = "protocols bgp {as_number} ".format(
+    command = "protocols bgp ".format(
         **config_data,
     ) + "neighbor {address} attribute-unchanged as-path".format(**config_data["neighbor"])
     return command
 
 
 def _tmplt_bgp_neighbor_attribute_unchanged_med(config_data):
-    command = "protocols bgp {as_number} ".format(
+    command = "protocols bgp ".format(
         **config_data,
     ) + "neighbor {address} attribute-unchanged med".format(**config_data["neighbor"])
     return command
 
 
 def _tmplt_bgp_neighbor_attribute_unchanged_next_hop(config_data):
-    command = "protocols bgp {as_number} ".format(
+    command = "protocols bgp ".format(
         **config_data,
     ) + "neighbor {address} attribute-unchanged next-hop".format(**config_data["neighbor"])
     return command
@@ -113,7 +113,7 @@ def _tmplt_bgp_neighbor_distribute_list(config_data):
     command = []
     for list_el in config_data["neighbor"]["distribute_list"]:
         command.append(
-            "protocols bgp {as_number} ".format(**config_data)
+            "protocols bgp ".format(**config_data)
             + "neighbor {address} distribute-list ".format(**config_data["neighbor"])
             + list_el["action"]
             + " "
@@ -126,7 +126,7 @@ def _tmplt_bgp_neighbor_route_map(config_data):
     command = []
     for list_el in config_data["neighbor"]["route_map"]:
         command.append(
-            "protocols bgp {as_number} ".format(**config_data)
+            "protocols bgp ".format(**config_data)
             + "neighbor {address} route-map ".format(**config_data["neighbor"])
             + list_el["action"]
             + " "
@@ -139,7 +139,7 @@ def _tmplt_bgp_neighbor_prefix_list(config_data):
     command = []
     for list_el in config_data["neighbor"]["prefix_list"]:
         command.append(
-            "protocols bgp {as_number} ".format(**config_data)
+            "protocols bgp ".format(**config_data)
             + "neighbor {address} prefix-list ".format(**config_data["neighbor"])
             + list_el["action"]
             + " "
@@ -152,7 +152,7 @@ def _tmplt_bgp_neighbor_filter_list(config_data):
     command = []
     for list_el in config_data["neighbor"]["filter_list"]:
         command.append(
-            "protocols bgp {as_number} ".format(**config_data)
+            "protocols bgp ".format(**config_data)
             + "neighbor {address} filter-list ".format(**config_data["neighbor"])
             + list_el["action"]
             + " "
@@ -163,7 +163,7 @@ def _tmplt_bgp_neighbor_filter_list(config_data):
 
 def _tmplt_bgp_params_distance(config_data):
     command = (
-        "protocols bgp {as_number} parameters distance global ".format(**config_data)
+        "protocols bgp parameters distance global ".format(**config_data)
         + config_data["bgp_params"]["distance"]["type"]
         + " "
         + str(config_data["bgp_params"]["distance"]["value"])
@@ -171,10 +171,10 @@ def _tmplt_bgp_params_distance(config_data):
     return command
 
 
-class Bgp_globalTemplate(NetworkTemplate):
+class Bgp_globalTemplate14(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
-        super(Bgp_globalTemplate, self).__init__(
+        super(Bgp_globalTemplate14, self).__init__(
             lines=lines,
             tmplt=self,
             prefix=prefix,
@@ -190,11 +190,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
+                \s*system-as
                 \s+(?P<as_num>\d+)
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }}",
+            "setval": "protocols bgp system-as {{ as_number }}",
+            "remval": "protocols bgp",
             "compval": "as_number",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -207,7 +209,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+maximum-paths
                 \s+(?P<path>ebgp|ibgp)
                 \s+(?P<count>\d+)
@@ -234,7 +235,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+advertisement-interval
@@ -242,8 +242,8 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} advertisement-interval {{ neighbor.advertisement_interval }}",
-            "remval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} advertisement-interval",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} advertisement-interval {{ neighbor.advertisement_interval }}",
+            "remval": "protocols bgp neighbor {{ neighbor.address }} advertisement-interval",
             "compval": "neighbor.advertisement_interval",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -262,7 +262,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+allowas-in
@@ -271,7 +270,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} allowas-in number {{ neighbor.allowas_in }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} allowas-in number {{ neighbor.allowas_in }}",
             "compval": "neighbor.allowas_in",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -290,14 +289,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+as-override
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} as-override",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} as-override",
             "compval": "neighbor.as_override",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -316,7 +314,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+attribute-unchanged
@@ -345,7 +342,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+attribute-unchanged
@@ -374,7 +370,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+attribute-unchanged
@@ -403,7 +398,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+capability
@@ -411,7 +405,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} capability dynamic",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} capability dynamic",
             "compval": "neighbor.capability.dynamic",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -432,7 +426,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+capability
@@ -442,7 +435,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} capability orf prefix-list {{ neighbor.capability.orf }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} capability orf prefix-list {{ neighbor.capability.orf }}",
             "compval": "neighbor.capability.orf",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -463,7 +456,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+default-originate
@@ -472,7 +464,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} default-originate route-map {{ neighbor.default_originate }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} default-originate route-map {{ neighbor.default_originate }}",
             "compval": "neighbor.advertisement_interval",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -491,7 +483,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+description
@@ -499,7 +490,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} description {{ neighbor.description }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} description {{ neighbor.description }}",
             "compval": "neighbor.description",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -518,14 +509,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+disable-capability-negotiation
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} disable-capability-negotiation",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} disable-capability-negotiation",
             "compval": "neighbor.disable_capability_negotiation",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -544,14 +534,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+disable-connected-check
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} disable-connected-check",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} disable-connected-check",
             "compval": "neighbor.disable_connected_check",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -570,7 +559,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+disable-send-community
@@ -578,7 +566,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} disable-send-community {{ neighbor.disable_send_community }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} disable-send-community {{ neighbor.disable_send_community }}",
             "compval": "neighbor.disable_send_community",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -597,7 +585,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+distribute-list
@@ -630,7 +617,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+ebgp-multihop
@@ -638,7 +624,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} ebgp-multihop {{ neighbor.ebgp_multihop }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} ebgp-multihop {{ neighbor.ebgp_multihop }}",
             "compval": "neighbor.ebgp_multihop",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -657,7 +643,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+filter-list
@@ -690,7 +675,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+local-as
@@ -699,7 +683,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} local-as {{ neighbor.local_as }} no-prepend",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} local-as {{ neighbor.local_as }} no-prepend",
             "compval": "neighbor.local_as",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -718,7 +702,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+maximum-prefix
@@ -726,7 +709,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} maximum-prefix {{ neighbor.maximum_prefix }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} maximum-prefix {{ neighbor.maximum_prefix }}",
             "compval": "neighbor.maximum_prefix",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -745,14 +728,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+nexthop-self
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} nexthop-self",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} nexthop-self",
             "compval": "neighbor.nexthop_self",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -771,14 +753,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+override-capability
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} override-capability",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} override-capability",
             "compval": "neighbor.override_capability",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -797,14 +778,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+passive
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} passive",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} passive",
             "compval": "neighbor.passive",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -823,7 +803,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+password
@@ -831,7 +810,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} password {{ neighbor.password }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} password {{ neighbor.password }}",
             "compval": "neighbor.password",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -850,7 +829,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+peer-group
@@ -858,7 +836,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} peer-group {{ neighbor.peer_group_name }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} peer-group {{ neighbor.peer_group_name }}",
             "compval": "neighbor.peer_group_name",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -877,7 +855,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+port
@@ -885,7 +862,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} port {{ neighbor.port }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} port {{ neighbor.port }}",
             "compval": "neighbor.port",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -904,7 +881,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+prefix-list
@@ -937,7 +913,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+remote-as
@@ -945,7 +920,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} remote-as {{ neighbor.remote_as }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} remote-as {{ neighbor.remote_as }}",
             "compval": "neighbor.remote_as",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -964,14 +939,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+remote-private-as
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} remote-private-as",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} remote-private-as",
             "compval": "neighbor.remove_private_as",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -990,7 +964,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+route-map
@@ -1023,14 +996,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+route-reflector-client
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} router-reflector-client",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} router-reflector-client",
             "compval": "neighbor.route_reflector_client",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1049,14 +1021,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+route-server-client
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} route-server-client",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} route-server-client",
             "compval": "neighbor.route_server_client",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1075,14 +1046,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+shutdown
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} shutdown",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} shutdown",
             "compval": "neighbor.shutdown",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1101,7 +1071,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+soft-reconfiguration
@@ -1109,7 +1078,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} soft-reconfiguration",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} soft-reconfiguration",
             "compval": "neighbor.soft_reconfiguration",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1128,14 +1097,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+strict-capability-match
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} strict-capability-match",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} strict-capability-match",
             "compval": "neighbor.strict_capability_match",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1154,7 +1122,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+unsuppress-map
@@ -1162,7 +1129,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} unsuppress-map {{ neighbor.unsuppress_map }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} unsuppress-map {{ neighbor.unsuppress_map }}",
             "compval": "neighbor.unsuppress_map",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1181,7 +1148,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+update-source
@@ -1189,7 +1155,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} update-source {{ neighbor.update_source }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} update-source {{ neighbor.update_source }}",
             "compval": "neighbor.update_source",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1208,7 +1174,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+weight
@@ -1216,7 +1181,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} weight {{ neighbor.weight }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} weight {{ neighbor.weight }}",
             "compval": "neighbor.weight",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1235,7 +1200,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+ttl-security
@@ -1243,7 +1207,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} ttl-security {{ neighbor.ttl_security }}",
+            "setval": "protocols bgp neighbor {{ neighbor.address }} ttl-security {{ neighbor.ttl_security }}",
             "compval": "neighbor.ttl_security",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1262,7 +1226,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+timers
@@ -1272,7 +1235,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_neighbor_timers,
-            "remval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} timers",
+            "remval": "protocols bgp neighbor {{ neighbor.address }} timers",
             "compval": "neighbor.timers",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1293,7 +1256,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+timers
                 \s+(?P<type>\S+)
                 \s+(?P<val>\S+)
@@ -1301,7 +1263,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_timers,
-            "remval": "protocols bgp {{ as_number }} timers",
+            "remval": "protocols bgp timers",
             "compval": "timers",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1317,13 +1279,12 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+always-compare-med
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters always-compare-med",
+            "setval": "protocols bgp parameters always-compare-med",
             "compval": "bgp_params.always_compare_med",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1339,7 +1300,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+bestpath
                 \s+as-path
@@ -1347,7 +1307,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters bestpath as-path {{ bgp_params.bestpath.as_path }}",
+            "setval": "protocols bgp parameters bestpath as-path {{ bgp_params.bestpath.as_path }}",
             "compval": "bgp_params.bestpath.as_path",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1365,14 +1325,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+bestpath
                 \s+compare-routerid
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters bestpath compare-routerid",
+            "setval": "protocols bgp parameters bestpath compare-routerid",
             "compval": "bgp_params.bestpath.compare_routerid",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1390,7 +1349,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+bestpath
                 \s+med
@@ -1398,7 +1356,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters bestpath med {{ bestpath.med }}",
+            "setval": "protocols bgp parameters bestpath med {{ bestpath.med }}",
             "compval": "bgp_params.bestpath.med",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1416,14 +1374,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+cluster-id
                 \s+(?P<id>\S+)
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters cluster-id {{ bgp_params.cluster_id }}",
+            "setval": "protocols bgp parameters cluster-id {{ bgp_params.cluster_id }}",
             "compval": "bgp_params.cluster_id",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1439,7 +1396,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+confederation
                 \s+(?P<type>identifier|peers)
@@ -1468,7 +1424,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+dampening
                 \s+half-life
@@ -1476,7 +1431,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters dampening half-life {{ bgp_params.dampening.half_life}}",
+            "setval": "protocols bgp parameters dampening half-life {{ bgp_params.dampening.half_life}}",
             "compval": "bgp_params.dampening.half_life",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1494,7 +1449,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+dampening
                 \s+max-suppress-time
@@ -1502,7 +1456,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters dampening max-suppress-time {{ bgp_params.dampening.max_suppress_time}}",
+            "setval": "protocols bgp parameters dampening max-suppress-time {{ bgp_params.dampening.max_suppress_time}}",
             "compval": "bgp_params.dampening.max_suppress_time",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1520,7 +1474,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+dampening
                 \s+re-use
@@ -1528,7 +1481,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters dampening re-use {{ bgp_params.dampening.re_use}}",
+            "setval": "protocols bgp parameters dampening re-use {{ bgp_params.dampening.re_use}}",
             "compval": "bgp_params.dampening.re_use",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1546,7 +1499,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+dampening
                 \s+start-suppress-time
@@ -1554,7 +1506,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters dampening start-suppress-time {{ bgp_params.dampening.start_suppress_time}}",
+            "setval": "protocols bgp parameters dampening start-suppress-time {{ bgp_params.dampening.start_suppress_time}}",
             "compval": "bgp_params.dampening.start_suppress_time",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1572,7 +1524,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+default
                 \s*(?P<no_ipv4_unicast>no-ipv4-unicast)*
@@ -1581,7 +1532,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_params_default,
-            "remval": "protocols bgp {{ as_number }} parameters default",
+            "remval": "protocols bgp parameters default",
             "compval": "bgp_params.default",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1600,13 +1551,12 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+deterministic-med
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters deterministic-med",
+            "setval": "protocols bgp parameters deterministic-med",
             "compval": "bgp_params.deterministic_med",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1622,13 +1572,12 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+disable-network-import-check
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters disable-network-import-check",
+            "setval": "protocols bgp parameters disable-network-import-check",
             "compval": "bgp_params.disable_network_import_check",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1644,7 +1593,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+distance\sprefix
                 \s+(?P<prefix>\S+)
@@ -1653,9 +1601,9 @@ class Bgp_globalTemplate(NetworkTemplate):
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters distance prefix {{ bgp_params.distance.prefix }} distance {{ bgp_params.distance.value }}",
+            "setval": "protocols bgp parameters distance prefix {{ bgp_params.distance.prefix }} distance {{ bgp_params.distance.value }}",
             "compval": "bgp_params.distance.prefix",
-            "remval": "protocols bgp {{ as_number }} parameters distance prefix",
+            "remval": "protocols bgp parameters distance prefix",
             "result": {
                 "as_number": "{{ as_num }}",
                 "bgp_params": {
@@ -1675,7 +1623,6 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+distance\sglobal
                 \s+(?P<type>\S+)
@@ -1684,7 +1631,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_params_distance,
-            "remval": "protocols bgp {{ as_number }} parameters distance global",
+            "remval": "protocols bgp parameters distance global",
             "compval": "bgp_params.distance",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1705,13 +1652,12 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+enforce-first-as
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters enforce-first-as",
+            "setval": "protocols bgp parameters enforce-first-as",
             "compval": "bgp_params.enforce_first_as",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1727,14 +1673,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+graceful-restart\s+stalepath-time
                 \s+(?P<val>\S+)
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters graceful-restart stalepath-time {{ bgp_params.graceful_restart }}",
+            "setval": "protocols bgp parameters graceful-restart stalepath-time {{ bgp_params.graceful_restart }}",
             "compval": "bgp_params.graceful_restart",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1750,13 +1695,12 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+log-neighbor-changes
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters log-neighbor-changes",
+            "setval": "protocols bgp parameters log-neighbor-changes",
             "compval": "bgp_params.log_neighbor_changes",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1772,13 +1716,12 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+no-client-to-client-reflection
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters no-client-to-client-reflection",
+            "setval": "protocols bgp parameters no-client-to-client-reflection",
             "compval": "bgp_params.log_neighbor_changes",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1794,13 +1737,12 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+no-fast-external-failover
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters no-fast-external-failover",
+            "setval": "protocols bgp parameters no-fast-external-failover",
             "compval": "bgp_params.no_fast_external_failover",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1816,14 +1758,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+router-id
                 \s+(?P<id>\S+)
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters router-id {{ bgp_params.router_id }}",
+            "setval": "protocols bgp parameters router-id {{ bgp_params.router_id }}",
             "compval": "bgp_params.router_id",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1839,14 +1780,13 @@ class Bgp_globalTemplate(NetworkTemplate):
                 ^set
                 \s+protocols
                 \s+bgp
-                \s+(?P<as_num>\d+)
                 \s+parameters
                 \s+scan-time
                 \s+(?P<sec>\d+)
                 *$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp {{ as_number }} parameters scan-time {{ bgp_params.scan_time }}",
+            "setval": "protocols bgp parameters scan-time {{ bgp_params.scan_time }}",
             "compval": "bgp_params.scan_time",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -1855,6 +1795,5 @@ class Bgp_globalTemplate(NetworkTemplate):
                 },
             },
         },
-
     ]
     # fmt: on
