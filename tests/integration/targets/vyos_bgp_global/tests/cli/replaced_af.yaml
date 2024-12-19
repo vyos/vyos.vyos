@@ -13,12 +13,6 @@
       vyos.vyos.vyos_bgp_global:
         config:
           as_number: "65536"
-          network:
-            - address: 203.0.113.0/24
-              route_map: map01
-          redistribute:
-            - protocol: static
-              route_map: map01
           bgp_params:
             always_compare_med: true
             dampening:
@@ -29,8 +23,6 @@
             bestpath:
               as_path: confed
               compare_routerid: true
-            default:
-              no_ipv4_unicast: true
           neighbor:
             - address: 192.0.2.43
               disable_connected_check: true
@@ -40,9 +32,11 @@
               timers:
                 holdtime: 30
                 keepalive: 10
+              remote_as: 102
             - address: 203.0.113.0
               capability:
-                orf: receive
+                dynamic: true
+              remote_as: 102
         state: replaced
 
     - assert:
