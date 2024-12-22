@@ -204,12 +204,12 @@ class Firewall_rules(ConfigBase):
                 for rs in have_r_sets:
                     rs_id = self._rs_id(rs, h["afi"])
                     w = self.search_r_sets_in_have(want, rs_id, "r_list")
-                    # if not w:
-                    commands.append(self._compute_command(rs_id, remove=True))
-                    # else:
-                    # commands.extend(self._add_r_sets(h["afi"], rs, w, opr=False))
-        have = {}
-        commands.extend(self._state_merged(want, have))
+                    if self._remove_none(w) == rs:
+                        continue
+                    else:
+                        commands.append(self._compute_command(rs_id, remove=True))
+                        have = {}
+            commands.extend(self._state_merged(want, have))
         return commands
 
     def _state_merged(self, want, have):
@@ -1058,15 +1058,32 @@ class Firewall_rules(ConfigBase):
         return key in l_set and not (h and self._in_target(h, key))
 
     def _is_w_same(self, w, h, key):
-        """
-        This function checks whether the key value is same in base and
-        target config dictionary.
-        :param w: base config.
-        :param h: target config.
-        :param key:attribute name.
-        :return: True/False.
-        """
+
         return True if h and key in h and h[key] == w[key] else False
+
+    def _remove_none(self, d):
+        """
+        This function remove None (defaut)
+        items from the config dictionary.
+        :param d: config config.
+        :return: Simplified dictionary.
+        """
+        if isinstance(d, dict):
+            new_dict = {}
+            for k, v in d.items():
+                if v is None:
+                    continue
+                elif isinstance(v, (dict, list)):
+                    cleaned_value = self._remove_none(v)
+                    if cleaned_value:
+                        new_dict[k] = cleaned_value
+                else:
+                    new_dict[k] = v
+            return new_dict
+        elif isinstance(d, list):
+            new_list = [self._remove_none(item) for item in d if item is not None]
+            return new_list
+        return d
 
     def _in_target(self, h, key):
         """

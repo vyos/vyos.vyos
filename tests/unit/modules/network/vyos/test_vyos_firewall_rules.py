@@ -1108,6 +1108,68 @@ class TestVyosFirewallRulesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+    def test_vyos_firewall_v4v6_rule_sets_rule_ovr_02(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="V4-INGRESS",
+                                description="This is IPv4 INGRESS rule set",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="accept",
+                                        protocol="udp",
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="EGRESS",
+                                default_action="reject",
+                                description="This rule-set is configured by Ansible RM",
+                                rules=[
+                                    dict(
+                                        number="20",
+                                        action="accept",
+                                        protocol="udp",
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+                state="overridden",
+            ),
+        )
+        commands = [
+            "delete firewall ipv6-name V6-INGRESS",
+            "delete firewall ipv6-name EGRESS",
+            "delete firewall name V4-INGRESS",
+            "delete firewall name EGRESS",
+            "set firewall name V4-INGRESS rule 101",
+            "set firewall name V4-INGRESS description 'This is IPv4 INGRESS rule set'",
+            "set firewall name V4-INGRESS default-action 'accept'",
+            "set firewall name V4-INGRESS enable-default-log",
+            "set firewall name V4-INGRESS rule 101 protocol 'udp'",
+            "set firewall name V4-INGRESS rule 101 action 'accept'",
+            "set firewall ipv6-name EGRESS description 'This rule-set is configured by Ansible RM'",
+            "set firewall ipv6-name EGRESS default-action 'reject'",
+            "set firewall ipv6-name EGRESS rule 20",
+            "set firewall ipv6-name EGRESS rule 20 protocol 'udp'",
+            "set firewall ipv6-name EGRESS rule 20 action 'accept'"
+        ]
+        self.execute_module(changed=True, commands=commands)
+
     def test_vyos_firewall_v4v6_rule_sets_rule_ovr_idem_01(self):
         set_module_args(
             dict(
