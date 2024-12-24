@@ -28,6 +28,7 @@ from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_ar
 
 from .vyos_module import TestVyosModule, load_fixture
 
+
 class TestVyosFirewallRulesModule14(TestVyosModule):
     module = vyos_firewall_rules
 
@@ -157,8 +158,8 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         )
         commands = [
             "delete firewall ipv4 name V4-INGRESS rule 101 protocol",
-            "delete firewall ipv4 name V4-INGRESS rule 101 disable",
             "delete firewall ipv4 name V4-INGRESS rule 101 packet-length-exclude 300",
+            "delete firewall ipv4 name V4-INGRESS rule 101 disable",
             "set firewall ipv4 name V4-INGRESS rule 101 packet-length-exclude 200",
             "set firewall ipv4 name V4-INGRESS rule 101 packet-length 22",
         ]
@@ -533,11 +534,24 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
     #                                     number="101",
     #                                     action="accept",
     #                                     description="Rule 101 is configured by Ansible",
-    #                                     ipsec="match-ipsec",
+    #                                     packet_length_exclude=[dict(length=100), dict(length=300)],
     #                                     protocol="icmp",
-    #                                     fragment="match-frag",
     #                                     disable=True,
     #                                     log="enable",
+    #                                 )
+    #                             ],
+    #                         ),
+    #                         dict(
+    #                             name="IF-TEST",
+    #                             rules=[
+    #                                 dict(
+    #                                     number="10",
+    #                                     action="accept",
+    #                                     icmp=dict(type_name="echo-request"),
+    #                                     state=dict(related=True),
+    #                                     inbound_interface=dict(name="eth0"),
+    #                                     outbound_interface=dict(group="the-ethers"),
+    #                                     disable=True,
     #                                 )
     #                             ],
     #                         ),
@@ -570,4 +584,4 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
     #             state="overridden",
     #         ),
     #     )
-    #     self.execute_module(changed=False, commands=[])
+    #     self.execute_module(changed=True, commands=[])
