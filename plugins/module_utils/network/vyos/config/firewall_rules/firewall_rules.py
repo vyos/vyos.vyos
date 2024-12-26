@@ -329,6 +329,8 @@ class Firewall_rules(ConfigBase):
             for w in w_rules:
                 cmd = self._compute_command(rs_id, w["number"], opr=opr)
                 h = self.search_rules_in_have_rs(h_rules, w["number"])
+                if w != h:
+                    h = {}
                 for key, val in iteritems(w):
                     if val:
                         if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
