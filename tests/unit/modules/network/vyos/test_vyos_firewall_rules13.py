@@ -803,12 +803,16 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
             ),
         )
         commands = [
-            "delete firewall name V4-INGRESS rule 101 disable",
+            "delete firewall name V4-INGRESS rule 101",
+            # "delete firewall name V4-INGRESS rule 101 disable",
+            "set firewall name V4-INGRESS rule 101",
             "set firewall name V4-INGRESS description 'This is IPv4 INGRESS rule set'",
+            "set firewall name V4-INGRESS rule 101 fragment 'match-frag'",
+            "set firewall name V4-INGRESS rule 101 ipsec 'match-ipsec'",
             "set firewall name V4-INGRESS rule 101 protocol 'tcp'",
             "set firewall name V4-INGRESS rule 101 description 'Rule 101 is configured by Ansible RM'",
             "set firewall name V4-INGRESS rule 101 action 'reject'",
-            "delete firewall name V4-INGRESS rule 101 log",
+            # "delete firewall name V4-INGRESS rule 101 log",
             "set firewall name V4-INGRESS rule 102 disable",
             "set firewall name V4-INGRESS rule 102 action 'accept'",
             "set firewall name V4-INGRESS rule 102 protocol 'icmp'",
@@ -869,8 +873,16 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
             ),
         )
         commands = [
+            "delete firewall name V4-INGRESS rule 101",
             "delete firewall name V4-INGRESS enable-default-log",
-            "delete firewall name V4-INGRESS rule 101 log",
+            "set firewall name V4-INGRESS rule 101",
+            "set firewall name V4-INGRESS rule 101 action 'accept'",
+            "set firewall name V4-INGRESS rule 101 description 'Rule 101 is configured by Ansible'",
+            "set firewall name V4-INGRESS rule 101 disable",
+            "set firewall name V4-INGRESS rule 101 fragment 'match-frag'",
+            "set firewall name V4-INGRESS rule 101 ipsec 'match-ipsec'",
+            "set firewall name V4-INGRESS rule 101 protocol 'icmp'",
+            # "delete firewall name V4-INGRESS rule 101 log",
         ]
         self.execute_module(changed=True, commands=commands)
 

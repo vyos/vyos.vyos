@@ -329,7 +329,7 @@ class Firewall_rules(ConfigBase):
             for w in w_rules:
                 cmd = self._compute_command(rs_id, w["number"], opr=opr)
                 h = self.search_rules_in_have_rs(h_rules, w["number"])
-                if w != h:
+                if w != h and self.state == "replaced":
                     h = {}
                 for key, val in iteritems(w):
                     if val:
