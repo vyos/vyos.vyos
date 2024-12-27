@@ -379,8 +379,14 @@ class Firewall_rules(ConfigBase):
                                 commands.extend(self._add_packet_length(key, w, h, cmd, opr))
                             elif key == "disable" and val and h and (key not in h or not h[key]):
                                 commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
-                            elif key in ("inbound_interface", "outbound_interface") and not (
-                                h and self._is_w_same(w, h, key)
+                            # elif key in ("inbound_interface", "outbound_interface") and not (
+                            #     h and self._is_w_same(w, h, key)
+                            # ):
+                            if (
+                                key in ("inbound_interface", "outbound_interface")
+                                and val
+                                and h
+                                and (key not in h or not h[key] or h[key] != w[key])
                             ):
                                 commands.extend(self._add_interface(key, w, h, cmd, opr))
                             elif (
