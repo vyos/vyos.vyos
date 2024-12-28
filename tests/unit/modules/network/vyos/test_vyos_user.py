@@ -67,18 +67,6 @@ class TestVyosUserModule(TestVyosModule):
         result = self.execute_module(changed=True)
         self.assertEqual(result["commands"], ["delete system login user ansible"])
 
-    def test_vyos_user_level(self):
-        set_module_args(dict(name="ansible", level="operator"))
-        result = self.execute_module(changed=True)
-        self.assertEqual(
-            result["commands"],
-            ["set system login user ansible level operator"],
-        )
-
-    def test_vyos_user_level_invalid(self):
-        set_module_args(dict(name="ansible", level="sysadmin"))
-        self.execute_module(failed=True)
-
     def test_vyos_user_purge(self):
         set_module_args(dict(purge=True))
         result = self.execute_module(changed=True)

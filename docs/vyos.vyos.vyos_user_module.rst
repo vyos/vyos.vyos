@@ -86,23 +86,6 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>level</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>The <code>level</code> argument configures the level of the user when logged into the system. This argument accepts string values admin or operator.</div>
-                        <div style="font-size: small; color: darkgreen"><br/>aliases: role</div>
-                </td>
-            </tr>
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>name</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -185,22 +168,6 @@ Parameters
                 </td>
                 <td>
                         <div>The <code>full_name</code> argument provides the full name of the user account to be created on the remote device. This argument accepts any text string value.</div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>level</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>The <code>level</code> argument configures the level of the user when logged into the system. This argument accepts string values admin or operator.</div>
-                        <div style="font-size: small; color: darkgreen"><br/>aliases: role</div>
                 </td>
             </tr>
             <tr>
@@ -307,7 +274,6 @@ Examples
         aggregate:
           - name: netop
           - name: netend
-        level: operator
         state: present
     - name: Change Password for User netop
       vyos.vyos.vyos_user:
@@ -344,7 +310,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The list of configuration mode commands to send to the device</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set system login user test level operator&#x27;, &#x27;set system login user authentication plaintext-password password&#x27;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set system login user authentication plaintext-password password&#x27;]</div>
                 </td>
             </tr>
     </table>

@@ -77,13 +77,6 @@ options:
         choices:
         - on_create
         - always
-      level:
-        description:
-        - The C(level) argument configures the level of the user when logged into the
-          system. This argument accepts string values admin or operator.
-        type: str
-        aliases:
-        - role
       state:
         description:
         - Configures the state of the username definition as it relates to the device
@@ -120,13 +113,6 @@ options:
     choices:
     - on_create
     - always
-  level:
-    description:
-    - The C(level) argument configures the level of the user when logged into the
-      system. This argument accepts string values admin or operator.
-    type: str
-    aliases:
-    - role
   purge:
     description:
     - Instructs the module to consider the resource definition absolute. It will remove
@@ -161,7 +147,6 @@ EXAMPLES = """
     aggregate:
       - name: netop
       - name: netend
-    level: operator
     state: present
 - name: Change Password for User netop
   vyos.vyos.vyos_user:
@@ -177,7 +162,6 @@ commands:
   returned: always
   type: list
   sample:
-    - set system login user test level operator
     - set system login user authentication plaintext-password password
 """
 
@@ -198,11 +182,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
 )
 
 
-def validate_level(value, module):
-    if value not in ("admin", "operator"):
-        module.fail_json(msg="level must be either admin or operator, got %s" % value)
-
-
 def spec_to_commands(updates, module):
     commands = list()
     update_password = module.params["update_password"]
@@ -220,11 +199,8 @@ def spec_to_commands(updates, module):
             commands.append("delete system login user %s" % want["name"])
             continue
 
-        if needs_update(want, have, "level"):
-            add(commands, want, "level %s" % want["level"])
-
         if needs_update(want, have, "full_name"):
-            add(commands, want, "full-name %s" % want["full_name"])
+            add(commands, want, "full-name '%s'" % want["full_name"])
 
         if needs_update(want, have, "configured_password"):
             if update_password == "always" or not have:
@@ -237,15 +213,8 @@ def spec_to_commands(updates, module):
     return commands
 
 
-def parse_level(data):
-    match = re.search(r"level (\S+)", data, re.M)
-    if match:
-        level = match.group(1)[1:-1]
-        return level
-
-
 def parse_full_name(data):
-    match = re.search(r"full-name (\S+)", data, re.M)
+    match = re.search(r"full-name '(\S+)'", data, re.M)
     if match:
         full_name = match.group(1)[1:-1]
         return full_name
@@ -268,7 +237,6 @@ def config_to_dict(module):
             "name": user,
             "state": "present",
             "configured_password": None,
-            "level": parse_level(cfg),
             "full_name": parse_full_name(cfg),
         }
         instances.append(obj)
@@ -310,7 +278,6 @@ def map_params_to_obj(module):
         get_value = partial(get_param_value, item=item, module=module)
         item["configured_password"] = get_value("configured_password")
         item["full_name"] = get_value("full_name")
-        item["level"] = get_value("level")
         item["state"] = get_value("state")
         objects.append(item)
 
@@ -335,7 +302,6 @@ def main():
     element_spec = dict(
         name=dict(),
         full_name=dict(),
-        level=dict(aliases=["role"]),
         configured_password=dict(no_log=True),
         update_password=dict(default="always", choices=["on_create", "always"]),
         state=dict(default="present", choices=["present", "absent"]),
