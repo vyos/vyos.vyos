@@ -20,7 +20,7 @@ short_description: Manages snmp_server resource module
 description: This module manages the snmp server attributes of Vyos network devices
 author: Gomathi Selvi Srinivasan (@GomathiselviS)
 notes:
-  - Tested against vyos 1.3.8
+  - Tested against vyos 1.3.8, 1.4.1
   - This module works with connection C(network_cli).
   - The Configuration defaults of the Vyos network devices
     are supposed to hinder idempotent behavior of plays
@@ -133,9 +133,11 @@ options:
                   encrypted_key:
                     description: Defines the encrypted password for authentication
                     type: str
+                    no_log: True
                   plaintext_key:
                     description: Defines the clear text password for authentication
                     type: str
+                    no_log: True
               port:
                 description: Specifies the TCP/UDP port of a destination for SNMP traps/informs.
                 type: int
@@ -150,9 +152,11 @@ options:
                   encrypted_key:
                     description: Defines the encrypted password for privacy
                     type: str
+                    no_log: True
                   plaintext_key:
                     description: Defines the clear text password for privacy
                     type: str
+                    no_log: True
               protocol:
                 description: Defines protocol for notification between TCP and UDP
                 type: str
@@ -180,9 +184,11 @@ options:
                   encrypted_key:
                     description: Defines the encrypted password for authentication
                     type: str
+                    no_log: True
                   plaintext_key:
                     description: Defines the clear text password for authentication
                     type: str
+                    no_log: True
               group:
                 description: Specifies group for user name
                 type: str
@@ -201,12 +207,15 @@ options:
                   encrypted_key:
                     description: Defines the encrypted password for privacy
                     type: str
+                    no_log: True
                   plaintext_key:
                     description: Defines the clear text password for privacy
                     type: str
+                    no_log: True
               tsm_key:
                 description: Specifies finger print or file name of TSM certificate.
                 type: str
+                no_log: True
           views:
             description: Specifies the view with name viewname
             type: list
