@@ -1,0 +1,9 @@
+---
+minor_changes:
+  - 192.0.2.1/24 (TEST-NET-1) is used on eth1 for testing to accomodate services that check
+    valid configurations (such as SNMP)
+  - use encrypted passwords for SNMPv3 tests as VyOS now converts those "when next reloaded"
+breaking_changes:
+  - parameter `engine_id` is no longer a `user` or `trap_target` parameter and is now a `snmp_v3` parameter
+  - parameters `encrypted-key` and `plaintext-key` are now `encrypted-password` and `puplaintext-password`
+    which is a breaking change with 1.2 and prior

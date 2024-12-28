@@ -2,16 +2,21 @@
 - name: setup
   vyos.vyos.vyos_config:
     lines:
+      - set interface ethernet eth2 address 20.1.1.1/24
       - set service snmp community switches authorization rw
       - set service snmp community bridges client 1.1.1.1
       - set service snmp community bridges client 12.1.1.10
       - set service snmp listen-address 20.1.1.1
-      - set service snmp listen-address 100.1.2.1 port 33
-      - set service snmp v3 user adminuser engineid 33
+      - set service snmp listen-address 192.0.2.1 port 33
+      - set service snmp v3 engineid 33
+      - set service snmp v3 group testgroup mode ro
+      - set service snmp v3 group testgroup view default
+      - set service snmp v3 view default oid 1
       - set service snmp v3 user adminuser auth type sha
-      - set service snmp v3 user adminuser auth plaintext-key abc1234567
+      - set service snmp v3 user adminuser auth plaintext-password abc1234567
       - set service snmp v3 user adminuser privacy type aes
-      - set service snmp v3 user adminuser privacy plaintext-key abc1234567
+      - set service snmp v3 user adminuser privacy plaintext-password abc1234567
+      - set service snmp v3 user adminuser group testgroup
       - set service snmp contact admin2@ex.com
   ignore_errors: true
   vars:

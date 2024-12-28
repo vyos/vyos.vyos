@@ -136,9 +136,6 @@ options:
                   plaintext_key:
                     description: Defines the clear text password for authentication
                     type: str
-              engine_id:
-                description: Defines the engineID.
-                type: str
               port:
                 description: Specifies the TCP/UDP port of a destination for SNMP traps/informs.
                 type: int
@@ -164,16 +161,6 @@ options:
                 description: Specifies the type of notification between inform and trap
                 type: str
                 choices: ['inform', 'trap']
-          tsm:
-            description: Specifies that the snmpd uses encryption
-            type: dict
-            suboptions:
-              local_key:
-                description: Defines the server certificate fingerprint or key-file name.
-                type: str
-              port:
-                description: Defines the port for tsm.
-                type: int
           users:
             description: Defines username for authentication
             type: list
@@ -196,9 +183,6 @@ options:
                   plaintext_key:
                     description: Defines the clear text password for authentication
                     type: str
-              engine_id:
-                description: Defines the engineID.
-                type: str
               group:
                 description: Specifies group for user name
                 type: str

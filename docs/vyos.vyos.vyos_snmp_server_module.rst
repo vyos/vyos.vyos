@@ -510,24 +510,6 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>engine_id</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Defines the engineID.</div>
-                </td>
-            </tr>
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>port</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -670,60 +652,6 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>tsm</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">dictionary</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Specifies that the snmpd uses encryption</div>
-                </td>
-            </tr>
-                                <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>local_key</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Defines the server certificate fingerprint or key-file name.</div>
-                </td>
-            </tr>
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>port</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">integer</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Defines the port for tsm.</div>
-                </td>
-            </tr>
-
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="3">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>users</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -817,24 +745,6 @@ Parameters
                 </td>
             </tr>
 
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>engine_id</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Defines the engineID.</div>
-                </td>
-            </tr>
             <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
