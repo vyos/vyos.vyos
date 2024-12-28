@@ -1,24 +1,20 @@
 
 # VyOS Collection
 
-[![Codecov](https://codecov.io/gh/ansible-collections/vyos.vyos/branch/main/graph/badge.svg)](https://codecov.io/gh/ansible-collections/vyos.vyos)
-[![CI](https://github.com/ansible-collections/vyos.vyos/actions/workflows/tests.yml/badge.svg?branch=main&event=schedule)](https://github.com/ansible-collections/vyos.vyos/actions/workflows/tests.yml)
+[![Codecov](https://codecov.io/gh/vyos/vyos.vyos/branch/main/graph/badge.svg)](https://codecov.io/gh/ansible-collections/vyos.vyos)
+[![CI](https://github.com/vyos/vyos.vyos/actions/workflows/tests.yml/badge.svg?branch=main&event=schedule)](https://github.com/vyos/vyos.vyos/actions/workflows/tests.yml)
 
 The Ansible VyOS collection includes a variety of Ansible content to help automate the management of VyOS network appliances.
 
-This collection has been tested against VyOS 1.1.8 (helium).
+This collection has been tested against VyOS 1.3.8 and 1.4.1.
 
 ## Communication
 
-* Join the Ansible forum:
-  * [Get Help](https://forum.ansible.com/c/help/6): get help or help others.
-  * [Posts tagged with 'vyos'](https://forum.ansible.com/tag/vyos): subscribe to participate in collection-related conversations.
-  * [Social Spaces](https://forum.ansible.com/c/chat/4): gather and interact with fellow enthusiasts.
-  * [News & Announcements](https://forum.ansible.com/c/news/5): track project-wide announcements including social events.
+* Join the VyOS forum:
+  * [FAQ](https://forum.vyos.io/faq): find answers to frequently asked questions.
+  * [Guides and How To](https://forum.vyos.io/c/howto-guies/27): find guides and how-to articles.
+  * [News & Announcements](https://forum.vyos.io/c/announcements/6): track project-wide announcements .
 
-* The Ansible [Bullhorn newsletter](https://docs.ansible.com/ansible/devel/community/communication.html#the-bullhorn): used to announce releases and important changes.
-
-For more information about communication, see the [Ansible communication guide](https://docs.ansible.com/ansible/devel/community/communication.html).
 
 <!--start requires_ansible-->
 ## Ansible version compatibility
@@ -141,14 +137,13 @@ The following example task replaces configuration changes in the existing config
 
 ## Contributing to this collection
 
-We welcome community contributions to this collection. If you find problems, please open an issue or create a PR against the [VyOS collection repository](https://github.com/ansible-collections/vyos). See [Contributing to Ansible-maintained collections](https://docs.ansible.com/ansible/devel/community/contributing_maintained_collections.html#contributing-maintained-collections) for complete details.
+We welcome community contributions to this collection. If you find problems, please open an issue or create a PR against the [VyOS collection repository](https://github.com/vyos/vyos.vyos). See [Contributing to VyOS](https://vyos.net/contribute/) for complete details.
 
 You can also join us on:
 
-- IRC - the ``#ansible-network`` [irc.libera.chat](https://libera.chat/) channel
-- Slack - https://ansiblenetwork.slack.com
+- Forum - https://forum.vyos.io
 
-See the [Ansible Community Guide](https://docs.ansible.com/ansible/latest/community/index.html) for details on contributing to Ansible.
+See the [Contributing to VyOS](https://vyos.net/contribute/) for details on contributing to Ansible.
 
 ### Code of Conduct
 This collection follows the Ansible project's
@@ -197,8 +192,6 @@ ansible-playbook -e rm_dest=`pwd` \
 
 Unlike the `resource_module_builder`, the `cli_rm_builder` does not require the `model` parameter. Instead, it uses the `resource` parameter to specify the resource to build.
 
-
-
 ### Testing playbooks
 
 You can use `ANSIBLE_COLLECTIONS_PATH` to test the collection locally. For example:
@@ -211,14 +204,35 @@ ANSIBLE_COLLECTIONS_PATHS=~/my_dev_path ansible-playbook -i inventory.network te
 
 ## Release notes
 
-Release notes are available [here](https://github.com/ansible-collections/vyos.vyos/blob/main/CHANGELOG.rst).
+Release notes are available [here](https://github.com/vyos/vyos.vyos/blob/main/CHANGELOG.rst).
 
 ## Roadmap
 
 <!-- Optional. Include the roadmap for this collection, and the proposed release/versioning strategy so users can anticipate the upgrade/update cycle. -->
 
+Major Version | Ansible Support | VyOS Support | Details
+--- | --- | --- | ---
+4.1.0 | 2.15 | 1.1.2 | Final release for the 4.x series
+5.0.0 | 2.16 | 1.1.2 | First relase under VyOS control as a separate collection
+6.0.0 | 2.18 | 1.3.8 | *Planned* release for supporting VyOS 1.3.8+
+7.0.0 | x.xx | 1.4.x | *Prospective* release deprecating incompatible 1.3.x modules
+
+Note:
+- Unreleased versions are not guaranteed to be released as described.
+- Some modules may support a wider variety of versions depending upon the compatibility
+  with prior versions of VyOS.
+- The roadmap is subject to change based on community feedback and contributions.
+
+
 ## More information
 
+VyOS resources
+- [Contributing to VyOS](https://vyos.net/contribute)
+- [VyOS documentation](https://docs.vyos.io/en/latest/)
+- [VyOS forum](https://forum.vyos.io)
+
+
+Ansible Resources
 - [Ansible network resources](https://docs.ansible.com/ansible/latest/network/getting_started/network_resources.html)
 - [Ansible Collection overview](https://github.com/ansible-collections/overview)
 - [Ansible User guide](https://docs.ansible.com/ansible/latest/user_guide/index.html)

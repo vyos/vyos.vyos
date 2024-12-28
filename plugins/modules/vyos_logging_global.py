@@ -20,7 +20,7 @@ short_description: Logging resource module
 description: This module manages the logging attributes of Vyos network devices
 author: Sagar Paul (@KB-perByte)
 notes:
-  - Tested against vyos 1.2
+  - Tested against vyos 1.3.8+
   - This module works with connection C(network_cli).
   - The Configuration defaults of the Vyos network devices
     are supposed to hinder idempotent behavior of plays
@@ -139,7 +139,7 @@ options:
               facility: *facility
               severity: *severity
               protocol:
-                description: syslog communication protocol
+                description: syslog communication protocol. Version 1.3 and below.
                 type: str
                 choices:
                   - udp
@@ -147,6 +147,12 @@ options:
           hostname:
             description: Remote host name or IP address
             type: str
+          protocol:
+            description: syslog communication protocol. Version 1.4+
+            type: str
+            choices:
+              - udp
+              - tcp
       syslog:
         description: logging syslog
         type: dict
@@ -715,17 +721,17 @@ commands:
   returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
   type: list
   sample:
-    - "set system syslog console facility local7 level err"
-    - "set system syslog host 172.16.0.1 port 223"
-    - "set system syslog global archive size 111"
+    - sample command 1
+    - sample command 2
+    - sample command 3
 rendered:
   description: The provided configuration in the task rendered in device-native format (offline).
   returned: when I(state) is C(rendered)
   type: list
   sample:
-    - "set system syslog host 172.16.0.1 port 223"
-    - "set system syslog user vyos facility local7 level debug"
-    - "set system syslog global facility cron level debug"
+    - sample command 1
+    - sample command 2
+    - sample command 3
 gathered:
   description: Facts about the network resource gathered from the remote device as structured data.
   returned: when I(state) is C(gathered)

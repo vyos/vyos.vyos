@@ -1,0 +1,12 @@
+---
+minor_changes:
+  - deprecating items for 1.4+ that have moved locations
+  - For 1.4, `protocol` is an attribute of the syslog host, not the facility
+  - Fixed v1.3 and before when `protocol` and `level` were set for the same host
+
+breaking_changes:
+  - none yet
+
+known_issues:
+  - existing code for 1.3 facility protocol and facility level are not compatible,
+    only one will be set and level is the priority.
