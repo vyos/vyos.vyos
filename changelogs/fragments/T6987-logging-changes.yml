@@ -3,6 +3,7 @@ minor_changes:
   - deprecating items for 1.4+ that have moved locations
   - For 1.4, `protocol` is an attribute of the syslog host, not the facility
   - Fixed v1.3 and before when `protocol` and `level` were set for the same host
+  - Fixed integration test for `vyos_facts` which was brittle due to line dependencies in checks
 
 breaking_changes:
   - none yet
