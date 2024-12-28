@@ -1,25 +1,4 @@
 ---
-overridden:
-  commands:
-    - delete system syslog file def
-    - delete system syslog global facility cron
-    - delete system syslog global facility local7
-    - delete system syslog host 172.16.2.12
-    - delete system syslog host 172.16.2.15
-    - delete system syslog user paul
-    - delete system syslog user vyos
-
-  after:
-    console:
-      facilities:
-        - facility: all
-        - facility: local7
-          severity: err
-        - facility: news
-          severity: debug
-    files:
-      - path: Myfile
-
 rendered:
   commands:
     - set system syslog console facility all
