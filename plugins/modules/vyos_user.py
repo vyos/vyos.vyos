@@ -87,6 +87,32 @@ options:
         choices:
         - present
         - absent
+      public_keys: &public_keys
+        description:
+        - Public keys for authentiction over SSH.
+        type: list
+        elements: dict
+        suboptions:
+          name:
+            description: Name of the key (usually in the form of user@hostname)
+            required: true
+            type: str
+          key:
+            description: Public key string (base64 encoded)
+            required: true
+            type: str
+          type:
+            description: Type of the key
+            required: true
+            type: str
+            choices:
+            - ssh-dss
+            - ssh-rsa
+            - ecdsa-sha2-nistp256
+            - ecdsa-sha2-nistp384
+            - ssh-ed25519
+            - ecdsa-sha2-nistp521
+
   name:
     description:
     - The username to be configured on the VyOS device. This argument accepts a string
@@ -113,6 +139,7 @@ options:
     choices:
     - on_create
     - always
+  public_keys: *public_keys
   purge:
     description:
     - Instructs the module to consider the resource definition absolute. It will remove
@@ -202,6 +229,30 @@ def spec_to_commands(updates, module):
         if needs_update(want, have, "full_name"):
             add(commands, want, "full-name '%s'" % want["full_name"])
 
+        # look both ways for public_keys to handle replacement
+        want_keys = want.get("public_keys") or dict()
+        have_keys = have.get("public_keys") or dict()
+        for key_name in want_keys:
+            key = want_keys[key_name]
+            if key_name not in have_keys or key != have_keys[key_name]:
+                add(
+                    commands,
+                    want,
+                    "authentication public-keys %s key '%s'" % (key["name"], key["key"]),
+                )
+                add(
+                    commands,
+                    want,
+                    "authentication public-keys %s type '%s'" % (key["name"], key["type"]),
+                )
+
+        for key_name in have_keys:
+            if key_name not in want_keys:
+                commands.append(
+                    "delete system login user %s authentication public-keys %s"
+                    % (want["name"], key_name),
+                )
+
         if needs_update(want, have, "configured_password"):
             if update_password == "always" or not have:
                 add(
@@ -218,6 +269,43 @@ def parse_full_name(data):
     if match:
         full_name = match.group(1)[1:-1]
         return full_name
+
+
+def parse_key(data):
+    match = re.search(r"key '(\S+)'", data, re.M)
+    if match:
+        key = match.group(1)
+        return key
+
+
+def parse_key_type(data):
+    match = re.search(r"type '(\S+)'", data, re.M)
+    if match:
+        key_type = match.group(1)
+        return key_type
+
+
+def parse_public_keys(data):
+    """
+    Parse public keys from the configuration
+    returning dictionary of dictionaries indexed by key name
+    """
+    match = re.findall(r"public-keys (\S+)", data, re.M)
+    if not match:
+        return dict()
+
+    keys = dict()
+    for key in set(match):
+        regex = r" %s .+$" % key
+        cfg = re.findall(regex, data, re.M)
+        cfg = "\n".join(cfg)
+        obj = {
+            "name": key,
+            "key": parse_key(cfg),
+            "type": parse_key_type(cfg),
+        }
+        keys[key] = obj
+    return keys
 
 
 def config_to_dict(module):
@@ -238,6 +326,7 @@ def config_to_dict(module):
             "state": "present",
             "configured_password": None,
             "full_name": parse_full_name(cfg),
+            "public_keys": parse_public_keys(cfg),
         }
         instances.append(obj)
 
@@ -255,6 +344,21 @@ def get_param_value(key, item, module):
         validator(value, module)
 
     return value
+
+
+def map_key_params_to_dict(keys):
+    """
+    Map the list of keys to a dictionary of dictionaries
+    indexed by key name
+    """
+    all_keys = dict()
+    if keys is None:
+        return all_keys
+
+    for key in keys:
+        key_name = key["name"]
+        all_keys[key_name] = key
+    return all_keys
 
 
 def map_params_to_obj(module):
@@ -279,6 +383,7 @@ def map_params_to_obj(module):
         item["configured_password"] = get_value("configured_password")
         item["full_name"] = get_value("full_name")
         item["state"] = get_value("state")
+        item["public_keys"] = map_key_params_to_dict(get_value("public_keys"))
         objects.append(item)
 
     return objects
@@ -299,12 +404,29 @@ def update_objects(want, have):
 
 def main():
     """main entry point for module execution"""
+    public_key_spec = dict(
+        name=dict(required=True, type="str"),
+        key=dict(required=True, type="str", no_log=False),
+        type=dict(
+            required=True,
+            type="str",
+            choices=[
+                "ssh-dss",
+                "ssh-rsa",
+                "ecdsa-sha2-nistp256",
+                "ecdsa-sha2-nistp384",
+                "ssh-ed25519",
+                "ecdsa-sha2-nistp521",
+            ],
+        ),
+    )
     element_spec = dict(
         name=dict(),
         full_name=dict(),
         configured_password=dict(no_log=True),
         update_password=dict(default="always", choices=["on_create", "always"]),
         state=dict(default="present", choices=["present", "absent"]),
+        public_keys=dict(type="list", elements="dict", options=public_key_spec),
     )
 
     aggregate_spec = deepcopy(element_spec)

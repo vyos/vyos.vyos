@@ -76,6 +76,7 @@ class TestVyosUserModule(TestVyosModule):
                 [
                     "delete system login user ansible",
                     "delete system login user admin",
+                    "delete system login user ssh",
                 ],
             ),
         )
@@ -117,3 +118,98 @@ class TestVyosUserModule(TestVyosModule):
             result["commands"],
             ["set system login user ansible authentication plaintext-password test"],
         )
+
+    def test_vyos_user_set_ssh_key(self):
+        set_module_args(
+            dict(
+                name="ansible",
+                public_keys=[
+                    dict(
+                        name="user@host",
+                        key="AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu",
+                        type="ssh-ed25519",
+                    ),
+                ],
+            ),
+        )
+        result = self.execute_module(changed=True)
+        self.assertEqual(
+            result["commands"],
+            [
+                "set system login user ansible authentication public-keys user@host key 'AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu'",
+                "set system login user ansible authentication public-keys user@host type 'ssh-ed25519'",
+            ],
+        )
+
+    def test_vyos_user_set_ssh_key_idempotent(self):
+        set_module_args(
+            dict(
+                name="ssh",
+                public_keys=[
+                    dict(
+                        name="user@host",
+                        key="AAAAB3NzaC1yc2EAAAADAQABAAABAQD",
+                        type="ssh-rsa",
+                    ),
+                ],
+            ),
+        )
+        self.load_fixtures()
+        result = self.execute_module(changed=False)
+        self.assertEqual(result["commands"], [])
+
+    def test_vyos_user_set_ssh_key_change(self):
+        set_module_args(
+            dict(
+                name="ssh",
+                public_keys=[
+                    dict(
+                        name="user@host",
+                        key="AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu",
+                        type="ssh-ed25519",
+                    ),
+                ],
+            ),
+        )
+        self.load_fixtures()
+        result = self.execute_module(
+            changed=True,
+            commands=[
+                "set system login user ssh authentication public-keys user@host key 'AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu'",
+                "set system login user ssh authentication public-keys user@host type 'ssh-ed25519'",
+            ],
+        )
+
+    def test_vyos_user_set_ssh_key_add_and_remove(self):
+        set_module_args(
+            dict(
+                name="ssh",
+                public_keys=[
+                    dict(
+                        name="noone@nowhere",
+                        key="AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu",
+                        type="ssh-ed25519",
+                    ),
+                ],
+            ),
+        )
+        self.load_fixtures()
+        result = self.execute_module(
+            changed=True,
+            commands=[
+                "delete system login user ssh authentication public-keys user@host",
+                "set system login user ssh authentication public-keys noone@nowhere key 'AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu'",
+                "set system login user ssh authentication public-keys noone@nowhere type 'ssh-ed25519'",
+            ],
+        )
+
+    def test_vyos_user_set_ssh_key_empty(self):
+        # empty public_keys has no effect (for setting passwords, user names, etc.)
+        set_module_args(
+            dict(
+                name="ssh",
+                public_keys=[],
+            ),
+        )
+        self.load_fixtures()
+        result = self.execute_module(changed=False)
