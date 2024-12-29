@@ -62,6 +62,12 @@ options:
         - The C(full_name) argument provides the full name of the user account to be created
           on the remote device. This argument accepts any text string value.
         type: str
+      encrypted_password:
+        description:
+        - The encrypted password of the user account on the remote device. Note that unlike
+          the C(configured_password) argument, this argument ignores the C(update_password)
+          and updates if the value is different from the one in the device running config.
+        type: str
       configured_password:
         description:
         - The password to be configured on the VyOS device. The password needs to be provided
@@ -122,6 +128,12 @@ options:
     description:
     - The C(full_name) argument provides the full name of the user account to be created
       on the remote device. This argument accepts any text string value.
+    type: str
+  encrypted_password:
+    description:
+    - The encrypted password of the user account on the remote device. Note that unlike
+      the C(configured_password) argument, this argument ignores the C(update_password)
+      and updates if the value is different from the one in the device running config.
     type: str
   configured_password:
     description:
@@ -253,6 +265,13 @@ def spec_to_commands(updates, module):
                     % (want["name"], key_name),
                 )
 
+        if needs_update(want, have, "encrypted_password"):
+            add(
+                commands,
+                want,
+                "authentication encrypted-password '%s'" % want["encrypted_password"],
+            )
+
         if needs_update(want, have, "configured_password"):
             if update_password == "always" or not have:
                 add(
@@ -308,6 +327,13 @@ def parse_public_keys(data):
     return keys
 
 
+def parse_encrypted_password(data):
+    match = re.search(r"authentication encrypted-password '(\S+)'", data, re.M)
+    if match:
+        encrypted_password = match.group(1)
+        return encrypted_password
+
+
 def config_to_dict(module):
     data = get_config(module)
 
@@ -326,6 +352,7 @@ def config_to_dict(module):
             "state": "present",
             "configured_password": None,
             "full_name": parse_full_name(cfg),
+            "encrypted_password": parse_encrypted_password(cfg),
             "public_keys": parse_public_keys(cfg),
         }
         instances.append(obj)
@@ -381,6 +408,7 @@ def map_params_to_obj(module):
     for item in users:
         get_value = partial(get_param_value, item=item, module=module)
         item["configured_password"] = get_value("configured_password")
+        item["encrypted_password"] = get_value("encrypted_password")
         item["full_name"] = get_value("full_name")
         item["state"] = get_value("state")
         item["public_keys"] = map_key_params_to_dict(get_value("public_keys"))
@@ -424,6 +452,7 @@ def main():
         name=dict(),
         full_name=dict(),
         configured_password=dict(no_log=True),
+        encrypted_password=dict(no_log=False),
         update_password=dict(default="always", choices=["on_create", "always"]),
         state=dict(default="present", choices=["present", "absent"]),
         public_keys=dict(type="list", elements="dict", options=public_key_spec),
@@ -447,7 +476,11 @@ def main():
 
     argument_spec.update(element_spec)
 
-    mutually_exclusive = [("name", "aggregate")]
+    mutually_exclusive = [
+        ("name", "aggregate"),
+        ("encrypted_password", "configured_password"),
+    ]
+
     module = AnsibleModule(
         argument_spec=argument_spec,
         mutually_exclusive=mutually_exclusive,

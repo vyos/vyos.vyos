@@ -70,6 +70,22 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>encrypted_password</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>The encrypted password of the user account on the remote device. Note that unlike the <code>configured_password</code> argument, this argument ignores the <code>update_password</code> and updates if the value is different from the one in the device running config.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>full_name</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -233,6 +249,21 @@ Parameters
                 </td>
                 <td>
                         <div>The password to be configured on the VyOS device. The password needs to be provided in clear and it will be encrypted on the device.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>encrypted_password</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>The encrypted password of the user account on the remote device. Note that unlike the <code>configured_password</code> argument, this argument ignores the <code>update_password</code> and updates if the value is different from the one in the device running config.</div>
                 </td>
             </tr>
             <tr>

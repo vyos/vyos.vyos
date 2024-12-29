@@ -4,6 +4,7 @@ breaking_changes:
 
 major_changes:
   - add support for public-key authentication
+  - add support for encrypted password specification
 
 minor_changes:
   - fix sending of `full-name` to use quotes
