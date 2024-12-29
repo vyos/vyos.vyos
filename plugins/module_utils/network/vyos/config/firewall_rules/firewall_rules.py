@@ -204,7 +204,7 @@ class Firewall_rules(ConfigBase):
                 for rs in have_r_sets:
                     rs_id = self._rs_id(rs, h["afi"])
                     w = self.search_r_sets_in_have(want, rs_id, "r_list")
-                    if self._remove_none(w) == rs:
+                    if remove_empties(w) == rs:
                         continue
                     else:
                         commands.append(self._compute_command(rs_id, remove=True))
@@ -379,9 +379,6 @@ class Firewall_rules(ConfigBase):
                                 commands.extend(self._add_packet_length(key, w, h, cmd, opr))
                             elif key == "disable" and val and h and (key not in h or not h[key]):
                                 commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
-                            # elif key in ("inbound_interface", "outbound_interface") and not (
-                            #     h and self._is_w_same(w, h, key)
-                            # ):
                             if (
                                 key in ("inbound_interface", "outbound_interface")
                                 and val
@@ -405,6 +402,8 @@ class Firewall_rules(ConfigBase):
                             commands.extend(self._add_icmp(key, w, h, cmd, opr))
                         elif key == "state":
                             commands.extend(self._add_state(key, w, h, cmd, opr))
+                        # elif key == "log":
+                        #     commands.extend(self._add_log(key, w, h, cmd, opr))
                         elif key == "limit":
                             commands.extend(self._add_limit(key, w, h, cmd, opr))
                         elif key == "recent":
@@ -443,6 +442,35 @@ class Firewall_rules(ConfigBase):
         return commands
 
     def _add_state(self, attr, w, h, cmd, opr):
+        """
+        This function forms the command for 'state' attributes based on the 'opr'.
+        :param attr: attribute name.
+        :param w: base config.
+        :param h: target config.
+        :param cmd: commands to be prepend.
+        :return: generated list of commands.
+        """
+        h_state = {}
+        commands = []
+        l_set = ("new", "invalid", "related", "established")
+        if w[attr]:
+            if h and attr in h.keys():
+                h_state = h.get(attr) or {}
+            for item, val in iteritems(w[attr]):
+                if (
+                    opr
+                    and item in l_set
+                    and not (h_state and self._is_w_same(w[attr], h_state, item))
+                ):
+                    if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                        commands.append(cmd + (" " + attr + " " + item))
+                    else:
+                        commands.append(cmd + (" " + attr + " " + item + " " + self._bool_to_str(val)))
+                elif not opr and item in l_set and not self._in_target(h_state, item):
+                    commands.append(cmd + (" " + attr + " " + item))
+        return commands
+
+    def _add_log(self, attr, w, h, cmd, opr):
         """
         This function forms the command for 'state' attributes based on the 'opr'.
         :param attr: attribute name.
@@ -1068,30 +1096,6 @@ class Firewall_rules(ConfigBase):
     def _is_w_same(self, w, h, key):
 
         return True if h and key in h and h[key] == w[key] else False
-
-    def _remove_none(self, d):
-        """
-        This function remove None (defaut)
-        items from the config dictionary.
-        :param d: config config.
-        :return: Simplified dictionary.
-        """
-        if isinstance(d, dict):
-            new_dict = {}
-            for k, v in d.items():
-                if v is None:
-                    continue
-                elif isinstance(v, (dict, list)):
-                    cleaned_value = self._remove_none(v)
-                    if cleaned_value:
-                        new_dict[k] = cleaned_value
-                else:
-                    new_dict[k] = v
-            return new_dict
-        elif isinstance(d, list):
-            new_list = [self._remove_none(item) for item in d if item is not None]
-            return new_list
-        return d
 
     def _in_target(self, h, key):
         """
