@@ -213,3 +213,27 @@ class TestVyosUserModule(TestVyosModule):
         )
         self.load_fixtures()
         result = self.execute_module(changed=False)
+
+    def test_vyos_user_set_encrypted_password(self):
+        set_module_args(
+            dict(
+                name="ansible",
+                encrypted_password="$6$rounds=656000$SALT$HASH",
+            ),
+        )
+        result = self.execute_module(changed=True)
+        self.assertEqual(
+            result["commands"],
+            [
+                "set system login user ansible authentication encrypted-password '$6$rounds=656000$SALT$HASH'",
+            ],
+        )
+
+    def test_vyos_user_set_encrypted_password_idem(self):
+        set_module_args(
+            dict(
+                name="ansible",
+                encrypted_password="$6$ZfvSv6A50W6yNPYX$4HP5eg2sywcXYxTqhApQ7zvUvx0HsQHrI9xuJoFLy2gM/",
+            ),
+        )
+        result = self.execute_module(changed=False)
