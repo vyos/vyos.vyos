@@ -9,4 +9,3 @@ minor_changes:
   - fixed behavior for override and replaced states
   - added support for packet-length-exclude for 1.4+ and the states
   - fixed behavior for log, disable attributes
-  
