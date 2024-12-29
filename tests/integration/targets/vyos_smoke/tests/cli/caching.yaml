@@ -6,11 +6,9 @@
         interface_cmds:
           - set interfaces ethernet eth1 description 'Configured by Ansible - Interface 1'
           - set interfaces ethernet eth1 mtu '1500'
-          - set interfaces ethernet eth1 duplex 'auto'
-          - set interfaces ethernet eth1 speed 'auto'
           - set interfaces ethernet eth1 vif 101 description 'Eth1 - VIF 101'
           - set interfaces ethernet eth2 description 'Configured by Ansible - Interface 2 (ADMIN DOWN)'
-          - set interfaces ethernet eth2 mtu '600'
+          - set interfaces ethernet eth2 mtu '1280'
         l3_interface_cmds:
           - set interfaces ethernet eth1 address '192.0.2.10/24'
           - set interfaces ethernet eth1 address '2001:db8::10/32'
@@ -31,15 +29,13 @@
           - name: eth1
             description: Configured by Ansible - Interface 1
             mtu: 1500
-            speed: auto
-            duplex: auto
             vifs:
               - vlan_id: 101
                 description: Eth1 - VIF 101
 
           - name: eth2
             description: Configured by Ansible - Interface 2 (ADMIN DOWN)
-            mtu: 600
+            mtu: 1280
         state: merged
 
     - assert:

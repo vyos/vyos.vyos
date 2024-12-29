@@ -9,6 +9,7 @@ major_changes:
 minor_changes:
   - fix sending of `full-name` to use quotes
   - fix parsing of `full-name` to ignore quotes
+  - fix integration tests for smoke
 
 known_issues:
   - ssh login tests are brittle
