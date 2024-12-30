@@ -108,7 +108,6 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                                         },
                                     },
                                 },
-                                "engine_id": {"type": "str"},
                                 "port": {"type": "int"},
                                 "privacy": {
                                     "type": "dict",
@@ -137,13 +136,6 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                                 },
                             },
                         },
-                        "tsm": {
-                            "type": "dict",
-                            "options": {
-                                "local_key": {"type": "str", "no_log": True},
-                                "port": {"type": "int"},
-                            },
-                        },
                         "users": {
                             "type": "list",
                             "elements": "dict",
@@ -166,7 +158,6 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                                         },
                                     },
                                 },
-                                "engine_id": {"type": "str"},
                                 "group": {"type": "str"},
                                 "mode": {"type": "str", "choices": ["ro", "rw"]},
                                 "privacy": {
