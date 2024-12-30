@@ -721,17 +721,17 @@ commands:
   returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
   type: list
   sample:
-    - sample command 1
-    - sample command 2
-    - sample command 3
+    - set system syslog console facility local7 level err
+    - set system syslog host 172.16.0.1 port 223
+    - set system syslog global archive size 111
 rendered:
   description: The provided configuration in the task rendered in device-native format (offline).
   returned: when I(state) is C(rendered)
   type: list
   sample:
-    - sample command 1
-    - sample command 2
-    - sample command 3
+    - set system syslog host 172.16.0.1 port 223
+    - set system syslog user vyos facility local7 level debug
+    - set system syslog global facility cron level debu
 gathered:
   description: Facts about the network resource gathered from the remote device as structured data.
   returned: when I(state) is C(gathered)
