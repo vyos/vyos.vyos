@@ -6,7 +6,8 @@
 
 The Ansible VyOS collection includes a variety of Ansible content to help automate the management of VyOS network appliances.
 
-This collection has been tested against VyOS 1.3.8 and 1.4.1.
+This collection has been tested against VyOS 1.3.8, 1.4.1 and the current rolling release for 1.5. Where possible,
+compatibility with older versions of VyOS are maintained but not guaranteed.
 
 ## Communication
 
