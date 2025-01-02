@@ -31,9 +31,9 @@
 - name: check that version info is present
   assert:
     that:
-      - result.ansible_facts.ansible_net_version in vyos_version.stdout_lines[0][0]
-      - result.ansible_facts.ansible_net_model in vyos_version.stdout_lines[0][9]
-      - result.ansible_facts.ansible_net_serialnum in vyos_version.stdout_lines[0][10]
+      - result.ansible_facts.ansible_net_version in (vyos_version.stdout_lines[0] | select('search', 'Version:') | list | first)
+      - result.ansible_facts.ansible_net_model in (vyos_version.stdout_lines[0] | select('search', 'Hardware model:') | list | first)
+      - result.ansible_facts.ansible_net_serialnum in (vyos_version.stdout_lines[0] | select('search', 'Hardware S/N:') | list | first)
 
 - name: check that config info is present
   assert:

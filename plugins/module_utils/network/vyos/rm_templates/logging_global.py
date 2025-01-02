@@ -28,7 +28,7 @@ def tmplt_params(config_data):
             tmplt += " facility {facility}".format(facility=val["facility"])
         if val.get("severity"):
             tmplt += " level {level}".format(level=val["severity"])
-        if val.get("protocol"):
+        elif val.get("protocol"):
             tmplt += " protocol {protocol}".format(protocol=val["protocol"])
         return tmplt
 
@@ -50,7 +50,12 @@ def tmplt_params(config_data):
             tmplt = templt_common(val.get("facilities"), tmplt)
     elif config_data.get("hosts"):
         val = config_data.get("hosts")
-        if val.get("hostname") and not val.get("archive") and not val.get("port"):
+        if (
+            val.get("hostname")
+            and not val.get("archive")
+            and not val.get("port")
+            and not val.get("protocol")
+        ):
             tmplt += "system syslog host {hostname}".format(hostname=val["hostname"])
         if val.get("facilities"):
             tmplt = templt_common(val.get("facilities"), tmplt)
@@ -352,6 +357,51 @@ class Logging_globalTemplate(NetworkTemplate):
             },
         },
         {
+            "name": "hosts.protocol",
+            "getval": re.compile(
+                r"""
+                ^set\ssystem\ssyslog\shost
+                (\s(?P<hostname>\S+))
+                (\sprotocol\s(?P<protocol>'(udp|tcp)'))
+                $""", re.VERBOSE,
+            ),
+            "setval": "system syslog host {{ hosts.hostname }} protocol {{ hosts.protocol }}",
+            "result": {
+                "hosts": {
+                    "{{ hostname }}": {
+                        "hostname": "{{ hostname }}",
+                        "protocol": "{{ protocol }}",
+                    },
+                },
+            },
+        },
+        {
+            # Version 1.3 and below
+            "name": "hosts.facility.protocol",
+            "getval": re.compile(
+                r"""
+                ^set\ssystem\ssyslog\shost
+                (\s(?P<hostname>\S+))
+                (\sfacility\s(?P<facility>all|auth|authpriv|cron|daemon|kern|lpr|mail|mark|news|protocols|security|syslog|user|uucp|local[0-7]))
+                (\sprotocol\s(?P<protocol>'(udp|tcp)'))
+                $""", re.VERBOSE,
+            ),
+            "setval": "system syslog host {{ hosts.hostname }} facility {{ hosts.facility }} protocol {{ hosts.protocol }}",
+            "remval": "system syslog host {{ hosts.hostname }} facility {{ hosts.facility }} protocol {{ hosts.protocol }}",
+            "result": {
+                "hosts": {
+                    "{{ hostname }}": {
+                        "hostname": "{{ hostname }}",
+                        "facilities": [
+                            {
+                                "facility": "{{ facility }}",
+                                "protocol": "{{ protocol }}",
+                            }, ],
+                    },
+                },
+            },
+        },
+        {
             "name": "hosts",
             "getval": re.compile(
                 r"""
@@ -359,7 +409,6 @@ class Logging_globalTemplate(NetworkTemplate):
                 (\s(?P<hostname>\S+))
                 (\sfacility\s(?P<facility>all|auth|authpriv|cron|daemon|kern|lpr|mail|mark|news|protocols|security|syslog|user|uucp|local[0-7]))
                 (\slevel\s(?P<level>'(emerg|alert|crit|err|warning|notice|info|debug|all)'))?
-                (\sprotocol\s(?P<protocol>'(udp|tcp)'))?
                 $""", re.VERBOSE,
             ),
             "setval": tmplt_params,
@@ -372,7 +421,6 @@ class Logging_globalTemplate(NetworkTemplate):
                             {
                                 "facility": "{{ facility }}",
                                 "severity": "{{ level }}",
-                                "protocol": "{{ protocol }}",
                             }, ],
                     },
                 },

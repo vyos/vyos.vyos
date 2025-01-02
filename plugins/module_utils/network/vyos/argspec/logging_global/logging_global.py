@@ -175,6 +175,8 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                                 "file_num": {"type": "int"},
                                 "size": {"type": "int"},
                             },
+                            "removed_in_version": "7.0.0",
+                            "removed_from_collection": "vyos.vyos",
                         },
                         "facilities": {
                             "type": "list",
@@ -282,10 +284,16 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                                 "protocol": {
                                     "type": "str",
                                     "choices": ["udp", "tcp"],
+                                    "removed_in_version": "7.0.0",
+                                    "removed_from_collection": "vyos.vyos",
                                 },
                             },
                         },
                         "hostname": {"type": "str"},
+                        "protocol": {
+                            "type": "str",
+                            "choices": ["udp", "tcp"],
+                        },
                     },
                 },
                 "syslog": {

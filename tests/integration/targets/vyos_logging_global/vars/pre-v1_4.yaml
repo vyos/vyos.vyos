@@ -1,0 +1,68 @@
+---
+host_172_16_2_15: &host_172_16_2_15
+  - hostname: 172.16.2.15
+    facilities:
+      - facility: all
+        severity: all
+
+merged:
+  before: {}
+  commands:
+    - set system syslog host 172.16.2.15 facility all level all
+    - set system syslog console facility all
+    - set system syslog user vyos facility local7 level debug
+    - set system syslog global facility cron level debug
+    - set system syslog file def archive file 2
+    - set system syslog file def facility local6 level emerg
+  after:
+    console:
+      facilities:
+        - facility: all
+    files:
+      - path: def
+        facilities:
+          - facility: local6
+            severity: emerg
+        archive:
+          file_num: 2
+    hosts: *host_172_16_2_15
+    users:
+      - username: vyos
+        facilities:
+          - facility: local7
+            severity: debug
+    global_params:
+      facilities:
+        - facility: cron
+          severity: debug
+
+overridden:
+  commands:
+    - delete system syslog file def
+    - delete system syslog global facility cron
+    - delete system syslog global facility local7
+    - delete system syslog host 172.16.2.12
+    - delete system syslog host 172.16.2.15
+    - delete system syslog user paul
+    - delete system syslog user vyos
+
+  after:
+    console:
+      facilities:
+        - facility: all
+        - facility: local7
+          severity: err
+        - facility: news
+          severity: debug
+    files:
+      - path: Myfile
+
+populate_logging_global_hosts:
+  - hostname: 172.16.2.15
+    facilities:
+      - facility: all
+        protocol: udp
+  - hostname: 172.16.2.12
+    facilities:
+      - facility: all
+        protocol: udp

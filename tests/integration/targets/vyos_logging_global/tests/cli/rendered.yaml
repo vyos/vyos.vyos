@@ -27,9 +27,6 @@
                 - facility: local7
                   severity: debug
           global_params:
-            archive:
-              file_num: 2
-              size: 111
             facilities:
               - facility: cron
                 severity: debug

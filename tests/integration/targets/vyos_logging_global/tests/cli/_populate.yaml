@@ -21,17 +21,7 @@
               severity: emerg
             - facility: local7
               severity: emerg
-      hosts:
-        - hostname: 172.16.2.15
-          facilities:
-            - facility: all
-              severity: all
-            - facility: all
-              protocol: udp
-        - hostname: 172.16.2.12
-          facilities:
-            - facility: all
-              protocol: udp
+      hosts: "{{ populate_logging_global_hosts }}"
       users:
         - username: vyos
           facilities:
@@ -44,9 +34,6 @@
             - facility: local7
               severity: err
       global_params:
-        archive:
-          file_num: 2
-          size: 111
         facilities:
           - facility: cron
             severity: debug
