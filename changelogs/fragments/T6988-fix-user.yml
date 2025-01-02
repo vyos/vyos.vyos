@@ -1,0 +1,15 @@
+---
+breaking_changes:
+  - removal of role/level as it was removed in 1.3
+
+major_changes:
+  - add support for public-key authentication
+  - add support for encrypted password specification
+
+minor_changes:
+  - fix sending of `full-name` to use quotes
+  - fix parsing of `full-name` to ignore quotes
+  - fix integration tests for smoke
+
+known_issues:
+  - ssh login tests are brittle
