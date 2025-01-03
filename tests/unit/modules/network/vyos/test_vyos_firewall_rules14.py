@@ -529,71 +529,71 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
-    # def test_vyos_firewall_v4v6_rule_sets_rule_ovr_idem_01(self):
-    #     set_module_args(
-    #         dict(
-    #             config=[
-    #                 dict(
-    #                     afi="ipv4",
-    #                     rule_sets=[
-    #                         dict(
-    #                             name="V4-INGRESS",
-    #                             description="This is IPv4 V4-INGRESS rule set",
-    #                             default_action="accept",
-    #                             enable_default_log=True,
-    #                             rules=[
-    #                                 dict(
-    #                                     number="101",
-    #                                     action="accept",
-    #                                     description="Rule 101 is configured by Ansible",
-    #                                     packet_length_exclude=[dict(length=100), dict(length=300)],
-    #                                     protocol="icmp",
-    #                                     disable=True,
-    #                                     log="enable",
-    #                                 )
-    #                             ],
-    #                         ),
-    #                         dict(
-    #                             name="IF-TEST",
-    #                             rules=[
-    #                                 dict(
-    #                                     number="10",
-    #                                     action="accept",
-    #                                     icmp=dict(type_name="echo-request"),
-    #                                     state=dict(related=True),
-    #                                     inbound_interface=dict(name="eth0"),
-    #                                     outbound_interface=dict(group="the-ethers"),
-    #                                     disable=True,
-    #                                 )
-    #                             ],
-    #                         ),
-    #                         dict(
-    #                             name="EGRESS",
-    #                             default_action="reject",
-    #                         ),
-    #                     ],
-    #                 ),
-    #                 dict(
-    #                     afi="ipv6",
-    #                     rule_sets=[
-    #                         dict(
-    #                             name="V6-INGRESS",
-    #                             default_action="accept",
-    #                         ),
-    #                         dict(
-    #                             name="EGRESS",
-    #                             default_action="reject",
-    #                             rules=[
-    #                                 dict(
-    #                                     icmp=dict(type_name="echo-request"),
-    #                                     number=20,
-    #                                 ),
-    #                             ],
-    #                         ),
-    #                     ],
-    #                 ),
-    #             ],
-    #             state="overridden",
-    #         ),
-    #     )
-    #     self.execute_module(changed=True, commands=[])
+    def test_vyos_firewall_v4v6_rule_sets_rule_ovr_idem_01(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="V4-INGRESS",
+                                description="This is IPv4 V4-INGRESS rule set",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="accept",
+                                        description="Rule 101 is configured by Ansible",
+                                        packet_length_exclude=[dict(length=100), dict(length=300)],
+                                        protocol="icmp",
+                                        disable=True,
+                                        log="enable",
+                                    )
+                                ],
+                            ),
+                            dict(
+                                name="IF-TEST",
+                                rules=[
+                                    dict(
+                                        number="10",
+                                        action="accept",
+                                        icmp=dict(type_name="echo-request"),
+                                        state=dict(related=True),
+                                        inbound_interface=dict(name="eth0"),
+                                        outbound_interface=dict(group="the-ethers"),
+                                        disable=True,
+                                    )
+                                ],
+                            ),
+                            dict(
+                                name="EGRESS",
+                                default_action="reject",
+                            ),
+                        ],
+                    ),
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="V6-INGRESS",
+                                default_action="accept",
+                            ),
+                            dict(
+                                name="EGRESS",
+                                default_action="reject",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+                state="overridden",
+            ),
+        )
+        self.execute_module(changed=True, commands=[])

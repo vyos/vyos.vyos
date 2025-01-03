@@ -324,7 +324,7 @@ class Firewall_rules(ConfigBase):
             "fragment",
             "disable",
             "description",
-            "log",
+            # "log",
             "jump_target",
         )
         if w_rules:
@@ -493,7 +493,7 @@ class Firewall_rules(ConfigBase):
                 and opr
                 and not (h and self._is_w_same(w, h, attr))
             ):
-                commands.append(cmd + " " + attr + " " + str(w[attr]))
+                commands.append(cmd + " " + attr + " '" + w[attr] + "'")
             elif (
                 LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
                 and opr
@@ -501,7 +501,7 @@ class Firewall_rules(ConfigBase):
             ):
                 commands.append(cmd + " " + attr)
             elif not opr and not self._in_target(h_state, w[attr]):
-                commands.append(cmd + (" " + attr + " " + w[attr]))
+                commands.append(cmd + (" " + attr + " '" + w[attr] + "'"))
 
         return commands
 
