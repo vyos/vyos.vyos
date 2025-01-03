@@ -485,7 +485,7 @@ class Firewall_rulesFacts(object):
                 else:
                     out = search(r"^.*" + regex + " (.+)", conf, M)
                     if not out and attrib == "disable":
-                        out = search(r"^.*\d+" + " ('disable'$)", conf, M)
+                        out = search(r"^.*\d+" + " (disable$)", conf, M)
                     if out:
                         val = out.group(1).strip("'")
                         if self.is_num(attrib):
@@ -518,6 +518,7 @@ class Firewall_rulesFacts(object):
             "invalid",
             "related",
             "disabled",
+            # "disable",
             "established",
             "enable_default_log",
             "default_log",
