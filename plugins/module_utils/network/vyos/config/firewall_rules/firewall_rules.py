@@ -128,6 +128,7 @@ class Firewall_rules(ConfigBase):
                   to the desired configuration
         """
         want = self._module.params["config"]
+        self._prune_stubs(want)
         have = existing_firewall_rules_facts
         resp = self.set_state(want, have)
         return to_list(resp)
@@ -163,6 +164,7 @@ class Firewall_rules(ConfigBase):
         :returns: the commands necessary to migrate the current configuration
                   to the desired configuration
         """
+        # self._prune_stubs(want)
         commands = []
         if have:
             # Iterate over the afi rule sets we already have.
@@ -204,11 +206,12 @@ class Firewall_rules(ConfigBase):
                 for rs in have_r_sets:
                     rs_id = self._rs_id(rs, h["afi"])
                     w = self.search_r_sets_in_have(want, rs_id, "r_list")
-                    if not w:
-                        commands.append(self._compute_command(rs_id, remove=True))
+                    if remove_empties(w) == rs:
+                        continue
                     else:
-                        commands.extend(self._add_r_sets(h["afi"], rs, w, opr=False))
-        commands.extend(self._state_merged(want, have))
+                        commands.append(self._compute_command(rs_id, remove=True))
+                        have = {}
+            commands.extend(self._state_merged(want, have))
         return commands
 
     def _state_merged(self, want, have):
@@ -321,13 +324,15 @@ class Firewall_rules(ConfigBase):
             "fragment",
             "disable",
             "description",
-            "log",
+            # "log",
             "jump_target",
         )
         if w_rules:
             for w in w_rules:
                 cmd = self._compute_command(rs_id, w["number"], opr=opr)
                 h = self.search_rules_in_have_rs(h_rules, w["number"])
+                if w != h and self.state == "replaced":
+                    h = {}
                 for key, val in iteritems(w):
                     if val:
                         if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
@@ -376,8 +381,11 @@ class Firewall_rules(ConfigBase):
                                 commands.extend(self._add_packet_length(key, w, h, cmd, opr))
                             elif key == "disable" and val and h and (key not in h or not h[key]):
                                 commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
-                            elif key in ("inbound_interface", "outbound_interface") and not (
-                                h and self._is_w_same(w, h, key)
+                            if (
+                                key in ("inbound_interface", "outbound_interface")
+                                and val
+                                and h
+                                and (key not in h or not h[key] or h[key] != w[key])
                             ):
                                 commands.extend(self._add_interface(key, w, h, cmd, opr))
                             elif (
@@ -396,6 +404,8 @@ class Firewall_rules(ConfigBase):
                             commands.extend(self._add_icmp(key, w, h, cmd, opr))
                         elif key == "state":
                             commands.extend(self._add_state(key, w, h, cmd, opr))
+                        elif key == "log":
+                            commands.extend(self._add_log(key, w, h, cmd, opr))
                         elif key == "limit":
                             commands.extend(self._add_limit(key, w, h, cmd, opr))
                         elif key == "recent":
@@ -462,6 +472,39 @@ class Firewall_rules(ConfigBase):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
 
+    def _add_log(self, attr, w, h, cmd, opr):
+        """
+        This function forms the command for 'log' attributes based on the 'opr'.
+        :param attr: attribute name.
+        :param w: base config.
+        :param h: target config.
+        :param cmd: commands to be prepend.
+        :return: generated list of commands.
+        """
+        h_state = {}
+        commands = []
+        if w[attr]:
+            #  if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
+            if h and attr in h.keys():
+                h_state = h.get(attr) or {}
+
+            if (
+                LooseVersion(get_os_version(self._module)) < LooseVersion("1.4")
+                and opr
+                and not (h and self._is_w_same(w, h, attr))
+            ):
+                commands.append(cmd + " " + attr + " '" + w[attr] + "'")
+            elif (
+                LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+                and opr
+                and not (h and self._is_w_same(w, h, attr))
+            ):
+                commands.append(cmd + " " + attr)
+            elif not opr and not self._in_target(h_state, w[attr]):
+                commands.append(cmd + (" " + attr + " '" + w[attr] + "'"))
+
+        return commands
+
     def _add_recent(self, attr, w, h, cmd, opr):
         """
         This function forms the command for 'recent' attributes based on the 'opr'.
@@ -512,7 +555,7 @@ class Firewall_rules(ConfigBase):
                     and not (h_icmp and self._is_w_same(w[attr], h_icmp, item))
                 ):
                     if item == "type_name":
-                        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.3"):
+                        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
                             param_name = "type-name"
                         else:
                             param_name = "type"
@@ -849,11 +892,11 @@ class Firewall_rules(ConfigBase):
         :return: rule.
         """
         if have_rules:
-            for h in have_rules:
-                key = "number"
-                for r in have_rules:
-                    if key in r and r[key] == r_number:
-                        return r
+            # for h in have_rules:
+            key = "number"
+            for r in have_rules:
+                if key in r and r[key] == r_number:
+                    return r
         return None
 
     def search_r_sets_in_have(self, have, rs_id, type="rule_sets"):
@@ -1057,14 +1100,7 @@ class Firewall_rules(ConfigBase):
         return key in l_set and not (h and self._in_target(h, key))
 
     def _is_w_same(self, w, h, key):
-        """
-        This function checks whether the key value is same in base and
-        target config dictionary.
-        :param w: base config.
-        :param h: target config.
-        :param key:attribute name.
-        :return: True/False.
-        """
+
         return True if h and key in h and h[key] == w[key] else False
 
     def _in_target(self, h, key):
@@ -1075,3 +1111,14 @@ class Firewall_rules(ConfigBase):
         :return: True/False.
         """
         return True if h and key in h else False
+
+    def _prune_stubs(self, rs):
+        if isinstance(rs, list):
+            for item in rs:
+                self._prune_stubs(item)
+        elif isinstance(rs, dict):
+            keys_to_remove = [key for key, value in rs.items() if key == "disable" and value is False]
+            for key in keys_to_remove:
+                del rs[key]
+            for key in rs:
+                self._prune_stubs(rs[key])
