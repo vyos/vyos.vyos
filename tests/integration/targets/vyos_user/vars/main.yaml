@@ -1,0 +1,64 @@
+---
+ssh_add:
+  commands:
+    - set system login user ssh_test_1 authentication public-keys test_key key 'AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu'
+    - set system login user ssh_test_1 authentication public-keys test_key type 'ssh-ed25519'
+
+ssh_aggregate_add:
+  commands:
+    - set system login user ssh_test_2 full-name 'test user'
+    - set system login user ssh_test_2 authentication public-keys test_key_2 key 'AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu'
+    - set system login user ssh_test_2 authentication public-keys test_key_2 type 'ssh-ed25519'
+    - set system login user ssh_test_3 full-name 'test user'
+    - set system login user ssh_test_3 authentication public-keys test_key_2 key 'AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu'
+    - set system login user ssh_test_3 authentication public-keys test_key_2 type 'ssh-ed25519'
+
+ssh_change_key:
+  commands:
+    - delete system login user ssh_test_1 authentication public-keys test_key
+    - set system login user ssh_test_1 authentication public-keys test_key_3 key 'AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu'
+    - set system login user ssh_test_1 authentication public-keys test_key_3 type 'ssh-ed25519'
+
+ssh_aggregate_change:
+  commands:
+    - delete system login user ssh_test_2 authentication public-keys test_key_2
+    - set system login user ssh_test_2 authentication public-keys test_key_4 key 'AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu'
+    - set system login user ssh_test_2 authentication public-keys test_key_4 type 'ssh-ed25519'
+    - delete system login user ssh_test_3 authentication public-keys test_key_2
+    - set system login user ssh_test_3 authentication public-keys test_key_4 key 'AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu'
+    - set system login user ssh_test_3 authentication public-keys test_key_4 type 'ssh-ed25519'
+
+encrypted_password: "$6$x6SQ/zSxNwIEuqnL$hHmU/NXfAK/pFWXoCi91kKPAiQtf/cyckOlBUDUIL44QOUZHnqipHtz2znwYHQVM0Lqm6aFnm7Qs9WFlRf4mW/"
+
+encrypted_add:
+  commands:
+    - >-
+      set system login user ansibletest1 authentication encrypted-password
+      '$6$x6SQ/zSxNwIEuqnL$hHmU/NXfAK/pFWXoCi91kKPAiQtf/cyckOlBUDUIL44QOUZHnqipHtz2znwYHQVM0Lqm6aFnm7Qs9WFlRf4mW/'
+encrypted_aggregate_add:
+  commands:
+    - set system login user ansibletest2 full-name 'test user'
+    - >-
+      set system login user ansibletest2 authentication encrypted-password
+      '$6$x6SQ/zSxNwIEuqnL$hHmU/NXfAK/pFWXoCi91kKPAiQtf/cyckOlBUDUIL44QOUZHnqipHtz2znwYHQVM0Lqm6aFnm7Qs9WFlRf4mW/'
+    - set system login user ansibletest3 full-name 'test user'
+    - >-
+      set system login user ansibletest3 authentication encrypted-password
+      '$6$x6SQ/zSxNwIEuqnL$hHmU/NXfAK/pFWXoCi91kKPAiQtf/cyckOlBUDUIL44QOUZHnqipHtz2znwYHQVM0Lqm6aFnm7Qs9WFlRf4mW/'
+
+encrypted_password_2: "$6$drNuMGFEgJ6Vremv$ukdc1trPwatKTUFVA9J1rAJsoWU.9ssgyZBoM7/ReK/yVAcxGbwx7.7VrKwF.Bag.thXXoXSduLtTzTlcJnU6."
+
+encrypted_change:
+  commands:
+    - >-
+      set system login user ansibletest1 authentication encrypted-password
+      '$6$drNuMGFEgJ6Vremv$ukdc1trPwatKTUFVA9J1rAJsoWU.9ssgyZBoM7/ReK/yVAcxGbwx7.7VrKwF.Bag.thXXoXSduLtTzTlcJnU6.'
+
+encrypted_aggregate_change:
+  commands:
+    - >-
+      set system login user ansibletest2 authentication encrypted-password
+      '$6$drNuMGFEgJ6Vremv$ukdc1trPwatKTUFVA9J1rAJsoWU.9ssgyZBoM7/ReK/yVAcxGbwx7.7VrKwF.Bag.thXXoXSduLtTzTlcJnU6.'
+    - >-
+      set system login user ansibletest3 authentication encrypted-password
+      '$6$drNuMGFEgJ6Vremv$ukdc1trPwatKTUFVA9J1rAJsoWU.9ssgyZBoM7/ReK/yVAcxGbwx7.7VrKwF.Bag.thXXoXSduLtTzTlcJnU6.'
