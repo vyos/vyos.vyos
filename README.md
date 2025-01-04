@@ -200,6 +200,21 @@ You can use `ANSIBLE_COLLECTIONS_PATH` to test the collection locally. For examp
 ANSIBLE_COLLECTIONS_PATHS=~/my_dev_path ansible-playbook -i inventory.network test.yml
 ```
 
+### Integration Tests
+
+Integration tests are run using `ansible-test` and require that there be an inventory
+defined (you can pass this in with `--inventory <filename>`) and that the system be
+configured for access (recommended to use SSH keys).
+
+Additionally:
+- eth0 should be configured for `address dhcp` and should have an assigned address
+  on the local network
+- eth1 and eth2 should be defined and uncofirgured (they'll be overwritten by the tests)
+- eth3 and beyond should not be present or interface-related tests will fail
+- eth0 is also expected to show `duplex auto` and `speed auto` in the output of `show interfaces`,
+  however others are not due to the fact that they are repeatedly deleted and recreated
+  which causes the default values to be hidden.
+
 ## Changelogs
 <!--Add a link to a changelog.md file or an external docsite to cover this information. -->
 

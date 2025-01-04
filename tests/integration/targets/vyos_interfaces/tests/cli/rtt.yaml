@@ -11,8 +11,6 @@
         config:
           - name: eth0
             enabled: true
-            duplex: auto
-            speed: auto
 
           - name: eth1
             description: Interface - 1
@@ -20,7 +18,7 @@
             vifs:
               - vlan_id: 100
                 description: Eth1 - VIF 100
-                mtu: 200
+                mtu: 1402
 
               - vlan_id: 101
                 enabled: false
@@ -28,7 +26,7 @@
           - name: eth2
             description: Interface - 2
             enabled: true
-            mtu: 900
+            mtu: 1409
         state: merged
 
     - name: Gather interfaces facts
@@ -44,11 +42,11 @@
         config:
           - name: eth1
             description: Interface 1 - Description (WILL BE REVERTED)
-            mtu: 1200
+            mtu: 1412
             vifs:
               - vlan_id: 100
                 description: Eth1 - VIF 100 (WILL BE REVERTED)
-                mtu: 400
+                mtu: 1404
 
               - vlan_id: 101
                 description: Eth1 - VIF 101 (WILL BE REMOVED)
@@ -56,7 +54,7 @@
 
           - name: eth2
             description: Interface 2 (ADMIN DOWN) (WILL BE REVERTED)
-            mtu: 600
+            mtu: 1406
             enabled: false
         state: merged
 

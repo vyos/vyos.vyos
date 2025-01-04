@@ -5,8 +5,6 @@
   vars:
     lines: |-
       set interfaces ethernet "{{ intf }}" description 'Configured by Ansible'
-      set interfaces ethernet "{{ intf }}" speed 'auto'
-      set interfaces ethernet "{{ intf }}" duplex 'auto'
       set interfaces ethernet "{{ intf }}" mtu '1500'
       set interfaces ethernet "{{ intf }}" vif 200
       set interfaces ethernet "{{ intf }}" vif 200 description 'VIF - 200'
