@@ -82,9 +82,9 @@ def _tmplt_snmp_server_v3_trap_target(config_data):
     if "type" in config_data:
         command += " type {mode}".format(**config_data)
     if "encrypted_key" in config_data:
-        command += " encrypted-key {encrypted_key}".format(**config_data)
+        command += " encrypted-password {encrypted_key}".format(**config_data)
     if "plaintext_key" in config_data:
-        command += " plaintext-key {plaintext_key}".format(**config_data)
+        command += " plaintext-password {plaintext_key}".format(**config_data)
     return command
 
 
@@ -103,10 +103,10 @@ def _tmplt_snmp_server_v3_user(config_data):
                 type_cmd = cmd + val + " type {type}".format(**config)
                 command.append(type_cmd)
             if "encrypted_key" in config:
-                enc_cmd = cmd + val + " encrypted-key {encrypted_key}".format(**config)
+                enc_cmd = cmd + val + " encrypted-password {encrypted_key}".format(**config)
                 command.append(enc_cmd)
             if "plaintext_key" in config:
-                plain_cmd = cmd + val + " plaintext-key {plaintext_key}".format(**config)
+                plain_cmd = cmd + val + " plaintext-password {plaintext_key}".format(**config)
                 command.append(plain_cmd)
     return command
 
@@ -329,8 +329,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\sv3\strap-target
                 \s+(?P<name>\S+)
                 \s+auth
-                \s*(?P<enc>encrypted-key\s\S+)*
-                \s*(?P<plain>plaintext-key\s\S+)*
+                \s*(?P<enc>encrypted-password\s\S+)*
+                \s*(?P<plain>plaintext-password\s\S+)*
                 \s*(?P<type>type\s\S+)*
                 $""",
                 re.VERBOSE,
@@ -451,8 +451,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\sv3\strap-target
                 \s+(?P<name>\S+)
                 \s+privacy
-                \s*(?P<enc>encrypted-key\s\S+)*
-                \s*(?P<plain>plaintext-key\s\S+)*
+                \s*(?P<enc>encrypted-password\s\S+)*
+                \s*(?P<plain>plaintext-password\s\S+)*
                 \s*(?P<type>type\s\S+)*
                 $""",
                 re.VERBOSE,
@@ -481,8 +481,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\sv3\suser
                 \s+(?P<name>\S+)
                 \s+auth
-                \s*(?P<enc>encrypted-key\s\S+)*
-                \s*(?P<plain>plaintext-key\s\S+)*
+                \s*(?P<enc>encrypted-password\s\S+)*
+                \s*(?P<plain>plaintext-password\s\S+)*
                 \s*(?P<type>type\s\S+)*
                 $""",
                 re.VERBOSE,
@@ -511,8 +511,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\sv3\suser
                 \s+(?P<name>\S+)
                 \s+privacy
-                \s*(?P<enc>encrypted-key\s\S+)*
-                \s*(?P<plain>plaintext-key\s\S+)*
+                \s*(?P<enc>encrypted-password\s\S+)*
+                \s*(?P<plain>plaintext-password\s\S+)*
                 \s*(?P<type>type\s\S+)*
                 $""",
                 re.VERBOSE,

@@ -12,14 +12,13 @@
   register: result
   vyos.vyos.vyos_user:
     name: ansibletest1
-    configured_password: test
+    encrypted_password: "{{ encrypted_password }}"
     state: present
 
 - assert:
     that:
       - result.changed == true
-      - '"set system login user" in result.commands[0]'
-      - '"authentication plaintext-password" in result.commands[0]'
+      - "{{ encrypted_add['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
 - name: Collection of users (SetUp)
   register: result
@@ -28,20 +27,20 @@
       - name: ansibletest2
       - name: ansibletest3
     full_name: "test user"
+    encrypted_password: "{{ encrypted_password }}"
     state: present
 
 - assert:
     that:
       - result.changed == true
-      - result.commands == ["set system login user ansibletest2 full-name 'test user'", "set system login user ansibletest3 full-name 'test user'"]
+      - "{{ encrypted_aggregate_add['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
 - name: Add user again (Idempotent)
   register: result
   vyos.vyos.vyos_user:
     name: ansibletest1
-    configured_password: test
+    encrypted_password: "{{ encrypted_password }}"
     state: present
-    update_password: on_create
 
 - assert:
     that:
@@ -53,23 +52,42 @@
   vyos.vyos.vyos_user:
     aggregate:
       - name: ansibletest2
-
       - name: ansibletest3
+    encrypted_password: "{{ encrypted_password }}"
+    state: present
+
+- name: Change user password
+  register: result
+  vyos.vyos.vyos_user:
+    name: ansibletest1
+    encrypted_password: "{{ encrypted_password_2 }}"
     state: present
 
 - assert:
     that:
-      - result.changed == false
-      - result.commands | length == 0
+      - result.changed == true
+      - "{{ encrypted_change['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+- name: Change collection of users
+  register: result
+  vyos.vyos.vyos_user:
+    aggregate:
+      - name: ansibletest2
+      - name: ansibletest3
+    encrypted_password: "{{ encrypted_password_2 }}"
+    state: present
+
+- assert:
+    that:
+      - result.changed == true
+      - "{{ encrypted_aggregate_change['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
 - name: tearDown
   register: result
   vyos.vyos.vyos_user:
     users:
       - name: ansibletest1
-
       - name: ansibletest2
-
       - name: ansibletest3
     state: absent
 

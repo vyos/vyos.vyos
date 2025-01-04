@@ -59,6 +59,8 @@ class Logging_global(ResourceModule):
             "files.archive.file_num",
             "files",
             "hosts.port",
+            "hosts.facility.protocol",  # 1.3 and below
+            "hosts.protocol",
             "hosts",
             "users",
         ]
