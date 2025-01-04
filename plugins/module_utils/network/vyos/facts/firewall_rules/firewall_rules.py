@@ -484,14 +484,19 @@ class Firewall_rulesFacts(object):
                             config[attrib] = True
                 else:
                     out = search(r"^.*" + regex + " (.+)", conf, M)
-                    if not out and attrib == "disable":
-                        out = search(r"^.*\d+" + " (disable$)", conf, M)
+                    if not out:
+                        if attrib == "disable":
+                            out = search(r"^.*\d+" + " (disable$)", conf, M)
+                        if attrib == 'log':
+                            out = search(r"^.*\d+" + " (log$)", conf, M)
                     if out:
                         val = out.group(1).strip("'")
                         if self.is_num(attrib):
                             val = int(val)
                         if attrib == "disable":
                             val = True
+                        if attrib == 'log':
+                            val = "enable"
                         config[attrib] = val
         return config
 

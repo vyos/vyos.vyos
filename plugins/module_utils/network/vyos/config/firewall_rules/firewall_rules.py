@@ -1117,7 +1117,12 @@ class Firewall_rules(ConfigBase):
             for item in rs:
                 self._prune_stubs(item)
         elif isinstance(rs, dict):
-            keys_to_remove = [key for key, value in rs.items() if key == "disable" and value is False]
+            keys_to_remove = [key for key, value in rs.items()
+                              if (
+                                  (key == "disable" and value is False)
+                                  or
+                                  (key == "log" and value == "disable" and
+                                   LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")))]
             for key in keys_to_remove:
                 del rs[key]
             for key in rs:
