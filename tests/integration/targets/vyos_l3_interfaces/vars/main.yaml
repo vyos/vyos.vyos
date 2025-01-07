@@ -1,6 +1,7 @@
 ---
 merged:
   before:
+    - name: lo
     - name: eth0
       ipv4:
         - address: dhcp
@@ -13,6 +14,7 @@ merged:
     - set interfaces ethernet eth2 vif 101 address '198.51.100.130/25'
     - set interfaces ethernet eth2 vif 101 address '2001:db8::20/32'
   after:
+    - name: lo
     - name: eth0
       ipv4:
         - address: dhcp
@@ -31,6 +33,7 @@ merged:
           ipv6:
             - address: 2001:db8::20/32
 populate:
+  - name: lo
   - name: eth1
     ipv4:
       - address: 192.0.2.14/24
@@ -54,6 +57,7 @@ replaced:
     - delete interfaces ethernet eth1 address '192.0.2.14/24'
     - set interfaces ethernet eth1 address '192.0.2.19/24'
   after:
+    - name: lo
     - name: eth2
       ipv6:
         - address: 2001:db8::11/32
@@ -72,6 +76,7 @@ overridden:
     - delete interfaces ethernet eth2 address '2001:db8::10/32'
     - delete interfaces ethernet eth2 address '2001:db8::12/32'
   after:
+    - name: lo
     - name: eth0
       ipv4:
         - address: dhcp
@@ -111,6 +116,7 @@ deleted:
     - delete interfaces ethernet eth2 address '2001:db8::10/32'
     - delete interfaces ethernet eth2 address '2001:db8::12/32'
   after:
+    - name: lo
     - name: eth0
       ipv4:
         - address: dhcp
