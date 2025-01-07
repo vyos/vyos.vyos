@@ -164,7 +164,6 @@ class Firewall_rules(ConfigBase):
         :returns: the commands necessary to migrate the current configuration
                   to the desired configuration
         """
-        # self._prune_stubs(want)
         commands = []
         if have:
             # Iterate over the afi rule sets we already have.
@@ -206,11 +205,20 @@ class Firewall_rules(ConfigBase):
                 for rs in have_r_sets:
                     rs_id = self._rs_id(rs, h["afi"])
                     w = self.search_r_sets_in_have(want, rs_id, "r_list")
-                    if remove_empties(w) == rs:
+                    if self._is_same_rs(remove_empties(w), rs):
                         continue
                     else:
                         commands.append(self._compute_command(rs_id, remove=True))
-                        have = {}
+                        # Blank out the only rule set that it is removed.
+                        # have = {}
+                        # have = [{'afi': entry['afi'], 'rule_sets': [rule_set for rule_set in entry['rule_sets']
+                        #         if not (entry['afi'] == rs_id['afi'] and rule_set['name'] == rs_id['name'])]}
+                        #         for entry in have]
+                        for entry in have:
+                            if entry['afi'] == rs_id['afi'] and not (rs_id['name'] is None) :
+                                entry['rule_sets'] = [rule_set for rule_set in entry['rule_sets'] if rule_set['name'] != rs_id['name']]
+                            # elif entry['afi'] == rs_id['afi'] and not (rs_id['filter'] is None):
+                            #     entry['rule_sets'] = [rule_set for rule_set in entry['rule_sets'] if rule_set['filter'] != rs_id['filter']]
             commands.extend(self._state_merged(want, have))
         return commands
 
@@ -1127,3 +1135,21 @@ class Firewall_rules(ConfigBase):
                 del rs[key]
             for key in rs:
                 self._prune_stubs(rs[key])
+
+    def _is_same_rs(self, w, rs):
+        if isinstance(w, dict) and isinstance(rs, dict):
+            if w.keys() != rs.keys():
+                return False
+            for key in w:
+                if not self._is_same_rs(w[key], rs[key]):
+                    return False
+            return True
+        elif isinstance(w, list) and isinstance(rs, list):
+            try:
+                sorted_list1 = sorted(w, key=lambda x: str(x))  # pylint: disable=unnecessary-lambda
+                sorted_list2 = sorted(rs, key=lambda x: str(x))  # pylint: disable=unnecessary-lambda
+            except TypeError:
+                return False
+            return all(self._is_same_rs(x, y) for x, y in zip(sorted_list1, sorted_list2))
+        else:
+            return w == rs

@@ -235,7 +235,7 @@ class Firewall_rulesFacts(object):
             "destination": self.parse_src_or_dest(conf, "destination"),
             "inbound_interface": self.parse_interface(conf, "inbound-interface"),
             "outbound_interface": self.parse_interface(conf, "outbound-interface"),
-            "packet_length": self.parse_packet_length(conf, "packet-length"),
+            # "packet_length": self.parse_packet_length(conf, "packet-length"),
             "packet_length_exclude": self.parse_packet_length(conf, "packet-length-exclude"),
         }
         rule.update(r_sub)
@@ -260,7 +260,7 @@ class Firewall_rulesFacts(object):
         :return: generated config dictionary.
         """
         lengths = []
-        rule_regex = r"%s (\d+)" % attrib
+        rule_regex = r"%s (.+)$" % attrib
         found_lengths = findall(rule_regex, conf, M)
         if found_lengths:
             lengths = []
@@ -523,7 +523,6 @@ class Firewall_rulesFacts(object):
             "invalid",
             "related",
             "disabled",
-            # "disable",
             "established",
             "enable_default_log",
             "default_log",
