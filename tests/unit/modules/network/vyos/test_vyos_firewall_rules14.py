@@ -158,9 +158,6 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         )
         commands = [
             "delete firewall ipv4 name V4-INGRESS rule 101",
-            # "delete firewall ipv4 name V4-INGRESS rule 101 protocol",
-            # "delete firewall ipv4 name V4-INGRESS rule 101 packet-length-exclude 300",
-            # "delete firewall ipv4 name V4-INGRESS rule 101 disable",
             "set firewall ipv4 name V4-INGRESS rule 101",
             "set firewall ipv4 name V4-INGRESS rule 101 action 'accept'",
             "set firewall ipv4 name V4-INGRESS rule 101 description 'Rule 101 is configured by Ansible'",
@@ -282,16 +279,11 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         )
         commands = [
             "delete firewall ipv4 name IF-TEST rule 10",
-            # "delete firewall ipv4 name IF-TEST rule 10 inbound-interface name",
             "set firewall ipv4 name IF-TEST rule 10",
             "set firewall ipv4 name IF-TEST description 'Changed'",
             "set firewall ipv4 name IF-TEST rule 10 description 'Rule 10 is configured by Ansible'",
             'set firewall ipv4 name IF-TEST rule 10 inbound-interface name eth1',
-            # "delete firewall ipv4 name IF-TEST rule 10 outbound-interface group",
             "set firewall ipv4 name IF-TEST rule 10 action 'accept'",
-            # "delete firewall ipv4 name IF-TEST rule 10 disable",
-            # "delete firewall ipv4 name IF-TEST rule 10 state related",
-            # "delete firewall ipv4 name IF-TEST rule 10 icmp type-name echo-request",
         ]
         self.maxDiff = None
         self.execute_module(changed=True, commands=commands)
@@ -384,11 +376,6 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         commands = [
             "delete firewall ipv4 name IF-TEST rule 10",
             "set firewall ipv4 name IF-TEST rule 10",
-            # "delete firewall ipv4 name IF-TEST rule 10 disable",
-            # "delete firewall ipv4 name IF-TEST rule 10 inbound-interface name",
-            # "delete firewall ipv4 name IF-TEST rule 10 icmp type-name echo-request",
-            # "delete firewall ipv4 name IF-TEST rule 10 outbound-interface group",
-            # "delete firewall ipv4 name IF-TEST rule 10 state related",
             "set firewall ipv4 name IF-TEST rule 10 state established",
             "set firewall ipv4 name IF-TEST rule 10 state new",
             "set firewall ipv4 name IF-TEST rule 10 action 'accept'",
@@ -554,6 +541,26 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                                 ],
                             ),
                             dict(
+                                filter="input",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="jump",
+                                        jump_target="INGRESS",
+                                    ),
+                                ],
+                            ),
+                            dict(
+                                filter="output",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="jump",
+                                        jump_target="EGRESS",
+                                    ),
+                                ],
+                            ),
+                            dict(
                                 name="IF-TEST",
                                 rules=[
                                     dict(
@@ -590,10 +597,30 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                                     ),
                                 ],
                             ),
+                            dict(
+                                filter="input",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="jump",
+                                        jump_target="V6-INGRESS",
+                                    ),
+                                ],
+                            ),
+                            dict(
+                                filter="output",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="jump",
+                                        jump_target="EGRESS",
+                                    ),
+                                ],
+                            ),
                         ],
                     ),
                 ],
                 state="overridden",
             ),
         )
-        self.execute_module(changed=True, commands=[])
+        self.execute_module(changed=False, commands=[])

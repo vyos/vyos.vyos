@@ -210,15 +210,15 @@ class Firewall_rules(ConfigBase):
                     else:
                         commands.append(self._compute_command(rs_id, remove=True))
                         # Blank out the only rule set that it is removed.
-                        # have = {}
-                        # have = [{'afi': entry['afi'], 'rule_sets': [rule_set for rule_set in entry['rule_sets']
-                        #         if not (entry['afi'] == rs_id['afi'] and rule_set['name'] == rs_id['name'])]}
-                        #         for entry in have]
                         for entry in have:
-                            if entry['afi'] == rs_id['afi'] and not (rs_id['name'] is None) :
-                                entry['rule_sets'] = [rule_set for rule_set in entry['rule_sets'] if rule_set['name'] != rs_id['name']]
-                            # elif entry['afi'] == rs_id['afi'] and not (rs_id['filter'] is None):
-                            #     entry['rule_sets'] = [rule_set for rule_set in entry['rule_sets'] if rule_set['filter'] != rs_id['filter']]
+                            if entry['afi'] == rs_id['afi'] and rs_id['name']:
+                                entry["rule_sets"] = [
+                                    rule_set for rule_set in entry["rule_sets"] if rule_set.get("name") != rs_id['name']
+                                ]
+                            elif entry['afi'] == rs_id['afi'] and rs_id['filter']:
+                                entry["rule_sets"] = [
+                                    rule_set for rule_set in entry["rule_sets"] if rule_set.get("filter") != rs_id['filter']
+                                ]
             commands.extend(self._state_merged(want, have))
         return commands
 
@@ -332,7 +332,6 @@ class Firewall_rules(ConfigBase):
             "fragment",
             "disable",
             "description",
-            # "log",
             "jump_target",
         )
         if w_rules:
@@ -492,7 +491,6 @@ class Firewall_rules(ConfigBase):
         h_state = {}
         commands = []
         if w[attr]:
-            #  if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
             if h and attr in h.keys():
                 h_state = h.get(attr) or {}
 
@@ -900,7 +898,6 @@ class Firewall_rules(ConfigBase):
         :return: rule.
         """
         if have_rules:
-            # for h in have_rules:
             key = "number"
             for r in have_rules:
                 if key in r and r[key] == r_number:
