@@ -261,8 +261,8 @@ deleted_rs:
   after: []
 deleted_afi_all:
   commands:
-    - delete firewall ipv6 name
-    - delete firewall ipv4 name
+    - delete firewall ipv6
+    - delete firewall ipv4
   after: []
 round_trip:
   after:
