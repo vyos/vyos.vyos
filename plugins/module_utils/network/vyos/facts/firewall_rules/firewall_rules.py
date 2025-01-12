@@ -495,7 +495,7 @@ class Firewall_rulesFacts(object):
                             val = int(val)
                         if attrib == "disable":
                             val = True
-                        if attrib == 'log':
+                        if attrib == "log":
                             val = "enable"
                         config[attrib] = val
         return config

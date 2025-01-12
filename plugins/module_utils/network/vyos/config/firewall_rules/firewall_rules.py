@@ -1127,6 +1127,9 @@ class Firewall_rules(ConfigBase):
                                   (key == "disable" and value is False)
                                   or
                                   (key == "log" and value == "disable" and
+                                   LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"))
+                                  or
+                                  (key in ["new", "invalid", "related", "established"] and value is False and
                                    LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")))]
             for key in keys_to_remove:
                 del rs[key]
