@@ -251,8 +251,8 @@ rendered:
     - set firewall ipv4 name INBOUND rule 103 destination group address-group inbound
     - set firewall ipv4 name INBOUND rule 103
     - set firewall ipv4 name INBOUND rule 103 source address 192.0.2.0
-    - set firewall ipv4 name INBOUND rule 103 state established enable
-    - set firewall ipv4 name INBOUND rule 103 state related enable
+    - set firewall ipv4 name INBOUND rule 103 state established
+    - set firewall ipv4 name INBOUND rule 103 state related
     - set firewall ipv4 name INBOUND rule 103 action 'accept'
 deleted_rs:
   commands:

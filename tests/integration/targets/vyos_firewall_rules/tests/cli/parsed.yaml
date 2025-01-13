@@ -2,13 +2,46 @@
 - debug:
     msg: START vyos_firewall_rules parsed integration tests on connection={{ ansible_connection }}
 
-- name: Parse externally provided Firewall rules config to agnostic model
-  register: result
-  vyos.vyos.vyos_firewall_rules:
-    running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
-    state: parsed
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
+- name: version 1.3
+  block:
+    - name: Parse externally provided Firewall rules config to agnostic model
+      register: result
+      vyos.vyos.vyos_firewall_rules:
+        running_config: "{{ lookup('file', '_parsed_config_1_3.cfg') }}"
+        state: parsed
+    - name: set result
+      set_fact:
+        parsed_result: "{{ result }}"
+  when: vyos_version is version('1.4.0', '<', version_type='semver')
+
+- name: version 1.4+
+  block:
+    - name: Parse externally provided Firewall rules config to agnostic model
+      register: result
+      vyos.vyos.vyos_firewall_rules:
+        running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
+        state: parsed
+    - name: set result
+      set_fact:
+        parsed_result: "{{ result }}"
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+
+# - assert:
+#     that:
+#       - parsed_result.changed == false
+#       - parsed_result.parsed == populate.global
+
+# - name: Parse externally provided Firewall rules config to agnostic model
+#   register: result
+#   vyos.vyos.vyos_firewall_rules:
+#     running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
+#     state: parsed
 
 - name: Assert that config was correctly parsed
   assert:
     that:
-      - "{{ parsed['after'] | symmetric_difference(result['parsed']) |length == 0 }}"
+      - parsed_result.changed == false
+      - "{{ parsed['after'] | symmetric_difference(parsed_result['parsed']) |length == 0 }}"
