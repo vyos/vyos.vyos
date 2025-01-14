@@ -28,10 +28,14 @@
                     ipsec: match-ipsec
         state: overridden
 
+    - name: Print result
+      debug:
+        msg: "Result: {{ result }}"
+
     - name: Assert that before dicts were correctly generated
       assert:
         that:
-          - "{{ populate | symmetric_difference(result['before']) |length == 0 }}"
+          - "{{ overridden['before'] | symmetric_difference(result['before']) |length == 0 }}"
 
     - name: Assert that correct commands were generated
       assert:
