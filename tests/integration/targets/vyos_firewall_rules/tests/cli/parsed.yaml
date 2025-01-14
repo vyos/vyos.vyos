@@ -29,17 +29,6 @@
         parsed_result: "{{ result }}"
   when: vyos_version is version('1.4.0', '>=', version_type='semver')
 
-# - assert:
-#     that:
-#       - parsed_result.changed == false
-#       - parsed_result.parsed == populate.global
-
-# - name: Parse externally provided Firewall rules config to agnostic model
-#   register: result
-#   vyos.vyos.vyos_firewall_rules:
-#     running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
-#     state: parsed
-
 - name: Assert that config was correctly parsed
   assert:
     that:
