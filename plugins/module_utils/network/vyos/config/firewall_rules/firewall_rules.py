@@ -1105,7 +1105,14 @@ class Firewall_rules(ConfigBase):
         return key in l_set and not (h and self._in_target(h, key))
 
     def _is_w_same(self, w, h, key):
-
+        """
+        This function checks whether the key value is same in base and
+        target config dictionary.
+        :param w: base config.
+        :param h: target config.
+        :param key:attribute name.
+        :return: True/False.
+        """
         return True if h and key in h and h[key] == w[key] else False
 
     def _in_target(self, h, key):

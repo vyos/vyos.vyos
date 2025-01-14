@@ -29,7 +29,6 @@
         state: overridden
 
     - name: Assert that before dicts were correctly generated
-      # ignore_errors: true
       assert:
         that:
           - "{{ populate | symmetric_difference(result['before']) |length == 0 }}"
