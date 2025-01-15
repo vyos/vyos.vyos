@@ -85,6 +85,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         self.execute_show_command.side_effect = load_from_file
 
     def test_vyos_firewall_packet_length_merged_01(self):
+        """Test if new stanza packet-lenght is correctly applied"""
         set_module_args(
             dict(
                 config=[
@@ -129,6 +130,9 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_packet_length_replace_01(self):
+        """Test that stanza is correctly replaced
+            without touching the other stanzas
+        """
         set_module_args(
             dict(
                 config=[
@@ -169,6 +173,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_filter_merged_01(self):
+        """Test if new stanza filter is correctly applied"""
         set_module_args(
             dict(
                 config=[
@@ -213,6 +218,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_interface_merged_01(self):
+        """Test that the rule with a jump action is correctly applied"""
         set_module_args(
             dict(
                 config=[
@@ -253,6 +259,9 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_interface_replace_02(self):
+        """Test that new stanza is correctly replaced
+            without touching the other stanzas
+        """
         set_module_args(
             dict(
                 config=[
@@ -289,6 +298,9 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_v4_rule_sets_rule_merged_02(self):
+        """Test that a rule set is correctly applied
+            including variant attributes such as state
+        """
         set_module_args(
             dict(
                 config=[
@@ -347,6 +359,9 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_v4_rule_sets_change_state_01(self):
+        """Test that a rule set is replaced applied without touching the other stanzas
+            in particular variant attributes such as state
+        """
         set_module_args(
             dict(
                 config=[
@@ -383,11 +398,17 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_v4v6_rule_sets_del_03(self):
+        """Test that the plugin correctly deprovisions
+            variant configuration
+        """
         set_module_args(dict(config=[], state="deleted"))
         commands = ["delete firewall ipv4", "delete firewall ipv6"]
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_v6_rule_sets_rule_merged_04(self):
+        """Test that the plugin correctly applies configuration
+            within exsiting rule set
+        """
         set_module_args(
             dict(
                 config=[
@@ -450,6 +471,9 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_v4v6_rule_sets_rule_ovr_02(self):
+        """Test that the plugin correctly resets the entire
+            rule sets configuration if changes are detected
+        """
         set_module_args(
             dict(
                 config=[
@@ -517,6 +541,9 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_v4v6_rule_sets_rule_ovr_idem_01(self):
+        """Test that the plugin is idempotent in overridden state
+            if there are no changes to the rule sets
+        """
         set_module_args(
             dict(
                 config=[
