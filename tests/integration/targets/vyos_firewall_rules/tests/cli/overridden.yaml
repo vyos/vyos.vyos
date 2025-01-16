@@ -28,6 +28,10 @@
                     ipsec: match-ipsec
         state: overridden
 
+    - name: Print result
+      debug:
+        msg: "Result: {{ result }}"
+
     - name: Assert that before dicts were correctly generated
       assert:
         that:
