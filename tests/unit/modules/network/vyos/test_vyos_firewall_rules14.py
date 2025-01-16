@@ -1266,208 +1266,213 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         )
         self.execute_module(changed=False, commands=[])
 
-    # def test_vyos_firewall_v4v6_rule_sets_rule_mer_idem_01(self):
-    #     """Test if plugin correctly has no effect if there is no change in the configuration
-    #     """
-    #     set_module_args(
-    #         dict(
-    #             config=[
-    #                 dict(
-    #                     afi="ipv4",
-    #                     rule_sets=[
-    #                         dict(
-    #                             name="V4-INGRESS",
-    #                             description="This is IPv4 V4-INGRESS rule set",
-    #                             default_action="accept",
-    #                             enable_default_log=True,
-    #                             rules=[
-    #                                 dict(
-    #                                     number="101",
-    #                                     action="accept",
-    #                                     description="Rule 101 is configured by Ansible",
-    #                                     packet_length_exclude=[dict(length=100), dict(length=300)],
-    #                                     protocol="icmp",
-    #                                     disable=True,
-    #                                     log="enable",
-    #                                 )
-    #                             ],
-    #                         ),
-    #                         dict(
-    #                             filter="input",
-    #                             rules=[
-    #                                 dict(
-    #                                     number="1",
-    #                                     action="jump",
-    #                                     jump_target="INGRESS",
-    #                                 ),
-    #                             ],
-    #                         ),
-    #                         dict(
-    #                             filter="output",
-    #                             rules=[
-    #                                 dict(
-    #                                     number="1",
-    #                                     action="jump",
-    #                                     jump_target="EGRESS",
-    #                                 ),
-    #                             ],
-    #                         ),
-    #                         dict(
-    #                             name="IF-TEST",
-    #                             rules=[
-    #                                 dict(
-    #                                     number="10",
-    #                                     action="accept",
-    #                                     icmp=dict(type_name="echo-request"),
-    #                                     state=dict(related=True),
-    #                                     inbound_interface=dict(name="eth0"),
-    #                                     outbound_interface=dict(group="the-ethers"),
-    #                                     disable=True,
-    #                                 )
-    #                             ],
-    #                         ),
-    #                         dict(
-    #                             name="EGRESS",
-    #                             default_action="reject",
-    #                         ),
-    #                     ],
-    #                 ),
-    #                 dict(
-    #                     afi="ipv6",
-    #                     rule_sets=[
-    #                         dict(
-    #                             name="V6-INGRESS",
-    #                             default_action="accept",
-    #                         ),
-    #                         dict(
-    #                             name="EGRESS",
-    #                             default_action="reject",
-    #                             rules=[
-    #                                 dict(
-    #                                     icmp=dict(type_name="echo-request"),
-    #                                     number=20,
-    #                                 ),
-    #                             ],
-    #                         ),
-    #                         dict(
-    #                             filter="input",
-    #                             rules=[
-    #                                 dict(
-    #                                     number="1",
-    #                                     action="jump",
-    #                                     jump_target="V6-INGRESS",
-    #                                 ),
-    #                             ],
-    #                         ),
-    #                         dict(
-    #                             filter="output",
-    #                             rules=[
-    #                                 dict(
-    #                                     number="1",
-    #                                     action="jump",
-    #                                     jump_target="EGRESS",
-    #                                 ),
-    #                             ],
-    #                         ),
-    #                     ],
-    #                 ),
-    #             ],
-    #             state="merged",
-    #         ),
-    #     )
-    #     self.execute_module(changed=False, commands=[])
+    def test_vyos_firewall_v4v6_rule_sets_rule_mer_idem_01(self):
+        """Test if plugin correctly has no effect if there is no change in the configuration
+        """
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="V4-INGRESS",
+                                description="This is IPv4 V4-INGRESS rule set",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="accept",
+                                        description="Rule 101 is configured by Ansible",
+                                        packet_length_exclude=[dict(length=100), dict(length=300)],
+                                        protocol="icmp",
+                                        disable=True,
+                                        log="enable",
+                                    )
+                                ],
+                            ),
+                            dict(
+                                filter="input",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="jump",
+                                        jump_target="INGRESS",
+                                    ),
+                                ],
+                            ),
+                            dict(
+                                filter="output",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="jump",
+                                        jump_target="EGRESS",
+                                    ),
+                                ],
+                            ),
+                            dict(
+                                name="IF-TEST",
+                                rules=[
+                                    dict(
+                                        number="10",
+                                        action="accept",
+                                        icmp=dict(type_name="echo-request"),
+                                        state=dict(related=True),
+                                        inbound_interface=dict(name="eth0"),
+                                        outbound_interface=dict(group="the-ethers"),
+                                        disable=True,
+                                    )
+                                ],
+                            ),
+                            dict(
+                                name="EGRESS",
+                                default_action="reject",
+                            ),
+                        ],
+                    ),
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="V6-INGRESS",
+                                default_action="accept",
+                            ),
+                            dict(
+                                name="EGRESS",
+                                default_action="reject",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    ),
+                                ],
+                            ),
+                            dict(
+                                filter="input",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="jump",
+                                        jump_target="V6-INGRESS",
+                                    ),
+                                ],
+                            ),
+                            dict(
+                                filter="output",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="jump",
+                                        jump_target="EGRESS",
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+        self.execute_module(changed=False, commands=[])
 
-    # def test_vyos_firewall_v4v6_rule_sets_rule_ovr_01(self):
-    #     """Test if plugin correctly resets the entire rule set if there is a change in the configuration
-    #     """
-    #     set_module_args(
-    #         dict(
-    #             config=[
-    #                 dict(
-    #                     afi="ipv4",
-    #                     rule_sets=[
-    #                         dict(
-    #                             name="V4-IN",
-    #                             description="This is IPv4 INGRESS rule set",
-    #                             default_action="accept",
-    #                             enable_default_log=True,
-    #                             rules=[
-    #                                 dict(
-    #                                     number="1",
-    #                                     action="reject",
-    #                                     description="Rule 1 is configured by Ansible RM",
-    #                                     ipsec="match-ipsec",
-    #                                     log="enable",
-    #                                     protocol="tcp",
-    #                                     fragment="match-frag",
-    #                                     disable=False,
-    #                                     source=dict(
-    #                                         group=dict(
-    #                                             address_group="IN-ADDR-GROUP",
-    #                                             network_group="IN-NET-GROUP",
-    #                                             port_group="IN-PORT-GROUP",
-    #                                         ),
-    #                                     ),
-    #                                 ),
-    #                                 dict(
-    #                                     number="2",
-    #                                     action="accept",
-    #                                     description="Rule 102 is configured by Ansible RM",
-    #                                     protocol="icmp",
-    #                                     disable=True,
-    #                                 ),
-    #                             ],
-    #                         ),
-    #                     ],
-    #                 ),
-    #                 dict(
-    #                     afi="ipv6",
-    #                     rule_sets=[
-    #                         dict(
-    #                             name="V6-IN",
-    #                             default_action="accept",
-    #                             description="This rule-set is configured by Ansible RM",
-    #                         ),
-    #                         dict(
-    #                             name="V6-EG",
-    #                             default_action="reject",
-    #                             description="This rule-set is configured by Ansible RM",
-    #                         ),
-    #                     ],
-    #                 ),
-    #             ],
-    #             state="overridden",
-    #         ),
-    #     )
-    #     commands = [
-    #         "delete firewall ipv6-name V6-INGRESS",
-    #         "delete firewall ipv6-name EGRESS",
-    #         "delete firewall name V4-INGRESS",
-    #         "delete firewall name EGRESS",
-    #         "set firewall name V4-IN default-action 'accept'",
-    #         "set firewall name V4-IN description 'This is IPv4 INGRESS rule set'",
-    #         "set firewall name V4-IN enable-default-log",
-    #         "set firewall name V4-IN rule 1 protocol 'tcp'",
-    #         "set firewall name V4-IN rule 1 log 'enable'",
-    #         "set firewall name V4-IN rule 1 description 'Rule 1 is configured by Ansible RM'",
-    #         "set firewall name V4-IN rule 1 fragment 'match-frag'",
-    #         "set firewall name V4-IN rule 1 source group address-group IN-ADDR-GROUP",
-    #         "set firewall name V4-IN rule 1 source group network-group IN-NET-GROUP",
-    #         "set firewall name V4-IN rule 1 source group port-group IN-PORT-GROUP",
-    #         "set firewall name V4-IN rule 1",
-    #         "set firewall name V4-IN rule 1 action 'reject'",
-    #         "set firewall name V4-IN rule 1 ipsec 'match-ipsec'",
-    #         "set firewall name V4-IN rule 2 disable",
-    #         "set firewall name V4-IN rule 2 action 'accept'",
-    #         "set firewall name V4-IN rule 2 protocol 'icmp'",
-    #         "set firewall name V4-IN rule 2 description 'Rule 102 is configured by Ansible RM'",
-    #         "set firewall name V4-IN rule 2",
-    #         "set firewall ipv6-name V6-IN default-action 'accept'",
-    #         "set firewall ipv6-name V6-IN description 'This rule-set is configured by Ansible RM'",
-    #         "set firewall ipv6-name V6-EG default-action 'reject'",
-    #         "set firewall ipv6-name V6-EG description 'This rule-set is configured by Ansible RM'",
-    #     ]
-    #     self.execute_module(changed=True, commands=commands)
+    def test_vyos_firewall_v4v6_rule_sets_rule_ovr_01(self):
+        """Test if plugin correctly resets the entire rule set if there is a change in the configuration
+        """
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="V4-IN",
+                                description="This is IPv4 INGRESS rule set",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="reject",
+                                        description="Rule 1 is configured by Ansible RM",
+                                        ipsec="match-ipsec",
+                                        log="enable",
+                                        protocol="tcp",
+                                        fragment="match-frag",
+                                        disable=False,
+                                        source=dict(
+                                            group=dict(
+                                                address_group="IN-ADDR-GROUP",
+                                                network_group="IN-NET-GROUP",
+                                                port_group="IN-PORT-GROUP",
+                                            ),
+                                        ),
+                                    ),
+                                    dict(
+                                        number="2",
+                                        action="accept",
+                                        description="Rule 102 is configured by Ansible RM",
+                                        protocol="icmp",
+                                        disable=True,
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="V6-IN",
+                                default_action="accept",
+                                description="This rule-set is configured by Ansible RM",
+                            ),
+                            dict(
+                                name="V6-EG",
+                                default_action="reject",
+                                description="This rule-set is configured by Ansible RM",
+                            ),
+                        ],
+                    ),
+                ],
+                state="overridden",
+            ),
+        )
+        commands = [
+            "delete firewall ipv6 name V6-INGRESS",
+            "delete firewall ipv6 name EGRESS",
+            "delete firewall ipv4 name V4-INGRESS",
+            "delete firewall ipv4 name EGRESS",
+            "delete firewall ipv4 input filter",
+            "delete firewall ipv4 output filter",
+            "delete firewall ipv6 input filter",
+            "delete firewall ipv6 output filter",
+            "delete firewall ipv4 name IF-TEST",
+            "set firewall ipv4 name V4-IN default-action 'accept'",
+            "set firewall ipv4 name V4-IN description 'This is IPv4 INGRESS rule set'",
+            "set firewall ipv4 name V4-IN default-log",
+            "set firewall ipv4 name V4-IN rule 1 protocol 'tcp'",
+            "set firewall ipv4 name V4-IN rule 1 log",
+            "set firewall ipv4 name V4-IN rule 1 description 'Rule 1 is configured by Ansible RM'",
+            "set firewall ipv4 name V4-IN rule 1 fragment 'match-frag'",
+            "set firewall ipv4 name V4-IN rule 1 source group address-group IN-ADDR-GROUP",
+            "set firewall ipv4 name V4-IN rule 1 source group network-group IN-NET-GROUP",
+            "set firewall ipv4 name V4-IN rule 1 source group port-group IN-PORT-GROUP",
+            "set firewall ipv4 name V4-IN rule 1",
+            "set firewall ipv4 name V4-IN rule 1 action 'reject'",
+            "set firewall ipv4 name V4-IN rule 1 ipsec 'match-ipsec'",
+            "set firewall ipv4 name V4-IN rule 2 disable",
+            "set firewall ipv4 name V4-IN rule 2 action 'accept'",
+            "set firewall ipv4 name V4-IN rule 2 protocol 'icmp'",
+            "set firewall ipv4 name V4-IN rule 2 description 'Rule 102 is configured by Ansible RM'",
+            "set firewall ipv4 name V4-IN rule 2",
+            "set firewall ipv6 name V6-IN default-action 'accept'",
+            "set firewall ipv6 name V6-IN description 'This rule-set is configured by Ansible RM'",
+            "set firewall ipv6 name V6-EG default-action 'reject'",
+            "set firewall ipv6 name V6-EG description 'This rule-set is configured by Ansible RM'",
+        ]
+        self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_v4v6_rule_sets_rule_ovr_02(self):
         """Test that the plugin correctly resets the entire
@@ -1651,125 +1656,123 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         )
         self.execute_module(changed=False, commands=[])
 
-    # def test_vyos_firewall_v6_rule_sets_rule_merged_01_version(self):
-    #     """Test if plugin correctly adds ipv6 rule set with rules
-    #     """
-    #     self.get_os_version.return_value = "1.3"
-    #     set_module_args(
-    #         dict(
-    #             config=[
-    #                 dict(
-    #                     afi="ipv6",
-    #                     rule_sets=[
-    #                         dict(
-    #                             name="INBOUND",
-    #                             description="This is IPv6 INBOUND rule set",
-    #                             default_action="accept",
-    #                             enable_default_log=True,
-    #                             rules=[
-    #                                 dict(
-    #                                     number="101",
-    #                                     action="accept",
-    #                                     description="Rule 101 is configured by Ansible",
-    #                                     ipsec="match-ipsec",
-    #                                     protocol="icmp",
-    #                                     disable=True,
-    #                                     icmp=dict(type_name="echo-request"),
-    #                                     log="enable",
-    #                                 ),
-    #                                 dict(
-    #                                     number="102",
-    #                                     action="reject",
-    #                                     description="Rule 102 is configured by Ansible",
-    #                                     protocol="ipv6-icmp",
-    #                                     icmp=dict(type=7),
-    #                                 ),
-    #                             ],
-    #                         ),
-    #                     ],
-    #                 ),
-    #             ],
-    #             state="merged",
-    #         ),
-    #     )
-    #     commands = [
-    #         "set firewall ipv6-name INBOUND default-action 'accept'",
-    #         "set firewall ipv6-name INBOUND description 'This is IPv6 INBOUND rule set'",
-    #         "set firewall ipv6-name INBOUND enable-default-log",
-    #         "set firewall ipv6-name INBOUND rule 101 protocol 'icmp'",
-    #         "set firewall ipv6-name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
-    #         "set firewall ipv6-name INBOUND rule 101",
-    #         "set firewall ipv6-name INBOUND rule 101 disable",
-    #         "set firewall ipv6-name INBOUND rule 101 action 'accept'",
-    #         "set firewall ipv6-name INBOUND rule 101 ipsec 'match-ipsec'",
-    #         "set firewall ipv6-name INBOUND rule 101 icmpv6 type echo-request",
-    #         "set firewall ipv6-name INBOUND rule 101 log 'enable'",
-    #         "set firewall ipv6-name INBOUND rule 102",
-    #         "set firewall ipv6-name INBOUND rule 102 action 'reject'",
-    #         "set firewall ipv6-name INBOUND rule 102 description 'Rule 102 is configured by Ansible'",
-    #         "set firewall ipv6-name INBOUND rule 102 protocol 'ipv6-icmp'",
-    #         'set firewall ipv6-name INBOUND rule 102 icmpv6 type 7',
-    #     ]
-    #     self.execute_module(changed=True, commands=commands)
+    def test_vyos_firewall_v6_rule_sets_rule_merged_01_version(self):
+        """Test if plugin correctly adds ipv6 rule set with rules
+        """
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="INBOUND",
+                                description="This is IPv6 INBOUND rule set",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="accept",
+                                        description="Rule 101 is configured by Ansible",
+                                        ipsec="match-ipsec",
+                                        protocol="icmp",
+                                        disable=True,
+                                        icmp=dict(type_name="echo-request"),
+                                        log="enable",
+                                    ),
+                                    dict(
+                                        number="102",
+                                        action="reject",
+                                        description="Rule 102 is configured by Ansible",
+                                        protocol="ipv6-icmp",
+                                        icmp=dict(type=7),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+        commands = [
+            "set firewall ipv6 name INBOUND default-action 'accept'",
+            "set firewall ipv6 name INBOUND description 'This is IPv6 INBOUND rule set'",
+            "set firewall ipv6 name INBOUND default-log",
+            "set firewall ipv6 name INBOUND rule 101 protocol 'icmp'",
+            "set firewall ipv6 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
+            "set firewall ipv6 name INBOUND rule 101",
+            "set firewall ipv6 name INBOUND rule 101 disable",
+            "set firewall ipv6 name INBOUND rule 101 action 'accept'",
+            "set firewall ipv6 name INBOUND rule 101 ipsec 'match-ipsec'",
+            "set firewall ipv6 name INBOUND rule 101 icmpv6 type-name echo-request",
+            "set firewall ipv6 name INBOUND rule 101 log",
+            "set firewall ipv6 name INBOUND rule 102",
+            "set firewall ipv6 name INBOUND rule 102 action 'reject'",
+            "set firewall ipv6 name INBOUND rule 102 description 'Rule 102 is configured by Ansible'",
+            "set firewall ipv6 name INBOUND rule 102 protocol 'ipv6-icmp'",
+            'set firewall ipv6 name INBOUND rule 102 icmpv6 type 7',
+        ]
+        self.execute_module(changed=True, commands=commands)
 
-    # def test_vyos_firewall_jump_rules_merged_01(self):
-    #     """Test if plugin correctly adds rule set with a jump action
-    #     """
-    #     self.get_os_version.return_value = "1.4"
-    #     set_module_args(
-    #         dict(
-    #             config=[
-    #                 dict(
-    #                     afi="ipv6",
-    #                     rule_sets=[
-    #                         dict(
-    #                             name="INBOUND",
-    #                             description="This is IPv6 INBOUND rule set with a jump action",
-    #                             default_action="accept",
-    #                             enable_default_log=True,
-    #                             rules=[
-    #                                 dict(
-    #                                     number="101",
-    #                                     action="jump",
-    #                                     description="Rule 101 is configured by Ansible",
-    #                                     ipsec="match-ipsec",
-    #                                     protocol="icmp",
-    #                                     icmp=dict(type_name="echo-request"),
-    #                                     jump_target="PROTECT-RE",
-    #                                     packet_length_exclude=[dict(length=100), dict(length=200)]
-    #                                 ),
-    #                                 dict(
-    #                                     number="102",
-    #                                     action="reject",
-    #                                     description="Rule 102 is configured by Ansible",
-    #                                     protocol="ipv6-icmp",
-    #                                     icmp=dict(type=7),
-    #                                 ),
-    #                             ],
-    #                         ),
-    #                     ],
-    #                 )
-    #             ],
-    #             state="merged",
-    #         )
-    #     )
-    #     commands = [
-    #         "set firewall ipv6 name INBOUND default-action 'accept'",
-    #         "set firewall ipv6 name INBOUND description 'This is IPv6 INBOUND rule set with a jump action'",
-    #         "set firewall ipv6 name INBOUND default-log",
-    #         "set firewall ipv6 name INBOUND rule 101 protocol 'icmp'",
-    #         "set firewall ipv6 name INBOUND rule 101 packet-length-exclude 100",
-    #         "set firewall ipv6 name INBOUND rule 101 packet-length-exclude 200",
-    #         "set firewall ipv6 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
-    #         "set firewall ipv6 name INBOUND rule 101",
-    #         "set firewall ipv6 name INBOUND rule 101 ipsec 'match-ipsec'",
-    #         "set firewall ipv6 name INBOUND rule 101 icmpv6 type-name echo-request",
-    #         "set firewall ipv6 name INBOUND rule 101 action 'jump'",
-    #         "set firewall ipv6 name INBOUND rule 101 jump-target 'PROTECT-RE'",
-    #         "set firewall ipv6 name INBOUND rule 102",
-    #         "set firewall ipv6 name INBOUND rule 102 action 'reject'",
-    #         "set firewall ipv6 name INBOUND rule 102 description 'Rule 102 is configured by Ansible'",
-    #         "set firewall ipv6 name INBOUND rule 102 protocol 'ipv6-icmp'",
-    #         'set firewall ipv6 name INBOUND rule 102 icmpv6 type 7',
-    #     ]
-    #     self.execute_module(changed=True, commands=commands)
+    def test_vyos_firewall_jump_rules_merged_01(self):
+        """Test if plugin correctly adds rule set with a jump action
+        """
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="INBOUND",
+                                description="This is IPv6 INBOUND rule set with a jump action",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="jump",
+                                        description="Rule 101 is configured by Ansible",
+                                        ipsec="match-ipsec",
+                                        protocol="icmp",
+                                        icmp=dict(type_name="echo-request"),
+                                        jump_target="PROTECT-RE",
+                                        packet_length_exclude=[dict(length=100), dict(length=200)]
+                                    ),
+                                    dict(
+                                        number="102",
+                                        action="reject",
+                                        description="Rule 102 is configured by Ansible",
+                                        protocol="ipv6-icmp",
+                                        icmp=dict(type=7),
+                                    ),
+                                ],
+                            ),
+                        ],
+                    )
+                ],
+                state="merged",
+            )
+        )
+        commands = [
+            "set firewall ipv6 name INBOUND default-action 'accept'",
+            "set firewall ipv6 name INBOUND description 'This is IPv6 INBOUND rule set with a jump action'",
+            "set firewall ipv6 name INBOUND default-log",
+            "set firewall ipv6 name INBOUND rule 101 protocol 'icmp'",
+            "set firewall ipv6 name INBOUND rule 101 packet-length-exclude 100",
+            "set firewall ipv6 name INBOUND rule 101 packet-length-exclude 200",
+            "set firewall ipv6 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
+            "set firewall ipv6 name INBOUND rule 101",
+            "set firewall ipv6 name INBOUND rule 101 ipsec 'match-ipsec'",
+            "set firewall ipv6 name INBOUND rule 101 icmpv6 type-name echo-request",
+            "set firewall ipv6 name INBOUND rule 101 action 'jump'",
+            "set firewall ipv6 name INBOUND rule 101 jump-target 'PROTECT-RE'",
+            "set firewall ipv6 name INBOUND rule 102",
+            "set firewall ipv6 name INBOUND rule 102 action 'reject'",
+            "set firewall ipv6 name INBOUND rule 102 description 'Rule 102 is configured by Ansible'",
+            "set firewall ipv6 name INBOUND rule 102 protocol 'ipv6-icmp'",
+            'set firewall ipv6 name INBOUND rule 102 icmpv6 type 7',
+        ]
+        self.execute_module(changed=True, commands=commands)
