@@ -85,7 +85,7 @@ class Firewall_rules(ConfigBase):
             existing_firewall_rules_facts = []
 
         if self.state in self.ACTION_STATES or self.state == "rendered":
-            commands.extend(self.set_config(existing_firewall_rules_facts))
+            commands.extend(self.set_config(deepcopy(existing_firewall_rules_facts)))
 
         if commands and self.state in self.ACTION_STATES:
             if not self._module.check_mode:

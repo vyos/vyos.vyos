@@ -35,7 +35,7 @@
     - name: Assert that before dicts were correctly generated
       assert:
         that:
-          - "{{ overridden['before'] | symmetric_difference(result['before']) |length == 0 }}"
+          - "{{ populate | symmetric_difference(result['before']) |length == 0 }}"
 
     - name: Assert that correct commands were generated
       assert:
