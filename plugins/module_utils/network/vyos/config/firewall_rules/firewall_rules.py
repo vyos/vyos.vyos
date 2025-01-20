@@ -176,6 +176,8 @@ class Firewall_rules(ConfigBase):
                     # configuration's rule set).
                     rs_id = self._rs_id(rs, h["afi"])
                     wanted_rule_set = self.search_r_sets_in_have(want, rs_id, "r_list")
+                    if self._is_same_rs(remove_empties(wanted_rule_set), remove_empties(rs)):
+                        continue
                     if wanted_rule_set is not None:
                         # Remove the rules that we already have if the wanted
                         # rules exist under the same name.
@@ -205,7 +207,7 @@ class Firewall_rules(ConfigBase):
                 for rs in have_r_sets:
                     rs_id = self._rs_id(rs, h["afi"])
                     w = self.search_r_sets_in_have(want, rs_id, "r_list")
-                    if self._is_same_rs(remove_empties(w), rs):
+                    if self._is_same_rs(remove_empties(w), remove_empties(rs)):
                         continue
                     else:
                         commands.append(self._compute_command(rs_id, remove=True))
@@ -235,7 +237,10 @@ class Firewall_rules(ConfigBase):
             for rs in r_sets:
                 rs_id = self._rs_id(rs, w["afi"])
                 h = self.search_r_sets_in_have(have, rs_id, "r_list")
-                commands.extend(self._add_r_sets(w["afi"], rs, h))
+                if self._is_same_rs(remove_empties(h), remove_empties(rs)):
+                    continue
+                else:
+                    commands.extend(self._add_r_sets(w["afi"], rs, h))
         return commands
 
     def _state_deleted(self, want, have):
