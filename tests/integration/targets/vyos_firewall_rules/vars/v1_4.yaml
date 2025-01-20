@@ -143,6 +143,8 @@ remove_config:
   - delete firewall ipv4
   - delete firewall ipv6
 
+parsed_config_file: "_parsed_config_1_4.cfg"
+
 replaced:
   commands:
     - delete firewall ipv6 name UPLINK rule 1
