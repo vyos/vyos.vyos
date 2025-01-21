@@ -5,23 +5,23 @@ merged_commands:
   - set firewall ipv6-name UPLINK rule 1 action 'accept'
   - set firewall ipv6-name UPLINK rule 1
   - set firewall ipv6-name UPLINK rule 1 description 'Fwipv6-Rule 1 is configured by Ansible'
-  - set firewall ipv6-name UPLINK rule 1 ipsec 'match-ipsec'
+  - set firewall ipv6-name UPLINK rule 1 protocol 'tcp'
   - set firewall ipv6-name UPLINK rule 2 action 'accept'
   - set firewall ipv6-name UPLINK rule 2
   - set firewall ipv6-name UPLINK rule 2 description 'Fwipv6-Rule 2 is configured by Ansible'
-  - set firewall ipv6-name UPLINK rule 2 ipsec 'match-ipsec'
+  - set firewall ipv6-name UPLINK rule 2 protocol 'tcp'
   - set firewall name INBOUND default-action 'accept'
   - set firewall name INBOUND description 'IPv4 INBOUND rule set'
   - set firewall name INBOUND rule 101 action 'accept'
   - set firewall name INBOUND rule 101 disable
   - set firewall name INBOUND rule 101
   - set firewall name INBOUND rule 101 description 'Rule 101 is configured by Ansible'
-  - set firewall name INBOUND rule 101 ipsec 'match-ipsec'
+  - set firewall name INBOUND rule 101 protocol 'tcp'
   - set firewall name INBOUND rule 102 action 'reject'
   - set firewall name INBOUND rule 102 disable
   - set firewall name INBOUND rule 102
   - set firewall name INBOUND rule 102 description 'Rule 102 is configured by Ansible'
-  - set firewall name INBOUND rule 102 ipsec 'match-ipsec'
+  - set firewall name INBOUND rule 102 protocol 'tcp'
   - set firewall name INBOUND rule 103 description 'Rule 103 is configured by Ansible'
   - set firewall name INBOUND rule 103 destination group address-group inbound
   - set firewall name INBOUND rule 103
@@ -38,18 +38,18 @@ populate_config:
   - set firewall ipv6-name UPLINK description 'This is ipv6 specific rule-set'
   - set firewall ipv6-name UPLINK rule 1 action 'accept'
   - set firewall ipv6-name UPLINK rule 1 description 'Fwipv6-Rule 1 is configured by Ansible'
-  - set firewall ipv6-name UPLINK rule 1 ipsec 'match-ipsec'
+  - set firewall ipv6-name UPLINK rule 1 protocol 'tcp'
   - set firewall ipv6-name UPLINK rule 2 action 'accept'
   - set firewall ipv6-name UPLINK rule 2 description 'Fwipv6-Rule 2 is configured by Ansible'
-  - set firewall ipv6-name UPLINK rule 2 ipsec 'match-ipsec'
+  - set firewall ipv6-name UPLINK rule 2 protocol 'tcp'
   - set firewall name INBOUND default-action 'accept'
   - set firewall name INBOUND description 'IPv4 INBOUND rule set'
   - set firewall name INBOUND rule 101 action 'accept'
   - set firewall name INBOUND rule 101 description 'Rule 101 is configured by Ansible'
-  - set firewall name INBOUND rule 101 ipsec 'match-ipsec'
+  - set firewall name INBOUND rule 101 protocol 'tcp'
   - set firewall name INBOUND rule 102 action 'reject'
   - set firewall name INBOUND rule 102 description 'Rule 102 is configured by Ansible'
-  - set firewall name INBOUND rule 102 ipsec 'match-ipsec'
+  - set firewall name INBOUND rule 102 protocol 'tcp'
   - set firewall name INBOUND rule 103 action 'accept'
   - set firewall name INBOUND rule 103 description 'Rule 103 is configured by Ansible'
   - set firewall name INBOUND rule 103 destination group address-group 'inbound'
@@ -73,7 +73,7 @@ replaced_commands:
   - set firewall name INBOUND rule 104 action 'reject'
   - set firewall name INBOUND rule 104 description 'Rule 104 is configured by Ansible'
   - set firewall name INBOUND rule 104
-  - set firewall name INBOUND rule 104 ipsec 'match-none'
+  - set firewall name INBOUND rule 104 protocol 'udp'
 
 overridden_commands:
   - delete firewall ipv6-name UPLINK
@@ -83,11 +83,11 @@ overridden_commands:
   - set firewall name Downlink rule 501 action 'accept'
   - set firewall name Downlink rule 501
   - set firewall name Downlink rule 501 description 'Rule 501 is configured by Ansible'
-  - set firewall name Downlink rule 501 ipsec 'match-ipsec'
+  - set firewall name Downlink rule 501 protocol 'tcp'
   - set firewall name Downlink rule 502 action 'reject'
   - set firewall name Downlink rule 502
   - set firewall name Downlink rule 502 description 'Rule 502 is configured by Ansible'
-  - set firewall name Downlink rule 502 ipsec 'match-ipsec'
+  - set firewall name Downlink rule 502 protocol 'tcp'
 
 rendered:
   commands:
@@ -98,11 +98,11 @@ rendered:
     - set firewall name INBOUND rule 101 action 'accept'
     - set firewall name INBOUND rule 101
     - set firewall name INBOUND rule 101 description 'Rule 101 is configured by Ansible'
-    - set firewall name INBOUND rule 101 ipsec 'match-ipsec'
+    - set firewall name INBOUND rule 101 protocol 'tcp'
     - set firewall name INBOUND rule 102 action 'reject'
     - set firewall name INBOUND rule 102
     - set firewall name INBOUND rule 102 description 'Rule 102 is configured by Ansible'
-    - set firewall name INBOUND rule 102 ipsec 'match-ipsec'
+    - set firewall name INBOUND rule 102 protocol 'tcp'
     - set firewall name INBOUND rule 103 description 'Rule 103 is configured by Ansible'
     - set firewall name INBOUND rule 103 destination group address-group inbound
     - set firewall name INBOUND rule 103

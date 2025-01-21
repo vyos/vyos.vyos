@@ -20,12 +20,12 @@
                   - number: 1
                     action: accept
                     description: Fwipv6-Rule 1 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
 
                   - number: 2
                     action: accept
                     description: Fwipv6-Rule 2 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
 
           - afi: ipv4
             rule_sets:
@@ -36,12 +36,12 @@
                   - number: 101
                     action: accept
                     description: Rule 101 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
 
                   - number: 102
                     action: reject
                     description: Rule 102 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
         state: merged
 
     - name: Gather firewall_rules facts
