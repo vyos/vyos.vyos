@@ -41,7 +41,7 @@ merged:
                   address_group: inbound
               source:
                 address: 192.0.2.0
-              state: "{{ state_dict}}"
+              state: "{{ state_dict }}"
 
 populate:
   - afi: ipv6
@@ -80,7 +80,7 @@ populate:
                 address_group: inbound
             source:
               address: 192.0.2.0
-            state: "{{ state_dict}}"
+            state: "{{ state_dict }}"
 
 replaced:
   commands: "{{ replaced_commands }}"

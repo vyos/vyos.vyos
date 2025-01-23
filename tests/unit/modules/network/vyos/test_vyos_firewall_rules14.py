@@ -1776,3 +1776,88 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             'set firewall ipv6 name INBOUND rule 102 icmpv6 type 7',
         ]
         self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_log_merged_01(self):
+        """Test if new stanza log is correctly applied"""
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="INBOUND",
+                                description="This is IPv6 INBOUND rule set with a log",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="accept",
+                                        description="Rule 101 is configured by Ansible",
+                                        log="enable",
+                                    ),
+                                ],
+                            ),
+                        ],
+                    )
+                ],
+                state="merged",
+            )
+        )
+        commands = [
+            "set firewall ipv6 name INBOUND default-action 'accept'",
+            "set firewall ipv6 name INBOUND description 'This is IPv6 INBOUND rule set with a log'",
+            "set firewall ipv6 name INBOUND default-log",
+            "set firewall ipv6 name INBOUND rule 101 log",
+            "set firewall ipv6 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'",
+            "set firewall ipv6 name INBOUND rule 101",
+            "set firewall ipv6 name INBOUND rule 101 action 'accept'",
+        ]
+        self.maxDiff = None
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_log_replace_01(self):
+        """Test that stanza is correctly replaced
+            without touching the other stanzas
+        """
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="V4-INGRESS",
+                                description="This is IPv4 V4-INGRESS rule set",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="accept",
+                                        description="Rule 101 is configured by Ansible",
+                                        packet_length_exclude=[dict(length=100), dict(length=200)],
+                                        packet_length=[dict(length=22)],
+                                        log="enable",
+                                    ),
+                                ],
+                            ),
+                        ],
+                    )
+                ],
+                state="replaced",
+            )
+        )
+        commands = [
+            "delete firewall ipv4 name V4-INGRESS rule 101",
+            "set firewall ipv4 name V4-INGRESS rule 101",
+            "set firewall ipv4 name V4-INGRESS rule 101 action 'accept'",
+            "set firewall ipv4 name V4-INGRESS rule 101 description 'Rule 101 is configured by Ansible'",
+            "set firewall ipv4 name V4-INGRESS rule 101 packet-length-exclude 100",
+            "set firewall ipv4 name V4-INGRESS rule 101 packet-length-exclude 200",
+            "set firewall ipv4 name V4-INGRESS rule 101 packet-length 22",
+            "set firewall ipv4 name V4-INGRESS rule 101 log",
+        ]
+        self.maxDiff = None
+        self.execute_module(changed=True, commands=commands)
