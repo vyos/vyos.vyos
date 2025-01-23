@@ -14,13 +14,10 @@
           - name: eth1
             access_rules:
               - afi: ipv4
-
               - afi: ipv6
-
           - name: eth2
             access_rules:
               - afi: ipv4
-
               - afi: ipv6
         state: deleted
 
