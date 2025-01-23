@@ -66,6 +66,8 @@ remove_firewall_config:
   - delete firewall name LOCAL
   - delete firewall ipv6-name V6-LOCAL
 
+parsed_config_file: "_parsed_config_1_3.cfg"
+
 populate:
   - access_rules:
       - afi: ipv4

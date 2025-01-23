@@ -1,9 +1,4 @@
 ---
-# - name: Remove Config
-#   vars:
-#     lines: "delete firewall name INBOUND\ndelete firewall name OUTBOUND\ndelete firewall name LOCAL\ndelete firewall ipv6-name V6-LOCAL\n"
-#   ansible.netcommon.cli_config:
-#     config: "{{ lines }}"
 
 - name: ensure facts
   include_tasks: _get_version.yaml
