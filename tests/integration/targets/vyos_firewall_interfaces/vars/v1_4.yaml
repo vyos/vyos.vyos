@@ -51,20 +51,20 @@ populate_config:
   - set interfaces ethernet eth2 firewall local ipv6-name 'V6-LOCAL'
 
 populate_rs:
-  - set firewall name 'INBOUND'
-  - set firewall name 'OUTBOUND'
-  - set firewall name 'LOCAL'
-  - set firewall ipv6-name 'V6-LOCAL'
+  - set firewall ipv4 name 'INBOUND'
+  - set firewall ipv4 name 'OUTBOUND'
+  - set firewall ipv4 name 'LOCAL'
+  - set firewall ipv6 name 'V6-LOCAL'
 
 remove_config:
   - delete interfaces ethernet eth1 firewall
   - delete interfaces ethernet eth2 firewall
 
 remove_firewall_config:
-  - delete firewall name INBOUND
-  - delete firewall name OUTBOUND
-  - delete firewall name LOCAL
-  - delete firewall ipv6-name V6-LOCAL
+  - delete firewall ipv4 name INBOUND
+  - delete firewall ipv4 name OUTBOUND
+  - delete firewall ipv4 name LOCAL
+  - delete firewall ipv6 name V6-LOCAL
 
 populate:
   - access_rules:
