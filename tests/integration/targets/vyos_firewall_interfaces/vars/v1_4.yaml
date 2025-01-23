@@ -1,9 +1,6 @@
 ---
 merged:
-  before:
-    - name: eth0
-    - name: eth1
-    - name: eth2
+  before: []
   commands:
     - set interfaces ethernet eth1 firewall in name 'INBOUND'
     - set interfaces ethernet eth1 firewall out name 'OUTBOUND'
@@ -14,7 +11,6 @@ merged:
     - set interfaces ethernet eth2 firewall local name 'LOCAL'
     - set interfaces ethernet eth2 firewall local ipv6-name 'V6-LOCAL'
   after:
-    - name: eth0
     - access_rules:
         - afi: ipv4
           rules:
@@ -43,8 +39,34 @@ merged:
             - direction: local
               name: V6-LOCAL
       name: eth2
+
+populate_config:
+  - set interfaces ethernet eth1 firewall in name 'INBOUND'
+  - set interfaces ethernet eth1 firewall out name 'OUTBOUND'
+  - set interfaces ethernet eth1 firewall local name 'LOCAL'
+  - set interfaces ethernet eth1 firewall local ipv6-name 'V6-LOCAL'
+  - set interfaces ethernet eth2 firewall in name 'INBOUND'
+  - set interfaces ethernet eth2 firewall out name 'OUTBOUND'
+  - set interfaces ethernet eth2 firewall local name 'LOCAL'
+  - set interfaces ethernet eth2 firewall local ipv6-name 'V6-LOCAL'
+
+populate_rs:
+  - set firewall name 'INBOUND'
+  - set firewall name 'OUTBOUND'
+  - set firewall name 'LOCAL'
+  - set firewall ipv6-name 'V6-LOCAL'
+
+remove_config:
+  - delete interfaces ethernet eth1 firewall
+  - delete interfaces ethernet eth2 firewall
+
+remove_firewall_config:
+  - delete firewall name INBOUND
+  - delete firewall name OUTBOUND
+  - delete firewall name LOCAL
+  - delete firewall ipv6-name V6-LOCAL
+
 populate:
-  - name: eth0
   - access_rules:
       - afi: ipv4
         rules:
@@ -78,7 +100,6 @@ merged_edit:
     - set interfaces ethernet eth1 firewall in name 'OUTBOUND'
     - set interfaces ethernet eth1 firewall out name 'INBOUND'
   after:
-    - name: eth0
     - access_rules:
         - afi: ipv4
           rules:
@@ -115,7 +136,6 @@ replaced:
     - delete interfaces ethernet eth1 firewall local name
     - delete interfaces ethernet eth1 firewall in name
   after:
-    - name: eth0
     - access_rules:
         - afi: ipv4
           rules:
@@ -169,22 +189,20 @@ overridden:
     - delete interfaces ethernet eth2 firewall local ipv6-name
     - set interfaces ethernet eth2 firewall out name 'INBOUND'
   after:
-    - name: eth0
-    - name: eth1
-    - access_rules:
+    - name: eth2
+      access_rules:
         - afi: ipv4
           rules:
             - name: INBOUND
               direction: out
-      name: eth2
 deleted:
   commands:
     - delete interfaces ethernet eth1 firewall
     - delete interfaces ethernet eth2 firewall
-  after:
-    - name: eth0
-    - name: eth1
-    - name: eth2
+  # after:
+  #   - name: eth1
+  #   - name: eth2
+  after: []
 deleted_afi:
   commands:
     - delete interfaces ethernet eth1 firewall in name
@@ -196,7 +214,6 @@ deleted_afi:
     - delete interfaces ethernet eth2 firewall out name
     - delete interfaces ethernet eth2 firewall local ipv6-name
   after:
-    - name: eth0
     - access_rules:
         - afi: ipv4
         - afi: ipv6
@@ -209,7 +226,6 @@ deleted_single:
   commands:
     - delete interfaces ethernet eth1 firewall in name 'INBOUND'
   after:
-    - name: eth0
     - access_rules:
         - afi: ipv4
           rules:
@@ -248,8 +264,8 @@ rendered:
     - set interfaces ethernet eth2 firewall local ipv6-name 'V6-LOCAL'
 round_trip:
   after:
-    - name: eth0
-    - access_rules:
+    - name: eth1
+      access_rules:
         - afi: ipv4
           rules:
             - direction: in
@@ -262,7 +278,6 @@ round_trip:
           rules:
             - direction: local
               name: V6-LOCAL
-      name: eth1
     - name: eth2
       access_rules:
         - afi: ipv4
