@@ -12,4 +12,5 @@ jobs:
       collection_pre_install: >-
         git+https://github.com/ansible-collections/ansible.utils.git
         git+https://github.com/ansible-collections/ansible.netcommon.git
+    secrets:
       token: ${{ secrets.CODECOV_TOKEN }}
