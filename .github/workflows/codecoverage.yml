@@ -1,28 +1,12 @@
 ---
 name: Code Coverage
+# cloned from ansible-network/github_actions/.github/workflows/coverage_network_devices.yml@main
+# in order to deal with token issue in codecov
 
 on: # yamllint disable-line rule:truthy
   push:
   pull_request:
     branches: [main]
-#jobs:
-#  codecoverage:
-#    uses: ansible-network/github_actions/.github/workflows/coverage_network_devices.yml@main
-#    with:
-#      collection_pre_install: >-
-#        git+https://github.com/ansible-collections/ansible.utils.git
-#        git+https://github.com/ansible-collections/ansible.netcommon.git
-#    secrets:
-#      token: ${{ secrets.CODECOV_TOKEN }}
-#
-#name: CodeCoverage
-#on:
-#  workflow_call:
-#    inputs:
-#      collection_pre_install:
-#        required: true
-#        type: string
-
 jobs:
   codecoverage:
     env:
