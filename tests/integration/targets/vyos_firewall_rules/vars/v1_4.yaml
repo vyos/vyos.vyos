@@ -85,7 +85,6 @@ overridden_commands:
   - set firewall ipv4 name Downlink rule 502 description 'Rule 502 is configured by Ansible'
   - set firewall ipv4 name Downlink rule 502 protocol 'tcp'
 
-
 rendered:
   commands:
     - set firewall ipv6 name UPLINK default-action 'accept'
