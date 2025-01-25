@@ -20,13 +20,17 @@
                   - number: 501
                     action: accept
                     description: Rule 501 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
 
                   - number: 502
                     action: reject
                     description: Rule 502 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
         state: overridden
+
+    - name: Print result
+      debug:
+        msg: "Result: {{ result }}"
 
     - name: Assert that before dicts were correctly generated
       assert:
