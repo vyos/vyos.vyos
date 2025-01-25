@@ -1,0 +1,23 @@
+---
+# Remove the lo0 interface for older versions of VyOS (pre-v1.4)
+#populate:
+#  - name: eth1
+#    enabled: true
+#    description: Configured by Ansible
+#    mtu: 1500
+#    vifs:
+#      - vlan_id: 200
+#        enabled: true
+#        description: VIF - 200
+#  - name: eth2
+#    enabled: true
+#    description: Configured by Ansible
+#    mtu: 1500
+#    vifs:
+#      - vlan_id: 200
+#        enabled: true
+#        description: VIF - 200
+#  - name: eth0
+#    enabled: true
+#    duplex: auto
+#    speed: auto
