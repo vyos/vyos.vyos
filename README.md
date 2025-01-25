@@ -1,7 +1,7 @@
 
 # VyOS Collection
 
-[![Codecov](https://codecov.io/gh/vyos/vyos.vyos/branch/main/graph/badge.svg)](https://codecov.io/gh/ansible-collections/vyos.vyos)
+[![codecov](https://codecov.io/gh/vyos/vyos.vyos/graph/badge.svg?token=J217GFD69W)](https://codecov.io/gh/vyos/vyos.vyos)
 [![CI](https://github.com/vyos/vyos.vyos/actions/workflows/tests.yml/badge.svg?branch=main&event=schedule)](https://github.com/vyos/vyos.vyos/actions/workflows/tests.yml)
 
 The Ansible VyOS collection includes a variety of Ansible content to help automate the management of VyOS network appliances.
