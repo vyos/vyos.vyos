@@ -12,25 +12,36 @@
       vyos.vyos.vyos_ntp_global: &id001
         config:
           servers:
-            - server: server1
+            - server: server1.example.com
               options:
-                - dynamic
+                - pool
                 - prefer
 
-            - server: server2
+            - server: server2.example.com
               options:
                 - noselect
-                - preempt
+                - prefer
 
-            - server: server_add
+            - server: server-add.example.com
               options:
-                - preempt
+                - prefer
         state: overridden
 
     - vyos.vyos.vyos_facts:
         gather_network_resources: ntp_global
 
-    - assert:
+    - name: debug result.after and overridden.after
+      debug:
+        msg: "{{ result.after }} != {{ overridden.after }}"
+      when: result.after != overridden.after
+
+    - name: debug ansible_facts['network_resources']['ntp_global']
+      debug:
+        msg: "{{ ansible_facts['network_resources']['ntp_global'] }}"
+      when: result.after != ansible_facts['network_resources']['ntp_global']
+
+    - name: Verify that the configuration was correctly overridden
+      assert:
         that:
           - result.changed == true
           - result.after == ansible_facts['network_resources']['ntp_global']

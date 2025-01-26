@@ -1,0 +1,129 @@
+---
+- debug: msg="START cli/basic.yaml on connection={{ ansible_connection }}"
+
+- name: Setup
+  vyos.vyos.vyos_config:
+    lines:
+      - delete system login user ssh_test_1
+      - delete system login user ssh_test_2
+      - delete system login user ssh_test_3
+
+- name: Create first user
+  register: result
+  vyos.vyos.vyos_user:
+    name: ssh_test_1
+    public_keys:
+      - name: test_key
+        key: "AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu"
+        type: ssh-ed25519
+    state: present
+
+- debug:
+    var: result
+- debug:
+    var: ssh_add['commands']
+
+- assert:
+    that:
+      - result.changed == true
+      - "{{ ssh_add['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+- name: Collection of users (SetUp)
+  register: result
+  vyos.vyos.vyos_user:
+    aggregate:
+      - name: ssh_test_2
+      - name: ssh_test_3
+    full_name: "test user"
+    public_keys:
+      - name: test_key_2
+        key: "AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu"
+        type: ssh-ed25519
+    state: present
+
+- debug:
+    var: result
+- debug:
+    var: ssh_aggregate_add['commands']
+
+- assert:
+    that:
+      - result.changed == true
+      - "{{ ssh_aggregate_add['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+- name: Add user again (Idempotent)
+  register: result
+  vyos.vyos.vyos_user:
+    name: ssh_test_1
+    public_keys:
+      - name: test_key
+        key: "AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu"
+        type: ssh-ed25519
+    state: present
+
+- assert:
+    that:
+      - result.changed == false
+      - result.commands | length == 0
+
+- name: Add collection of users (Idempotent)
+  register: result
+  vyos.vyos.vyos_user:
+    aggregate:
+      - name: ssh_test_2
+      - name: ssh_test_3
+    public_keys:
+      - name: test_key_2
+        key: "AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu"
+        type: ssh-ed25519
+    state: present
+
+- assert:
+    that:
+      - result.changed == false
+      - result.commands | length == 0
+
+- name: Change user key
+  register: result
+  vyos.vyos.vyos_user:
+    name: ssh_test_1
+    public_keys:
+      - name: test_key_3
+        key: "AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu"
+        type: ssh-ed25519
+    state: present
+
+- assert:
+    that:
+      - result.changed == True
+      - "{{ ssh_change_key['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+- name: change collection of users keys
+  register: result
+  vyos.vyos.vyos_user:
+    aggregate:
+      - name: ssh_test_2
+      - name: ssh_test_3
+    public_keys:
+      - name: test_key_4
+        key: "AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2uyuhu"
+        type: ssh-ed25519
+    state: present
+- assert:
+    that:
+      - result.changed == True
+      - "{{ ssh_aggregate_change['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+- name: tearDown
+  register: result
+  vyos.vyos.vyos_user:
+    users:
+      - name: ssh_test_1
+      - name: ssh_test_2
+      - name: ssh_test_3
+    state: absent
+
+- assert:
+    that:
+      - result.changed == true
+      - result.commands == ["delete system login user ssh_test_1", "delete system login user ssh_test_2", "delete system login user ssh_test_3"]

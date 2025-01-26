@@ -15,7 +15,7 @@
 
           - name: eth2
             description: Overridden by Ansible
-            mtu: 1200
+            mtu: 1402
         state: overridden
 
     - name: Assert that before dicts were correctly generated

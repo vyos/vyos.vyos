@@ -6,11 +6,15 @@ merged:
     - set service snmp community bridges client 1.1.1.1
     - set service snmp community bridges client 12.1.1.10
     - set service snmp listen-address 20.1.1.1
-    - set service snmp listen-address 100.1.2.1 port 33
+    - set service snmp listen-address 192.0.2.1 port 33
+    - set service snmp v3 group testgroup mode ro
+    - set service snmp v3 group testgroup view default
     - set service snmp v3 user adminuser auth type sha
-    - set service snmp v3 user adminuser auth plaintext-key ********
+    - set service snmp v3 user adminuser auth encrypted-password ********
     - set service snmp v3 user adminuser privacy type aes
-    - set service snmp v3 user adminuser privacy plaintext-key ********
+    - set service snmp v3 user adminuser privacy encrypted-password ********
+    - set service snmp v3 user adminuser group testgroup
+    - set service snmp v3 view default oid 1
     - set service snmp contact admin2@ex.com
   after:
     communities:
@@ -22,18 +26,26 @@ merged:
         name: switches
     contact: admin2@ex.com
     listen_addresses:
-      - address: 100.1.2.1
+      - address: 192.0.2.1
         port: 33
       - address: 20.1.1.1
     snmp_v3:
+      groups:
+        - group: testgroup
+          mode: ro
+          view: default
       users:
-        - authentication:
-            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+        - user: adminuser
+          authentication:
+            encrypted_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
             type: sha
           privacy:
-            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            encrypted_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
             type: aes
-          user: adminuser
+          group: testgroup
+      views:
+        - view: default
+          oid: "1"
 
 overridden:
   commands:
@@ -45,9 +57,9 @@ overridden:
     - set service snmp community bridges network 1.1.1.0/24
     - set service snmp community bridges network 12.1.1.0/24
     - set service snmp v3 user guestuser2 auth type sha
-    - set service snmp v3 user guestuser2 auth plaintext-key ********
+    - set service snmp v3 user guestuser2 auth encrypted-password ********
     - set service snmp v3 user guestuser2 privacy type aes
-    - set service snmp v3 user guestuser2 privacy plaintext-key ********
+    - set service snmp v3 user guestuser2 privacy encrypted-password ********
     - set service snmp v3 view default oid 1
     - set service snmp location \'RDU\'
 
@@ -65,17 +77,17 @@ overridden:
     snmp_v3:
       users:
         - authentication:
-            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            encrypted_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
             type: sha
           privacy:
-            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            encrypted_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
             type: aes
           user: adminuser
         - authentication:
-            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            encrypted_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
             type: sha
           privacy:
-            plaintext_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            encrypted_key: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
             type: aes
           user: guestuser2
       views:

@@ -1,0 +1,141 @@
+---
+rtt:
+  config:
+    servers:
+      - server: 10.3.6.5
+        options:
+          - noselect
+          - nts
+          - pool
+          - prefer
+
+      - server: server4.example.com
+        options:
+          - noselect
+          - pool
+
+  commands:
+    - set service ntp server server4.example.com pool
+    - set service ntp server 10.3.6.5 noselect
+    - set service ntp server 10.3.6.5 nts
+    - set service ntp server 10.3.6.5 pool
+    - set service ntp server server4.example.com noselect
+    - set service ntp server 10.3.6.5 prefer
+
+merged:
+  config:
+    servers:
+      - server: server5.example.com
+      - server: server4.example.com
+        options:
+          - noselect
+          - pool
+      - server: 10.3.6.5
+        options:
+          - noselect
+          - nts
+          - pool
+          - prefer
+
+  commands:
+    - set service ntp server server5.example.com
+    - set service ntp server server4.example.com pool
+    - set service ntp server 10.3.6.5 noselect
+    - set service ntp server 10.3.6.5 nts
+    - set service ntp server 10.3.6.5 pool
+    - set service ntp server server4.example.com noselect
+    - set service ntp server 10.3.6.5 prefer
+
+  after:
+    servers:
+      - server: 10.3.6.5
+        options:
+          - noselect
+          - nts
+          - pool
+          - prefer
+
+      - server: server4.example.com
+        options:
+          - noselect
+          - pool
+
+      - server: server5.example.com
+
+replaced:
+  commands:
+    - delete service ntp server 10.3.6.5
+    - delete service ntp server server4.example.com
+    - delete service ntp server server5.example.com
+    - set service ntp server server-new.example.com prefer
+
+  after:
+    servers:
+      - options:
+          - prefer
+        server: server-new.example.com
+
+overridden:
+  commands:
+    - delete service ntp server server-new.example.com
+    - set service ntp server server1.example.com pool
+    - set service ntp server server1.example.com prefer
+    - set service ntp server server2.example.com noselect
+    - set service ntp server server2.example.com prefer
+    - set service ntp server server-add.example.com prefer
+
+  after:
+    servers:
+      - server: server-add.example.com
+        options:
+          - prefer
+
+      - server: server1.example.com
+        options:
+          - pool
+          - prefer
+
+      - server: server2.example.com
+        options:
+          - noselect
+          - prefer
+
+deleted:
+  commands:
+    - delete service ntp server 10.3.6.5
+    - delete service ntp server server4.example.com
+    - delete service ntp server server5.example.com
+    - delete service ntp
+
+parsed:
+  config: |
+    set service ntp server 10.3.6.5 noselect
+    set service ntp server 10.3.6.5 pool
+    set service ntp server 0.pool.ntp.org
+    set service ntp server 1.pool.ntp.org
+    set service ntp server 2.pool.ntp.org
+  after:
+    servers:
+      - server: 0.pool.ntp.org
+      - server: 1.pool.ntp.org
+      - server: 10.3.6.5
+        options:
+          - noselect
+          - pool
+      - server: 2.pool.ntp.org
+
+populate:
+  config:
+    servers:
+      - server: server4.example.com
+        options:
+          - prefer
+      - server: server4.example.com
+        options:
+          - noselect
+          - pool
+      - server: 10.3.6.5
+        options:
+          - noselect
+          - prefer
+          - prefer

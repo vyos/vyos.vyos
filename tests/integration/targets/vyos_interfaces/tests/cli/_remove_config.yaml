@@ -1,17 +1,12 @@
 ---
 - name: Remove Config
-  vars:
-    lines: |-
+  ansible.netcommon.cli_config:
+    config: |-
+      {% for intf in ('eth1','eth2') %}
       delete interfaces ethernet "{{ intf }}" description
       delete interfaces ethernet "{{ intf }}" speed
       delete interfaces ethernet "{{ intf }}" duplex
       delete interfaces ethernet "{{ intf }}" mtu
       delete interfaces ethernet "{{ intf }}" disable
       delete interfaces ethernet "{{ intf }}" vif
-  loop:
-    - eth1
-    - eth2
-  loop_control:
-    loop_var: intf
-  ansible.netcommon.cli_config:
-    config: "{{ lines }}"
+      {% endfor %}

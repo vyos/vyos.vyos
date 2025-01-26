@@ -24,12 +24,12 @@
                   - number: 101
                     action: accept
                     description: Rule 101 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
 
                   - number: 102
                     action: reject
                     description: Rule 102 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
 
                   - number: 103
                     action: accept

@@ -719,7 +719,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>syslog communication protocol</div>
+                        <div>syslog communication protocol. Version 1.3 and below.</div>
                 </td>
             </tr>
             <tr>
@@ -784,6 +784,27 @@ Parameters
                 </td>
                 <td>
                         <div>Destination port (1-65535)</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>protocol</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>udp</li>
+                                    <li>tcp</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>syslog communication protocol. Version 1.4+</div>
                 </td>
             </tr>
 
@@ -1003,7 +1024,7 @@ Notes
 -----
 
 .. note::
-   - Tested against vyos 1.2
+   - Tested against vyos 1.3.8+
    - This module works with connection ``network_cli``.
    - The Configuration defaults of the Vyos network devices are supposed to hinder idempotent behavior of plays
 
@@ -1559,7 +1580,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                       <span style="color: purple">dictionary</span>
                     </div>
                 </td>
-                <td>when state is <em>merged</em>, <em>replaced</em>, <em>overridden</em>, <em>deleted</em> or <em>purged</em></td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
                 <td>
                             <div>The configuration prior to the module execution.</div>
                     <br/>
@@ -1576,7 +1597,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                       <span style="color: purple">list</span>
                     </div>
                 </td>
-                <td>when state is <em>merged</em>, <em>replaced</em>, <em>overridden</em>, <em>deleted</em> or <em>purged</em></td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
                 <td>
                             <div>The set of commands pushed to the remote device.</div>
                     <br/>
@@ -1593,7 +1614,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                       <span style="color: purple">list</span>
                     </div>
                 </td>
-                <td>when state is <em>gathered</em></td>
+                <td>when <em>state</em> is <code>gathered</code></td>
                 <td>
                             <div>Facts about the network resource gathered from the remote device as structured data.</div>
                     <br/>
@@ -1610,7 +1631,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                       <span style="color: purple">list</span>
                     </div>
                 </td>
-                <td>when state is <em>parsed</em></td>
+                <td>when <em>state</em> is <code>parsed</code></td>
                 <td>
                             <div>The device native config provided in <em>running_config</em> option parsed into structured data as per module argspec.</div>
                     <br/>
@@ -1627,12 +1648,12 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                       <span style="color: purple">list</span>
                     </div>
                 </td>
-                <td>when state is <em>rendered</em></td>
+                <td>when <em>state</em> is <code>rendered</code></td>
                 <td>
                             <div>The provided configuration in the task rendered in device-native format (offline).</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set system syslog host 172.16.0.1 port 223&#x27;, &#x27;set system syslog user vyos facility local7 level debug&#x27;, &#x27;set system syslog global facility cron level debug&#x27;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set system syslog host 172.16.0.1 port 223&#x27;, &#x27;set system syslog user vyos facility local7 level debug&#x27;, &#x27;set system syslog global facility cron level debu&#x27;]</div>
                 </td>
             </tr>
     </table>

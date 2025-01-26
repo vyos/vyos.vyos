@@ -1,0 +1,12 @@
+---
+minor_changes:
+  - fix integration tests for `l3_interfaces`
+  - fix integration tests for `interfaces`
+  - fix replace in interfaces to remove vif completely if not present in new config
+  - fix override in interfaces to remove vif completely if not present in new config
+  - fix delete in interfaces to remove vif completely if in affected interface
+  - added unit test for unknown interface type
+
+known_issues:
+  - integration tests for `interfaces` fail for 1.3 and below due to
+    mtu setting issue when a `vif` is defined.

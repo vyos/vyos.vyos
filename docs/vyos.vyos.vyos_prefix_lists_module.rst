@@ -1481,12 +1481,12 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>after</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
-                      <span style="color: purple">list</span>
+                      <span style="color: purple">dictionary</span>
                     </div>
                 </td>
                 <td>when changed</td>
                 <td>
-                            <div>The resulting configuration after the module invocation.</div>
+                            <div>The resulting configuration after module execution.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
@@ -1498,12 +1498,12 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>before</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
-                      <span style="color: purple">list</span>
+                      <span style="color: purple">dictionary</span>
                     </div>
                 </td>
-                <td>when state is <em>merged</em>, <em>replaced</em>, <em>overridden</em> or <em>deleted</em></td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
                 <td>
-                            <div>The configuration prior to the module invocation.</div>
+                            <div>The configuration prior to the module execution.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
@@ -1518,9 +1518,9 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                       <span style="color: purple">list</span>
                     </div>
                 </td>
-                <td>when state is <em>merged</em>, <em>replaced</em>, <em>overridden</em> or <em>deleted</em></td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
                 <td>
-                            <div>The set of commands pushed to the remote device for the required configurations to take place.</div>
+                            <div>The set of commands pushed to the remote device.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set policy prefix-list AnsibleIPv4PrefixList description &#x27;PL configured by ansible&#x27;&quot;, &quot;set policy prefix-list AnsibleIPv4PrefixList rule 2 action &#x27;permit&#x27;&quot;, &quot;set policy prefix-list6 AllowIPv6Prefix description &#x27;Configured by ansible for allowing IPv6 networks&#x27;&quot;]</div>
@@ -1535,7 +1535,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                       <span style="color: purple">list</span>
                     </div>
                 </td>
-                <td>when state is <em>gathered</em></td>
+                <td>when <em>state</em> is <code>gathered</code></td>
                 <td>
                             <div>Facts about the network resource gathered from the remote device as structured data.</div>
                     <br/>
@@ -1552,7 +1552,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                       <span style="color: purple">list</span>
                     </div>
                 </td>
-                <td>when state is <em>parsed</em></td>
+                <td>when <em>state</em> is <code>parsed</code></td>
                 <td>
                             <div>The device native config provided in <em>running_config</em> option parsed into structured data as per module argspec.</div>
                     <br/>
@@ -1569,7 +1569,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                       <span style="color: purple">list</span>
                     </div>
                 </td>
-                <td>when state is <em>rendered</em></td>
+                <td>when <em>state</em> is <code>rendered</code></td>
                 <td>
                             <div>The provided configuration in the task rendered in device-native format (offline).</div>
                     <br/>

@@ -26,15 +26,14 @@
   vyos.vyos.vyos_user:
     aggregate:
       - name: ansibletest2
-
       - name: ansibletest3
-    level: operator
+    full_name: "test user"
     state: present
 
 - assert:
     that:
       - result.changed == true
-      - result.commands == ["set system login user ansibletest2 level operator", "set system login user ansibletest3 level operator"]
+      - result.commands == ["set system login user ansibletest2 full-name 'test user'", "set system login user ansibletest3 full-name 'test user'"]
 
 - name: Add user again (Idempotent)
   register: result
@@ -56,7 +55,6 @@
       - name: ansibletest2
 
       - name: ansibletest3
-    level: operator
     state: present
 
 - assert:

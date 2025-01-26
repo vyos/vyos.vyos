@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright 2021 Red Hat
+# Copyright 2024 Red Hat
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
@@ -1244,24 +1244,23 @@ EXAMPLES = """
 """
 
 RETURN = """
-
 before:
-  description: The configuration prior to the module invocation.
-  returned: when state is I(merged), I(replaced), I(overridden) or I(deleted)
-  type: list
+  description: The configuration prior to the module execution.
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
+  type: dict
   sample: >
     This output will always be in the same format as the
     module argspec.
 after:
-  description: The resulting configuration after the module invocation.
+  description: The resulting configuration after module execution.
   returned: when changed
-  type: list
+  type: dict
   sample: >
     This output will always be in the same format as the
     module argspec.
 commands:
-  description: The set of commands pushed to the remote device for the required configurations to take place.
-  returned: when state is I(merged), I(replaced), I(overridden) or I(deleted)
+  description: The set of commands pushed to the remote device.
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
   type: list
   sample:
     - set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
@@ -1269,7 +1268,7 @@ commands:
     - set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
 rendered:
   description: The provided configuration in the task rendered in device-native format (offline).
-  returned: when state is I(rendered)
+  returned: when I(state) is C(rendered)
   type: list
   sample:
     - set policy prefix-list AnsibleIPv4PrefixList description 'PL configured by ansible'
@@ -1277,21 +1276,19 @@ rendered:
     - set policy prefix-list6 AllowIPv6Prefix description 'Configured by ansible for allowing IPv6 networks'
 gathered:
   description: Facts about the network resource gathered from the remote device as structured data.
-  returned: when state is I(gathered)
+  returned: when I(state) is C(gathered)
   type: list
   sample: >
     This output will always be in the same format as the
     module argspec.
 parsed:
   description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
-  returned: when state is I(parsed)
+  returned: when I(state) is C(parsed)
   type: list
   sample: >
     This output will always be in the same format as the
     module argspec.
-
 """
-
 
 from ansible.module_utils.basic import AnsibleModule
 

@@ -17,17 +17,25 @@
           contact: admin2@ex.com
           listen_addresses:
             - address: 20.1.1.1
-            - address: 100.1.2.1
+            - address: 192.0.2.1
               port: 33
           snmp_v3:
+            views:
+              - view: default
+                oid: 1
+            groups:
+              - group: testgroup
+                mode: ro
+                view: default
             users:
               - user: adminuser
                 authentication:
-                  plaintext_key: abc1234567
+                  encrypted_key: 33f8bfd6b69ee03a184818a4daea503c9e579633
                   type: sha
                 privacy:
-                  plaintext_key: abc1234567
+                  encrypted_key: 33f8bfd6b69ee03a184818a4daea503c9e579633
                   type: aes
+                group: testgroup
         state: rendered
 
     - assert:

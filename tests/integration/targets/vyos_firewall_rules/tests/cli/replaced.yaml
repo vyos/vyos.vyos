@@ -26,12 +26,12 @@
                   - number: 101
                     action: accept
                     description: Rule 101 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
 
                   - number: 104
                     action: reject
                     description: Rule 104 is configured by Ansible
-                    ipsec: match-none
+                    protocol: udp
         state: replaced
 
     - name: Assert that correct set of commands were generated
