@@ -66,5 +66,6 @@ jobs:
         with:
           directory: ${{ steps.identify.outputs.collection_path }}
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
