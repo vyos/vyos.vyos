@@ -353,7 +353,7 @@ EXAMPLES = """
 # - delete interfaces ethernet eth2 speed
 # - delete interfaces ethernet eth2 duplex
 # - delete interfaces ethernet eth2 mtu
-# - delete interfaces ethernet eth2 vif 200 description
+# - delete interfaces ethernet eth2 vif 200
 # - set interfaces ethernet eth2 description 'Replaced by Ansible'
 # - delete interfaces ethernet eth3 speed
 # - delete interfaces ethernet eth3 duplex
@@ -375,9 +375,6 @@ EXAMPLES = """
 # - description: Replaced by Ansible
 #   enabled: true
 #   name: eth2
-#   vifs:
-#   - enabled: true
-#     vlan_id: '200'
 # - description: Replaced by Ansible
 #   enabled: true
 #   name: eth1
@@ -405,7 +402,6 @@ EXAMPLES = """
 # set interfaces ethernet eth2 description 'Replaced by Ansible'
 # set interfaces ethernet eth2 hw-id '08:00:27:c2:98:23'
 # set interfaces ethernet eth2 smp-affinity 'auto'
-# set interfaces ethernet eth2 vif 200
 # set interfaces ethernet eth3 description 'Replaced by Ansible'
 # set interfaces ethernet eth3 hw-id '08:00:27:43:70:8c'
 # set interfaces loopback lo
@@ -490,8 +486,7 @@ EXAMPLES = """
 # - delete interfaces vti vti1 mtu
 # - delete interfaces ethernet eth1 description
 # - delete interfaces ethernet eth1 mtu
-# - delete interfaces ethernet eth1 vif 100 description
-# - delete interfaces ethernet eth1 vif 100 disable
+# - delete interfaces ethernet eth1 vif 100
 # - delete interfaces ethernet eth0 mtu
 # - set interfaces ethernet eth0 description 'Outbound Interface For The Appliance'
 # - delete interfaces ethernet eth2 description
@@ -515,9 +510,6 @@ EXAMPLES = """
 #   speed: auto
 # - enabled: true
 #   name: eth1
-#   vifs:
-#   - enabled: true
-#     vlan_id: '100'
 # - description: Outbound Interface For The Appliance
 #   duplex: auto
 #   enabled: true
@@ -536,7 +528,6 @@ EXAMPLES = """
 # set interfaces ethernet eth0 speed 'auto'
 # set interfaces ethernet eth1 hw-id '08:00:27:ea:0f:b9'
 # set interfaces ethernet eth1 smp-affinity 'auto'
-# set interfaces ethernet eth1 vif 100
 # set interfaces ethernet eth2 duplex 'auto'
 # set interfaces ethernet eth2 hw-id '08:00:27:c2:98:23'
 # set interfaces ethernet eth2 smp-affinity 'auto'
