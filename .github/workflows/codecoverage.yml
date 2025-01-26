@@ -62,9 +62,10 @@ jobs:
         working-directory: ${{ steps.identify.outputs.collection_path }}
 
       - name: Upload coverage report to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           directory: ${{ steps.identify.outputs.collection_path }}
           fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

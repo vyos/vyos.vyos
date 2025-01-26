@@ -59,6 +59,8 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
             "facts.interfaces.interfaces.InterfacesFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
+        # define the default fixture for the vyos_interfaces module
+        self.fixture_path = "vyos_interfaces_config.cfg"
 
     def tearDown(self):
         super(TestVyosFirewallInterfacesModule, self).tearDown()
@@ -70,7 +72,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
 
     def load_fixtures(self, commands=None, filename=None):
         def load_from_file(*args, **kwargs):
-            return load_fixture("vyos_interfaces_config.cfg")
+            return load_fixture(self.fixture_path)
 
         self.execute_show_command.side_effect = load_from_file
 
@@ -90,6 +92,52 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
             "set interfaces bonding bond1 description 'Bond - 1'",
             "set interfaces openvpn vtun1 description 'vtun - 1'",
             "set interfaces wireguard wg01 description 'wg - 1'",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_merged_retain_vif(self):
+        # we have a vif in eth1 at this point, so that should be retained
+        self.fixture_path = "vyos_interfaces_config_vif.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(name="bond1", description="Bond - 1", enabled=True),
+                    dict(name="vtun1", description="vtun - 1", enabled=True),
+                    dict(name="wg01", description="wg - 1", enabled=True),
+                ],
+                state="merged",
+            ),
+        )
+
+        commands = [
+            "set interfaces bonding bond1 description 'Bond - 1'",
+            "set interfaces openvpn vtun1 description 'vtun - 1'",
+            "set interfaces wireguard wg01 description 'wg - 1'",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_merged_additional_vif(self):
+        # we have a vif in eth1 at this point, so that should be retained
+        self.fixture_path = "vyos_interfaces_config_vif.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth1",
+                        vifs=[
+                            dict(
+                                vlan_id=105,
+                                description="vlan 105",
+                            ),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+
+        commands = [
+            "set interfaces ethernet eth1 vif 105 description 'vlan 105'",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -159,6 +207,102 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+    def test_vyos_interfaces_replaced_remove_vif(self):
+        # we have a vif in eth1 at this point, so that should be removed
+        self.fixture_path = "vyos_interfaces_config_vif.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth4",
+                        description="Ethernet 4",
+                        enabled=True,
+                        speed="auto",
+                        duplex="auto",
+                    ),
+                    dict(name="eth1", description="Configured by Ansible"),
+                ],
+                state="replaced",
+            ),
+        )
+
+        commands = [
+            "delete interfaces ethernet eth1 vif 200",
+            "delete interfaces ethernet eth1 vif 201",
+            "set interfaces ethernet eth1 description 'Configured by Ansible'",
+            "set interfaces ethernet eth4 description 'Ethernet 4'",
+            "set interfaces ethernet eth4 duplex 'auto'",
+            "set interfaces ethernet eth4 speed 'auto'",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_merged_enable_vif(self):
+        # merge in enabling vif
+        self.fixture_path = "vyos_interfaces_config_vif.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth1",
+                        vifs=[
+                            dict(
+                                vlan_id=201,
+                                enabled=True,
+                            ),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+
+        commands = [
+            "delete interfaces ethernet eth1 vif 201 disable",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_replaced_retain_vif(self):
+        # we have a vif in eth1 at this point, so that should be removed
+        self.fixture_path = "vyos_interfaces_config_vif.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth4",
+                        description="Ethernet 4",
+                        enabled=True,
+                        speed="auto",
+                        duplex="auto",
+                    ),
+                    dict(
+                        name="eth1",
+                        description="Configured by Ansible",
+                        vifs=[
+                            dict(
+                                vlan_id=200,
+                            ),
+                            dict(
+                                vlan_id=201,
+                                description="VIF eth1.201",
+                                enabled=True,
+                            ),
+                        ],
+                    ),
+                ],
+                state="replaced",
+            ),
+        )
+
+        commands = [
+            "delete interfaces ethernet eth1 vif 200 description",
+            "delete interfaces ethernet eth1 vif 201 disable",
+            "set interfaces ethernet eth1 description 'Configured by Ansible'",
+            "set interfaces ethernet eth4 description 'Ethernet 4'",
+            "set interfaces ethernet eth4 duplex 'auto'",
+            "set interfaces ethernet eth4 speed 'auto'",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
     def test_vyos_interfaces_overridden_newinterface(self):
         set_module_args(
             dict(
@@ -187,6 +331,38 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+    def test_vyos_overridden_remove_vif(self):
+        # we have a vif in eth1 at this point, so that should be removed
+        self.fixture_path = "vyos_interfaces_config_vif.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth4",
+                        description="Ethernet 4",
+                        enabled=True,
+                        speed="auto",
+                        duplex="auto",
+                    ),
+                    dict(name="eth1", description="Configured by Ansible"),
+                ],
+                state="overridden",
+            ),
+        )
+
+        commands = [
+            "set interfaces ethernet eth1 description 'Configured by Ansible'",
+            "set interfaces ethernet eth4 description 'Ethernet 4'",
+            "set interfaces ethernet eth4 duplex 'auto'",
+            "set interfaces ethernet eth4 speed 'auto'",
+            "delete interfaces wireguard wg02 description",
+            "delete interfaces ethernet eth3 description",
+            "delete interfaces ethernet eth3 disable",
+            "delete interfaces ethernet eth1 vif 200",
+            "delete interfaces ethernet eth1 vif 201",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
     def test_vyos_interfaces_idempotent_disable(self):
         set_module_args(
             dict(
@@ -198,7 +374,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="merged",
-            )
+            ),
         )
 
         commands = []
@@ -215,8 +391,62 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
 
         commands = []
         self.execute_module(changed=False, commands=commands)
+
+    def test_vyos_interfaces_deleted_remove_vif(self):
+        # we have a vif in eth1 at this point, so that should be removed
+        self.fixture_path = "vyos_interfaces_config_vif.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(name="eth1"),
+                ],
+                state="deleted",
+            ),
+        )
+
+        commands = [
+            "delete interfaces ethernet eth1 vif 200",
+            "delete interfaces ethernet eth1 vif 201",
+            "delete interfaces ethernet eth1 description",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_deleted_remove_all(self):
+        # we have a vif in eth1 at this point, so that should be removed
+        set_module_args(
+            dict(
+                config=[],
+                state="deleted",
+            ),
+        )
+
+        commands = [
+            "delete interfaces ethernet eth1 description",
+            "delete interfaces ethernet eth3 description",
+            "delete interfaces ethernet eth3 disable",
+            "delete interfaces wireguard wg02 description",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_replaced_bad_name(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="int4",
+                        description="Ethernet 4",
+                        enabled=True,
+                        speed="auto",
+                        duplex="auto",
+                    ),
+                ],
+                state="replaced",
+            ),
+        )
+
+        self.execute_module(failed=True)

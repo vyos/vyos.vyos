@@ -1,17 +1,15 @@
 ---
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
 - ansible.builtin.include_tasks: _remove_config.yaml
 
 - name: Setup
-  vars:
-    lines: |-
+  ansible.netcommon.cli_config:
+    config: |-
+      {% for intf in ('eth1','eth2') %}
       set interfaces ethernet "{{ intf }}" description 'Configured by Ansible'
       set interfaces ethernet "{{ intf }}" mtu '1500'
       set interfaces ethernet "{{ intf }}" vif 200
       set interfaces ethernet "{{ intf }}" vif 200 description 'VIF - 200'
-  loop:
-    - eth1
-    - eth2
-  loop_control:
-    loop_var: intf
-  ansible.netcommon.cli_config:
-    config: "{{ lines }}"
+      {% endfor %}
