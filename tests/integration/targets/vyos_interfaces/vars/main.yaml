@@ -63,10 +63,10 @@ populate:
 replaced:
   commands:
     - delete interfaces ethernet eth1 mtu
-    - delete interfaces ethernet eth1 vif 200 description
+    - delete interfaces ethernet eth1 vif 200
     - set interfaces ethernet eth1 description 'Replaced by Ansible'
     - set interfaces ethernet eth1 vif 100 description 'VIF 100 - Replaced by Ansible'
-    - delete interfaces ethernet eth2 vif 200 description
+    - delete interfaces ethernet eth2 vif 200
     - set interfaces ethernet eth2 description 'Replaced by Ansible'
     - set interfaces ethernet eth2 mtu '1400'
   after:
@@ -77,15 +77,10 @@ replaced:
         - vlan_id: 100
           enabled: true
           description: VIF 100 - Replaced by Ansible
-        - vlan_id: 200
-          enabled: true
     - name: eth2
       mtu: 1400
       description: Replaced by Ansible
       enabled: true
-      vifs:
-        - vlan_id: 200
-          enabled: true
     - name: eth0
       enabled: true
       duplex: auto
@@ -112,8 +107,8 @@ overridden:
   commands:
     - delete interfaces ethernet eth1 description
     - delete interfaces ethernet eth1 mtu
-    - delete interfaces ethernet eth1 vif 200 description
-    - delete interfaces ethernet eth2 vif 200 description
+    - delete interfaces ethernet eth1 vif 200
+    - delete interfaces ethernet eth2 vif 200
     - set interfaces ethernet eth2 description 'Overridden by Ansible'
     - set interfaces ethernet eth2 mtu '1402'
   after:
@@ -123,16 +118,10 @@ overridden:
       duplex: auto
     - name: eth1
       enabled: true
-      vifs:
-        - vlan_id: 200
-          enabled: true
     - name: eth2
       enabled: true
       description: Overridden by Ansible
       mtu: 1402
-      vifs:
-        - vlan_id: 200
-          enabled: true
 rendered:
   commands:
     - set interfaces ethernet eth1 description 'Configured by Ansible - Interface 1'
@@ -147,10 +136,10 @@ deleted:
   commands:
     - delete interfaces ethernet eth1 description
     - delete interfaces ethernet eth1 mtu
-    - delete interfaces ethernet eth1 vif 200 description
+    - delete interfaces ethernet eth1 vif 200
     - delete interfaces ethernet eth2 description
     - delete interfaces ethernet eth2 mtu
-    - delete interfaces ethernet eth2 vif 200 description
+    - delete interfaces ethernet eth2 vif 200
   after:
     - name: eth0
       enabled: true
@@ -158,14 +147,8 @@ deleted:
       duplex: auto
     - name: eth1
       enabled: true
-      vifs:
-        - vlan_id: 200
-          enabled: true
     - name: eth2
       enabled: true
-      vifs:
-        - vlan_id: 200
-          enabled: true
 round_trip:
   after:
     - name: eth0
