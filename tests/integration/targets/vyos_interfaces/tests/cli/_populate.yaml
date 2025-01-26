@@ -7,11 +7,9 @@
 - name: Setup
   ansible.netcommon.cli_config:
     config: |-
-      set interfaces ethernet "eth1" description 'Configured by Ansible'
-      set interfaces ethernet "eth1" mtu '1500'
-      set interfaces ethernet "eth1" vif 200
-      set interfaces ethernet "eth1" vif 200 description 'VIF - 200'
-      set interfaces ethernet "eth2" description 'Configured by Ansible'
-      set interfaces ethernet "eth2" mtu '1500'
-      set interfaces ethernet "eth2" vif 200
-      set interfaces ethernet "eth2" vif 200 description 'VIF - 200'
+      {% for intf in ('eth1','eth2') %}
+      set interfaces ethernet "{{ intf }}" description 'Configured by Ansible'
+      set interfaces ethernet "{{ intf }}" mtu '1500'
+      set interfaces ethernet "{{ intf }}" vif 200
+      set interfaces ethernet "{{ intf }}" vif 200 description 'VIF - 200'
+      {% endfor %}

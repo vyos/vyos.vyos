@@ -1,7 +1,8 @@
 ---
 minor_changes:
   - fix integration tests for `l3_interfaces`
-  - fix integration tests for `interfaces` (still failing occasionally in 1.3 and below)
+  - fix integration tests for `interfaces`
 
 known_issues:
-  - integration tests for `interfaces` are still failing occasionally in 1.3 and below
+  - integration tests for `interfaces` fail for 1.3 and below due to
+    mtu setting issue when a `vif` is defined.
