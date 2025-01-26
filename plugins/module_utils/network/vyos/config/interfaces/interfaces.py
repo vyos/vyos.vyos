@@ -307,19 +307,15 @@ class Interfaces(ConfigBase):
                             remove=True,
                         ),
                     )
-                if have_vif["enabled"] is False:
-                    commands.append(
-                        self._compute_commands(
-                            key="enabled",
-                            value=True,
-                            interface=want_copy["name"],
-                            vif=want_vif["vlan_id"],
-                        ),
-                    )
         return commands
 
     def _compute_commands(self, interface, key, vif=None, value=None, remove=False):
-        intf_context = "interfaces {0} {1}".format(get_interface_type(interface), interface)
+        interface_type = get_interface_type(interface)
+        if not interface_type:
+            self._module.fail_json(
+                msg="interface {0} is not a valid interface type".format(interface),
+            )
+        intf_context = "interfaces {0} {1}".format(interface_type, interface)
         set_cmd = "set {0}".format(intf_context)
         del_cmd = "delete {0}".format(intf_context)
 
