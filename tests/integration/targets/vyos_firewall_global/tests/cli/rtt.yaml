@@ -12,7 +12,7 @@
       vyos.vyos.vyos_firewall_global:
         config:
           validation: strict
-          config_trap: true
+          # config_trap: true
           log_martians: true
           syn_cookies: true
           twa_hazards_protection: true
