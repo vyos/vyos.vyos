@@ -1,6 +1,18 @@
 ---
 - ansible.builtin.include_tasks: _remove_config.yaml
 
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
+- name: Setup {{ vyos_version }}
+  vyos.vyos.vyos_config:
+    lines: "{{ populate_config }}"
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
+    
+---
+- ansible.builtin.include_tasks: _remove_config.yaml
+
 - name: Setup
   vars:
     lines: >-
