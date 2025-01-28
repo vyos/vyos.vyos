@@ -1,3 +1,3 @@
 ---
 breaking_changes:
-  - firewall_rules - p2p: The code and the corresponding documentation and configuration should be removed as deprecated since 1.2
+  - firewall_rules - p2p -> the code and the corresponding documentation and configuration should be removed as deprecated since 1.2
