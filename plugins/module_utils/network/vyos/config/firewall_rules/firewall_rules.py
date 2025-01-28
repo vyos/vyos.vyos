@@ -406,8 +406,6 @@ class Firewall_rules(ConfigBase):
                                 and not self._is_del(l_set, h)
                             ):
                                 commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
-                        elif key == "p2p":
-                            commands.extend(self._add_p2p(key, w, h, cmd, opr))
                         elif key == "tcp":
                             commands.extend(self._add_tcp(key, w, h, cmd, opr))
                         elif key == "time":
@@ -428,31 +426,6 @@ class Firewall_rules(ConfigBase):
                             commands.extend(self._add_packet_length(key, w, h, cmd, opr))
                         elif key in ("inbound_interface", "outbound_interface"):
                             commands.extend(self._add_interface(key, w, h, cmd, opr))
-        return commands
-
-    def _add_p2p(self, attr, w, h, cmd, opr):
-        """
-        This function forms the set/delete commands based on the 'opr' type
-        for p2p applications attributes.
-        :param want: desired config.
-        :param have: target config.
-        :return: generated commands list.
-        """
-        commands = []
-        have = []
-        if w:
-            want = w.get(attr) or []
-        if h:
-            have = h.get(attr) or []
-        if want:
-            if opr:
-                applications = list_diff_want_only(want, have)
-                for app in applications:
-                    commands.append(cmd + (" " + attr + " " + app["application"]))
-            elif not opr and have:
-                applications = list_diff_want_only(want, have)
-                for app in applications:
-                    commands.append(cmd + (" " + attr + " " + app["application"]))
         return commands
 
     def _add_state(self, attr, w, h, cmd, opr):

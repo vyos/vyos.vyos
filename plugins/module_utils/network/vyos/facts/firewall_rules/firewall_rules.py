@@ -224,7 +224,6 @@ class Firewall_rulesFacts(object):
         ]
         rule = self.parse_attr(conf, a_lst)
         r_sub = {
-            "p2p": self.parse_p2p(conf),
             "tcp": self.parse_tcp(conf),
             "icmp": self.parse_icmp(conf, "icmp"),
             "time": self.parse_time(conf, "time"),
@@ -268,23 +267,6 @@ class Firewall_rulesFacts(object):
                 obj = {"length": l.strip("'")}
                 lengths.append(obj)
         return lengths
-
-    def parse_p2p(self, conf):
-        """
-        This function forms the regex to fetch the 'p2p' with in
-        'rules'
-        :param conf: configuration data.
-        :return: generated rule list configuration.
-        """
-        a_lst = []
-        applications = findall(r"p2p (?:\'*)(\d+)(?:\'*)", conf, M)
-        if applications:
-            app_lst = []
-            for r in set(applications):
-                obj = {"application": r.strip("'")}
-                app_lst.append(obj)
-            a_lst = sorted(app_lst, key=lambda i: i["application"])
-        return a_lst
 
     def parse_src_or_dest(self, conf, attrib=None):
         """
