@@ -1,0 +1,52 @@
+---
+merged_commands:
+  - set policy route-map test1 rule 1 description test
+  - set policy route-map test1 rule 1 action permit
+  - set policy route-map test1 rule 1 continue 2
+  - set policy route-map test3 rule 1 action permit
+  - set policy route-map test3 rule 1 set local-preference 4
+  - set policy route-map test3 rule 1 set metric 5
+  - set policy route-map test3 rule 1 set metric-type type-1
+  - set policy route-map test3 rule 1 set origin egp
+  - set policy route-map test3 rule 1 set originator-id 192.0.2.34
+  - set policy route-map test3 rule 1 set tag 5
+  - set policy route-map test3 rule 1 set weight 4
+  - set policy route-map test3 rule 1 match metric 1
+  - set policy route-map test3 rule 1 match peer 192.0.2.32
+
+replaced_commands:
+  - delete policy route-map test3 rule 1 set ip-next-hop 192.0.2.33
+  - set policy route-map test3 rule 1 set local-preference 6
+  - set policy route-map test3 rule 1 set metric 4
+  - set policy route-map test3 rule 1 set tag 4
+  - delete policy route-map test3 rule 1 set community
+  - set policy route-map test3 rule 1 match metric 3
+  - set policy route-map test3 rule 1 match peer 192.0.2.35
+
+overridden_commands:
+  - delete policy route-map test2
+  - delete policy route-map test3 rule 1 set ip-next-hop 192.0.2.33
+  - set policy route-map test3 rule 1 set local-preference 6
+  - set policy route-map test3 rule 1 set metric 4
+  - set policy route-map test3 rule 1 set tag 4
+  - delete policy route-map test3 rule 1 set community
+  - set policy route-map test3 rule 1 match metric 3
+  - set policy route-map test3 rule 1 match peer 192.0.2.35
+
+populate_config:
+  - set policy route-map test2 rule 1 action 'permit'
+  - set policy route-map test2 rule 1 description 'test'
+  - set policy route-map test2 rule 2 action 'permit'
+  - set policy route-map test2 rule 2 on-match goto '4'
+  - set policy route-map test3 rule 1 action 'permit'
+  - set policy route-map test3 rule 1 match metric '1'
+  - set policy route-map test3 rule 1 match peer '192.0.2.32'
+  - set policy route-map test3 rule 1 set community
+  - set policy route-map test3 rule 1 set ip-next-hop '192.0.2.33'
+  - set policy route-map test3 rule 1 set local-preference '4'
+  - set policy route-map test3 rule 1 set metric '5'
+  - set policy route-map test3 rule 1 set metric-type 'type-1'
+  - set policy route-map test3 rule 1 set origin 'egp'
+  - set policy route-map test3 rule 1 set originator-id '192.0.2.34'
+  - set policy route-map test3 rule 1 set tag '5'
+  - set policy route-map test3 rule 1 set weight '4'
