@@ -19,7 +19,7 @@ replaced_commands:
   - set policy route-map test3 rule 1 set local-preference 6
   - set policy route-map test3 rule 1 set metric 4
   - set policy route-map test3 rule 1 set tag 4
-  - delete policy route-map test3 rule 1 set community
+  - delete policy route-map test3 rule 1 set community none
   - set policy route-map test3 rule 1 match metric 3
   - set policy route-map test3 rule 1 match peer 192.0.2.35
 
@@ -29,7 +29,7 @@ overridden_commands:
   - set policy route-map test3 rule 1 set local-preference 6
   - set policy route-map test3 rule 1 set metric 4
   - set policy route-map test3 rule 1 set tag 4
-  - delete policy route-map test3 rule 1 set community
+  - delete policy route-map test3 rule 1 set community none
   - set policy route-map test3 rule 1 match metric 3
   - set policy route-map test3 rule 1 match peer 192.0.2.35
 
@@ -41,7 +41,7 @@ populate_config:
   - set policy route-map test3 rule 1 action 'permit'
   - set policy route-map test3 rule 1 match metric '1'
   - set policy route-map test3 rule 1 match peer '192.0.2.32'
-  - set policy route-map test3 rule 1 set community
+  - set policy route-map test3 rule 1 set community none
   - set policy route-map test3 rule 1 set ip-next-hop '192.0.2.33'
   - set policy route-map test3 rule 1 set local-preference '4'
   - set policy route-map test3 rule 1 set metric '5'
