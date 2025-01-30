@@ -652,7 +652,10 @@ class Firewall_global(ConfigBase):
         if attr:
             cmd += attr.replace("_", "-")
         if val and opr:
-            cmd += " '" + str(val) + "'"
+            if key == "state_policy" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                cmd += ""
+            else:
+                cmd += " '" + str(val) + "'"
         return cmd.strip()
 
     def _bool_to_str(self, val):
