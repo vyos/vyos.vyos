@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - firewall_rules - Fix limit parameter processing

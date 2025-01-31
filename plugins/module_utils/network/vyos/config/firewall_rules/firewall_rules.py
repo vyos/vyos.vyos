@@ -778,7 +778,7 @@ class Firewall_rules(ConfigBase):
                     if opr and not (
                         h_limit
                         and self._is_w_same(rate, h_limit, "unit")
-                        and self.is_w_same(rate, h_limit, "number")
+                        and self._is_w_same(rate, h_limit, "number")
                     ):
                         commands.append(
                             cmd
