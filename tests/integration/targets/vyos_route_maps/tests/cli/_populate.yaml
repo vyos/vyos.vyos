@@ -1,8 +1,8 @@
 ---
 - ansible.builtin.include_tasks: _remove_config.yaml
 
-- name: ensure facts
-  include_tasks: _get_version.yaml
+# - name: ensure facts
+#   include_tasks: _get_version.yaml
 
 - name: Setup {{ vyos_version }}
   vyos.vyos.vyos_config:
