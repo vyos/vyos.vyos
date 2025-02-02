@@ -352,24 +352,6 @@ options:
                   - Packet type match.
                 type: str
                 choices: ['broadcast', 'multicast', 'host', 'other']
-              p2p:
-                description:
-                - P2P application packets.
-                type: list
-                elements: dict
-                suboptions:
-                  application:
-                    description:
-                    - Name of the application.
-                    type: str
-                    choices:
-                    - all
-                    - applejuice
-                    - bittorrent
-                    - directconnect
-                    - edonkey
-                    - gnutella
-                    - kazaa
               protocol:
                 description:
                 - Protocol to match (protocol name in /etc/protocols or protocol number
