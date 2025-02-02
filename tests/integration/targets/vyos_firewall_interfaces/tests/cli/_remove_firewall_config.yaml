@@ -1,5 +1,4 @@
 ---
-
 - name: ensure facts
   include_tasks: _get_version.yaml
 
