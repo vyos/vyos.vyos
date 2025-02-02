@@ -3,6 +3,7 @@ breaking_changes:
   - if "address" is available, merge will cause it to be added, in contrast to
     the previous behavior where it was replaced. When used in replace mode, it
     will remove any existing addresses and replace them with the new one.
+  - civic_address is no longer a valid key (removed prior to 1.3)
 
 minor_changes:
   - lldp_global address is now addresses, with appropriate coercion

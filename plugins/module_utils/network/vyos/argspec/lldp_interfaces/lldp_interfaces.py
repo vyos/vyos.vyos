@@ -45,29 +45,6 @@ class Lldp_interfacesArgs(object):  # pylint: disable=R0903
                 "enable": {"default": True, "type": "bool"},
                 "location": {
                     "options": {
-                        "civic_based": {
-                            "options": {
-                                "ca_info": {
-                                    "elements": "dict",
-                                    "options": {
-                                        "ca_type": {
-                                            "required": True,
-                                            "type": "int",
-                                        },
-                                        "ca_value": {
-                                            "required": True,
-                                            "type": "str",
-                                        },
-                                    },
-                                    "type": "list",
-                                },
-                                "country_code": {
-                                    "required": True,
-                                    "type": "str",
-                                },
-                            },
-                            "type": "dict",
-                        },
                         "coordinate_based": {
                             "options": {
                                 "altitude": {"type": "int"},
