@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - route_maps - Refactor the integration tests structure and support for 1.4+ versions
