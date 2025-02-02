@@ -61,7 +61,24 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>This argument defines management-address.</div>
+                        <div>Exactly one management address (exclusive with addresses). Deprecated in favor of addresses. To be removed in 7.0.0.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>addresses</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">list</span>
+                         / <span style="color: purple">elements=string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>One or more management addresses. The management address is used to identify the management interface of the system. Only addresses connected to the system will be transmitted.</div>
                 </td>
             </tr>
             <tr>
@@ -196,7 +213,8 @@ Examples
             - fdp
             - cdp
           snmp: enable
-          address: 192.0.2.11
+          addresses:
+            - 192.0.2.11
         state: merged
     #
     #
@@ -215,7 +233,9 @@ Examples
     #
     #  after": {
     #    "snmp": "enable"
-    #    "address": "192.0.2.11"
+    #    "addresses": [
+    #        "192.0.2.11"
+    #    ]
     #    "legacy_protocols": [
     #        "cdp",
     #        "fdp"
@@ -250,7 +270,8 @@ Examples
             - edp
             - sonmp
             - cdp
-          address: 192.0.2.14
+          addresses:
+            - 192.0.2.14
         state: replaced
     #
     #
@@ -261,7 +282,9 @@ Examples
     #
     # "before": {
     #    "snmp": "enable"
-    #    "address": "192.0.2.11"
+    #    "addresses": [
+    #        "192.0.2.11"
+    #    ]
     #    "legacy_protocols": [
     #        "cdp",
     #        "fdp"
@@ -272,13 +295,16 @@ Examples
     # "commands": [
     #        "delete service lldp snmp",
     #        "delete service lldp legacy-protocols fdp",
+    #        "delete service lldp management-address '192.0.2.11'",
     #        "set service lldp management-address '192.0.2.14'",
     #        "set service lldp legacy-protocols edp",
     #        "set service lldp legacy-protocols sonmp"
     #    ]
     #
     # "after": {
-    #    "address": "192.0.2.14"
+    #    "addresses": [
+    #        "192.0.2.14"
+    #    ]
     #    "legacy_protocols": [
     #        "cdp",
     #        "edp",
@@ -319,7 +345,9 @@ Examples
     # ------------------------
     #
     # "before": {
-    #    "address": "192.0.2.14"
+    #    "addresses": [
+    #       "192.0.2.14"
+    #    ]
     #    "legacy_protocols": [
     #       "cdp",
     #       "edp",
@@ -451,7 +479,8 @@ Examples
     - name: Render the commands for provided  configuration
       vyos.vyos.vyos_lldp_global:
         config:
-          address: 192.0.2.17
+          addresses:
+            - 192.0.2.17
           enable: true
           legacy_protocols:
             - cdp
@@ -489,7 +518,9 @@ Examples
     #
     #
     # "parsed": {
-    #    "address": "192.0.2.11",
+    #    "addresses": [
+    #       "192.0.2.11"
+    #    ]
     #    "enable": true,
     #    "legacy_protocols": [
     #       "cdp",

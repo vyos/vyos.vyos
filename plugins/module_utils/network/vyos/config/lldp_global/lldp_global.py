@@ -42,7 +42,8 @@ class Lldp_global(ConfigBase):
         "lldp_global",
     ]
 
-    params = ["enable", "address", "snmp", "legacy_protocols"]
+    # address intentionally omitted since it's coerced to addresses
+    params = ["enable", "addresses", "snmp", "legacy_protocols"]
 
     def __init__(self, module):
         super(Lldp_global, self).__init__(module)
@@ -72,6 +73,12 @@ class Lldp_global(ConfigBase):
         result = {"changed": False}
         warnings = list()
         commands = list()
+
+        # fix for new name/type
+        if self._module.params["config"]:
+            temp_have_address = self._module.params["config"].pop("address", None)
+            if temp_have_address:
+                self._module.params["config"]["addresses"] = [temp_have_address]
 
         if self.state in self.ACTION_STATES:
             existing_lldp_global_facts = self.get_lldp_global_facts()
@@ -184,14 +191,19 @@ class Lldp_global(ConfigBase):
             for item in Lldp_global.params:
                 if item == "legacy_protocols":
                     commands.extend(self._update_lldp_protocols(want, have))
+                if item == "addresses":
+                    commands.extend(self._update_management_addresses(want, have))
                 elif have.get(item) and not want.get(item) and item != "enable":
                     commands.append(Lldp_global.del_cmd + item)
         elif have:
+            if have.get("enable"):
+                commands.append(self._compute_command(remove=True))
+                return commands
             for item in Lldp_global.params:
                 if have.get(item):
                     if item == "legacy_protocols":
                         commands.append(self._compute_command("legacy-protocols", remove=True))
-                    elif item == "address":
+                    elif item == "addresses":
                         commands.append(self._compute_command("management-address", remove=True))
                     elif item == "snmp":
                         commands.append(self._compute_command(item, remove=True))
@@ -202,9 +214,17 @@ class Lldp_global(ConfigBase):
         commands = []
         if have:
             temp_have_legacy_protos = have.pop("legacy_protocols", None)
+            temp_have_addreses = have.pop("addresses", None)
+            temp_have_address = have.pop("address", None)
+            if temp_have_address:
+                temp_have_addresses = [temp_have_address]
         else:
             have = {}
             temp_want_legacy_protos = want.pop("legacy_protocols", None)
+            temp_want_addreses = want.pop("addresses", None)
+            temp_want_address = want.pop("address", None)
+            if temp_want_address:
+                temp_want_addresses = [temp_want_address]
 
         updates = dict_diff(have, want)
 
@@ -212,16 +232,23 @@ class Lldp_global(ConfigBase):
             have["legacy_protocols"] = temp_have_legacy_protos
         if not have and temp_want_legacy_protos:
             want["legacy_protocols"] = temp_want_legacy_protos
+        if have and temp_have_addreses:
+            have["addresses"] = temp_have_addreses
+        if not have and temp_want_addreses:
+            want["addresses"] = temp_want_addreses
 
         commands.extend(self._add_lldp_protocols(want, have))
+        commands.extend(self._add_management_addresses(want, have))
 
         if updates:
             for key, value in iteritems(updates):
-                if value:
+                if value is not None:
                     if key == "enable":
-                        commands.append(self._compute_command())
-                    elif key == "address":
-                        commands.append(self._compute_command("management-address", str(value)))
+                        if value is False:
+                            commands.append(self._compute_command(remove=True))
+                            return commands
+                        else:
+                            commands.append(self._compute_command())
                     elif key == "snmp":
                         if value == "disable":
                             commands.append(self._compute_command(key, remove=True))
@@ -232,8 +259,17 @@ class Lldp_global(ConfigBase):
     def _add_lldp_protocols(self, want, have):
         commands = []
         diff_members = get_lst_diff_for_dicts(want, have, "legacy_protocols")
-        for key in diff_members:
-            commands.append(self._compute_command("legacy-protocols", key))
+        if diff_members:
+            for key in diff_members:
+                commands.append(self._compute_command("legacy-protocols", key))
+        return commands
+
+    def _add_management_addresses(self, want, have):
+        commands = []
+        diff_members = get_lst_diff_for_dicts(want, have, "addresses")
+        if diff_members:
+            for key in diff_members:
+                commands.append(self._compute_command("management-address", key))
         return commands
 
     def _update_lldp_protocols(self, want_item, have_item):
@@ -245,6 +281,17 @@ class Lldp_global(ConfigBase):
         if members_diff:
             for member in members_diff:
                 commands.append(self._compute_command("legacy-protocols", member, remove=True))
+        return commands
+
+    def _update_management_addresses(self, want_item, have_item):
+        commands = []
+        want_addresses = want_item.get("addresses") or []
+        have_addresses = have_item.get("addresses") or []
+
+        members_diff = list_diff_have_only(want_addresses, have_addresses)
+        if members_diff:
+            for member in members_diff:
+                commands.append(self._compute_command("management-address", member, remove=True))
         return commands
 
     def _compute_command(self, key=None, value=None, remove=False):
