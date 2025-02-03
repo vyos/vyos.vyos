@@ -1,0 +1,4 @@
+---
+minor_changes:
+  - fix integration tests for `lag_interfaces`
+  - add unit tests for `lag_interfaces`
