@@ -492,7 +492,7 @@ class Firewall_global(ConfigBase):
                                             val=self._bool_to_str(val),
                                             opr=opr,
                                         ),
-                                    )    
+                                    )
                             elif not opr and key in l_set:
                                 if not h:
                                     commands.append(

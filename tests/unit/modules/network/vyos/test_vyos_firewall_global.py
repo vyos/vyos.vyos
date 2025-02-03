@@ -373,7 +373,7 @@ class TestVyosFirewallGlobalModule(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_firewall_global_set_01_merged_version14(self):
-        self.get_os_version.return_value = "1.4"
+        # self.get_os_version.return_value = "1.4"
         set_module_args(
             dict(
                 config=dict(

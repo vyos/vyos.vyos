@@ -11,17 +11,17 @@ merged:
     - set firewall group network-group MGMT description 'This group has the Management network addresses'
     - set firewall group network-group MGMT
     - set firewall global-options ip-src-route 'enable'
-    - set firewall receive-redirects 'disable'
-    - set firewall send-redirects 'enable'
-    - set firewall state-policy established action 'accept'
-    - set firewall state-policy established log
-    - set firewall state-policy invalid action 'reject'
+    - set firewall global-options receive-redirects 'disable'
+    - set firewall global-options send-redirects 'enable'
+    - set firewall global-options state-policy established action 'accept'
+    - set firewall global-options state-policy established log
+    - set firewall global-options state-policy invalid action 'reject'
     - set firewall global-options broadcast-ping 'enable'
     - set firewall global-options all-ping 'enable'
-    - set firewall log-martians 'enable'
-    - set firewall twa-hazards-protection 'enable'
-    - set firewall syn-cookies 'enable'
-    - set firewall source-validation 'strict'
+    - set firewall global-options log-martians 'enable'
+    - set firewall global-options twa-hazards-protection 'enable'
+    - set firewall global-options syn-cookies 'enable'
+    - set firewall global-options source-validation 'strict'
   after:
     group:
       address_group:
@@ -101,15 +101,15 @@ populate_config:
   - set firewall group network-group MGMT description 'This group has the Management network addresses'
   - set firewall group network-group MGMT network '192.0.1.0/24'
   - set firewall global-options ip-src-route 'enable'
-  - set firewall log-martians 'enable'
-  - set firewall receive-redirects 'disable'
-  - set firewall send-redirects 'enable'
-  - set firewall source-validation 'strict'
-  - set firewall state-policy established action 'accept'
-  - set firewall state-policy established log
-  - set firewall state-policy invalid action 'reject'
-  - set firewall syn-cookies 'enable'
-  - set firewall twa-hazards-protection 'enable'
+  - set firewall global-options log-martians 'enable'
+  - set firewall global-options receive-redirects 'disable'
+  - set firewall global-options send-redirects 'enable'
+  - set firewall global-options source-validation 'strict'
+  - set firewall global-options state-policy established action 'accept'
+  - set firewall global-options state-policy established log
+  - set firewall global-options state-policy invalid action 'reject'
+  - set firewall global-options syn-cookies 'enable'
+  - set firewall global-options twa-hazards-protection 'enable'
 
 populate:
   validation: strict
@@ -254,17 +254,17 @@ rendered:
     - set firewall group network-group MGMT description 'This group has the Management network addresses'
     - set firewall group network-group MGMT
     - set firewall global-options ip-src-route 'enable'
-    - set firewall receive-redirects 'disable'
-    - set firewall send-redirects 'enable'
-    - set firewall state-policy established action 'accept'
-    - set firewall state-policy established log
-    - set firewall state-policy invalid action 'reject'
+    - set firewall global-options receive-redirects 'disable'
+    - set firewall global-options send-redirects 'enable'
+    - set firewall global-options state-policy established action 'accept'
+    - set firewall global-options state-policy established log
+    - set firewall global-options state-policy invalid action 'reject'
     - set firewall global-options broadcast-ping 'enable'
     - set firewall global-options all-ping 'enable'
-    - set firewall log-martians 'enable'
-    - set firewall twa-hazards-protection 'enable'
-    - set firewall syn-cookies 'enable'
-    - set firewall source-validation 'strict'
+    - set firewall global-options log-martians 'enable'
+    - set firewall global-options twa-hazards-protection 'enable'
+    - set firewall global-options syn-cookies 'enable'
+    - set firewall global-options source-validation 'strict'
   config:
     validation: strict
     log_martians: true
@@ -306,7 +306,7 @@ rendered:
 
 deleted:
   commands:
-    - "delete firewall"
+    - "delete firewall global-options"
   after: []
 
 round_trip:
