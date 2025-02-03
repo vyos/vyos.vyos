@@ -167,6 +167,7 @@ round_trip:
         - vlan_id: 101
           description: Eth1 - VIF 101 (WILL BE REMOVED)
           enabled: true
+          mtu: 1401
     - name: eth2
       description: Interface 2 (ADMIN DOWN) (WILL BE REVERTED)
       mtu: 1406
