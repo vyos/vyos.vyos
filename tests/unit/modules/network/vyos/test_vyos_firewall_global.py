@@ -62,7 +62,7 @@ class TestVyosFirewallGlobalModule(TestVyosModule):
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_global.firewall_global.get_os_version",
         )
         self.get_os_version = self.mock_get_os_version.start()
-        self.get_os_version.return_value = "1.2"
+        self.get_os_version.return_value = "1.3"
 
         self.execute_show_command = self.mock_execute_show_command.start()
         self.maxDiff = None
@@ -102,11 +102,15 @@ class TestVyosFirewallGlobalModule(TestVyosModule):
                         dict(connection_type="invalid", action="reject"),
                     ],
                     route_redirects=[
-                        dict(ip_src_route=True, afi="ipv6"),
                         dict(
                             afi="ipv4",
                             ip_src_route=True,
                             icmp_redirects=dict(send=True, receive=False),
+                        ),
+                        dict(
+                            afi="ipv6",
+                            ip_src_route=True,
+                            icmp_redirects=dict(receive=False),
                         ),
                     ],
                     group=dict(
@@ -179,10 +183,9 @@ class TestVyosFirewallGlobalModule(TestVyosModule):
             "set firewall group port-group TELNET description 'This group has the telnet ports'",
             "set firewall group port-group TELNET",
             "set firewall ip-src-route 'enable'",
-            "set firewall ipv6-src-route 'enable'",
             "set firewall receive-redirects 'disable'",
-            "set firewall send-redirects 'enable'",
             "set firewall config-trap 'enable'",
+            "set firewall ipv6-receive-redirects 'disable'",
             "set firewall state-policy established action 'accept'",
             "set firewall state-policy established log 'enable'",
             "set firewall state-policy invalid action 'reject'",
@@ -302,8 +305,82 @@ class TestVyosFirewallGlobalModule(TestVyosModule):
             ),
         )
         commands = [
+            "delete firewall ipv6-src-route",
+            "delete firewall send-redirects",
             "delete firewall group address-group RND-HOSTS address 192.0.2.3",
             "delete firewall group address-group RND-HOSTS address 192.0.2.5",
+            "set firewall group address-group RND-HOSTS address 192.0.2.7",
+            "set firewall group address-group RND-HOSTS address 192.0.2.9",
+            "delete firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::1",
+            "set firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::2",
+            "delete firewall group port-group SSH port 22",
+            "set firewall group port-group SSH port 2222",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_global_set_02_replaced(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    state_policy=[
+                        dict(connection_type="invalid", action="reject"),
+                        dict(connection_type="related", action="drop"),
+                    ],
+                    group=dict(
+                        address_group=[
+                            dict(
+                                afi="ipv4",
+                                name="RND-HOSTS",
+                                description="This group has the Management hosts address lists",
+                                members=[
+                                    dict(address="192.0.2.1"),
+                                    dict(address="192.0.2.7"),
+                                    dict(address="192.0.2.9"),
+                                ],
+                            ),
+                            dict(
+                                afi="ipv6",
+                                name="LOCAL-v6",
+                                description="This group has the hosts address lists of this machine",
+                                members=[
+                                    dict(address="::1"),
+                                    dict(address="fdec:2503:89d6:59b3::2"),
+                                ],
+                            ),
+                        ],
+                        network_group=[
+                            dict(
+                                afi="ipv4",
+                                name="RND",
+                                description="This group has the Management network addresses",
+                                members=[dict(address="192.0.2.0/24")],
+                            ),
+                            dict(
+                                afi="ipv6",
+                                name="UNIQUE-LOCAL-v6",
+                                description="This group encompasses the ULA address space in IPv6",
+                                members=[dict(address="fc00::/7")],
+                            ),
+                        ],
+                        port_group=[
+                            dict(
+                                name="SSH",
+                                description="This group has the ssh ports",
+                                members=[dict(port="2222")],
+                            ),
+                        ],
+                    ),
+                ),
+                state="replaced",
+            ),
+        )
+        commands = [
+            "delete firewall group address-group RND-HOSTS address 192.0.2.3",
+            "delete firewall group address-group RND-HOSTS address 192.0.2.5",
+            "delete firewall ipv6-src-route",
+            "delete firewall send-redirects",
+            "set firewall state-policy related action 'drop'",
+            "set firewall state-policy invalid action 'reject'",
             "set firewall group address-group RND-HOSTS address 192.0.2.7",
             "set firewall group address-group RND-HOSTS address 192.0.2.9",
             "delete firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::1",
@@ -317,6 +394,10 @@ class TestVyosFirewallGlobalModule(TestVyosModule):
         set_module_args(
             dict(
                 config=dict(
+                    route_redirects=[
+                        dict(ip_src_route=True, afi="ipv6"),
+                        dict(icmp_redirects=dict(send=True), afi="ipv4"),
+                    ],
                     group=dict(
                         address_group=[
                             dict(
@@ -370,122 +451,4 @@ class TestVyosFirewallGlobalModule(TestVyosModule):
     def test_vyos_firewall_global_set_01_deleted(self):
         set_module_args(dict(config=dict(), state="deleted"))
         commands = ["delete firewall"]
-        self.execute_module(changed=True, commands=commands)
-
-    def test_vyos_firewall_global_set_01_merged_version14(self):
-        # self.get_os_version.return_value = "1.4"
-        set_module_args(
-            dict(
-                config=dict(
-                    validation="strict",
-                    config_trap=True,
-                    log_martians=True,
-                    syn_cookies=True,
-                    twa_hazards_protection=True,
-                    ping=dict(all=True, broadcast=True),
-                    state_policy=[
-                        dict(
-                            connection_type="established",
-                            action="accept",
-                            log=True,
-                        ),
-                        dict(connection_type="invalid", action="reject"),
-                    ],
-                    route_redirects=[
-                        dict(
-                            afi="ipv4",
-                            ip_src_route=True,
-                            icmp_redirects=dict(send=True, receive=False),
-                        ),
-                        dict(
-                            afi="ipv6",
-                            ip_src_route=True,
-                            icmp_redirects=dict(receive=False),
-                        ),
-                    ],
-                    group=dict(
-                        address_group=[
-                            dict(
-                                afi="ipv4",
-                                name="MGMT-HOSTS",
-                                description="This group has the Management hosts address lists",
-                                members=[
-                                    dict(address="192.0.1.1"),
-                                    dict(address="192.0.1.3"),
-                                    dict(address="192.0.1.5"),
-                                ],
-                            ),
-                            dict(
-                                afi="ipv6",
-                                name="GOOGLE-DNS-v6",
-                                members=[
-                                    dict(address="2001:4860:4860::8888"),
-                                    dict(address="2001:4860:4860::8844"),
-                                ],
-                            ),
-                        ],
-                        network_group=[
-                            dict(
-                                afi="ipv4",
-                                name="MGMT",
-                                description="This group has the Management network addresses",
-                                members=[dict(address="192.0.1.0/24")],
-                            ),
-                            dict(
-                                afi="ipv6",
-                                name="DOCUMENTATION-v6",
-                                description="IPv6 Addresses reserved for documentation per RFC 3849",
-                                members=[
-                                    dict(address="2001:0DB8::/32"),
-                                    dict(address="3FFF:FFFF::/32"),
-                                ],
-                            ),
-                        ],
-                        port_group=[
-                            dict(
-                                name="TELNET",
-                                description="This group has the telnet ports",
-                                members=[dict(port="23")],
-                            ),
-                        ],
-                    ),
-                ),
-                state="merged",
-            ),
-        )
-        commands = [
-            "set firewall group address-group MGMT-HOSTS address 192.0.1.1",
-            "set firewall group address-group MGMT-HOSTS address 192.0.1.3",
-            "set firewall group address-group MGMT-HOSTS address 192.0.1.5",
-            "set firewall group address-group MGMT-HOSTS description 'This group has the Management hosts address lists'",
-            "set firewall group address-group MGMT-HOSTS",
-            "set firewall group ipv6-address-group GOOGLE-DNS-v6 address 2001:4860:4860::8888",
-            "set firewall group ipv6-address-group GOOGLE-DNS-v6 address 2001:4860:4860::8844",
-            "set firewall group ipv6-address-group GOOGLE-DNS-v6",
-            "set firewall group network-group MGMT network 192.0.1.0/24",
-            "set firewall group network-group MGMT description 'This group has the Management network addresses'",
-            "set firewall group network-group MGMT",
-            "set firewall group ipv6-network-group DOCUMENTATION-v6 network 2001:0DB8::/32",
-            "set firewall group ipv6-network-group DOCUMENTATION-v6 network 3FFF:FFFF::/32",
-            "set firewall group ipv6-network-group DOCUMENTATION-v6 description 'IPv6 Addresses reserved for documentation per RFC 3849'",
-            "set firewall group ipv6-network-group DOCUMENTATION-v6",
-            "set firewall group port-group TELNET port 23",
-            "set firewall group port-group TELNET description 'This group has the telnet ports'",
-            "set firewall group port-group TELNET",
-            "set firewall global-options ip-src-route 'enable'",
-            "set firewall global-options receive-redirects 'disable'",
-            "set firewall global-options send-redirects 'enable'",
-            "set firewall global-options config-trap 'enable'",
-            "set firewall global-options ipv6-src-route 'enable'",
-            "set firewall global-options ipv6-receive-redirects 'disable'",
-            "set firewall global-options state-policy established action 'accept'",
-            "set firewall global-options state-policy established log 'enable'",
-            "set firewall global-options state-policy invalid action 'reject'",
-            "set firewall global-options broadcast-ping 'enable'",
-            "set firewall global-options all-ping 'enable'",
-            "set firewall global-options log-martians 'enable'",
-            "set firewall global-options twa-hazards-protection 'enable'",
-            "set firewall global-options syn-cookies 'enable'",
-            "set firewall global-options source-validation 'strict'",
-        ]
         self.execute_module(changed=True, commands=commands)
