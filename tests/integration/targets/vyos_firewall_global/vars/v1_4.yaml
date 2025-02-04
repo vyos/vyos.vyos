@@ -306,7 +306,7 @@ rendered:
 
 deleted:
   commands:
-    - "delete firewall global-options"
+    - "delete firewall"
   after: []
 
 round_trip:

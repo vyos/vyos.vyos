@@ -650,11 +650,12 @@ class Firewall_global(ConfigBase):
         :param opr: True/False.
         :return: generated command.
         """
+        # self._module.fail_json(msg=attr)
         if remove or not opr:
             cmd = "delete firewall "
         else:
             cmd = "set firewall "
-        if key != "group" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+        if attr and key != "group" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             cmd += "global-options "
         if key:
             cmd += key.replace("_", "-") + " "

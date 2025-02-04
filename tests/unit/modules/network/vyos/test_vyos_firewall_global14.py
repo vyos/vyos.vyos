@@ -462,5 +462,5 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
 
     def test_vyos_firewall_global_set_01_deleted(self):
         set_module_args(dict(config=dict(), state="deleted"))
-        commands = ["delete firewall global-options"]
+        commands = ["delete firewall"]
         self.execute_module(changed=True, commands=commands)
