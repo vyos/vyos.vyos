@@ -650,7 +650,6 @@ class Firewall_global(ConfigBase):
         :param opr: True/False.
         :return: generated command.
         """
-        # self._module.fail_json(msg=attr)
         if remove or not opr:
             cmd = "delete firewall "
         else:
