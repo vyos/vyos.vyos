@@ -1,0 +1,133 @@
+---
+merged:
+  commands:
+    - set interfaces ethernet eth0 ip ospf cost 50
+    - set interfaces ethernet eth0 ip ospf priority 26
+    - set interfaces ethernet eth0 ipv6 ospfv3 mtu-ignore
+    - set interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
+    - set interfaces bonding bond2 ip ospf transmit-delay 45
+    - set interfaces bonding bond2 ipv6 ospfv3 passive
+  after:
+    - address_family:
+        - afi: ipv4
+          transmit_delay: 45
+        - afi: ipv6
+          passive: true
+      name: bond2
+    - address_family:
+        - afi: ipv4
+          cost: 50
+          priority: 26
+        - afi: ipv6
+          instance: "33"
+          mtu_ignore: true
+      name: eth0
+
+replaced:
+  commands:
+    - set interfaces ethernet eth0 ip ospf transmit-delay 50
+    - set interfaces ethernet eth0 ip ospf network point-to-point
+    - set interfaces ethernet eth0 ipv6 ospfv3 dead-interval 39
+    - delete interfaces ethernet eth0 ip ospf cost 50
+    - delete interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
+    - delete interfaces ethernet eth0 ipv6 ospfv3 mtu-ignore
+    - set interfaces bonding bond2 ip ospf bandwidth 70
+    - set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key ********
+
+  after:
+    - address_family:
+        - afi: ipv4
+          authentication:
+            md5_key:
+              key: "1111111111232345"
+              key_id: 10
+          bandwidth: 70
+          transmit_delay: 45
+        - afi: ipv6
+          passive: true
+      name: bond2
+    - address_family:
+        - afi: ipv4
+          network: point-to-point
+          priority: 26
+          transmit_delay: 50
+        - afi: ipv6
+          dead_interval: 39
+      name: eth0
+
+overridden:
+  commands:
+    - delete interfaces bonding bond2 ip ospf
+    - delete interfaces bonding bond2 ipv6 ospfv3
+    - set interfaces ethernet eth0 ip ospf transmit-delay 50
+    - set interfaces ethernet eth0 ip ospf network point-to-point
+    - set interfaces ethernet eth0 ipv6 ospfv3 dead-interval 39
+    - delete interfaces ethernet eth0 ip ospf cost 50
+    - delete interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
+    - delete interfaces ethernet eth0 ipv6 ospfv3 mtu-ignore
+
+  after:
+    - address_family:
+        - afi: ipv4
+          network: point-to-point
+          priority: 26
+          transmit_delay: 50
+        - afi: ipv6
+          dead_interval: 39
+      name: eth0
+
+deleted:
+  commands:
+    - delete interfaces bonding bond2 ip ospf
+    - delete interfaces bonding bond2 ipv6 ospfv3
+  after:
+    - address_family:
+        - afi: ipv4
+          cost: 50
+          priority: 26
+        - afi: ipv6
+          instance: "33"
+          mtu_ignore: true
+      name: eth0
+
+rendered:
+  commands:
+    - set interfaces ethernet eth1 firewall in name 'INBOUND'
+    - set interfaces ethernet eth1 firewall out name 'OUTBOUND'
+    - set interfaces ethernet eth1 firewall local name 'LOCAL'
+    - set interfaces ethernet eth1 firewall local ipv6-name 'V6-LOCAL'
+    - set interfaces ethernet eth2 firewall in name 'INBOUND'
+    - set interfaces ethernet eth2 firewall out name 'OUTBOUND'
+    - set interfaces ethernet eth2 firewall local name 'LOCAL'
+    - set interfaces ethernet eth2 firewall local ipv6-name 'V6-LOCAL'
+round_trip:
+  after:
+    - name: eth0
+    - access_rules:
+        - afi: ipv4
+          rules:
+            - direction: in
+              name: INBOUND
+            - direction: local
+              name: LOCAL
+            - direction: out
+              name: OUTBOUND
+        - afi: ipv6
+          rules:
+            - direction: local
+              name: V6-LOCAL
+      name: eth1
+    - name: eth2
+      access_rules:
+        - afi: ipv4
+          rules:
+            - direction: in
+              name: INBOUND
+            - direction: local
+              name: LOCAL
+            - direction: out
+              name: OUTBOUND
+        - afi: ipv6
+          rules:
+            - direction: local
+              name: V6-LOCAL
