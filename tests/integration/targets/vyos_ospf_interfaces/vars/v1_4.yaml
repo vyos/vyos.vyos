@@ -23,6 +23,14 @@ merged:
           mtu_ignore: true
       name: eth0
 
+populate_config:
+  - set protocols ospf interface eth0 cost 50
+  - set protocols ospf interface eth0 priority 26
+  - set protocols ospfv3 interface eth0 mtu-ignore
+  - set protocols ospfv3 interface eth0 instance-id 33
+  - set protocols ospfv3 interface bond2 passive
+  - set protocols ospf interface bond2 transmit-delay 45
+
 replaced:
   commands:
     - set interfaces ethernet eth0 ip ospf transmit-delay 50
