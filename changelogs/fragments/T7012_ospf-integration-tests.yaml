@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - ospf_infterfaces - mtu-ignore and passive parsers fixed
