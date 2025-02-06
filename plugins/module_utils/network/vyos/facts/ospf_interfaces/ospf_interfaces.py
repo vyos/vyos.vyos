@@ -139,4 +139,5 @@ class Ospf_interfacesFacts(object):
                 facts["ospf_interfaces"].append(utils.remove_empties(cfg))
         ansible_facts["ansible_network_resources"].update(facts)
 
+        self._module.fail_json(msg=ansible_facts)
         return ansible_facts
