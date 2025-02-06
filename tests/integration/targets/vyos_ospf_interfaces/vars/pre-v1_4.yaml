@@ -31,6 +31,8 @@ populate_config:
   - set interfaces bonding bond2 ip ospf transmit-delay 45
   - set interfaces bonding bond2 ipv6 ospfv3 passive
 
+parsed_config_file: "_parsed_config_1_3.cfg"
+
 replaced:
   commands:
     - set interfaces ethernet eth0 ip ospf transmit-delay 50
