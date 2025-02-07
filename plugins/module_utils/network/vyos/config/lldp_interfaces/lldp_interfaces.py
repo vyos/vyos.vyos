@@ -29,7 +29,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     is_dict_element_present,
     key_value_in_dict,
-    search_dict_tv_in_list,
     search_obj_in_list,
 )
 
@@ -290,31 +289,6 @@ class Lldp_interfaces(ConfigBase):
                 if value:
                     commands.append(self._compute_command(set_cmd + location_type, key, str(value)))
 
-        elif want_location_type["civic_based"]:
-            location_type = "civic-based"
-            want_dict = want_location_type.get("civic_based") or {}
-            want_ca = want_dict.get("ca_info") or []
-            if is_dict_element_present(have_location_type, "civic_based"):
-                have_dict = have_location_type.get("civic_based") or {}
-                have_ca = have_dict.get("ca_info") or []
-                if want_dict["country_code"] != have_dict["country_code"]:
-                    commands.append(
-                        self._compute_command(
-                            set_cmd + location_type,
-                            "country-code",
-                            str(want_dict["country_code"]),
-                        ),
-                    )
-            else:
-                commands.append(
-                    self._compute_command(
-                        set_cmd + location_type,
-                        "country-code",
-                        str(want_dict["country_code"]),
-                    ),
-                )
-            commands.extend(self._add_civic_address(name, want_ca, have_ca))
-
         elif want_location_type["elin"]:
             location_type = "elin"
             if is_dict_element_present(have_location_type, "elin"):
@@ -354,55 +328,12 @@ class Lldp_interfaces(ConfigBase):
             else:
                 commands.append(self._compute_command(del_cmd, remove=True))
 
-        elif want_location_type["civic_based"]:
-            want_dict = want_location_type.get("civic_based") or {}
-            want_ca = want_dict.get("ca_info") or []
-            if is_dict_element_present(have_location_type, "civic_based"):
-                have_dict = have_location_type.get("civic_based") or {}
-                have_ca = have_dict.get("ca_info")
-                commands.extend(self._update_civic_address(name, want_ca, have_ca))
-            else:
-                commands.append(self._compute_command(del_cmd, remove=True))
-
         else:
             if is_dict_element_present(have_location_type, "elin"):
                 if want_location_type.get("elin") != have_location_type.get("elin"):
                     commands.append(self._compute_command(del_cmd, remove=True))
             else:
                 commands.append(self._compute_command(del_cmd, remove=True))
-        return commands
-
-    def _add_civic_address(self, name, want, have):
-        commands = []
-        for item in want:
-            ca_type = item["ca_type"]
-            ca_value = item["ca_value"]
-            obj_in_have = search_dict_tv_in_list(ca_type, ca_value, have, "ca_type", "ca_value")
-            if not obj_in_have:
-                commands.append(
-                    self._compute_command(
-                        key=name + " location civic-based ca-type",
-                        attrib=str(ca_type) + " ca-value",
-                        value=ca_value,
-                    ),
-                )
-        return commands
-
-    def _update_civic_address(self, name, want, have):
-        commands = []
-        for item in have:
-            ca_type = item["ca_type"]
-            ca_value = item["ca_value"]
-            in_want = search_dict_tv_in_list(ca_type, ca_value, want, "ca_type", "ca_value")
-            if not in_want:
-                commands.append(
-                    self._compute_command(
-                        name,
-                        "location civic-based ca-type",
-                        str(ca_type),
-                        remove=True,
-                    ),
-                )
         return commands
 
     def _compute_command(self, key, attrib=None, value=None, remove=False):
