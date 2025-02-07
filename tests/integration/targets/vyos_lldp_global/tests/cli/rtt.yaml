@@ -35,7 +35,7 @@
 
     - name: Assert that changes were applied
       assert:
-        that: "{{ round_trip['after'] == result['after'] }}"
+        that: round_trip['after'] == result['after']
 
     - name: Revert back to base config using facts round trip
       register: revert
@@ -45,6 +45,6 @@
 
     - name: Assert that config was reverted
       assert:
-        that: "{{ base_config['after'] == revert['after'] }}"
+        that: base_config['after'] == revert['after']
   always:
     - include_tasks: _remove_config.yaml

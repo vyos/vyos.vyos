@@ -2,8 +2,7 @@
 merged:
   before: []
   commands:
-    - set service lldp interface eth1 location civic-based country-code 'US'
-    - set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
+    - set service lldp interface eth1 location elin '0000000911'
     - set service lldp interface eth1
     - set service lldp interface eth2 location coordinate-based latitude '33.524449N'
     - set service lldp interface eth2 location coordinate-based altitude '2200'
@@ -13,11 +12,7 @@ merged:
   after:
     - name: eth1
       location:
-        civic_based:
-          country_code: US
-          ca_info:
-            - ca_type: 0
-              ca_value: ENGLISH
+        elin: 0000000911
     - name: eth2
       location:
         coordinate_based:
@@ -28,11 +23,7 @@ merged:
 populate:
   - name: eth1
     location:
-      civic_based:
-        country_code: US
-        ca_info:
-          - ca_type: 0
-            ca_value: ENGLISH
+      elin: 0000000911
   - name: eth2
     location:
       coordinate_based:
@@ -42,8 +33,7 @@ populate:
         latitude: 33.524449N
 rendered:
   commands:
-    - set service lldp interface eth1 location civic-based country-code 'US'
-    - set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
+    - set service lldp interface eth1 location elin '0000000911'
     - set service lldp interface eth1
     - set service lldp interface eth2 location coordinate-based latitude '33.524449N'
     - set service lldp interface eth2 location coordinate-based altitude '2200'
@@ -54,8 +44,7 @@ replaced:
   commands:
     - delete service lldp interface eth2 location
     - set service lldp interface eth2 'disable'
-    - set service lldp interface eth2 location civic-based country-code 'US'
-    - set service lldp interface eth2 location civic-based ca-type 0 ca-value 'ENGLISH'
+    - set service lldp interface eth2 location elin '0000000911'
     - delete service lldp interface eth1 location
     - set service lldp interface eth1 'disable'
     - set service lldp interface eth1 location coordinate-based latitude '33.524449N'
@@ -66,11 +55,7 @@ replaced:
     - name: eth2
       enable: false
       location:
-        civic_based:
-          country_code: US
-          ca_info:
-            - ca_type: 0
-              ca_value: ENGLISH
+        elin: 0000000911
     - name: eth1
       enable: false
       location:
@@ -83,16 +68,10 @@ populate_intf:
   - name: eth2
     enable: false
     location:
-      civic_based:
-        country_code: US
-        ca_info:
-          - ca_type: 0
-            ca_value: ENGLISH
+      elin: "0000000911"
 overridden:
   commands:
-    - delete service lldp interface eth2 location
     - delete service lldp interface eth2 'disable'
-    - set service lldp interface eth2 location elin '0000000911'
   after:
     - name: eth2
       location:
@@ -101,11 +80,7 @@ parsed:
   after:
     - name: eth1
       location:
-        civic_based:
-          country_code: US
-          ca_info:
-            - ca_type: 0
-              ca_value: ENGLISH
+        elin: 0000000911
     - name: eth2
       location:
         coordinate_based:
@@ -122,11 +97,7 @@ round_trip:
   after:
     - name: eth1
       location:
-        civic_based:
-          country_code: US
-          ca_info:
-            - ca_type: 0
-              ca_value: ENGLISH
+        elin: 0000000911
     - name: eth2
       location:
         coordinate_based:
