@@ -111,7 +111,7 @@ class Firewall_globalFacts(object):
         rr_lst = []
 
         v6_attr = findall(
-            r"^set firewall (?:global-options )?(?:ipv6-src-route|ipv6-receive-redirects)? (\S+)",
+            r"^set firewall (?:global-options )?(?:ipv6-src-route|ipv6-receive-redirects) (\S+)",
             conf,
             M,
         )
@@ -121,7 +121,7 @@ class Firewall_globalFacts(object):
                 rr_lst.append(obj)
 
         v4_attr = findall(
-            r"^set firewall (?:global-options )?(?:ip-src-route|receive-redirects|send-redirects)? (\S+)",
+            r"^set firewall (?:global-options )?(?:ip-src-route|receive-redirects|send-redirects) (\S+)",
             conf,
             M,
         )

@@ -1,3 +1,6 @@
 ---
 minor_changes:
-  - fix integration tests for `firewall_global` for v1.3-
+  - fix integration tests for `firewall_global` for v1.3-. Tested against 1.2.0, 1.3.8, 1.4.8, and VyOS 1.5-rolling-202410260007
+  - update facts parsers to include state-policies, redirect, etc
+  - update config to fix stanzas processing in 1.4+ (e.g. present/absent stanza vs enable/disable)
+  - update unit tests
