@@ -29,12 +29,12 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
         <tr>
-            <th colspan="5">Parameter</th>
+            <th colspan="4">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
             <th width="100%">Comments</th>
         </tr>
             <tr>
-                <td colspan="5">
+                <td colspan="4">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>config</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -51,7 +51,7 @@ Parameters
             </tr>
                                 <tr>
                     <td class="elbow-placeholder"></td>
-                <td colspan="4">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>enable</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -71,7 +71,7 @@ Parameters
             </tr>
             <tr>
                     <td class="elbow-placeholder"></td>
-                <td colspan="4">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>location</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -88,104 +88,7 @@ Parameters
                                 <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="3">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>civic_based</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">dictionary</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Civic-based location data.</div>
-                </td>
-            </tr>
-                                <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
                 <td colspan="2">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>ca_info</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">list</span>
-                         / <span style="color: purple">elements=dictionary</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>LLDP-MED address info</div>
-                </td>
-            </tr>
-                                <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>ca_type</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">integer</span>
-                         / <span style="color: red">required</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>LLDP-MED Civic Address type.</div>
-                </td>
-            </tr>
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>ca_value</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>LLDP-MED Civic Address value.</div>
-                </td>
-            </tr>
-
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>country_code</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                         / <span style="color: red">required</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Country Code</div>
-                </td>
-            </tr>
-
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>coordinate_based</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -203,7 +106,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>altitude</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -221,7 +124,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>datum</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -244,7 +147,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>latitude</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -263,7 +166,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>longitude</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -282,7 +185,7 @@ Parameters
             <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="3">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>elin</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -299,7 +202,7 @@ Parameters
 
             <tr>
                     <td class="elbow-placeholder"></td>
-                <td colspan="4">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>name</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -316,7 +219,7 @@ Parameters
             </tr>
 
             <tr>
-                <td colspan="5">
+                <td colspan="4">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>running_config</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -333,7 +236,7 @@ Parameters
                 </td>
             </tr>
             <tr>
-                <td colspan="5">
+                <td colspan="4">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>state</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -386,11 +289,7 @@ Examples
         config:
           - name: eth1
             location:
-              civic_based:
-                country_code: US
-                ca_info:
-                  - ca_type: 0
-                    ca_value: ENGLISH
+              elin: 0000000911
           - name: eth2
             location:
               coordinate_based:
@@ -408,10 +307,7 @@ Examples
     # before": {}
     #
     #    "commands": [
-    #        "set service lldp interface eth1 location civic-based country-code 'US'",
-    #        "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'",
-    #        "set service lldp interface eth1 location civic-based country-code 'US'",
-    #        "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'",
+    #        "set service lldp interface eth1 location elin '0000000911'",
     #        "set service lldp interface eth1",
     #        "set service lldp interface eth2 location coordinate-based latitude '33.524449N'",
     #        "set service lldp interface eth2 location coordinate-based altitude '2200'",
@@ -437,14 +333,7 @@ Examples
     #  },
     #  {
     #      "location": {
-    #          "civic_based": {
-    #              "ca_info": [
-    #                  {
-    #                      "ca_type": 0,
-    #                      "ca_value": "ENGLISH"
-    #                  }
-    #              ],
-    #              "country_code": "US"
+    #          "elin": "0000000911"
     #          }
     #      },
     #      "name": "eth1"
@@ -454,8 +343,7 @@ Examples
     # -------------
     #
     # vyos@vyos:~$ show configuration commands | grep lldp
-    # set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
-    # set service lldp interface eth1 location civic-based country-code 'US'
+    # set service lldp interface eth1 location elin '0000000911'
     # set service lldp interface eth2 location coordinate-based altitude '2200'
     # set service lldp interface eth2 location coordinate-based datum 'WGS84'
     # set service lldp interface eth2 location coordinate-based latitude '33.524449N'
@@ -468,8 +356,7 @@ Examples
     # -------------
     #
     # vyos@vyos:~$ show configuration commands | grep lldp
-    # set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
-    # set service lldp interface eth1 location civic-based country-code 'US'
+    # set service lldp interface eth1 location elin '0000000911'
     # set service lldp interface eth2 location coordinate-based altitude '2200'
     # set service lldp interface eth2 location coordinate-based datum 'WGS84'
     # set service lldp interface eth2 location coordinate-based latitude '33.524449N'
@@ -482,11 +369,7 @@ Examples
         config:
           - name: eth2
             location:
-              civic_based:
-                country_code: US
-                ca_info:
-                  - ca_type: 0
-                    ca_value: ENGLISH
+              elin: 0000000911
           - name: eth1
             location:
               coordinate_based:
@@ -515,15 +398,7 @@ Examples
     #        },
     #        {
     #            "location": {
-    #                "civic_based": {
-    #                    "ca_info": [
-    #                        {
-    #                            "ca_type": 0,
-    #                            "ca_value": "ENGLISH"
-    #                        }
-    #                    ],
-    #                    "country_code": "US"
-    #                }
+    #                "elin": "0000000911"
     #            },
     #            "name": "eth1"
     #        }
@@ -532,8 +407,7 @@ Examples
     #    "commands": [
     #        "delete service lldp interface eth2 location",
     #        "set service lldp interface eth2 'disable'",
-    #        "set service lldp interface eth2 location civic-based country-code 'US'",
-    #        "set service lldp interface eth2 location civic-based ca-type 0 ca-value 'ENGLISH'",
+    #        "set service lldp interface eth2 location elin '0000000911'",
     #        "delete service lldp interface eth1 location",
     #        "set service lldp interface eth1 'disable'",
     #        "set service lldp interface eth1 location coordinate-based latitude '33.524449N'",
@@ -544,15 +418,7 @@ Examples
     #
     #    "after": {
     #        "location": {
-    #            "civic_based": {
-    #                "ca_info": [
-    #                    {
-    #                        "ca_type": 0,
-    #                        "ca_value": "ENGLISH"
-    #                    }
-    #                ],
-    #                "country_code": "US"
-    #            }
+    #            "elin": "0000000911"
     #        },
     #        "name": "eth2"
     #    },
@@ -578,8 +444,7 @@ Examples
     # set service lldp interface eth1 location coordinate-based latitude '33.524449N'
     # set service lldp interface eth1 location coordinate-based longitude '222.267255W'
     # set service lldp interface eth2 'disable'
-    # set service lldp interface eth2 location civic-based ca-type 0 ca-value 'ENGLISH'
-    # set service lldp interface eth2 location civic-based country-code 'US'
+    # set service lldp interface eth2 location elin '0000000911'
 
 
     # Using overridden
@@ -594,8 +459,7 @@ Examples
     # set service lldp interface eth1 location coordinate-based latitude '33.524449N'
     # set service lldp interface eth1 location coordinate-based longitude '222.267255W'
     # set service lldp interface eth2 'disable'
-    # set service lldp interface eth2 location civic-based ca-type 0 ca-value 'ENGLISH'
-    # set service lldp interface eth2 location civic-based country-code 'US'
+    # set service lldp interface eth2 location elin '0000000911'
     #
     - name: Overrides all device configuration with provided configuration
       vyos.vyos.vyos_lldp_interfaces:
@@ -614,17 +478,7 @@ Examples
     # "before": [
     #    {
     #      "enable": false,
-    #      "location": {
-    #        "civic_based": {
-    #          "ca_info": [
-    #            {
-    #              "ca_type": 0,
-    #              "ca_value": "ENGLISH"
-    #            }
-    #          ],
-    #          "country_code": "US"
-    #        }
-    #      },
+    #      "elin": "0000000911",
     #      "name": "eth2"
     #    },
     #    {
@@ -708,8 +562,7 @@ Examples
     # -------------
     #
     # vyos@192# run show configuration commands | grep lldp
-    # set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
-    # set service lldp interface eth1 location civic-based country-code 'US'
+    # set service lldp interface eth1 location elin '0000000911'
     # set service lldp interface eth2 location coordinate-based altitude '2200'
     # set service lldp interface eth2 location coordinate-based datum 'WGS84'
     # set service lldp interface eth2 location coordinate-based latitude '33.524449N'
@@ -739,15 +592,7 @@ Examples
     #         },
     #         {
     #             "location": {
-    #                 "civic_based": {
-    #                     "ca_info": [
-    #                         {
-    #                             "ca_type": 0,
-    #                             "ca_value": "ENGLISH"
-    #                         }
-    #                     ],
-    #                     "country_code": "US"
-    #                 }
+    #                 "elin": "0000000911"
     #             },
     #             "name": "eth1"
     #         }
@@ -758,8 +603,7 @@ Examples
     # -------------
     #
     # vyos@192# run show configuration commands | grep lldp
-    # set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
-    # set service lldp interface eth1 location civic-based country-code 'US'
+    # set service lldp interface eth1 location elin '0000000911'
     # set service lldp interface eth2 location coordinate-based altitude '2200'
     # set service lldp interface eth2 location coordinate-based datum 'WGS84'
     # set service lldp interface eth2 location coordinate-based latitude '33.524449N'
@@ -774,11 +618,7 @@ Examples
         config:
           - name: eth1
             location:
-              civic_based:
-                country_code: US
-                ca_info:
-                  - ca_type: 0
-                    ca_value: ENGLISH
+              elin: 0000000911
           - name: eth2
             location:
               coordinate_based:
@@ -796,8 +636,7 @@ Examples
     #
     #
     # "rendered": [
-    #         "set service lldp interface eth1 location civic-based country-code 'US'",
-    #         "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'",
+    #         "set service lldp interface eth1 location elin '0000000911'",
     #         "set service lldp interface eth1",
     #         "set service lldp interface eth2 location coordinate-based latitude '33.524449N'",
     #         "set service lldp interface eth2 location coordinate-based altitude '2200'",
@@ -813,8 +652,7 @@ Examples
     - name: Parsed the commands to provide structured configuration.
       vyos.vyos.vyos_lldp_interfaces:
         running_config:
-          "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
-           set service lldp interface eth1 location civic-based country-code 'US'
+          "set service lldp interface eth1 location elin '0000000911'
            set service lldp interface eth2 location coordinate-based altitude '2200'
            set service lldp interface eth2 location coordinate-based datum 'WGS84'
            set service lldp interface eth2 location coordinate-based latitude '33.524449N'
@@ -841,15 +679,7 @@ Examples
     #         },
     #         {
     #             "location": {
-    #                 "civic_based": {
-    #                     "ca_info": [
-    #                         {
-    #                             "ca_type": 0,
-    #                             "ca_value": "ENGLISH"
-    #                         }
-    #                     ],
-    #                     "country_code": "US"
-    #                 }
+    #                 "elin": "0000000911"
     #             },
     #             "name": "eth1"
     #         }

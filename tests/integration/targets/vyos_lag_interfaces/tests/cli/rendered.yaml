@@ -26,7 +26,7 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ rendered['commands'] | symmetric_difference(result['rendered']) |length == 0 }}"
+          - rendered['commands'] | symmetric_difference(result['rendered']) |length == 0
 
   always:
     - include_tasks: _remove_bond.yaml

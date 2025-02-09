@@ -29,11 +29,11 @@ from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_ar
 from .vyos_module import TestVyosModule, load_fixture
 
 
-class TestVyosFirewallInterfacesModule(TestVyosModule):
+class TestVyosInterfacesModule(TestVyosModule):
     module = vyos_interfaces
 
     def setUp(self):
-        super(TestVyosFirewallInterfacesModule, self).setUp()
+        super(TestVyosInterfacesModule, self).setUp()
         self.mock_get_config = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
         )
@@ -63,7 +63,7 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
         self.fixture_path = "vyos_interfaces_config.cfg"
 
     def tearDown(self):
-        super(TestVyosFirewallInterfacesModule, self).tearDown()
+        super(TestVyosInterfacesModule, self).tearDown()
         self.mock_get_resource_connection_config.stop()
         self.mock_get_resource_connection_facts.stop()
         self.mock_get_config.stop()

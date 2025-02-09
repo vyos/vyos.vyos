@@ -85,7 +85,6 @@ class Lldp_interfacesFacts(object):
         config = {}
         location = {}
 
-        civic_conf = "\n".join(filter(lambda x: ("civic-based" in x), conf))
         elin_conf = "\n".join(filter(lambda x: ("elin" in x), conf))
         coordinate_conf = "\n".join(filter(lambda x: ("coordinate-based" in x), conf))
         disable = "\n".join(filter(lambda x: ("disable" in x), conf))
@@ -95,14 +94,10 @@ class Lldp_interfacesFacts(object):
             coordinate_conf,
         )
         elin_based_conf = self.parse_lldp_elin_based(elin_conf)
-        civic_based_conf = self.parse_lldp_civic_based(civic_conf)
         if disable:
             config["enable"] = False
         if coordinate_conf:
             location["coordinate_based"] = coordinate_based_conf
-            config["location"] = location
-        elif civic_based_conf:
-            location["civic_based"] = civic_based_conf
             config["location"] = location
         elif elin_conf:
             location["elin"] = elin_based_conf
@@ -122,25 +117,6 @@ class Lldp_interfacesFacts(object):
             else:
                 config[item] = None
         return utils.remove_empties(config)
-
-    def parse_lldp_civic_based(self, conf):
-        civic_based = None
-        if conf:
-            civic_info_list = []
-            civic_add_list = findall(r"^.*civic-based ca-type (.+)", conf, M)
-            if civic_add_list:
-                for civic_add in civic_add_list:
-                    ca = civic_add.split(" ")
-                    c_add = {}
-                    c_add["ca_type"] = int(ca[0].strip("'"))
-                    c_add["ca_value"] = ca[2].strip("'")
-                    civic_info_list.append(c_add)
-
-                country_code = search(r"^.*civic-based country-code (.+)", conf, M)
-                civic_based = {}
-                civic_based["ca_info"] = civic_info_list
-                civic_based["country_code"] = country_code.group(1).strip("'")
-        return civic_based
 
     def parse_lldp_elin_based(self, conf):
         elin_based = None
