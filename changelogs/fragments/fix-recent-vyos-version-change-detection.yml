@@ -1,3 +1,3 @@
 ---
-trivial:
-  - Fix change detection for recent Vyos versions
+bugfixes:
+  - vyos_config - Fix change detection for recent Vyos versions
