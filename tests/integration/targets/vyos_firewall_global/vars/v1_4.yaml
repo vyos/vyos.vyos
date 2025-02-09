@@ -91,7 +91,7 @@ merged:
           members:
             - address: 192.0.1.0/24
 
-populate_config:
+populate_commands:
   - set firewall global-options all-ping 'enable'
   - set firewall global-options broadcast-ping 'enable'
   - set firewall group address-group MGMT-HOSTS address '192.0.1.1'

@@ -94,7 +94,7 @@ merged:
           members:
             - address: 192.0.1.0/24
 
-populate_config:
+populate_commands:
   - set firewall all-ping 'enable'
   - set firewall broadcast-ping 'enable'
   - set firewall config-trap 'enable'
