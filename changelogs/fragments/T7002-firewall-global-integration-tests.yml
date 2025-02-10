@@ -1,6 +1,8 @@
 ---
-minor_changes:
-  - fix integration tests for `firewall_global` for v1.3-. Tested against 1.2.0, 1.3.8, 1.4.8, and VyOS 1.5-rolling-202410260007
-  - update facts parsers to include state-policies, redirect, etc
-  - update config to fix stanzas processing in 1.4+ (e.g. present/absent stanza vs enable/disable)
-  - update unit tests
+bugfixes:
+  - vyos_firewall_global - fixed the facts parsers to include state-policies, redirect
+  - vyos_firewall_global - fixed behavior for stanzas processing by facts in 1.4+ (e.g. present/absent stanza vs enable/disable)
+trivial:
+  - vyos_firewall_global - updated unit test suites to include units for 1.4+ and missing attributes (e.g. log)
+  - vyos_firewall_global - re-factored integration test suite structure to D.R.Y and add support for 1.4+
+  - vyos_firewall_global - cleared-up the obsolete stanzas (e.g. config-trap)
