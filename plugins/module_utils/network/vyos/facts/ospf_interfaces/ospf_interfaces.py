@@ -50,28 +50,12 @@ class Ospf_interfacesFacts(object):
 
     def get_config_set_1_4(self, data):
         """To classify the configurations beased on interface"""
-        interface_list = []
-        test_dict = {}
-        config_set = []
-        int_string = ""
+        config_dict = {}
         for config_line in data.splitlines():
             ospf_int = re.search(r"set protocols (?:ospf|ospfv3) interface (\S+).*", config_line)
             if ospf_int:
-                test_dict[ospf_int.group(1)] = test_dict.get(ospf_int.group(1), "") + config_line + "\n"
-                # if ospf_int.group(1) not in interface_list:
-                #     # test_dict[ospf_int.group(1)] = config_line + "\n"
-                #     if int_string:
-                #         config_set.append(int_string)
-                #     interface_list.append(ospf_int.group(1))
-                #     int_string = ""
-                # int_string = int_string + config_line + "\n"
-            # test_dict[ospf_int.group(1)] += config_line + "\n"
-        # if int_string:
-        #     config_set.append(int_string)
-
-        # self._module.fail_json(msg=list(test_dict.values()))
-        # return config_set
-        return list(test_dict.values())
+                config_dict[ospf_int.group(1)] = config_dict.get(ospf_int.group(1), "") + config_line + "\n"
+        return list(config_dict.values())
 
     def get_config_set_1_2(self, data):
         """To classify the configurations beased on interface"""

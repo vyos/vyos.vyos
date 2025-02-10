@@ -1,0 +1,100 @@
+---
+merged:
+  commands: "{{ merged_commands }}"
+  after:
+    - address_family:
+        - afi: ipv4
+          transmit_delay: 45
+        - afi: ipv6
+          passive: true
+      name: bond2
+    - address_family:
+        - afi: ipv4
+          cost: 50
+          priority: 26
+        - afi: ipv6
+          instance: "33"
+          mtu_ignore: true
+      name: eth0
+
+replaced:
+  commands: "{{ replaced_commands }}"
+  after:
+    - address_family:
+        - afi: ipv4
+          authentication:
+            md5_key:
+              key: "1111111111232345"
+              key_id: 10
+          bandwidth: 70
+          transmit_delay: 45
+        - afi: ipv6
+          passive: true
+      name: bond2
+    - address_family:
+        - afi: ipv4
+          network: point-to-point
+          priority: 26
+          transmit_delay: 50
+        - afi: ipv6
+          dead_interval: 39
+      name: eth0
+
+overridden:
+  commands: "{{ overridden_commands }}"
+  after:
+    - address_family:
+        - afi: ipv4
+          network: point-to-point
+          priority: 26
+          transmit_delay: 50
+        - afi: ipv6
+          dead_interval: 39
+      name: eth0
+
+deleted:
+  commands: "{{ deleted_commands }}"
+  after:
+    - address_family:
+        - afi: ipv4
+          cost: 50
+          priority: 26
+        - afi: ipv6
+          instance: "33"
+          mtu_ignore: true
+      name: eth0
+
+rendered:
+  commands: "{{ rendered_commands }}"
+
+round_trip:
+  after:
+    - name: eth0
+    - access_rules:
+        - afi: ipv4
+          rules:
+            - direction: in
+              name: INBOUND
+            - direction: local
+              name: LOCAL
+            - direction: out
+              name: OUTBOUND
+        - afi: ipv6
+          rules:
+            - direction: local
+              name: V6-LOCAL
+      name: eth1
+    - name: eth2
+      access_rules:
+        - afi: ipv4
+          rules:
+            - direction: in
+              name: INBOUND
+            - direction: local
+              name: LOCAL
+            - direction: out
+              name: OUTBOUND
+        - afi: ipv6
+          rules:
+            - direction: local
+              name: V6-LOCAL
