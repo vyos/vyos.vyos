@@ -1,3 +1,7 @@
 ---
 minor_changes:
-  - ospf_infterfaces - mtu-ignore and passive parsers fixed
+  - vyos_ospf_interfaces - fixed get_config to cater for unordered command lists in 1.4+
+trivial:
+  - vyos_ospf_interfaces - re-worked intergration test suite structure to D.R.Y.
+  - vyos_ospf_interfaces - added support for 1.4+ VyOS
+  - vyos_ospf_interfaces - updated unit test suite to cater for 1.4+ bugfixes
