@@ -41,6 +41,14 @@ class Lag_interfacesFacts(object):
 
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
+    def get_config(self, connection):
+        """Get the configuration from the device
+        :param connection: the device connection
+        :rtype: string
+        :returns: The configuration
+        """
+        return connection.get_config()
+
     def populate_facts(self, connection, ansible_facts, data=None):
         """Populate the facts for lag_interfaces
         :param module: the module instance
@@ -50,7 +58,7 @@ class Lag_interfacesFacts(object):
         :returns: facts
         """
         if not data:
-            data = connection.get_config()
+            data = self.get_config(connection)
 
         objs = []
         lag_names = findall(r"^set interfaces bonding (\S+)", data, M)
@@ -62,13 +70,13 @@ class Lag_interfacesFacts(object):
                 members = []
                 member = {}
 
-                group_regex = r".*eth.* '%s'" % lag
+                group_regex = r"%s member interface .*eth.*" % lag
                 g_cfg = findall(group_regex, data, M)
                 for item in g_cfg:
-                    output = search("^set interfaces ethernet (\\S+)", item, M)
+                    output = search("member interface '(\\S+)'", item, M)
                     if output:
                         member["member"] = output.group(1).strip("'")
-                        members.append(member)
+                        members.append(deepcopy(member))
                 obj["name"] = lag.strip("'")
                 if members:
                     obj["members"] = members

@@ -6,11 +6,11 @@ merged:
   commands:
     - set interfaces bonding bond0 hash-policy 'layer2'
     - set interfaces bonding bond0 mode 'active-backup'
-    - set interfaces ethernet eth1 bond-group 'bond0'
+    - set interfaces bonding bond0 member interface 'eth1'
     - set interfaces bonding bond0 primary 'eth1'
     - set interfaces bonding bond1 hash-policy 'layer2+3'
     - set interfaces bonding bond1 mode 'active-backup'
-    - set interfaces ethernet eth2 bond-group 'bond1'
+    - set interfaces bonding bond1 member interface 'eth2'
     - set interfaces bonding bond1 primary 'eth2'
   after:
     - name: bond0
@@ -58,7 +58,7 @@ replaced:
 overridden:
   commands:
     - delete interfaces bonding bond0 hash-policy
-    - delete interfaces ethernet eth1 bond-group 'bond0'
+    - delete interfaces bonding bond0 member interface 'eth1'
     - delete interfaces bonding bond0 mode
     - delete interfaces bonding bond0 primary
     - set interfaces bonding bond1 hash-policy 'layer2'
@@ -73,11 +73,11 @@ overridden:
 deleted:
   commands:
     - delete interfaces bonding bond0 hash-policy
-    - delete interfaces ethernet eth1 bond-group 'bond0'
+    - delete interfaces bonding bond0 member interface 'eth1'
     - delete interfaces bonding bond0 mode
     - delete interfaces bonding bond0 primary
     - delete interfaces bonding bond1 hash-policy
-    - delete interfaces ethernet eth2 bond-group 'bond1'
+    - delete interfaces bonding bond1 member interface 'eth2'
     - delete interfaces bonding bond1 mode
     - delete interfaces bonding bond1 primary
   after:
@@ -86,11 +86,11 @@ deleted:
 rendered:
   commands:
     - set interfaces bonding bond0 hash-policy 'layer2'
-    - set interfaces ethernet eth1 bond-group 'bond0'
+    - set interfaces bonding bond0 member interface 'eth1'
     - set interfaces bonding bond0 mode 'active-backup'
     - set interfaces bonding bond0 primary 'eth1'
     - set interfaces bonding bond1 hash-policy 'layer2+3'
-    - set interfaces ethernet eth2 bond-group 'bond1'
+    - set interfaces bonding bond1 member interface 'eth2'
     - set interfaces bonding bond1 mode 'active-backup'
     - set interfaces bonding bond1 primary 'eth2'
 round_trip:
@@ -99,11 +99,11 @@ round_trip:
       hash_policy: layer2+3
       members:
         - member: eth1
-      mode: 802.3ad
+      mode: transmit-load-balance
       primary: eth1
     - name: bond1
       hash_policy: layer2
       members:
         - member: eth2
-      mode: xor-hash
+      mode: adaptive-load-balance
       primary: eth2

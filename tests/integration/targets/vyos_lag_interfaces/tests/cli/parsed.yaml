@@ -21,7 +21,7 @@
 
     - name: Assert that correct parsing done
       assert:
-        that: "{{ ansible_facts['network_resources']['lag_interfaces'] | symmetric_difference(result['parsed']) |length == 0 }}"
+        that: ansible_facts['network_resources']['lag_interfaces'] | symmetric_difference(result['parsed']) |length == 0
 
   always:
     - include_tasks: _remove_bond.yaml

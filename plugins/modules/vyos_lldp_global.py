@@ -60,8 +60,16 @@ options:
         type: bool
       address:
         description:
-        - This argument defines management-address.
+        - Exactly one management address (exclusive with addresses).
+          Deprecated in favor of addresses. To be removed in 7.0.0.
         type: str
+      addresses:
+        description:
+        - One or more management addresses. The management address is used to identify
+          the management interface of the system. Only addresses connected to the
+          system will be transmitted.
+        type: list
+        elements: str
       snmp:
         description:
         - This argument enable the SNMP queries to LLDP database.
@@ -113,7 +121,8 @@ EXAMPLES = """
         - fdp
         - cdp
       snmp: enable
-      address: 192.0.2.11
+      addresses:
+        - 192.0.2.11
     state: merged
 #
 #
@@ -132,7 +141,9 @@ EXAMPLES = """
 #
 #  after": {
 #    "snmp": "enable"
-#    "address": "192.0.2.11"
+#    "addresses": [
+#        "192.0.2.11"
+#    ]
 #    "legacy_protocols": [
 #        "cdp",
 #        "fdp"
@@ -167,7 +178,8 @@ EXAMPLES = """
         - edp
         - sonmp
         - cdp
-      address: 192.0.2.14
+      addresses:
+        - 192.0.2.14
     state: replaced
 #
 #
@@ -178,7 +190,9 @@ EXAMPLES = """
 #
 # "before": {
 #    "snmp": "enable"
-#    "address": "192.0.2.11"
+#    "addresses": [
+#        "192.0.2.11"
+#    ]
 #    "legacy_protocols": [
 #        "cdp",
 #        "fdp"
@@ -189,13 +203,16 @@ EXAMPLES = """
 # "commands": [
 #        "delete service lldp snmp",
 #        "delete service lldp legacy-protocols fdp",
+#        "delete service lldp management-address '192.0.2.11'",
 #        "set service lldp management-address '192.0.2.14'",
 #        "set service lldp legacy-protocols edp",
 #        "set service lldp legacy-protocols sonmp"
 #    ]
 #
 # "after": {
-#    "address": "192.0.2.14"
+#    "addresses": [
+#        "192.0.2.14"
+#    ]
 #    "legacy_protocols": [
 #        "cdp",
 #        "edp",
@@ -236,7 +253,9 @@ EXAMPLES = """
 # ------------------------
 #
 # "before": {
-#    "address": "192.0.2.14"
+#    "addresses": [
+#       "192.0.2.14"
+#    ]
 #    "legacy_protocols": [
 #       "cdp",
 #       "edp",
@@ -368,7 +387,8 @@ EXAMPLES = """
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_lldp_global:
     config:
-      address: 192.0.2.17
+      addresses:
+        - 192.0.2.17
       enable: true
       legacy_protocols:
         - cdp
@@ -406,7 +426,9 @@ EXAMPLES = """
 #
 #
 # "parsed": {
-#    "address": "192.0.2.11",
+#    "addresses": [
+#       "192.0.2.11"
+#    ]
 #    "enable": true,
 #    "legacy_protocols": [
 #       "cdp",

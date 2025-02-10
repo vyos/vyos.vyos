@@ -42,6 +42,10 @@ class Lldp_globalArgs(object):  # pylint: disable=R0903
         "config": {
             "options": {
                 "address": {"type": "str"},
+                "addresses": {
+                    "elements": "str",
+                    "type": "list",
+                },
                 "enable": {"type": "bool"},
                 "legacy_protocols": {
                     "choices": [
@@ -56,6 +60,7 @@ class Lldp_globalArgs(object):  # pylint: disable=R0903
                 "snmp": {"type": "str"},
             },
             "type": "dict",
+            "mutually_exclusive": [["addresses", "address"]],
         },
         "running_config": {"type": "str"},
         "state": {

@@ -70,28 +70,6 @@ options:
         - LLDP-MED location data.
         type: dict
         suboptions:
-          civic_based:
-            description:
-            - Civic-based location data.
-            type: dict
-            suboptions:
-              ca_info:
-                description: LLDP-MED address info
-                type: list
-                elements: dict
-                suboptions:
-                  ca_type:
-                    description: LLDP-MED Civic Address type.
-                    type: int
-                    required: true
-                  ca_value:
-                    description: LLDP-MED Civic Address value.
-                    type: str
-                    required: true
-              country_code:
-                description: Country Code
-                type: str
-                required: true
           coordinate_based:
             description:
             - Coordinate-based location.
@@ -154,11 +132,7 @@ EXAMPLES = """
     config:
       - name: eth1
         location:
-          civic_based:
-            country_code: US
-            ca_info:
-              - ca_type: 0
-                ca_value: ENGLISH
+          elin: 0000000911
       - name: eth2
         location:
           coordinate_based:
@@ -176,10 +150,7 @@ EXAMPLES = """
 # before": {}
 #
 #    "commands": [
-#        "set service lldp interface eth1 location civic-based country-code 'US'",
-#        "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'",
-#        "set service lldp interface eth1 location civic-based country-code 'US'",
-#        "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'",
+#        "set service lldp interface eth1 location elin '0000000911'",
 #        "set service lldp interface eth1",
 #        "set service lldp interface eth2 location coordinate-based latitude '33.524449N'",
 #        "set service lldp interface eth2 location coordinate-based altitude '2200'",
@@ -205,14 +176,7 @@ EXAMPLES = """
 #  },
 #  {
 #      "location": {
-#          "civic_based": {
-#              "ca_info": [
-#                  {
-#                      "ca_type": 0,
-#                      "ca_value": "ENGLISH"
-#                  }
-#              ],
-#              "country_code": "US"
+#          "elin": "0000000911"
 #          }
 #      },
 #      "name": "eth1"
@@ -222,8 +186,7 @@ EXAMPLES = """
 # -------------
 #
 # vyos@vyos:~$ show configuration commands | grep lldp
-# set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
-# set service lldp interface eth1 location civic-based country-code 'US'
+# set service lldp interface eth1 location elin '0000000911'
 # set service lldp interface eth2 location coordinate-based altitude '2200'
 # set service lldp interface eth2 location coordinate-based datum 'WGS84'
 # set service lldp interface eth2 location coordinate-based latitude '33.524449N'
@@ -236,8 +199,7 @@ EXAMPLES = """
 # -------------
 #
 # vyos@vyos:~$ show configuration commands | grep lldp
-# set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
-# set service lldp interface eth1 location civic-based country-code 'US'
+# set service lldp interface eth1 location elin '0000000911'
 # set service lldp interface eth2 location coordinate-based altitude '2200'
 # set service lldp interface eth2 location coordinate-based datum 'WGS84'
 # set service lldp interface eth2 location coordinate-based latitude '33.524449N'
@@ -250,11 +212,7 @@ EXAMPLES = """
     config:
       - name: eth2
         location:
-          civic_based:
-            country_code: US
-            ca_info:
-              - ca_type: 0
-                ca_value: ENGLISH
+          elin: 0000000911
       - name: eth1
         location:
           coordinate_based:
@@ -283,15 +241,7 @@ EXAMPLES = """
 #        },
 #        {
 #            "location": {
-#                "civic_based": {
-#                    "ca_info": [
-#                        {
-#                            "ca_type": 0,
-#                            "ca_value": "ENGLISH"
-#                        }
-#                    ],
-#                    "country_code": "US"
-#                }
+#                "elin": "0000000911"
 #            },
 #            "name": "eth1"
 #        }
@@ -300,8 +250,7 @@ EXAMPLES = """
 #    "commands": [
 #        "delete service lldp interface eth2 location",
 #        "set service lldp interface eth2 'disable'",
-#        "set service lldp interface eth2 location civic-based country-code 'US'",
-#        "set service lldp interface eth2 location civic-based ca-type 0 ca-value 'ENGLISH'",
+#        "set service lldp interface eth2 location elin '0000000911'",
 #        "delete service lldp interface eth1 location",
 #        "set service lldp interface eth1 'disable'",
 #        "set service lldp interface eth1 location coordinate-based latitude '33.524449N'",
@@ -312,15 +261,7 @@ EXAMPLES = """
 #
 #    "after": {
 #        "location": {
-#            "civic_based": {
-#                "ca_info": [
-#                    {
-#                        "ca_type": 0,
-#                        "ca_value": "ENGLISH"
-#                    }
-#                ],
-#                "country_code": "US"
-#            }
+#            "elin": "0000000911"
 #        },
 #        "name": "eth2"
 #    },
@@ -346,8 +287,7 @@ EXAMPLES = """
 # set service lldp interface eth1 location coordinate-based latitude '33.524449N'
 # set service lldp interface eth1 location coordinate-based longitude '222.267255W'
 # set service lldp interface eth2 'disable'
-# set service lldp interface eth2 location civic-based ca-type 0 ca-value 'ENGLISH'
-# set service lldp interface eth2 location civic-based country-code 'US'
+# set service lldp interface eth2 location elin '0000000911'
 
 
 # Using overridden
@@ -362,8 +302,7 @@ EXAMPLES = """
 # set service lldp interface eth1 location coordinate-based latitude '33.524449N'
 # set service lldp interface eth1 location coordinate-based longitude '222.267255W'
 # set service lldp interface eth2 'disable'
-# set service lldp interface eth2 location civic-based ca-type 0 ca-value 'ENGLISH'
-# set service lldp interface eth2 location civic-based country-code 'US'
+# set service lldp interface eth2 location elin '0000000911'
 #
 - name: Overrides all device configuration with provided configuration
   vyos.vyos.vyos_lldp_interfaces:
@@ -382,17 +321,7 @@ EXAMPLES = """
 # "before": [
 #    {
 #      "enable": false,
-#      "location": {
-#        "civic_based": {
-#          "ca_info": [
-#            {
-#              "ca_type": 0,
-#              "ca_value": "ENGLISH"
-#            }
-#          ],
-#          "country_code": "US"
-#        }
-#      },
+#      "elin": "0000000911",
 #      "name": "eth2"
 #    },
 #    {
@@ -476,8 +405,7 @@ EXAMPLES = """
 # -------------
 #
 # vyos@192# run show configuration commands | grep lldp
-# set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
-# set service lldp interface eth1 location civic-based country-code 'US'
+# set service lldp interface eth1 location elin '0000000911'
 # set service lldp interface eth2 location coordinate-based altitude '2200'
 # set service lldp interface eth2 location coordinate-based datum 'WGS84'
 # set service lldp interface eth2 location coordinate-based latitude '33.524449N'
@@ -507,15 +435,7 @@ EXAMPLES = """
 #         },
 #         {
 #             "location": {
-#                 "civic_based": {
-#                     "ca_info": [
-#                         {
-#                             "ca_type": 0,
-#                             "ca_value": "ENGLISH"
-#                         }
-#                     ],
-#                     "country_code": "US"
-#                 }
+#                 "elin": "0000000911"
 #             },
 #             "name": "eth1"
 #         }
@@ -526,8 +446,7 @@ EXAMPLES = """
 # -------------
 #
 # vyos@192# run show configuration commands | grep lldp
-# set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
-# set service lldp interface eth1 location civic-based country-code 'US'
+# set service lldp interface eth1 location elin '0000000911'
 # set service lldp interface eth2 location coordinate-based altitude '2200'
 # set service lldp interface eth2 location coordinate-based datum 'WGS84'
 # set service lldp interface eth2 location coordinate-based latitude '33.524449N'
@@ -542,11 +461,7 @@ EXAMPLES = """
     config:
       - name: eth1
         location:
-          civic_based:
-            country_code: US
-            ca_info:
-              - ca_type: 0
-                ca_value: ENGLISH
+          elin: 0000000911
       - name: eth2
         location:
           coordinate_based:
@@ -564,8 +479,7 @@ EXAMPLES = """
 #
 #
 # "rendered": [
-#         "set service lldp interface eth1 location civic-based country-code 'US'",
-#         "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'",
+#         "set service lldp interface eth1 location elin '0000000911'",
 #         "set service lldp interface eth1",
 #         "set service lldp interface eth2 location coordinate-based latitude '33.524449N'",
 #         "set service lldp interface eth2 location coordinate-based altitude '2200'",
@@ -581,8 +495,7 @@ EXAMPLES = """
 - name: Parsed the commands to provide structured configuration.
   vyos.vyos.vyos_lldp_interfaces:
     running_config:
-      "set service lldp interface eth1 location civic-based ca-type 0 ca-value 'ENGLISH'
-       set service lldp interface eth1 location civic-based country-code 'US'
+      "set service lldp interface eth1 location elin '0000000911'
        set service lldp interface eth2 location coordinate-based altitude '2200'
        set service lldp interface eth2 location coordinate-based datum 'WGS84'
        set service lldp interface eth2 location coordinate-based latitude '33.524449N'
@@ -609,15 +522,7 @@ EXAMPLES = """
 #         },
 #         {
 #             "location": {
-#                 "civic_based": {
-#                     "ca_info": [
-#                         {
-#                             "ca_type": 0,
-#                             "ca_value": "ENGLISH"
-#                         }
-#                     ],
-#                     "country_code": "US"
-#                 }
+#                 "elin": "0000000911"
 #             },
 #             "name": "eth1"
 #         }
