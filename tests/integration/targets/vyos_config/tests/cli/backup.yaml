@@ -12,7 +12,7 @@
   file:
     path: "{{ item.path }}"
     state: absent
-  with_items: "{{backup_files.files|default([])}}"
+  with_items: "{{ backup_files.files|default([]) }}"
 
 - name: take configure backup
   register: result
@@ -41,6 +41,7 @@
   with_items:
     - "{{ role_path }}/backup_test_dir/"
     - "{{ role_path }}/backup/backup.cfg"
+  run_once: true
 
 - name: take configuration backup in custom filename and directory path
   register: result
