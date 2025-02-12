@@ -1,4 +1,4 @@
 ---
-minor_changes:
-  - fix integration tests for `lag_interfaces`
-  - add unit tests for `lag_interfaces`
+trivial:
+  - vyos_lag_interfaces - fix integration tests for `lag_interfaces`
+  - vyos_lag_interfaces - add unit tests for `lag_interfaces`

@@ -1,8 +1,5 @@
 ---
-minor_changes:
-  - adjust for loopback being removed in `vyos_l3_interfaces`
-  - fixed `vyos_interfaces` for 1.5+
-  - update codecov updloader to version 5
-
-known_issues:
-  - integration tests for `interfaces` are still failing occasionally in 1.4 and below
+trivial:
+  - vyos interfaces tests - adjust for loopback being removed in `vyos_l3_interfaces`
+  - vyos interfaces tests - fixed `vyos_interfaces` for 1.5+
+  - actions - update codecov updloader to version 5

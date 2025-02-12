@@ -1,4 +1,9 @@
 ---
 minor_changes:
-  - added support for VIF interfaces
-  - expanded firewall interface types to match existing types
+  - vyos_firewall_interfaces - added support for VIF interfaces
+  - vyos_firewall_interfaces - expanded firewall interface types to match existing types
+
+deprecated_features:
+  - vyos_firewall_interfaces - deprecated for use with VyOS 1.4+, firewalls are no longer
+    connected directly to interfaces. See the Firewall Configuration documentation
+    for how to establish a connection betwen the firewall rulesets and the flow, interface, or zone.

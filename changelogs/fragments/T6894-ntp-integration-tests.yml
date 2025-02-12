@@ -1,5 +1,6 @@
 ---
 minor_changes:
-  - Added ntp options for 1.5+ (interleave, ptp)
-  - Synchronized argspec and docs with core module
-  - Fix integration tests for 1.3+
+  - vyos_ntp_global - Added ntp options for 1.5+ (interleave, ptp)
+trivial:
+  - vyos_ntp_global - Synchronized argspec and docs with core module
+  - vyos_ntp_global - Fix integration tests for 1.3+
