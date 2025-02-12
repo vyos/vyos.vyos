@@ -1,3 +1,3 @@
 ---
-minor_changes:
+trivial:
   - updated resources and re-ran resource templates for existing older template code

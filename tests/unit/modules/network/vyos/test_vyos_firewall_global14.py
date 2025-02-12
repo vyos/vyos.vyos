@@ -187,7 +187,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "set firewall global-options config-trap 'enable'",
             "set firewall global-options ipv6-receive-redirects 'disable'",
             "set firewall global-options state-policy established action 'accept'",
-            "set firewall global-options state-policy established log 'enable'",
+            "set firewall global-options state-policy established log",
             "set firewall global-options state-policy established log-level 'emerg'",
             "set firewall global-options state-policy invalid action 'reject'",
             "set firewall global-options broadcast-ping 'enable'",
@@ -462,5 +462,5 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
 
     def test_vyos_firewall_global_set_01_deleted(self):
         set_module_args(dict(config=dict(), state="deleted"))
-        commands = ["delete firewall global-options"]
+        commands = ["delete firewall"]
         self.execute_module(changed=True, commands=commands)
