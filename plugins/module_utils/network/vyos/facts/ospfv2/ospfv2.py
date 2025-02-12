@@ -409,7 +409,7 @@ class Ospfv2Facts(object):
                             config[attrib] = False
                         else:
                             config[attrib] = True
-                    elif match and en >= 1:
+                    elif match and en >= -1:
                         config[attrib] = True
                 else:
                     out = search(r"^.*" + regex + " (.+)", conf, M)
