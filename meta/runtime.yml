@@ -33,14 +33,13 @@ plugin_routing:
     lldp_interfaces:
       redirect: vyos.vyos.vyos_lldp_interfaces
     logging:
-      redirect: vyos.vyos.vyos_logging
-      deprecation:
-        removal_date: "2023-08-01"
-        warning_text: See the plugin documentation for more details
+      tombstone:
+        removal_version: 6.0.0
+        warning_text: use vyos_logging_global instead
     vyos_logging:
-      deprecation:
-        removal_date: "2023-08-01"
-        warning_text: See the plugin documentation for more details
+      tombstone:
+        removal_version: 6.0.0
+        warning_text: use vyos_logging_global instead
     logging_global:
       redirect: vyos.vyos.vyos_logging_global
     ntp_global:
