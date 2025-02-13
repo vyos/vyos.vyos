@@ -403,14 +403,16 @@ class Ospfv2Facts(object):
                     if match:
                         if attrib == "set" and conf.find(match) >= 1:
                             config[attrib] = True
-                        en = conf.find(match + " 'enable'")
+                        en = conf.find(match + " enable")
                     if out >= 1:
                         if dis >= 1:
                             config[attrib] = False
                         else:
                             config[attrib] = True
-                    elif match and en >= -1:
+                    elif match and en >= 1:
                         config[attrib] = True
+                    # if attrib == 'enabled':
+                    #     self._module.fail_json(msg=en)
                 else:
                     out = search(r"^.*" + regex + " (.+)", conf, M)
                     if out:
