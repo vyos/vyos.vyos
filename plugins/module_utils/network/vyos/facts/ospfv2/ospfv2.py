@@ -22,6 +22,9 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common i
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv2.ospfv2 import (
     Ospfv2Args,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Ospfv2Facts(object):
@@ -99,7 +102,7 @@ class Ospfv2Facts(object):
         config["areas"] = self.parse_attrib_list(conf, "area", "area_id")
         config["parameters"] = self.parse_attrib(conf, "parameters", "parameters")
         config["neighbor"] = self.parse_attrib_list(conf, "neighbor", "neighbor_id")
-        config["passive_interface"] = self.parse_leaf_list(conf, "passive-interface")
+        config["passive_interface"] = self.parse_passive(conf, "passive-interface")
         config["redistribute"] = self.parse_attrib_list(conf, "redistribute", "route_type")
         config["passive_interface_exclude"] = self.parse_leaf_list(
             conf,
@@ -153,6 +156,26 @@ class Ospfv2Facts(object):
 
         lst = []
         items = findall(r"^" + attrib + " (?:'*)(\\S+)(?:'*)", conf, M)
+        if items:
+            for i in set(items):
+                lst.append(i.strip("'"))
+                lst.sort()
+        return lst
+
+    def parse_passive(self, conf, attrib):
+        """
+        This function forms the regex to fetch the listed attributes
+        from the configuration data
+        :param conf: configuration data
+        :param attrib: attribute name
+        :return: generated rule list configuration
+        """
+
+        lst = []
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            items = findall(r"^interface" + " (?:'*)(\\S+)(?:'*) passive", conf, M)
+        else:
+            items = findall(r"^" + attrib + " (?:'*)(\\S+)(?:'*)", conf, M)
         if items:
             for i in set(items):
                 lst.append(i.strip("'"))

@@ -129,6 +129,9 @@
               route_type: bgp
         state: replaced
 
+    - debug:
+        msg: "{{ round_trip['after'] }}"
+
     - name: Assert that changes were applied
       assert:
         that: "{{ round_trip['after'] == result['after'] }}"

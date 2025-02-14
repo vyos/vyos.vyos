@@ -241,6 +241,7 @@ merged_update:
     - delete protocols ospf area 4 area-type stub
     - set protocols ospf area 4 network 192.0.22.0/24
     - set protocols ospf area 4 network 192.0.32.0/24
+
 populate:
   areas:
     - area_id: "2"
@@ -297,6 +298,7 @@ populate:
     - metric: 10
       metric_type: 2
       route_type: bgp
+
 replaced:
   commands:
     - delete protocols ospf passive-interface eth2
@@ -363,6 +365,7 @@ replaced:
       - metric: 10
         metric_type: 2
         route_type: bgp
+
 rendered:
   commands:
     - set protocols ospf mpls-te enable
@@ -401,6 +404,7 @@ rendered:
     - set protocols ospf area 4 area-type stub default-cost 20
     - set protocols ospf area '4'
     - set protocols ospf area 4 network 192.0.2.0/24
+
 parsed:
   after:
     areas:
@@ -458,10 +462,12 @@ parsed:
       - metric: 10
         metric_type: 2
         route_type: bgp
+
 deleted:
   commands:
     - delete protocols ospf
   after: {}
+
 round_trip:
   after:
     areas:

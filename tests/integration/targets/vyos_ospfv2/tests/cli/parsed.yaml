@@ -8,6 +8,9 @@
     running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
     state: parsed
 
+- debug:
+    msg: "{{ parsed['after'] }}"
+
 - name: Assert that config was correctly parsed
   assert:
     that:
