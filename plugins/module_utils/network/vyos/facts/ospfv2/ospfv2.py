@@ -170,12 +170,12 @@ class Ospfv2Facts(object):
         :param attrib: attribute name
         :return: generated rule list configuration
         """
-
         lst = []
+        items = []
         if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             items = findall(r"^interface" + " (?:'*)(\\S+)(?:'*) passive", conf, M)
-        else:
-            items = findall(r"^" + attrib + " (?:'*)(\\S+)(?:'*)", conf, M)
+        # else:
+        items += findall(r"^" + attrib + " (?:'*)(\\S+)(?:'*)", conf, M)
         if items:
             for i in set(items):
                 lst.append(i.strip("'"))
@@ -412,13 +412,13 @@ class Ospfv2Facts(object):
         :param match: parent node/attribute name.
         :return: generated config dictionary.
         """
-
         config = {}
         for attrib in attr_list:
             regex = self.map_regex(attrib)
 
             if match:
                 regex = match.replace("_", "-") + " " + regex
+
             if conf:
                 if self.is_bool(attrib):
                     out = conf.find(attrib.replace("_", "-"))
@@ -426,16 +426,14 @@ class Ospfv2Facts(object):
                     if match:
                         if attrib == "set" and conf.find(match) >= 1:
                             config[attrib] = True
-                        en = conf.find(match + " enable")
+                        en = conf.find(match + " enable") != -1
                     if out >= 1:
                         if dis >= 1:
                             config[attrib] = False
                         else:
                             config[attrib] = True
-                    elif match and en >= 1:
+                    elif match and en:
                         config[attrib] = True
-                    # if attrib == 'enabled':
-                    #     self._module.fail_json(msg=en)
                 else:
                     out = search(r"^.*" + regex + " (.+)", conf, M)
                     if out:
