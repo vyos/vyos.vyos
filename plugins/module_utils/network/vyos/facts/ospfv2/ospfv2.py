@@ -104,7 +104,7 @@ class Ospfv2Facts(object):
         config["neighbor"] = self.parse_attrib_list(conf, "neighbor", "neighbor_id")
         config["passive_interface"] = self.parse_passive(conf, "passive-interface")
         config["redistribute"] = self.parse_attrib_list(conf, "redistribute", "route_type")
-        config["passive_interface_exclude"] = self.parse_leaf_list(
+        config["passive_interface_exclude"] = self.parse_passive(
             conf,
             "passive-interface-exclude",
         )
@@ -173,7 +173,10 @@ class Ospfv2Facts(object):
         lst = []
         items = []
         if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-            items = findall(r"^interface" + " (?:'*)(\\S+)(?:'*) passive", conf, M)
+            if attrib == "passive-interface-exclude":
+                items = findall(r"^interface" + " (?:'*)(\\S+)(?:'*) passive disable$", conf, M)
+            else:
+                items = findall(r"^interface" + " (?:'*)(\\S+)(?:'*) passive$", conf, M)
         # else:
         items += findall(r"^" + attrib + " (?:'*)(\\S+)(?:'*)", conf, M)
         if items:
