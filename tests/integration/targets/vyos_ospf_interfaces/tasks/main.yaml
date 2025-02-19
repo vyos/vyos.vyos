@@ -1,5 +1,13 @@
 ---
+- name: Run preflight setup
+  import_tasks: pre_tasks.yml
+  ignore_errors: yes
+
 - name: Run CLI tests
   ansible.builtin.include_tasks: cli.yaml
   tags:
     - network_cli
+
+- name: Run post-test cleanup tasks
+  import_tasks: post_tasks.yml
+  ignore_errors: yes 
