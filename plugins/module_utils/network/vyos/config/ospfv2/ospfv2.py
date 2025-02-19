@@ -354,6 +354,8 @@ class Ospfv2(ConfigBase):
                         elif member not in h:
                             if attr == "passive_interface" and member != "default" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
                                 commands.append(cmd + "interface" + " " + member + " passive")
+                            elif attr == "passive_interface_exclude" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                                command = command.replace("passive-interface-exclude", "interface") + member + " passive disable"
                             else:
                                 commands.append(cmd + attr.replace("_", "-") + " " + member)
                 else:
