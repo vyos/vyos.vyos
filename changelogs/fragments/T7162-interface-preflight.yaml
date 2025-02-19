@@ -1,0 +1,5 @@
+---
+trivial:
+  - fix pre-flight sets for interfaces
+  - restore previously-removed interface test duplex and speed
+  - remove unnecessary debug statemetns in integration tests

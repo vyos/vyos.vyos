@@ -210,12 +210,15 @@ Additionally:
   on the local network
 - eth1 and eth2 should be defined and uncofirgured (they'll be overwritten by the tests)
 - eth3 and beyond should not be present or interface-related tests will fail
+- when using VMs for testing, ensure that the interfaces don't use `virtio`, as it will supress
+  some interface configurations. `e1000e` is a good choice for testing.
 - eth0 is also expected to show `duplex auto` and `speed auto` in the output of `show interfaces`,
   however others are not due to the fact that they are repeatedly deleted and recreated
   which causes the default values to be hidden.
 
 ## Changelogs
-<!--Add a link to a changelog.md file or an external docsite to cover this information. -->
+
+Change logs are available [here](https://github.com/vyos/vyos.vyos/blob/main/CHANGELOG.rst).
 
 ## Release notes
 

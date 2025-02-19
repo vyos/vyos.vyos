@@ -8,7 +8,7 @@
       set interfaces ethernet eth1 address 192.0.2.1/24
       set interfaces ethernet eth2
       delete interfaces loopback lo
-  ignore_errors: "{{ result.failed }}"
+  ignore_errors: True
   register: result
   ansible.netcommon.cli_config:
     config: "{{ lines }}"
