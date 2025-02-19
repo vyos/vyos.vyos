@@ -177,7 +177,7 @@ class Ospfv2Facts(object):
                 items = findall(r"^interface" + " (?:'*)(\\S+)(?:'*) passive disable$", conf, M)
             else:
                 items = findall(r"^interface" + " (?:'*)(\\S+)(?:'*) passive$", conf, M)
-        # else:
+
         items += findall(r"^" + attrib + " (?:'*)(\\S+)(?:'*)", conf, M)
         if items:
             for i in set(items):
