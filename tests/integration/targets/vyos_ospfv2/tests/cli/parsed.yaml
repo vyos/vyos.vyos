@@ -2,6 +2,9 @@
 - debug:
     msg: START vyos_ospfv2 parsed integration tests on connection={{ ansible_connection }}
 
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
 - name: Parse externally provided ospfv2 config to agnostic model
   register: result
   vyos.vyos.vyos_ospfv2:
