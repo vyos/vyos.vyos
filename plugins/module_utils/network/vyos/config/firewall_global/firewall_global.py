@@ -473,7 +473,7 @@ class Firewall_global(ConfigBase):
                         if val and key != "connection_type":
                             if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
                                 if key == "log" and LooseVersion(
-                                    get_os_version(self._module)
+                                    get_os_version(self._module),
                                 ) >= LooseVersion("1.4"):
                                     commands.append(
                                         self._form_attr_cmd(
@@ -604,7 +604,10 @@ class Firewall_global(ConfigBase):
                 if opr and item in l_set and not (h_red and self._is_w_same(w[attr], h_red, item)):
                     commands.append(
                         self._form_attr_cmd(
-                            attr=item, val=self._bool_to_str(value), opr=opr, type=afi
+                            attr=item,
+                            val=self._bool_to_str(value),
+                            opr=opr,
+                            type=afi,
                         ),
                     )
                 elif (
@@ -640,7 +643,10 @@ class Firewall_global(ConfigBase):
         :return: generated command.
         """
         command = self._compute_command(
-            key=key, attr=self._map_attrib(attr, type=type), val=val, opr=opr
+            key=key,
+            attr=self._map_attrib(attr, type=type),
+            val=val,
+            opr=opr,
         )
         return command
 
@@ -670,7 +676,7 @@ class Firewall_global(ConfigBase):
             cmd += attr.replace("_", "-")
         if val and opr:
             if key == "state_policy" and LooseVersion(get_os_version(self._module)) >= LooseVersion(
-                "1.4"
+                "1.4",
             ):
                 cmd += ""
             else:
