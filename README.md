@@ -39,40 +39,39 @@ The VyOS collection supports ``network_cli`` connections.
 ### Cliconf plugins
 Name | Description
 --- | ---
-[vyos.vyos.vyos](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_cliconf.rst)|Use vyos cliconf to run command on VyOS platform
+[vyos.vyos.vyos](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_cliconf.rst)|Use vyos cliconf to run command on VyOS platform
 
 ### Modules
 Name | Description
 --- | ---
-[vyos.vyos.vyos_banner](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_banner_module.rst)|Manage multiline banners on VyOS devices
-[vyos.vyos.vyos_bgp_address_family](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_bgp_address_family_module.rst)|BGP Address Family resource module
-[vyos.vyos.vyos_bgp_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_bgp_global_module.rst)|BGP global resource module
-[vyos.vyos.vyos_command](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_command_module.rst)|Run one or more commands on VyOS devices
-[vyos.vyos.vyos_config](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_config_module.rst)|Manage VyOS configuration on remote device
-[vyos.vyos.vyos_facts](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_facts_module.rst)|Get facts about vyos devices.
-[vyos.vyos.vyos_firewall_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_global_module.rst)|Firewall global resource module
-[vyos.vyos.vyos_firewall_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_interfaces_module.rst)|Firewall interfaces resource module
-[vyos.vyos.vyos_firewall_rules](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_rules_module.rst)|Firewall rules resource module
-[vyos.vyos.vyos_hostname](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_hostname_module.rst)|Manages hostname resource module
-[vyos.vyos.vyos_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_interfaces_module.rst)|Manages interface attributes of VyOS network devices.
-[vyos.vyos.vyos_l3_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_l3_interfaces_module.rst)|Layer 3 interfaces resource module.
-[vyos.vyos.vyos_lag_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lag_interfaces_module.rst)|LAG interfaces resource module
-[vyos.vyos.vyos_lldp_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_global_module.rst)|LLDP global resource module
-[vyos.vyos.vyos_lldp_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_interfaces_module.rst)|LLDP interfaces resource module
-[vyos.vyos.vyos_logging](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_logging_module.rst)|Manage logging on network devices
-[vyos.vyos.vyos_logging_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_logging_global_module.rst)|Logging resource module
-[vyos.vyos.vyos_ntp_global](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ntp_global_module.rst)|NTP global resource module
-[vyos.vyos.vyos_ospf_interfaces](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospf_interfaces_module.rst)|OSPF Interfaces Resource Module.
-[vyos.vyos.vyos_ospfv2](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospfv2_module.rst)|OSPFv2 resource module
-[vyos.vyos.vyos_ospfv3](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospfv3_module.rst)|OSPFv3 resource module
-[vyos.vyos.vyos_ping](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ping_module.rst)|Tests reachability using ping from VyOS network devices
-[vyos.vyos.vyos_prefix_lists](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_prefix_lists_module.rst)|Prefix-Lists resource module for VyOS
-[vyos.vyos.vyos_route_maps](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_route_maps_module.rst)|Route Map resource module
-[vyos.vyos.vyos_snmp_server](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_snmp_server_module.rst)|Manages snmp_server resource module
-[vyos.vyos.vyos_static_routes](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_static_routes_module.rst)|Static routes resource module
-[vyos.vyos.vyos_system](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_system_module.rst)|Run `set system` commands on VyOS devices
-[vyos.vyos.vyos_user](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_user_module.rst)|Manage the collection of local users on VyOS device
-[vyos.vyos.vyos_vlan](https://github.com/ansible-collections/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vlan_module.rst)|Manage VLANs on VyOS network devices
+[vyos.vyos.vyos_banner](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_banner_module.rst)|Manage multiline banners on VyOS devices
+[vyos.vyos.vyos_bgp_address_family](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_bgp_address_family_module.rst)|BGP Address Family resource module
+[vyos.vyos.vyos_bgp_global](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_bgp_global_module.rst)|BGP global resource module
+[vyos.vyos.vyos_command](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_command_module.rst)|Run one or more commands on VyOS devices
+[vyos.vyos.vyos_config](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_config_module.rst)|Manage VyOS configuration on remote device
+[vyos.vyos.vyos_facts](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_facts_module.rst)|Get facts about vyos devices.
+[vyos.vyos.vyos_firewall_global](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_global_module.rst)|Firewall global resource module
+[vyos.vyos.vyos_firewall_interfaces](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_interfaces_module.rst)|Firewall interfaces resource module
+[vyos.vyos.vyos_firewall_rules](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_rules_module.rst)|Firewall rules resource module
+[vyos.vyos.vyos_hostname](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_hostname_module.rst)|Manages hostname resource module
+[vyos.vyos.vyos_interfaces](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_interfaces_module.rst)|Manages interface attributes of VyOS network devices.
+[vyos.vyos.vyos_l3_interfaces](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_l3_interfaces_module.rst)|Layer 3 interfaces resource module.
+[vyos.vyos.vyos_lag_interfaces](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lag_interfaces_module.rst)|LAG interfaces resource module
+[vyos.vyos.vyos_lldp_global](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_global_module.rst)|LLDP global resource module
+[vyos.vyos.vyos_lldp_interfaces](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_interfaces_module.rst)|LLDP interfaces resource module
+[vyos.vyos.vyos_logging_global](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_logging_global_module.rst)|Logging resource module
+[vyos.vyos.vyos_ntp_global](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ntp_global_module.rst)|NTP global resource module
+[vyos.vyos.vyos_ospf_interfaces](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospf_interfaces_module.rst)|OSPF Interfaces Resource Module.
+[vyos.vyos.vyos_ospfv2](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospfv2_module.rst)|OSPFv2 resource module
+[vyos.vyos.vyos_ospfv3](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospfv3_module.rst)|OSPFv3 resource module
+[vyos.vyos.vyos_ping](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ping_module.rst)|Tests reachability using ping from VyOS network devices
+[vyos.vyos.vyos_prefix_lists](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_prefix_lists_module.rst)|Prefix-Lists resource module for VyOS
+[vyos.vyos.vyos_route_maps](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_route_maps_module.rst)|Route Map resource module
+[vyos.vyos.vyos_snmp_server](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_snmp_server_module.rst)|Manages snmp_server resource module
+[vyos.vyos.vyos_static_routes](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_static_routes_module.rst)|Static routes resource module
+[vyos.vyos.vyos_system](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_system_module.rst)|Run `set system` commands on VyOS devices
+[vyos.vyos.vyos_user](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_user_module.rst)|Manage the collection of local users on VyOS device
+[vyos.vyos.vyos_vlan](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vlan_module.rst)|Manage VLANs on VyOS network devices
 
 <!--end collection content-->
 
