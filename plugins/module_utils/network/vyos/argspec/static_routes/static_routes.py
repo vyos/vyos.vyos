@@ -73,7 +73,7 @@ class Static_routesArgs(object):  # pylint: disable=R0903
                                         "admin_distance": {"type": "int"},
                                         "enabled": {"type": "bool"},
                                         "forward_router_address": {
-                                            "required": True,
+                                            # "required": True,
                                             "type": "str",
                                         },
                                         "interface": {"type": "str"},

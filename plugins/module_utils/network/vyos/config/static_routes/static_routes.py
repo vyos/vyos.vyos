@@ -350,12 +350,13 @@ class Static_routes(ConfigBase):
                         commands.append(
                             self._compute_command(
                                 dest=want["dest"],
-                                key="next-hop",
-                                attrib=hop["forward_router_address"] + " " + "next-hop-interface",
+                                key="next-hop-interface",
+                                # attrib=hop["interface"] + " " + "next-hop-interface",
                                 value=hop[element],
                                 opr=opr,
-                            ),
+                            ).replace("route", "interface-route"),
                         )
+                        # self._module.fail_json(msg=commands)
         return commands
 
     def _update_blackhole(self, key, want, have):
@@ -446,8 +447,8 @@ class Static_routes(ConfigBase):
                         commands.append(
                             self._compute_command(
                                 dest=want["dest"],
-                                key="next-hop",
-                                attrib=hop["forward_router_address"] + " " + "next-hop-interface",
+                                key="next-hop-interface",
+                                # attrib=hop["forward_router_address"] + " " + "next-hop-interface",
                                 value=hop[element],
                                 remove=True,
                             ),
@@ -517,6 +518,7 @@ class Static_routes(ConfigBase):
             cmd += " " + attrib
         if value:
             cmd += " '" + value + "'"
+        # self._module.fail_json(msg=cmd)
         return cmd
 
     def afi_in_have(self, have, w_item):
