@@ -140,12 +140,11 @@ class Static_routesFacts(object):
         nh_list = None
         if conf:
             nh_list = []
-            hop_list = findall(r"^.*next-hop (.+)", conf, M)
+            hop_list = findall(r"(next-hop|next-hop-interface.+)$", conf, M)
             if hop_list:
                 for hop in hop_list:
                     distance = search(r"^.*distance (.\S+)", hop, M)
                     interface = search(r"^.*interface (.\S+)", hop, M)
-
                     dis = hop.find("disable")
                     hop_info = hop.split(" ")
                     nh_info = {"forward_router_address": hop_info[0].strip("'")}
