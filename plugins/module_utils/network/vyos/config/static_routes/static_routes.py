@@ -518,7 +518,6 @@ class Static_routes(ConfigBase):
             cmd += " " + attrib
         if value:
             cmd += " '" + value + "'"
-        # self._module.fail_json(msg=cmd)
         return cmd
 
     def afi_in_have(self, have, w_item):
