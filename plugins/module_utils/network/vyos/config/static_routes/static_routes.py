@@ -34,6 +34,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils
     get_lst_same_for_dicts,
     get_route_type,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
 class Static_routes(ConfigBase):
@@ -346,16 +350,28 @@ class Static_routes(ConfigBase):
                                 opr=opr,
                             ),
                         )
-                    elif element == "interface":
-                        self._module.log(msg="Interface")
+                    elif element == "interface" and LooseVersion(
+                        get_os_version(self._module),
+                    ) < LooseVersion("1.4"):
                         commands.append(
                             self._compute_command(
                                 dest=want["dest"],
                                 key="next-hop-interface",
-                                # attrib=hop["interface"] + " " + "next-hop-interface",
                                 value=hop[element],
                                 opr=opr,
                             ).replace("route", "interface-route"),
+                        )
+                    elif element == "interface" and LooseVersion(
+                        get_os_version(self._module),
+                    ) >= LooseVersion("1.4"):
+                        commands.append(
+                            self._compute_command(
+                                dest=want["dest"],
+                                key="interface",
+                                # attrib=hop["interface"] + " " + "next-hop-interface",
+                                value=hop[element],
+                                opr=opr,
+                            ),
                         )
         return commands
 
@@ -443,15 +459,27 @@ class Static_routes(ConfigBase):
                                 remove=True,
                             ),
                         )
-                    elif element == "interface":
+                    elif element == "interface" and LooseVersion(
+                        get_os_version(self._module),
+                    ) < LooseVersion("1.4"):
                         commands.append(
                             self._compute_command(
                                 dest=want["dest"],
                                 key="next-hop-interface",
-                                # attrib=hop["forward_router_address"] + " " + "next-hop-interface",
                                 value=hop[element],
                                 remove=True,
                             ).replace("route", "interface-route"),
+                        )
+                    elif element == "interface" and LooseVersion(
+                        get_os_version(self._module),
+                    ) >= LooseVersion("1.4"):
+                        commands.append(
+                            self._compute_command(
+                                dest=want["dest"],
+                                key="interface",
+                                value=hop[element],
+                                remove=True,
+                            ),
                         )
         return commands
 

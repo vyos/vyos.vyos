@@ -58,6 +58,12 @@ class TestVyosStaticRoutesModule(TestVyosModule):
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes.Static_routesFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.static_routes.static_routes.get_os_version",
+        )
+        self.test_version = "1.2"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
 
     def tearDown(self):
         super(TestVyosStaticRoutesModule, self).tearDown()
