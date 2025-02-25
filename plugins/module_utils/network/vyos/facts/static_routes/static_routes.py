@@ -141,18 +141,24 @@ class Static_routesFacts(object):
         nh_info = {}
         if conf:
             nh_list = []
-            hop_list = findall(r"(next-hop\s|next-hop-interface\s)(.+)$", conf, M)
+            hop_list = findall(r"^.*next-hop(.+)$", conf, M)
+
             if hop_list:
                 for hop in hop_list:
-                    hop_info = hop[0].rstrip()
-                    if hop_info == "next-hop-interface":
-                        nh_info["interface"] = hop[1].strip("'")
+                    distance = search(r"^.*distance (.\S+)", hop, M)
+                    interface = search(r"^.*interface (.\S+)", hop, M)
+
+                    dis = hop.find("disable")
+                    hop_info = hop.split(" ")
+
+                    if interface:
+                        nh_info["interface"] = interface.group(1).strip("'")
                     else:
-                        nh_info = {"forward_router_address": hop[1].strip("'")}
-                    if hop_info == "distance":
-                        value = hop[1].strip("'")
+                        nh_info = {"forward_router_address": hop_info[1].strip("'")}
+                    if distance:
+                        value = distance.group(1).strip("'")
                         nh_info["admin_distance"] = int(value)
-                    if hop_info == "disable":
+                    elif dis >= 1:
                         nh_info["enabled"] = False
                     for element in nh_list:
                         if element["forward_router_address"] == nh_info["forward_router_address"]:
