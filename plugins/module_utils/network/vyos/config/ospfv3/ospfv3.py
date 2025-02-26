@@ -259,6 +259,7 @@ class Ospfv3(ConfigBase):
         :param opr: True/False.
         :return: generated commands list.
         """
+        self._module.fail_json(msg=attr)
         commands = []
         h = []
         name = {
