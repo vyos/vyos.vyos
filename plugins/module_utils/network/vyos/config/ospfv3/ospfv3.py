@@ -259,16 +259,17 @@ class Ospfv3(ConfigBase):
         :param opr: True/False.
         :return: generated commands list.
         """
-        self._module.fail_json(msg=attr)
         commands = []
         h = []
         name = {
             "redistribute": "route_type",
             "range": "address",
+            "interface": "name",
         }
         leaf_dict = {
             "redistribute": ("route_map", "route_type"),
             "range": ("address", "advertise", "not_advertise"),
+            "interface": ("name"),
         }
         leaf = leaf_dict[attr]
         w = want.get(attr) or []
@@ -283,11 +284,12 @@ class Ospfv3(ConfigBase):
                         cmd = self._compute_command(opr=opr)
                     h_item = search_obj_in_list(w_item[name[attr]], h, name[attr])
                     if opr and key in leaf and not _is_w_same(w_item, h_item, key):
-                        if key == "route_type" or (
+                        if key in ["route_type", "name"] or (
                             key == "address"
                             and "advertise" not in w_item
                             and "not-advertise" not in w_item
                         ):
+                            # self._module.fail_json(msg=key)
                             if not val:
                                 cmd = cmd.replace("set", "delete")
                             commands.append(cmd + attr + " " + str(val))
@@ -307,7 +309,7 @@ class Ospfv3(ConfigBase):
                                 + str(val),
                             )
                     elif not opr and key in leaf and not _in_target(h_item, key):
-                        if key in ("route_type", "address"):
+                        if key in ("route_type", "address", "name"):
                             commands.append(cmd + attr + " " + str(val))
                         else:
                             commands.append(cmd + (attr + " " + w_item[name[attr]] + " " + key))
@@ -371,6 +373,10 @@ class Ospfv3(ConfigBase):
                             if key != "area_id" and not _in_target(h_area, key):
                                 commands.append(cmd + val + " " + key)
                         elif key == "range":
+                            commands.extend(
+                                self._render_list_dict_param(key, w_area, h_area, cmd, opr),
+                            )
+                        elif key == "interface":
                             commands.extend(
                                 self._render_list_dict_param(key, w_area, h_area, cmd, opr),
                             )
