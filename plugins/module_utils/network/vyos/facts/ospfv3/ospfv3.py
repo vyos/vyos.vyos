@@ -107,7 +107,6 @@ class Ospfv3Facts(object):
                 if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
                     cfg14 = findall(r"(interface .+) area '%s'$" % item, conf, M)
                     cfg += "\n " + item + " " + " ".join(cfg14)
-                # self._module.fail_json(msg=cfg)
                 if attrib == "area":
                     obj = self.parse_area(cfg, item)
                 else:

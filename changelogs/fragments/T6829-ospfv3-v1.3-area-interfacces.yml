@@ -1,5 +1,6 @@
 ---
-breaking_changes:
-  - vyos_ospfv3 - added interface(s) new parameter to the area attribute (both facts and config) for 1.3- only
+bugfixes:
+  - vyos_ospfv3 - added interface(s) new parameter to the area attribute (both facts and config) for 1.3- and 1.4+
 trivial:
-  - vyos_ospfv3 - updated unit test suites to include area interfaces for 1.3- only
+  - vyos_ospfv3 - updated unit test suites to include area interfaces
+  - vyos_ospfv3 - added v1.4 unit test

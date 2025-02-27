@@ -69,7 +69,7 @@ options:
             description: Name of import-list.
             type: str
           interface:
-            description: OSPFV3 area interfaces in v1.3 and earlier (For similar functionality in 1.4 and later, please use ospf_interface module).
+            description: OSPFV3 area interfaces.
             aliases: ['interfaces']
             type: list
             elements: dict
