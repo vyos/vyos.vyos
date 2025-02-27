@@ -33,6 +33,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils
     _in_target,
     _is_w_same,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
 class Ospfv3(ConfigBase):
@@ -289,10 +293,21 @@ class Ospfv3(ConfigBase):
                             and "advertise" not in w_item
                             and "not-advertise" not in w_item
                         ):
-                            # self._module.fail_json(msg=key)
                             if not val:
                                 cmd = cmd.replace("set", "delete")
-                            commands.append(cmd + attr + " " + str(val))
+                            if (
+                                LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+                                and attr == "interface"
+                            ):
+                                words = cmd.split()
+                                cmd14_list = []
+                                for word in words:
+                                    cmd14_list.append(word)
+                                    if word == "ospfv3":
+                                        cmd14_list.append(attr + " " + str(val))
+                                commands.append(" ".join(cmd14_list))
+                            else:
+                                commands.append(cmd + attr + " " + str(val))
                         elif key in leaf_dict["range"] and key != "address":
                             commands.append(
                                 cmd + attr + " " + w_item[name[attr]] + " " + key.replace("_", "-"),
