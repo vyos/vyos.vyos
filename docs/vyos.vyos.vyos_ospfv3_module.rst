@@ -131,7 +131,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>OSPFV3 area interfaces.</div>
+                        <div>OSPFV3 area interfaces in v1.3 and earlier (For similar functionality in 1.4 and later, please use ospf_interface module).</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: interfaces</div>
                 </td>
             </tr>
