@@ -22,6 +22,10 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common i
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv3.ospfv3 import (
     Ospfv3Args,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
 class Ospfv3Facts(object):
@@ -100,6 +104,10 @@ class Ospfv3Facts(object):
             for item in set(items):
                 i_regex = r" %s .+$" % item
                 cfg = "\n".join(findall(i_regex, conf, M))
+                if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                    cfg14 = findall(r"(interface .+) area '%s'$" % item, conf, M)
+                    cfg += "\n " + item + " " + " ".join(cfg14)
+                # self._module.fail_json(msg=cfg)
                 if attrib == "area":
                     obj = self.parse_area(cfg, item)
                 else:

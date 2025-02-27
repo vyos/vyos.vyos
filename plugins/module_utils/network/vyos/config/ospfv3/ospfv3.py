@@ -325,7 +325,19 @@ class Ospfv3(ConfigBase):
                             )
                     elif not opr and key in leaf and not _in_target(h_item, key):
                         if key in ("route_type", "address", "name"):
-                            commands.append(cmd + attr + " " + str(val))
+                            if (
+                                LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+                                and attr == "interface"
+                            ):
+                                words = cmd.split()
+                                cmd14_list = []
+                                for word in words:
+                                    cmd14_list.append(word)
+                                    if word == "ospfv3":
+                                        cmd14_list.append(attr + " " + str(val))
+                                commands.append(" ".join(cmd14_list))
+                            else:
+                                commands.append(cmd + attr + " " + str(val))
                         else:
                             commands.append(cmd + (attr + " " + w_item[name[attr]] + " " + key))
         return commands
