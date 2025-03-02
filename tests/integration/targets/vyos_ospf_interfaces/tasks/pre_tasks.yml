@@ -1,0 +1,7 @@
+---
+- name: Setup environment
+  vyos.vyos.vyos_config:
+    lines: |-
+      set interfaces bonding bond2
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
