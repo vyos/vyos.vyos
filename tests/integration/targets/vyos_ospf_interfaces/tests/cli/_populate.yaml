@@ -1,14 +1,11 @@
 ---
 - ansible.builtin.include_tasks: _remove_config.yaml
 
-- name: Setup
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
+- name: Setup {{ vyos_version }}
   vyos.vyos.vyos_config:
-    lines:
-      - set interfaces ethernet eth0 ip ospf cost 50
-      - set interfaces ethernet eth0 ip ospf priority 26
-      - set interfaces ethernet eth0 ipv6 ospfv3 mtu-ignore
-      - set interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
-      - set interfaces bonding bond2 ip ospf transmit-delay 45
-      - set interfaces bonding bond2 ipv6 ospfv3 passive
+    lines: "{{ populate_commands }}"
   vars:
     ansible_connection: ansible.netcommon.network_cli
