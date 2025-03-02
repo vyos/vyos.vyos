@@ -509,7 +509,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+(?P<name>\S+)
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
-                \s+(?P<mtu>\'mtu-ignore\')
+                \s+(?P<mtu>mtu-ignore)
                 *$""",
                 re.VERBOSE,
             ),
@@ -697,7 +697,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+(?P<name>\S+)
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
-                \s+(?P<pass>\'passive\')
+                \s+(?P<pass>passive)
                 *$""",
                 re.VERBOSE,
             ),
