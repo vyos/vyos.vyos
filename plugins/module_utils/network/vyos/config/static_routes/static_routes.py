@@ -368,7 +368,6 @@ class Static_routes(ConfigBase):
                             self._compute_command(
                                 dest=want["dest"],
                                 key="interface",
-                                # attrib=hop["interface"] + " " + "next-hop-interface",
                                 value=hop[element],
                                 opr=opr,
                             ),
