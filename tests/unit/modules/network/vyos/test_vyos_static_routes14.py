@@ -29,11 +29,11 @@ from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_ar
 from .vyos_module import TestVyosModule, load_fixture
 
 
-class TestVyosStaticRoutesModule(TestVyosModule):
+class TestVyosStaticRoutesModule14(TestVyosModule):
     module = vyos_static_routes
 
     def setUp(self):
-        super(TestVyosStaticRoutesModule, self).setUp()
+        super(TestVyosStaticRoutesModule14, self).setUp()
         self.mock_get_config = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
         )
@@ -61,12 +61,12 @@ class TestVyosStaticRoutesModule(TestVyosModule):
         self.mock_get_os_version = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.static_routes.static_routes.get_os_version",
         )
-        self.test_version = "1.3"
+        self.test_version = "1.4"
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = self.test_version
 
     def tearDown(self):
-        super(TestVyosStaticRoutesModule, self).tearDown()
+        super(TestVyosStaticRoutesModule14, self).tearDown()
         self.mock_get_resource_connection_config.stop()
         self.mock_get_resource_connection_facts.stop()
         self.mock_get_config.stop()
@@ -114,7 +114,7 @@ class TestVyosStaticRoutesModule(TestVyosModule):
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.9'",
             "set protocols static route 192.0.2.48/28 next-hop 192.0.2.9 distance '10'",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.10'",
-            "set protocols static interface-route 192.0.2.48/28 next-hop-interface 'eth0'",
+            "set protocols static route 192.0.2.48/28 interface 'eth0'",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -177,7 +177,7 @@ class TestVyosStaticRoutesModule(TestVyosModule):
         commands = [
             "set protocols static route 192.0.2.48/28",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.9'",
-            "set protocols static interface-route 192.0.2.48/28 next-hop-interface 'eth0'",
+            "set protocols static route 192.0.2.48/28 interface 'eth0'",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.10'",
             "set protocols static route 192.0.2.48/28 next-hop 192.0.2.10 distance '10'",
         ]
