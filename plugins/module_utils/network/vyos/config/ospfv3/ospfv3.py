@@ -33,6 +33,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils
     _in_target,
     _is_w_same,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
 class Ospfv3(ConfigBase):
@@ -264,10 +268,12 @@ class Ospfv3(ConfigBase):
         name = {
             "redistribute": "route_type",
             "range": "address",
+            "interface": "name",
         }
         leaf_dict = {
             "redistribute": ("route_map", "route_type"),
             "range": ("address", "advertise", "not_advertise"),
+            "interface": ("name"),
         }
         leaf = leaf_dict[attr]
         w = want.get(attr) or []
@@ -282,14 +288,26 @@ class Ospfv3(ConfigBase):
                         cmd = self._compute_command(opr=opr)
                     h_item = search_obj_in_list(w_item[name[attr]], h, name[attr])
                     if opr and key in leaf and not _is_w_same(w_item, h_item, key):
-                        if key == "route_type" or (
+                        if key in ["route_type", "name"] or (
                             key == "address"
                             and "advertise" not in w_item
                             and "not-advertise" not in w_item
                         ):
                             if not val:
                                 cmd = cmd.replace("set", "delete")
-                            commands.append(cmd + attr + " " + str(val))
+                            if (
+                                LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+                                and attr == "interface"
+                            ):
+                                words = cmd.split()
+                                cmd14_list = []
+                                for word in words:
+                                    cmd14_list.append(word)
+                                    if word == "ospfv3":
+                                        cmd14_list.append(attr + " " + str(val))
+                                commands.append(" ".join(cmd14_list))
+                            else:
+                                commands.append(cmd + attr + " " + str(val))
                         elif key in leaf_dict["range"] and key != "address":
                             commands.append(
                                 cmd + attr + " " + w_item[name[attr]] + " " + key.replace("_", "-"),
@@ -306,8 +324,20 @@ class Ospfv3(ConfigBase):
                                 + str(val),
                             )
                     elif not opr and key in leaf and not _in_target(h_item, key):
-                        if key in ("route_type", "address"):
-                            commands.append(cmd + attr + " " + str(val))
+                        if key in ("route_type", "address", "name"):
+                            if (
+                                LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+                                and attr == "interface"
+                            ):
+                                words = cmd.split()
+                                cmd14_list = []
+                                for word in words:
+                                    cmd14_list.append(word)
+                                    if word == "ospfv3":
+                                        cmd14_list.append(attr + " " + str(val))
+                                commands.append(" ".join(cmd14_list))
+                            else:
+                                commands.append(cmd + attr + " " + str(val))
                         else:
                             commands.append(cmd + (attr + " " + w_item[name[attr]] + " " + key))
         return commands
@@ -370,6 +400,10 @@ class Ospfv3(ConfigBase):
                             if key != "area_id" and not _in_target(h_area, key):
                                 commands.append(cmd + val + " " + key)
                         elif key == "range":
+                            commands.extend(
+                                self._render_list_dict_param(key, w_area, h_area, cmd, opr),
+                            )
+                        elif key == "interface":
                             commands.extend(
                                 self._render_list_dict_param(key, w_area, h_area, cmd, opr),
                             )
