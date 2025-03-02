@@ -432,7 +432,7 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 \s+(?P<proto>ospf|ospfv3)
                 \s+interface
                 \s+(?P<name>\S+)
-                \s+(?P<mtu>\'mtu-ignore\')
+                \s+(?P<mtu>mtu-ignore)
                 *$""",
                 re.VERBOSE,
             ),
@@ -613,7 +613,7 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 \s+(?P<proto>ospf|ospfv3)
                 \s+interface
                 \s+(?P<name>\S+)
-                \s+(?P<pass>\'passive\')
+                \s+(?P<pass>passive)
                 *$""",
                 re.VERBOSE,
             ),
