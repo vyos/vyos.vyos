@@ -107,7 +107,8 @@ class Static_routesFacts(object):
         :rtype: dictionary
         :returns: The generated config
         """
-        next_hops_conf = "\n".join(filter(lambda x: ("next-hop" in x), conf))
+
+        next_hops_conf = "\n".join(filter(lambda x: ("next-hop" in x or "interface" in x), conf))
         blackhole_conf = "\n".join(filter(lambda x: ("blackhole" in x), conf))
         routes_dict = {
             "blackhole_config": self.parse_blackhole(blackhole_conf),
@@ -138,9 +139,13 @@ class Static_routesFacts(object):
 
     def parse_next_hop(self, conf):
         nh_list = None
+        nh_info = {}
         if conf:
             nh_list = []
-            hop_list = findall(r"^.*next-hop (.+)", conf, M)
+            hop_list = [
+                match[0] if match[0] else match[1]
+                for match in findall(r"^.*next-hop(.+)|(\s+interface.+)$", conf, M)
+            ]
             if hop_list:
                 for hop in hop_list:
                     distance = search(r"^.*distance (.\S+)", hop, M)
@@ -148,9 +153,11 @@ class Static_routesFacts(object):
 
                     dis = hop.find("disable")
                     hop_info = hop.split(" ")
-                    nh_info = {"forward_router_address": hop_info[0].strip("'")}
+
                     if interface:
                         nh_info["interface"] = interface.group(1).strip("'")
+                    else:
+                        nh_info = {"forward_router_address": hop_info[1].strip("'")}
                     if distance:
                         value = distance.group(1).strip("'")
                         nh_info["admin_distance"] = int(value)

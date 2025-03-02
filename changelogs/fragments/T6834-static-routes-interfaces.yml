@@ -1,0 +1,5 @@
+---
+bugfixes:
+  - vyos_static routes - fixed the facts, argspecs, config to include interface-routes
+trivial:
+  - vyos_static routes - updated unit test suites to include interface-routes

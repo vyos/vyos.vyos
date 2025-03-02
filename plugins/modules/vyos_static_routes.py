@@ -104,7 +104,6 @@ options:
                     - The IP address of the next hop that can be used to reach the
                       destination network.
                     type: str
-                    required: true
                   enabled:
                     description:
                     - Disable IPv4/v6 next-hop static route.
