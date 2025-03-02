@@ -22,9 +22,10 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common i
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv2.ospfv2 import (
     Ospfv2Args,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Ospfv2Facts(object):
@@ -174,9 +175,9 @@ class Ospfv2Facts(object):
         items = []
         if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             if attrib == "passive-interface-exclude":
-                items = findall(r"^interface" + " (?:'*)(\\S+)(?:'*) passive disable$", conf, M)
+                items = findall(r"^interface (?:'*)(\\S+)(?:'*) passive disable$", conf, M)
             else:
-                items = findall(r"^interface" + " (?:'*)(\\S+)(?:'*) passive$", conf, M)
+                items = findall(r"^interface (?:'*)(\\S+)(?:'*) passive$", conf, M)
 
         items += findall(r"^" + attrib + " (?:'*)(\\S+)(?:'*)", conf, M)
         if items:
