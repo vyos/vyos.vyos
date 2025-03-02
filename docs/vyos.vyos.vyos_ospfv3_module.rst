@@ -131,7 +131,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>OSPFV3 area interfaces.</div>
+                        <div>Enable OSPVv3 on an interface for this area.</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: interfaces</div>
                 </td>
             </tr>
