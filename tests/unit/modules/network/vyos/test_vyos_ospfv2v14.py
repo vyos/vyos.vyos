@@ -29,11 +29,11 @@ from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_ar
 from .vyos_module import TestVyosModule, load_fixture
 
 
-class TestVyosOspfv2Module(TestVyosModule):
+class TestVyosOspfv2Module14(TestVyosModule):
     module = vyos_ospfv2
 
     def setUp(self):
-        super(TestVyosOspfv2Module, self).setUp()
+        super(TestVyosOspfv2Module14, self).setUp()
         self.mock_get_config = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
         )
@@ -62,7 +62,7 @@ class TestVyosOspfv2Module(TestVyosModule):
         self.mock_get_os_version = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv2.ospfv2.get_os_version"
         )
-        self.test_version = "1.2"
+        self.test_version = "1.4"
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = self.test_version
         self.mock_facts_get_os_version = patch(
@@ -73,7 +73,7 @@ class TestVyosOspfv2Module(TestVyosModule):
         self.maxDiff = None
 
     def tearDown(self):
-        super(TestVyosOspfv2Module, self).tearDown()
+        super(TestVyosOspfv2Module14, self).tearDown()
         self.mock_get_resource_connection_config.stop()
         self.mock_get_resource_connection_facts.stop()
         self.mock_get_config.stop()
@@ -327,8 +327,8 @@ set protocols ospf parameters abr-type 'cisco'
 set protocols ospf parameters 'opaque-lsa'
 set protocols ospf parameters 'rfc1583-compatibility'
 set protocols ospf parameters router-id '192.0.1.1'
-set protocols ospf passive-interface 'eth1'
-set protocols ospf passive-interface 'eth2'
+set protocols ospf interface 'eth1' passive
+set protocols ospf interface 'eth2' passive
 set protocols ospf redistribute bgp metric '10'
 set protocols ospf redistribute bgp metric-type '2'"""
         set_module_args(dict(running_config=parsed_str, state="parsed"))

@@ -1,0 +1,7 @@
+---
+- name: Remove pre-requisite configuration
+  vyos.vyos.vyos_config:
+    lines: |-
+      delete policy route-map ingress
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

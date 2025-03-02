@@ -1,0 +1,6 @@
+---
+trivial:
+  - vyos_ospfv2 - fix intergration test suite.
+  - vyos_ospfv2 - fix unit tests.
+bugfixes:
+  - vyos_ospfv2 - passive-interface processing for 1.3- and 1.4+
