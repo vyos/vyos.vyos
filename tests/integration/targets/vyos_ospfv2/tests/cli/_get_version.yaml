@@ -1,0 +1,30 @@
+- name: make sure to get facts
+  vyos.vyos.vyos_facts:
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
+  register: vyos_facts
+  when: vyos_version is not defined
+
+- name: debug vyos_facts
+  debug:
+    var: vyos_facts
+
+- name: pull version from facts
+  set_fact:
+    vyos_version: "{{ vyos_facts.ansible_facts.ansible_net_version.split('-')[0].split(' ')[-1] }}"
+  when: vyos_version is not defined
+
+- name: fix '.0' versions
+  set_fact:
+    vyos_version: "{{ vyos_version }}.0"
+  when: vyos_version.count('.') == 1
+
+- name: include correct vars
+  include_vars: pre-v1_4.yaml
+  when: vyos_version is version('1.4.0', '<', version_type='semver')
+
+- name: include correct vars
+  include_vars: v1_4.yaml
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+# - name: include common vars
+#   include_vars: main.yaml
