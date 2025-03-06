@@ -310,18 +310,7 @@ def _tmplt_ospf_int_passive(config_data):
     int_type = get_interface_type(config_data["name"])
     name = get_interface(config_data["name"])
     params = _get_parameters(config_data["address_family"])
-    command = (
-        "interfaces "
-        + int_type
-        + " "
-        + name
-        + " "
-        + " {name} ".format(**config_data)
-        + params[1]
-        + " "
-        + params[0]
-        + " passive"
-    )
+    command = "interfaces " + int_type + " " + name + " " + params[1] + " " + params[0] + " passive"
 
     return command
 
