@@ -453,6 +453,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+cost
@@ -463,7 +464,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_cost,
             "compval": "address_family.cost",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
