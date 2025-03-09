@@ -335,6 +335,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 *$""",
@@ -343,7 +344,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "remval": _tmplt_ospf_int_delete,
             "compval": "address_family",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -359,6 +360,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+authentication
@@ -370,7 +372,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_auth_password,
             "compval": "address_family.authentication",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -389,6 +391,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+authentication
@@ -404,7 +407,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "remval": _tmplt_ospf_int_auth_md5_delete,
             "compval": "address_family.authentication",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -426,6 +429,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+bandwidth
@@ -436,7 +440,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_bw,
             "compval": "address_family.bandwidth",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -464,7 +468,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_cost,
             "compval": "address_family.cost",
             "result": {
-                "name": "{{ name + vif if vif is defined else name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -481,6 +485,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+hello-interval
@@ -491,7 +496,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_hello_interval,
             "compval": "address_family.hello_interval",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -508,6 +513,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+dead-interval
@@ -518,7 +524,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_dead_interval,
             "compval": "address_family.dead_interval",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -535,6 +541,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+(?P<mtu>mtu-ignore)
@@ -544,7 +551,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_mtu_ignore,
             "compval": "address_family.mtu_ignore",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -561,6 +568,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+network
@@ -571,7 +579,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_network,
             "compval": "address_family.network",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -588,6 +596,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+priority
@@ -598,7 +607,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_priority,
             "compval": "address_family.priority",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -615,6 +624,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+retransmit-interval
@@ -625,7 +635,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_retransmit_interval,
             "compval": "address_family.retransmit_interval",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -642,6 +652,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+transmit-delay
@@ -652,7 +663,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_transmit_delay,
             "compval": "address_family.transmit_delay",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -669,6 +680,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+ifmtu
@@ -679,7 +691,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_ifmtu,
             "compval": "address_family.ifmtu",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -696,6 +708,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+instance-id
@@ -706,7 +719,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_instance,
             "compval": "address_family.instance",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -723,6 +736,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+(?P<pass>passive)
@@ -732,7 +746,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
             "setval": _tmplt_ospf_int_passive,
             "compval": "address_family.passive",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
                 "address_family": {
                     "{{ afi }}": {
                         "afi": '{{ "ipv4" if afi == "ip" else "ipv6" }}',
@@ -749,12 +763,13 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+interfaces
                 \s+(?P<type>\S+)
                 \s+(?P<name>\S+)
+                (?:\s+vif\s+(?P<vif>\d+))?
                 .*$""",
                 re.VERBOSE,
             ),
             "setval": "set interface {{ type }} {{ name }}",
             "result": {
-                "name": "{{ name }}",
+                "name": "{{ name + '.' + vif if vif is defined else name }}",
             },
         },
     ]

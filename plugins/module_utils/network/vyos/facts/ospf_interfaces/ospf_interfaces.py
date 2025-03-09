@@ -109,7 +109,6 @@ class Ospf_interfacesFacts(object):
         # parse native config using the Ospf_interfaces template
         ospf_interfaces_facts = []
         resources = self.get_config_set(data, connection)
-        # self._module.fail_json(msg=resources)
         for resource in resources:
             ospf_interfaces_parser = ospf_interface_class(
                 lines=resource.split("\n"),
@@ -120,7 +119,6 @@ class Ospf_interfacesFacts(object):
                 if key in objs and objs[key]:
                     objs[key] = list(objs[key].values())
             ospf_interfaces_facts.append(objs)
-        # self._module.fail_json(msg=ospf_interfaces_facts)
         ansible_facts["ansible_network_resources"].pop("ospf_interfaces", None)
         facts = {"ospf_interfaces": []}
         params = utils.remove_empties(
