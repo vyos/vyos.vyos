@@ -4,6 +4,8 @@ merged_commands:
   - set protocols ospf interface eth0 priority 26
   - set protocols ospfv3 interface eth0 mtu-ignore
   - set protocols ospfv3 interface eth0 instance-id 33
+  - set protocols ospf interface eth0.3 cost 60
+  - set protocols ospf interface eth0.3 priority 40
   - set protocols ospfv3 interface bond2 passive
   - set protocols ospf interface bond2 transmit-delay 45
 
@@ -17,6 +19,7 @@ populate_commands:
 
 remove_commands:
   - delete protocols ospf interface eth0
+  - delete protocols ospf interface eth0.3
   - delete protocols ospf interface bond2
   - delete protocols ospfv3 interface bond2
   - delete protocols ospfv3 interface eth0
