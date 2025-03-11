@@ -60,6 +60,20 @@ class TestVyosOspfv3Module(TestVyosModule):
 
         self.execute_show_command = self.mock_execute_show_command.start()
 
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv3.ospfv3.get_os_version",
+        )
+
+        self.test_version = "1.3"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
+        self.mock_facts_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3.get_os_version",
+        )
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = self.test_version
+        self.maxDiff = None
+
     def tearDown(self):
         super(TestVyosOspfv3Module, self).tearDown()
         self.mock_get_resource_connection_config.stop()
@@ -94,6 +108,7 @@ class TestVyosOspfv3Module(TestVyosModule):
                                 dict(address="2001:db20::/32"),
                                 dict(address="2001:db30::/32"),
                             ],
+                            interfaces=[dict(name="eth0")],
                         ),
                         dict(
                             area_id="3",
@@ -111,6 +126,50 @@ class TestVyosOspfv3Module(TestVyosModule):
             "set protocols ospfv3 area 2 range 2001:db20::/32",
             "set protocols ospfv3 area 2 range 2001:db30::/32",
             "set protocols ospfv3 area '2'",
+            "set protocols ospfv3 area 2 interface eth0",
+            "set protocols ospfv3 area 2 export-list export1",
+            "set protocols ospfv3 area 2 import-list import1",
+            "set protocols ospfv3 area '3'",
+            "set protocols ospfv3 area 3 range 2001:db40::/32",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_ospfv3_merged_new_config14(self):
+        self.get_os_version.return_value = "1.4"
+        set_module_args(
+            dict(
+                config=dict(
+                    redistribute=[dict(route_type="bgp")],
+                    parameters=dict(router_id="192.0.2.10"),
+                    areas=[
+                        dict(
+                            area_id="2",
+                            export_list="export1",
+                            import_list="import1",
+                            range=[
+                                dict(address="2001:db10::/32"),
+                                dict(address="2001:db20::/32"),
+                                dict(address="2001:db30::/32"),
+                            ],
+                            interfaces=[dict(name="eth0")],
+                        ),
+                        dict(
+                            area_id="3",
+                            range=[dict(address="2001:db40::/32")],
+                        ),
+                    ],
+                ),
+                state="merged",
+            ),
+        )
+        commands = [
+            "set protocols ospfv3 redistribute bgp",
+            "set protocols ospfv3 parameters router-id '192.0.2.10'",
+            "set protocols ospfv3 area 2 range 2001:db10::/32",
+            "set protocols ospfv3 area 2 range 2001:db20::/32",
+            "set protocols ospfv3 area 2 range 2001:db30::/32",
+            "set protocols ospfv3 area '2'",
+            "set protocols ospfv3 interface eth0 area 2",
             "set protocols ospfv3 area 2 export-list export1",
             "set protocols ospfv3 area 2 import-list import1",
             "set protocols ospfv3 area '3'",
