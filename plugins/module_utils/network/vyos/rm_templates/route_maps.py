@@ -310,12 +310,12 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_as_path_prepend",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sas-path-prepend\s(?P<as>\S+)
-                *$""",
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sas-path\sprepend\s(?P<as>.*)
+                $""",
                 re.VERBOSE,
             ),
             "compval": "set.as_path_prepend",
-            "setval": "policy route-map {{route_map}} rule {{sequence}} set as-path-prepend {{set.as_path_prepend}}",
+            "setval": "policy route-map {{route_map}} rule {{sequence}} set as-path prepend '{{set.as_path_prepend}}'",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
