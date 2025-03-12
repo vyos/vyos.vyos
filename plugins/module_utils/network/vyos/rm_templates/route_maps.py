@@ -816,13 +816,13 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_community",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\scommunity\s(?P<value>\S+)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\scommunity\sreplace\s(?P<value>\S+)
                 *$""",
                 re.VERBOSE,
             ),
             "compval": "set.community.value",
             "setval": "policy route-map {{route_map}} rule {{sequence}} "
-                      "set community {{set.community.value}}",
+                      "set community replace {{set.community.value}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
