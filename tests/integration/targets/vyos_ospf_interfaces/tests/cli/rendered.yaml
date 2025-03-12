@@ -17,7 +17,7 @@
               - afi: ipv6
                 mtu_ignore: true
                 instance: 33
-          - name: eth0.3
+          - name: eth2.3
             address_family:
               - afi: ipv4
                 cost: 60

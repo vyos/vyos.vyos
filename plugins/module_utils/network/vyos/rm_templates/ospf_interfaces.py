@@ -22,8 +22,8 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 )
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
-    get_interface,
     get_interface_type,
+    get_interface_with_vif,
 )
 
 
@@ -37,7 +37,7 @@ def _get_parameters(data):
 
 def _tmplt_ospf_int_delete(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = "interfaces " + int_type + " " + name + " " + params[1] + " " + params[0]
 
@@ -46,7 +46,7 @@ def _tmplt_ospf_int_delete(config_data):
 
 def _tmplt_ospf_int_cost(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -65,7 +65,7 @@ def _tmplt_ospf_int_cost(config_data):
 
 def _tmplt_ospf_int_auth_password(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -85,7 +85,7 @@ def _tmplt_ospf_int_auth_password(config_data):
 
 def _tmplt_ospf_int_auth_md5(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -107,7 +107,7 @@ def _tmplt_ospf_int_auth_md5(config_data):
 
 def _tmplt_ospf_int_auth_md5_delete(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -126,7 +126,7 @@ def _tmplt_ospf_int_auth_md5_delete(config_data):
 
 def _tmplt_ospf_int_bw(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -145,7 +145,7 @@ def _tmplt_ospf_int_bw(config_data):
 
 def _tmplt_ospf_int_hello_interval(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -164,7 +164,7 @@ def _tmplt_ospf_int_hello_interval(config_data):
 
 def _tmplt_ospf_int_dead_interval(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -183,7 +183,7 @@ def _tmplt_ospf_int_dead_interval(config_data):
 
 def _tmplt_ospf_int_mtu_ignore(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces " + int_type + " " + name + " " + params[1] + " " + params[0] + " mtu-ignore"
@@ -194,7 +194,7 @@ def _tmplt_ospf_int_mtu_ignore(config_data):
 
 def _tmplt_ospf_int_network(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -213,7 +213,7 @@ def _tmplt_ospf_int_network(config_data):
 
 def _tmplt_ospf_int_priority(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -232,7 +232,7 @@ def _tmplt_ospf_int_priority(config_data):
 
 def _tmplt_ospf_int_retransmit_interval(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -251,7 +251,7 @@ def _tmplt_ospf_int_retransmit_interval(config_data):
 
 def _tmplt_ospf_int_transmit_delay(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -270,7 +270,7 @@ def _tmplt_ospf_int_transmit_delay(config_data):
 
 def _tmplt_ospf_int_ifmtu(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -289,7 +289,7 @@ def _tmplt_ospf_int_ifmtu(config_data):
 
 def _tmplt_ospf_int_instance(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = (
         "interfaces "
@@ -308,7 +308,7 @@ def _tmplt_ospf_int_instance(config_data):
 
 def _tmplt_ospf_int_passive(config_data):
     int_type = get_interface_type(config_data["name"])
-    name = get_interface(config_data["name"])
+    name = get_interface_with_vif(config_data["name"])
     params = _get_parameters(config_data["address_family"])
     command = "interfaces " + int_type + " " + name + " " + params[1] + " " + params[0] + " passive"
 

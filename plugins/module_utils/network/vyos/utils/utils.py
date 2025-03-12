@@ -50,7 +50,7 @@ def get_interface_type(interface):
         return "dummy"
 
 
-def get_interface(interface):
+def get_interface_with_vif(interface):
     """Gets virtual interface if any or return as is"""
     vlan = None
     interface_real = interface
