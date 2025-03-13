@@ -19,7 +19,7 @@ populate_commands:
 
 remove_commands:
   - delete protocols ospf interface eth0
-  - delete protocols ospf interface eth0.3
+  - delete protocols ospf interface eth2.3
   - delete protocols ospf interface bond2
   - delete protocols ospfv3 interface bond2
   - delete protocols ospfv3 interface eth0
