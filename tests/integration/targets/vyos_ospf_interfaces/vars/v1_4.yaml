@@ -14,6 +14,7 @@ populate_commands:
   - set protocols ospf interface eth0 priority 26
   - set protocols ospfv3 interface eth0 mtu-ignore
   - set protocols ospfv3 interface eth0 instance-id 33
+  - set protocols ospf interface eth2.18 cost 80
   - set protocols ospfv3 interface bond2 passive
   - set protocols ospf interface bond2 transmit-delay 45
 
@@ -39,6 +40,7 @@ replaced_commands:
 overridden_commands:
   - delete protocols ospf interface bond2
   - delete protocols ospfv3 interface bond2
+  - delete protocols ospf interface eth2.18
   - set protocols ospf interface eth0 transmit-delay 50
   - set protocols ospf interface eth0 network point-to-point
   - set protocols ospfv3 interface eth0 dead-interval 39
