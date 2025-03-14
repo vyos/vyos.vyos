@@ -53,7 +53,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
         self.mock_get_os_version = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.route_maps.route_maps.get_os_version",
         )
-        self.test_version = "1.2"
+        self.test_version = "1.4"
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = self.test_version
         self.mock_facts_get_os_version = patch(
@@ -171,7 +171,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
             "set policy route-map test2 rule 1 set ip-next-hop 10.20.10.22",
             "set policy route-map test2 rule 1 set ipv6-next-hop global fdda:5cc1:23:4::1f",
             "set policy route-map test2 rule 1 set large-community 10:20:21",
-            "set policy route-map test2 rule 1 set as-path-prepend '100 200 350'",
+            "set policy route-map test2 rule 1 set as-path prepend '100 200 350'",
             "set policy route-map test2 rule 1 set local-preference 4",
             "set policy route-map test2 rule 1 set metric 5",
             "set policy route-map test2 rule 1 set metric-type type-2",
@@ -180,7 +180,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
             "set policy route-map test2 rule 1 set src 10.0.2.15",
             "set policy route-map test2 rule 1 set tag 4",
             "set policy route-map test2 rule 1 set weight 4",
-            "set policy route-map test2 rule 1 set community internet",
+            "set policy route-map test2 rule 1 set community replace internet",
             "set policy route-map test2 rule 1 match interface eth2",
             "set policy route-map test2 rule 1 match metric 1",
             "set policy route-map test2 rule 1 match peer 1.1.1.3",
@@ -234,7 +234,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
         commands = [
             "delete policy route-map test3 rule 1 match interface eth2",
             "set policy route-map test3 rule 1 set ip-next-hop 10.20.10.22",
-            "set policy route-map test3 rule 1 set community 100:100",
+            "set policy route-map test3 rule 1 set community replace 100:100",
             "set policy route-map test3 rule 1 set large-community 10:20:21",
             "set policy route-map test3 rule 1 set metric-type type-2",
             "set policy route-map test3 rule 1 set originator-id 10.0.2.2",
@@ -337,7 +337,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
             "set policy route-map test2 rule 1 set src 10.0.2.15",
             "set policy route-map test2 rule 1 set tag 4",
             "set policy route-map test2 rule 1 set weight 4",
-            "set policy route-map test2 rule 1 set community internet",
+            "set policy route-map test2 rule 1 set community replace internet",
             "set policy route-map test2 rule 1 match peer 1.1.1.3",
             "set policy route-map test2 rule 1 match rpki invalid",
         ]
@@ -456,7 +456,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
             "set policy route-map test3 rule 1 set src 10.0.2.15",
             "set policy route-map test3 rule 1 set tag 5",
             "set policy route-map test3 rule 1 set weight 4",
-            "set policy route-map test3 rule 1 set community internet",
+            "set policy route-map test3 rule 1 set community replace internet",
             "set policy route-map test3 rule 1 match interface eth2",
             "set policy route-map test3 rule 1 match metric 1",
             "set policy route-map test3 rule 1 match peer 1.1.1.2",
@@ -481,7 +481,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
             "\nset policy route-map test3 rule 1 match interface 'eth2'\nset policy route-map test3 rule 1 match ipv6 nexthop"
             " 'fdda:5cc1:23:4::1f'\nset policy route-map test3 rule 1 match metric '1'\nset policy route-map test3 rule 1 match peer "
             "'1.1.1.2'\nset policy route-map test3 rule 1 match rpki 'invalid'\nset policy route-map test3 rule 1 set bgp-extcommunity-rt "
-            "'22:11'\nset policy route-map test3 rule 1 set community 'internet'\nset policy route-map test3 rule 1 set ipv6-next-hop global"
+            "'22:11'\nset policy route-map test3 rule 1 set community replace 'internet'\nset policy route-map test3 rule 1 set ipv6-next-hop global"
             " 'fdda:5cc1:23:4::1f'\nset policy route-map test3 rule 1 set ip-next-hop '10.20.10.20'\nset policy route-map "
             "test3 rule 1 set local-preference '4'\nset policy route-map test3 rule 1 set metric '5'\nset policy route-map test3 "
             "rule 1 set metric-type 'type-1'\nset policy route-map test3 rule 1 set origin 'egp'\nset policy route-map test3 rule 1 set originator-id "
