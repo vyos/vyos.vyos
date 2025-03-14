@@ -25,6 +25,13 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.rou
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.route_maps import (
     Route_mapsTemplate,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.route_maps_14 import (
+    Route_mapsTemplate14,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
 class Route_mapsFacts(object):
@@ -59,11 +66,17 @@ class Route_mapsFacts(object):
         """
         facts = {}
         objs = []
+
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            route_maps_class = Route_mapsTemplate14
+        else:
+            route_maps_class = Route_mapsTemplate
+
         if not data:
             data = self.get_config(connection)
 
         # parse native config using the Route_maps template
-        route_maps_parser = Route_mapsTemplate(lines=data.splitlines())
+        route_maps_parser = route_maps_class(lines=data.splitlines())
         if route_maps_parser.parse().get("route_maps"):
             objs = list(route_maps_parser.parse().get("route_maps").values())
         for item in objs:
