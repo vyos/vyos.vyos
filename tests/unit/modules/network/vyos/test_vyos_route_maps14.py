@@ -71,7 +71,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
 
     def load_fixtures(self, commands=None, filename=None):
         if filename is None:
-            filename = "vyos_route_maps_config.cfg"
+            filename = "vyos_route_maps_config_v14.cfg"
 
         def load_from_file(*args, **kwargs):
             output = load_fixture(filename)
