@@ -843,6 +843,36 @@ class Route_mapsTemplate14(NetworkTemplate):
             },
         },
         {
+            "name": "set_community_none",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\scommunity\s(?P<value>none)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "set.community.value",
+            "setval": "policy route-map {{route_map}} rule {{sequence}} "
+                      "set community none",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{sequence}}":
+                                {
+                                    "sequence": "{{sequence}}",
+                                    "set": {
+                                        "community": {
+                                            "value": "{{value}}",
+                                        },
+                                    },
+                                },
+                        },
+                    },
+                },
+            },
+        },
+        {
             "name": "match_as_path",
             "getval": re.compile(
                 r"""
