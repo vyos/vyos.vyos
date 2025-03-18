@@ -80,7 +80,6 @@ class Route_maps(ResourceModule):
             "set_comm_list",
             "set_comm_list_delete",
             "set_community",
-            "set_community_none",
             "match_as_path",
             "match_community_community_list",
             "match_community_exact_match",

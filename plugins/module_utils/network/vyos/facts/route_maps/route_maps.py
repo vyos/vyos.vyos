@@ -77,6 +77,7 @@ class Route_mapsFacts(object):
 
         # parse native config using the Route_maps template
         route_maps_parser = route_maps_class(lines=data.splitlines())
+
         if route_maps_parser.parse().get("route_maps"):
             objs = list(route_maps_parser.parse().get("route_maps").values())
         for item in objs:

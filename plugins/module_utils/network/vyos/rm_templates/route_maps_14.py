@@ -816,13 +816,13 @@ class Route_mapsTemplate14(NetworkTemplate):
             "name": "set_community",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\scommunity\sreplace\s(?P<value>\S+)
-                *$""",
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\scommunity\s(?P<op>none|replace\s(?P<value>\S+))
+                $""",
                 re.VERBOSE,
             ),
             "compval": "set.community.value",
             "setval": "policy route-map {{route_map}} rule {{sequence}} "
-                      "set community replace {{set.community.value}}",
+                      "set community {{set.community.value if set.community.value == 'none' else 'replace ' + set.community.value}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -833,37 +833,7 @@ class Route_mapsTemplate14(NetworkTemplate):
                                     "sequence": "{{sequence}}",
                                     "set": {
                                         "community": {
-                                            "value": "{{value}}",
-                                        },
-                                    },
-                                },
-                        },
-                    },
-                },
-            },
-        },
-        {
-            "name": "set_community_none",
-            "getval": re.compile(
-                r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\scommunity\s(?P<value>none)
-                *$""",
-                re.VERBOSE,
-            ),
-            "compval": "set.community.value",
-            "setval": "policy route-map {{route_map}} rule {{sequence}} "
-                      "set community none",
-            "result": {
-                "route_maps": {
-                    "{{ route_map }}": {
-                        "route_map": '{{ route_map }}',
-                        "entries": {
-                            "{{sequence}}":
-                                {
-                                    "sequence": "{{sequence}}",
-                                    "set": {
-                                        "community": {
-                                            "value": "{{value}}",
+                                            "value": "{{op if op == 'none' else value}}",
                                         },
                                     },
                                 },
