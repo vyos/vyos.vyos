@@ -360,6 +360,34 @@ class Route_mapsTemplate14(NetworkTemplate):
             },
         },
         {
+            "name": "set_bgp_extcommunity_rt",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sbgp-extcommunity-rt\s(?P<bgp>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "set.bgp_extcommunity_rt",
+            "setval": "policy route-map {{route_map}} rule {{sequence}} "
+                      "set bgp-extcommunity-rt {{set.bgp_extcommunity_rt}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{sequence}}":
+                                {
+                                    "sequence": "{{sequence}}",
+                                    "set": {
+                                        "bgp_extcommunity_rt": "{{bgp}}",
+                                    },
+                                },
+                        },
+                    },
+                },
+            },
+        },
+        {
             "name": "set_comm_list",
             "getval": re.compile(
                 r"""
