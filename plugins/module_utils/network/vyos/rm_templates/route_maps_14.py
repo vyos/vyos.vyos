@@ -471,34 +471,6 @@ class Route_mapsTemplate14(NetworkTemplate):
                 },
             },
         },
-        # {
-        #     "name": "set_extcommunity_soo",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity soo\s(?P<extcommunity_soo>\S+)
-        #         *$""",
-        #         re.VERBOSE,
-        #     ),
-        #     "compval": "set.extcommunity_soo",
-        #     "setval": "policy route-map {{route_map}} rule {{sequence}} "
-        #               "set extcommunity soo {{set.extcommunity_soo}}",
-        #     "result": {
-        #         "route_maps": {
-        #             "{{ route_map }}": {
-        #                 "route_map": '{{ route_map }}',
-        #                 "entries": {
-        #                     "{{sequence}}":
-        #                         {
-        #                             "sequence": "{{sequence}}",
-        #                             "set": {
-        #                                 "extcommunity_soo": "{{set.extcommunity_soo}}",
-        #                             },
-        #                         },
-        #                 },
-        #             },
-        #         },
-        #     },
-        # },
         {
             "name": "set_extcommunity_soo",
             "getval": re.compile(
