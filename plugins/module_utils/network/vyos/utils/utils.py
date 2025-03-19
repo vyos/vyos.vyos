@@ -263,4 +263,4 @@ def _in_target(h, key):
     :param key: attribute name.
     :return: True/False.
     """
-    return True if h and key in h else False
+    return True if h and key in h and h[key] is not None else False

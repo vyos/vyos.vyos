@@ -29,6 +29,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     list_diff_want_only,
+    _in_target,
 )
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
@@ -259,7 +260,7 @@ class Firewall_global(ConfigBase):
                         continue
                     if (
                         key in l_set
-                        and not self._in_target(h, key)
+                        and not _in_target(h, key)
                         and not self._is_del(l_set, h)
                     ):
                         commands.append(
@@ -374,10 +375,10 @@ class Firewall_global(ConfigBase):
                             if key == "name" and self._is_grp_del(h, want, key):
                                 commands.append(cmd + " " + want["name"])
                                 continue
-                            if not (h and self._in_target(h, key)) and not self._is_grp_del(
+                            if not (h and _in_target(h, key)) and not self._is_grp_del(
                                 h,
                                 want,
-                                key,
+                                "name",
                             ):
                                 commands.append(cmd + " " + want["name"] + " " + key)
                         elif key == "members":
@@ -502,7 +503,7 @@ class Firewall_global(ConfigBase):
                                         ),
                                     )
                                     break  # delete the whole thing and move on
-                                if (not self._in_target(h, key) or h[key] is None) and (self._in_target(w, key) and w[key]):
+                                if (not _in_target(h, key) or h[key] is None) and (_in_target(w, key) and w[key]):
                                     # delete if not being replaced and value currently exists
                                     commands.append(
                                         self._form_attr_cmd(
@@ -564,7 +565,7 @@ class Firewall_global(ConfigBase):
                                     ),
                                 )
                                 continue
-                            if not (h and self._in_target(h, key)) and not self._is_del(l_set, h):
+                            if not (h and _in_target(h, key)) and not self._is_del(l_set, h):
                                 commands.append(
                                     self._form_attr_cmd(
                                         attr=key,
@@ -696,15 +697,6 @@ class Firewall_global(ConfigBase):
         """
         return True if h and key in h and h[key] == w[key] else False
 
-    def _in_target(self, h, key):
-        """
-        This function checks whether the target exist and key present in target config.
-        :param h: target config.
-        :param key: attribute name.
-        :return: True/False.
-        """
-        return True if h and key in h else False
-
     def _is_grp_del(self, w, h, key):
         """
         This function checks whether group needed to be deleted based on
@@ -736,7 +728,7 @@ class Firewall_global(ConfigBase):
         :param key: number.
         :return: True/False.
         """
-        return key in b_set and not self._in_target(h, key)
+        return key in b_set and not _in_target(h, key)
 
     def _map_attrib(self, attrib, type=None):
         """

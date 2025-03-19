@@ -1,0 +1,2 @@
+bugfixes:
+  - multiple modules - fix `_in_target` check for None

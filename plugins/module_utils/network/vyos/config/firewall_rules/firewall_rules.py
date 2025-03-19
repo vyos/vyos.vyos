@@ -29,6 +29,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     list_diff_want_only,
+    _in_target,
 )
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
@@ -309,7 +310,7 @@ class Firewall_rules(ConfigBase):
                         and (key not in h_rs or not h_rs[key])
                     ):
                         commands.append(self._add_rs_base_attrib(rs_id, key, w_rs, opr))
-                    elif not (h_rs and self._in_target(h_rs, key)):
+                    elif not (h_rs and _in_target(h_rs, key)):
                         commands.append(self._add_rs_base_attrib(rs_id, key, w_rs, opr))
             commands.extend(self._add_rules(rs_id, w_rules, h_rules, opr))
         if h_rules:
@@ -402,7 +403,7 @@ class Firewall_rules(ConfigBase):
                                 commands.extend(self._add_interface(key, w, h, cmd, opr))
                             elif (
                                 key in l_set
-                                and not (h and self._in_target(h, key))
+                                and not (h and _in_target(h, key))
                                 and not self._is_del(l_set, h)
                             ):
                                 commands.append(self._add_r_base_attrib(rs_id, key, w, opr=opr))
@@ -453,7 +454,7 @@ class Firewall_rules(ConfigBase):
                         commands.append(cmd + (" " + attr + " " + item))
                     else:
                         commands.append(cmd + (" " + attr + " " + item + " " + self._bool_to_str(val)))
-                elif not opr and item in l_set and not self._in_target(h_state, item):
+                elif not opr and item in l_set and not _in_target(h_state, item):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
 
@@ -484,7 +485,7 @@ class Firewall_rules(ConfigBase):
                 and not (h and self._is_w_same(w, h, attr))
             ):
                 commands.append(cmd + " " + attr)
-            elif not opr and not self._in_target(h_state, w[attr]):
+            elif not opr and not _in_target(h_state, w[attr]):
                 commands.append(cmd + (" " + attr + " '" + w[attr] + "'"))
 
         return commands
@@ -512,7 +513,7 @@ class Firewall_rules(ConfigBase):
                 ):
                     commands.append(cmd + (" " + attr + " " + item + " " + str(val)))
                 elif (
-                    not opr and item in l_set and not (h_recent and self._in_target(h_recent, item))
+                    not opr and item in l_set and not (h_recent and _in_target(h_recent, item))
                 ):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
@@ -554,7 +555,7 @@ class Firewall_rules(ConfigBase):
                             commands.append(cmd + (" " + "icmpv6" + " " + item + " " + str(val)))
                         else:
                             commands.append(cmd + (" " + attr + " " + item + " " + str(val)))
-                elif not opr and item in l_set and not self._in_target(h_icmp, item):
+                elif not opr and item in l_set and not _in_target(h_icmp, item):
                     commands.append(cmd + (" " + attr + " " + item.replace("_", "-") + " " + str(val)))
         return commands
 
@@ -579,7 +580,7 @@ class Firewall_rules(ConfigBase):
                         cmd
                         + (" " + attr.replace("_", "-") + " " + item.replace("_", "-") + " " + val)
                     )
-                elif not opr and item in l_set and not (h_if and self._in_target(h_if, item)):
+                elif not opr and item in l_set and not (h_if and _in_target(h_if, item)):
                     commands.append(
                         cmd + (" " + attr.replace("_", "-") + " " + item.replace("_", "-"))
                     )
@@ -766,7 +767,7 @@ class Firewall_rules(ConfigBase):
             elif (
                 not opr
                 and key in w[attr].keys()
-                and not (h and attr in h.keys() and self._in_target(h[attr], key))
+                and not (h and attr in h.keys() and _in_target(h[attr], key))
             ):
                 commands.append(cmd + (" " + attr + " " + key + " " + str(w[attr].get(key))))
             key = "rate"
@@ -827,7 +828,7 @@ class Firewall_rules(ConfigBase):
                 elif (
                     not opr
                     and key in w[attr].keys()
-                    and not (h and attr in h.keys() and self._in_target(h[attr], key))
+                    and not (h and attr in h.keys() and _in_target(h[attr], key))
                 ):
                     commands.append(cmd + (" " + attr + " " + key))
 
@@ -860,7 +861,7 @@ class Firewall_rules(ConfigBase):
                         elif (
                             not opr
                             and item in g_set
-                            and not (h_group and self._in_target(h_group, item))
+                            and not (h_group and _in_target(h_group, item))
                         ):
                             commands.append(
                                 cmd + (" " + attr + " " + key + " " + item.replace("_", "-")),
@@ -1080,7 +1081,7 @@ class Firewall_rules(ConfigBase):
         :param key: number.
         :return: True/False.
         """
-        return key in l_set and not (h and self._in_target(h, key))
+        return key in l_set and not (h and _in_target(h, key))
 
     def _is_w_same(self, w, h, key):
         """
@@ -1092,15 +1093,6 @@ class Firewall_rules(ConfigBase):
         :return: True/False.
         """
         return True if h and key in h and h[key] == w[key] else False
-
-    def _in_target(self, h, key):
-        """
-        This function checks whether the target exists and key present in target config.
-        :param h: target config.
-        :param key: attribute name.
-        :return: True/False.
-        """
-        return True if h and key in h else False
 
     def _prune_stubs(self, rs):
         if isinstance(rs, list):
