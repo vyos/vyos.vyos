@@ -447,13 +447,13 @@ class Route_mapsTemplate14(NetworkTemplate):
             "name": "set_extcommunity_rt",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity-rt\s(?P<extcommunity_rt>\S+)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity\srt\s(?P<extcommunity_rt>\S+)
                 *$""",
                 re.VERBOSE,
             ),
             "compval": "set.extcommunity_rt",
             "setval": "policy route-map {{route_map}} rule {{sequence}} "
-                      "set extcommunity-rt {{set.extcommunity_rt}}",
+                      "set extcommunity rt {{set.extcommunity_rt}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -471,17 +471,45 @@ class Route_mapsTemplate14(NetworkTemplate):
                 },
             },
         },
+        # {
+        #     "name": "set_extcommunity_soo",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity soo\s(?P<extcommunity_soo>\S+)
+        #         *$""",
+        #         re.VERBOSE,
+        #     ),
+        #     "compval": "set.extcommunity_soo",
+        #     "setval": "policy route-map {{route_map}} rule {{sequence}} "
+        #               "set extcommunity soo {{set.extcommunity_soo}}",
+        #     "result": {
+        #         "route_maps": {
+        #             "{{ route_map }}": {
+        #                 "route_map": '{{ route_map }}',
+        #                 "entries": {
+        #                     "{{sequence}}":
+        #                         {
+        #                             "sequence": "{{sequence}}",
+        #                             "set": {
+        #                                 "extcommunity_soo": "{{set.extcommunity_soo}}",
+        #                             },
+        #                         },
+        #                 },
+        #             },
+        #         },
+        #     },
+        # },
         {
             "name": "set_extcommunity_soo",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity-soo\s(?P<extcommunity_soo>\S+)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity\ssoo\s(?P<extcommunity_soo>\S+)
                 *$""",
                 re.VERBOSE,
             ),
             "compval": "set.extcommunity_soo",
             "setval": "policy route-map {{route_map}} rule {{sequence}} "
-                      "set extcommunity-soo {{set.extcommunity_soo}}",
+                      "set extcommunity soo {{set.extcommunity_soo}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -491,7 +519,7 @@ class Route_mapsTemplate14(NetworkTemplate):
                                 {
                                     "sequence": "{{sequence}}",
                                     "set": {
-                                        "extcommunity_soo": "{{set.extcommunity_soo}}",
+                                        "extcommunity_soo": "{{extcommunity_soo}}",
                                     },
                                 },
                         },
