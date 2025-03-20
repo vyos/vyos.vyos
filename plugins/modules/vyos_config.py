@@ -287,9 +287,9 @@ def run(module, result):
     # get the current active config from the node or passed in via
     # the config param
     if module.params["match"] == "none":
-        config = module.params["config"]
+        config = dict()
     else:
-        config = get_config(module)
+        config = module.params["config"] or get_config(module)
 
     # create the candidate config object from the arguments
     candidate = get_candidate(module)
