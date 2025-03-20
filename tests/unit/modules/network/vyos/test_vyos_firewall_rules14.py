@@ -1418,6 +1418,17 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                                     ),
                                 ],
                             ),
+                            dict(
+                                name="MULTIPLE-RULE",
+                                default_action="drop",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="accept",
+                                        protocol="all",
+                                    ),
+                                ],
+                            ),
                         ],
                     ),
                     dict(
@@ -1444,11 +1455,16 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "delete firewall ipv6 name EGRESS",
             "delete firewall ipv4 name V4-INGRESS",
             "delete firewall ipv4 name EGRESS",
+            "delete firewall ipv4 name MULTIPLE-RULE",
             "delete firewall ipv4 input filter",
             "delete firewall ipv4 output filter",
             "delete firewall ipv6 input filter",
             "delete firewall ipv6 output filter",
             "delete firewall ipv4 name IF-TEST",
+            "set firewall ipv4 name MULTIPLE-RULE default-action 'drop'",
+            "set firewall ipv4 name MULTIPLE-RULE rule 1",
+            "set firewall ipv4 name MULTIPLE-RULE rule 1 action 'accept'",
+            "set firewall ipv4 name MULTIPLE-RULE rule 1 protocol 'all'",
             "set firewall ipv4 name V4-IN default-action 'accept'",
             "set firewall ipv4 name V4-IN description 'This is IPv4 INGRESS rule set'",
             "set firewall ipv4 name V4-IN default-log",
@@ -1530,6 +1546,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "delete firewall ipv6 input filter",
             "delete firewall ipv6 output filter",
             "delete firewall ipv4 name IF-TEST",
+            "delete firewall ipv4 name MULTIPLE-RULE",
             "set firewall ipv4 name V4-INGRESS rule 101",
             "set firewall ipv4 name V4-INGRESS default-log",
             "set firewall ipv4 name V4-INGRESS description 'This is IPv4 INGRESS rule set'",
@@ -1608,6 +1625,22 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                             dict(
                                 name="EGRESS",
                                 default_action="reject",
+                            ),
+                            dict(
+                                name="MULTIPLE-RULE",
+                                default_action="drop",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="accept",
+                                        protocol="all",
+                                    ),
+                                    dict(
+                                        number="2",
+                                        action="drop",
+                                        protocol="all",
+                                    ),
+                                ],
                             ),
                         ],
                     ),

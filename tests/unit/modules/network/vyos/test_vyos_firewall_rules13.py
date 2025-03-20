@@ -1057,6 +1057,17 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
                                     ),
                                 ],
                             ),
+                            dict(
+                                name="MULTIPLE-RULE",
+                                default_action="drop",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="accept",
+                                        protocol="all",
+                                    ),
+                                ],
+                            ),
                         ],
                     ),
                     dict(
@@ -1083,6 +1094,11 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
             "delete firewall ipv6-name EGRESS",
             "delete firewall name V4-INGRESS",
             "delete firewall name EGRESS",
+            "delete firewall name MULTIPLE-RULE",
+            "set firewall name MULTIPLE-RULE default-action 'drop'",
+            "set firewall name MULTIPLE-RULE rule 1",
+            "set firewall name MULTIPLE-RULE rule 1 action 'accept'",
+            "set firewall name MULTIPLE-RULE rule 1 protocol 'all'",
             "set firewall name V4-IN default-action 'accept'",
             "set firewall name V4-IN description 'This is IPv4 INGRESS rule set'",
             "set firewall name V4-IN enable-default-log",
@@ -1159,6 +1175,7 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
             "delete firewall ipv6-name EGRESS",
             "delete firewall name V4-INGRESS",
             "delete firewall name EGRESS",
+            "delete firewall name MULTIPLE-RULE",
             "set firewall name V4-INGRESS rule 101",
             "set firewall name V4-INGRESS description 'This is IPv4 INGRESS rule set'",
             "set firewall name V4-INGRESS default-action 'accept'",
@@ -1203,6 +1220,22 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
                             dict(
                                 name="EGRESS",
                                 default_action="reject",
+                            ),
+                            dict(
+                                name="MULTIPLE-RULE",
+                                default_action="drop",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="accept",
+                                        protocol="all",
+                                    ),
+                                    dict(
+                                        number="2",
+                                        action="drop",
+                                        protocol="all",
+                                    ),
+                                ],
                             ),
                         ],
                     ),
