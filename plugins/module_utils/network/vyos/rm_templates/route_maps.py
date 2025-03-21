@@ -528,6 +528,34 @@ class Route_mapsTemplate(NetworkTemplate):
             },
         },
         {
+            "name": "set_extcommunity_bandwidth_non_transitive",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity\s(?P<extcommunity_bw_nt>bandwidth-non-transitive)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "set.extcommunity_bandwidth_non_transitive",
+            "setval": "policy route-map {{route_map}} rule {{sequence}} "
+                      "set extcommunity bandwidth-non-transitive",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{sequence}}":
+                                {
+                                    "sequence": "{{sequence}}",
+                                    "set": {
+                                        "extcommunity_bandwidth_non_transitive": "{{True if extcommunity_bw_nt is defined}}",
+                                    },
+                                },
+                        },
+                    },
+                },
+            },
+        },
+        {
             "name": "set_ip_next_hop",
             "getval": re.compile(
                 r"""

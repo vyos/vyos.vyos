@@ -155,8 +155,6 @@ class Route_maps(ResourceModule):
         for wk, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(wk, {}))
 
-        self._module.fail_json(msg=self.commands)
-
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
         populates the list of commands to be run by comparing
