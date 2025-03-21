@@ -74,6 +74,8 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
                                 },
                                 "extcommunity_rt": {"type": "str"},
                                 "extcommunity_soo": {"type": "str"},
+                                "extcommunity_bandwidth": {"type": "str"},
+                                "extcommunity_bandwidth_non_transitive": {"type": "bool"},
                                 "ip_next_hop": {"type": "str"},
                                 "ipv6_next_hop": {
                                     "type": "dict",

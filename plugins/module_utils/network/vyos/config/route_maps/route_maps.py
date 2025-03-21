@@ -66,6 +66,8 @@ class Route_maps(ResourceModule):
             "set_bgp_extcommunity_rt",
             "set_extcommunity_rt",
             "set_extcommunity_soo",
+            "set_extcommunity_bandwidth",
+            "set_extcommunity_bandwidth_non_transitive",
             "set_ip_next_hop",
             "set_ipv6_next_hop",
             "set_large_community",
@@ -152,6 +154,8 @@ class Route_maps(ResourceModule):
 
         for wk, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(wk, {}))
+
+        self._module.fail_json(msg=self.commands)
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
