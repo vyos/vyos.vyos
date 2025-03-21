@@ -283,12 +283,12 @@ class Route_mapsTemplate14(NetworkTemplate):
             "name": "set_as_path_exclude",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sas-path-exclude\s(?P<as>\S+)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sas-path\sexclude\s(?P<as>\S+)
                 *$""",
                 re.VERBOSE,
             ),
             "compval": "set.as_path_exclude",
-            "setval": "policy route-map {{route_map}} rule {{sequence}} set as-path-exclude {{set.as_path_exclude}}",
+            "setval": "policy route-map {{route_map}} rule {{sequence}} set as-path exclude {{set.as_path_exclude}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -391,13 +391,13 @@ class Route_mapsTemplate14(NetworkTemplate):
             "name": "set_comm_list",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\scomm-list\scomm-list\s(?P<comm_list>\S+)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\scommunity\scommunity-list\s(?P<comm_list>\S+)
                 *$""",
                 re.VERBOSE,
             ),
             "compval": "set.comm_list.comm_list",
             "setval": "policy route-map {{route_map}} rule {{sequence}} "
-                      "set comm-list comm-list {{set.comm_list.comm_list}}",
+                      "set community community-list {{set.comm_list.comm_list}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
