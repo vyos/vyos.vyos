@@ -103,6 +103,12 @@ options:
                 extcommunity_soo:
                   type: str
                   description: Set Site of Origin value. ASN:nn_or_IP_address:nn VPN extended community
+                extcommunity_bandwidth:
+                  type: str
+                  description: Set Bandwidth of Origin value. 1-25600|cumulative|num-multipaths VPN extended community
+                extcommunity_bandwidth_non_transitive:
+                  type: bool
+                  description: Set the bandwidth extended community encoded as non-transitive True/False VPN extended community
                 ip_next_hop:
                   type: str
                   description: IP address.
