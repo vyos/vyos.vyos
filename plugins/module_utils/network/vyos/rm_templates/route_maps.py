@@ -500,6 +500,34 @@ class Route_mapsTemplate(NetworkTemplate):
             },
         },
         {
+            "name": "set_extcommunity_bandwidth",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity\sbandwidth\s(?P<extcommunity_bw>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "set.extcommunity_bandwidth",
+            "setval": "policy route-map {{route_map}} rule {{sequence}} "
+                      "set extcommunity bandwidth {{set.extcommunity_bandwidth}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{sequence}}":
+                                {
+                                    "sequence": "{{sequence}}",
+                                    "set": {
+                                        "extcommunity_bandwidth": "{{extcommunity_bw}}",
+                                    },
+                                },
+                        },
+                    },
+                },
+            },
+        },
+        {
             "name": "set_ip_next_hop",
             "getval": re.compile(
                 r"""
