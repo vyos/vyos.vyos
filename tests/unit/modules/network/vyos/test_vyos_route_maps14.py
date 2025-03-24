@@ -365,6 +365,32 @@ class TestVyosRouteMapsModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+    def test_route_maps__deny_overridden(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        route_map="test2",
+                        entries=[
+                            dict(
+                                sequence=1,
+                                action="deny",
+                                match=dict(rpki="invalid", peer="1.1.1.5"),
+                            ),
+                        ],
+                    ),
+                ],
+                state="overridden",
+            ),
+        )
+        commands = [
+            "delete policy route-map test3",
+            "set policy route-map test2 rule 1 action deny",
+            "set policy route-map test2 rule 1 match peer 1.1.1.5",
+            "set policy route-map test2 rule 1 match rpki invalid",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
     def test_vyos_route_maps_overridden_idempotent(self):
         set_module_args(
             dict(
