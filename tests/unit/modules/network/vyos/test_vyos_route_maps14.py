@@ -239,7 +239,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     metric_type="type-2",
                                     origin="egp",
                                     originator_id="10.0.2.2",
-                                    src="10.0.2.15",
+                                    src="fdda:5cc1:23:4::12",
                                     tag=4,
                                     weight=4,
                                 ),
@@ -258,6 +258,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
             "set policy route-map test3 rule 1 set metric-type type-2",
             "set policy route-map test3 rule 1 set originator-id 10.0.2.2",
             "set policy route-map test3 rule 1 set tag 4",
+            "set policy route-map test3 rule 1 set src fdda:5cc1:23:4::12",
             "set policy route-map test3 rule 1 match peer 1.1.1.3",
         ]
         self.execute_module(changed=True, commands=commands)
