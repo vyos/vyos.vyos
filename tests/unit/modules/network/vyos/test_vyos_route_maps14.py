@@ -132,6 +132,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             dict(
                                 sequence=1,
                                 action="permit",
+                                call="2",
                                 continue_sequence=2,
                                 match=dict(
                                     rpki="invalid",
@@ -176,6 +177,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
         )
         commands = [
             "set policy route-map test2 rule 1 action permit",
+            "set policy route-map test2 rule 1 call 2",
             "set policy route-map test2 rule 1 set bgp-extcommunity-rt 22:11",
             "set policy route-map test2 rule 1 set ip-next-hop 10.20.10.22",
             "set policy route-map test2 rule 1 set ipv6-next-hop global fdda:5cc1:23:4::1f",
