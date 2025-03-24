@@ -337,10 +337,11 @@ class Route_mapsTemplate14(NetworkTemplate):
             "name": "set_atomic_aggregate",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\satomic-aggregate(?P<as>)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\s(?P<as>atomic-aggregate)
                 *$""",
                 re.VERBOSE,
             ),
+            "compval": "set.atomic_aggregate",
             "setval": "policy route-map {{route_map}} rule {{sequence}} set atomic-aggregate",
             "result": {
                 "route_maps": {
@@ -391,13 +392,13 @@ class Route_mapsTemplate14(NetworkTemplate):
             "name": "set_comm_list",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\scommunity\scommunity-list\s(?P<comm_list>\S+)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\smatch\scommunity\scommunity-list\s(?P<comm_list>\S+)
                 *$""",
                 re.VERBOSE,
             ),
-            "compval": "set.comm_list.comm_list",
+            "compval": "match.community.community_list",
             "setval": "policy route-map {{route_map}} rule {{sequence}} "
-                      "set community community-list {{set.comm_list.comm_list}}",
+                      "match community community-list {{set.comm_list.comm_list}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -406,8 +407,8 @@ class Route_mapsTemplate14(NetworkTemplate):
                             "{{sequence}}":
                                 {
                                     "sequence": "{{sequence}}",
-                                    "set": {
-                                        "comm_list": {"comm_list": "{{comm_list}}"},
+                                    "match": {
+                                        "community": {"community_list": "{{comm_list}}"},
                                     },
                                 },
                         },

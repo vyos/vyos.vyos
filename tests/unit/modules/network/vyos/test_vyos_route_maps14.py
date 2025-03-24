@@ -132,12 +132,14 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             dict(
                                 sequence=1,
                                 action="permit",
+                                continue_sequence=2,
                                 match=dict(
                                     rpki="invalid",
                                     interface="eth2",
                                     metric=1,
                                     peer="1.1.1.3",
                                     ipv6=dict(next_hop="fdda:5cc1:23:4::1f"),
+                                    community=dict(community_list="235"),
                                 ),
                                 set=dict(
                                     ipv6_next_hop=dict(
@@ -145,6 +147,12 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                         value="fdda:5cc1:23:4::1f",
                                     ),
                                     community=dict(value="internet"),
+                                    extcommunity_rt="22:11",
+                                    extcommunity_soo="220:110",
+                                    extcommunity_bandwidth="100",
+                                    extcommunity_bandwidth_non_transitive=True,
+                                    atomic_aggregate=True,
+                                    aggregator=dict(),
                                     bgp_extcommunity_rt="22:11",
                                     ip_next_hop="10.20.10.22",
                                     large_community="10:20:21",
@@ -183,11 +191,20 @@ class TestVyosRouteMapsModule(TestVyosModule):
             "set policy route-map test2 rule 1 set tag 4",
             "set policy route-map test2 rule 1 set weight 4",
             "set policy route-map test2 rule 1 set community replace internet",
+            "set policy route-map test2 rule 1 set extcommunity rt 22:11",
+            "set policy route-map test2 rule 1 set extcommunity soo 220:110",
+            "set policy route-map test2 rule 1 set extcommunity bandwidth 100",
+            "set policy route-map test2 rule 1 set extcommunity bandwidth-non-transitive",
+            "set policy route-map test2 rule 1 set atomic-aggregate",
+            # "set policy route-map test2 rule 1 set aggregator as 245",
+            # "set policy route-map test2 rule 1 set aggregator ip 10.20.11.22",
             "set policy route-map test2 rule 1 match interface eth2",
             "set policy route-map test2 rule 1 match metric 1",
             "set policy route-map test2 rule 1 match peer 1.1.1.3",
             "set policy route-map test2 rule 1 match ipv6 nexthop fdda:5cc1:23:4::1f",
             "set policy route-map test2 rule 1 match rpki invalid",
+            "set policy route-map test2 rule 1 match community community-list 235",
+            "set policy route-map test2 rule 1 continue 2",
         ]
 
         self.execute_module(changed=True, commands=commands)
