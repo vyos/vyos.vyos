@@ -232,6 +232,10 @@ options:
                   type: str
                   description: RPKI validation value.
                   choices: [ "notfound", "invalid", "valid" ]
+                protocol:
+                  type: str
+                  description: Source protocol to match.
+                  choices: [ "babel","bgp","connected","isis","kernel","ospf","ospfv3","rip","ripng","static","table","vnc" ]
             on_match:
               type: dict
               description: Exit policy on matches.

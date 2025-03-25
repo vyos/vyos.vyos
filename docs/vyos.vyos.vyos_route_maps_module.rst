@@ -667,6 +667,38 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>protocol</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>babel</li>
+                                    <li>bgp</li>
+                                    <li>connected</li>
+                                    <li>isis</li>
+                                    <li>kernel</li>
+                                    <li>ospf</li>
+                                    <li>ospfv3</li>
+                                    <li>rip</li>
+                                    <li>ripng</li>
+                                    <li>static</li>
+                                    <li>table</li>
+                                    <li>vnc</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Source protocol to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>rpki</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
