@@ -1,0 +1,2 @@
+bugfixes:
+  - vyos_firewall_rules - Allow deleting of firewall description.
