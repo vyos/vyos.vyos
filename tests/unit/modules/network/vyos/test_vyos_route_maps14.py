@@ -141,6 +141,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     peer="1.1.1.3",
                                     ipv6=dict(next_hop="fdda:5cc1:23:4::1f"),
                                     community=dict(community_list="235"),
+                                    protocol="bgp",
                                 ),
                                 set=dict(
                                     ipv6_next_hop=dict(
@@ -205,6 +206,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
             "set policy route-map test2 rule 1 match peer 1.1.1.3",
             "set policy route-map test2 rule 1 match ipv6 nexthop fdda:5cc1:23:4::1f",
             "set policy route-map test2 rule 1 match rpki invalid",
+            "set policy route-map test2 rule 1 match protocol bgp",
             "set policy route-map test2 rule 1 match community community-list 235",
             "set policy route-map test2 rule 1 continue 2",
         ]

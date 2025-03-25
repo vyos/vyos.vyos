@@ -98,6 +98,7 @@ class Route_maps(ResourceModule):
             "on_match_next",
             "match_ipv6_address",
             "match_ipv6_nexthop",
+            "match_protocol",
             "match_rpki",
         ]
 

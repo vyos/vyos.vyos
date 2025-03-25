@@ -1318,6 +1318,33 @@ class Route_mapsTemplate(NetworkTemplate):
             },
         },
         {
+            "name": "match_protocol",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\smatch\sprotocol\s(?P<value>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "match.protocol",
+            "setval": "policy route-map {{route_map}} rule {{sequence}} "
+                      "match protocol {{match.protocol}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{sequence}}": {
+                                "sequence": "{{sequence}}",
+                                "match": {
+                                    "protocol": "{{value}}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        {
             "name": "match_rpki",
             "getval": re.compile(
                 r"""

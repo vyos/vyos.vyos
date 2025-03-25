@@ -180,6 +180,23 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
                                         "next_hop": {"type": "str"},
                                     },
                                 },
+                                "protocol": {
+                                    "type": "str",
+                                    "choices": [
+                                        "babel",
+                                        "bgp",
+                                        "connected",
+                                        "isis",
+                                        "kernel",
+                                        "ospf",
+                                        "ospfv3",
+                                        "rip",
+                                        "ripng",
+                                        "static",
+                                        "table",
+                                        "vnc",
+                                    ],
+                                },
                                 "large_community_large_community_list": {
                                     "type": "str",
                                 },
