@@ -870,6 +870,34 @@ class Route_mapsTemplate14(NetworkTemplate):
             },
         },
         {
+            "name": "set_table",
+            "getval": re.compile(
+                r"""
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\stable\s(?P<table>\S+)
+                *$""",
+                re.VERBOSE,
+            ),
+            "compval": "set.weight",
+            "setval": "policy route-map {{route_map}} rule {{sequence}} "
+                      "set table {{set.table}}",
+            "result": {
+                "route_maps": {
+                    "{{ route_map }}": {
+                        "route_map": '{{ route_map }}',
+                        "entries": {
+                            "{{sequence}}":
+                                {
+                                    "sequence": "{{sequence}}",
+                                    "set": {
+                                        "table": "{{table}}",
+                                    },
+                                },
+                        },
+                    },
+                },
+            },
+        },
+        {
             "name": "set_community",
             "getval": re.compile(
                 r"""

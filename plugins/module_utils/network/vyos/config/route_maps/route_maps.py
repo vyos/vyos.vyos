@@ -79,6 +79,7 @@ class Route_maps(ResourceModule):
             "set_src",
             "set_tag",
             "set_weight",
+            "set_table",
             "set_comm_list",
             "set_comm_list_delete",
             "set_community",

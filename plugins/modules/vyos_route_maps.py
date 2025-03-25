@@ -152,6 +152,9 @@ options:
                 weight:
                   type: str
                   description: Border Gateway Protocol (BGP) weight attribute. Example <0-4294967295>
+                table:
+                  type: str
+                  description: Set prefixes to table. Example <1-200>
             match:
               description: Route parameters to match.
               type: dict

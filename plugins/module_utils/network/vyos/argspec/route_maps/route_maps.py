@@ -102,6 +102,7 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
                                 "src": {"type": "str"},
                                 "tag": {"type": "str"},
                                 "weight": {"type": "str"},
+                                "table": {"type": "str"},
                             },
                         },
                         "match": {
