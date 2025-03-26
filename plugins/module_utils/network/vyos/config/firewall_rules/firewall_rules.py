@@ -28,13 +28,15 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
-    dict_to_set,
     list_diff_want_only,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
     LooseVersion,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    get_os_version,
+    load_config,
+)
 
 
 class Firewall_rules(ConfigBase):
@@ -79,6 +81,14 @@ class Firewall_rules(ConfigBase):
         result = {"changed": False}
         warnings = list()
         commands = list()
+        diff = None
+
+        try:
+            self._module.params["comment"]
+        except KeyError:
+            comment = []
+        else:
+            comment = self._module.params["comment"]
 
         if self.state in self.ACTION_STATES:
             existing_firewall_rules_facts = self.get_firewall_rules_facts()
@@ -89,14 +99,10 @@ class Firewall_rules(ConfigBase):
             commands.extend(self.set_config(deepcopy(existing_firewall_rules_facts)))
 
         if commands and self._module._diff:
-            want_dict = dict_to_set(self._module.params["config"])
-            # have_dict = dict_to_set(existing_firewall_rules_facts)
-            # diff = want_dict - have_dict
-            self._module.fail_json(msg=existing_firewall_rules_facts)
-
-            # if diff:
-            #     diff = dict(diff)
-            #     self._module.fail_json(msg=diff)
+            commit = not self._module.check_mode
+            diff = load_config(self._module, commands, commit=commit, comment=comment)
+            if diff:
+                result["diff"] = {"prepared": str(diff)}
 
         if commands and self.state in self.ACTION_STATES:
             if not self._module.check_mode:
