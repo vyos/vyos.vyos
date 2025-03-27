@@ -1170,8 +1170,8 @@ class Firewall_rules(ConfigBase):
                 sorted_list1 = sorted(w, key=lambda x: str(x))  # pylint: disable=unnecessary-lambda
                 sorted_list2 = sorted(
                     rs,
-                    key=lambda x: str(x),
-                )  # pylint: disable=unnecessary-lambda
+                    key=lambda x: str(x),  # pylint: disable=unnecessary-lambda
+                )
             except TypeError:
                 return False
             return all(self._is_same_rs(x, y) for x, y in zip(sorted_list1, sorted_list2))
