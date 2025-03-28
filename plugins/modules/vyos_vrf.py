@@ -20,49 +20,41 @@ short_description: VRF resource module
 description:
 - This module manages vrf configuration on devices running Vyos
 author:
-- Varshitha Yataluru (@YVarshitha)
+- Evgeny Molotkov (@omnom62)
 notes:
-- Tested against vyos 1.4.0
+- Tested against vyos 1.4+
 - This module works with connection C(network_cli).
 options:
   config:
-    description: List of configurations for ntp module
+    description: List of vrf configuration.
     type: dict
     suboptions:
-      allow_clients:
-        description: Network Time Protocol (NTP) server options
-        type: list
-        elements: str
-      listen_addresses:
-        description: local IP addresses for service to listen on
-        type: list
-        elements: str
-      servers:
-        description: Network Time Protocol (NTP) server
+      bind-to-all:
+        default: false
+        description: Enable binding services to all VRFs
+        type: bool
+      instances:
+        description: Virtual Routing and Forwarding instance
         type: list
         elements: dict
         suboptions:
-          server:
-            description: server name or address for NTP
+          name:
+            description: VRF instance name
             type: str
-          options:
-            description:
-            - "server options for NTP"
-            - "`pool` replaces `dynamic` in Vyos 1.3"
-            - "`preempt` is only available in Vyos 1.3 and earlier"
-            - "`nts` was added in Vyos 1.4"
-            - "`ptp` and `interleave` were added in Vyos 1.5"
-            type: list
-            elements: str
-            choices:
-            - dynamic
-            - noselect
-            - pool
-            - preempt
-            - prefer
-            - nts
-            - ptp
-            - interleave
+          description:
+            description: Description
+            type: str
+          disabled:
+            default: false
+            description: Administratively disable interface
+            type: bool
+            aliases: ['disable']
+          table_id:
+            description: Routing table associated with this instance
+            type: int
+          vni:
+            description: Virtual Network Identifier
+            type: int
   running_config:
     description:
     - This option is used only with state I(parsed).

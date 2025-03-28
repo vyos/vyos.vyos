@@ -28,7 +28,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.vrf import (
-    NtpTemplate,
+    VrfTemplate,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
     LooseVersion,
@@ -47,7 +47,7 @@ class Vrf(ResourceModule):
             facts_module=Facts(module),
             module=module,
             resource="vrf",
-            tmplt=NtpTemplate(),
+            tmplt=VrfTemplate(),
         )
         self.parsers = [
             "allow_clients",

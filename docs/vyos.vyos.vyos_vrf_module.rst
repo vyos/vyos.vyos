@@ -45,48 +45,34 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>List of configurations for ntp module</div>
+                        <div>List of vrf configuration.</div>
                 </td>
             </tr>
                                 <tr>
                     <td class="elbow-placeholder"></td>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>allow_clients</b>
+                    <b>bind-to-all</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">list</span>
-                         / <span style="color: purple">elements=string</span>
+                        <span style="color: purple">boolean</span>
                     </div>
                 </td>
                 <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                    <li>yes</li>
+                        </ul>
                 </td>
                 <td>
-                        <div>Network Time Protocol (NTP) server options</div>
+                        <div>Enable binding services to all VRFs</div>
                 </td>
             </tr>
             <tr>
                     <td class="elbow-placeholder"></td>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>listen_addresses</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">list</span>
-                         / <span style="color: purple">elements=string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>local IP addresses for service to listen on</div>
-                </td>
-            </tr>
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>servers</b>
+                    <b>instances</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">list</span>
@@ -96,7 +82,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Network Time Protocol (NTP) server</div>
+                        <div>Virtual Routing and Forwarding instance</div>
                 </td>
             </tr>
                                 <tr>
@@ -104,39 +90,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>options</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">list</span>
-                         / <span style="color: purple">elements=string</span>
-                    </div>
-                </td>
-                <td>
-                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>dynamic</li>
-                                    <li>noselect</li>
-                                    <li>pool</li>
-                                    <li>preempt</li>
-                                    <li>prefer</li>
-                                    <li>nts</li>
-                                    <li>ptp</li>
-                                    <li>interleave</li>
-                        </ul>
-                </td>
-                <td>
-                        <div>server options for NTP</div>
-                        <div>`pool` replaces `dynamic` in Vyos 1.3</div>
-                        <div>`preempt` is only available in Vyos 1.3 and earlier</div>
-                        <div>`nts` was added in Vyos 1.4</div>
-                        <div>`ptp` and `interleave` were added in Vyos 1.5</div>
-                </td>
-            </tr>
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>server</b>
+                    <b>description</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
@@ -145,7 +99,80 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>server name or address for NTP</div>
+                        <div>Description</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>disabled</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Administratively disable interface</div>
+                        <div style="font-size: small; color: darkgreen"><br/>aliases: disable</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>name</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>VRF instance name</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>table_id</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">integer</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Routing table associated with this instance</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>vni</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">integer</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Virtual Network Identifier</div>
                 </td>
             </tr>
 
@@ -200,7 +227,7 @@ Notes
 -----
 
 .. note::
-   - Tested against vyos 1.4.0
+   - Tested against vyos 1.4+
    - This module works with connection ``network_cli``.
 
 
@@ -969,4 +996,4 @@ Status
 Authors
 ~~~~~~~
 
-- Varshitha Yataluru (@YVarshitha)
+- Evgeny Molotkov (@omnom62)

@@ -9,7 +9,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The vyos ntp fact class
+The vyos vrf fact class
 It is in this file the configuration is collected from the device
 for a given resource, parsed, and the facts tree is populated
 based on the configuration.
@@ -33,10 +33,10 @@ class VrfFacts(object):
         self.argument_spec = VrfArgs.argument_spec
 
     def get_config(self, connection):
-        return connection.get("show configuration commands | grep ntp")
+        return connection.get("show configuration commands |  match 'set vrf'")
 
     def populate_facts(self, connection, ansible_facts, data=None):
-        """Populate the facts for Ntp network resource
+        """Populate the facts for Vrf network resource
 
         :param connection: the device connection
         :param ansible_facts: Facts dictionary
@@ -54,10 +54,11 @@ class VrfFacts(object):
 
         for resource in data.splitlines():
             config_lines.append(re.sub("'", "", resource))
-        # parse native config using the Ntp template
-        ntp_parser = VrfTemplate(lines=config_lines, module=self._module)
+        self._module.fail_json(msg=data)
+        # parse native config using the Vrf template
+        vrf_parser = VrfTemplate(lines=config_lines, module=self._module)
 
-        objs = ntp_parser.parse()
+        objs = vrf_parser.parse()
 
         if objs:
             if "allow_clients" in objs:
@@ -80,7 +81,7 @@ class VrfFacts(object):
         ansible_facts["ansible_network_resources"].pop("ntp_global", None)
 
         params = utils.remove_empties(
-            ntp_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
+            vrf_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
         )
 
         if params.get("config"):

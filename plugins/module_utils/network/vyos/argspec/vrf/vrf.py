@@ -24,49 +24,37 @@ __metaclass__ = type
 #############################################
 
 """
-The arg spec for the vyos_ntp_global module
+The arg spec for the vyos_vrf module
 """
 
 
 class VrfArgs(object):  # pylint: disable=R0903
-    """The arg spec for the vyos_ntp_global module"""
+    """The arg spec for the vyos_vrf module"""
 
     argument_spec = {
         "config": {
             "type": "dict",
             "options": {
-                "allow_clients": {"type": "list", "elements": "str"},
-                "listen_addresses": {"type": "list", "elements": "str"},
-                "servers": {
+                "bind-to-all": {"type": "bool"},
+                "instances": {
                     "type": "list",
                     "elements": "dict",
                     "options": {
-                        "server": {"type": "str"},
-                        "options": {
-                            "type": "list",
-                            "elements": "str",
-                            "choices": [
-                                "dynamic",
-                                "noselect",
-                                "pool",
-                                "preempt",
-                                "prefer",
-                                "nts",
-                                "ptp",
-                                "interleave",
-                            ],
-                        },
+                        "name": {"type": "str"},
+                        "description": {"type": "str"},
+                        "disabled": {"type": "bool"},
+                        "table_id": {"type": "int"},
+                        "vni": {"type": "int"},
                     },
                 },
             },
         },
-        "running_config": {"type": "str"},
         "state": {
             "type": "str",
             "choices": [
                 "deleted",
                 "merged",
-                "overridden",
+                "purged",
                 "replaced",
                 "gathered",
                 "rendered",
@@ -74,4 +62,5 @@ class VrfArgs(object):  # pylint: disable=R0903
             ],
             "default": "merged",
         },
+        "running_config": {"type": "str"},
     }  # pylint: disable=C0301
