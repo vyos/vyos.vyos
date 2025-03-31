@@ -23,148 +23,39 @@
       register: result
       diff: true
       vyos.vyos.vyos_firewall_rules:
-        config:
-          - afi: ipv6
-            rule_sets:
-              - name: UPLINK
-                description: This is ipv6 specific rule-set
-                default_action: accept
-                rules:
-                  - number: 1
-                    action: accept
-                    description: Fwipv6-Rule 1 is configured by Ansible
-                    protocol: tcp
-                  - number: 2
-                    action: accept
-                    description: Fwipv6-Rule 2 is configured by Ansible
-                    protocol: tcp
-          - afi: ipv4
-            rule_sets:
-              - name: INBOUND
-                description: IPv4 INBOUND rule set
-                default_action: accept
-                rules:
-                  - number: 101
-                    action: reject
-                    description: Rule 101 is configured by Ansible
-                    protocol: tcp
-                  - number: 102
-                    action: reject
-                    description: Rule 102 is configured by Ansible
-                    protocol: tcp
-                  - number: 103
-                    action: accept
-                    description: Rule 103 is configured by Ansible
-                    destination:
-                      group:
-                        address_group: inbound
-                    source:
-                      address: 192.0.2.0
+        config: "{{ replaced_diff_01.config }}"
         state: replaced
 
     - name: Assert - Diff for a single rule and attribute
       assert:
         that:
           - result['changed'] == true
-          - result.diff.prepared == "[firewall ipv4 name INBOUND rule 101]\n- action \"accept\"\n+ action \"reject\"\n[firewall ipv4 name INBOUND rule 103]\n- state \"established\"\n- state \"related\"\n\n\n[edit]"
+          - result.diff.prepared == "{{ replaced_diff_01.diff }}"
 
     - name: Replace single rule's multiple attributes and register Diff
       register: result
       diff: true
       vyos.vyos.vyos_firewall_rules:
-        config:
-          - afi: ipv6
-            rule_sets:
-              - name: UPLINK
-                description: This is ipv6 specific rule-set
-                default_action: accept
-                rules:
-                  - number: 1
-                    action: accept
-                    description: Fwipv6-Rule 1 is configured by Ansible
-                    protocol: tcp
-                  - number: 2
-                    action: accept
-                    description: Fwipv6-Rule 2 is configured by Ansible
-                    protocol: tcp
-          - afi: ipv4
-            rule_sets:
-              - name: INBOUND
-                description: IPv4 INBOUND rule set
-                default_action: accept
-                rules:
-                  - number: 101
-                    action: reject
-                    description: Rule 101 is configured by Ansible
-                    protocol: tcp
-                  - number: 102
-                    action: accept
-                    description: Rule 102 is configured by Ansible
-                    protocol: udp
-                  - number: 103
-                    action: accept
-                    description: Rule 103 is configured by Ansible
-                    destination:
-                      group:
-                        address_group: inbound
-                    source:
-                      address: 192.0.2.0
+        config: "{{ replaced_diff_02.config }}"
         state: replaced
 
     - name: Assert - Diff for a single rule and multiple attributes
       assert:
         that:
           - result['changed'] == true
-          - result.diff.prepared == "[firewall ipv4 name INBOUND rule 102]\n- action \"reject\"\n+ action \"accept\"\n- protocol \"tcp\"\n+ protocol \"udp\"\n\n\n[edit]"
+          - result.diff.prepared == "{{ replaced_diff_02.diff }}"
 
     - name: Replace attributes in multiple rules and register Diff
       register: result
       diff: true
       vyos.vyos.vyos_firewall_rules:
-        config:
-          - afi: ipv6
-            rule_sets:
-              - name: UPLINK
-                description: This is ipv6 specific rule-set
-                default_action: accept
-                rules:
-                  - number: 1
-                    action: reject
-                    description: Fwipv6-Rule 1 is configured by Ansible
-                    protocol: udp
-                  - number: 2
-                    action: accept
-                    description: Fwipv6-Rule 2 is configured by Ansible
-                    protocol: tcp
-          - afi: ipv4
-            rule_sets:
-              - name: INBOUND
-                description: IPv4 INBOUND rule set
-                default_action: accept
-                rules:
-                  - number: 101
-                    action: reject
-                    description: Rule 101 is configured by Ansible
-                    protocol: tcp
-                  - number: 102
-                    action: accept
-                    description: Rule 102 is configured by Ansible
-                    protocol: tcp
-                  - number: 103
-                    action: accept
-                    description: Rule 103 is configured by Ansible
-                    destination:
-                      group:
-                        address_group: inbound
-                    source:
-                      address: 192.0.2.0
+        config: "{{ replaced_diff_03.config }}"
         state: replaced
 
     - name: Assert - Diff for a single rule and multiple attributes
       assert:
         that:
           - result['changed'] == true
-          - result.diff.prepared == "[firewall ipv4 name INBOUND rule 102]\n- protocol \"udp\"\n+ protocol \"tcp\"\n[firewall ipv6 name UPLINK rule 1]\n- action \"accept\"\n+ action \"reject\"\n- protocol \"tcp\"\n+ protocol \"udp\"\n\n\n[edit]"
-
+          - result.diff.prepared == "{{ replaced_diff_03.diff }}"
   always:
     - include_tasks: _remove_config.yaml

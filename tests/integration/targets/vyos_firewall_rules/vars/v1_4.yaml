@@ -120,3 +120,126 @@ deleted_afi_all:
 state_dict:
   established: true
   related: true
+
+replaced_diff_01:
+  config:
+    - afi: ipv6
+      rule_sets:
+        - name: UPLINK
+          description: This is ipv6 specific rule-set
+          default_action: accept
+          rules:
+            - number: 1
+              action: accept
+              description: Fwipv6-Rule 1 is configured by Ansible
+              protocol: tcp
+            - number: 2
+              action: accept
+              description: Fwipv6-Rule 2 is configured by Ansible
+              protocol: tcp
+    - afi: ipv4
+      rule_sets:
+        - name: INBOUND
+          description: IPv4 INBOUND rule set
+          default_action: accept
+          rules:
+            - number: 101
+              action: reject
+              description: Rule 101 is configured by Ansible
+              protocol: tcp
+            - number: 102
+              action: reject
+              description: Rule 102 is configured by Ansible
+              protocol: tcp
+            - number: 103
+              action: accept
+              description: Rule 103 is configured by Ansible
+              destination:
+                group:
+                  address_group: inbound
+              source:
+                address: 192.0.2.0
+              state: "{{ state_dict }}"
+  diff: '[firewall ipv4 name INBOUND rule 101]\n- action \"accept\"\n+ action \"reject\"\n\n\n[edit]'
+
+replaced_diff_02:
+  config:
+    - afi: ipv6
+      rule_sets:
+        - name: UPLINK
+          description: This is ipv6 specific rule-set
+          default_action: accept
+          rules:
+            - number: 1
+              action: accept
+              description: Fwipv6-Rule 1 is configured by Ansible
+              protocol: tcp
+            - number: 2
+              action: accept
+              description: Fwipv6-Rule 2 is configured by Ansible
+              protocol: tcp
+    - afi: ipv4
+      rule_sets:
+        - name: INBOUND
+          description: IPv4 INBOUND rule set
+          default_action: accept
+          rules:
+            - number: 101
+              action: reject
+              description: Rule 101 is configured by Ansible
+              protocol: tcp
+            - number: 102
+              action: accept
+              description: Rule 102 is configured by Ansible
+              protocol: udp
+            - number: 103
+              action: accept
+              description: Rule 103 is configured by Ansible
+              destination:
+                group:
+                  address_group: inbound
+              source:
+                address: 192.0.2.0
+              state: "{{ state_dict }}"
+  diff: '[firewall ipv4 name INBOUND rule 102]\n- action \"reject\"\n+ action \"accept\"\n- protocol \"tcp\"\n+ protocol \"udp\"\n\n\n[edit]'
+
+replaced_diff_03:
+  config:
+    - afi: ipv6
+      rule_sets:
+        - name: UPLINK
+          description: This is ipv6 specific rule-set
+          default_action: accept
+          rules:
+            - number: 1
+              action: reject
+              description: Fwipv6-Rule 1 is configured by Ansible
+              protocol: udp
+            - number: 2
+              action: accept
+              description: Fwipv6-Rule 2 is configured by Ansible
+              protocol: tcp
+    - afi: ipv4
+      rule_sets:
+        - name: INBOUND
+          description: IPv4 INBOUND rule set
+          default_action: accept
+          rules:
+            - number: 101
+              action: reject
+              description: Rule 101 is configured by Ansible
+              protocol: tcp
+            - number: 102
+              action: accept
+              description: Rule 102 is configured by Ansible
+              protocol: tcp
+            - number: 103
+              action: accept
+              description: Rule 103 is configured by Ansible
+              destination:
+                group:
+                  address_group: inbound
+              source:
+                address: 192.0.2.0
+              state: "{{ state_dict }}"
+  diff: '[firewall ipv4 name INBOUND rule 102]\n- protocol \"udp\"\n+ protocol \"tcp\"\n[firewall ipv6 name UPLINK rule 1]\n- action \"accept\"\n+ action \"reject\"\n- protocol \"tcp\"\n+ protocol \"udp\"\n\n\n[edit]'
