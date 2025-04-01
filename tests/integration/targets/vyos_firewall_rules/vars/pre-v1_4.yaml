@@ -168,7 +168,9 @@ replaced_diff_01:
               source:
                 address: 192.0.2.0
               state: "{{ state_dict }}"
-  diff: '[edit firewall name INBOUND rule 101]\n>action reject\n\n[edit]'
+  diff: >
+    [edit firewall name INBOUND rule
+    101]\n>action reject\n\n[edit]
 
 replaced_diff_02:
   config:
@@ -209,7 +211,9 @@ replaced_diff_02:
               source:
                 address: 192.0.2.0
               state: "{{ state_dict }}"
-  diff: '[edit firewall name INBOUND rule 102]\n>action accept\n>protocol udp\n\n[edit]'
+  diff: >
+    [edit firewall name INBOUND rule
+    102]\n>action accept\n>protocol udp\n\n[edit]
 
 replaced_diff_03:
   config:
@@ -250,4 +254,7 @@ replaced_diff_03:
               source:
                 address: 192.0.2.0
               state: "{{ state_dict }}"
-  diff: '[edit firewall ipv6-name UPLINK rule 1]\n>action reject\n>protocol udp\n[edit firewall name INBOUND rule 102]\n>protocol tcp\n\n[edit]'
+  diff: >
+    [edit firewall ipv6-name UPLINK rule 1]\n>action
+    reject\n>protocol udp\n[edit firewall name INBOUND
+    rule 102]\n>protocol tcp\n\n[edit]
