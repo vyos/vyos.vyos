@@ -30,7 +30,7 @@
       assert:
         that:
           - result['changed'] == true
-          - result.diff.prepared == "{{ replaced_diff_01.diff }}"
+          - result.diff.prepared == "{{ replaced_diff_01.diff.rstrip() }}"
 
     - name: Replace single rule's multiple attributes and register Diff
       register: result
@@ -43,7 +43,7 @@
       assert:
         that:
           - result['changed'] == true
-          - result.diff.prepared == "{{ replaced_diff_02.diff }}"
+          - result.diff.prepared == "{{ replaced_diff_02.diff.rstrip() }}"
 
     - name: Replace attributes in multiple rules and register Diff
       register: result
@@ -56,6 +56,6 @@
       assert:
         that:
           - result['changed'] == true
-          - result.diff.prepared == "{{ replaced_diff_03.diff }}"
+          - result.diff.prepared == "{{ replaced_diff_03.diff.rstrip() }}"
   always:
     - include_tasks: _remove_config.yaml

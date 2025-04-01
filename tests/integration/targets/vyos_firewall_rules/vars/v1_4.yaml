@@ -160,7 +160,11 @@ replaced_diff_01:
               source:
                 address: 192.0.2.0
               state: "{{ state_dict }}"
-  diff: '[firewall ipv4 name INBOUND rule 101]\n- action \"accept\"\n+ action \"reject\"\n\n\n[edit]'
+  # diff: '[firewall ipv4 name INBOUND rule 101]\n- action \"accept\"\n+ action \"reject\"\n\n\n[edit]'
+  diff: >
+    [firewall ipv4 name INBOUND rule 101]\n-
+    action \"accept\"\n+
+    action \"reject\"\n\n\n[edit]
 
 replaced_diff_02:
   config:
@@ -201,7 +205,10 @@ replaced_diff_02:
               source:
                 address: 192.0.2.0
               state: "{{ state_dict }}"
-  diff: '[firewall ipv4 name INBOUND rule 102]\n- action \"reject\"\n+ action \"accept\"\n- protocol \"tcp\"\n+ protocol \"udp\"\n\n\n[edit]'
+  diff: >
+    [firewall ipv4 name INBOUND rule 102]\n-
+    action \"reject\"\n+ action \"accept\"\n-
+    protocol \"tcp\"\n+ protocol \"udp\"\n\n\n[edit]
 
 replaced_diff_03:
   config:
@@ -242,4 +249,9 @@ replaced_diff_03:
               source:
                 address: 192.0.2.0
               state: "{{ state_dict }}"
-  diff: '[firewall ipv4 name INBOUND rule 102]\n- protocol \"udp\"\n+ protocol \"tcp\"\n[firewall ipv6 name UPLINK rule 1]\n- action \"accept\"\n+ action \"reject\"\n- protocol \"tcp\"\n+ protocol \"udp\"\n\n\n[edit]'
+  diff: >
+    [firewall ipv4 name INBOUND rule 102]\n-
+    protocol \"udp\"\n+ protocol \"tcp\"\n[firewall
+    ipv6 name UPLINK rule 1]\n- action \"accept\"\n+
+    action \"reject\"\n- protocol \"tcp\"\n+
+    protocol \"udp\"\n\n\n[edit]
