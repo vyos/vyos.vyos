@@ -1,0 +1,3 @@
+---
+trivial:
+  - prepare_vyos_tests - fix dependency script for intergration tests to run on e1000e vNiC
