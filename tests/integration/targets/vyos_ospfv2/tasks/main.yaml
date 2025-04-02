@@ -1,4 +1,8 @@
 ---
+- name: Run preflight setup
+  ansible.builtin.import_tasks: pre_tasks.yaml
+  failed_when: false
+
 - name: Run CLI tests
   ansible.builtin.include_tasks: cli.yaml
   tags:
@@ -9,3 +13,7 @@
   when: ansible_version.full is version('2.10.0', '>=')
   tags:
     - network_cli
+
+- name: Run post-test cleanup tasks
+  ansible.builtin.import_tasks: post_tasks.yaml
+  failed_when: false
