@@ -261,7 +261,8 @@ replaced_diff_03:
               state: "{{ state_dict }}"
   diff: |-
     [edit firewall ipv6-name UPLINK rule 1]
-    >action reject\n>protocol udp
+    >action reject
+    >protocol udp
     [edit firewall name INBOUND rule 102]
     >protocol tcp
 
