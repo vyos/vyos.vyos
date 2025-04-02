@@ -276,3 +276,13 @@ def _in_target(h, key):
     :return: True/False.
     """
     return True if h and key in h else False
+
+
+def in_target_not_none(h, key):
+    """
+    This function checks whether the target exist,key present in target config, and the value is not None.
+    :param h: target config.
+    :param key: attribute name.
+    :return: True/False.
+    """
+    return True if h and key in h and h[key] is not None else False

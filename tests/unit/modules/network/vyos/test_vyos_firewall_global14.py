@@ -285,7 +285,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                             dict(
                                 afi="ipv4",
                                 name="RND",
-                                description="This group has the Management network addresses",
+                                # Deleted the description here.
                                 members=[dict(address="192.0.2.0/24")],
                             ),
                             dict(
@@ -317,6 +317,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "set firewall global-options state-policy invalid action 'reject'",
             "set firewall group address-group RND-HOSTS address 192.0.2.7",
             "set firewall group address-group RND-HOSTS address 192.0.2.9",
+            "delete firewall group network-group RND description",
             "delete firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::1",
             "set firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::2",
             "delete firewall group port-group SSH port 22",
