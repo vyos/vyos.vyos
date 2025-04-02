@@ -54,11 +54,11 @@ class VrfFacts(object):
 
         for resource in data.splitlines():
             config_lines.append(re.sub("'", "", resource))
-        self._module.fail_json(msg=data)
         # parse native config using the Vrf template
         vrf_parser = VrfTemplate(lines=config_lines, module=self._module)
 
         objs = vrf_parser.parse()
+        self._module.fail_json(msg=objs)
 
         if objs:
             if "allow_clients" in objs:

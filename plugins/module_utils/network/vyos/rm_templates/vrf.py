@@ -25,43 +25,48 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 class VrfTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
-        self._overrides = {  # 1.4+ by default
-            "_path": "service",  # 1.4 or greater, "system" for 1.3 or less
-            "_ac": "allow-client",  # 1.4 or greater, "allow-clients" for 1.3 or less
-        }
+        # self._overrides = {  # 1.4+ by default
+        #     "_path": "service",  # 1.4 or greater, "system" for 1.3 or less
+        #     "_ac": "allow-client",  # 1.4 or greater, "allow-clients" for 1.3 or less
+        # }
         super(VrfTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix, module=module)
 
-    def set_ntp_path(self, path: str):
-        """set_ntp_path"""
-        self._overrides["_path"] = path
+    # def set_ntp_path(self, path: str):
+    #     """set_ntp_path"""
+    #     self._overrides["_path"] = path
 
-    def set_ntp_ac(self, ac: str):
-        """set_ntp_ac"""
-        self._overrides["_ac"] = ac
+    # def set_ntp_ac(self, ac: str):
+    #     """set_ntp_ac"""
+    #     self._overrides["_ac"] = ac
 
-    def render(self, data, parser_name, negate=False):
-        """render"""
-        # add path to the data before rendering
-        data = data.copy()
-        data.update(self._overrides)
-        # call the original method
-        return super(VrfTemplate, self).render(data, parser_name, negate)
+    # def render(self, data, parser_name, negate=False):
+    #     """render"""
+    #     # add path to the data before rendering
+    #     data = data.copy()
+    #     data.update(self._overrides)
+    #     # call the original method
+    #     return super(VrfTemplate, self).render(data, parser_name, negate)
 
     # fmt: off
     PARSERS = [
 
         # set system ntp allow_clients address <address>
         {
-            "name": "allow_clients",
+            "name": "set_table",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)\sntp\s(?P<ac>allow-clients|allow-client)\saddress (\s(?P<ipaddress>\S+))?
+                ^set
+                \svrf
+                \s(?P<name>\S+)
+                \stable
+                \s(?P<tid>\S+)
                 $""",
                 re.VERBOSE,
             ),
             "setval": "{{_path}} ntp {{_ac}} address {{allow_clients}}",
             "result": {
-                "allow_clients": ["{{ipaddress}}"],
+                "name": "{{ name }}",
+                "tid": "{{ tid }}",
             },
         },
 
