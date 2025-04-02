@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -34,22 +35,22 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
     def setUp(self):
         super(TestVyosOspfInterfacesModule14, self).setUp()
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.Ospf_interfacesFacts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.Ospf_interfacesFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospf_interfaces.ospf_interfaces.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospf_interfaces.ospf_interfaces.get_os_version",
         )
         self.test_version = "1.4"
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = self.test_version
         self.mock_facts_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.get_os_version",
         )
         self.get_facts_os_version = self.mock_facts_get_os_version.start()
         self.get_facts_os_version.return_value = self.test_version
@@ -104,7 +105,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
                     ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set protocols ospf interface bond2 transmit-delay 9",
@@ -113,6 +114,34 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
             "set protocols ospf interface eth0 priority 55",
             "set protocols ospf interface eth0 authentication plaintext-password abcdefg!",
             "set protocols ospfv3 interface eth0 instance-id 20",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_ospf_interfaces_merged_vif_config(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth0.3",
+                        address_family=[
+                            dict(
+                                afi="ipv4",
+                                cost=100,
+                                authentication=dict(plaintext_password="abcdefg!"),
+                                priority=55,
+                            ),
+                            dict(afi="ipv6", mtu_ignore=True),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+        commands = [
+            "set protocols ospf interface eth0.3 cost 100",
+            "set protocols ospf interface eth0.3 priority 55",
+            "set protocols ospf interface eth0.3 authentication plaintext-password abcdefg!",
+            "set protocols ospfv3 interface eth0.3 mtu-ignore",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -137,7 +166,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
                         ],
                     ),
                 ],
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -162,7 +191,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
                         ],
                     ),
                 ],
-            )
+            ),
         )
         commands = [
             "set protocols ospfv3 interface eth0 cost 500",
@@ -198,7 +227,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "set protocols ospf interface bond2 transmit-delay 9",
@@ -249,7 +278,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "delete protocols ospf interface eth1 cost 100",
@@ -287,7 +316,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -318,7 +347,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
                     ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         commands = [
             "set protocols ospf interface bond2 transmit-delay 9",
@@ -355,7 +384,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
                     ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -368,7 +397,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
                     ),
                 ],
                 state="deleted",
-            )
+            ),
         )
         commands = ["delete protocols ospfv3 interface eth0"]
         self.execute_module(changed=True, commands=commands)
@@ -382,7 +411,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
                     ),
                 ],
                 state="deleted",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -414,7 +443,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
                     ),
                 ],
                 state="rendered",
-            )
+            ),
         )
         commands = [
             "set protocols ospf interface eth0 cost 100",
@@ -456,7 +485,7 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
                             "md5_key": {
                                 "key": "1111111111232345",
                                 "key_id": 10,
-                            }
+                            },
                         },
                         "bandwidth": 70,
                         "transmit_delay": 45,
