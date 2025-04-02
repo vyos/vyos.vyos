@@ -44,13 +44,13 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
         )
         self.execute_show_command = self.mock_execute_show_command.start()
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospf_interfaces.ospf_interfaces.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospf_interfaces.ospf_interfaces.get_os_version",
         )
         self.test_version = "1.2"
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = self.test_version
         self.mock_facts_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospf_interfaces.ospf_interfaces.get_os_version",
         )
         self.get_facts_os_version = self.mock_facts_get_os_version.start()
         self.get_facts_os_version.return_value = self.test_version
@@ -115,6 +115,34 @@ class TestVyosOspfInterfacesModule(TestVyosModule):
             "set interfaces ethernet eth0 ip ospf priority 55",
             "set interfaces ethernet eth0 ip ospf authentication plaintext-password abcdefg!",
             "set interfaces ethernet eth0 ipv6 ospfv3 instance-id 20",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_ospf_interfaces_merged_vif_config(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth0.3",
+                        address_family=[
+                            dict(
+                                afi="ipv4",
+                                cost=100,
+                                authentication=dict(plaintext_password="abcdefg!"),
+                                priority=55,
+                            ),
+                            dict(afi="ipv6", mtu_ignore=True),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+        commands = [
+            "set interfaces ethernet eth0 vif 3 ip ospf cost 100",
+            "set interfaces ethernet eth0 vif 3 ip ospf priority 55",
+            "set interfaces ethernet eth0 vif 3 ip ospf authentication plaintext-password abcdefg!",
+            "set interfaces ethernet eth0 vif 3 ipv6 ospfv3 mtu-ignore",
         ]
         self.execute_module(changed=True, commands=commands)
 
