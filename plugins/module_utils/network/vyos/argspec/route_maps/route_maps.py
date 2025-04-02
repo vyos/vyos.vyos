@@ -74,6 +74,8 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
                                 },
                                 "extcommunity_rt": {"type": "str"},
                                 "extcommunity_soo": {"type": "str"},
+                                "extcommunity_bandwidth": {"type": "str"},
+                                "extcommunity_bandwidth_non_transitive": {"type": "bool"},
                                 "ip_next_hop": {"type": "str"},
                                 "ipv6_next_hop": {
                                     "type": "dict",
@@ -100,6 +102,7 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
                                 "src": {"type": "str"},
                                 "tag": {"type": "str"},
                                 "weight": {"type": "str"},
+                                "table": {"type": "str"},
                             },
                         },
                         "match": {
@@ -177,6 +180,23 @@ class Route_mapsArgs(object):  # pylint: disable=R0903
                                         },
                                         "next_hop": {"type": "str"},
                                     },
+                                },
+                                "protocol": {
+                                    "type": "str",
+                                    "choices": [
+                                        "babel",
+                                        "bgp",
+                                        "connected",
+                                        "isis",
+                                        "kernel",
+                                        "ospf",
+                                        "ospfv3",
+                                        "rip",
+                                        "ripng",
+                                        "static",
+                                        "table",
+                                        "vnc",
+                                    ],
                                 },
                                 "large_community_large_community_list": {
                                     "type": "str",
