@@ -29,6 +29,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     list_diff_want_only,
+    in_target_not_none,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
     LooseVersion,
@@ -370,11 +371,7 @@ class Firewall_global(ConfigBase):
                             if key == "name" and self._is_grp_del(h, want, key):
                                 commands.append(cmd + " " + want["name"])
                                 continue
-                            if not (h and self._in_target(h, key)) and not self._is_grp_del(
-                                h,
-                                want,
-                                key,
-                            ):
+                            if not (h and in_target_not_none(h, key)) and not self._is_grp_del(h, want, "name"):
                                 commands.append(cmd + " " + want["name"] + " " + key)
                         elif key == "members":
                             commands.extend(
