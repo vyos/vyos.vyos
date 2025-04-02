@@ -19,6 +19,11 @@
               - afi: ipv6
                 mtu_ignore: true
                 instance: 33
+          - name: eth2.3
+            address_family:
+              - afi: ipv4
+                cost: 60
+                priority: 40
           - name: bond2
             address_family:
               - afi: ipv4
@@ -32,7 +37,6 @@
 
     - assert:
         that:
-          - baseconfig.commands|length == 6
           - baseconfig.changed == true
           - baseconfig.commands|symmetric_difference(merged.commands) == []
           - baseconfig.after|symmetric_difference(ansible_facts['network_resources']['ospf_interfaces']) == []

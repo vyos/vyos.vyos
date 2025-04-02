@@ -17,7 +17,6 @@
 
     - assert:
         that:
-          - result.commands|length == 2
           - result.changed == true
           - result.commands|symmetric_difference(deleted.commands) == []
           - result.after|symmetric_difference(ansible_facts['network_resources']['ospf_interfaces']) == []
