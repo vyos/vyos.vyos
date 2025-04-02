@@ -34,6 +34,7 @@ import json
 from ansible.module_utils._text import to_text
 from ansible.module_utils.connection import Connection, ConnectionError
 
+
 _DEVICE_CONFIGS = {}
 
 
@@ -68,8 +69,8 @@ def get_config(module, flags=None, format=None):
     flags = [] if flags is None else flags
     global _DEVICE_CONFIGS
 
-    if _DEVICE_CONFIGS != {}:
-        return _DEVICE_CONFIGS
+    if _DEVICE_CONFIGS != {} or module.params["match"] == "none":
+        return to_text(_DEVICE_CONFIGS)
     else:
         connection = get_connection(module)
         try:
