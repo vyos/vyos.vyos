@@ -35,6 +35,17 @@ class VrfFacts(object):
     def get_config(self, connection):
         return connection.get("show configuration commands |  match 'set vrf'")
 
+    def get_config_set(self, data, connection):
+        """To classify the configurations beased on vrf"""
+        config_dict = {}
+        for config_line in data.splitlines():
+            vrf_inst = re.search(r"set vrf name (\S+).*", config_line)
+            if vrf_inst:
+                config_dict[vrf_inst.group(1)] = (
+                    config_dict.get(vrf_inst.group(1), "") + config_line + "\n"
+                )
+        return list(config_dict.values())
+
     def populate_facts(self, connection, ansible_facts, data=None):
         """Populate the facts for Vrf network resource
 
@@ -47,45 +58,60 @@ class VrfFacts(object):
         """
         facts = {}
         objs = []
-        config_lines = []
 
         if not data:
             data = self.get_config(connection)
 
-        for resource in data.splitlines():
-            config_lines.append(re.sub("'", "", resource))
-        # parse native config using the Vrf template
-        vrf_parser = VrfTemplate(lines=config_lines, module=self._module)
+        vrf_facts = []
+        resources = self.get_config_set(data, connection)
+        self._module.fail_json(msg=resources)
+        for resource in resources:
+            vrf_parser = VrfTemplate(
+                lines=resource.split("\n"),
+                module=self._module,
+            )
+            objs = vrf_parser.parse()
+            # for key, sortv in [("address_family", "afi")]:
+            #     if key in objs and objs[key]:
+            #         objs[key] = list(objs[key].values())
+            vrf_facts.append(objs)
+        # for resource in data.splitlines():
+        #     config_lines.append(re.sub("'", "", resource))
+        # # parse native config using the Vrf template
+        # vrf_parser = VrfTemplate(lines=config_lines, module=self._module)
 
-        objs = vrf_parser.parse()
-        self._module.fail_json(msg=objs)
+        # objs = vrf_parser.parse()
+        # self._module.fail_json(msg=objs)
 
-        if objs:
-            if "allow_clients" in objs:
-                objs["allow_clients"] = sorted(list(objs["allow_clients"]))
+        # if objs:
+        #     if "allow_clients" in objs:
+        #         objs["allow_clients"] = sorted(list(objs["allow_clients"]))
 
-            if "listen_addresses" in objs:
-                objs["listen_addresses"] = sorted(list(objs["listen_addresses"]))
+        #     if "listen_addresses" in objs:
+        #         objs["listen_addresses"] = sorted(list(objs["listen_addresses"]))
 
-            """ if "options" in objs["servers"].values():
-                val = objs["servers"].values()
-                val["options"] = sorted(val["options"]) """
+        #     """ if "options" in objs["servers"].values():
+        #         val = objs["servers"].values()
+        #         val["options"] = sorted(val["options"]) """
 
-            if "servers" in objs:
-                objs["servers"] = list(objs["servers"].values())
-                objs["servers"] = sorted(objs["servers"], key=lambda k: k["server"])
-                for i in objs["servers"]:
-                    if "options" in i:
-                        i["options"] = sorted(list(i["options"]))
+        #     if "servers" in objs:
+        #         objs["servers"] = list(objs["servers"].values())
+        #         objs["servers"] = sorted(objs["servers"], key=lambda k: k["server"])
+        #         for i in objs["servers"]:
+        #             if "options" in i:
+        #                 i["options"] = sorted(list(i["options"]))
 
-        ansible_facts["ansible_network_resources"].pop("ntp_global", None)
+        self._module.fail_json(msg=vrf_facts)
+        ansible_facts["ansible_network_resources"].pop("vrf", None)
 
         params = utils.remove_empties(
             vrf_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
         )
 
         if params.get("config"):
-            facts["ntp_global"] = params["config"]
+            facts["vrf"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
+
+        self._module.fail_json(msg=ansible_facts)
 
         return ansible_facts
