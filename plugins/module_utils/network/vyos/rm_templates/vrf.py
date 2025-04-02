@@ -25,147 +25,136 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 class VrfTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
-        # self._overrides = {  # 1.4+ by default
-        #     "_path": "service",  # 1.4 or greater, "system" for 1.3 or less
-        #     "_ac": "allow-client",  # 1.4 or greater, "allow-clients" for 1.3 or less
-        # }
         super(VrfTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix, module=module)
-
-    # def set_ntp_path(self, path: str):
-    #     """set_ntp_path"""
-    #     self._overrides["_path"] = path
-
-    # def set_ntp_ac(self, ac: str):
-    #     """set_ntp_ac"""
-    #     self._overrides["_ac"] = ac
-
-    # def render(self, data, parser_name, negate=False):
-    #     """render"""
-    #     # add path to the data before rendering
-    #     data = data.copy()
-    #     data.update(self._overrides)
-    #     # call the original method
-    #     return super(VrfTemplate, self).render(data, parser_name, negate)
 
     # fmt: off
     PARSERS = [
-
-        # set system ntp allow_clients address <address>
         {
-            "name": "set_table",
+            "name": "table",
             "getval": re.compile(
                 r"""
                 ^set
                 \svrf
+                \sname
                 \s(?P<name>\S+)
                 \stable
                 \s(?P<tid>\S+)
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{_path}} ntp {{_ac}} address {{allow_clients}}",
+            "setval": "vrf name {{name}} table {{tid}}",
+            "compval": "tid",
             "result": {
                 "name": "{{ name }}",
                 "tid": "{{ tid }}",
             },
         },
-
-        # set system ntp allow_clients
         {
-            "name": "allow_clients_delete",
+            "name": "vni",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)\sntp\s(?P<ac>allow-clients|allow-client)
+                ^set
+                \svrf
+                \sname
+                \s(?P<name>\S+)
+                \svni
+                \s(?P<vni>\S+)
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{_path}} ntp {{_ac}}",
+            "setval": "vrf name {{name}} vni {{tid}}",
+            "compval": "vni",
             "result": {
-
-            },
-
-        },
-
-        # set system ntp listen_address <address>
-        {
-            "name": "listen_addresses",
-            "getval": re.compile(
-                r"""
-                ^set\s(?P<path>system|service)\sntp\slisten-address (\s(?P<ip_address>\S+))?
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "{{_path}} ntp listen-address {{listen_addresses}}",
-            "result": {
-                "listen_addresses": ["{{ip_address}}"],
+                "name": "{{ name }}",
+                "vni": "{{ vni }}",
             },
         },
-
-        # set system ntp listen_address
         {
-            "name": "listen_addresses_delete",
+            "name": "description",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)\sntp\slisten-address
+                ^set
+                \svrf
+                \sname
+                \s(?P<name>\S+)
+                \sdescription
+                \s(?P<desc>\S+)
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{_path}} ntp listen-address",
+            "setval": "vrf name {{name}} description {{desc}}",
+            "compval": "desc",
             "result": {
+                "name": "{{ name }}",
+                "description": "{{ desc }}",
             },
         },
-
-        # set {{path}} ntp - for deleting the ntp configuration
         {
-            "name": "service_delete",
+            "name": "disable_vrf",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)\sntp$
+                ^set
+                \svrf
+                \sname
+                \s(?P<name>\S+)
+                \s(?P<disable>disable)
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{_path}} ntp",
+            "setval": "vrf name {{name}} description disable",
+            "compval": "desc",
             "result": {
+                "name": "{{ name }}",
+                "disable": "{{ True if disable is defined }}",
             },
         },
-
-        # set system ntp server <name>
         {
-            "name": "server",
+            "name": "disable_forwarding",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)\sntp\sserver (\s(?P<name>\S+))
+                ^set
+                \svrf
+                \sname
+                \s(?P<name>\S+)
+                \s(?P<af>\S+)
+                \s(?P<df>disable-forwarding)
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{_path}} ntp server {{server}}",
+            "setval": "vrf name {{name}} {{ af }} disable-forwarding",
+            "compval": "address_family.disable_forwarding",
             "result": {
-                "servers": {
-                    "{{name}}": {
-                        "server": "{{name}}",
+                "name": "{{ name }}",
+                "address_family": {
+                    '{{ "ipv4" if af == "ip" else "ipv6" }}': {
+                        "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
+                        "disable_forwarding": "{{ True if df is defined }}",
                     },
                 },
-
             },
         },
-
-        # set system ntp server <name> <options>
         {
-            "name": "options",
+            "name": "disable_nht",
             "getval": re.compile(
                 r"""
-                ^set\s(?P<path>system|service)\sntp\sserver
+                ^set
+                \svrf
+                \sname
                 \s(?P<name>\S+)
-                \s(?P<options>dynamic|preempt|pool|noselect|prefer|nts|interleave|ptp)
+                \s(?P<af>\S+)
+                \snht
+                \s(?P<nht>no-resolve-via-default)
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{_path}} ntp server {{server}} {{options}}",
+            "setval": "vrf name {{name}} {{ af }} nht no-resolve-via-default",
+            "compval": "address_family.no_resolve_via_default",
             "result": {
-                "servers": {
-                    "{{name}}": {
-                        "server": "{{name}}",
-                        "options": ["{{options}}"],
+                "name": "{{ name }}",
+                "address_family": {
+                    '{{ "ipv4" if af == "ip" else "ipv6" }}': {
+                        "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
+                        "no_resolve_via_default": "{{ True if nht is defined }}",
                     },
                 },
             },
