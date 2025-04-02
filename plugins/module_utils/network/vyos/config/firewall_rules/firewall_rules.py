@@ -30,10 +30,13 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     list_diff_want_only,
 )
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    get_os_version,
+    load_config,
+)
 
 
 class Firewall_rules(ConfigBase):
@@ -78,6 +81,14 @@ class Firewall_rules(ConfigBase):
         result = {"changed": False}
         warnings = list()
         commands = list()
+        diff = None
+
+        try:
+            self._module.params["comment"]
+        except KeyError:
+            comment = []
+        else:
+            comment = self._module.params["comment"]
 
         if self.state in self.ACTION_STATES:
             existing_firewall_rules_facts = self.get_firewall_rules_facts()
@@ -86,6 +97,12 @@ class Firewall_rules(ConfigBase):
 
         if self.state in self.ACTION_STATES or self.state == "rendered":
             commands.extend(self.set_config(deepcopy(existing_firewall_rules_facts)))
+
+        if commands and self._module._diff:
+            commit = not self._module.check_mode
+            diff = load_config(self._module, commands, commit=commit, comment=comment)
+            if diff:
+                result["diff"] = {"prepared": str(diff)}
 
         if commands and self.state in self.ACTION_STATES:
             if not self._module.check_mode:
@@ -213,13 +230,17 @@ class Firewall_rules(ConfigBase):
                         commands.append(self._compute_command(rs_id, remove=True))
                         # Blank out the only rule set that it is removed.
                         for entry in have:
-                            if entry['afi'] == rs_id['afi'] and rs_id['name']:
+                            if entry["afi"] == rs_id["afi"] and rs_id["name"]:
                                 entry["rule_sets"] = [
-                                    rule_set for rule_set in entry["rule_sets"] if rule_set.get("name") != rs_id['name']
+                                    rule_set
+                                    for rule_set in entry["rule_sets"]
+                                    if rule_set.get("name") != rs_id["name"]
                                 ]
-                            elif entry['afi'] == rs_id['afi'] and rs_id['filter']:
+                            elif entry["afi"] == rs_id["afi"] and rs_id["filter"]:
                                 entry["rule_sets"] = [
-                                    rule_set for rule_set in entry["rule_sets"] if rule_set.get("filter") != rs_id['filter']
+                                    rule_set
+                                    for rule_set in entry["rule_sets"]
+                                    if rule_set.get("filter") != rs_id["filter"]
                                 ]
             commands.extend(self._state_merged(want, have))
         return commands
@@ -264,7 +285,7 @@ class Firewall_rules(ConfigBase):
                     for h in have:
                         if h["afi"] == w["afi"]:
                             commands.append(
-                                self._compute_command(self._rs_id(None, w["afi"]), remove=True)
+                                self._compute_command(self._rs_id(None, w["afi"]), remove=True),
                             )
         elif have:
             for h in have:
@@ -452,7 +473,9 @@ class Firewall_rules(ConfigBase):
                     if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
                         commands.append(cmd + (" " + attr + " " + item))
                     else:
-                        commands.append(cmd + (" " + attr + " " + item + " " + self._bool_to_str(val)))
+                        commands.append(
+                            cmd + (" " + attr + " " + item + " " + self._bool_to_str(val)),
+                        )
                 elif not opr and item in l_set and not self._in_target(h_state, item):
                     commands.append(cmd + (" " + attr + " " + item))
         return commands
@@ -555,7 +578,9 @@ class Firewall_rules(ConfigBase):
                         else:
                             commands.append(cmd + (" " + attr + " " + item + " " + str(val)))
                 elif not opr and item in l_set and not self._in_target(h_icmp, item):
-                    commands.append(cmd + (" " + attr + " " + item.replace("_", "-") + " " + str(val)))
+                    commands.append(
+                        cmd + (" " + attr + " " + item.replace("_", "-") + " " + str(val)),
+                    )
         return commands
 
     def _add_interface(self, attr, w, h, cmd, opr):
@@ -577,11 +602,11 @@ class Firewall_rules(ConfigBase):
                 if opr and item in l_set and not (h_if and self._is_w_same(w[attr], h_if, item)):
                     commands.append(
                         cmd
-                        + (" " + attr.replace("_", "-") + " " + item.replace("_", "-") + " " + val)
+                        + (" " + attr.replace("_", "-") + " " + item.replace("_", "-") + " " + val),
                     )
                 elif not opr and item in l_set and not (h_if and self._in_target(h_if, item)):
                     commands.append(
-                        cmd + (" " + attr.replace("_", "-") + " " + item.replace("_", "-"))
+                        cmd + (" " + attr.replace("_", "-") + " " + item.replace("_", "-")),
                     )
         return commands
 
@@ -654,14 +679,14 @@ class Firewall_rules(ConfigBase):
                 for flag in flags:
                     invert = flag.get("invert", False)
                     commands.append(
-                        cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"])
+                        cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"]),
                     )
             elif not opr:
                 flags = list_diff_want_only(want, have)
                 for flag in flags:
                     invert = flag.get("invert", False)
                     commands.append(
-                        cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"])
+                        cmd + (" " + attr + " flags " + ("not " if invert else "") + flag["flag"]),
                     )
         return commands
 
@@ -969,7 +994,10 @@ class Firewall_rules(ConfigBase):
         if number:
             cmd += " rule " + str(number)
         if attrib:
-            if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4") and attrib == "enable_default_log":
+            if (
+                LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+                and attrib == "enable_default_log"
+            ):
                 cmd += " " + "default-log"
             else:
                 cmd += " " + attrib.replace("_", "-")
@@ -1107,15 +1135,23 @@ class Firewall_rules(ConfigBase):
             for item in rs:
                 self._prune_stubs(item)
         elif isinstance(rs, dict):
-            keys_to_remove = [key for key, value in rs.items()
-                              if (
-                                  (key == "disable" and value is False)
-                                  or
-                                  (key == "log" and value == "disable" and
-                                   LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"))
-                                  or
-                                  (key in ["new", "invalid", "related", "established"] and value is False and
-                                   LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")))]
+            keys_to_remove = [
+                key
+                for key, value in rs.items()
+                if (
+                    (key == "disable" and value is False)
+                    or (
+                        key == "log"
+                        and value == "disable"
+                        and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+                    )
+                    or (
+                        key in ["new", "invalid", "related", "established"]
+                        and value is False
+                        and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+                    )
+                )
+            ]
             for key in keys_to_remove:
                 del rs[key]
             for key in rs:
@@ -1132,7 +1168,10 @@ class Firewall_rules(ConfigBase):
         elif isinstance(w, list) and isinstance(rs, list):
             try:
                 sorted_list1 = sorted(w, key=lambda x: str(x))  # pylint: disable=unnecessary-lambda
-                sorted_list2 = sorted(rs, key=lambda x: str(x))  # pylint: disable=unnecessary-lambda
+                sorted_list2 = sorted(
+                    rs,
+                    key=lambda x: str(x),  # pylint: disable=unnecessary-lambda
+                )
             except TypeError:
                 return False
             return all(self._is_same_rs(x, y) for x, y in zip(sorted_list1, sorted_list2))
