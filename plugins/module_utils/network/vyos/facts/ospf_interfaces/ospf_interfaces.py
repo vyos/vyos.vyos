@@ -23,16 +23,15 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.osp
     Ospf_interfacesArgs,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ospf_interfaces import (
-    Ospf_interfacesTemplate
+    Ospf_interfacesTemplate,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ospf_interfaces_14 import (
-    Ospf_interfacesTemplate14
+    Ospf_interfacesTemplate14,
 )
-
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Ospf_interfacesFacts(object):
@@ -54,7 +53,9 @@ class Ospf_interfacesFacts(object):
         for config_line in data.splitlines():
             ospf_int = re.search(r"set protocols (?:ospf|ospfv3) interface (\S+).*", config_line)
             if ospf_int:
-                config_dict[ospf_int.group(1)] = config_dict.get(ospf_int.group(1), "") + config_line + "\n"
+                config_dict[ospf_int.group(1)] = (
+                    config_dict.get(ospf_int.group(1), "") + config_line + "\n"
+                )
         return list(config_dict.values())
 
     def get_config_set_1_2(self, data):
@@ -63,12 +64,15 @@ class Ospf_interfacesFacts(object):
         config_set = []
         int_string = ""
         for config_line in data.splitlines():
-            ospf_int = re.search(r"set interfaces \S+ (\S+) .*", config_line)
+            ospf_int_raw = re.findall(r"^set interfaces \S+ (\S+)", config_line, re.M)
+            ospf_int_vif = re.findall(r"^set interfaces \S+ (\S+) vif (\d+)", config_line, re.M)
+
+            ospf_int = ospf_int_raw + ospf_int_vif
             if ospf_int:
-                if ospf_int.group(1) not in interface_list:
+                if ospf_int not in interface_list:
                     if int_string:
                         config_set.append(int_string)
-                    interface_list.append(ospf_int.group(1))
+                    interface_list.append(ospf_int)
                     int_string = ""
                 int_string = int_string + config_line + "\n"
         if int_string:
@@ -115,7 +119,6 @@ class Ospf_interfacesFacts(object):
                 if key in objs and objs[key]:
                     objs[key] = list(objs[key].values())
             ospf_interfaces_facts.append(objs)
-
         ansible_facts["ansible_network_resources"].pop("ospf_interfaces", None)
         facts = {"ospf_interfaces": []}
         params = utils.remove_empties(
@@ -123,11 +126,10 @@ class Ospf_interfacesFacts(object):
                 self.argument_spec,
                 {"config": ospf_interfaces_facts},
                 redact=True,
-            )
+            ),
         )
         if params.get("config"):
             for cfg in params["config"]:
                 facts["ospf_interfaces"].append(utils.remove_empties(cfg))
         ansible_facts["ansible_network_resources"].update(facts)
-
         return ansible_facts
