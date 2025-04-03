@@ -62,7 +62,7 @@ class VrfTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "vrf name {{name}} vni {{tid}}",
+            "setval": "vrf name {{name}} vni {{vni}}",
             "compval": "vni",
             "result": {
                 "name": "{{ name }}",
