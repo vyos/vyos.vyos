@@ -64,13 +64,14 @@ class VrfFacts(object):
 
         vrf_facts = []
         resources = self.get_config_set(data, connection)
-        self._module.fail_json(msg=resources)
+        # self._module.fail_json(msg=resources)
         for resource in resources:
             vrf_parser = VrfTemplate(
                 lines=resource.split("\n"),
                 module=self._module,
             )
             objs = vrf_parser.parse()
+
             # for key, sortv in [("address_family", "afi")]:
             #     if key in objs and objs[key]:
             #         objs[key] = list(objs[key].values())
