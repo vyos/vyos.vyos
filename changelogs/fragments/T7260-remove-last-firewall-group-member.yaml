@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - vyos_firewall_global - Fix removing last member of a firewall group.
