@@ -44,11 +44,11 @@ options:
           description:
             description: Description
             type: str
-          disabled:
+          disable:
             default: false
             description: Administratively disable interface
             type: bool
-            aliases: ['disable']
+            aliases: ['disabled']
           table_id:
             description: Routing table associated with this instance
             type: int

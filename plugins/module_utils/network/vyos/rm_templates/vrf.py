@@ -43,10 +43,10 @@ class VrfTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "vrf name {{name}} table {{tid}}",
-            "compval": "tid",
+            "compval": "table_id",
             "result": {
                 "name": "{{ name }}",
-                "tid": "{{ tid }}",
+                "table_id": "{{ tid }}",
             },
         },
         {
@@ -101,7 +101,7 @@ class VrfTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "vrf name {{name}} description disable",
+            "setval": "vrf name {{name}} disable",
             "compval": "desc",
             "result": {
                 "name": "{{ name }}",
