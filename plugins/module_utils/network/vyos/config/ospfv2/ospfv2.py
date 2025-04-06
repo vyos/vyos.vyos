@@ -33,9 +33,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils
     _is_w_same,
     list_diff_want_only,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Ospfv2(ConfigBase):
@@ -336,10 +337,22 @@ class Ospfv2(ConfigBase):
                     command = cmd + attr.replace("_", "-") + " "
                     if attr == "network":
                         command += member["address"]
-                    elif attr == "passive_interface" and member != "default" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-                        command = command.replace("passive-interface", "interface") + member + " passive"
-                    elif attr == "passive_interface_exclude" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-                        command = command.replace("passive-interface-exclude", "interface") + member + " passive disable"
+                    elif (
+                        attr == "passive_interface"
+                        and member != "default"
+                        and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+                    ):
+                        command = (
+                            command.replace("passive-interface", "interface") + member + " passive"
+                        )
+                    elif attr == "passive_interface_exclude" and LooseVersion(
+                        get_os_version(self._module),
+                    ) >= LooseVersion("1.4"):
+                        command = (
+                            command.replace("passive-interface-exclude", "interface")
+                            + member
+                            + " passive disable"
+                        )
                     else:
                         command += member
                     commands.append(command)
@@ -352,10 +365,21 @@ class Ospfv2(ConfigBase):
                                     cmd + attr.replace("_", "-") + " " + member["address"],
                                 )
                         elif member not in h:
-                            if attr == "passive_interface" and member != "default" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                            if (
+                                attr == "passive_interface"
+                                and member != "default"
+                                and LooseVersion(get_os_version(self._module))
+                                >= LooseVersion("1.4")
+                            ):
                                 commands.append(cmd + "interface" + " " + member + " passive")
-                            elif attr == "passive_interface_exclude" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-                                command = command.replace("passive-interface-exclude", "interface") + member + " passive disable"
+                            elif attr == "passive_interface_exclude" and LooseVersion(
+                                get_os_version(self._module),
+                            ) >= LooseVersion("1.4"):
+                                command = (
+                                    command.replace("passive-interface-exclude", "interface")
+                                    + member
+                                    + " passive disable"
+                                )
                             else:
                                 commands.append(cmd + attr.replace("_", "-") + " " + member)
                 else:

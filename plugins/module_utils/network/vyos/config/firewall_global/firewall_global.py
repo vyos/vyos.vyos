@@ -28,13 +28,13 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
-    list_diff_want_only,
     in_target_not_none,
+    list_diff_want_only,
 )
-
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Firewall_global(ConfigBase):
@@ -258,11 +258,7 @@ class Firewall_global(ConfigBase):
                             self._form_attr_cmd(attr=key, key=self._bool_to_str(val), opr=opr),
                         )
                         continue
-                    if (
-                        key in l_set
-                        and not self._in_target(h, key)
-                        and not self._is_del(l_set, h)
-                    ):
+                    if key in l_set and not self._in_target(h, key) and not self._is_del(l_set, h):
                         commands.append(
                             self._form_attr_cmd(attr=key, val=self._bool_to_str(val), opr=opr),
                         )
@@ -375,7 +371,11 @@ class Firewall_global(ConfigBase):
                             if key == "name" and self._is_grp_del(h, want, key):
                                 commands.append(cmd + " " + want["name"])
                                 continue
-                            if not (h and in_target_not_none(h, key)) and not self._is_grp_del(h, want, "name"):
+                            if not (h and in_target_not_none(h, key)) and not self._is_grp_del(
+                                h,
+                                want,
+                                "name",
+                            ):
                                 commands.append(cmd + " " + want["name"] + " " + key)
                         elif key == "members":
                             commands.extend(
@@ -473,7 +473,9 @@ class Firewall_global(ConfigBase):
                     for key, val in iteritems(w):
                         if val and key != "connection_type":
                             if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
-                                if key == "log" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                                if key == "log" and LooseVersion(
+                                    get_os_version(self._module),
+                                ) >= LooseVersion("1.4"):
                                     commands.append(
                                         self._form_attr_cmd(
                                             key=attr + " " + w["connection_type"],
@@ -499,7 +501,9 @@ class Firewall_global(ConfigBase):
                                         ),
                                     )
                                     break  # delete the whole thing and move on
-                                if (not self._in_target(h, key) or h[key] is None) and (self._in_target(w, key) and w[key]):
+                                if (not self._in_target(h, key) or h[key] is None) and (
+                                    self._in_target(w, key) and w[key]
+                                ):
                                     # delete if not being replaced and value currently exists
                                     commands.append(
                                         self._form_attr_cmd(
@@ -531,11 +535,11 @@ class Firewall_global(ConfigBase):
         if want:
             for w in want:
                 h = self.search_attrib_in_have(have, w, "afi")
-                if 'afi' in w:
-                    afi = w['afi']
+                if "afi" in w:
+                    afi = w["afi"]
                 else:
-                    if h and 'afi' in h:
-                        afi = h['afi']
+                    if h and "afi" in h:
+                        afi = h["afi"]
                     else:
                         afi = None
                     afi = None
@@ -547,7 +551,7 @@ class Firewall_global(ConfigBase):
                                     attr=key,
                                     val=self._bool_to_str(val),
                                     opr=opr,
-                                    type=afi
+                                    type=afi,
                                 ),
                             )
                         elif not opr and key in l_set:
@@ -557,7 +561,7 @@ class Firewall_global(ConfigBase):
                                         attr=key,
                                         val=self._bool_to_str(val),
                                         opr=opr,
-                                        type=afi
+                                        type=afi,
                                     ),
                                 )
                                 continue
@@ -567,7 +571,7 @@ class Firewall_global(ConfigBase):
                                         attr=key,
                                         val=self._bool_to_str(val),
                                         opr=opr,
-                                        type=afi
+                                        type=afi,
                                     ),
                                 )
                         elif key == "icmp_redirects":
@@ -587,11 +591,11 @@ class Firewall_global(ConfigBase):
         commands = []
         h_red = {}
         l_set = ("send", "receive")
-        if w and 'afi' in w:
-            afi = w['afi']
+        if w and "afi" in w:
+            afi = w["afi"]
         else:
-            if h and 'afi' in h:
-                afi = h['afi']
+            if h and "afi" in h:
+                afi = h["afi"]
             else:
                 afi = None
         if w[attr]:
@@ -600,7 +604,12 @@ class Firewall_global(ConfigBase):
             for item, value in iteritems(w[attr]):
                 if opr and item in l_set and not (h_red and self._is_w_same(w[attr], h_red, item)):
                     commands.append(
-                        self._form_attr_cmd(attr=item, val=self._bool_to_str(value), opr=opr, type=afi)
+                        self._form_attr_cmd(
+                            attr=item,
+                            val=self._bool_to_str(value),
+                            opr=opr,
+                            type=afi,
+                        ),
                     )
                 elif (
                     not opr
@@ -634,7 +643,12 @@ class Firewall_global(ConfigBase):
         :param type: AF type of attribute.
         :return: generated command.
         """
-        command = self._compute_command(key=key, attr=self._map_attrib(attr, type=type), val=val, opr=opr)
+        command = self._compute_command(
+            key=key,
+            attr=self._map_attrib(attr, type=type),
+            val=val,
+            opr=opr,
+        )
         return command
 
     def _compute_command(self, key=None, attr=None, val=None, remove=False, opr=True):
@@ -651,14 +665,20 @@ class Firewall_global(ConfigBase):
             cmd = "delete firewall "
         else:
             cmd = "set firewall "
-        if attr and key != "group" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+        if (
+            attr
+            and key != "group"
+            and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+        ):
             cmd += "global-options "
         if key:
             cmd += key.replace("_", "-") + " "
         if attr:
             cmd += attr.replace("_", "-")
         if val and opr:
-            if key == "state_policy" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            if key == "state_policy" and LooseVersion(get_os_version(self._module)) >= LooseVersion(
+                "1.4",
+            ):
                 cmd += ""
             else:
                 cmd += " '" + str(val) + "'"
