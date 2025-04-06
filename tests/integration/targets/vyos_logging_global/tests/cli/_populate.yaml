@@ -1,5 +1,6 @@
 ---
 - ansible.builtin.include_tasks: _remove_config.yaml
+- ansible.builtin.include_tasks: _get_version.yaml
 
 - name: POPULATE Apply the provided configuration
   register: result
@@ -29,7 +30,7 @@
               severity: debug
             - facility: local6
               severity: alert
-        - username: paul
+        - username: vyos
           facilities:
             - facility: local7
               severity: err

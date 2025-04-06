@@ -43,7 +43,6 @@ overridden:
     - delete system syslog global facility local7
     - delete system syslog host 172.16.2.12
     - delete system syslog host 172.16.2.15
-    - delete system syslog user paul
     - delete system syslog user vyos
 
   after:
