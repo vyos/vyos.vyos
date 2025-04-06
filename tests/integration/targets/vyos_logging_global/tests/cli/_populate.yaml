@@ -1,5 +1,6 @@
 ---
 - ansible.builtin.include_tasks: _remove_config.yaml
+- ansible.builtin.include_tasks: _get_version.yaml
 
 - name: POPULATE Apply the provided configuration
   register: result
