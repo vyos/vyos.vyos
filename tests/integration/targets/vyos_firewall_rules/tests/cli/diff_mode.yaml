@@ -1,0 +1,61 @@
+---
+- debug:
+    msg: START vyos_firewall_rules diff mode integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace device configurations - No Diff
+      register: result
+      diff: true
+      vyos.vyos.vyos_firewall_rules:
+        config: "{{ populate }}"
+
+    - name: Assert No Diff
+      assert:
+        that:
+          - result['changed'] == false
+          - result.diff is not defined
+
+    - name: Replace single rule's attribute and register Diff
+      register: result
+      diff: true
+      vyos.vyos.vyos_firewall_rules:
+        config: "{{ replaced_diff_01.config }}"
+        state: replaced
+
+    - name: Assert - Diff for a single rule and attribute
+      assert:
+        that:
+          - result['changed'] == true
+          - result.diff.prepared == "{{ replaced_diff_01.diff.rstrip() }}"
+
+    - name: Replace single rule's multiple attributes and register Diff
+      register: result
+      diff: true
+      vyos.vyos.vyos_firewall_rules:
+        config: "{{ replaced_diff_02.config }}"
+        state: replaced
+
+    - name: Assert - Diff for a single rule and multiple attributes
+      assert:
+        that:
+          - result['changed'] == true
+          - result.diff.prepared == "{{ replaced_diff_02.diff.rstrip() }}"
+
+    - name: Replace attributes in multiple rules and register Diff
+      register: result
+      diff: true
+      vyos.vyos.vyos_firewall_rules:
+        config: "{{ replaced_diff_03.config }}"
+        state: replaced
+
+    - name: Assert - Diff for a single rule and multiple attributes
+      assert:
+        that:
+          - result['changed'] == true
+          - result.diff.prepared == "{{ replaced_diff_03.diff.rstrip() }}"
+  always:
+    - include_tasks: _remove_config.yaml

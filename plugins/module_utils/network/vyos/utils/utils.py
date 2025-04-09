@@ -50,6 +50,18 @@ def get_interface_type(interface):
         return "dummy"
 
 
+def get_interface_with_vif(interface):
+    """Gets virtual interface if any or return as is"""
+    vlan = None
+    interface_real = interface
+    if "." in interface:
+        interface_real, vlan = interface.split(".")
+
+    if vlan is not None:
+        interface_real = interface_real + " vif " + vlan
+    return interface_real
+
+
 def dict_delete(base, comparable):
     """
     This function generates a dict containing key, value pairs for keys
@@ -264,3 +276,13 @@ def _in_target(h, key):
     :return: True/False.
     """
     return True if h and key in h else False
+
+
+def in_target_not_none(h, key):
+    """
+    This function checks whether the target exist,key present in target config, and the value is not None.
+    :param h: target config.
+    :param key: attribute name.
+    :return: True/False.
+    """
+    return True if h and key in h and h[key] is not None else False
