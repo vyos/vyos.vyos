@@ -18,6 +18,8 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
+from copy import deepcopy
+
 from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
@@ -50,13 +52,25 @@ class Vrf(ResourceModule):
             tmplt=VrfTemplate(),
         )
         self.parsers = [
-            "allow_clients",
-            "listen_addresses",
-            "server",
-            "options",
-            "allow_clients_delete",
-            "listen_addresses_delete",
+            "bind_to_all",
         ]
+
+    def _validate_template(self):
+        version = get_os_version(self._module)
+        if LooseVersion(version) >= LooseVersion("1.4"):
+            self._tmplt = VrfTemplate()
+        else:
+            self._module.fail_json(msg="VRF is not supported in this version of VyOS")
+
+    def parse(self):
+        """override parse to check template"""
+        self._validate_template()
+        return super().parse()
+
+    def get_parser(self, name):
+        """get_parsers"""
+        self._validate_template()
+        return super().get_parser(name)
 
     def execute_module(self):
         """Execute the module
@@ -73,74 +87,29 @@ class Vrf(ResourceModule):
         """Generate configuration commands to send based on
         want, have and desired state.
         """
-
-        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-            path = "service"
-            ac = "allow-client"
-        else:
-            path = "system"
-            ac = "allow-clients"
-
-        self._tmplt.set_ntp_path(path)
-        self._tmplt.set_ntp_ac(ac)
-
-        wantd = self._ntp_list_to_dict(self.want)
-        haved = self._ntp_list_to_dict(self.have)
+        wantd = {}
+        haved = {}
+        wantd = deepcopy(self.want)
+        haved = deepcopy(self.have)
 
         # if state is merged, merge want onto have and then compare
         if self.state == "merged":
             wantd = dict_merge(haved, wantd)
 
-        # if state is deleted, empty out wantd and set haved to wantd
-        if self.state == "deleted":
-            haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
-            wantd = {}
+        # # if state is deleted, empty out wantd and set haved to wantd
+        # if self.state == "deleted":
+        #     haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
+        #     wantd = {}
 
-            commandlist = self._commandlist(haved)
-            servernames = self._servernames(haved)
-            # removing the servername and commandlist from the list after deleting it from haved
-            # iterate through the top-level items to delete
-            for k, have in iteritems(haved):
-                if k not in wantd:
-                    for hk, hval in iteritems(have):
-                        if hk == "allow_clients" and hk in commandlist:
-                            self.commands.append(
-                                self._tmplt.render({"": hk}, "allow_clients_delete", True),
-                            )
-                            commandlist.remove(hk)
-                        elif hk == "listen_addresses" and hk in commandlist:
-                            self.commands.append(
-                                self._tmplt.render({"": hk}, "listen_addresses_delete", True),
-                            )
-                            commandlist.remove(hk)
-                        elif hk == "server" and have["server"] in servernames:
-                            self._compareoverride(want={}, have=have)
-                            servernames.remove(have["server"])
-            # if everything is deleted add the delete command for {path} ntp
-            # this should be equiv: servernames == [] and commandlist == ["server"]:
-            if wantd == {} and haved != {}:
-                self.commands.append(
-                    self._tmplt.render({}, "service_delete", True),
-                )
-
-        # remove existing config for overridden and replaced
-        # Getting the list of the server names from haved
-        #   to avoid the duplication of overridding/replacing the servers
-        if self.state in ["overridden", "replaced"]:
-            commandlist = self._commandlist(haved)
-            servernames = self._servernames(haved)
-
-            for k, have in iteritems(haved):
-                if k not in wantd:
-                    if "server" not in have:
-                        self._compareoverride(want={}, have=have)
-                        # removing the servername from the list after deleting it from haved
-                    elif have["server"] in servernames:
-                        self._compareoverride(want={}, have=have)
-                        servernames.remove(have["server"])
+        # if self.state in ["overridden", "replaced"]:
+        #     for k, have in iteritems(haved):
+        #         if k not in wantd:
+        #             self.commands.append(self._tmplt.render({"route_map": k}, "route_map", True))
 
         for k, want in iteritems(wantd):
+            # self._module.fail_json(msg=k)
             self._compare(want=want, have=haved.pop(k, {}))
+        self._module.fail_json(msg=self.commands)
 
     def _compare(self, want, have):
         """Leverages the base class `compare()` method and
@@ -148,58 +117,28 @@ class Vrf(ResourceModule):
         the `want` and `have` data with the `parsers` defined
         for the Ntp network resource.
         """
-        if "options" in want:
-            self.compare(parsers="options", want=want, have=have)
-        else:
-            self.compare(parsers=self.parsers, want=want, have=have)
+        if isinstance(want, list):
+            self._compare_inststances(want=want, have=have)
+        # if "options" in want:
+        #     self.compare(parsers="options", want=want, have=have)
+        # else:
+        # self.compare(parsers=self.parsers, want=want, have=have)
 
-    def _compareoverride(self, want, have):
-        # do not delete configuration with options level
-        for i, val in iteritems(have):
-            if i == "options":
-                pass
-            else:
-                self.compare(parsers=i, want={}, have=have)
+    def _compare_inststances(self, want, have):
+        """Compare the instances of the VRF"""
+        parsers = [
+            "table",
+            "vni",
+            "description",
+            "disable_vrf",
+            "disable_forwarding",
+            "disable_nht",
+        ]
+        # wname = want.get("name")
+        # hname = have.get("name")
 
-    def _ntp_list_to_dict(self, entry):
-        servers_dict = {}
-        for k, data in iteritems(entry):
-            if k == "servers":
-                for value in data:
-                    if "options" in value:
-                        result = self._serveroptions_list_to_dict(value)
-                        for res, resvalue in iteritems(result):
-                            servers_dict.update({res: resvalue})
-                    else:
-                        servers_dict.update({value["server"]: value})
-            else:
-                for value in data:
-                    servers_dict.update({"ip_" + value: {k: value}})
-        return servers_dict
-
-    def _serveroptions_list_to_dict(self, entry):
-        serveroptions_dict = {}
-        for Opk, Op in iteritems(entry):
-            if Opk == "options":
-                for val in Op:
-                    dict = {}
-                    dict.update({"server": entry["server"]})
-                    dict.update({Opk: val})
-                    serveroptions_dict.update({entry["server"] + "_" + val: dict})
-        return serveroptions_dict
-
-    def _commandlist(self, haved):
-        commandlist = []
-        for k, have in iteritems(haved):
-            for ck, cval in iteritems(have):
-                if ck != "options" and ck not in commandlist:
-                    commandlist.append(ck)
-        return commandlist
-
-    def _servernames(self, haved):
-        servernames = []
-        for k, have in iteritems(haved):
-            for sk, sval in iteritems(have):
-                if sk != "options" and sval not in servernames:
-                    servernames.append(sval)
-        return servernames
+        for entry in want:
+            wname = entry.get("name")
+            h = next(d for d in have if d["name"] == wname)
+            self._module.fail_json(msg=str(entry) + str(h))
+            self.compare(parsers=parsers, want=entry, have=h)

@@ -35,7 +35,7 @@ class VrfArgs(object):  # pylint: disable=R0903
         "config": {
             "type": "dict",
             "options": {
-                "bind-to-all": {"type": "bool"},
+                "bind_to_all": {"type": "bool"},
                 "instances": {
                     "type": "list",
                     "elements": "dict",

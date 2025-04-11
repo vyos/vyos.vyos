@@ -52,7 +52,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>bind-to-all</b>
+                    <b>bind_to_all</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">boolean</span>

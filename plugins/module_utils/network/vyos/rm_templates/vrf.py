@@ -30,6 +30,22 @@ class VrfTemplate(NetworkTemplate):
     # fmt: off
     PARSERS = [
         {
+            "name": "bind_to_all",
+            "getval": re.compile(
+                r"""
+                ^set
+                \svrf
+                \s(?P<bta>bind-to-all)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "vrf bind-to-all",
+            "compval": "bta",
+            "result": {
+                "bind_to_all": "{{ True if bta is defined }}",
+            },
+        },
+        {
             "name": "table",
             "getval": re.compile(
                 r"""

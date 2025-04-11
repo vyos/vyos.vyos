@@ -29,7 +29,7 @@ options:
     description: List of vrf configuration.
     type: dict
     suboptions:
-      bind-to-all:
+      bind_to_all:
         default: false
         description: Enable binding services to all VRFs
         type: bool
