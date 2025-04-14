@@ -1,0 +1,2 @@
+---
+# Remove the lo0 interface for older versions of VyOS (pre-v1.4)

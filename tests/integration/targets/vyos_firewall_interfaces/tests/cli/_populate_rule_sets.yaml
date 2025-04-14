@@ -1,7 +1,9 @@
 ---
-- name: Setup
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
+- name: Setup Rule Sets {{ vyos_version }}
+  vyos.vyos.vyos_config:
+    lines: "{{ populate_rs }}"
   vars:
-    lines: "set firewall name 'INBOUND'\nset firewall name 'OUTBOUND'\nset firewall\
-      \ name 'LOCAL'\nset firewall ipv6-name 'V6-LOCAL'\n"
-  ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    ansible_connection: ansible.netcommon.network_cli

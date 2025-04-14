@@ -1,7 +1,8 @@
 ---
 - debug:
-    msg: START vyos_route_maps merged integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_route_maps merged integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
 
 - include_tasks: _remove_config.yaml
 
@@ -13,7 +14,7 @@
           - route_map: test1
             entries:
               - sequence: 1
-                description: "test"
+                description: test
                 action: permit
                 continue_sequence: 2
           - route_map: test3
@@ -26,7 +27,7 @@
                 set:
                   local_preference: 4
                   metric: 5
-                  metric_type: "type-1"
+                  metric_type: type-1
                   origin: egp
                   originator_id: 192.0.2.34
                   tag: 5
@@ -57,7 +58,7 @@
                 set:
                   local_preference: 6
                   metric: 4
-                  metric_type: "type-1"
+                  metric_type: type-1
                   origin: egp
                   originator_id: 192.0.2.34
                   tag: 4

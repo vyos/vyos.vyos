@@ -1,0 +1,47 @@
+---
+- debug:
+    msg: START vyos_snmp_server rendered integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Render the given configuration in the form of native commands
+      register: result
+      vyos.vyos.vyos_snmp_server:
+        config:
+          communities:
+            - name: switches
+              authorization_type: rw
+            - name: bridges
+              clients: [1.1.1.1, 12.1.1.10]
+          contact: admin2@ex.com
+          listen_addresses:
+            - address: 20.1.1.1
+            - address: 192.0.2.1
+              port: 33
+          snmp_v3:
+            engine_id: "000000000000000000000002"
+            views:
+              - view: default
+                oid: 1
+            groups:
+              - group: testgroup
+                mode: ro
+                view: default
+            users:
+              - user: adminuser
+                authentication:
+                  encrypted_key: 33f8bfd6b69ee03a184818a4daea503c9e579633
+                  type: sha
+                privacy:
+                  encrypted_key: 33f8bfd6b69ee03a184818a4daea503c9e579633
+                  type: aes
+                group: testgroup
+        state: rendered
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.rendered|symmetric_difference(merged.commands) == []
+  always:
+    - include_tasks: _remove_config.yaml

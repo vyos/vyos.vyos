@@ -1,0 +1,12 @@
+---
+merged:
+  before: {}
+  commands:
+    - set system host-name vyosTest
+  after:
+    hostname: vyosTest
+
+deleted:
+  commands:
+    - delete system host-name vyosuser
+  after: {}

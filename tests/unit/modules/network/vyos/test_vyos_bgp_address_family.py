@@ -18,43 +18,53 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
-from ansible_collections.vyos.vyos.plugins.modules import (
-    vyos_bgp_address_family,
-)
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from unittest.mock import patch
+
+from ansible_collections.vyos.vyos.plugins.modules import vyos_bgp_address_family
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
-class TestVyosBgpafModule(TestVyosModule):
-
+class TestVyosBgpafModule13(TestVyosModule):
     module = vyos_bgp_address_family
 
     def setUp(self):
-        super(TestVyosBgpafModule, self).setUp()
+        super(TestVyosBgpafModule13, self).setUp()
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_execute_show_command = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts."
-            + "bgp_address_family.bgp_address_family.Bgp_address_familyFacts.get_device_data"
+            + "bgp_address_family.bgp_address_family.Bgp_address_familyFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_address_family.bgp_address_family.get_os_version"
+        )
+        self.test_version = "1.2"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
+        self.mock_facts_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family.get_os_version"
+        )
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = self.test_version
+        self.maxDiff = None
 
     def tearDown(self):
-        super(TestVyosBgpafModule, self).tearDown()
+        super(TestVyosBgpafModule13, self).tearDown()
         self.mock_get_resource_connection_config.stop()
         self.mock_execute_show_command.stop()
+        self.mock_get_os_version.stop()
+        self.mock_facts_get_os_version.stop()
 
-    def load_fixtures(self, commands=None, transport="cli", filename=None):
+    def load_fixtures(self, commands=None, filename=None):
         if filename is None:
             filename = "vyos_bgp_address_family_config.cfg"
 
@@ -72,13 +82,9 @@ class TestVyosBgpafModule(TestVyosModule):
                     address_family=[
                         dict(
                             afi="ipv4",
-                            aggregate_address=[
-                                dict(prefix="192.0.2.0/24", as_set=True)
-                            ],
+                            aggregate_address=[dict(prefix="192.0.2.0/24", as_set=True)],
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                                 dict(prefix="192.2.13.0/24", backdoor=True),
                             ],
                         ),
@@ -93,11 +99,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="export", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="export", route_map="map01")],
                                     soft_reconfiguration=True,
                                 ),
                             ],
@@ -108,12 +110,12 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(
                                     afi="ipv6",
                                     attribute_unchanged=dict(next_hop=True),
-                                )
+                                ),
                             ],
                         ),
                     ],
-                )
-            )
+                ),
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -125,13 +127,9 @@ class TestVyosBgpafModule(TestVyosModule):
                     address_family=[
                         dict(
                             afi="ipv4",
-                            aggregate_address=[
-                                dict(prefix="192.0.2.0/24", summary_only=True)
-                            ],
+                            aggregate_address=[dict(prefix="192.0.2.0/24", summary_only=True)],
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                             ],
                         ),
                         dict(
@@ -145,9 +143,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv6",
-                                    distribute_list=[
-                                        dict(action="export", acl=10)
-                                    ],
+                                    distribute_list=[dict(action="export", acl=10)],
                                     route_server_client=True,
                                 ),
                             ],
@@ -158,17 +154,15 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(
                                     afi="ipv4",
                                     filter_list=[
-                                        dict(
-                                            action="export", path_list="list01"
-                                        ),
+                                        dict(action="export", path_list="list01"),
                                     ],
                                     capability=dict(orf="send"),
-                                )
+                                ),
                             ],
                         ),
                     ],
-                )
-            )
+                ),
+            ),
         )
         commands = [
             "set protocols bgp 65536 address-family ipv4-unicast aggregate-address 192.0.2.0/24 as-setipv4-unicast aggregate-address 192.0.2.0/24 summary-only",
@@ -189,13 +183,9 @@ class TestVyosBgpafModule(TestVyosModule):
                     address_family=[
                         dict(
                             afi="ipv4",
-                            aggregate_address=[
-                                dict(prefix="192.0.2.0/24", as_set=True)
-                            ],
+                            aggregate_address=[dict(prefix="192.0.2.0/24", as_set=True)],
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                                 dict(prefix="192.2.13.0/24", backdoor=True),
                             ],
                         ),
@@ -210,11 +200,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="export", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="export", route_map="map01")],
                                     soft_reconfiguration=True,
                                 ),
                             ],
@@ -225,12 +211,12 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(
                                     afi="ipv6",
                                     attribute_unchanged=dict(next_hop=True),
-                                )
+                                ),
                             ],
                         ),
                     ],
                 ),
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -243,13 +229,9 @@ class TestVyosBgpafModule(TestVyosModule):
                     address_family=[
                         dict(
                             afi="ipv4",
-                            aggregate_address=[
-                                dict(prefix="192.0.2.0/24", summary_only=True)
-                            ],
+                            aggregate_address=[dict(prefix="192.0.2.0/24", summary_only=True)],
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                             ],
                         ),
                         dict(
@@ -263,17 +245,11 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="import", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="import", route_map="map01")],
                                 ),
                                 dict(
                                     afi="ipv6",
-                                    distribute_list=[
-                                        dict(action="export", acl=10)
-                                    ],
+                                    distribute_list=[dict(action="export", acl=10)],
                                     route_server_client=True,
                                 ),
                             ],
@@ -283,11 +259,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="export", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="export", route_map="map01")],
                                 ),
                             ],
                         ),
@@ -297,17 +269,15 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(
                                     afi="ipv4",
                                     filter_list=[
-                                        dict(
-                                            action="export", path_list="list01"
-                                        ),
+                                        dict(action="export", path_list="list01"),
                                     ],
                                     capability=dict(orf="send"),
-                                )
+                                ),
                             ],
                         ),
                     ],
                 ),
-            )
+            ),
         )
         commands = [
             "delete protocols bgp 65536 neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged",
@@ -333,13 +303,9 @@ class TestVyosBgpafModule(TestVyosModule):
                     address_family=[
                         dict(
                             afi="ipv4",
-                            aggregate_address=[
-                                dict(prefix="192.0.2.0/24", as_set=True)
-                            ],
+                            aggregate_address=[dict(prefix="192.0.2.0/24", as_set=True)],
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                                 dict(prefix="192.2.13.0/24", backdoor=True),
                             ],
                         ),
@@ -354,11 +320,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="export", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="export", route_map="map01")],
                                     soft_reconfiguration=True,
                                 ),
                             ],
@@ -369,12 +331,12 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(
                                     afi="ipv6",
                                     attribute_unchanged=dict(next_hop=True),
-                                )
+                                ),
                             ],
                         ),
                     ],
                 ),
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -388,9 +350,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         dict(
                             afi="ipv4",
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                             ],
                         ),
                         dict(
@@ -404,24 +364,18 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="import", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="import", route_map="map01")],
                                 ),
                                 dict(
                                     afi="ipv6",
-                                    distribute_list=[
-                                        dict(action="export", acl=10)
-                                    ],
+                                    distribute_list=[dict(action="export", acl=10)],
                                     route_server_client=True,
                                 ),
                             ],
                         ),
                     ],
                 ),
-            )
+            ),
         )
         commands = [
             "delete protocols bgp 65536 neighbor 203.0.113.5 address-family",
@@ -461,7 +415,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         ),
                     ],
                 ),
-            )
+            ),
         )
         commands = [
             "delete protocols bgp 65536 address-family ipv4-unicast",
@@ -481,9 +435,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         dict(
                             afi="ipv4",
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                             ],
                         ),
                         dict(
@@ -497,29 +449,21 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="import", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="import", route_map="map01")],
                                 ),
                                 dict(
                                     afi="ipv6",
-                                    distribute_list=[
-                                        dict(action="export", acl=10)
-                                    ],
+                                    distribute_list=[dict(action="export", acl=10)],
                                     route_server_client=True,
                                 ),
                             ],
                         ),
                     ],
                 ),
-            )
+            ),
         )
         result = self.execute_module(failed=True)
-        self.assertIn(
-            "Only one bgp instance is allowed per device", result["msg"]
-        )
+        self.assertIn("Only one bgp instance is allowed per device", result["msg"])
 
     def test_vyos_bgp_address_family_rendered(self):
         set_module_args(
@@ -530,13 +474,9 @@ class TestVyosBgpafModule(TestVyosModule):
                     address_family=[
                         dict(
                             afi="ipv4",
-                            aggregate_address=[
-                                dict(prefix="192.0.2.0/24", as_set=True)
-                            ],
+                            aggregate_address=[dict(prefix="192.0.2.0/24", as_set=True)],
                             networks=[
-                                dict(
-                                    prefix="192.1.13.0/24", route_map="map01"
-                                ),
+                                dict(prefix="192.1.13.0/24", route_map="map01"),
                                 dict(prefix="192.2.13.0/24", backdoor=True),
                             ],
                         ),
@@ -551,11 +491,7 @@ class TestVyosBgpafModule(TestVyosModule):
                             address_family=[
                                 dict(
                                     afi="ipv4",
-                                    route_map=[
-                                        dict(
-                                            action="export", route_map="map01"
-                                        )
-                                    ],
+                                    route_map=[dict(action="export", route_map="map01")],
                                     soft_reconfiguration=True,
                                 ),
                             ],
@@ -566,12 +502,12 @@ class TestVyosBgpafModule(TestVyosModule):
                                 dict(
                                     afi="ipv6",
                                     attribute_unchanged=dict(next_hop=True),
-                                )
+                                ),
                             ],
                         ),
                     ],
                 ),
-            )
+            ),
         )
 
         rendered_cmds = [
@@ -613,9 +549,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         {"prefix": "192.1.13.0/24", "route_map": "map01"},
                         {"prefix": "192.2.13.0/24", "backdoor": True},
                     ],
-                    "aggregate_address": [
-                        {"prefix": "192.0.2.0/24", "as_set": True}
-                    ],
+                    "aggregate_address": [{"prefix": "192.0.2.0/24", "as_set": True}],
                 },
                 {
                     "afi": "ipv6",
@@ -635,7 +569,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         {
                             "afi": "ipv6",
                             "attribute_unchanged": {"next_hop": True},
-                        }
+                        },
                     ],
                 },
             ],
@@ -654,9 +588,7 @@ class TestVyosBgpafModule(TestVyosModule):
                         {"prefix": "192.1.13.0/24", "route_map": "map01"},
                         {"prefix": "192.2.13.0/24", "backdoor": True},
                     ],
-                    "aggregate_address": [
-                        {"prefix": "192.0.2.0/24", "as_set": True}
-                    ],
+                    "aggregate_address": [{"prefix": "192.0.2.0/24", "as_set": True}],
                 },
                 {
                     "afi": "ipv6",
@@ -676,9 +608,183 @@ class TestVyosBgpafModule(TestVyosModule):
                         {
                             "afi": "ipv6",
                             "attribute_unchanged": {"next_hop": True},
-                        }
+                        },
                     ],
                 },
             ],
         }
         self.assertEqual(sorted(gather_list), sorted(result["gathered"]))
+
+
+class TestVyosBgpafOpsModule13(TestVyosModule):
+    module = vyos_bgp_address_family
+
+    def setUp(self):
+        super(TestVyosBgpafOpsModule13, self).setUp()
+        self.mock_get_resource_connection_config = patch(
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
+        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
+
+        self.mock_execute_show_command = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts."
+            + "bgp_address_family.bgp_address_family.Bgp_address_familyFacts.get_device_data",
+        )
+        self.execute_show_command = self.mock_execute_show_command.start()
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_address_family.bgp_address_family.get_os_version"
+        )
+        self.test_version = "1.2"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
+        self.mock_facts_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family.get_os_version"
+        )
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = self.test_version
+        self.maxDiff = None
+
+    def tearDown(self):
+        super(TestVyosBgpafOpsModule13, self).tearDown()
+        self.mock_get_resource_connection_config.stop()
+        self.mock_execute_show_command.stop()
+        self.mock_get_os_version.stop()
+        self.mock_facts_get_os_version.stop()
+
+    def load_fixtures(self, commands=None, filename=None):
+        if filename is None:
+            filename = "vyos_bgp_af_ops_config.cfg"
+
+        def load_from_file(*args, **kwargs):
+            output = load_fixture(filename)
+            return output
+
+        self.execute_show_command.side_effect = load_from_file
+
+    def test_vyos_bgp_address_family_merged(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    address_family=[
+                        dict(
+                            afi="ipv4",
+                            networks=[
+                                dict(prefix="192.3.13.0/24", backdoor=True),
+                            ],
+                        ),
+                        dict(
+                            afi="ipv6",
+                            redistribute=[dict(protocol="ospfv3", metric=20)],
+                        ),
+                    ],
+                ),
+            ),
+        )
+        commands = [
+            "set protocols bgp 65536 address-family ipv4-unicast network 192.3.13.0/24 backdoor",
+            "set protocols bgp 65536 address-family ipv6-unicast redistribute ospfv3 metric 20",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_bgp_address_family_replaced(self):
+        set_module_args(
+            dict(
+                state="replaced",
+                config=dict(
+                    as_number=65536,
+                    address_family=[
+                        dict(
+                            afi="ipv4",
+                            networks=[
+                                dict(prefix="192.1.13.0/24", backdoor=True),
+                            ],
+                            redistribute=[
+                                dict(protocol="ospf", metric=25),
+                            ]
+                        ),
+                        dict(
+                            afi="ipv6",
+                            redistribute=[
+                                dict(protocol="ospfv3", metric=20),
+                                dict(protocol="ripng")
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        )
+        commands = [
+            "delete protocols bgp 65536 address-family ipv6-unicast redistribute ripng metric",
+            "delete protocols bgp 65536 address-family ipv4-unicast network 192.2.13.0/24",
+            "delete protocols bgp 65536 address-family ipv4-unicast redistribute rip",
+            "set protocols bgp 65536 address-family ipv4-unicast redistribute ospf metric 25",
+            "set protocols bgp 65536 address-family ipv4-unicast network 192.1.13.0/24 backdoor",
+            "set protocols bgp 65536 address-family ipv6-unicast redistribute ospfv3 metric 20",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_bgp_address_family_overridden(self):
+        set_module_args(
+            dict(
+                state="overridden",
+                config=dict(
+                    as_number=65536,
+                    address_family=[
+                        dict(
+                            afi="ipv4",
+                            networks=[
+                                dict(prefix="192.1.13.0/24", backdoor=True),
+                            ],
+                            redistribute=[
+                                dict(protocol="ospf", metric=25),
+                            ]
+                        ),
+                        dict(
+                            afi="ipv6",
+                            redistribute=[
+                                dict(protocol="ospfv3", metric=20),
+                                dict(protocol="ripng")
+                            ],
+                        ),
+                    ],
+                ),
+            ),
+        )
+        commands = [
+            "delete protocols bgp 65536 address-family ipv6-unicast redistribute ripng metric",
+            "delete protocols bgp 65536 address-family ipv4-unicast network 192.2.13.0/24",
+            "delete protocols bgp 65536 address-family ipv4-unicast redistribute rip",
+            "set protocols bgp 65536 address-family ipv4-unicast redistribute ospf metric 25",
+            "set protocols bgp 65536 address-family ipv4-unicast network 192.1.13.0/24 backdoor",
+            "set protocols bgp 65536 address-family ipv6-unicast redistribute ospfv3 metric 20",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_bgp_address_family_deleted(self):
+        set_module_args(
+            dict(
+                state="deleted",
+                config=dict(
+                    as_number=65536,
+                    address_family=[
+                        dict(
+                            afi="ipv4",
+                            networks=[
+                                dict(prefix="192.2.13.0/24"),
+                            ]
+                        ),
+                        dict(
+                            afi="ipv6",
+                            redistribute=[dict(protocol="ripng")],
+                        ),
+                    ],
+                ),
+            ),
+        )
+        commands = [
+            "delete protocols bgp 65536 address-family ipv4-unicast",
+            "delete protocols bgp 65536 address-family ipv6-unicast",
+        ]
+
+        self.execute_module(changed=True, commands=commands)

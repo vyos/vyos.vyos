@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright 2021 Red Hat
+# Copyright 2024 Red Hat
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
@@ -9,6 +9,7 @@ The module file for vyos_logging_global
 """
 
 from __future__ import absolute_import, division, print_function
+
 
 __metaclass__ = type
 
@@ -19,7 +20,7 @@ short_description: Logging resource module
 description: This module manages the logging attributes of Vyos network devices
 author: Sagar Paul (@KB-perByte)
 notes:
-  - Tested against vyos 1.2
+  - Tested against vyos 1.3.8+
   - This module works with connection C(network_cli).
   - The Configuration defaults of the Vyos network devices
     are supposed to hinder idempotent behavior of plays
@@ -138,7 +139,7 @@ options:
               facility: *facility
               severity: *severity
               protocol:
-                description: syslog communication protocol
+                description: syslog communication protocol. Version 1.3 and below.
                 type: str
                 choices:
                   - udp
@@ -146,6 +147,12 @@ options:
           hostname:
             description: Remote host name or IP address
             type: str
+          protocol:
+            description: syslog communication protocol. Version 1.4+
+            type: str
+            choices:
+              - udp
+              - tcp
       syslog:
         description: logging syslog
         type: dict
@@ -220,15 +227,15 @@ EXAMPLES = """
       users:
         - username: vyos
           facilities:
-          - facility: local7
-            severity: debug
+            - facility: local7
+              severity: debug
       global_params:
         archive:
           file_num: 2
           size: 111
         facilities:
-        - facility: cron
-          severity: debug
+          - facility: cron
+            severity: debug
         marker_interval: 111
         preserve_fqdn: true
     state: merged
@@ -396,9 +403,10 @@ EXAMPLES = """
       users:
         - username: paul
           facilities:
-          - facility: local7
-            severity: err
+            - facility: local7
+              severity: err
     state: replaced
+
 
 # Commands Fired:
 # ---------------
@@ -696,7 +704,7 @@ EXAMPLES = """
 RETURN = """
 before:
   description: The configuration prior to the module execution.
-  returned: when state is I(merged), I(replaced), I(overridden), I(deleted) or I(purged)
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
   type: dict
   sample: >
     This output will always be in the same format as the
@@ -710,30 +718,30 @@ after:
     module argspec.
 commands:
   description: The set of commands pushed to the remote device.
-  returned: when state is I(merged), I(replaced), I(overridden), I(deleted) or I(purged)
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
   type: list
   sample:
-    - "set system syslog console facility local7 level err"
-    - "set system syslog host 172.16.0.1 port 223"
-    - "set system syslog global archive size 111"
+    - set system syslog console facility local7 level err
+    - set system syslog host 172.16.0.1 port 223
+    - set system syslog global archive size 111
 rendered:
   description: The provided configuration in the task rendered in device-native format (offline).
-  returned: when state is I(rendered)
+  returned: when I(state) is C(rendered)
   type: list
   sample:
-    - "set system syslog host 172.16.0.1 port 223"
-    - "set system syslog user vyos facility local7 level debug"
-    - "set system syslog global facility cron level debug"
+    - set system syslog host 172.16.0.1 port 223
+    - set system syslog user vyos facility local7 level debug
+    - set system syslog global facility cron level debu
 gathered:
   description: Facts about the network resource gathered from the remote device as structured data.
-  returned: when state is I(gathered)
+  returned: when I(state) is C(gathered)
   type: list
   sample: >
     This output will always be in the same format as the
     module argspec.
 parsed:
   description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
-  returned: when state is I(parsed)
+  returned: when I(state) is C(parsed)
   type: list
   sample: >
     This output will always be in the same format as the
@@ -741,6 +749,7 @@ parsed:
 """
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.logging_global.logging_global import (
     Logging_globalArgs,
 )

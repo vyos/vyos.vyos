@@ -1,7 +1,6 @@
 ---
 - debug:
-    msg: START vyos_ospf_interfaces merged integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_ospf_interfaces merged integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -10,19 +9,24 @@
       register: result
       vyos.vyos.vyos_ospf_interfaces: &id001
         config:
-          - name: "eth0"
+          - name: eth0
             address_family:
-              - afi: "ipv4"
+              - afi: ipv4
                 cost: 50
                 priority: 26
-              - afi: "ipv6"
+              - afi: ipv6
                 mtu_ignore: true
                 instance: 33
-          - name: "bond2"
+          - name: eth2.3
             address_family:
-              - afi: "ipv4"
+              - afi: ipv4
+                cost: 60
+                priority: 40
+          - name: bond2
+            address_family:
+              - afi: ipv4
                 transmit_delay: 45
-              - afi: "ipv6"
+              - afi: ipv6
                 passive: true
         state: merged
 
@@ -31,14 +35,11 @@
 
     - assert:
         that:
-          - result.commands|length == 6
           - result.changed == true
           - result.commands|symmetric_difference(merged.commands) == []
           - result.after|symmetric_difference(ansible_facts['network_resources']['ospf_interfaces']) == []
 
-    - name:
-        Merge the provided configuration with the existing running configuration
-        (IDEMPOTENT)
+    - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_ospf_interfaces: *id001
 

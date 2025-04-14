@@ -21,6 +21,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -30,9 +31,9 @@ short_description: Tests reachability using ping from VyOS network devices
 description:
 - Tests reachability using ping from a VyOS device to a remote destination.
 - Tested against VyOS 1.1.8 (helium)
-- For a general purpose network module, see the net_ping module.
-- For Windows targets, use the win_ping module instead.
-- For targets running Python, use the ping module instead.
+- For a general purpose network module, see the M(ansible.netcommon.net_ping) module.
+- For Windows targets, use the M(ansible.windows.win_ping) module instead.
+- For targets running Python, use the M(ansible.builtin.ping) module instead.
 version_added: 1.0.0
 author:
 - Nilashish Chakraborty (@NilashishC)
@@ -73,10 +74,10 @@ options:
     default: present
 notes:
 - Tested against VyOS 1.1.8 (helium).
-- For a general purpose network module, see the net_ping module.
-- For Windows targets, use the win_ping module instead.
-- For targets running Python, use the ping module instead.
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- For a general purpose network module, see the M(ansible.netcommon.net_ping) module.
+- For Windows targets, use the M(ansible.windows.win_ping) module instead.
+- For targets running Python, use the M(ansible.builtin.ping) module instead.
+- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 extends_documentation_fragment:
 - vyos.vyos.vyos
 """
@@ -134,14 +135,11 @@ rtt:
   sample: {"avg": 2, "max": 8, "min": 1, "mdev": 24}
 """
 
-from ansible.module_utils.basic import AnsibleModule
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    run_commands,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
-)
 import re
+
+from ansible.module_utils.basic import AnsibleModule
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import run_commands
 
 
 def main():
@@ -153,12 +151,8 @@ def main():
         ttl=dict(type="int"),
         size=dict(type="int"),
         interval=dict(type="int"),
-        state=dict(
-            type="str", choices=["absent", "present"], default="present"
-        ),
+        state=dict(type="str", choices=["absent", "present"], default="present"),
     )
-
-    argument_spec.update(vyos_argument_spec)
 
     module = AnsibleModule(argument_spec=argument_spec)
 
@@ -175,9 +169,7 @@ def main():
     if warnings:
         results["warnings"] = warnings
 
-    results["commands"] = [
-        build_ping(dest, count, size, interval, source, ttl)
-    ]
+    results["commands"] = [build_ping(dest, count, size, interval, source, ttl)]
 
     ping_results = run_commands(module, commands=results["commands"])
     ping_results_list = ping_results[0].split("\n")
@@ -226,10 +218,10 @@ def build_ping(dest, count, size=None, interval=None, source=None, ttl=None):
 
 def parse_rate(rate_info):
     rate_re = re.compile(
-        r"(?P<tx>\d+) (?:\w+) (?:\w+), (?P<rx>\d+) (?:\w+), (?P<pkt_loss>\d+)% (?:\w+) (?:\w+), (?:\w+) (?P<time>\d+)"
+        r"(?P<tx>\d+) (?:\w+) (?:\w+), (?P<rx>\d+) (?:\w+), (?P<pkt_loss>\d+)% (?:\w+) (?:\w+), (?:\w+) (?P<time>\d+)",
     )
     rate_err_re = re.compile(
-        r"(?P<tx>\d+) (?:\w+) (?:\w+), (?P<rx>\d+) (?:\w+), (?:[+-])(?P<err>\d+) (?:\w+), (?P<pkt_loss>\d+)% (?:\w+) (?:\w+), (?:\w+) (?P<time>\d+)"
+        r"(?P<tx>\d+) (?:\w+) (?:\w+), (?P<rx>\d+) (?:\w+), (?:[+-])(?P<err>\d+) (?:\w+), (?P<pkt_loss>\d+)% (?:\w+) (?:\w+), (?:\w+) (?P<time>\d+)",
     )
 
     if rate_re.match(rate_info):
@@ -242,7 +234,7 @@ def parse_rate(rate_info):
 
 def parse_rtt(rtt_info):
     rtt_re = re.compile(
-        r"rtt (?:.*)=(?:\s*)(?P<min>\d*).(?:\d*)/(?P<avg>\d*).(?:\d*)/(?P<max>\d+).(?:\d*)/(?P<mdev>\d*)"
+        r"rtt (?:.*)=(?:\s*)(?P<min>\d*).(?:\d*)/(?P<avg>\d*).(?:\d*)/(?P<max>\d+).(?:\d*)/(?P<mdev>\d*)",
     )
     rtt = rtt_re.match(rtt_info)
 

@@ -11,16 +11,21 @@ based on the configuration.
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from re import findall, search, M
 from copy import deepcopy
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from re import M, findall, search
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv3.ospfv3 import (
     Ospfv3Args,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
 class Ospfv3Facts(object):
@@ -75,13 +80,9 @@ class Ospfv3Facts(object):
         """
         conf = "\n".join(filter(lambda x: x, conf))
         config = {}
-        config["parameters"] = self.parse_attrib(
-            conf, "parameters", "parameters"
-        )
+        config["parameters"] = self.parse_attrib(conf, "parameters", "parameters")
         config["areas"] = self.parse_attrib_list(conf, "area", "area_id")
-        config["redistribute"] = self.parse_attrib_list(
-            conf, "redistribute", "route_type"
-        )
+        config["redistribute"] = self.parse_attrib_list(conf, "redistribute", "route_type")
         return config
 
     def parse_attrib_list(self, conf, attrib, param):
@@ -103,6 +104,9 @@ class Ospfv3Facts(object):
             for item in set(items):
                 i_regex = r" %s .+$" % item
                 cfg = "\n".join(findall(i_regex, conf, M))
+                if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                    cfg14 = findall(r"(interface .+) area '%s'$" % item, conf, M)
+                    cfg += "\n " + item + " " + " ".join(cfg14)
                 if attrib == "area":
                     obj = self.parse_area(cfg, item)
                 else:
@@ -124,6 +128,8 @@ class Ospfv3Facts(object):
         rule = self.parse_attrib(conf, "area_id", match=area_id)
         r_sub = {"range": self.parse_attrib_list(conf, "range", "address")}
         rule.update(r_sub)
+        r_int = {"interface": self.parse_attrib_list(conf, "interface", "name")}
+        rule.update(r_int)
         return rule
 
     def parse_attrib(self, conf, param, match=None):
@@ -136,6 +142,7 @@ class Ospfv3Facts(object):
             "area_id": ["export_list", "import_list"],
             "redistribute": ["route_map"],
             "range": ["advertise", "not_advertise"],
+            "interface": ["name"],
             "parameters": ["router_id"],
         }
         cfg_dict = self.parse_attr(conf, param_lst[param], match)
@@ -188,9 +195,7 @@ class Ospfv3Facts(object):
         return (
             "disable"
             if attrib == "disabled"
-            else "enable"
-            if attrib == "enabled"
-            else attrib.replace("_", "-")
+            else "enable" if attrib == "enabled" else attrib.replace("_", "-")
         )
 
     def is_bool(self, attrib):

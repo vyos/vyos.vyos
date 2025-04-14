@@ -1,105 +1,72 @@
 ---
 merged:
-  commands:
-    - set interfaces ethernet eth0 ip ospf cost 50
-    - set interfaces ethernet eth0 ip ospf priority 26
-    - set interfaces ethernet eth0 ipv6 ospfv3 mtu-ignore
-    - set interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
-    - set interfaces bonding bond2 ip ospf transmit-delay 45
-    - set interfaces bonding bond2 ipv6 ospfv3 passive
+  commands: "{{ merged_commands }}"
   after:
     - address_family:
-        - afi: "ipv4"
+        - afi: ipv4
           transmit_delay: 45
-        - afi: "ipv6"
+        - afi: ipv6
           passive: true
-      name: "bond2"
+      name: bond2
     - address_family:
-        - afi: "ipv4"
+        - afi: ipv4
           cost: 50
           priority: 26
-        - afi: "ipv6"
+        - afi: ipv6
           instance: "33"
           mtu_ignore: true
-      name: "eth0"
+      name: eth0
 
 replaced:
-  commands:
-    - set interfaces ethernet eth0 ip ospf transmit-delay 50
-    - set interfaces ethernet eth0 ip ospf network point-to-point
-    - set interfaces ethernet eth0 ipv6 ospfv3 dead-interval 39
-    - delete interfaces ethernet eth0 ip ospf cost 50
-    - delete interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
-    - delete interfaces ethernet eth0 ipv6 ospfv3 mtu-ignore
-    - set interfaces bonding bond2 ip ospf bandwidth 70
-    - set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key ********
-
+  commands: "{{ replaced_commands }}"
   after:
     - address_family:
-        - afi: "ipv4"
+        - afi: ipv4
           authentication:
             md5_key:
               key: "1111111111232345"
               key_id: 10
           bandwidth: 70
           transmit_delay: 45
-        - afi: "ipv6"
+        - afi: ipv6
           passive: true
-      name: "bond2"
+      name: bond2
     - address_family:
-        - afi: "ipv4"
-          network: "point-to-point"
+        - afi: ipv4
+          network: point-to-point
           priority: 26
           transmit_delay: 50
-        - afi: "ipv6"
+        - afi: ipv6
           dead_interval: 39
-      name: "eth0"
+      name: eth0
 
 overridden:
-  commands:
-    - delete interfaces bonding bond2 ip ospf
-    - delete interfaces bonding bond2 ipv6 ospfv3
-    - set interfaces ethernet eth0 ip ospf transmit-delay 50
-    - set interfaces ethernet eth0 ip ospf network point-to-point
-    - set interfaces ethernet eth0 ipv6 ospfv3 dead-interval 39
-    - delete interfaces ethernet eth0 ip ospf cost 50
-    - delete interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
-    - delete interfaces ethernet eth0 ipv6 ospfv3 mtu-ignore
-
+  commands: "{{ overridden_commands }}"
   after:
     - address_family:
-        - afi: "ipv4"
-          network: "point-to-point"
+        - afi: ipv4
+          network: point-to-point
           priority: 26
           transmit_delay: 50
-        - afi: "ipv6"
+        - afi: ipv6
           dead_interval: 39
-      name: "eth0"
+      name: eth0
 
 deleted:
-  commands:
-    - delete interfaces bonding bond2 ip ospf
-    - delete interfaces bonding bond2 ipv6 ospfv3
+  commands: "{{ deleted_commands }}"
   after:
     - address_family:
-        - afi: "ipv4"
+        - afi: ipv4
           cost: 50
           priority: 26
-        - afi: "ipv6"
+        - afi: ipv6
           instance: "33"
           mtu_ignore: true
-      name: "eth0"
+      name: eth0
 
 rendered:
-  commands:
-    - set interfaces ethernet eth1 firewall in name 'INBOUND'
-    - set interfaces ethernet eth1 firewall out name 'OUTBOUND'
-    - set interfaces ethernet eth1 firewall local name 'LOCAL'
-    - set interfaces ethernet eth1 firewall local ipv6-name 'V6-LOCAL'
-    - set interfaces ethernet eth2 firewall in name 'INBOUND'
-    - set interfaces ethernet eth2 firewall out name 'OUTBOUND'
-    - set interfaces ethernet eth2 firewall local name 'LOCAL'
-    - set interfaces ethernet eth2 firewall local ipv6-name 'V6-LOCAL'
+  commands: "{{ rendered_commands }}"
+
 round_trip:
   after:
     - name: eth0

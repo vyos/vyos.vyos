@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-# Copyright 2021 Red Hat
+# Copyright 2024 Red Hat
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 from __future__ import absolute_import, division, print_function
+
 
 __metaclass__ = type
 
@@ -174,6 +175,8 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                                 "file_num": {"type": "int"},
                                 "size": {"type": "int"},
                             },
+                            "removed_in_version": "7.0.0",
+                            "removed_from_collection": "vyos.vyos",
                         },
                         "facilities": {
                             "type": "list",
@@ -281,10 +284,16 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                                 "protocol": {
                                     "type": "str",
                                     "choices": ["udp", "tcp"],
+                                    "removed_in_version": "7.0.0",
+                                    "removed_from_collection": "vyos.vyos",
                                 },
                             },
                         },
                         "hostname": {"type": "str"},
+                        "protocol": {
+                            "type": "str",
+                            "choices": ["udp", "tcp"],
+                        },
                     },
                 },
                 "syslog": {
@@ -293,7 +302,7 @@ class Logging_globalArgs(object):  # pylint: disable=R0903
                         "state": {
                             "type": "str",
                             "choices": ["enabled", "disabled"],
-                        }
+                        },
                     },
                 },
                 "users": {

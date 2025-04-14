@@ -28,19 +28,29 @@ The module file for vyos_firewall_rules
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
+---
 module: vyos_firewall_rules
-short_description: FIREWALL rules resource module
+version_added: '1.0.0'
+short_description: Firewall rules resource module
 description: This module manages firewall rule-set attributes on VyOS devices
-version_added: 1.0.0
-notes:
-- Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Rohit Thakur (@rohitthakur2590)
+- Gaige B. Paulsen (@gaige)
+notes:
+- Tested against VyOS 1.3.8.
+- This module works with connection C(ansible.netcommon.network_cli).
+  See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+
 options:
   config:
     description: A dictionary of Firewall rule-set options.
@@ -61,9 +71,16 @@ options:
         type: list
         elements: dict
         suboptions:
+          filter:
+            description:
+            - Filter type (exclusive to "name").
+            - Supported in 1.4 and later.
+            type: str
+            choices: ['input', 'output', 'forward']
           name:
             description:
             - Firewall rule set name.
+            - Required for 1.3- and optional for 1.4+.
             type: str
           default_action:
             description:
@@ -71,11 +88,15 @@ options:
             - drop (Drop if no prior rules are hit (default))
             - reject (Drop and notify source if no prior rules are hit)
             - accept (Accept if no prior rules are hit)
+            - jump (Jump to another rule-set, 1.4+)
             type: str
-            choices:
-            - drop
-            - reject
-            - accept
+            choices: ['drop', 'reject', 'accept', 'jump']
+          default_jump_target:
+            description:
+            - Default jump target if the default action is jump.
+            - Only valid in 1.4 and later.
+            - Only valid when default_action = jump.
+            type: str
           description:
             description:
             - Rule set description.
@@ -102,12 +123,19 @@ options:
               action:
                 description:
                 - Specifying the action.
+                - inspect is available  < 1.4
+                - continue, return, jump, queue, synproxy are available >= 1.4
                 type: str
                 choices:
                 - drop
                 - reject
                 - accept
                 - inspect
+                - continue
+                - return
+                - jump
+                - queue
+                - synproxy
               destination:
                 description:
                 - Specifying the destination parameters.
@@ -144,10 +172,12 @@ options:
                     - The whole list can also be "negated" using '!'.
                     - For example:'!22,telnet,http,123,1001-1005'.
                     type: str
-              disabled:
+              disable:
                 description:
                 - Option to disable firewall rule.
+                - aliased to disabled
                 type: bool
+                aliases: ["disabled"]
               fragment:
                 description:
                 - IP fragment match.
@@ -213,13 +243,40 @@ options:
                     description:
                     - ICMP type.
                     type: int
+              inbound_interface:
+                description:
+                  - Inbound interface.
+                  - Only valid in 1.4 and later.
+                type: dict
+                suboptions:
+                  name:
+                    description:
+                      - Interface name.
+                      - Can have wildcards
+                    type: str
+                  group:
+                    description:
+                      - Interface group.
+                    type: str
               ipsec:
                 description:
                 - Inbound ip sec packets.
+                - VyOS 1.4 and older match-ipsec/match-none
+                - VyOS 1.5 and later require -in/-out suffixes
                 type: str
                 choices:
                 - match-ipsec
                 - match-none
+                - match-ipsec-in
+                - match-ipsec-out
+                - match-none-in
+                - match-none-out
+              jump_target:
+                description:
+                  - Jump target if the action is jump.
+                  - Only valid in 1.4 and later.
+                  - Only valid when action = jump.
+                type: str
               limit:
                 description:
                 - Rate limit using a token bucket filter.
@@ -246,24 +303,55 @@ options:
                         description:
                         - This is the time unit.
                         type: str
-              p2p:
+              log:
                 description:
-                - P2P application packets.
+                  - Option to log packets matching rule.
+                type: str
+                choices: ['disable', 'enable']
+              outbound_interface:
+                description:
+                  - Match outbound interface.
+                  - Only valid in 1.4 and later.
+                type: dict
+                suboptions:
+                  name:
+                    description:
+                      - Interface name.
+                      - Can have wildcards
+                    type: str
+                  group:
+                    description:
+                      - Interface group.
+                    type: str
+              packet_length:
+                description:
+                  - Packet length match.
+                  - Only valid in 1.4 and later.
+                  - Multiple values from 1 to 65535 and ranges are supported
                 type: list
                 elements: dict
                 suboptions:
-                  application:
+                  length:
                     description:
-                    - Name of the application.
+                      - Packet length or range.
                     type: str
-                    choices:
-                    - all
-                    - applejuice
-                    - bittorrent
-                    - directconnect
-                    - edonkey
-                    - gnutella
-                    - kazaa
+              packet_length_exclude:
+                description:
+                  - Packet length match.
+                  - Only valid in 1.4 and later.
+                  - Multiple values from 1 to 65535 and ranges are supported
+                type: list
+                elements: dict
+                suboptions:
+                  length:
+                    description:
+                      - Packet length or range.
+                    type: str
+              packet_type:
+                description:
+                  - Packet type match.
+                type: str
+                choices: ['broadcast', 'multicast', 'host', 'other']
               protocol:
                 description:
                 - Protocol to match (protocol name in /etc/protocols or protocol number
@@ -274,6 +362,20 @@ options:
                 - all All IP protocols.
                 - (!)All IP protocols except for the specified name or number.
                 type: str
+              queue:
+                description:
+                  - Queue options.
+                  - Only valid in 1.4 and later.
+                  - Only valid when action = queue.
+                  - Can be a queue number or range.
+                type: str
+              queue_options:
+                description:
+                  - Queue options.
+                  - Only valid in 1.4 and later.
+                  - Only valid when action = queue.
+                type: str
+                choices: ['bypass', 'fanout']
               recent:
                 description:
                 - Parameters for matching recently seen sources.
@@ -286,7 +388,8 @@ options:
                   time:
                     description:
                     - Source addresses seen in the last N seconds.
-                    type: int
+                    - Since 1.4, this is a string of second/minute/hour
+                    type: str
               source:
                 description:
                 - Source parameters.
@@ -328,6 +431,12 @@ options:
                     - <MAC address> MAC address to match.
                     - <!MAC address> Match everything except the specified MAC address.
                     type: str
+                  fqdn:
+                    description:
+                      - Fully qualified domain name.
+                      - Available in 1.4 and later.
+                    type: str
+
               state:
                 description:
                 - Session state.
@@ -349,6 +458,21 @@ options:
                     description:
                     - Related state.
                     type: bool
+              synproxy:
+                description:
+                  - SYN proxy options.
+                  - Only valid in 1.4 and later.
+                  - Only valid when action = synproxy.
+                type: dict
+                suboptions:
+                  mss:
+                    description:
+                      - Adjust MSS (501-65535)
+                    type: int
+                  window_scale:
+                    description:
+                      - Window scale (1-14).
+                    type: int
               tcp:
                 description:
                 - TCP flags to match.
@@ -356,8 +480,31 @@ options:
                 suboptions:
                   flags:
                     description:
-                    - TCP flags to be matched.
-                    type: str
+                      - list of tcp flags to be matched
+                      - 5.0 breaking change to support 1.4+ and 1.3-
+                    type: list
+                    elements: dict
+                    suboptions:
+                      flag:
+                        description:
+                          - TCP flag to be matched.
+                          - syn, ack, fin, rst, urg, psh, all (1.3-)
+                          - syn, ack, fin, rst, urg, psh, cwr, ecn (1.4+)
+                        type: str
+                        choices:
+                        - ack
+                        - cwr
+                        - ecn
+                        - fin
+                        - psh
+                        - rst
+                        - syn
+                        - urg
+                        - all
+                      invert:
+                        description:
+                          - Invert the match.
+                        type: bool
               time:
                 description:
                 - Time to match rule.
@@ -414,7 +561,6 @@ options:
     - rendered
     - parsed
     default: merged
-
 """
 EXAMPLES = """
 # Using deleted to delete firewall rules based on rule-set name
@@ -432,13 +578,13 @@ EXAMPLES = """
 # set firewall name Downlink rule 502 action 'reject'
 # set firewall name Downlink rule 502 description 'Rule 502 is configured by Ansible'
 # set firewall name Downlink rule 502 ipsec 'match-ipsec'
-#
+
 - name: Delete attributes of given firewall rules.
   vyos.vyos.vyos_firewall_rules:
     config:
-    - afi: ipv4
-      rule_sets:
-      - name: Downlink
+      - afi: ipv4
+        rule_sets:
+          - name: Downlink
     state: deleted
 #
 #
@@ -509,11 +655,10 @@ EXAMPLES = """
 # set firewall name Downlink rule 502 description 'Rule 502 is configured by Ansible'
 # set firewall name Downlink rule 502 ipsec 'match-ipsec'
 
-#
 - name: Delete attributes of given firewall rules.
   vyos.vyos.vyos_firewall_rules:
     config:
-    - afi: ipv4
+      - afi: ipv4
     state: deleted
 #
 #
@@ -609,7 +754,6 @@ EXAMPLES = """
 #
 - name: Delete attributes of given firewall rules.
   vyos.vyos.vyos_firewall_rules:
-    config:
     state: deleted
 #
 #
@@ -665,48 +809,47 @@ EXAMPLES = """
 - name: Merge the provided configuration with the existing running configuration
   vyos.vyos.vyos_firewall_rules:
     config:
-    - afi: ipv6
-      rule_sets:
-      - name: UPLINK
-        description: This is ipv6 specific rule-set
-        default_action: accept
-        rules:
-        - number: 1
-          action: accept
-          description: Fwipv6-Rule 1 is configured by Ansible
-          ipsec: match-ipsec
-        - number: 2
-          action: accept
-          description: Fwipv6-Rule 2 is configured by Ansible
-          ipsec: match-ipsec
-
-    - afi: ipv4
-      rule_sets:
-      - name: INBOUND
-        description: IPv4 INBOUND rule set
-        default_action: accept
-        rules:
-        - number: 101
-          action: accept
-          description: Rule 101 is configured by Ansible
-          ipsec: match-ipsec
-        - number: 102
-          action: reject
-          description: Rule 102 is configured by Ansible
-          ipsec: match-ipsec
-        - number: 103
-          action: accept
-          description: Rule 103 is configured by Ansible
-          destination:
-            group:
-              address_group: inbound
-          source:
-            address: 192.0.2.0
-          state:
-            established: true
-            new: false
-            invalid: false
-            related: true
+      - afi: ipv6
+        rule_sets:
+          - name: UPLINK
+            description: This is ipv6 specific rule-set
+            default_action: accept
+            rules:
+              - number: 1
+                action: accept
+                description: Fwipv6-Rule 1 is configured by Ansible
+                ipsec: match-ipsec
+              - number: 2
+                action: accept
+                description: Fwipv6-Rule 2 is configured by Ansible
+                ipsec: match-ipsec
+      - afi: ipv4
+        rule_sets:
+          - name: INBOUND
+            description: IPv4 INBOUND rule set
+            default_action: accept
+            rules:
+              - number: 101
+                action: accept
+                description: Rule 101 is configured by Ansible
+                ipsec: match-ipsec
+              - number: 102
+                action: reject
+                description: Rule 102 is configured by Ansible
+                ipsec: match-ipsec
+              - number: 103
+                action: accept
+                description: Rule 103 is configured by Ansible
+                destination:
+                  group:
+                    address_group: inbound
+                source:
+                  address: 192.0.2.0
+                state:
+                  established: true
+                  new: false
+                  invalid: false
+                  related: true
     state: merged
 #
 #
@@ -881,28 +1024,30 @@ EXAMPLES = """
 # set firewall name INBOUND rule 103 state new 'disable'
 # set firewall name INBOUND rule 103 state related 'enable'
 #
-- name: Replace device configurations of listed firewall rules with provided configurations
+- name: >-
+    Replace device configurations of listed firewall rules with provided
+    configurations
   vyos.vyos.vyos_firewall_rules:
     config:
-    - afi: ipv6
-      rule_sets:
-      - name: UPLINK
-        description: This is ipv6 specific rule-set
-        default_action: accept
-    - afi: ipv4
-      rule_sets:
-      - name: INBOUND
-        description: IPv4 INBOUND rule set
-        default_action: accept
-        rules:
-        - number: 101
-          action: accept
-          description: Rule 101 is configured by Ansible
-          ipsec: match-ipsec
-        - number: 104
-          action: reject
-          description: Rule 104 is configured by Ansible
-          ipsec: match-none
+      - afi: ipv6
+        rule_sets:
+          - name: UPLINK
+            description: This is ipv6 specific rule-set
+            default_action: accept
+      - afi: ipv4
+        rule_sets:
+          - name: INBOUND
+            description: IPv4 INBOUND rule set
+            default_action: accept
+            rules:
+              - number: 101
+                action: accept
+                description: Rule 101 is configured by Ansible
+                ipsec: match-ipsec
+              - number: 104
+                action: reject
+                description: Rule 104 is configured by Ansible
+                ipsec: match-none
     state: replaced
 #
 #
@@ -1066,20 +1211,20 @@ EXAMPLES = """
 - name: Overrides all device configuration with provided configuration
   vyos.vyos.vyos_firewall_rules:
     config:
-    - afi: ipv4
-      rule_sets:
-      - name: Downlink
-        description: IPv4 INBOUND rule set
-        default_action: accept
-        rules:
-        - number: 501
-          action: accept
-          description: Rule 501 is configured by Ansible
-          ipsec: match-ipsec
-        - number: 502
-          action: reject
-          description: Rule 502 is configured by Ansible
-          ipsec: match-ipsec
+      - afi: ipv4
+        rule_sets:
+          - name: Downlink
+            description: IPv4 INBOUND rule set
+            default_action: accept
+            rules:
+              - number: 501
+                action: accept
+                description: Rule 501 is configured by Ansible
+                ipsec: match-ipsec
+              - number: 502
+                action: reject
+                description: Rule 502 is configured by Ansible
+                ipsec: match-ipsec
     state: overridden
 #
 #
@@ -1332,38 +1477,38 @@ EXAMPLES = """
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_firewall_rules:
     config:
-    - afi: ipv6
-      rule_sets:
-      - name: UPLINK
-        description: This is ipv6 specific rule-set
-        default_action: accept
-    - afi: ipv4
-      rule_sets:
-      - name: INBOUND
-        description: IPv4 INBOUND rule set
-        default_action: accept
-        rules:
-        - number: 101
-          action: accept
-          description: Rule 101 is configured by Ansible
-          ipsec: match-ipsec
-        - number: 102
-          action: reject
-          description: Rule 102 is configured by Ansible
-          ipsec: match-ipsec
-        - number: 103
-          action: accept
-          description: Rule 103 is configured by Ansible
-          destination:
-            group:
-              address_group: inbound
-          source:
-            address: 192.0.2.0
-          state:
-            established: true
-            new: false
-            invalid: false
-            related: true
+      - afi: ipv6
+        rule_sets:
+          - name: UPLINK
+            description: This is ipv6 specific rule-set
+            default_action: accept
+      - afi: ipv4
+        rule_sets:
+          - name: INBOUND
+            description: IPv4 INBOUND rule set
+            default_action: accept
+            rules:
+              - number: 101
+                action: accept
+                description: Rule 101 is configured by Ansible
+                ipsec: match-ipsec
+              - number: 102
+                action: reject
+                description: Rule 102 is configured by Ansible
+                ipsec: match-ipsec
+              - number: 103
+                action: accept
+                description: Rule 103 is configured by Ansible
+                destination:
+                  group:
+                    address_group: inbound
+                source:
+                  address: 192.0.2.0
+                state:
+                  established: true
+                  new: false
+                  invalid: false
+                  related: true
     state: rendered
 #
 #
@@ -1400,7 +1545,7 @@ EXAMPLES = """
 # Using parsed
 #
 #
-- name: Parsed the provided input commands.
+- name: Parse the commands for provided configuration
   vyos.vyos.vyos_firewall_rules:
     running_config:
       "set firewall group address-group 'inbound'
@@ -1446,24 +1591,22 @@ EXAMPLES = """
 #            ]
 #        }
 #    ]
-
-
 """
 RETURN = """
 before:
-  description: The configuration prior to the model invocation.
-  returned: always
-  type: list
+  description: The configuration prior to the module execution.
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
+  type: dict
   sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
+    This output will always be in the same format as the
+    module argspec.
 after:
-  description: The resulting configuration model invocation.
+  description: The resulting configuration after module execution.
   returned: when changed
-  type: list
+  type: dict
   sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
+    This output will always be in the same format as the
+    module argspec.
 commands:
   description: The set of commands pushed to the remote device.
   returned: always
@@ -1474,10 +1617,36 @@ commands:
     - "set firewall name Downlink rule 501 action 'accept'"
     - "set firewall name Downlink rule 502 description 'Rule 502 is configured by Ansible'"
     - "set firewall name Downlink rule 502 ipsec 'match-ipsec'"
+rendered:
+  description: The provided configuration in the task rendered in device-native format (offline).
+  returned: when I(state) is C(rendered)
+  type: list
+  sample:
+    - "set firewall name Downlink default-action 'accept'"
+    - "set firewall name Downlink description 'IPv4 INBOUND rule set'"
+    - "set firewall name Downlink rule 501 action 'accept'"
+    - "set firewall name Downlink rule 502 description 'Rule 502 is configured by Ansible'"
+    - "set firewall name Downlink rule 502 ipsec 'match-ipsec'"
+gathered:
+  description: Facts about the network resource gathered from the remote device as structured data.
+  returned: when I(state) is C(gathered)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+parsed:
+  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
+  returned: when I(state) is C(parsed)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+
 """
 
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_rules.firewall_rules import (
     Firewall_rulesArgs,
 )
@@ -1489,6 +1658,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.fire
 def main():
     """
     Main entry point for module execution
+
     :returns: the result form module invocation
     """
     required_if = [
@@ -1506,6 +1676,7 @@ def main():
         supports_check_mode=True,
         mutually_exclusive=mutually_exclusive,
     )
+
     result = Firewall_rules(module).execute_module()
     module.exit_json(**result)
 

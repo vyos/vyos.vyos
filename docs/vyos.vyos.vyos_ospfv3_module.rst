@@ -5,7 +5,7 @@
 vyos.vyos.vyos_ospfv3
 *********************
 
-**OSPFV3 resource module**
+**OSPFv3 resource module**
 
 
 Version added: 1.0.0
@@ -116,6 +116,44 @@ Parameters
                         <div>Name of import-list.</div>
                 </td>
             </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>interface</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">list</span>
+                         / <span style="color: purple">elements=dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Enable OSPVv3 on an interface for this area.</div>
+                        <div style="font-size: small; color: darkgreen"><br/>aliases: interfaces</div>
+                </td>
+            </tr>
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>name</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Interface name.</div>
+                </td>
+            </tr>
+
             <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
@@ -340,8 +378,8 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.1.8 (helium).
-   - This module works with connection ``network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
+   - Tested against VyOS 1.3.8
+   - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
 
@@ -362,20 +400,21 @@ Examples
       vyos.vyos.vyos_ospfv3:
         config:
           redistribute:
-          - route_type: bgp
+            - route_type: bgp
           parameters:
             router_id: 192.0.2.10
           areas:
-          - area_id: '2'
-            export_list: export1
-            import_list: import1
-            range:
-            - address: 2001:db10::/32
-            - address: 2001:db20::/32
-            - address: 2001:db30::/32
-          - area_id: '3'
-            range:
-            - address: 2001:db40::/32
+            - area_id: 2
+              export_list: export1
+              import_list: import1
+
+              range:
+                - address: '2001:db10::/32'
+                - address: '2001:db20::/32'
+                - address: '2001:db30::/32'
+            - area_id: 3
+              range:
+                - address: '2001:db40::/32'
         state: merged
     #
     #
@@ -468,20 +507,21 @@ Examples
       vyos.vyos.vyos_ospfv3:
         config:
           redistribute:
-          - route_type: bgp
+            - route_type: bgp
           parameters:
             router_id: 192.0.2.10
           areas:
-          - area_id: '2'
-            export_list: export1
-            import_list: import1
-            range:
-            - address: 2001:db10::/32
-            - address: 2001:db30::/32
-            - address: 2001:db50::/32
-          - area_id: '4'
-            range:
-            - address: 2001:db60::/32
+            - area_id: 2
+              export_list: export1
+              import_list: import1
+
+              range:
+                - address: '2001:db10::/32'
+                - address: '2001:db30::/32'
+                - address: '2001:db50::/32'
+            - area_id: 4
+              range:
+                - address: '2001:db60::/32'
         state: replaced
     #
     #
@@ -592,20 +632,21 @@ Examples
       vyos.vyos.vyos_ospfv3:
         config:
           redistribute:
-          - route_type: bgp
+            - route_type: bgp
           parameters:
             router_id: 192.0.2.10
           areas:
-          - area_id: '2'
-            export_list: export1
-            import_list: import1
-            range:
-            - address: 2001:db10::/32
-            - address: 2001:db20::/32
-            - address: 2001:db30::/32
-          - area_id: '3'
-            range:
-            - address: 2001:db40::/32
+            - area_id: 2
+              export_list: export1
+              import_list: import1
+
+              range:
+                - address: '2001:db10::/32'
+                - address: '2001:db20::/32'
+                - address: '2001:db30::/32'
+            - area_id: 3
+              range:
+                - address: '2001:db40::/32'
         state: rendered
     #
     #
@@ -632,17 +673,17 @@ Examples
     # Using parsed
     #
     #
-    - name: Parse the commands to provide structured configuration.
+    - name: Parse the commands from the provided configuration
       vyos.vyos.vyos_ospfv3:
-        running_config:
-          "set protocols ospfv3 area 2 export-list 'export1'
-           set protocols ospfv3 area 2 import-list 'import1'
-           set protocols ospfv3 area 2 range '2001:db10::/32'
-           set protocols ospfv3 area 2 range '2001:db20::/32'
-           set protocols ospfv3 area 2 range '2001:db30::/32'
-           set protocols ospfv3 area 3 range '2001:db40::/32'
-           set protocols ospfv3 parameters router-id '192.0.2.10'
-           set protocols ospfv3 redistribute 'bgp'"
+        running_config: |
+          set protocols ospfv3 area 2 export-list 'export1'
+          set protocols ospfv3 area 2 import-list 'import1'
+          set protocols ospfv3 area 2 range '2001:db10::/32'
+          set protocols ospfv3 area 2 range '2001:db20::/32'
+          set protocols ospfv3 area 2 range '2001:db30::/32'
+          set protocols ospfv3 area 3 range '2001:db40::/32'
+          set protocols ospfv3 parameters router-id '192.0.2.10'
+          set protocols ospfv3 redistribute 'bgp'
         state: parsed
     #
     #
@@ -899,7 +940,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The set of commands pushed to the remote device.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set protocols ospf parameters router-id 192.0.1.1&#x27;, &quot;set protocols ospfv3 area 2 range &#x27;2001:db10::/32&#x27;&quot;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set protocols ospfv3 parameters router-id &#x27;192.0.2.10&#x27;&quot;, &quot;set protocols ospfv3 redistribute &#x27;bgp&#x27;&quot;]</div>
                 </td>
             </tr>
     </table>

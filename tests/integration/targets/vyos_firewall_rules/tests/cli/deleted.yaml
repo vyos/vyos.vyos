@@ -1,13 +1,11 @@
 ---
 - debug:
-    msg: Start vyos_firewall_rules deleted integration tests ansible_connection={{
-      ansible_connection }}
+    msg: Start vyos_firewall_rules deleted integration tests ansible_connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
-    - name: Delete firewall rule set.
+    - name: Delete firewall rule set
       register: result
       vyos.vyos.vyos_firewall_rules: &id001
         config:
@@ -27,14 +25,12 @@
     - name: Assert that the correct set of commands were generated
       assert:
         that:
-          - "{{ deleted_rs['commands'] | symmetric_difference(result['commands'])\
-            \ |length == 0 }}"
+          - "{{ deleted_rs['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
     - name: Assert that the after dicts were correctly generated
       assert:
         that:
-          - "{{ deleted_rs['after'] | symmetric_difference(result['after']) |length\
-            \ == 0 }}"
+          - "{{ deleted_rs['after'] | symmetric_difference(result['after']) |length == 0 }}"
 
     - name: Delete attributes of given interfaces (IDEMPOTENT)
       register: result
@@ -49,8 +45,6 @@
     - name: Assert that the before dicts were correctly generated
       assert:
         that:
-          - "{{ deleted_rs['after'] | symmetric_difference(result['before']) |length\
-            \ == 0 }}"
+          - "{{ deleted_rs['after'] | symmetric_difference(result['before']) |length == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

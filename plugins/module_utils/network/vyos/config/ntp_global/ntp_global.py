@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -18,18 +19,21 @@ created.
 """
 
 from ansible.module_utils.six import iteritems
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    dict_merge,
-)
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    dict_merge,
 )
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ntp_global import (
     NtpTemplate,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
 class Ntp_global(ResourceModule):
@@ -70,6 +74,16 @@ class Ntp_global(ResourceModule):
         want, have and desired state.
         """
 
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            path = "service"
+            ac = "allow-client"
+        else:
+            path = "system"
+            ac = "allow-clients"
+
+        self._tmplt.set_ntp_path(path)
+        self._tmplt.set_ntp_ac(ac)
+
         wantd = self._ntp_list_to_dict(self.want)
         haved = self._ntp_list_to_dict(self.have)
 
@@ -79,50 +93,51 @@ class Ntp_global(ResourceModule):
 
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
-            haved = {
-                k: v for k, v in iteritems(haved) if k in wantd or not wantd
-            }
+            haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
             wantd = {}
 
             commandlist = self._commandlist(haved)
             servernames = self._servernames(haved)
             # removing the servername and commandlist from the list after deleting it from haved
+            # iterate through the top-level items to delete
             for k, have in iteritems(haved):
                 if k not in wantd:
                     for hk, hval in iteritems(have):
                         if hk == "allow_clients" and hk in commandlist:
                             self.commands.append(
-                                self._tmplt.render(
-                                    {"": hk}, "allow_clients_delete", True
-                                )
+                                self._tmplt.render({"": hk}, "allow_clients_delete", True),
                             )
                             commandlist.remove(hk)
                         elif hk == "listen_addresses" and hk in commandlist:
                             self.commands.append(
-                                self._tmplt.render(
-                                    {"": hk}, "listen_addresses_delete", True
-                                )
+                                self._tmplt.render({"": hk}, "listen_addresses_delete", True),
                             )
                             commandlist.remove(hk)
                         elif hk == "server" and have["server"] in servernames:
                             self._compareoverride(want={}, have=have)
                             servernames.remove(have["server"])
+            # if everything is deleted add the delete command for {path} ntp
+            # this should be equiv: servernames == [] and commandlist == ["server"]:
+            if wantd == {} and haved != {}:
+                self.commands.append(
+                    self._tmplt.render({}, "service_delete", True),
+                )
 
-        # remove existing config for overridden,replaced and deleted
+        # remove existing config for overridden and replaced
         # Getting the list of the server names from haved
         #   to avoid the duplication of overridding/replacing the servers
         if self.state in ["overridden", "replaced"]:
-
             commandlist = self._commandlist(haved)
             servernames = self._servernames(haved)
 
             for k, have in iteritems(haved):
-                if k not in wantd and "server" not in have:
-                    self._compareoverride(want={}, have=have)
-                    # removing the servername from the list after deleting it from haved
-                elif k not in wantd and have["server"] in servernames:
-                    self._compareoverride(want={}, have=have)
-                    servernames.remove(have["server"])
+                if k not in wantd:
+                    if "server" not in have:
+                        self._compareoverride(want={}, have=have)
+                        # removing the servername from the list after deleting it from haved
+                    elif have["server"] in servernames:
+                        self._compareoverride(want={}, have=have)
+                        servernames.remove(have["server"])
 
         for k, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(k, {}))
@@ -170,9 +185,7 @@ class Ntp_global(ResourceModule):
                     dict = {}
                     dict.update({"server": entry["server"]})
                     dict.update({Opk: val})
-                    serveroptions_dict.update(
-                        {entry["server"] + "_" + val: dict}
-                    )
+                    serveroptions_dict.update({entry["server"] + "_" + val: dict})
         return serveroptions_dict
 
     def _commandlist(self, haved):
@@ -187,11 +200,6 @@ class Ntp_global(ResourceModule):
         servernames = []
         for k, have in iteritems(haved):
             for sk, sval in iteritems(have):
-                if sk == "server" and sval not in [
-                    "0.pool.ntp.org",
-                    "1.pool.ntp.org",
-                    "2.pool.ntp.org",
-                ]:
-                    if sval not in servernames:
-                        servernames.append(sval)
+                if sk != "options" and sval not in servernames:
+                    servernames.append(sval)
         return servernames

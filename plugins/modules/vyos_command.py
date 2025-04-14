@@ -17,6 +17,7 @@
 #
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -74,7 +75,8 @@ options:
     - Specifies the number of retries a command should be tried before it is considered
       failed. The command is run on the target device every retry and evaluated against
       the I(wait_for) conditionals.
-    default: 10
+    - The commands are run once when I(retries) is set to C(0).
+    default: 9
     type: int
   interval:
     description:
@@ -89,33 +91,33 @@ notes:
   is using a custom pager setting to display the output of that command.
 - If a command sent to the device requires answering a prompt, it is possible to pass
   a dict containing I(command), I(answer) and I(prompt). See examples.
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 """
 
 EXAMPLES = """
 - name: show configuration on ethernet devices eth0 and eth1
   vyos.vyos.vyos_command:
     commands:
-    - show interfaces ethernet {{ item }}
+      - show interfaces ethernet {{ item }}
   with_items:
-  - eth0
-  - eth1
+    - eth0
+    - eth1
 
 - name: run multiple commands and check if version output contains specific version
     string
   vyos.vyos.vyos_command:
     commands:
-    - show version
-    - show hardware cpu
+      - show version
+      - show hardware cpu
     wait_for:
-    - result[0] contains 'VyOS 1.1.7'
+      - result[0] contains 'VyOS 1.1.7'
 
 - name: run command that requires answering a prompt
   vyos.vyos.vyos_command:
     commands:
-    - command: rollback 1
-      prompt: Proceed with reboot? [confirm][y]
-      answer: y
+      - command: rollback 1
+        prompt: Proceed with reboot? [confirm][y]
+        answer: y
 """
 
 RETURN = """
@@ -148,15 +150,11 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.p
     Conditional,
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    transform_commands,
     to_lines,
+    transform_commands,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    run_commands,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
-)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import run_commands
 
 
 def parse_commands(module, warnings):
@@ -167,7 +165,7 @@ def parse_commands(module, warnings):
             if not item["command"].startswith("show"):
                 warnings.append(
                     "Only show commands are supported when using check mode, not "
-                    "executing %s" % item["command"]
+                    "executing %s" % item["command"],
                 )
                 commands.remove(item)
 
@@ -179,11 +177,9 @@ def main():
         commands=dict(type="list", required=True, elements="raw"),
         wait_for=dict(type="list", aliases=["waitfor"], elements="str"),
         match=dict(default="all", choices=["all", "any"]),
-        retries=dict(default=10, type="int"),
+        retries=dict(default=9, type="int"),
         interval=dict(default=1, type="int"),
     )
-
-    spec.update(vyos_argument_spec)
 
     module = AnsibleModule(argument_spec=spec, supports_check_mode=True)
 
@@ -192,6 +188,7 @@ def main():
     commands = parse_commands(module, warnings)
     wait_for = module.params["wait_for"] or list()
 
+    conditionals = []
     try:
         conditionals = [Conditional(c) for c in wait_for]
     except AttributeError as exc:
@@ -201,7 +198,8 @@ def main():
     interval = module.params["interval"]
     match = module.params["match"]
 
-    for item in range(retries):
+    # Always run at least once, and then `retries` more times.
+    for item in range(retries + 1):
         responses = run_commands(module, commands)
 
         for item in list(conditionals):
@@ -221,9 +219,7 @@ def main():
         msg = "One or more conditional statements have not been satisfied"
         module.fail_json(msg=msg, failed_conditions=failed_conditions)
 
-    result.update(
-        {"stdout": responses, "stdout_lines": list(to_lines(responses))}
-    )
+    result.update({"stdout": responses, "stdout_lines": list(to_lines(responses))})
 
     module.exit_json(**result)
 

@@ -5,10 +5,10 @@
 vyos.vyos.vyos_bgp_address_family
 *********************************
 
-**BGP Address Family Resource Module.**
+**BGP Address Family resource module**
 
 
-Version added: 2.1.0
+Version added: 1.0.0
 
 .. contents::
    :local:
@@ -18,6 +18,7 @@ Version added: 2.1.0
 Synopsis
 --------
 - This module manages BGP address family configuration of interfaces on devices running VYOS.
+- Tested against VYOS 1.3, 1.4
 
 
 
@@ -376,7 +377,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>AS number.</div>
+                        <div>AS number</div>
                 </td>
             </tr>
             <tr>
@@ -1177,39 +1178,39 @@ Examples
     # vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
     # vyos@vyos:~$
 
-      - name: Merge provided configuration with device configuration
-        vyos.vyos.vyos_bgp_address_family:
-          config:
-            as_number: "100"
-            address_family:
-              - afi: "ipv4"
-                redistribute:
-                  - protocol: "static"
-                    metric: 50
-            neighbors:
-              - neighbor_address: "20.33.1.1/24"
-                address_family:
-                  - afi: "ipv4"
-                    allowas_in: 4
-                    as_override: True
-                    attribute_unchanged:
-                      med: True
-                  - afi: "ipv6"
-                    default_originate: "map01"
-                    distribute_list:
-                      - action: "export"
-                        acl: 10
-              - neighbor_address: "100.11.34.12"
-                address_family:
-                  - afi: "ipv4"
-                    maximum_prefix: 45
-                    nexthop_self: True
-                    route_map:
-                      - action: "export"
-                        route_map: "map01"
-                      - action: "import"
-                        route_map: "map01"
-                    weight: 50
+    - name: Merge provided configuration with device configuration
+      vyos.vyos.vyos_bgp_address_family:
+        config:
+          as_number: "100"
+          address_family:
+            - afi: "ipv4"
+              redistribute:
+                - protocol: "static"
+                  metric: 50
+          neighbors:
+            - neighbor_address: "20.33.1.1/24"
+              address_family:
+                - afi: "ipv4"
+                  allowas_in: 4
+                  as_override: true
+                  attribute_unchanged:
+                    med: true
+                - afi: "ipv6"
+                  default_originate: "map01"
+                  distribute_list:
+                    - action: "export"
+                      acl: 10
+            - neighbor_address: "100.11.34.12"
+              address_family:
+                - afi: "ipv4"
+                  maximum_prefix: 45
+                  nexthop_self: true
+                  route_map:
+                    - action: "export"
+                      route_map: "map01"
+                    - action: "import"
+                      route_map: "map01"
+                  weight: 50
 
     # After State:
     # vyos@vyos:~$ show configuration commands | match "set protocols bgp"
@@ -1323,33 +1324,32 @@ Examples
     # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast weight '50'
     # vyos@vyos:~$
 
-      - name: Replace provided configuration with device configuration
-        vyos.vyos.vyos_bgp_address_family:
-          config:
-            as_number: "100"
-            neighbors:
-              - neighbor_address: "100.11.34.12"
-                address_family:
-                  - afi: "ipv4"
-                    allowas_in: 4
-                    as_override: True
-                    attribute_unchanged:
-                      med: True
-                  - afi: "ipv6"
-                    default_originate: "map01"
-                    distribute_list:
-                      - action: "export"
-                        acl: 10
-              - neighbor_address: "20.33.1.1/24"
-                address_family:
-                  - afi: "ipv6"
-                    maximum_prefix: 45
-                    nexthop_self: True
-
-          state: replaced
+    - name: Replace provided configuration with device configuration
+      vyos.vyos.vyos_bgp_address_family:
+        config:
+          as_number: "100"
+          neighbors:
+            - neighbor_address: "100.11.34.12"
+              address_family:
+                - afi: "ipv4"
+                  allowas_in: 4
+                  as_override: true
+                  attribute_unchanged:
+                    med: true
+                - afi: "ipv6"
+                  default_originate: "map01"
+                  distribute_list:
+                    - action: "export"
+                      acl: 10
+            - neighbor_address: "20.33.1.1/24"
+              address_family:
+                - afi: "ipv6"
+                  maximum_prefix: 45
+                  nexthop_self: true
+        state: replaced
 
     # After State:
-
+    #
     # vyos@vyos:~$ show configuration commands | match "set protocols bgp"
     # set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
     # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast
@@ -1513,31 +1513,31 @@ Examples
     # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast distribute-list export '10'
     # vyos@vyos:~$
 
-      - name: Override
-        vyos.vyos.vyos_bgp_address_family:
-          config:
-            as_number: "100"
-            neighbors:
-              - neighbor_address: "100.11.34.12"
-                address_family:
-                  - afi: "ipv6"
-                    maximum_prefix: 45
-                    nexthop_self: True
-                    route_map:
-                      - action: "import"
-                        route_map: "map01"
-            address_family:
-              - afi: "ipv4"
-                aggregate_address:
-                  - prefix: "60.9.2.0/24"
-                    summary_only: True
-              - afi: "ipv6"
-                redistribute:
-                  - protocol: "static"
-                    metric: 50
-          state: overridden
+    - name: Override
+      vyos.vyos.vyos_bgp_address_family:
+        config:
+          as_number: "100"
+          neighbors:
+            - neighbor_address: "100.11.34.12"
+              address_family:
+                - afi: "ipv6"
+                  maximum_prefix: 45
+                  nexthop_self: true
+                  route_map:
+                    - action: "import"
+                      route_map: "map01"
+          address_family:
+            - afi: "ipv4"
+              aggregate_address:
+                - prefix: "60.9.2.0/24"
+                  summary_only: true
+            - afi: "ipv6"
+              redistribute:
+                - protocol: "static"
+                  metric: 50
+        state: overridden
 
-    # Aft=validate-moduleser State
+    # After State
 
     # vyos@vyos:~$ show configuration commands | match "set protocols bgp"
     # set protocols bgp 100 address-family ipv4-unicast aggregate-address 60.9.2.0/24 summary-only
@@ -1712,18 +1712,18 @@ Examples
     # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast route-map import 'map01'
     # vyos@vyos:~$
 
-      - name: Delete
-        vyos.vyos.vyos_bgp_address_family:
-          config:
-            as_number: "100"
-            neighbors:
-              - neighbor_address: "20.33.1.1/24"
-                address_family:
-                  - afi: "ipv6"
-              - neighbor_address: "100.11.34.12"
-            address_family:
-              - afi: "ipv4"
-          state: deleted
+    - name: Delete
+      vyos.vyos.vyos_bgp_address_family:
+        config:
+          as_number: "100"
+          neighbors:
+            - neighbor_address: "20.33.1.1/24"
+              address_family:
+                - afi: "ipv6"
+            - neighbor_address: "100.11.34.12"
+          address_family:
+            - afi: "ipv4"
+        state: deleted
 
 
     # After State:
@@ -1874,12 +1874,13 @@ Examples
     # set protocols bgp 65536 neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged next-hop
 
 
-      - name: parse configs
-        vyos.vyos.vyos_bgp_address_family:
-          running_config: "{{ lookup('file', './parsed.cfg') }}"
-          state: parsed
+    - name: parse configs
+      vyos.vyos.vyos_bgp_address_family:
+        running_config: "{{ lookup('file', './parsed.cfg') }}"
+        state: parsed
 
-    # Module Execution:
+    # Module execution result:
+    #
     # "parsed": {
     #         "address_family": [
     #             {
@@ -1957,12 +1958,12 @@ Examples
     # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
     # set protocols bgp 100 neighbor 100.11.34.12
 
-      - name: gather configs
-        vyos.vyos.vyos_bgp_address_family:
-          state: gathered
+    - name: gather configs
+      vyos.vyos.vyos_bgp_address_family:
+        state: gathered
 
-    # Module Execution:
-
+    # Module execution result:
+    #
     # "gathered": {
     #         "address_family": [
     #             {
@@ -2021,40 +2022,40 @@ Examples
 
     # Using rendered:
 
-      - name: Render
-        vyos.vyos.vyos_bgp_address_family:
-          config:
-            as_number: "100"
-            address_family:
-              - afi: "ipv4"
-                redistribute:
-                  - protocol: "static"
-                    metric: 50
-            neighbors:
-              - neighbor_address: "20.33.1.1/24"
-                address_family:
-                  - afi: "ipv4"
-                    allowas_in: 4
-                    as_override: True
-                    attribute_unchanged:
-                      med: True
-                  - afi: "ipv6"
-                    default_originate: "map01"
-                    distribute_list:
-                      - action: "export"
-                        acl: 10
-              - neighbor_address: "100.11.34.12"
-                address_family:
-                  - afi: "ipv4"
-                    maximum_prefix: 45
-                    nexthop_self: True
-                    route_map:
-                      - action: "export"
-                        route_map: "map01"
-                      - action: "import"
-                        route_map: "map01"
-                    weight: 50
-          state: rendered
+    - name: Render
+      vyos.vyos.vyos_bgp_address_family:
+        config:
+          as_number: "100"
+          address_family:
+            - afi: "ipv4"
+              redistribute:
+                - protocol: "static"
+                  metric: 50
+          neighbors:
+            - neighbor_address: "20.33.1.1/24"
+              address_family:
+                - afi: "ipv4"
+                  allowas_in: 4
+                  as_override: true
+                  attribute_unchanged:
+                    med: true
+                - afi: "ipv6"
+                  default_originate: "map01"
+                  distribute_list:
+                    - action: "export"
+                      acl: 10
+            - neighbor_address: "100.11.34.12"
+              address_family:
+                - afi: "ipv4"
+                  maximum_prefix: 45
+                  nexthop_self: true
+                  route_map:
+                    - action: "export"
+                      route_map: "map01"
+                    - action: "import"
+                      route_map: "map01"
+                  weight: 50
+        state: rendered
 
     # Module Execution:
 
@@ -2073,6 +2074,123 @@ Examples
     #     ]
 
 
+
+Return Values
+-------------
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html#common-return-values>`_, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=0 cellpadding=0 class="documentation-table">
+        <tr>
+            <th colspan="1">Key</th>
+            <th>Returned</th>
+            <th width="100%">Description</th>
+        </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>after</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>when changed</td>
+                <td>
+                            <div>The resulting configuration after module execution.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>before</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
+                <td>
+                            <div>The configuration prior to the module execution.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>commands</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
+                <td>
+                            <div>The set of commands pushed to the remote device.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;sample command 1&#x27;, &#x27;sample command 2&#x27;, &#x27;sample command 3&#x27;]</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>gathered</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>gathered</code></td>
+                <td>
+                            <div>Facts about the network resource gathered from the remote device as structured data.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>parsed</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>parsed</code></td>
+                <td>
+                            <div>The device native config provided in <em>running_config</em> option parsed into structured data as per module argspec.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>rendered</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>rendered</code></td>
+                <td>
+                            <div>The provided configuration in the task rendered in device-native format (offline).</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;sample command 1&#x27;, &#x27;sample command 2&#x27;, &#x27;sample command 3&#x27;]</div>
+                </td>
+            </tr>
+    </table>
+    <br/><br/>
 
 
 Status

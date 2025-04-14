@@ -1,3 +1,5 @@
+#
+# -*- coding: utf-8 -*-
 # Copyright 2019 Red Hat
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
@@ -22,7 +24,10 @@
 """
 The arg spec for the vyos_lag_interfaces module
 """
+
+
 from __future__ import absolute_import, division, print_function
+
 
 __metaclass__ = type
 
@@ -40,12 +45,19 @@ class Lag_interfacesArgs(object):  # pylint: disable=R0903
                 "arp_monitor": {
                     "options": {
                         "interval": {"type": "int"},
-                        "target": {"type": "list", "elements": "str"},
+                        "target": {
+                            "elements": "str",
+                            "type": "list",
+                        },
                     },
                     "type": "dict",
                 },
                 "hash_policy": {
-                    "choices": ["layer2", "layer2+3", "layer3+4"],
+                    "choices": [
+                        "layer2",
+                        "layer2+3",
+                        "layer3+4",
+                    ],
                     "type": "str",
                 },
                 "members": {
@@ -77,9 +89,9 @@ class Lag_interfacesArgs(object):  # pylint: disable=R0903
                 "replaced",
                 "overridden",
                 "deleted",
-                "rendered",
-                "gathered",
                 "parsed",
+                "gathered",
+                "rendered",
             ],
             "default": "merged",
             "type": "str",

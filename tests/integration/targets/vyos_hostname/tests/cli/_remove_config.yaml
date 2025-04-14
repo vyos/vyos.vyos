@@ -1,0 +1,8 @@
+---
+- name: Delete Hostname
+  vyos.vyos.vyos_config:
+    lines:
+      - delete system host-name
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

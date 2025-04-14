@@ -1,25 +1,20 @@
 ---
 - debug:
-    msg:
-      START vyos_lag_interfaces gathered integration tests on connection={{ ansible_connection
-      }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_lag_interfaces gathered integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
     - name: Gather the provided configuration with the existing running configuration
       register: result
-      vyos.vyos.vyos_lag_interfaces: &id001
+      vyos.vyos.vyos_lag_interfaces:
         config:
         state: gathered
 
     - name: Assert that gathered dicts was correctly generated
       assert:
         that:
-          - "{{ populate | symmetric_difference(result['gathered']) |length == 0\
-            \ }}"
+          - populate | symmetric_difference(result['gathered']) |length == 0
 
   always:
-    - include_tasks: _remove_config.yaml
+    - include_tasks: _remove_bond.yaml

@@ -1,17 +1,13 @@
 ---
 - debug:
-    msg: START vyos_bgp_global purged integration tests on connection={{
-      ansible_connection }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_bgp_global purged integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Purge the provided configuration
       register: result
-      vyos.vyos.vyos_bgp_global: &id001
+      vyos.vyos.vyos_bgp_global:
         config:
           as_number: "65536"
         state: purged
@@ -25,7 +21,15 @@
           - result.changed == true
           - "'delete protocols bgp 65536' in result.commands"
           - ansible_facts.network_resources.bgp_global == []
+      when: vyos_version is version('1.4.0', '<', version_type='semver')
+
+    - assert:
+        that:
+          - result.commands|length == 1
+          - result.changed == true
+          - "'delete protocols bgp' in result.commands"
+          - ansible_facts.network_resources.bgp_global == []
+      when: vyos_version is version('1.4.0', '>=', version_type='semver')
 
   always:
-
     - include_tasks: _remove_config.yaml

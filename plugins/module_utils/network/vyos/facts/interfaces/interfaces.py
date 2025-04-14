@@ -12,14 +12,15 @@ based on the configuration.
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
-from re import findall, M
 from copy import deepcopy
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from re import M, findall, search
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.interfaces.interfaces import (
     InterfacesArgs,
 )
@@ -43,7 +44,6 @@ class InterfacesFacts(object):
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def get_device_data(self, connection):
-
         data = connection.get_config(flags=["| grep interfaces"])
         return data
 
@@ -60,13 +60,13 @@ class InterfacesFacts(object):
 
         objs = []
         interface_names = findall(
-            r"^set interfaces (?:ethernet|bonding|vti|loopback|vxlan|openvpn|wireguard) (?:\'*)(\S+)(?:\'*)",
+            r"^set interfaces (?:ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard) (?:\'*)(\S+)(?:\'*)",
             data,
             M,
         )
         if interface_names:
             for interface in set(interface_names):
-                intf_regex = r" %s .+$" % interface.strip("'")
+                intf_regex = r" %s (.+$)" % interface.strip("'")
                 cfg = findall(intf_regex, data, M)
                 obj = self.render_config(cfg)
                 obj["name"] = interface.strip("'")
@@ -75,9 +75,7 @@ class InterfacesFacts(object):
         facts = {}
         if objs:
             facts["interfaces"] = []
-            params = utils.validate_config(
-                self.argument_spec, {"config": objs}
-            )
+            params = utils.validate_config(self.argument_spec, {"config": objs})
             for cfg in params["config"]:
                 facts["interfaces"].append(utils.remove_empties(cfg))
 
@@ -96,9 +94,7 @@ class InterfacesFacts(object):
         """
         vif_conf = "\n".join(filter(lambda x: ("vif" in x), conf))
         eth_conf = "\n".join(filter(lambda x: ("vif" not in x), conf))
-        config = self.parse_attribs(
-            ["description", "speed", "mtu", "duplex"], eth_conf
-        )
+        config = self.parse_attribs(["description", "speed", "mtu", "duplex"], eth_conf)
         config["vifs"] = self.parse_vifs(vif_conf)
 
         return utils.remove_empties(config)
@@ -110,7 +106,7 @@ class InterfacesFacts(object):
         if vif_names:
             vifs_list = []
             for vif in set(vif_names):
-                vif_regex = r" %s .+$" % vif
+                vif_regex = r"%s (.+$)" % vif
                 cfg = "\n".join(findall(vif_regex, conf, M))
                 obj = self.parse_attribs(["description", "mtu"], cfg)
                 obj["vlan_id"] = int(vif)
@@ -121,6 +117,14 @@ class InterfacesFacts(object):
         return vifs_list
 
     def parse_attribs(self, attribs, conf):
+        """
+        Parse the attributes of a network interface.
+
+        :param attribs: List of attribute names.
+        :param conf: Configuration string.
+        :rtype: dict
+        :returns: Parsed configuration dictionary.
+        """
         config = {}
         for item in attribs:
             value = utils.parse_conf_arg(conf, item)
@@ -130,7 +134,11 @@ class InterfacesFacts(object):
                 config[item] = value.strip("'")
             else:
                 config[item] = None
-        if "disable" in conf:
+
+        # match only on disable next to the interface name
+        # there are other sub-commands that can be disabled
+        match = search(r"^ *disable", conf, M)
+        if match:
             config["enabled"] = False
         else:
             config["enabled"] = True

@@ -28,17 +28,25 @@ The module file for vyos_static_routes
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
+---
 module: vyos_static_routes
+version_added: '1.0.0'
 short_description: Static routes resource module
 description: This module manages attributes of static routes on VyOS network devices.
-version_added: 1.0.0
 notes:
-- Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- Tested against VyOS 1.3.8.
+- This module works with connection C(ansible.netcommon.network_cli).
+  See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Rohit Thakur (@rohitthakur2590)
 options:
@@ -96,7 +104,6 @@ options:
                     - The IP address of the next hop that can be used to reach the
                       destination network.
                     type: str
-                    required: true
                   enabled:
                     description:
                     - Disable IPv4/v6 next-hop static route.
@@ -143,24 +150,24 @@ EXAMPLES = """
 - name: Merge the provided configuration with the existing running configuration
   vyos.vyos.vyos_static_routes:
     config:
-    - address_families:
-      - afi: ipv4
-        routes:
-        - dest: 192.0.2.32/28
-          blackhole_config:
-            type: blackhole
-          next_hops:
-          - forward_router_address: 192.0.2.6
-          - forward_router_address: 192.0.2.7
-    - address_families:
-      - afi: ipv6
-        routes:
-        - dest: 2001:db8:1000::/36
-          blackhole_config:
-            distance: 2
-          next_hops:
-          - forward_router_address: 2001:db8:2000:2::1
-          - forward_router_address: 2001:db8:2000:2::2
+      - address_families:
+          - afi: ipv4
+            routes:
+              - dest: 192.0.2.32/28
+                blackhole_config:
+                  type: blackhole
+                next_hops:
+                  - forward_router_address: 192.0.2.6
+                  - forward_router_address: 192.0.2.7
+      - address_families:
+          - afi: ipv6
+            routes:
+              - dest: '2001:db8:1000::/36'
+                blackhole_config:
+                  distance: 2
+                next_hops:
+                  - forward_router_address: '2001:db8:2000:2::1'
+                  - forward_router_address: '2001:db8:2000:2::2'
     state: merged
 #
 #
@@ -257,16 +264,16 @@ EXAMPLES = """
 - name: Replace device configurations of listed static routes with provided configurations
   vyos.vyos.vyos_static_routes:
     config:
-    - address_families:
-      - afi: ipv4
-        routes:
-        - dest: 192.0.2.32/28
-          blackhole_config:
-            distance: 2
-          next_hops:
-          - forward_router_address: 192.0.2.7
-            enabled: false
-          - forward_router_address: 192.0.2.9
+      - address_families:
+          - afi: ipv4
+            routes:
+              - dest: 192.0.2.32/28
+                blackhole_config:
+                  distance: 2
+                next_hops:
+                  - forward_router_address: 192.0.2.7
+                    enabled: false
+                  - forward_router_address: 192.0.2.9
     state: replaced
 #
 #
@@ -433,12 +440,12 @@ EXAMPLES = """
 - name: Overrides all device configuration with provided configuration
   vyos.vyos.vyos_static_routes:
     config:
-    - address_families:
-      - afi: ipv4
-        routes:
-        - dest: 198.0.2.48/28
-          next_hops:
-          - forward_router_address: 192.0.2.18
+      - address_families:
+          - afi: ipv4
+            routes:
+              - dest: 198.0.2.48/28
+                next_hops:
+                  - forward_router_address: 192.0.2.18
     state: overridden
 #
 #
@@ -543,9 +550,9 @@ EXAMPLES = """
 - name: Delete static route based on afi.
   vyos.vyos.vyos_static_routes:
     config:
-    - address_families:
-      - afi: ipv4
-      - afi: ipv6
+      - address_families:
+          - afi: ipv4
+          - afi: ipv6
     state: deleted
 #
 #
@@ -694,24 +701,24 @@ EXAMPLES = """
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_static_routes:
     config:
-    - address_families:
-      - afi: ipv4
-        routes:
-        - dest: 192.0.2.32/28
-          blackhole_config:
-            type: blackhole
-          next_hops:
-          - forward_router_address: 192.0.2.6
-          - forward_router_address: 192.0.2.7
-    - address_families:
-      - afi: ipv6
-        routes:
-        - dest: 2001:db8:1000::/36
-          blackhole_config:
-            distance: 2
-          next_hops:
-          - forward_router_address: 2001:db8:2000:2::1
-          - forward_router_address: 2001:db8:2000:2::2
+      - address_families:
+          - afi: ipv4
+            routes:
+              - dest: 192.0.2.32/28
+                blackhole_config:
+                  type: blackhole
+                next_hops:
+                  - forward_router_address: 192.0.2.6
+                  - forward_router_address: 192.0.2.7
+      - address_families:
+          - afi: ipv6
+            routes:
+              - dest: '2001:db8:1000::/36'
+                blackhole_config:
+                  distance: 2
+                next_hops:
+                  - forward_router_address: '2001:db8:2000:2::1'
+                  - forward_router_address: '2001:db8:2000:2::2'
     state: rendered
 #
 #
@@ -737,13 +744,13 @@ EXAMPLES = """
 #
 - name: Parse the provided running configuration
   vyos.vyos.vyos_static_routes:
-    running_config:
-      "set protocols static route 192.0.2.32/28 'blackhole'
-       set protocols static route 192.0.2.32/28 next-hop '192.0.2.6'
-       set protocols static route 192.0.2.32/28 next-hop '192.0.2.7'
-       set protocols static route6 2001:db8:1000::/36 blackhole distance '2'
-       set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::1'
-       set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'"
+    running_config: |
+      set protocols static route 192.0.2.32/28 'blackhole'
+      set protocols static route 192.0.2.32/28 next-hop '192.0.2.6'
+      set protocols static route 192.0.2.32/28 next-hop '192.0.2.7'
+      set protocols static route6 2001:db8:1000::/36 blackhole distance '2'
+      set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::1'
+      set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'
     state: parsed
 #
 #
@@ -871,21 +878,19 @@ EXAMPLES = """
 # set protocols static route6 2001:db8:1000::/36 blackhole distance '2'
 # set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::1'
 # set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::2'
-
-
 """
 RETURN = """
 before:
   description: The configuration prior to the model invocation.
   returned: always
-  type: list
+  type: dict
   sample: >
     The configuration returned will always be in the same format
      of the parameters above.
 after:
   description: The resulting configuration model invocation.
   returned: when changed
-  type: list
+  type: dict
   sample: >
     The configuration returned will always be in the same format
      of the parameters above.
@@ -896,10 +901,12 @@ commands:
   sample:
     - "set protocols static route 192.0.2.32/28 next-hop '192.0.2.6'"
     - "set protocols static route 192.0.2.32/28 'blackhole'"
+
 """
 
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.static_routes.static_routes import (
     Static_routesArgs,
 )
@@ -929,6 +936,7 @@ def main():
         supports_check_mode=True,
         mutually_exclusive=mutually_exclusive,
     )
+
     result = Static_routes(module).execute_module()
     module.exit_json(**result)
 

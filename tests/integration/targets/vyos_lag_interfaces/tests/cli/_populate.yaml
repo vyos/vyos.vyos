@@ -1,11 +1,18 @@
 ---
+- ansible.builtin.include_tasks: _add_bond.yaml
+
 - name: Setup
   vars:
-    lines: "set interfaces bonding bond0\nset interfaces bonding bond0 hash-policy\
-      \ 'layer2'\nset interfaces bonding bond0 mode 'active-backup'\nset interfaces\
-      \ ethernet eth1 bond-group bond0\nset interfaces bonding bond1\nset interfaces\
-      \ bonding bond0 primary 'eth1'\nset interfaces bonding bond1 hash-policy 'layer2+3'\n\
-      set interfaces bonding bond1 mode 'active-backup'\nset interfaces ethernet\
-      \ eth2 bond-group bond1\nset interfaces bonding bond1 primary 'eth2'\n"
+    lines: |-
+      set interfaces bonding bond0
+      set interfaces bonding bond0 hash-policy 'layer2'
+      set interfaces bonding bond0 mode 'active-backup'
+      set interfaces bonding bond0 member interface 'eth1'
+      set interfaces bonding bond1
+      set interfaces bonding bond0 primary 'eth1'
+      set interfaces bonding bond1 hash-policy 'layer2+3'
+      set interfaces bonding bond1 mode 'active-backup'
+      set interfaces bonding bond1 member interface 'eth2'
+      set interfaces bonding bond1 primary 'eth2'
   ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    config: "{{ lines }}"

@@ -10,23 +10,23 @@ created
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
+from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
-)
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    to_list,
     dict_diff,
+    to_list,
 )
-from ansible.module_utils.six import iteritems
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
-    search_obj_in_list,
     get_lst_diff_for_dicts,
-    list_diff_want_only,
     list_diff_have_only,
+    list_diff_want_only,
+    search_obj_in_list,
 )
 
 
@@ -63,11 +63,11 @@ class Lag_interfaces(ConfigBase):
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources, data=data
+            self.gather_subset,
+            self.gather_network_resources,
+            data=data,
         )
-        lag_interfaces_facts = facts["ansible_network_resources"].get(
-            "lag_interfaces"
-        )
+        lag_interfaces_facts = facts["ansible_network_resources"].get("lag_interfaces")
         if not lag_interfaces_facts:
             return []
         return lag_interfaces_facts
@@ -106,11 +106,9 @@ class Lag_interfaces(ConfigBase):
             running_config = self._module.params["running_config"]
             if not running_config:
                 self._module.fail_json(
-                    msg="value of running_config parameter must not be empty for state parsed"
+                    msg="value of running_config parameter must not be empty for state parsed",
                 )
-            result["parsed"] = self.get_lag_interfaces_facts(
-                data=running_config
-            )
+            result["parsed"] = self.get_lag_interfaces_facts(data=running_config)
         else:
             changed_lag_interfaces_facts = []
 
@@ -147,14 +145,9 @@ class Lag_interfaces(ConfigBase):
                   to the desired configuration
         """
         commands = []
-        if (
-            self.state in ("merged", "replaced", "overridden", "rendered")
-            and not want
-        ):
+        if self.state in ("merged", "replaced", "overridden", "rendered") and not want:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(
-                    self.state
-                )
+                msg="value of config parameter must not be empty for state {0}".format(self.state),
             )
         if self.state == "overridden":
             commands.extend(self._state_overridden(want, have))
@@ -174,9 +167,7 @@ class Lag_interfaces(ConfigBase):
                 if self.state in ("merged", "rendered"):
                     commands.extend(self._state_merged(want_item, obj_in_have))
                 elif self.state == "replaced":
-                    commands.extend(
-                        self._state_replaced(want_item, obj_in_have)
-                    )
+                    commands.extend(self._state_replaced(want_item, obj_in_have))
         return commands
 
     def _state_replaced(self, want, have):
@@ -257,15 +248,9 @@ class Lag_interfaces(ConfigBase):
             for key, value in iteritems(updates):
                 if value:
                     if key == "arp_monitor":
-                        commands.extend(
-                            self._add_arp_monitor(updates, key, want, have)
-                        )
+                        commands.extend(self._add_arp_monitor(updates, key, want, have))
                     else:
-                        commands.append(
-                            self._compute_command(
-                                have["name"], key, str(value)
-                            )
-                        )
+                        commands.append(self._compute_command(have["name"], key, str(value)))
         return commands
 
     def _render_set_commands(self, want):
@@ -278,17 +263,11 @@ class Lag_interfaces(ConfigBase):
             value = want[attrib]
             if value:
                 if attrib == "arp_monitor":
-                    commands.extend(
-                        self._add_arp_monitor(want, attrib, want, have)
-                    )
+                    commands.extend(self._add_arp_monitor(want, attrib, want, have))
                 elif attrib == "members":
                     commands.extend(self._add_bond_members(want, have))
                 elif attrib != "name":
-                    commands.append(
-                        self._compute_command(
-                            want["name"], attrib, value=str(value)
-                        )
-                    )
+                    commands.append(self._compute_command(want["name"], attrib, value=str(value)))
         return commands
 
     def _purge_attribs(self, have):
@@ -298,11 +277,7 @@ class Lag_interfaces(ConfigBase):
                 if item == "members":
                     commands.extend(self._delete_bond_members(have))
                 elif item != "name":
-                    commands.append(
-                        self._compute_command(
-                            have["name"], attrib=item, remove=True
-                        )
-                    )
+                    commands.append(self._compute_command(have["name"], attrib=item, remove=True))
         return commands
 
     def _render_del_commands(self, want, have):
@@ -315,9 +290,7 @@ class Lag_interfaces(ConfigBase):
             elif attrib == "arp_monitor":
                 commands.extend(self._update_arp_monitor(attrib, want, have))
             elif have.get(attrib) and not want.get(attrib):
-                commands.append(
-                    self._compute_command(have["name"], attrib, remove=True)
-                )
+                commands.append(self._compute_command(have["name"], attrib, remove=True))
         return commands
 
     def _add_bond_members(self, want, have):
@@ -327,20 +300,17 @@ class Lag_interfaces(ConfigBase):
             for key in diff_members:
                 commands.append(
                     self._compute_command(
-                        key["member"],
-                        "bond-group",
                         want["name"],
-                        type="ethernet",
-                    )
+                        "member interface",
+                        key["member"],
+                    ),
                 )
         return commands
 
     def _add_arp_monitor(self, updates, key, want, have):
         commands = []
         arp_monitor = updates.get(key) or {}
-        diff_targets = self._get_arp_monitor_target_diff(
-            want, have, key, "target"
-        )
+        diff_targets = self._get_arp_monitor_target_diff(want, have, key, "target")
 
         if "interval" in arp_monitor:
             commands.append(
@@ -348,7 +318,7 @@ class Lag_interfaces(ConfigBase):
                     key=want["name"] + " arp-monitor",
                     attrib="interval",
                     value=str(arp_monitor["interval"]),
-                )
+                ),
             )
         if diff_targets:
             for target in diff_targets:
@@ -357,7 +327,7 @@ class Lag_interfaces(ConfigBase):
                         key=want["name"] + " arp-monitor",
                         attrib="target",
                         value=target,
-                    )
+                    ),
                 )
         return commands
 
@@ -366,12 +336,11 @@ class Lag_interfaces(ConfigBase):
         for member in have["members"]:
             commands.append(
                 self._compute_command(
-                    member["member"],
-                    "bond-group",
                     have["name"],
+                    "member interface",
+                    member["member"],
                     remove=True,
-                    type="ethernet",
-                )
+                ),
             )
         return commands
 
@@ -394,7 +363,7 @@ class Lag_interfaces(ConfigBase):
                     key=have["name"] + " arp-monitor",
                     attrib="interval",
                     remove=True,
-                )
+                ),
             )
         if "target" in have_arp_monitor:
             target_diff = list_diff_have_only(want_arp_target, have_arp_target)
@@ -406,7 +375,7 @@ class Lag_interfaces(ConfigBase):
                             attrib="target",
                             value=target,
                             remove=True,
-                        )
+                        ),
                     )
 
         return commands
@@ -426,13 +395,11 @@ class Lag_interfaces(ConfigBase):
                         have["name"],
                         True,
                         "ethernet",
-                    )
+                    ),
                 )
         return commands
 
-    def _get_arp_monitor_target_diff(
-        self, want_list, have_list, dict_name, lst
-    ):
+    def _get_arp_monitor_target_diff(self, want_list, have_list, dict_name, lst):
         want_arp_target = []
         have_arp_target = []
 
@@ -450,9 +417,7 @@ class Lag_interfaces(ConfigBase):
             diff = list_diff_want_only(want_arp_target, have_arp_target)
         return diff
 
-    def _compute_command(
-        self, key, attrib, value=None, remove=False, type="bonding"
-    ):
+    def _compute_command(self, key, attrib, value=None, remove=False, type="bonding"):
         if remove:
             cmd = "delete interfaces " + type
         else:

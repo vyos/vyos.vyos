@@ -1,7 +1,18 @@
 ---
+ci:
+  # format compatible with commitlint
+  autoupdate_commit_msg: "chore: pre-commit autoupdate"
+  autoupdate_schedule: monthly
+  autofix_commit_msg: "chore: auto fixes from pre-commit.com hooks"
+
 repos:
+  - repo: https://github.com/ansible-network/collection_prep
+    rev: 1.1.1
+    hooks:
+      - id: update-docs
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.1.0
+    rev: v4.6.0
     hooks:
       - id: check-merge-conflict
       - id: check-symlinks
@@ -10,12 +21,36 @@ repos:
       - id: no-commit-to-branch
         args: [--branch, main]
       - id: trailing-whitespace
+
+  - repo: https://github.com/asottile/add-trailing-comma
+    rev: v3.1.0
+    hooks:
+      - id: add-trailing-comma
+
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v4.0.0-alpha.8
+    hooks:
+      - id: prettier
+        entry: env CI=1 bash -c "prettier --list-different . || ec=$? && prettier --loglevel=error --write . && exit $ec"
+        pass_filenames: false
+        args: []
+        additional_dependencies:
+          - prettier
+          - prettier-plugin-toml
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: Sort import statements using isort
+        args: [--filter-files]
+
   - repo: https://github.com/psf/black
-    rev: 19.3b0
+    rev: 24.4.2
     hooks:
       - id: black
-        args: [-l, "79"]
-  - repo: https://github.com/ansible-network/collection_prep
-    rev: 0.9.4
+
+  - repo: https://github.com/pycqa/flake8
+    rev: 7.1.0
     hooks:
-      - id: update-docs
+      - id: flake8

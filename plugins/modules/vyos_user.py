@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 # (c) 2017, Ansible by Red Hat, inc
@@ -33,9 +34,11 @@ description:
   collection of usernames in the current running config. It also supports purging
   usernames from the configuration that are not explicitly defined.
 version_added: 1.0.0
+extends_documentation_fragment:
+- vyos.vyos.vyos
 notes:
 - Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 options:
   aggregate:
     description:
@@ -51,8 +54,7 @@ options:
       name:
         description:
         - The username to be configured on the VyOS device. This argument accepts a string
-          value and is mutually exclusive with the C(aggregate) argument. Please note
-          that this option is not same as C(provider username).
+          value and is mutually exclusive with the C(aggregate) argument.
         required: True
         type: str
       full_name:
@@ -60,11 +62,16 @@ options:
         - The C(full_name) argument provides the full name of the user account to be created
           on the remote device. This argument accepts any text string value.
         type: str
+      encrypted_password:
+        description:
+        - The encrypted password of the user account on the remote device. Note that unlike
+          the C(configured_password) argument, this argument ignores the C(update_password)
+          and updates if the value is different from the one in the device running config.
+        type: str
       configured_password:
         description:
         - The password to be configured on the VyOS device. The password needs to be provided
-          in clear and it will be encrypted on the device. Please note that this option
-          is not same as C(provider password).
+          in clear and it will be encrypted on the device.
         type: str
       update_password:
         description:
@@ -76,13 +83,6 @@ options:
         choices:
         - on_create
         - always
-      level:
-        description:
-        - The C(level) argument configures the level of the user when logged into the
-          system. This argument accepts string values admin or operator.
-        type: str
-        aliases:
-        - role
       state:
         description:
         - Configures the state of the username definition as it relates to the device
@@ -93,22 +93,52 @@ options:
         choices:
         - present
         - absent
+      public_keys: &public_keys
+        description:
+        - Public keys for authentiction over SSH.
+        type: list
+        elements: dict
+        suboptions:
+          name:
+            description: Name of the key (usually in the form of user@hostname)
+            required: true
+            type: str
+          key:
+            description: Public key string (base64 encoded)
+            required: true
+            type: str
+          type:
+            description: Type of the key
+            required: true
+            type: str
+            choices:
+            - ssh-dss
+            - ssh-rsa
+            - ecdsa-sha2-nistp256
+            - ecdsa-sha2-nistp384
+            - ssh-ed25519
+            - ecdsa-sha2-nistp521
+
   name:
     description:
     - The username to be configured on the VyOS device. This argument accepts a string
-      value and is mutually exclusive with the C(aggregate) argument. Please note
-      that this option is not same as C(provider username).
+      value and is mutually exclusive with the C(aggregate) argument.
     type: str
   full_name:
     description:
     - The C(full_name) argument provides the full name of the user account to be created
       on the remote device. This argument accepts any text string value.
     type: str
+  encrypted_password:
+    description:
+    - The encrypted password of the user account on the remote device. Note that unlike
+      the C(configured_password) argument, this argument ignores the C(update_password)
+      and updates if the value is different from the one in the device running config.
+    type: str
   configured_password:
     description:
     - The password to be configured on the VyOS device. The password needs to be provided
-      in clear and it will be encrypted on the device. Please note that this option
-      is not same as C(provider password).
+      in clear and it will be encrypted on the device.
     type: str
   update_password:
     description:
@@ -121,13 +151,7 @@ options:
     choices:
     - on_create
     - always
-  level:
-    description:
-    - The C(level) argument configures the level of the user when logged into the
-      system. This argument accepts string values admin or operator.
-    type: str
-    aliases:
-    - role
+  public_keys: *public_keys
   purge:
     description:
     - Instructs the module to consider the resource definition absolute. It will remove
@@ -146,8 +170,6 @@ options:
     choices:
     - present
     - absent
-extends_documentation_fragment:
-- vyos.vyos.vyos
 """
 
 EXAMPLES = """
@@ -158,13 +180,12 @@ EXAMPLES = """
     state: present
 - name: remove all users except admin
   vyos.vyos.vyos_user:
-    purge: yes
+    purge: true
 - name: set multiple users to level operator
   vyos.vyos.vyos_user:
     aggregate:
-    - name: netop
-    - name: netend
-    level: operator
+      - name: netop
+      - name: netend
     state: present
 - name: Change Password for User netop
   vyos.vyos.vyos_user:
@@ -180,7 +201,6 @@ commands:
   returned: always
   type: list
   sample:
-    - set system login user test level operator
     - set system login user authentication plaintext-password password
 """
 
@@ -190,24 +210,15 @@ from copy import deepcopy
 from functools import partial
 
 from ansible.module_utils.basic import AnsibleModule
+from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     remove_default_spec,
 )
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     get_config,
     load_config,
 )
-from ansible.module_utils.six import iteritems
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
-    vyos_argument_spec,
-)
-
-
-def validate_level(value, module):
-    if value not in ("admin", "operator"):
-        module.fail_json(
-            msg="level must be either admin or operator, got %s" % value
-        )
 
 
 def spec_to_commands(updates, module):
@@ -227,36 +238,100 @@ def spec_to_commands(updates, module):
             commands.append("delete system login user %s" % want["name"])
             continue
 
-        if needs_update(want, have, "level"):
-            add(commands, want, "level %s" % want["level"])
-
         if needs_update(want, have, "full_name"):
-            add(commands, want, "full-name %s" % want["full_name"])
+            add(commands, want, "full-name '%s'" % want["full_name"])
+
+        # look both ways for public_keys to handle replacement
+        want_keys = want.get("public_keys") or dict()
+        have_keys = have.get("public_keys") or dict()
+        for key_name in want_keys:
+            key = want_keys[key_name]
+            if key_name not in have_keys or key != have_keys[key_name]:
+                add(
+                    commands,
+                    want,
+                    "authentication public-keys %s key '%s'" % (key["name"], key["key"]),
+                )
+                add(
+                    commands,
+                    want,
+                    "authentication public-keys %s type '%s'" % (key["name"], key["type"]),
+                )
+
+        for key_name in have_keys:
+            if key_name not in want_keys:
+                commands.append(
+                    "delete system login user %s authentication public-keys %s"
+                    % (want["name"], key_name),
+                )
+
+        if needs_update(want, have, "encrypted_password"):
+            add(
+                commands,
+                want,
+                "authentication encrypted-password '%s'" % want["encrypted_password"],
+            )
 
         if needs_update(want, have, "configured_password"):
             if update_password == "always" or not have:
                 add(
                     commands,
                     want,
-                    "authentication plaintext-password %s"
-                    % want["configured_password"],
+                    "authentication plaintext-password %s" % want["configured_password"],
                 )
 
     return commands
 
 
-def parse_level(data):
-    match = re.search(r"level (\S+)", data, re.M)
-    if match:
-        level = match.group(1)[1:-1]
-        return level
-
-
 def parse_full_name(data):
-    match = re.search(r"full-name (\S+)", data, re.M)
+    match = re.search(r"full-name '(\S+)'", data, re.M)
     if match:
         full_name = match.group(1)[1:-1]
         return full_name
+
+
+def parse_key(data):
+    match = re.search(r"key '(\S+)'", data, re.M)
+    if match:
+        key = match.group(1)
+        return key
+
+
+def parse_key_type(data):
+    match = re.search(r"type '(\S+)'", data, re.M)
+    if match:
+        key_type = match.group(1)
+        return key_type
+
+
+def parse_public_keys(data):
+    """
+    Parse public keys from the configuration
+    returning dictionary of dictionaries indexed by key name
+    """
+    match = re.findall(r"public-keys (\S+)", data, re.M)
+    if not match:
+        return dict()
+
+    keys = dict()
+    for key in set(match):
+        regex = r" %s .+$" % key
+        cfg = re.findall(regex, data, re.M)
+        cfg = "\n".join(cfg)
+        obj = {
+            "name": key,
+            "key": parse_key(cfg),
+            "type": parse_key_type(cfg),
+        }
+        keys[key] = obj
+    return keys
+
+
+def parse_encrypted_password(data):
+    match = re.search(r"authentication encrypted-password '(\S+)'", data, re.M)
+    if match:
+        encrypted_password = match.group(1)
+        return encrypted_password
 
 
 def config_to_dict(module):
@@ -276,8 +351,9 @@ def config_to_dict(module):
             "name": user,
             "state": "present",
             "configured_password": None,
-            "level": parse_level(cfg),
             "full_name": parse_full_name(cfg),
+            "encrypted_password": parse_encrypted_password(cfg),
+            "public_keys": parse_public_keys(cfg),
         }
         instances.append(obj)
 
@@ -295,6 +371,21 @@ def get_param_value(key, item, module):
         validator(value, module)
 
     return value
+
+
+def map_key_params_to_dict(keys):
+    """
+    Map the list of keys to a dictionary of dictionaries
+    indexed by key name
+    """
+    all_keys = dict()
+    if keys is None:
+        return all_keys
+
+    for key in keys:
+        key_name = key["name"]
+        all_keys[key_name] = key
+    return all_keys
 
 
 def map_params_to_obj(module):
@@ -317,9 +408,10 @@ def map_params_to_obj(module):
     for item in users:
         get_value = partial(get_param_value, item=item, module=module)
         item["configured_password"] = get_value("configured_password")
+        item["encrypted_password"] = get_value("encrypted_password")
         item["full_name"] = get_value("full_name")
-        item["level"] = get_value("level")
         item["state"] = get_value("state")
+        item["public_keys"] = map_key_params_to_dict(get_value("public_keys"))
         objects.append(item)
 
     return objects
@@ -340,15 +432,30 @@ def update_objects(want, have):
 
 def main():
     """main entry point for module execution"""
+    public_key_spec = dict(
+        name=dict(required=True, type="str"),
+        key=dict(required=True, type="str", no_log=False),
+        type=dict(
+            required=True,
+            type="str",
+            choices=[
+                "ssh-dss",
+                "ssh-rsa",
+                "ecdsa-sha2-nistp256",
+                "ecdsa-sha2-nistp384",
+                "ssh-ed25519",
+                "ecdsa-sha2-nistp521",
+            ],
+        ),
+    )
     element_spec = dict(
         name=dict(),
         full_name=dict(),
-        level=dict(aliases=["role"]),
         configured_password=dict(no_log=True),
-        update_password=dict(
-            default="always", choices=["on_create", "always"]
-        ),
+        encrypted_password=dict(no_log=False),
+        update_password=dict(default="always", choices=["on_create", "always"]),
         state=dict(default="present", choices=["present", "absent"]),
+        public_keys=dict(type="list", elements="dict", options=public_key_spec),
     )
 
     aggregate_spec = deepcopy(element_spec)
@@ -368,9 +475,12 @@ def main():
     )
 
     argument_spec.update(element_spec)
-    argument_spec.update(vyos_argument_spec)
 
-    mutually_exclusive = [("name", "aggregate")]
+    mutually_exclusive = [
+        ("name", "aggregate"),
+        ("encrypted_password", "configured_password"),
+    ]
+
     module = AnsibleModule(
         argument_spec=argument_spec,
         mutually_exclusive=mutually_exclusive,

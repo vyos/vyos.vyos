@@ -1,0 +1,53 @@
+---
+merged_commands:
+  - set protocols ospf interface eth0 cost 50
+  - set protocols ospf interface eth0 priority 26
+  - set protocols ospfv3 interface eth0 mtu-ignore
+  - set protocols ospfv3 interface eth0 instance-id 33
+  - set protocols ospf interface eth2.3 cost 60
+  - set protocols ospf interface eth2.3 priority 40
+  - set protocols ospfv3 interface bond2 passive
+  - set protocols ospf interface bond2 transmit-delay 45
+
+populate_commands:
+  - set protocols ospf interface eth0 cost 50
+  - set protocols ospf interface eth0 priority 26
+  - set protocols ospfv3 interface eth0 mtu-ignore
+  - set protocols ospfv3 interface eth0 instance-id 33
+  - set protocols ospf interface eth2.18 cost 80
+  - set protocols ospfv3 interface bond2 passive
+  - set protocols ospf interface bond2 transmit-delay 45
+
+remove_commands:
+  - delete protocols ospf interface eth0
+  - delete protocols ospf interface eth2.3
+  - delete protocols ospf interface bond2
+  - delete protocols ospfv3 interface bond2
+  - delete protocols ospfv3 interface eth0
+
+parsed_config_file: "_parsed_config_1_4.cfg"
+
+replaced_commands:
+  - set protocols ospf interface eth0 transmit-delay 50
+  - set protocols ospf interface eth0 network point-to-point
+  - set protocols ospfv3 interface eth0 dead-interval 39
+  - delete protocols ospf interface eth0 cost 50
+  - delete protocols ospfv3 interface eth0 instance-id 33
+  - delete protocols ospfv3 interface eth0 mtu-ignore
+  - set protocols ospf interface bond2 bandwidth 70
+  - set protocols ospf interface bond2 authentication md5 key-id 10 md5-key ********
+
+overridden_commands:
+  - delete protocols ospf interface bond2
+  - delete protocols ospfv3 interface bond2
+  - delete protocols ospf interface eth2.18
+  - set protocols ospf interface eth0 transmit-delay 50
+  - set protocols ospf interface eth0 network point-to-point
+  - set protocols ospfv3 interface eth0 dead-interval 39
+  - delete protocols ospf interface eth0 cost 50
+  - delete protocols ospfv3 interface eth0 instance-id 33
+  - delete protocols ospfv3 interface eth0 mtu-ignore
+
+deleted_commands:
+  - delete protocols ospf interface bond2
+  - delete protocols ospfv3 interface bond2

@@ -9,8 +9,9 @@
 - block:
     # Delete all prefix-lists
     - name: Delete all prefix-lists
+      ignore_errors: true
       register: result
-      vyos.vyos.vyos_prefix_lists: &id006
+      vyos.vyos.vyos_prefix_lists: &id001
         config:
         state: deleted
 
@@ -23,8 +24,7 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ deleted['commands'] | symmetric_difference(result['commands']) |length\
-            \ == 0 }}"
+          - "{{ deleted['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
     - name: Assert that after dict is correctly generated
       assert:
@@ -33,7 +33,7 @@
 
     - name: Delete all prefix-lists (IDEMPOTENT)
       register: result
-      vyos.vyos.vyos_prefix_lists: *id006
+      vyos.vyos.vyos_prefix_lists: *id001
 
     - name: Assert that task was idempotent
       assert:
@@ -50,7 +50,7 @@
       register: result
       vyos.vyos.vyos_prefix_lists:
         config:
-          - afi: "ipv6"
+          - afi: ipv6
         state: deleted
 
     - name: Assert that before dicts are correctly generated
@@ -82,12 +82,12 @@
       register: result
       vyos.vyos.vyos_prefix_lists:
         config:
-          - afi: "ipv4"
+          - afi: ipv4
             prefix_lists:
-              - name: "AnsibleIPv4PrefixList"
-          - afi: "ipv6"
+              - name: AnsibleIPv4PrefixList
+          - afi: ipv6
             prefix_lists:
-              - name: "DenyIPv6Prefix"
+              - name: DenyIPv6Prefix
         state: deleted
 
     - name: Assert that before dicts are correctly generated

@@ -6,9 +6,11 @@
 # utils
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
-from ansible.module_utils.six import iteritems
 from ansible.module_utils.basic import missing_required_lib
+from ansible.module_utils.six import iteritems
+
 
 try:
     import ipaddress
@@ -40,6 +42,24 @@ def get_interface_type(interface):
         return "openvpn"
     elif interface.startswith("wg"):
         return "wireguard"
+    elif interface.startswith("tun"):
+        return "tunnel"
+    elif interface.startswith("br"):
+        return "bridge"
+    elif interface.startswith("dum"):
+        return "dummy"
+
+
+def get_interface_with_vif(interface):
+    """Gets virtual interface if any or return as is"""
+    vlan = None
+    interface_real = interface
+    if "." in interface:
+        interface_real, vlan = interface.split(".")
+
+    if vlan is not None:
+        interface_real = interface_real + " vif " + vlan
+    return interface_real
 
 
 def dict_delete(base, comparable):
@@ -112,11 +132,7 @@ def get_lst_same_for_dicts(want, have, lst):
     if want and have:
         want_list = want.get(lst) or {}
         have_list = have.get(lst) or {}
-        diff = [
-            i
-            for i in want_list and have_list
-            if i in have_list and i in want_list
-        ]
+        diff = [i for i in want_list and have_list if i in have_list and i in want_list]
     return diff
 
 
@@ -133,11 +149,7 @@ def list_diff_have_only(want_list, have_list):
     elif not have_list:
         diff = None
     else:
-        diff = [
-            i
-            for i in have_list + want_list
-            if i in have_list and i not in want_list
-        ]
+        diff = [i for i in have_list + want_list if i in have_list and i not in want_list]
     return diff
 
 
@@ -154,11 +166,7 @@ def list_diff_want_only(want_list, have_list):
     elif not have_list:
         diff = want_list
     else:
-        diff = [
-            i
-            for i in have_list + want_list
-            if i in want_list and i not in have_list
-        ]
+        diff = [i for i in have_list + want_list if i in want_list and i not in have_list]
     return diff
 
 
@@ -173,11 +181,7 @@ def search_dict_tv_in_list(d_val1, d_val2, lst, key1, key2):
     :return:
     """
     obj = next(
-        (
-            item
-            for item in lst
-            if item[key1] == d_val1 and item[key2] == d_val2
-        ),
+        (item for item in lst if item[key1] == d_val1 and item[key2] == d_val2),
         None,
     )
     if obj:
@@ -249,13 +253,7 @@ def _bool_to_str(val):
     :param val: bool value.
     :return: enable/disable.
     """
-    return (
-        "enable"
-        if str(val) == "True"
-        else "disable"
-        if str(val) == "False"
-        else val
-    )
+    return "enable" if str(val) == "True" else "disable" if str(val) == "False" else val
 
 
 def _is_w_same(w, h, key):
@@ -278,3 +276,13 @@ def _in_target(h, key):
     :return: True/False.
     """
     return True if h and key in h else False
+
+
+def in_target_not_none(h, key):
+    """
+    This function checks whether the target exist,key present in target config, and the value is not None.
+    :param h: target config.
+    :param key: attribute name.
+    :return: True/False.
+    """
+    return True if h and key in h and h[key] is not None else False

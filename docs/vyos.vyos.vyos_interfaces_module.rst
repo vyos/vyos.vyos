@@ -5,10 +5,10 @@
 vyos.vyos.vyos_interfaces
 *************************
 
-**Interfaces resource module**
+**Manages interface attributes of VyOS network devices.**
 
 
-Version added: 1.0.0
+Version added: 2.9.0
 
 .. contents::
    :local:
@@ -47,7 +47,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>The provided interfaces configuration.</div>
+                        <div>The provided interface configuration.</div>
                 </td>
             </tr>
                                 <tr>
@@ -107,6 +107,7 @@ Parameters
                 <td>
                         <div>Administrative state of the interface.</div>
                         <div>Set the value to <code>true</code> to administratively enable the interface or <code>false</code> to disable it.</div>
+                        <div style="font-size: small; color: darkgreen"><br/>aliases: enable</div>
                 </td>
             </tr>
             <tr>
@@ -223,6 +224,7 @@ Parameters
                 <td>
                         <div>Administrative state of the virtual sub-interface.</div>
                         <div>Set the value to <code>true</code> to administratively enable the interface or <code>false</code> to disable it.</div>
+                        <div style="font-size: small; color: darkgreen"><br/>aliases: enable</div>
                 </td>
             </tr>
             <tr>
@@ -311,8 +313,8 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.1.8 (helium).
-   - This module works with connection ``network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
+   - Tested against VyOS 1.3.8
+   - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
 
@@ -322,143 +324,100 @@ Examples
 .. code-block:: yaml
 
     # Using merged
-    #
-    # -------------
+
     # Before state:
     # -------------
-    #
     # vyos@vyos:~$ show configuration commands | grep interfaces
+    # set interfaces bonding 'bond0'
+    # set interfaces bonding 'bond1'
+    # set interfaces bonding bond2 'ip'
+    # set interfaces bonding bond2 'ipv6'
     # set interfaces ethernet eth0 address 'dhcp'
-    # set interfaces ethernet eth0 address 'dhcpv6'
     # set interfaces ethernet eth0 duplex 'auto'
-    # set interfaces ethernet eth0 hw-id '08:00:27:30:f0:22'
-    # set interfaces ethernet eth0 smp-affinity 'auto'
+    # set interfaces ethernet eth0 'ip'
+    # set interfaces ethernet eth0 'ipv6'
+    # set interfaces ethernet eth0 smp_affinity 'auto'
     # set interfaces ethernet eth0 speed 'auto'
-    # set interfaces ethernet eth1 hw-id '08:00:27:ea:0f:b9'
-    # set interfaces ethernet eth1 smp-affinity 'auto'
-    # set interfaces ethernet eth2 hw-id '08:00:27:c2:98:23'
-    # set interfaces ethernet eth2 smp-affinity 'auto'
-    # set interfaces ethernet eth3 hw-id '08:00:27:43:70:8c'
-    # set interfaces loopback lo
+    # set interfaces ethernet 'eth1'
+    # set interfaces ethernet 'eth2'
 
     - name: Merge provided configuration with device configuration
       vyos.vyos.vyos_interfaces:
         config:
-        - name: eth2
-          description: Configured by Ansible
-          enabled: true
-          vifs:
-          - vlan_id: 200
-            description: VIF 200 - ETH2
-
-        - name: eth3
-          description: Configured by Ansible
-          mtu: 1500
-
-        - name: bond1
-          description: Bond - 1
-          mtu: 1200
-
-        - name: vti2
-          description: VTI - 2
-          enabled: false
+          - name: eth2
+            description: Configured by Ansible
+            enabled: true
+            vifs:
+              - vlan_id: 200
+                description: VIF 200 - ETH2
+          - name: eth3
+            description: Configured by Ansible
+            mtu: 1500
+          - name: bond1
+            description: Bond - 1
+            mtu: 1200
+          - name: vti2
+            description: VTI - 2
+            enabled: false
         state: merged
-    #
-    #
-    # -------------------------
-    # Module Execution Result
-    # -------------------------
-    #
-    # "before": [
-    #      	{
-    #            "enabled": true,
-    #            "name": "lo"
-    #      	},
-    #       {
-    #            "enabled": true,
-    #            "name": "eth3"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "eth2"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "eth1"
-    #        },
-    #        {
-    #            "duplex": "auto",
-    #            "enabled": true,
-    #            "name": "eth0",
-    #            "speed": "auto"
-    #        }
-    #    ]
-    #
-    # "commands": [
-    #        "set interfaces ethernet eth2 description 'Configured by Ansible'",
-    #        "set interfaces ethernet eth2 vif 200",
-    #        "set interfaces ethernet eth2 vif 200 description 'VIF 200 - ETH2'",
-    #        "set interfaces ethernet eth3 description 'Configured by Ansible'",
-    #        "set interfaces ethernet eth3 mtu '1500'",
-    #        "set interfaces bonding bond1",
-    #        "set interfaces bonding bond1 description 'Bond - 1'",
-    #        "set interfaces bonding bond1 mtu '1200'",
-    #        "set interfaces vti vti2",
-    #        "set interfaces vti vti2 description 'VTI - 2'",
-    #        "set interfaces vti vti2 disable"
-    #    ]
-    #
-    # "after": [
-    #        {
-    #            "description": "Bond - 1",
-    #            "enabled": true,
-    #            "mtu": 1200,
-    #            "name": "bond1"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "lo"
-    #        },
-    #        {
-    #            "description": "VTI - 2",
-    #            "enabled": false,
-    #            "name": "vti2"
-    #        },
-    #        {
-    #            "description": "Configured by Ansible",
-    #            "enabled": true,
-    #            "mtu": 1500,
-    #            "name": "eth3"
-    #        },
-    #        {
-    #            "description": "Configured by Ansible",
-    #            "enabled": true,
-    #            "name": "eth2",
-    #            "vifs": [
-    #                {
-    #                    "description": "VIF 200 - ETH2",
-    #                    "enabled": true,
-    #                    "vlan_id": "200"
-    #                }
-    #            ]
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "eth1"
-    #        },
-    #        {
-    #            "duplex": "auto",
-    #            "enabled": true,
-    #            "name": "eth0",
-    #            "speed": "auto"
-    #        }
-    #    ]
-    #
-    #
-    # -------------
+
+    # Task Output
+    # -----------
+    # before:
+    # - enabled: true
+    #   name: lo
+    # - enabled: true
+    #   name: eth3
+    # - enabled: true
+    #   name: eth2
+    # - enabled: true
+    #   name: eth1
+    # - duplex: auto
+    #   enabled: true
+    #   name: eth0
+    #   speed: auto
+    # commands:
+    # - set interfaces ethernet eth2 description 'Configured by Ansible'
+    # - set interfaces ethernet eth2 vif 200
+    # - set interfaces ethernet eth2 vif 200 description 'VIF 200 - ETH2'
+    # - set interfaces ethernet eth3 description 'Configured by Ansible'
+    # - set interfaces ethernet eth3 mtu '1500'
+    # - set interfaces bonding bond1
+    # - set interfaces bonding bond1 description 'Bond - 1'
+    # - set interfaces bonding bond1 mtu '1200'
+    # - set interfaces vti vti2
+    # - set interfaces vti vti2 description 'VTI - 2'
+    # - set interfaces vti vti2 disable
+    # after:
+    # - description: Bond - 1
+    #   enabled: true
+    #   mtu: 1200
+    #   name: bond1
+    # - enabled: true
+    #   name: lo
+    # - description: VTI - 2
+    #   enabled: false
+    #   name: vti2
+    # - description: Configured by Ansible
+    #   enabled: true
+    #   mtu: 1500
+    #   name: eth3
+    # - description: Configured by Ansible
+    #   enabled: true
+    #   name: eth2
+    #   vifs:
+    #   - description: VIF 200 - ETH2
+    #     enabled: true
+    #     vlan_id: '200'
+    # - enabled: true
+    #   name: eth1
+    # - duplex: auto
+    #   enabled: true
+    #   name: eth0
+    #   speed: auto
+
     # After state:
-    # -------------
-    #
+    # ------------
     # vyos@vyos:~$ show configuration commands | grep interfaces
     # set interfaces bonding bond1 description 'Bond - 1'
     # set interfaces bonding bond1 mtu '1200'
@@ -480,15 +439,11 @@ Examples
     # set interfaces loopback lo
     # set interfaces vti vti2 description 'VTI - 2'
     # set interfaces vti vti2 disable
-    #
 
 
     # Using replaced
-    #
-    # -------------
     # Before state:
     # -------------
-    #
     # vyos:~$ show configuration commands | grep eth
     # set interfaces bonding bond1 description 'Bond - 1'
     # set interfaces bonding bond1 mtu '1400'
@@ -517,137 +472,90 @@ Examples
     # set interfaces ethernet eth3 smp_affinity 'auto'
     # set interfaces ethernet eth3 speed '100'
     # set interfaces loopback lo
-    #
-    #
+
     - name: Replace device configurations of listed interfaces with provided configurations
       vyos.vyos.vyos_interfaces:
         config:
-        - name: eth2
-          description: Replaced by Ansible
-
-        - name: eth3
-          description: Replaced by Ansible
-
-        - name: eth1
-          description: Replaced by Ansible
+          - name: eth2
+            description: Replaced by Ansible
+          - name: eth3
+            description: Replaced by Ansible
+          - name: eth1
+            description: Replaced by Ansible
         state: replaced
-    #
-    #
-    # -----------------------
-    # Module Execution Result
-    # -----------------------
-    #
-    # "before": [
-    #        {
-    #            "description": "Bond - 1",
-    #            "enabled": true,
-    #            "mtu": 1400,
-    #            "name": "bond1"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "lo"
-    #        },
-    #        {
-    #            "description": "Configured by Ansible",
-    #            "duplex": "full",
-    #            "enabled": true,
-    #            "mtu": 1500,
-    #            "name": "eth3",
-    #            "speed": "100"
-    #        },
-    #        {
-    #            "description": "Configured by Ansible",
-    #            "duplex": "full",
-    #            "enabled": true,
-    #            "mtu": 500,
-    #            "name": "eth2",
-    #            "speed": "100",
-    #            "vifs": [
-    #                {
-    #                    "description": "VIF 200 - ETH2",
-    #                    "enabled": true,
-    #                    "vlan_id": "200"
-    #                }
-    #            ]
-    #        },
-    #        {
-    #            "description": "Configured by Ansible Eng Team",
-    #            "duplex": "full",
-    #            "enabled": true,
-    #            "name": "eth1",
-    #            "speed": "100"
-    #        },
-    #        {
-    #            "description": "Management Interface for the Appliance",
-    #            "duplex": "auto",
-    #            "enabled": true,
-    #            "name": "eth0",
-    #            "speed": "auto"
-    #        }
-    #    ]
-    #
-    # "commands": [
-    #        "delete interfaces ethernet eth2 speed",
-    #        "delete interfaces ethernet eth2 duplex",
-    #        "delete interfaces ethernet eth2 mtu",
-    #        "delete interfaces ethernet eth2 vif 200 description",
-    #        "set interfaces ethernet eth2 description 'Replaced by Ansible'",
-    #        "delete interfaces ethernet eth3 speed",
-    #        "delete interfaces ethernet eth3 duplex",
-    #        "delete interfaces ethernet eth3 mtu",
-    #        "set interfaces ethernet eth3 description 'Replaced by Ansible'",
-    #        "delete interfaces ethernet eth1 speed",
-    #        "delete interfaces ethernet eth1 duplex",
-    #        "set interfaces ethernet eth1 description 'Replaced by Ansible'"
-    #    ]
-    #
-    # "after": [
-    #        {
-    #            "description": "Bond - 1",
-    #            "enabled": true,
-    #            "mtu": 1400,
-    #            "name": "bond1"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "lo"
-    #        },
-    #        {
-    #            "description": "Replaced by Ansible",
-    #            "enabled": true,
-    #            "name": "eth3"
-    #        },
-    #        {
-    #            "description": "Replaced by Ansible",
-    #            "enabled": true,
-    #            "name": "eth2",
-    #            "vifs": [
-    #                {
-    #                    "enabled": true,
-    #                    "vlan_id": "200"
-    #                }
-    #            ]
-    #        },
-    #        {
-    #            "description": "Replaced by Ansible",
-    #            "enabled": true,
-    #            "name": "eth1"
-    #        },
-    #        {
-    #            "description": "Management Interface for the Appliance",
-    #            "duplex": "auto",
-    #            "enabled": true,
-    #            "name": "eth0",
-    #            "speed": "auto"
-    #        }
-    #    ]
-    #
-    #
-    # -------------
+
+    # Task Output
+    # -----------
+    # before:
+    # - description: Bond - 1
+    #   enabled: true
+    #   mtu: 1400
+    #   name: bond1
+    # - enabled: true
+    #   name: lo
+    # - description: Configured by Ansible
+    #   duplex: full
+    #   enabled: true
+    #   mtu: 1500
+    #   name: eth3
+    #   speed: '100'
+    # - description: Configured by Ansible
+    #   duplex: full
+    #   enabled: true
+    #   mtu: 500
+    #   name: eth2
+    #   speed: '100'
+    #   vifs:
+    #   - description: VIF 200 - ETH2
+    #     enabled: true
+    #     vlan_id: '200'
+    # - description: Configured by Ansible Eng Team
+    #   duplex: full
+    #   enabled: true
+    #   name: eth1
+    #   speed: '100'
+    # - description: Management Interface for the Appliance
+    #   duplex: auto
+    #   enabled: true
+    #   name: eth0
+    #   speed: auto
+    # commands:
+    # - delete interfaces ethernet eth2 speed
+    # - delete interfaces ethernet eth2 duplex
+    # - delete interfaces ethernet eth2 mtu
+    # - delete interfaces ethernet eth2 vif 200
+    # - set interfaces ethernet eth2 description 'Replaced by Ansible'
+    # - delete interfaces ethernet eth3 speed
+    # - delete interfaces ethernet eth3 duplex
+    # - delete interfaces ethernet eth3 mtu
+    # - set interfaces ethernet eth3 description 'Replaced by Ansible'
+    # - delete interfaces ethernet eth1 speed
+    # - delete interfaces ethernet eth1 duplex
+    # - set interfaces ethernet eth1 description 'Replaced by Ansible'
+    # after:
+    # - description: Bond - 1
+    #   enabled: true
+    #   mtu: 1400
+    #   name: bond1
+    # - enabled: true
+    #   name: lo
+    # - description: Replaced by Ansible
+    #   enabled: true
+    #   name: eth3
+    # - description: Replaced by Ansible
+    #   enabled: true
+    #   name: eth2
+    # - description: Replaced by Ansible
+    #   enabled: true
+    #   name: eth1
+    # - description: Management Interface for the Appliance
+    #   duplex: auto
+    #   enabled: true
+    #   name: eth0
+    #   speed: auto
+
     # After state:
-    # -------------
-    #
+    # ------------
     # vyos@vyos:~$ show configuration commands | grep interfaces
     # set interfaces bonding bond1 description 'Bond - 1'
     # set interfaces bonding bond1 mtu '1400'
@@ -664,19 +572,15 @@ Examples
     # set interfaces ethernet eth2 description 'Replaced by Ansible'
     # set interfaces ethernet eth2 hw-id '08:00:27:c2:98:23'
     # set interfaces ethernet eth2 smp-affinity 'auto'
-    # set interfaces ethernet eth2 vif 200
     # set interfaces ethernet eth3 description 'Replaced by Ansible'
     # set interfaces ethernet eth3 hw-id '08:00:27:43:70:8c'
     # set interfaces loopback lo
-    #
-    #
+
+
     # Using overridden
-    #
-    #
-    # --------------
-    # Before state
-    # --------------
-    #
+
+    # Before state:
+    # -------------
     # vyos@vyos:~$ show configuration commands | grep interfaces
     # set interfaces ethernet eth0 address 'dhcp'
     # set interfaces ethernet eth0 address 'dhcpv6'
@@ -702,136 +606,88 @@ Examples
     # set interfaces loopback lo
     # set interfaces vti vti1 description 'Virtual Tunnel Interface - 1'
     # set interfaces vti vti1 mtu '68'
-    #
-    #
+
     - name: Overrides all device configuration with provided configuration
       vyos.vyos.vyos_interfaces:
         config:
-        - name: eth0
-          description: Outbound Interface For The Appliance
-          speed: auto
-          duplex: auto
-
-        - name: eth2
-          speed: auto
-          duplex: auto
-
-        - name: eth3
-          mtu: 1200
+          - name: eth0
+            description: Outbound Interface For The Appliance
+            speed: auto
+            duplex: auto
+          - name: eth2
+            speed: auto
+            duplex: auto
+          - name: eth3
+            mtu: 1200
         state: overridden
-    #
-    #
-    # ------------------------
-    # Module Execution Result
-    # ------------------------
-    #
-    # "before": [
-    #        {
-    #            "enabled": true,
-    #            "name": "lo"
-    #        },
-    #        {
-    #            "description": "Virtual Tunnel Interface - 1",
-    #            "enabled": true,
-    #            "mtu": 68,
-    #            "name": "vti1"
-    #        },
-    #        {
-    #            "description": "Configured by Ansible Network",
-    #            "enabled": true,
-    #            "name": "eth3"
-    #        },
-    #        {
-    #            "description": "Configured by Ansible Team (Admin Down)",
-    #            "enabled": false,
-    #            "mtu": 600,
-    #            "name": "eth2"
-    #        },
-    #        {
-    #            "description": "Configured by Ansible Eng Team",
-    #            "enabled": true,
-    #            "mtu": 100,
-    #            "name": "eth1",
-    #            "vifs": [
-    #                {
-    #                    "description": "VIF 100 - ETH1",
-    #                    "enabled": false,
-    #                    "vlan_id": "100"
-    #                }
-    #            ]
-    #        },
-    #        {
-    #            "description": "Ethernet Interface - 0",
-    #            "duplex": "auto",
-    #            "enabled": true,
-    #            "mtu": 1200,
-    #            "name": "eth0",
-    #            "speed": "auto"
-    #        }
-    #    ]
-    #
-    # "commands": [
-    #        "delete interfaces vti vti1 description",
-    #        "delete interfaces vti vti1 mtu",
-    #        "delete interfaces ethernet eth1 description",
-    #        "delete interfaces ethernet eth1 mtu",
-    #        "delete interfaces ethernet eth1 vif 100 description",
-    #        "delete interfaces ethernet eth1 vif 100 disable",
-    #        "delete interfaces ethernet eth0 mtu",
-    #        "set interfaces ethernet eth0 description 'Outbound Interface For The Appliance'",
-    #        "delete interfaces ethernet eth2 description",
-    #        "delete interfaces ethernet eth2 mtu",
-    #        "set interfaces ethernet eth2 duplex 'auto'",
-    #        "delete interfaces ethernet eth2 disable",
-    #        "set interfaces ethernet eth2 speed 'auto'",
-    #        "delete interfaces ethernet eth3 description",
-    #        "set interfaces ethernet eth3 mtu '1200'"
-    #    ],
-    #
-    # "after": [
-    #        {
-    #            "enabled": true,
-    #            "name": "lo"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "vti1"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "mtu": 1200,
-    #            "name": "eth3"
-    #        },
-    #        {
-    #            "duplex": "auto",
-    #            "enabled": true,
-    #            "name": "eth2",
-    #            "speed": "auto"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "eth1",
-    #            "vifs": [
-    #                {
-    #                    "enabled": true,
-    #                    "vlan_id": "100"
-    #                }
-    #            ]
-    #        },
-    #        {
-    #            "description": "Outbound Interface For The Appliance",
-    #            "duplex": "auto",
-    #            "enabled": true,
-    #            "name": "eth0",
-    #            "speed": "auto"
-    #        }
-    #    ]
-    #
-    #
+
+    # Task Output
+    # -----------
+    # before:
+    # - enabled: true
+    #   name: lo
+    # - description: Virtual Tunnel Interface - 1
+    #   enabled: true
+    #   mtu: 68
+    #   name: vti1
+    # - description: Configured by Ansible Network
+    #   enabled: true
+    #   name: eth3
+    # - description: Configured by Ansible Team (Admin Down)
+    #   enabled: false
+    #   mtu: 600
+    #   name: eth2
+    # - description: Configured by Ansible Eng Team
+    #   enabled: true
+    #   mtu: 100
+    #   name: eth1
+    #   vifs:
+    #   - description: VIF 100 - ETH1
+    #     enabled: false
+    #     vlan_id: '100'
+    # - description: Ethernet Interface - 0
+    #   duplex: auto
+    #   enabled: true
+    #   mtu: 1200
+    #   name: eth0
+    #   speed: auto
+    # commands:
+    # - delete interfaces vti vti1 description
+    # - delete interfaces vti vti1 mtu
+    # - delete interfaces ethernet eth1 description
+    # - delete interfaces ethernet eth1 mtu
+    # - delete interfaces ethernet eth1 vif 100
+    # - delete interfaces ethernet eth0 mtu
+    # - set interfaces ethernet eth0 description 'Outbound Interface For The Appliance'
+    # - delete interfaces ethernet eth2 description
+    # - delete interfaces ethernet eth2 mtu
+    # - set interfaces ethernet eth2 duplex 'auto'
+    # - delete interfaces ethernet eth2 disable
+    # - set interfaces ethernet eth2 speed 'auto'
+    # - delete interfaces ethernet eth3 description
+    # - set interfaces ethernet eth3 mtu '1200'
+    # after:
+    # - enabled: true
+    #   name: lo
+    # - enabled: true
+    #   name: vti1
+    # - enabled: true
+    #   mtu: 1200
+    #   name: eth3
+    # - duplex: auto
+    #   enabled: true
+    #   name: eth2
+    #   speed: auto
+    # - enabled: true
+    #   name: eth1
+    # - description: Outbound Interface For The Appliance
+    #   duplex: auto
+    #   enabled: true
+    #   name: eth0
+    #   speed: auto
+
+    # After state:
     # ------------
-    # After state
-    # ------------
-    #
     # vyos@vyos:~$ show configuration commands | grep interfaces
     # set interfaces ethernet eth0 address 'dhcp'
     # set interfaces ethernet eth0 address 'dhcpv6'
@@ -842,7 +698,6 @@ Examples
     # set interfaces ethernet eth0 speed 'auto'
     # set interfaces ethernet eth1 hw-id '08:00:27:ea:0f:b9'
     # set interfaces ethernet eth1 smp-affinity 'auto'
-    # set interfaces ethernet eth1 vif 100
     # set interfaces ethernet eth2 duplex 'auto'
     # set interfaces ethernet eth2 hw-id '08:00:27:c2:98:23'
     # set interfaces ethernet eth2 smp-affinity 'auto'
@@ -851,15 +706,12 @@ Examples
     # set interfaces ethernet eth3 mtu '1200'
     # set interfaces loopback lo
     # set interfaces vti vti1
-    #
-    #
+
+
     # Using deleted
-    #
-    #
+
+    # Before state:
     # -------------
-    # Before state
-    # -------------
-    #
     # vyos@vyos:~$ show configuration commands | grep interfaces
     # set interfaces bonding bond0 mtu '1300'
     # set interfaces bonding bond1 description 'LAG - 1'
@@ -887,130 +739,87 @@ Examples
     # set interfaces ethernet eth3 hw-id '08:00:27:43:70:8c'
     # set interfaces ethernet eth3 speed '100'
     # set interfaces loopback lo
-    #
-    #
+
     - name: Delete attributes of given interfaces (Note - This won't delete the interfaces
         themselves)
       vyos.vyos.vyos_interfaces:
         config:
-        - name: bond1
-
-        - name: eth1
-
-        - name: eth2
-
-        - name: eth3
+          - name: bond1
+          - name: eth1
+          - name: eth2
+          - name: eth3
         state: deleted
-    #
-    #
-    # ------------------------
-    # Module Execution Results
-    # ------------------------
-    #
-    # "before": [
-    #        {
-    #            "enabled": true,
-    #            "mtu": 1300,
-    #            "name": "bond0"
-    #        },
-    #        {
-    #            "description": "LAG - 1",
-    #            "enabled": true,
-    #            "name": "bond1"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "lo"
-    #        },
-    #        {
-    #            "description": "Configured by Ansible Network",
-    #            "duplex": "full",
-    #            "enabled": true,
-    #            "name": "eth3",
-    #            "speed": "100"
-    #        },
-    #        {
-    #            "description": "Configured by Ansible",
-    #            "duplex": "full",
-    #            "enabled": false,
-    #            "mtu": 600,
-    #            "name": "eth2",
-    #            "speed": "100"
-    #        },
-    #        {
-    #            "description": "Configured by Ansible Network",
-    #            "duplex": "full",
-    #            "enabled": true,
-    #            "name": "eth1",
-    #            "speed": "100"
-    #        },
-    #        {
-    #            "description": "Outbound Interface for this appliance",
-    #            "duplex": "auto",
-    #            "enabled": true,
-    #            "name": "eth0",
-    #            "speed": "auto"
-    #        }
-    #    ]
-    #
-    # "commands": [
-    #        "delete interfaces bonding bond1 description",
-    #        "delete interfaces ethernet eth1 speed",
-    #        "delete interfaces ethernet eth1 duplex",
-    #        "delete interfaces ethernet eth1 description",
-    #        "delete interfaces ethernet eth2 speed",
-    #        "delete interfaces ethernet eth2 disable",
-    #        "delete interfaces ethernet eth2 duplex",
-    #        "delete interfaces ethernet eth2 disable",
-    #        "delete interfaces ethernet eth2 description",
-    #        "delete interfaces ethernet eth2 disable",
-    #        "delete interfaces ethernet eth2 mtu",
-    #        "delete interfaces ethernet eth2 disable",
-    #        "delete interfaces ethernet eth3 speed",
-    #        "delete interfaces ethernet eth3 duplex",
-    #        "delete interfaces ethernet eth3 description"
-    #    ]
-    #
-    # "after": [
-    #        {
-    #            "enabled": true,
-    #            "mtu": 1300,
-    #            "name": "bond0"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "bond1"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "lo"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "eth3"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "eth2"
-    #        },
-    #        {
-    #            "enabled": true,
-    #            "name": "eth1"
-    #        },
-    #        {
-    #            "description": "Outbound Interface for this appliance",
-    #            "duplex": "auto",
-    #            "enabled": true,
-    #            "name": "eth0",
-    #            "speed": "auto"
-    #        }
-    #    ]
-    #
-    #
+
+    # Task Output
+    # -----------
+    # before:
+    # - enabled: true
+    #   mtu: 1300
+    #   name: bond0
+    # - description: LAG - 1
+    #   enabled: true
+    #   name: bond1
+    # - enabled: true
+    #   name: lo
+    # - description: Configured by Ansible Network
+    #   duplex: full
+    #   enabled: true
+    #   name: eth3
+    #   speed: '100'
+    # - description: Configured by Ansible
+    #   duplex: full
+    #   enabled: false
+    #   mtu: 600
+    #   name: eth2
+    #   speed: '100'
+    # - description: Configured by Ansible Network
+    #   duplex: full
+    #   enabled: true
+    #   name: eth1
+    #   speed: '100'
+    # - description: Outbound Interface for this appliance
+    #   duplex: auto
+    #   enabled: true
+    #   name: eth0
+    #   speed: auto
+    # commands:
+    # - delete interfaces bonding bond1 description
+    # - delete interfaces ethernet eth1 speed
+    # - delete interfaces ethernet eth1 duplex
+    # - delete interfaces ethernet eth1 description
+    # - delete interfaces ethernet eth2 speed
+    # - delete interfaces ethernet eth2 disable
+    # - delete interfaces ethernet eth2 duplex
+    # - delete interfaces ethernet eth2 disable
+    # - delete interfaces ethernet eth2 description
+    # - delete interfaces ethernet eth2 disable
+    # - delete interfaces ethernet eth2 mtu
+    # - delete interfaces ethernet eth2 disable
+    # - delete interfaces ethernet eth3 speed
+    # - delete interfaces ethernet eth3 duplex
+    # - delete interfaces ethernet eth3 description
+    # after:
+    # - enabled: true
+    #   mtu: 1300
+    #   name: bond0
+    # - enabled: true
+    #   name: bond1
+    # - enabled: true
+    #   name: lo
+    # - enabled: true
+    #   name: eth3
+    # - enabled: true
+    #   name: eth2
+    # - enabled: true
+    #   name: eth1
+    # - description: Outbound Interface for this appliance
+    #   duplex: auto
+    #   enabled: true
+    #   name: eth0
+    #   speed: auto
+
+    # After state:
     # ------------
-    # After state
-    # ------------
-    #
     # vyos@vyos:~$ show configuration commands | grep interfaces
     # set interfaces bonding bond0 mtu '1300'
     # set interfaces bonding bond1
@@ -1027,15 +836,12 @@ Examples
     # set interfaces ethernet eth2 smp-affinity 'auto'
     # set interfaces ethernet eth3 hw-id '08:00:27:43:70:8c'
     # set interfaces loopback lo
-    #
-    #
 
 
     # Using gathered
-    #
+
     # Before state:
     # -------------
-    #
     # vyos@192# run show configuration commands | grep interfaces
     # set interfaces ethernet eth0 address 'dhcp'
     # set interfaces ethernet eth0 duplex 'auto'
@@ -1055,132 +861,89 @@ Examples
     #
     - name: Gather listed interfaces with provided configurations
       vyos.vyos.vyos_interfaces:
-        config:
         state: gathered
-    #
-    #
-    # -------------------------
-    # Module Execution Result
-    # -------------------------
-    #
-    #    "gathered": [
-    #         {
-    #             "description": "Configured by Ansible",
-    #             "duplex": "auto",
-    #             "enabled": true,
-    #             "mtu": 1500,
-    #             "name": "eth2",
-    #             "speed": "auto",
-    #             "vifs": [
-    #                 {
-    #                     "description": "VIF - 200",
-    #                     "enabled": true,
-    #                     "vlan_id": 200
-    #                 }
-    #             ]
-    #         },
-    #         {
-    #             "description": "Configured by Ansible",
-    #             "duplex": "auto",
-    #             "enabled": true,
-    #             "mtu": 1500,
-    #             "name": "eth1",
-    #             "speed": "auto",
-    #             "vifs": [
-    #                 {
-    #                     "description": "VIF - 200",
-    #                     "enabled": true,
-    #                     "vlan_id": 200
-    #                 }
-    #             ]
-    #         },
-    #         {
-    #             "duplex": "auto",
-    #             "enabled": true,
-    #             "name": "eth0",
-    #             "speed": "auto"
-    #         }
-    #     ]
-    #
-    #
-    # After state:
-    # -------------
-    #
-    # vyos@192# run show configuration commands | grep interfaces
-    # set interfaces ethernet eth0 address 'dhcp'
-    # set interfaces ethernet eth0 duplex 'auto'
-    # set interfaces ethernet eth0 hw-id '08:00:27:50:5e:19'
-    # set interfaces ethernet eth0 smp_affinity 'auto'
-    # set interfaces ethernet eth0 speed 'auto'
-    # set interfaces ethernet eth1 description 'Configured by Ansible'
-    # set interfaces ethernet eth1 duplex 'auto'
-    # set interfaces ethernet eth1 mtu '1500'
-    # set interfaces ethernet eth1 speed 'auto'
-    # set interfaces ethernet eth1 vif 200 description 'VIF - 200'
-    # set interfaces ethernet eth2 description 'Configured by Ansible'
-    # set interfaces ethernet eth2 duplex 'auto'
-    # set interfaces ethernet eth2 mtu '1500'
-    # set interfaces ethernet eth2 speed 'auto'
-    # set interfaces ethernet eth2 vif 200 description 'VIF - 200'
+
+    # Task output
+    # -----------
+    # gathered:
+    # - description: Configured by Ansible
+    #   duplex: auto
+    #   enabled: true
+    #   mtu: 1500
+    #   name: eth2
+    #   speed: auto
+    #   vifs:
+    #   - description: VIF - 200
+    #     enabled: true
+    #     vlan_id: 200
+    # - description: Configured by Ansible
+    #   duplex: auto
+    #   enabled: true
+    #   mtu: 1500
+    #   name: eth1
+    #   speed: auto
+    #   vifs:
+    #   - description: VIF - 200
+    #     enabled: true
+    #     vlan_id: 200
+    # - duplex: auto
+    #   enabled: true
+    #   name: eth0
+    #   speed: auto
 
 
     # Using rendered
-    #
-    #
+
     - name: Render the commands for provided  configuration
       vyos.vyos.vyos_interfaces:
         config:
-        - name: eth0
-          enabled: true
-          duplex: auto
-          speed: auto
-        - name: eth1
-          description: Configured by Ansible - Interface 1
-          mtu: 1500
-          speed: auto
-          duplex: auto
-          enabled: true
-          vifs:
-          - vlan_id: 100
-            description: Eth1 - VIF 100
-            mtu: 400
+          - name: eth0
             enabled: true
-          - vlan_id: 101
-            description: Eth1 - VIF 101
+            duplex: auto
+            speed: auto
+          - name: eth1
+            description: Configured by Ansible - Interface 1
+            mtu: 1500
+            speed: auto
+            duplex: auto
             enabled: true
-        - name: eth2
-          description: Configured by Ansible - Interface 2 (ADMIN DOWN)
-          mtu: 600
-          enabled: false
+            vifs:
+              - vlan_id: 100
+                description: Eth1 - VIF 100
+                mtu: 400
+                enabled: true
+              - vlan_id: 101
+                description: Eth1 - VIF 101
+                enabled: true
+          - name: eth2
+            description: Configured by Ansible - Interface 2 (ADMIN DOWN)
+            mtu: 600
+            enabled: false
         state: rendered
-    #
-    #
-    # -------------------------
-    # Module Execution Result
-    # -------------------------
-    #
-    #
-    # "rendered": [
-    #         "set interfaces ethernet eth0 duplex 'auto'",
-    #         "set interfaces ethernet eth0 speed 'auto'",
-    #         "delete interfaces ethernet eth0 disable",
-    #         "set interfaces ethernet eth1 duplex 'auto'",
-    #         "delete interfaces ethernet eth1 disable",
-    #         "set interfaces ethernet eth1 speed 'auto'",
-    #         "set interfaces ethernet eth1 description 'Configured by Ansible - Interface 1'",
-    #         "set interfaces ethernet eth1 mtu '1500'",
-    #         "set interfaces ethernet eth1 vif 100 description 'Eth1 - VIF 100'",
-    #         "set interfaces ethernet eth1 vif 100 mtu '400'",
-    #         "set interfaces ethernet eth1 vif 101 description 'Eth1 - VIF 101'",
-    #         "set interfaces ethernet eth2 disable",
-    #         "set interfaces ethernet eth2 description 'Configured by Ansible - Interface 2 (ADMIN DOWN)'",
-    #         "set interfaces ethernet eth2 mtu '600'"
-    #     ]
+
+
+    # Task Output
+    # -----------
+    # rendered:
+    # - set interfaces ethernet eth0 duplex 'auto'
+    # - set interfaces ethernet eth0 speed 'auto'
+    # - delete interfaces ethernet eth0 disable
+    # - set interfaces ethernet eth1 duplex 'auto'
+    # - delete interfaces ethernet eth1 disable
+    # - set interfaces ethernet eth1 speed 'auto'
+    # - set interfaces ethernet eth1 description 'Configured by Ansible - Interface 1'
+    # - set interfaces ethernet eth1 mtu '1500'
+    # - set interfaces ethernet eth1 vif 100 description 'Eth1 - VIF 100'
+    # - set interfaces ethernet eth1 vif 100 mtu '400'
+    # - set interfaces ethernet eth1 vif 101 description 'Eth1 - VIF 101'
+    # - set interfaces ethernet eth2 disable
+    # - set interfaces ethernet eth2 description 'Configured by Ansible - Interface 2 (ADMIN
+    #   DOWN)'
+    # - set interfaces ethernet eth2 mtu '600'
 
 
     # Using parsed
-    #
-    #
+
     - name: Parse the configuration.
       vyos.vyos.vyos_interfaces:
         running_config:
@@ -1200,51 +963,34 @@ Examples
            set interfaces ethernet eth2 speed 'auto'
            set interfaces ethernet eth2 vif 200 description 'VIF - 200'"
         state: parsed
-    #
-    #
-    # -------------------------
-    # Module Execution Result
-    # -------------------------
-    #
-    #
-    # "parsed": [
-    #         {
-    #             "description": "Configured by Ansible",
-    #             "duplex": "auto",
-    #             "enabled": true,
-    #             "mtu": 1500,
-    #             "name": "eth2",
-    #             "speed": "auto",
-    #             "vifs": [
-    #                 {
-    #                     "description": "VIF - 200",
-    #                     "enabled": true,
-    #                     "vlan_id": 200
-    #                 }
-    #             ]
-    #         },
-    #         {
-    #             "description": "Configured by Ansible",
-    #             "duplex": "auto",
-    #             "enabled": true,
-    #             "mtu": 1500,
-    #             "name": "eth1",
-    #             "speed": "auto",
-    #             "vifs": [
-    #                 {
-    #                     "description": "VIF - 200",
-    #                     "enabled": true,
-    #                     "vlan_id": 200
-    #                 }
-    #             ]
-    #         },
-    #         {
-    #             "duplex": "auto",
-    #             "enabled": true,
-    #             "name": "eth0",
-    #             "speed": "auto"
-    #         }
-    #     ]
+
+    # Task output
+    # -----------
+    # parsed:
+    # - description: Configured by Ansible
+    #   duplex: auto
+    #   enabled: true
+    #   mtu: 1500
+    #   name: eth2
+    #   speed: auto
+    #   vifs:
+    #   - description: VIF - 200
+    #     enabled: true
+    #     vlan_id: 200
+    # - description: Configured by Ansible
+    #   duplex: auto
+    #   enabled: true
+    #   mtu: 1500
+    #   name: eth1
+    #   speed: auto
+    #   vifs:
+    #   - description: VIF - 200
+    #     enabled: true
+    #     vlan_id: 200
+    # - duplex: auto
+    #   enabled: true
+    #   name: eth0
+    #   speed: auto
 
 
 
@@ -1271,11 +1017,10 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>when changed</td>
                 <td>
-                            <div>The configuration as structured data after module completion.</div>
+                            <div>The resulting configuration after module execution.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format
-     of the parameters above.</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
                 </td>
             </tr>
             <tr>
@@ -1287,13 +1032,12 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                       <span style="color: purple">list</span>
                     </div>
                 </td>
-                <td>always</td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
                 <td>
-                            <div>The configuration as structured data prior to module invocation.</div>
+                            <div>The configuration prior to the module execution.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format
-     of the parameters above.</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
                 </td>
             </tr>
             <tr>
@@ -1308,6 +1052,57 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>always</td>
                 <td>
                             <div>The set of commands pushed to the remote device.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set interfaces ethernet eth1 mtu 1200&#x27;, &#x27;set interfaces ethernet eth2 vif 100 description VIF 100&#x27;]</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>gathered</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>gathered</code></td>
+                <td>
+                            <div>Facts about the network resource gathered from the remote device as structured data.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>parsed</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>parsed</code></td>
+                <td>
+                            <div>The device native config provided in <em>running_config</em> option parsed into structured data as per module argspec.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>rendered</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>rendered</code></td>
+                <td>
+                            <div>The provided configuration in the task rendered in device-native format (offline).</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set interfaces ethernet eth1 mtu 1200&#x27;, &#x27;set interfaces ethernet eth2 vif 100 description VIF 100&#x27;]</div>

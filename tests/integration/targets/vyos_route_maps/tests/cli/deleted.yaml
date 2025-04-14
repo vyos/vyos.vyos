@@ -1,14 +1,10 @@
 ---
 - debug:
-    msg: START vyos_route_maps deleted integration tests on connection={{
-      ansible_connection }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_route_maps deleted integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Delete the provided configuration
       register: result
       vyos.vyos.vyos_route_maps: &id001
@@ -24,11 +20,9 @@
     - name: Assert that the after dicts were correctly generated
       assert:
         that:
-          - "{{ deleted['after'] | symmetric_difference(result['after']) |length\
-            \ == 0 }}"
+          - "{{ deleted['after'] | symmetric_difference(result['after']) |length == 0 }}"
 
-    - name: Delete the existing configuration with the provided running configuration
-        (IDEMPOTENT)
+    - name: Delete the existing configuration with the provided running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_route_maps: *id001
 
@@ -38,5 +32,4 @@
           - result['changed'] == false
 
   always:
-
     - include_tasks: _remove_config.yaml

@@ -12,27 +12,31 @@ created
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from copy import deepcopy
+
+from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    to_list,
     remove_empties,
     search_obj_in_list,
+    to_list,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
-)
-from ansible.module_utils.six import iteritems
 
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
+    _bool_to_str,
     _in_target,
     _is_w_same,
-    _bool_to_str,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
 class Ospfv3(ConfigBase):
@@ -59,7 +63,9 @@ class Ospfv3(ConfigBase):
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources, data=data
+            self.gather_subset,
+            self.gather_network_resources,
+            data=data,
         )
         ospfv3_facts = facts["ansible_network_resources"].get("ospfv3", {})
         return ospfv3_facts
@@ -98,7 +104,7 @@ class Ospfv3(ConfigBase):
             running_config = self._module.params["running_config"]
             if not running_config:
                 self._module.fail_json(
-                    msg="value of running_config parameter must not be empty for state parsed"
+                    msg="value of running_config parameter must not be empty for state parsed",
                 )
             result["parsed"] = self.get_ospfv3_facts(data=running_config)
         else:
@@ -137,14 +143,9 @@ class Ospfv3(ConfigBase):
                   to the desired configuration
         """
         commands = []
-        if (
-            self.state in ("merged", "replaced", "overridden", "rendered")
-            and not w
-        ):
+        if self.state in ("merged", "replaced", "overridden", "rendered") and not w:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(
-                    self.state
-                )
+                msg="value of config parameter must not be empty for state {0}".format(self.state),
             )
         if self.state == "deleted":
             commands.extend(self._state_deleted(w, h))
@@ -245,20 +246,10 @@ class Ospfv3(ConfigBase):
             leaf_dict = {"parameters": "router_id"}
             leaf = leaf_dict[attr]
             for item, value in iteritems(want[attr]):
-                if (
-                    opr
-                    and item in leaf
-                    and not _is_w_same(want[attr], h, item)
-                ):
-                    commands.append(
-                        self._form_attr_cmd(
-                            key=attr, attr=item, val=value, opr=opr
-                        )
-                    )
+                if opr and item in leaf and not _is_w_same(want[attr], h, item):
+                    commands.append(self._form_attr_cmd(key=attr, attr=item, val=value, opr=opr))
                 elif not opr and item in leaf and not _in_target(h, item):
-                    commands.append(
-                        self._form_attr_cmd(key=attr, attr=item, opr=opr)
-                    )
+                    commands.append(self._form_attr_cmd(key=attr, attr=item, opr=opr))
         return commands
 
     def _render_list_dict_param(self, attr, want, have, cmd=None, opr=True):
@@ -277,10 +268,12 @@ class Ospfv3(ConfigBase):
         name = {
             "redistribute": "route_type",
             "range": "address",
+            "interface": "name",
         }
         leaf_dict = {
             "redistribute": ("route_map", "route_type"),
             "range": ("address", "advertise", "not_advertise"),
+            "interface": ("name"),
         }
         leaf = leaf_dict[attr]
         w = want.get(attr) or []
@@ -293,30 +286,31 @@ class Ospfv3(ConfigBase):
                 for key, val in iteritems(w_item):
                     if not cmd:
                         cmd = self._compute_command(opr=opr)
-                    h_item = search_obj_in_list(
-                        w_item[name[attr]], h, name[attr]
-                    )
-                    if (
-                        opr
-                        and key in leaf
-                        and not _is_w_same(w_item, h_item, key)
-                    ):
-                        if key == "route_type" or (
+                    h_item = search_obj_in_list(w_item[name[attr]], h, name[attr])
+                    if opr and key in leaf and not _is_w_same(w_item, h_item, key):
+                        if key in ["route_type", "name"] or (
                             key == "address"
                             and "advertise" not in w_item
                             and "not-advertise" not in w_item
                         ):
                             if not val:
                                 cmd = cmd.replace("set", "delete")
-                            commands.append(cmd + attr + " " + str(val))
+                            if (
+                                LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+                                and attr == "interface"
+                            ):
+                                words = cmd.split()
+                                cmd14_list = []
+                                for word in words:
+                                    cmd14_list.append(word)
+                                    if word == "ospfv3":
+                                        cmd14_list.append(attr + " " + str(val))
+                                commands.append(" ".join(cmd14_list))
+                            else:
+                                commands.append(cmd + attr + " " + str(val))
                         elif key in leaf_dict["range"] and key != "address":
                             commands.append(
-                                cmd
-                                + attr
-                                + " "
-                                + w_item[name[attr]]
-                                + " "
-                                + key.replace("_", "-")
+                                cmd + attr + " " + w_item[name[attr]] + " " + key.replace("_", "-"),
                             )
                         elif key == "route_map":
                             commands.append(
@@ -327,18 +321,25 @@ class Ospfv3(ConfigBase):
                                 + " "
                                 + key.replace("_", "-")
                                 + " "
-                                + str(val)
+                                + str(val),
                             )
-                    elif (
-                        not opr and key in leaf and not _in_target(h_item, key)
-                    ):
-                        if key in ("route_type", "address"):
-                            commands.append(cmd + attr + " " + str(val))
+                    elif not opr and key in leaf and not _in_target(h_item, key):
+                        if key in ("route_type", "address", "name"):
+                            if (
+                                LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+                                and attr == "interface"
+                            ):
+                                words = cmd.split()
+                                cmd14_list = []
+                                for word in words:
+                                    cmd14_list.append(word)
+                                    if word == "ospfv3":
+                                        cmd14_list.append(attr + " " + str(val))
+                                commands.append(" ".join(cmd14_list))
+                            else:
+                                commands.append(cmd + attr + " " + str(val))
                         else:
-                            commands.append(
-                                cmd
-                                + (attr + " " + w_item[name[attr]] + " " + key)
-                            )
+                            commands.append(cmd + (attr + " " + w_item[name[attr]] + " " + key))
         return commands
 
     def _render_areas(self, attr, want, have, opr=True):
@@ -369,52 +370,42 @@ class Ospfv3(ConfigBase):
                     )
                     + " "
                 )
-                h_area = search_obj_in_list(
-                    w_area["area_id"], h_lst, "area_id"
-                )
+                h_area = search_obj_in_list(w_area["area_id"], h_lst, "area_id")
                 if not opr and not h_area:
                     commands.append(
-                        self._form_attr_cmd(
-                            key="area", attr=w_area["area_id"], opr=opr
-                        )
+                        self._form_attr_cmd(key="area", attr=w_area["area_id"], opr=opr),
                     )
                 else:
                     for key, val in iteritems(w_area):
-                        if (
-                            opr
-                            and key in l_set
-                            and not _is_w_same(w_area, h_area, key)
-                        ):
+                        if opr and key in l_set and not _is_w_same(w_area, h_area, key):
                             if key == "area_id":
                                 commands.append(
                                     self._form_attr_cmd(
                                         attr="area",
                                         val=_bool_to_str(val),
                                         opr=opr,
-                                    )
+                                    ),
                                 )
                             else:
                                 commands.append(
                                     cmd
                                     + key.replace("_", "-")
                                     + " "
-                                    + _bool_to_str(val).replace("_", "-")
+                                    + _bool_to_str(val).replace("_", "-"),
                                 )
                         elif not opr and key in l_set:
-                            if key == "area_id" and not _in_target(
-                                h_area, key
-                            ):
+                            if key == "area_id" and not _in_target(h_area, key):
                                 commands.append(cmd)
                                 continue
-                            if key != "area_id" and not _in_target(
-                                h_area, key
-                            ):
+                            if key != "area_id" and not _in_target(h_area, key):
                                 commands.append(cmd + val + " " + key)
                         elif key == "range":
                             commands.extend(
-                                self._render_list_dict_param(
-                                    key, w_area, h_area, cmd, opr
-                                )
+                                self._render_list_dict_param(key, w_area, h_area, cmd, opr),
+                            )
+                        elif key == "interface":
+                            commands.extend(
+                                self._render_list_dict_param(key, w_area, h_area, cmd, opr),
                             )
         return commands
 
@@ -427,13 +418,9 @@ class Ospfv3(ConfigBase):
         :param opr: True/False.
         :return: generated command.
         """
-        return self._compute_command(
-            key, attr=self._map_attrib(attr), val=val, opr=opr
-        )
+        return self._compute_command(key, attr=self._map_attrib(attr), val=val, opr=opr)
 
-    def _compute_command(
-        self, key=None, attr=None, val=None, remove=False, opr=True
-    ):
+    def _compute_command(self, key=None, attr=None, val=None, remove=False, opr=True):
         """
         This function construct the add/delete command based on passed attributes.
         :param key: parent key.

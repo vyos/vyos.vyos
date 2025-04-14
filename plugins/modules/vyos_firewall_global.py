@@ -28,18 +28,27 @@ The module file for vyos_firewall_global
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
+---
 module: vyos_firewall_global
-short_description: FIREWALL global resource module
-description: This module manage global policies or configurations for firewall on
+short_description: Firewall global resource module
+description:
+- This module manage global policies or configurations for firewall on
   VyOS devices.
-version_added: 1.0.0
+version_added: '1.0.0'
 notes:
-- Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- Tested against VyOS 1.3.8.
+- This module works with connection C(ansible.netcommon.network_cli).
+  See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Rohit Thakur (@rohitthakur2590)
 options:
@@ -49,7 +58,8 @@ options:
     type: dict
     suboptions:
       route_redirects:
-        description: -A dictionary of Firewall icmp redirect and source route global
+        description:
+        - A dictionary of Firewall ICMP redirect and source route global
           configuration options.
         type: list
         elements: dict
@@ -150,7 +160,8 @@ options:
                 elements: dict
                 suboptions:
                   address:
-                    description: IP address.
+                    description:
+                    - IP address.
                     type: str
           network_group:
             description:
@@ -184,7 +195,8 @@ options:
                 elements: dict
                 suboptions:
                   address:
-                    description: IP address.
+                    description:
+                    - IP address.
                     type: str
           port_group:
             description:
@@ -199,7 +211,7 @@ options:
                 required: true
               description:
                 description:
-                - Allows you to specify a brief description for the port group.
+                - A brief description for the port group.
                 type: str
               members:
                 description:
@@ -208,7 +220,8 @@ options:
                 elements: dict
                 suboptions:
                   port:
-                    description: Defines the number.
+                    description:
+                    - Specified port.
                     type: str
       log_martians:
         description:
@@ -234,7 +247,8 @@ options:
         elements: dict
         suboptions:
           connection_type:
-            description: Specifies connection type.
+            description:
+            - Specifies connection type.
             type: str
             choices:
             - established
@@ -252,9 +266,24 @@ options:
             description:
             - Enable logging of packets part of an established connection.
             type: bool
+          log_level:
+            description:
+            - Specify log level for packets logged.
+            - Only available in 1.4+
+            type: str
+            choices:
+            - emerg
+            - alert
+            - crit
+            - err
+            - warn
+            - notice
+            - info
+            - debug
   running_config:
     description:
-    - The module, by default, will connect to the remote device and retrieve the current
+    - >
+      The module, by default, will connect to the remote device and retrieve the current
       running-config to use as a base for comparing against the contents of source.
       There are times when it is not desirable to have the task get the current running-config
       for every task in a playbook.  The I(running_config) argument allows the implementer
@@ -274,7 +303,6 @@ options:
     - rendered
     - parsed
     default: merged
-
 """
 EXAMPLES = """
 # Using merged
@@ -297,30 +325,31 @@ EXAMPLES = """
         all: true
         broadcast: true
       state_policy:
-      - connection_type: established
-        action: accept
-        log: true
-      - connection_type: invalid
-        action: reject
+        - connection_type: established
+          action: accept
+          log: true
+          log_level: emerg
+        - connection_type: invalid
+          action: reject
       route_redirects:
-      - afi: ipv4
-        ip_src_route: true
-        icmp_redirects:
-          send: true
-          receive: false
+        - afi: ipv4
+          ip_src_route: true
+          icmp_redirects:
+            send: true
+            receive: false
       group:
         address_group:
-        - name: MGMT-HOSTS
-          description: This group has the Management hosts address list
-          members:
-          - address: 192.0.1.1
-          - address: 192.0.1.3
-          - address: 192.0.1.5
+          - name: MGMT-HOSTS
+            description: This group has the Management hosts address list
+            members:
+              - address: 192.0.1.1
+              - address: 192.0.1.3
+              - address: 192.0.1.5
         network_group:
-        - name: MGMT
-          description: This group has the Management network addresses
-          members:
-          - address: 192.0.1.0/24
+          - name: MGMT
+            description: This group has the Management network addresses
+            members:
+              - address: 192.0.1.0/24
     state: merged
 #
 #
@@ -339,19 +368,20 @@ EXAMPLES = """
 #        "set firewall group network-group MGMT network 192.0.1.0/24",
 #        "set firewall group network-group MGMT description 'This group has the Management network addresses'",
 #        "set firewall group network-group MGMT",
-#        "set firewall ip-src-route 'enable'",
-#        "set firewall receive-redirects 'disable'",
-#        "set firewall send-redirects 'enable'",
-#        "set firewall config-trap 'enable'",
-#        "set firewall state-policy established action 'accept'",
-#        "set firewall state-policy established log 'enable'",
-#        "set firewall state-policy invalid action 'reject'",
-#        "set firewall broadcast-ping 'enable'",
-#        "set firewall all-ping 'enable'",
-#        "set firewall log-martians 'enable'",
-#        "set firewall twa-hazards-protection 'enable'",
-#        "set firewall syn-cookies 'enable'",
-#        "set firewall source-validation 'strict'"
+#        "set firewall global-options ip-src-route 'enable'",
+#        "set firewall global-options receive-redirects 'disable'",
+#        "set firewall global-options send-redirects 'enable'",
+#        "set firewall global-options config-trap 'enable'",
+#        "set firewall global-options state-policy established action 'accept'",
+#        "set firewall global-options state-policy established log 'enable'",
+#        "set firewall global-options state-policy established log-level 'emerg'",
+#        "set firewall global-options state-policy invalid action 'reject'",
+#        "set firewall global-options broadcast-ping 'enable'",
+#        "set firewall global-options all-ping 'enable'",
+#        "set firewall global-options log-martians 'enable'",
+#        "set firewall global-options twa-hazards-protection 'enable'",
+#        "set firewall global-options syn-cookies 'enable'",
+#        "set firewall global-options source-validation 'strict'"
 #    ]
 #
 # "after": {
@@ -421,36 +451,48 @@ EXAMPLES = """
 # -------------
 #
 # vyos@192# run show configuration commands | grep firewall
-# set firewall all-ping 'enable'
-# set firewall broadcast-ping 'enable'
-# set firewall config-trap 'enable'
+# set firewall global-options all-ping 'enable'
+# set firewall global-options broadcast-ping 'enable'
+# set firewall global-options config-trap 'enable'
+# set firewall global-options ip-src-route 'enable'
+# set firewall global-options log-martians 'enable'
+# set firewall global-options receive-redirects 'disable'
+# set firewall global-options send-redirects 'enable'
+# set firewall global-options source-validation 'strict'
+# set firewall global-options state-policy established action 'accept'
+# set firewall global-options state-policy established log 'enable'
+# set firewall global-options state-policy invalid action 'reject'
+# set firewall global-options syn-cookies 'enable'
+# set firewall global-options twa-hazards-protection 'enable'
 # set firewall group address-group MGMT-HOSTS address '192.0.1.1'
 # set firewall group address-group MGMT-HOSTS address '192.0.1.3'
 # set firewall group address-group MGMT-HOSTS address '192.0.1.5'
 # set firewall group address-group MGMT-HOSTS description 'This group has the Management hosts address list'
 # set firewall group network-group MGMT description 'This group has the Management network addresses'
 # set firewall group network-group MGMT network '192.0.1.0/24'
-# set firewall ip-src-route 'enable'
-# set firewall log-martians 'enable'
-# set firewall receive-redirects 'disable'
-# set firewall send-redirects 'enable'
-# set firewall source-validation 'strict'
-# set firewall state-policy established action 'accept'
-# set firewall state-policy established log 'enable'
-# set firewall state-policy invalid action 'reject'
-# set firewall syn-cookies 'enable'
-# set firewall twa-hazards-protection 'enable'
 #
 #
+
+
 # Using parsed
 #
 #
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_firewall_global:
-    running_config:
-      "set firewall all-ping 'enable'
-       set firewall broadcast-ping 'enable'
-       set firewall config-trap 'enable'
+    running_config: |
+       set firewall global-options all-ping 'enable'
+       set firewall global-options broadcast-ping 'enable'
+       set firewall global-options config-trap 'enable'
+       set firewall global-options ip-src-route 'enable'
+       set firewall global-options log-martians 'enable'
+       set firewall global-options receive-redirects 'disable'
+       set firewall global-options send-redirects 'enable'
+       set firewall global-options source-validation 'strict'
+       set firewall global-options state-policy established action 'accept'
+       set firewall global-options state-policy established log 'enable'
+       set firewall global-options state-policy invalid action 'reject'
+       set firewall global-options syn-cookies 'enable'
+       set firewall global-options twa-hazards-protection 'enable'"
        set firewall group address-group ENG-HOSTS address '192.0.3.1'
        set firewall group address-group ENG-HOSTS address '192.0.3.2'
        set firewall group address-group ENG-HOSTS description 'Sales office hosts address list'
@@ -460,16 +502,6 @@ EXAMPLES = """
        set firewall group address-group SALES-HOSTS description 'Sales office hosts address list'
        set firewall group network-group MGMT description 'This group has the Management network addresses'
        set firewall group network-group MGMT network '192.0.1.0/24'
-       set firewall ip-src-route 'enable'
-       set firewall log-martians 'enable'
-       set firewall receive-redirects 'disable'
-       set firewall send-redirects 'enable'
-       set firewall source-validation 'strict'
-       set firewall state-policy established action 'accept'
-       set firewall state-policy established log 'enable'
-       set firewall state-policy invalid action 'reject'
-       set firewall syn-cookies 'enable'
-       set firewall twa-hazards-protection 'enable'"
     state: parsed
 #
 #
@@ -554,6 +586,8 @@ EXAMPLES = """
 #    }
 # }
 #
+
+
 #
 # Using deleted
 #
@@ -561,25 +595,26 @@ EXAMPLES = """
 # -------------
 #
 # vyos@192# run show configuration commands | grep firewall
-# set firewall all-ping 'enable'
-# set firewall broadcast-ping 'enable'
-# set firewall config-trap 'enable'
+# set firewall global-options all-ping 'enable'
+# set firewall global-options broadcast-ping 'enable'
+# set firewall global-options config-trap 'enable'
+# set firewall global-options ip-src-route 'enable'
+# set firewall global-options log-martians 'enable'
+# set firewall global-options receive-redirects 'disable'
+# set firewall global-options send-redirects 'enable'
+# set firewall global-options source-validation 'strict'
+# set firewall global-options state-policy established action 'accept'
+# set firewall global-options state-policy established log 'enable'
+# set firewall global-options state-policy invalid action 'reject'
+# set firewall global-options syn-cookies 'enable'
+# set firewall global-options twa-hazards-protection 'enable'
 # set firewall group address-group MGMT-HOSTS address '192.0.1.1'
 # set firewall group address-group MGMT-HOSTS address '192.0.1.3'
 # set firewall group address-group MGMT-HOSTS address '192.0.1.5'
 # set firewall group address-group MGMT-HOSTS description 'This group has the Management hosts address list'
 # set firewall group network-group MGMT description 'This group has the Management network addresses'
 # set firewall group network-group MGMT network '192.0.1.0/24'
-# set firewall ip-src-route 'enable'
-# set firewall log-martians 'enable'
-# set firewall receive-redirects 'disable'
-# set firewall send-redirects 'enable'
-# set firewall source-validation 'strict'
-# set firewall state-policy established action 'accept'
-# set firewall state-policy established log 'enable'
-# set firewall state-policy invalid action 'reject'
-# set firewall syn-cookies 'enable'
-# set firewall twa-hazards-protection 'enable'
+
 - name: Delete attributes of firewall.
   vyos.vyos.vyos_firewall_global:
     config:
@@ -592,6 +627,7 @@ EXAMPLES = """
       ping:
       group:
     state: deleted
+
 #
 #
 # ------------------------
@@ -661,26 +697,29 @@ EXAMPLES = """
 #        "validation": "strict"
 #    }
 # "commands": [
-#        "delete firewall source-validation",
-#        "delete firewall group",
-#        "delete firewall log-martians",
-#        "delete firewall ip-src-route",
-#        "delete firewall receive-redirects",
-#        "delete firewall send-redirects",
-#        "delete firewall config-trap",
-#        "delete firewall state-policy",
-#        "delete firewall syn-cookies",
-#        "delete firewall broadcast-ping",
-#        "delete firewall all-ping",
-#        "delete firewall twa-hazards-protection"
+#        "delete firewall global-options source-validation",
+#        "delete firewall global-options group",
+#        "delete firewall global-options log-martians",
+#        "delete firewall global-options ip-src-route",
+#        "delete firewall global-options receive-redirects",
+#        "delete firewall global-options send-redirects",
+#        "delete firewall global-options config-trap",
+#        "delete firewall global-options state-policy",
+#        "delete firewall global-options syn-cookies",
+#        "delete firewall global-options broadcast-ping",
+#        "delete firewall global-options all-ping",
+#        "delete firewall global-options twa-hazards-protection"
 #    ]
 #
 # "after": []
+#
 # After state
 # ------------
 # vyos@192# run show configuration commands | grep firewall
 # set  'firewall'
 #
+
+
 #
 # Using replaced
 #
@@ -688,26 +727,26 @@ EXAMPLES = """
 # -------------
 #
 # vyos@vyos:~$ show configuration commands| grep firewall
-# set firewall all-ping 'enable'
-# set firewall broadcast-ping 'enable'
-# set firewall config-trap 'enable'
+# set firewall global-options all-ping 'enable'
+# set firewall global-options broadcast-ping 'enable'
+# set firewall global-options config-trap 'enable'
+# set firewall global-options ip-src-route 'enable'
+# set firewall global-options log-martians 'enable'
+# set firewall global-options receive-redirects 'disable'
+# set firewall global-options send-redirects 'enable'
+# set firewall global-options source-validation 'strict'
+# set firewall global-options state-policy established action 'accept'
+# set firewall global-options state-policy established log 'enable'
+# set firewall global-options state-policy invalid action 'reject'
+# set firewall global-options syn-cookies 'enable'
+# set firewall global-options twa-hazards-protection 'enable'
 # set firewall group address-group MGMT-HOSTS address '192.0.1.1'
 # set firewall group address-group MGMT-HOSTS address '192.0.1.3'
 # set firewall group address-group MGMT-HOSTS address '192.0.1.5'
 # set firewall group address-group MGMT-HOSTS description 'This group has the Management hosts address list'
 # set firewall group network-group MGMT description 'This group has the Management network addresses'
 # set firewall group network-group MGMT network '192.0.1.0/24'
-# set firewall ip-src-route 'enable'
-# set firewall log-martians 'enable'
-# set firewall receive-redirects 'disable'
-# set firewall send-redirects 'enable'
-# set firewall source-validation 'strict'
-# set firewall state-policy established action 'accept'
-# set firewall state-policy established log 'enable'
-# set firewall state-policy invalid action 'reject'
-# set firewall syn-cookies 'enable'
-# set firewall twa-hazards-protection 'enable'
-#
+
 - name: Replace firewall global attributes configuration.
   vyos.vyos.vyos_firewall_global:
     config:
@@ -716,39 +755,39 @@ EXAMPLES = """
       log_martians: true
       syn_cookies: true
       twa_hazards_protection: true
-      ping:
+      ping: null
       all: true
       broadcast: true
       state_policy:
-      - connection_type: established
-        action: accept
-        log: true
-      - connection_type: invalid
-        action: reject
+        - connection_type: established
+          action: accept
+          log: true
+        - connection_type: invalid
+          action: reject
       route_redirects:
-      - afi: ipv4
-        ip_src_route: true
-        icmp_redirects:
-          send: true
-          receive: false
+        - afi: ipv4
+          ip_src_route: true
+          icmp_redirects:
+            send: true
+            receive: false
       group:
         address_group:
-        - name: SALES-HOSTS
-          description: Sales office hosts address list
-          members:
-          - address: 192.0.2.1
-          - address: 192.0.2.2
-          - address: 192.0.2.3
-        - name: ENG-HOSTS
-          description: Sales office hosts address list
-          members:
-          - address: 192.0.3.1
-          - address: 192.0.3.2
+          - name: SALES-HOSTS
+            description: Sales office hosts address list
+            members:
+              - address: 192.0.2.1
+              - address: 192.0.2.2
+              - address: 192.0.2.3
+          - name: ENG-HOSTS
+            description: Sales office hosts address list
+            members:
+              - address: 192.0.3.1
+              - address: 192.0.3.2
         network_group:
-        - name: MGMT
-          description: This group has the Management network addresses
-          members:
-          - address: 192.0.1.0/24
+          - name: MGMT
+            description: This group has the Management network addresses
+            members:
+              - address: 192.0.1.0/24
     state: replaced
 #
 #
@@ -911,9 +950,19 @@ EXAMPLES = """
 # -------------
 #
 # vyos@192# run show configuration commands | grep firewall
-# set firewall all-ping 'enable'
-# set firewall broadcast-ping 'enable'
-# set firewall config-trap 'enable'
+# set firewall global-options all-ping 'enable'
+# set firewall global-options broadcast-ping 'enable'
+# set firewall global-options config-trap 'enable'
+# set firewall global-options ip-src-route 'enable'
+# set firewall global-options log-martians 'enable'
+# set firewall global-options receive-redirects 'disable'
+# set firewall global-options send-redirects 'enable'
+# set firewall global-options source-validation 'strict'
+# set firewall global-options state-policy established action 'accept'
+# set firewall global-options state-policy established log 'enable'
+# set firewall global-options state-policy invalid action 'reject'
+# set firewall global-options syn-cookies 'enable'
+# set firewall global-options twa-hazards-protection 'enable'
 # set firewall group address-group ENG-HOSTS address '192.0.3.1'
 # set firewall group address-group ENG-HOSTS address '192.0.3.2'
 # set firewall group address-group ENG-HOSTS description 'Sales office hosts address list'
@@ -923,27 +972,29 @@ EXAMPLES = """
 # set firewall group address-group SALES-HOSTS description 'Sales office hosts address list'
 # set firewall group network-group MGMT description 'This group has the Management network addresses'
 # set firewall group network-group MGMT network '192.0.1.0/24'
-# set firewall ip-src-route 'enable'
-# set firewall log-martians 'enable'
-# set firewall receive-redirects 'disable'
-# set firewall send-redirects 'enable'
-# set firewall source-validation 'strict'
-# set firewall state-policy established action 'accept'
-# set firewall state-policy established log 'enable'
-# set firewall state-policy invalid action 'reject'
-# set firewall syn-cookies 'enable'
-# set firewall twa-hazards-protection 'enable'
 #
 #
+
+
 # Using gathered
 #
 # Before state:
 # -------------
 #
 # vyos@192# run show configuration commands | grep firewall
-# set firewall all-ping 'enable'
-# set firewall broadcast-ping 'enable'
-# set firewall config-trap 'enable'
+# set firewall global-options all-ping 'enable'
+# set firewall global-options broadcast-ping 'enable'
+# set firewall global-options config-trap 'enable'
+# set firewall global-options ip-src-route 'enable'
+# set firewall global-options log-martians 'enable'
+# set firewall global-options receive-redirects 'disable'
+# set firewall global-options send-redirects 'enable'
+# set firewall global-options source-validation 'strict'
+# set firewall global-options state-policy established action 'accept'
+# set firewall global-options state-policy established log 'enable'
+# set firewall global-options state-policy invalid action 'reject'
+# set firewall global-options syn-cookies 'enable'
+# set firewall global-options twa-hazards-protection 'enable'
 # set firewall group address-group ENG-HOSTS address '192.0.3.1'
 # set firewall group address-group ENG-HOSTS address '192.0.3.2'
 # set firewall group address-group ENG-HOSTS description 'Sales office hosts address list'
@@ -953,20 +1004,9 @@ EXAMPLES = """
 # set firewall group address-group SALES-HOSTS description 'Sales office hosts address list'
 # set firewall group network-group MGMT description 'This group has the Management network addresses'
 # set firewall group network-group MGMT network '192.0.1.0/24'
-# set firewall ip-src-route 'enable'
-# set firewall log-martians 'enable'
-# set firewall receive-redirects 'disable'
-# set firewall send-redirects 'enable'
-# set firewall source-validation 'strict'
-# set firewall state-policy established action 'accept'
-# set firewall state-policy established log 'enable'
-# set firewall state-policy invalid action 'reject'
-# set firewall syn-cookies 'enable'
-# set firewall twa-hazards-protection 'enable'
-#
+
 - name: Gather firewall global config with provided configurations
   vyos.vyos.vyos_firewall_global:
-    config:
     state: gathered
 #
 #
@@ -1054,9 +1094,19 @@ EXAMPLES = """
 # -------------
 #
 # vyos@192# run show configuration commands | grep firewall
-# set firewall all-ping 'enable'
-# set firewall broadcast-ping 'enable'
-# set firewall config-trap 'enable'
+# set firewall global-options all-ping 'enable'
+# set firewall global-options broadcast-ping 'enable'
+# set firewall global-options config-trap 'enable'
+# set firewall global-options ip-src-route 'enable'
+# set firewall global-options log-martians 'enable'
+# set firewall global-options receive-redirects 'disable'
+# set firewall global-options send-redirects 'enable'
+# set firewall global-options source-validation 'strict'
+# set firewall global-options state-policy established action 'accept'
+# set firewall global-options state-policy established log 'enable'
+# set firewall global-options state-policy invalid action 'reject'
+# set firewall global-options syn-cookies 'enable'
+# set firewall global-options twa-hazards-protection 'enable'
 # set firewall group address-group ENG-HOSTS address '192.0.3.1'
 # set firewall group address-group ENG-HOSTS address '192.0.3.2'
 # set firewall group address-group ENG-HOSTS description 'Sales office hosts address list'
@@ -1066,16 +1116,6 @@ EXAMPLES = """
 # set firewall group address-group SALES-HOSTS description 'Sales office hosts address list'
 # set firewall group network-group MGMT description 'This group has the Management network addresses'
 # set firewall group network-group MGMT network '192.0.1.0/24'
-# set firewall ip-src-route 'enable'
-# set firewall log-martians 'enable'
-# set firewall receive-redirects 'disable'
-# set firewall send-redirects 'enable'
-# set firewall source-validation 'strict'
-# set firewall state-policy established action 'accept'
-# set firewall state-policy established log 'enable'
-# set firewall state-policy invalid action 'reject'
-# set firewall syn-cookies 'enable'
-# set firewall twa-hazards-protection 'enable'
 
 
 # Using rendered
@@ -1089,40 +1129,41 @@ EXAMPLES = """
       log_martians: true
       syn_cookies: true
       twa_hazards_protection: true
-      ping:
+      ping: null
       all: true
       broadcast: true
       state_policy:
-      - connection_type: established
-        action: accept
-        log: true
-      - connection_type: invalid
-        action: reject
+        - connection_type: established
+          action: accept
+          log: true
+        - connection_type: invalid
+          action: reject
       route_redirects:
-      - afi: ipv4
-        ip_src_route: true
-        icmp_redirects:
-        send: true
-        receive: false
+        - afi: ipv4
+          ip_src_route: true
+          icmp_redirects: null
+          send: true
+          receive: false
       group:
         address_group:
-        - name: SALES-HOSTS
-          description: Sales office hosts address list
-          members:
-          - address: 192.0.2.1
-          - address: 192.0.2.2
-          - address: 192.0.2.3
-        - name: ENG-HOSTS
-          description: Sales office hosts address list
-          members:
-          - address: 192.0.3.1
-          - address: 192.0.3.2
+          - name: SALES-HOSTS
+            description: Sales office hosts address list
+            members:
+              - address: 192.0.2.1
+              - address: 192.0.2.2
+              - address: 192.0.2.3
+          - name: ENG-HOSTS
+            description: Sales office hosts address list
+            members:
+              - address: 192.0.3.1
+              - address: 192.0.3.2
         network_group:
-        - name: MGMT
-          description: This group has the Management network addresses
-          members:
-          - address: 192.0.1.0/24
+          - name: MGMT
+            description: This group has the Management network addresses
+            members:
+              - address: 192.0.1.0/24
     state: rendered
+
 #
 #
 # -------------------------
@@ -1143,48 +1184,71 @@ EXAMPLES = """
 #        "set firewall group network-group MGMT network 192.0.1.0/24",
 #        "set firewall group network-group MGMT description 'This group has the Management network addresses'",
 #        "set firewall group network-group MGMT",
-#        "set firewall ip-src-route 'enable'",
-#        "set firewall receive-redirects 'disable'",
-#        "set firewall send-redirects 'enable'",
-#        "set firewall config-trap 'enable'",
-#        "set firewall state-policy established action 'accept'",
-#        "set firewall state-policy established log 'enable'",
-#        "set firewall state-policy invalid action 'reject'",
-#        "set firewall broadcast-ping 'enable'",
-#        "set firewall all-ping 'enable'",
-#        "set firewall log-martians 'enable'",
-#        "set firewall twa-hazards-protection 'enable'",
-#        "set firewall syn-cookies 'enable'",
-#        "set firewall source-validation 'strict'"
+#        "set firewall global-options ip-src-route 'enable'",
+#        "set firewall global-options receive-redirects 'disable'",
+#        "set firewall global-options send-redirects 'enable'",
+#        "set firewall global-options config-trap 'enable'",
+#        "set firewall global-options state-policy established action 'accept'",
+#        "set firewall global-options state-policy established log 'enable'",
+#        "set firewall global-options state-policy invalid action 'reject'",
+#        "set firewall global-options broadcast-ping 'enable'",
+#        "set firewall global-options all-ping 'enable'",
+#        "set firewall global-options log-martians 'enable'",
+#        "set firewall global-options twa-hazards-protection 'enable'",
+#        "set firewall global-options syn-cookies 'enable'",
+#        "set firewall global-options source-validation 'strict'"
 #    ]
-#
 #
 """
 RETURN = """
 before:
-  description: The configuration prior to the model invocation.
-  returned: always
-  type: list
+  description: The configuration prior to the module execution.
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
+  type: dict
   sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
+    This output will always be in the same format as the
+    module argspec.
 after:
-  description: The resulting configuration model invocation.
+  description: The resulting configuration after module execution.
   returned: when changed
-  type: list
+  type: dict
   sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
+    This output will always be in the same format as the
+    module argspec.
 commands:
   description: The set of commands pushed to the remote device.
   returned: always
   type: list
-  sample: ['set firewall group address-group ENG-HOSTS',
-           'set firewall group address-group ENG-HOSTS address 192.0.3.1']
+  sample:
+    - "set firewall group address-group ENG-HOSTS"
+    - "set firewall group address-group ENG-HOSTS address 192.0.3.1"
+rendered:
+  description: The provided configuration in the task rendered in device-native format (offline).
+  returned: when I(state) is C(rendered)
+  type: list
+  sample:
+    - "set firewall group address-group ENG-HOSTS"
+    - "set firewall group address-group ENG-HOSTS address 192.0.3.1"
+gathered:
+  description: Facts about the network resource gathered from the remote device as structured data.
+  returned: when I(state) is C(gathered)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+parsed:
+  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
+  returned: when I(state) is C(parsed)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+
 """
 
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_global.firewall_global import (
     Firewall_globalArgs,
 )
@@ -1202,9 +1266,12 @@ def main():
     required_if = [
         ("state", "merged", ("config",)),
         ("state", "replaced", ("config",)),
+        ("state", "rendered", ("config",)),
+        ("state", "overridden", ("config",)),
         ("state", "parsed", ("running_config",)),
     ]
     mutually_exclusive = [("config", "running_config")]
+
     module = AnsibleModule(
         argument_spec=Firewall_globalArgs.argument_spec,
         required_if=required_if,

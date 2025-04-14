@@ -1,0 +1,22 @@
+---
+- debug:
+    msg: START vyos_snmp_server gathered integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Gather config from the device in structured format.
+      register: result
+      vyos.vyos.vyos_snmp_server:
+        state: gathered
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: snmp_server
+
+    - name: Assert that facts are correctly generated
+      assert:
+        that:
+          - result.changed == false
+          - result.gathered == ansible_facts['network_resources']['snmp_server']

@@ -13,24 +13,23 @@ created
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
+from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
-)
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    to_list,
     dict_diff,
+    to_list,
 )
-from ansible.module_utils.six import iteritems
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
-    search_obj_in_list,
-    search_dict_tv_in_list,
-    key_value_in_dict,
     is_dict_element_present,
+    key_value_in_dict,
+    search_obj_in_list,
 )
 
 
@@ -60,11 +59,11 @@ class Lldp_interfaces(ConfigBase):
         :returns: The current configuration as a dictionary
         """
         facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset, self.gather_network_resources, data=data
+            self.gather_subset,
+            self.gather_network_resources,
+            data=data,
         )
-        lldp_interfaces_facts = facts["ansible_network_resources"].get(
-            "lldp_interfaces"
-        )
+        lldp_interfaces_facts = facts["ansible_network_resources"].get("lldp_interfaces")
         if not lldp_interfaces_facts:
             return []
         return lldp_interfaces_facts
@@ -103,11 +102,9 @@ class Lldp_interfaces(ConfigBase):
             running_config = self._module.params["running_config"]
             if not running_config:
                 self._module.fail_json(
-                    msg="value of running_config parameter must not be empty for state parsed"
+                    msg="value of running_config parameter must not be empty for state parsed",
                 )
-            result["parsed"] = self.get_lldp_interfaces_facts(
-                data=running_config
-            )
+            result["parsed"] = self.get_lldp_interfaces_facts(data=running_config)
         else:
             changed_lldp_interfaces_facts = []
 
@@ -144,14 +141,9 @@ class Lldp_interfaces(ConfigBase):
                   to the desired configuration
         """
         commands = []
-        if (
-            self.state in ("merged", "replaced", "overridden", "rendered")
-            and not want
-        ):
+        if self.state in ("merged", "replaced", "overridden", "rendered") and not want:
             self._module.fail_json(
-                msg="value of config parameter must not be empty for state {0}".format(
-                    self.state
-                )
+                msg="value of config parameter must not be empty for state {0}".format(self.state),
             )
         if self.state == "overridden":
             commands.extend(self._state_overridden(want=want, have=have))
@@ -160,26 +152,18 @@ class Lldp_interfaces(ConfigBase):
                 for item in want:
                     name = item["name"]
                     have_item = search_obj_in_list(name, have)
-                    commands.extend(
-                        self._state_deleted(want=None, have=have_item)
-                    )
+                    commands.extend(self._state_deleted(want=None, have=have_item))
             else:
                 for have_item in have:
-                    commands.extend(
-                        self._state_deleted(want=None, have=have_item)
-                    )
+                    commands.extend(self._state_deleted(want=None, have=have_item))
         else:
             for want_item in want:
                 name = want_item["name"]
                 have_item = search_obj_in_list(name, have)
                 if self.state in ("merged", "rendered"):
-                    commands.extend(
-                        self._state_merged(want=want_item, have=have_item)
-                    )
+                    commands.extend(self._state_merged(want=want_item, have=have_item))
                 if self.state == "replaced":
-                    commands.extend(
-                        self._state_replaced(want=want_item, have=have_item)
-                    )
+                    commands.extend(self._state_replaced(want=want_item, have=have_item))
         return commands
 
     def _state_replaced(self, want, have):
@@ -207,9 +191,7 @@ class Lldp_interfaces(ConfigBase):
             lldp_name = have_item["name"]
             lldp_in_want = search_obj_in_list(lldp_name, want)
             if not lldp_in_want:
-                commands.append(
-                    self._compute_command(have_item["name"], remove=True)
-                )
+                commands.append(self._compute_command(have_item["name"], remove=True))
 
         for want_item in want:
             name = want_item["name"]
@@ -243,9 +225,7 @@ class Lldp_interfaces(ConfigBase):
             params = Lldp_interfaces.params
             for attrib in params:
                 if attrib == "location":
-                    commands.extend(
-                        self._update_location(have["name"], want, have)
-                    )
+                    commands.extend(self._update_location(have["name"], want, have))
 
         elif have:
             commands.append(self._compute_command(have["name"], remove=True))
@@ -272,9 +252,7 @@ class Lldp_interfaces(ConfigBase):
                     commands.extend(self._add_location(lldp_name, want, have))
                 elif attrib == "enable":
                     if not value:
-                        commands.append(
-                            self._compute_command(lldp_name, value="disable")
-                        )
+                        commands.append(self._compute_command(lldp_name, value="disable"))
                 else:
                     commands.append(self._compute_command(lldp_name))
 
@@ -288,9 +266,7 @@ class Lldp_interfaces(ConfigBase):
             temp_have_item = True
         if want_item["enable"] != temp_have_item:
             if want_item["enable"]:
-                commands.append(
-                    self._compute_command(name, value="disable", remove=True)
-                )
+                commands.append(self._compute_command(name, value="disable", remove=True))
             else:
                 commands.append(self._compute_command(name, value="disable"))
         return commands
@@ -311,55 +287,24 @@ class Lldp_interfaces(ConfigBase):
             updates = dict_diff(have_dict, want_dict)
             for key, value in iteritems(updates):
                 if value:
-                    commands.append(
-                        self._compute_command(
-                            set_cmd + location_type, key, str(value)
-                        )
-                    )
-
-        elif want_location_type["civic_based"]:
-            location_type = "civic-based"
-            want_dict = want_location_type.get("civic_based") or {}
-            want_ca = want_dict.get("ca_info") or []
-            if is_dict_element_present(have_location_type, "civic_based"):
-                have_dict = have_location_type.get("civic_based") or {}
-                have_ca = have_dict.get("ca_info") or []
-                if want_dict["country_code"] != have_dict["country_code"]:
-                    commands.append(
-                        self._compute_command(
-                            set_cmd + location_type,
-                            "country-code",
-                            str(want_dict["country_code"]),
-                        )
-                    )
-            else:
-                commands.append(
-                    self._compute_command(
-                        set_cmd + location_type,
-                        "country-code",
-                        str(want_dict["country_code"]),
-                    )
-                )
-            commands.extend(self._add_civic_address(name, want_ca, have_ca))
+                    commands.append(self._compute_command(set_cmd + location_type, key, str(value)))
 
         elif want_location_type["elin"]:
             location_type = "elin"
             if is_dict_element_present(have_location_type, "elin"):
-                if want_location_type.get("elin") != have_location_type.get(
-                    "elin"
-                ):
+                if want_location_type.get("elin") != have_location_type.get("elin"):
                     commands.append(
                         self._compute_command(
                             set_cmd + location_type,
                             value=str(want_location_type["elin"]),
-                        )
+                        ),
                     )
             else:
                 commands.append(
                     self._compute_command(
                         set_cmd + location_type,
                         value=str(want_location_type["elin"]),
-                    )
+                    ),
                 )
         return commands
 
@@ -378,72 +323,17 @@ class Lldp_interfaces(ConfigBase):
                     only_in_have = key_value_in_dict(key, value, want_dict)
                     if not only_in_have:
                         commands.append(
-                            self._compute_command(
-                                del_cmd + location_type, key, str(value), True
-                            )
+                            self._compute_command(del_cmd + location_type, key, str(value), True),
                         )
-            else:
-                commands.append(self._compute_command(del_cmd, remove=True))
-
-        elif want_location_type["civic_based"]:
-            want_dict = want_location_type.get("civic_based") or {}
-            want_ca = want_dict.get("ca_info") or []
-            if is_dict_element_present(have_location_type, "civic_based"):
-                have_dict = have_location_type.get("civic_based") or {}
-                have_ca = have_dict.get("ca_info")
-                commands.extend(
-                    self._update_civic_address(name, want_ca, have_ca)
-                )
             else:
                 commands.append(self._compute_command(del_cmd, remove=True))
 
         else:
             if is_dict_element_present(have_location_type, "elin"):
-                if want_location_type.get("elin") != have_location_type.get(
-                    "elin"
-                ):
-                    commands.append(
-                        self._compute_command(del_cmd, remove=True)
-                    )
+                if want_location_type.get("elin") != have_location_type.get("elin"):
+                    commands.append(self._compute_command(del_cmd, remove=True))
             else:
                 commands.append(self._compute_command(del_cmd, remove=True))
-        return commands
-
-    def _add_civic_address(self, name, want, have):
-        commands = []
-        for item in want:
-            ca_type = item["ca_type"]
-            ca_value = item["ca_value"]
-            obj_in_have = search_dict_tv_in_list(
-                ca_type, ca_value, have, "ca_type", "ca_value"
-            )
-            if not obj_in_have:
-                commands.append(
-                    self._compute_command(
-                        key=name + " location civic-based ca-type",
-                        attrib=str(ca_type) + " ca-value",
-                        value=ca_value,
-                    )
-                )
-        return commands
-
-    def _update_civic_address(self, name, want, have):
-        commands = []
-        for item in have:
-            ca_type = item["ca_type"]
-            ca_value = item["ca_value"]
-            in_want = search_dict_tv_in_list(
-                ca_type, ca_value, want, "ca_type", "ca_value"
-            )
-            if not in_want:
-                commands.append(
-                    self._compute_command(
-                        name,
-                        "location civic-based ca-type",
-                        str(ca_type),
-                        remove=True,
-                    )
-                )
         return commands
 
     def _compute_command(self, key, attrib=None, value=None, remove=False):

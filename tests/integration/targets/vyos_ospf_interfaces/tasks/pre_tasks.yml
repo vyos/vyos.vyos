@@ -1,0 +1,9 @@
+---
+- name: Setup environment
+  vyos.vyos.vyos_config:
+    lines: |-
+      set interfaces bonding bond2
+      set interfaces ethernet eth2 vif 3
+      set interfaces ethernet eth2 vif 18
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
