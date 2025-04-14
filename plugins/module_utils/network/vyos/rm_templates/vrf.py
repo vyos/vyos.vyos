@@ -61,8 +61,10 @@ class VrfTemplate(NetworkTemplate):
             "setval": "vrf name {{name}} table {{tid}}",
             "compval": "table_id",
             "result": {
-                "name": "{{ name }}",
-                "table_id": "{{ tid }}",
+                "instances": {
+                    "name": "{{ name }}",
+                    "table_id": "{{ tid }}",
+                },
             },
         },
         {
@@ -81,8 +83,10 @@ class VrfTemplate(NetworkTemplate):
             "setval": "vrf name {{name}} vni {{vni}}",
             "compval": "vni",
             "result": {
-                "name": "{{ name }}",
-                "vni": "{{ vni }}",
+                "instances": {
+                    "name": "{{ name }}",
+                    "vni": "{{ vni }}",
+                },
             },
         },
         {
@@ -101,8 +105,10 @@ class VrfTemplate(NetworkTemplate):
             "setval": "vrf name {{name}} description {{desc}}",
             "compval": "desc",
             "result": {
-                "name": "{{ name }}",
-                "description": "{{ desc }}",
+                "instances": {
+                    "name": "{{ name }}",
+                    "description": "{{ desc }}",
+                },
             },
         },
         {
@@ -120,8 +126,10 @@ class VrfTemplate(NetworkTemplate):
             "setval": "vrf name {{name}} disable",
             "compval": "desc",
             "result": {
-                "name": "{{ name }}",
-                "disable": "{{ True if disable is defined }}",
+                "instances": {
+                    "name": "{{ name }}",
+                    "disable": "{{ True if disable is defined }}",
+                },
             },
         },
         {

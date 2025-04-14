@@ -140,5 +140,5 @@ class Vrf(ResourceModule):
         for entry in want:
             wname = entry.get("name")
             h = next(d for d in have if d["name"] == wname)
-            self._module.fail_json(msg=str(entry) + str(h))
+            # self._module.fail_json(msg=str(entry) + str(h))
             self.compare(parsers=parsers, want=entry, have=h)

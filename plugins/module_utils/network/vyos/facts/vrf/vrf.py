@@ -40,6 +40,9 @@ class VrfFacts(object):
         config_dict = {}
         for config_line in data.splitlines():
             vrf_inst = re.search(r"set vrf name (\S+).*", config_line)
+            vrf_bta = re.search(r"set vrf bind-to-all", config_line)
+            if vrf_bta:
+                config_dict["bind_to_all"] = config_dict.get("bind_to_all", "") + config_line + "\n"
             if vrf_inst:
                 config_dict[vrf_inst.group(1)] = (
                     config_dict.get(vrf_inst.group(1), "") + config_line + "\n"
@@ -65,58 +68,36 @@ class VrfFacts(object):
         vrf_facts = {}
         instances = []
         resources = self.get_config_set(data, connection)
-        # self._module.fail_json(msg=resources)
         for resource in resources:
             vrf_parser = VrfTemplate(
                 lines=resource.split("\n"),
                 module=self._module,
             )
             objs = vrf_parser.parse()
-            if "name" in objs and objs["name"]:
-                instances.append(objs)
-            # for key, sortv in [("address_family", "afi")]:
-            #     if key in objs and objs[key]:
-            #         objs[key] = list(objs[key].values())
-        vrf_facts["instances"] = instances
-        # for resource in data.splitlines():
-        #     config_lines.append(re.sub("'", "", resource))
-        # # parse native config using the Vrf template
-        # vrf_parser = VrfTemplate(lines=config_lines, module=self._module)
 
-        # objs = vrf_parser.parse()
-        # self._module.fail_json(msg=objs)
+            if objs:
+                if "bind_to_all" in objs:
+                    vrf_facts.update(objs)
+                if "instances" in objs and objs["instances"]:
+                    # name = objs["instances"].get("name")
+                    # attrib = {k: v for k, v in objs["instances"].items() if k != 'name'}
+                    # instances.update({name: attrib})
+                    instances.append(objs["instances"])
 
-        # if objs:
-        #     if "allow_clients" in objs:
-        #         objs["allow_clients"] = sorted(list(objs["allow_clients"]))
+        vrf_facts.update({"instances": instances})
 
-        #     if "listen_addresses" in objs:
-        #         objs["listen_addresses"] = sorted(list(objs["listen_addresses"]))
-
-        #     """ if "options" in objs["servers"].values():
-        #         val = objs["servers"].values()
-        #         val["options"] = sorted(val["options"]) """
-
-        #     if "servers" in objs:
-        #         objs["servers"] = list(objs["servers"].values())
-        #         objs["servers"] = sorted(objs["servers"], key=lambda k: k["server"])
-        #         for i in objs["servers"]:
-        #             if "options" in i:
-        #                 i["options"] = sorted(list(i["options"]))
-
-        # self._module.fail_json(msg=vrf_facts)
-        ansible_facts["ansible_network_resources"].pop("vrf", None)
+        ansible_facts["ansible_network_resources"].pop("vrf_facts", None)
+        facts = {"vrf": []}
 
         params = utils.remove_empties(
-            vrf_parser.validate_config(self.argument_spec, {"config": vrf_facts}, redact=True),
+            vrf_parser.validate_config(
+                self.argument_spec,
+                {"config": vrf_facts},
+                redact=True,
+            ),
         )
-
-        # self._module.fail_json(msg=params)
 
         if params.get("config"):
             facts["vrf"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
-
-        self._module.fail_json(msg=ansible_facts)
-
         return ansible_facts
