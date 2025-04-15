@@ -40,7 +40,7 @@ class VrfTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "vrf bind-to-all",
-            "compval": "bta",
+            "compval": "bind_to_all",
             "result": {
                 "bind_to_all": "{{ True if bta is defined }}",
             },
@@ -61,10 +61,8 @@ class VrfTemplate(NetworkTemplate):
             "setval": "vrf name {{name}} table {{tid}}",
             "compval": "table_id",
             "result": {
-                "instances": {
-                    "name": "{{ name }}",
-                    "table_id": "{{ tid }}",
-                },
+                "name": "{{ name }}",
+                "table_id": "{{ tid }}",
             },
         },
         {
@@ -83,32 +81,44 @@ class VrfTemplate(NetworkTemplate):
             "setval": "vrf name {{name}} vni {{vni}}",
             "compval": "vni",
             "result": {
-                "instances": {
-                    "name": "{{ name }}",
-                    "vni": "{{ vni }}",
-                },
+                "name": "{{ name }}",
+                "vni": "{{ vni }}",
             },
         },
+        # {
+        #     "name": "description",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set
+        #         \svrf
+        #         \sname
+        #         \s(?P<name>\S+)
+        #         \sdescription
+        #         \s(?P<desc>\S+)
+        #         $""",
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": "vrf name {{name}} description {{desc}}",
+        #     "compval": "description",
+        #     "result": {
+        #         # "name": "{{ name }}",
+        #         "description": "{{ desc }}",
+        #     },
+        # },
         {
             "name": "description",
             "getval": re.compile(
                 r"""
                 ^set
                 \svrf
-                \sname
-                \s(?P<name>\S+)
-                \sdescription
-                \s(?P<desc>\S+)
+                \s(?P<bta>bind-to-all)
                 $""",
                 re.VERBOSE,
             ),
             "setval": "vrf name {{name}} description {{desc}}",
-            "compval": "desc",
+            "compval": "description",
             "result": {
-                "instances": {
-                    "name": "{{ name }}",
-                    "description": "{{ desc }}",
-                },
+                "description": "{{ desc }}",
             },
         },
         {
@@ -124,12 +134,10 @@ class VrfTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "vrf name {{name}} disable",
-            "compval": "desc",
+            "compval": "disable",
             "result": {
-                "instances": {
-                    "name": "{{ name }}",
-                    "disable": "{{ True if disable is defined }}",
-                },
+                "name": "{{ name }}",
+                "disable": "{{ True if disable is defined }}",
             },
         },
         {

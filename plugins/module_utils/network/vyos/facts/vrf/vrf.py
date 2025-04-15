@@ -67,6 +67,7 @@ class VrfFacts(object):
 
         vrf_facts = {}
         instances = []
+        vrf_parser = VrfTemplate(lines=[], module=self._module)
         resources = self.get_config_set(data, connection)
         for resource in resources:
             vrf_parser = VrfTemplate(
@@ -74,17 +75,17 @@ class VrfFacts(object):
                 module=self._module,
             )
             objs = vrf_parser.parse()
-
             if objs:
                 if "bind_to_all" in objs:
                     vrf_facts.update(objs)
-                if "instances" in objs and objs["instances"]:
+                if "name" in objs:
                     # name = objs["instances"].get("name")
                     # attrib = {k: v for k, v in objs["instances"].items() if k != 'name'}
                     # instances.update({name: attrib})
-                    instances.append(objs["instances"])
+                    instances.append(objs)
 
-        vrf_facts.update({"instances": instances})
+        if instances:
+            vrf_facts.update({"instances": instances})
 
         ansible_facts["ansible_network_resources"].pop("vrf_facts", None)
         facts = {"vrf": []}

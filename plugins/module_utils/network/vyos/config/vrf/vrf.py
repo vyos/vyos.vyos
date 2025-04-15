@@ -53,6 +53,7 @@ class Vrf(ResourceModule):
         )
         self.parsers = [
             "bind_to_all",
+            "description",
         ]
 
     def _validate_template(self):
@@ -107,22 +108,31 @@ class Vrf(ResourceModule):
         #             self.commands.append(self._tmplt.render({"route_map": k}, "route_map", True))
 
         for k, want in iteritems(wantd):
-            # self._module.fail_json(msg=k)
-            self._compare(want=want, have=haved.pop(k, {}))
-        self._module.fail_json(msg=self.commands)
+            if isinstance(want, list):
+                self._compare_inststances(want=want, have=haved.pop(k, {}))
+            # else:
+            #     self.compare(
+            #         parsers=self.parsers,
+            #         want={k: want},
+            #         have={k: haved.pop(k, {})},
+            #         )
 
-    def _compare(self, want, have):
-        """Leverages the base class `compare()` method and
-        populates the list of commands to be run by comparing
-        the `want` and `have` data with the `parsers` defined
-        for the Ntp network resource.
-        """
-        if isinstance(want, list):
-            self._compare_inststances(want=want, have=have)
-        # if "options" in want:
-        #     self.compare(parsers="options", want=want, have=have)
-        # else:
-        # self.compare(parsers=self.parsers, want=want, have=have)
+    # def _compare(self, want, have):
+    #     """Leverages the base class `compare()` method and
+    #     populates the list of commands to be run by comparing
+    #     the `want` and `have` data with the `parsers` defined
+    #     for the Ntp network resource.
+    #     """
+    #     # self._module.fail_json(msg=str(want))
+    #     if isinstance(want, list):
+    #         self._compare_inststances(want=want, have=have)
+    #     else:
+    #         self.compare(parsers=self.parsers, want=want, have=have)
+    #     # self._module.fail_json(msg="Here")
+    #     # if "options" in want:
+    #     #     self.compare(parsers="options", want=want, have=have)
+    #     # else:
+    #     # self.compare(parsers=self.parsers, want=want, have=have)
 
     def _compare_inststances(self, want, have):
         """Compare the instances of the VRF"""
@@ -134,11 +144,28 @@ class Vrf(ResourceModule):
             "disable_forwarding",
             "disable_nht",
         ]
-        # wname = want.get("name")
-        # hname = have.get("name")
 
-        for entry in want:
-            wname = entry.get("name")
-            h = next(d for d in have if d["name"] == wname)
-            # self._module.fail_json(msg=str(entry) + str(h))
-            self.compare(parsers=parsers, want=entry, have=h)
+        # self._module.fail_json(msg="Here")
+        self.compare(
+            parsers=self.parsers,
+            want={"bind_to_all": "test"},
+            have={},
+        )
+
+        # for entry in want:
+        #     h = {}
+        #     wname = entry.get("name")
+        #     h = next((vrf for vrf in have if vrf["name"] == wname), {})
+        #     # self._module.fail_json(msg=str(entry) + "****" + str(h))
+        #     # self.compare(parsers=parsers, want=entry, have=h)
+        #     self.compare(
+        #         parsers=parsers,
+        #         want={
+        #             "name": "vrf2",
+        #             "table_id": 100,
+        #         },
+        #         have={
+        #             "name": "vrf2",
+        #             "table_id": 200,
+        #         },
+        #     )
