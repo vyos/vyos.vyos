@@ -61,8 +61,9 @@ class VrfTemplate(NetworkTemplate):
             "setval": "vrf name {{name}} table {{tid}}",
             "compval": "table_id",
             "result": {
-                "name": "{{ name }}",
-                "table_id": "{{ tid }}",
+                # "name": "{{ name }}",
+                "table_id": "{{ True if tid is defined }}",
+                # "table_id": "{{ tid }}",
             },
         },
         {
@@ -85,26 +86,6 @@ class VrfTemplate(NetworkTemplate):
                 "vni": "{{ vni }}",
             },
         },
-        # {
-        #     "name": "description",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \svrf
-        #         \sname
-        #         \s(?P<name>\S+)
-        #         \sdescription
-        #         \s(?P<desc>\S+)
-        #         $""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "vrf name {{name}} description {{desc}}",
-        #     "compval": "description",
-        #     "result": {
-        #         # "name": "{{ name }}",
-        #         "description": "{{ desc }}",
-        #     },
-        # },
         {
             "name": "description",
             "getval": re.compile(

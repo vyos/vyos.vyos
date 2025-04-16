@@ -20,7 +20,7 @@ created.
 
 from copy import deepcopy
 
-from ansible.module_utils.six import iteritems
+# from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
@@ -53,7 +53,12 @@ class Vrf(ResourceModule):
         )
         self.parsers = [
             "bind_to_all",
+            "table",
+            "vni",
             "description",
+            "disable_vrf",
+            "disable_forwarding",
+            "disable_nht",
         ]
 
     def _validate_template(self):
@@ -107,17 +112,25 @@ class Vrf(ResourceModule):
         #         if k not in wantd:
         #             self.commands.append(self._tmplt.render({"route_map": k}, "route_map", True))
 
-        for k, want in iteritems(wantd):
-            if isinstance(want, list):
-                self._compare_inststances(want=want, have=haved.pop(k, {}))
-            # else:
-            #     self.compare(
-            #         parsers=self.parsers,
-            #         want={k: want},
-            #         have={k: haved.pop(k, {})},
-            #         )
+        # for k, want in iteritems(wantd):
+        #     if isinstance(want, list):
+        #         self._compare_inststances(want=want, have=haved.pop(k, {}))
+        # else:
+        #     self.compare(
+        #         parsers=self.parsers,
+        #         want={k: want},
+        #         have={k: haved.pop(k, {})},
+        #         )
 
-    # def _compare(self, want, have):
+        self.compare(
+            parsers=self.parsers,
+            want={"table_id": 100},
+            have={"table_id": {}},
+        )
+        self._module.fail_json(msg=self.commands)
+
+    # def _com
+    # pare(self, want, have):
     #     """Leverages the base class `compare()` method and
     #     populates the list of commands to be run by comparing
     #     the `want` and `have` data with the `parsers` defined
