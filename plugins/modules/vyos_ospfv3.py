@@ -31,18 +31,24 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
+---
 module: vyos_ospfv3
-short_description: OSPFV3 resource module
-description: This resource module configures and manages attributes of OSPFv3 routes
-  on VyOS network devices.
-version_added: 1.0.0
-notes:
-- Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+version_added: '1.0.0'
+short_description: OSPFv3 resource module
+description: This resource module configures and manages attributes of OSPFv3 routes on VyOS network devices.
 author:
 - Rohit Thakur (@rohitthakur2590)
+notes:
+- Tested against VyOS 1.3.8
+- This module works with connection C(ansible.netcommon.network_cli).
+  See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 options:
   config:
     description: A provided OSPFv3 route configuration.
@@ -62,6 +68,15 @@ options:
           import_list:
             description: Name of import-list.
             type: str
+          interface:
+            description: Enable OSPVv3 on an interface for this area.
+            aliases: ['interfaces']
+            type: list
+            elements: dict
+            suboptions:
+              name:
+                description: Interface name.
+                type: str
           range:
             description: Summarize routes matching prefix (border routers only).
             type: list
@@ -91,7 +106,12 @@ options:
           route_type:
             description: Route type to redistribute.
             type: str
-            choices: [bgp, connected, kernel, ripng, static]
+            choices:
+            - bgp
+            - connected
+            - kernel
+            - ripng
+            - static
           route_map:
             description: Route map references.
             type: str
@@ -116,7 +136,6 @@ options:
     - gathered
     - rendered
     default: merged
-
 """
 EXAMPLES = """
 # Using merged
@@ -135,18 +154,18 @@ EXAMPLES = """
       parameters:
         router_id: 192.0.2.10
       areas:
-        - area_id: '2'
+        - area_id: 2
           export_list: export1
           import_list: import1
+
           range:
             - address: '2001:db10::/32'
             - address: '2001:db20::/32'
             - address: '2001:db30::/32'
-        - area_id: '3'
+        - area_id: 3
           range:
             - address: '2001:db40::/32'
     state: merged
-
 #
 #
 # -------------------------
@@ -242,18 +261,18 @@ EXAMPLES = """
       parameters:
         router_id: 192.0.2.10
       areas:
-        - area_id: '2'
+        - area_id: 2
           export_list: export1
           import_list: import1
+
           range:
             - address: '2001:db10::/32'
             - address: '2001:db30::/32'
             - address: '2001:db50::/32'
-        - area_id: '4'
+        - area_id: 4
           range:
             - address: '2001:db60::/32'
     state: replaced
-
 #
 #
 # -------------------------
@@ -367,18 +386,18 @@ EXAMPLES = """
       parameters:
         router_id: 192.0.2.10
       areas:
-        - area_id: '2'
+        - area_id: 2
           export_list: export1
           import_list: import1
+
           range:
             - address: '2001:db10::/32'
             - address: '2001:db20::/32'
             - address: '2001:db30::/32'
-        - area_id: '3'
+        - area_id: 3
           range:
             - address: '2001:db40::/32'
     state: rendered
-
 #
 #
 # -------------------------
@@ -404,17 +423,17 @@ EXAMPLES = """
 # Using parsed
 #
 #
-- name: Parse the commands to provide structured configuration.
+- name: Parse the commands from the provided configuration
   vyos.vyos.vyos_ospfv3:
-    running_config:
-      "set protocols ospfv3 area 2 export-list 'export1'
-       set protocols ospfv3 area 2 import-list 'import1'
-       set protocols ospfv3 area 2 range '2001:db10::/32'
-       set protocols ospfv3 area 2 range '2001:db20::/32'
-       set protocols ospfv3 area 2 range '2001:db30::/32'
-       set protocols ospfv3 area 3 range '2001:db40::/32'
-       set protocols ospfv3 parameters router-id '192.0.2.10'
-       set protocols ospfv3 redistribute 'bgp'"
+    running_config: |
+      set protocols ospfv3 area 2 export-list 'export1'
+      set protocols ospfv3 area 2 import-list 'import1'
+      set protocols ospfv3 area 2 range '2001:db10::/32'
+      set protocols ospfv3 area 2 range '2001:db20::/32'
+      set protocols ospfv3 area 2 range '2001:db30::/32'
+      set protocols ospfv3 area 3 range '2001:db40::/32'
+      set protocols ospfv3 parameters router-id '192.0.2.10'
+      set protocols ospfv3 redistribute 'bgp'
     state: parsed
 #
 #
@@ -627,8 +646,9 @@ commands:
   returned: always
   type: list
   sample:
-    - "set protocols ospf parameters router-id 192.0.1.1"
-    - "set protocols ospfv3 area 2 range '2001:db10::/32'"
+    - "set protocols ospfv3 parameters router-id '192.0.2.10'"
+    - "set protocols ospfv3 redistribute 'bgp'"
+
 """
 
 
@@ -652,9 +672,11 @@ def main():
         ("state", "merged", ("config",)),
         ("state", "replaced", ("config",)),
         ("state", "rendered", ("config",)),
+        ("state", "overridden", ("config",)),
         ("state", "parsed", ("running_config",)),
     ]
     mutually_exclusive = [("config", "running_config")]
+
     module = AnsibleModule(
         argument_spec=Ospfv3Args.argument_spec,
         required_if=required_if,

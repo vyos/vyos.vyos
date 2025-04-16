@@ -16,7 +16,7 @@
     - name: Provide the running configuration for parsing (config to be parsed)
       register: result
       vyos.vyos.vyos_firewall_global: &id001
-        running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
+        running_config: "{{ lookup('file', parsed_config_file) }}"
         state: parsed
 
     - name: Assert that correct parsing done

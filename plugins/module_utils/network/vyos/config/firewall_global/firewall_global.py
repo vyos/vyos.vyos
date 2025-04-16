@@ -29,6 +29,7 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
     list_diff_want_only,
+    in_target_not_none,
 )
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
@@ -374,11 +375,7 @@ class Firewall_global(ConfigBase):
                             if key == "name" and self._is_grp_del(h, want, key):
                                 commands.append(cmd + " " + want["name"])
                                 continue
-                            if not (h and self._in_target(h, key)) and not self._is_grp_del(
-                                h,
-                                want,
-                                key,
-                            ):
+                            if not (h and in_target_not_none(h, key)) and not self._is_grp_del(h, want, "name"):
                                 commands.append(cmd + " " + want["name"] + " " + key)
                         elif key == "members":
                             commands.extend(
@@ -476,14 +473,23 @@ class Firewall_global(ConfigBase):
                     for key, val in iteritems(w):
                         if val and key != "connection_type":
                             if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
-                                commands.append(
-                                    self._form_attr_cmd(
-                                        key=attr + " " + w["connection_type"],
-                                        attr=key,
-                                        val=self._bool_to_str(val),
-                                        opr=opr,
-                                    ),
-                                )
+                                if key == "log" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                                    commands.append(
+                                        self._form_attr_cmd(
+                                            key=attr + " " + w["connection_type"],
+                                            attr=key,
+                                            opr=opr,
+                                        ),
+                                    )
+                                else:
+                                    commands.append(
+                                        self._form_attr_cmd(
+                                            key=attr + " " + w["connection_type"],
+                                            attr=key,
+                                            val=self._bool_to_str(val),
+                                            opr=opr,
+                                        ),
+                                    )
                             elif not opr and key in l_set:
                                 if not h:
                                     commands.append(
@@ -645,14 +651,17 @@ class Firewall_global(ConfigBase):
             cmd = "delete firewall "
         else:
             cmd = "set firewall "
-        if key != "group" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+        if attr and key != "group" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             cmd += "global-options "
         if key:
             cmd += key.replace("_", "-") + " "
         if attr:
             cmd += attr.replace("_", "-")
         if val and opr:
-            cmd += " '" + str(val) + "'"
+            if key == "state_policy" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                cmd += ""
+            else:
+                cmd += " '" + str(val) + "'"
         return cmd.strip()
 
     def _bool_to_str(self, val):

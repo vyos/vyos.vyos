@@ -4,11 +4,6 @@
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
-
-__metaclass__ = type
-
 #############################################
 #                WARNING                    #
 #############################################
@@ -31,6 +26,12 @@ The arg spec for the vyos_ospfv2 module
 """
 
 
+from __future__ import absolute_import, division, print_function
+
+
+__metaclass__ = type
+
+
 class Ospfv2Args(object):  # pylint: disable=R0903
     """The arg spec for the vyos_ospfv2 module"""
 
@@ -40,6 +41,109 @@ class Ospfv2Args(object):  # pylint: disable=R0903
     argument_spec = {
         "config": {
             "options": {
+                "areas": {
+                    "elements": "dict",
+                    "options": {
+                        "area_id": {"type": "str"},
+                        "area_type": {
+                            "options": {
+                                "normal": {"type": "bool"},
+                                "nssa": {
+                                    "options": {
+                                        "default_cost": {"type": "int"},
+                                        "no_summary": {"type": "bool"},
+                                        "set": {"type": "bool"},
+                                        "translate": {
+                                            "choices": [
+                                                "always",
+                                                "candidate",
+                                                "never",
+                                            ],
+                                            "type": "str",
+                                        },
+                                    },
+                                    "type": "dict",
+                                },
+                                "stub": {
+                                    "options": {
+                                        "default_cost": {"type": "int"},
+                                        "no_summary": {"type": "bool"},
+                                        "set": {"type": "bool"},
+                                    },
+                                    "type": "dict",
+                                },
+                            },
+                            "type": "dict",
+                        },
+                        "authentication": {
+                            "choices": [
+                                "plaintext-password",
+                                "md5",
+                            ],
+                            "type": "str",
+                        },
+                        "network": {
+                            "elements": "dict",
+                            "options": {
+                                "address": {
+                                    "required": True,
+                                    "type": "str",
+                                },
+                            },
+                            "type": "list",
+                        },
+                        "range": {
+                            "elements": "dict",
+                            "options": {
+                                "address": {"type": "str"},
+                                "cost": {"type": "int"},
+                                "not_advertise": {"type": "bool"},
+                                "substitute": {"type": "str"},
+                            },
+                            "type": "list",
+                        },
+                        "shortcut": {
+                            "choices": [
+                                "default",
+                                "disable",
+                                "enable",
+                            ],
+                            "type": "str",
+                        },
+                        "virtual_link": {
+                            "elements": "dict",
+                            "options": {
+                                "address": {"type": "str"},
+                                "authentication": {
+                                    "options": {
+                                        "md5": {
+                                            "elements": "dict",
+                                            "options": {
+                                                "key_id": {"type": "int"},
+                                                "md5_key": {
+                                                    "no_log": True,
+                                                    "type": "str",
+                                                },
+                                            },
+                                            "type": "list",
+                                        },
+                                        "plaintext_password": {
+                                            "no_log": True,
+                                            "type": "str",
+                                        },
+                                    },
+                                    "type": "dict",
+                                },
+                                "dead_interval": {"type": "int"},
+                                "hello_interval": {"type": "int"},
+                                "retransmit_interval": {"type": "int"},
+                                "transmit_delay": {"type": "int"},
+                            },
+                            "type": "list",
+                        },
+                    },
+                    "type": "list",
+                },
                 "auto_cost": {
                     "options": {"reference_bandwidth": {"type": "int"}},
                     "type": "dict",
@@ -106,97 +210,6 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                     },
                     "type": "list",
                 },
-                "areas": {
-                    "elements": "dict",
-                    "options": {
-                        "area_id": {"type": "str"},
-                        "area_type": {
-                            "options": {
-                                "normal": {"type": "bool"},
-                                "nssa": {
-                                    "options": {
-                                        "default_cost": {"type": "int"},
-                                        "no_summary": {"type": "bool"},
-                                        "set": {"type": "bool"},
-                                        "translate": {
-                                            "choices": [
-                                                "always",
-                                                "candidate",
-                                                "never",
-                                            ],
-                                            "type": "str",
-                                        },
-                                    },
-                                    "type": "dict",
-                                },
-                                "stub": {
-                                    "options": {
-                                        "default_cost": {"type": "int"},
-                                        "no_summary": {"type": "bool"},
-                                        "set": {"type": "bool"},
-                                    },
-                                    "type": "dict",
-                                },
-                            },
-                            "type": "dict",
-                        },
-                        "authentication": {
-                            "choices": ["plaintext-password", "md5"],
-                            "type": "str",
-                        },
-                        "network": {
-                            "elements": "dict",
-                            "options": {"address": {"required": True, "type": "str"}},
-                            "type": "list",
-                        },
-                        "range": {
-                            "elements": "dict",
-                            "options": {
-                                "address": {"type": "str"},
-                                "cost": {"type": "int"},
-                                "not_advertise": {"type": "bool"},
-                                "substitute": {"type": "str"},
-                            },
-                            "type": "list",
-                        },
-                        "shortcut": {
-                            "choices": ["default", "disable", "enable"],
-                            "type": "str",
-                        },
-                        "virtual_link": {
-                            "elements": "dict",
-                            "options": {
-                                "address": {"type": "str"},
-                                "authentication": {
-                                    "options": {
-                                        "md5": {
-                                            "elements": "dict",
-                                            "options": {
-                                                "key_id": {"type": "int"},
-                                                "md5_key": {
-                                                    "type": "str",
-                                                    "no_log": True,
-                                                },
-                                            },
-                                            "type": "list",
-                                        },
-                                        "plaintext_password": {
-                                            "type": "str",
-                                            "no_log": True,
-                                        },
-                                    },
-                                    "type": "dict",
-                                },
-                                "dead_interval": {"type": "int"},
-                                "hello_interval": {"type": "int"},
-                                "retransmit_interval": {"type": "int"},
-                                "transmit_delay": {"type": "int"},
-                            },
-                            "type": "list",
-                        },
-                    },
-                    "type": "list",
-                },
                 "parameters": {
                     "options": {
                         "abr_type": {
@@ -214,10 +227,13 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                     },
                     "type": "dict",
                 },
-                "passive_interface": {"type": "list", "elements": "str"},
-                "passive_interface_exclude": {
-                    "type": "list",
+                "passive_interface": {
                     "elements": "str",
+                    "type": "list",
+                },
+                "passive_interface_exclude": {
+                    "elements": "str",
+                    "type": "list",
                 },
                 "redistribute": {
                     "elements": "dict",
@@ -238,7 +254,7 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                     },
                     "type": "list",
                 },
-                "route_map": {"type": "list", "elements": "str"},
+                "route_map": {"elements": "str", "type": "list"},
                 "timers": {
                     "options": {
                         "refresh": {

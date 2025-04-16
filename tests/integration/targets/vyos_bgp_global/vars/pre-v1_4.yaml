@@ -1,0 +1,91 @@
+---
+merged:
+  commands:
+    - set protocols bgp 65536 parameters bestpath as-path confed
+    - set protocols bgp 65536 parameters bestpath compare-routerid
+    - set protocols bgp 65536 parameters default local-pref 100
+    - set protocols bgp 65536 parameters router-id 192.1.2.9
+    - set protocols bgp 65536 timers keepalive 35
+  after:
+    as_number: 65536
+    bgp_params:
+      bestpath:
+        as_path: confed
+        compare_routerid: true
+      default:
+        local_pref: 100
+      router_id: 192.1.2.9
+    timers:
+      keepalive: 35
+
+replaced:
+  commands:
+    - delete protocols bgp 65536 timers
+    - delete protocols bgp 65536 parameters router-id 192.1.2.9
+    - delete protocols bgp 65536 parameters default
+    - delete protocols bgp 65536 parameters confederation
+    - delete protocols bgp 65536 neighbor 5001::64
+    - delete protocols bgp 65536 neighbor 203.0.113.5
+    - delete protocols bgp 65536 neighbor 192.0.2.25
+    - set protocols bgp 65536 neighbor 192.0.2.43 disable-connected-check
+    - set protocols bgp 65536 neighbor 192.0.2.43 advertisement-interval 72
+    - set protocols bgp 65536 neighbor 192.0.2.43 capability dynamic
+    - set protocols bgp 65536 neighbor 192.0.2.43 timers holdtime 30
+    - set protocols bgp 65536 neighbor 192.0.2.43 timers keepalive 10
+    - set protocols bgp 65536 neighbor 192.0.2.43 remote-as 102
+    - set protocols bgp 65536 neighbor 203.0.113.0 capability dynamic
+    - set protocols bgp 65536 neighbor 203.0.113.0 remote-as 102
+    - set protocols bgp 65536 parameters always-compare-med
+    - set protocols bgp 65536 parameters dampening half-life 33
+    - set protocols bgp 65536 parameters dampening max-suppress-time 20
+    - set protocols bgp 65536 parameters dampening re-use 60
+    - set protocols bgp 65536 parameters dampening start-suppress-time 5
+
+deleted:
+  commands:
+    - delete protocols bgp 65536 timers
+    - delete protocols bgp 65536 parameters
+    - delete protocols bgp 65536 neighbor 5001::64
+    - delete protocols bgp 65536 neighbor 203.0.113.5
+    - delete protocols bgp 65536 neighbor 192.0.2.25
+
+rendered:
+  commands:
+    - set interfaces ethernet eth1 firewall in name 'INBOUND'
+    - set interfaces ethernet eth1 firewall out name 'OUTBOUND'
+    - set interfaces ethernet eth1 firewall local name 'LOCAL'
+    - set interfaces ethernet eth1 firewall local ipv6-name 'V6-LOCAL'
+    - set interfaces ethernet eth2 firewall in name 'INBOUND'
+    - set interfaces ethernet eth2 firewall out name 'OUTBOUND'
+    - set interfaces ethernet eth2 firewall local name 'LOCAL'
+    - set interfaces ethernet eth2 firewall local ipv6-name 'V6-LOCAL'
+
+populate:
+  global:
+    as_number: 65536
+    bgp_params:
+      bestpath:
+        as_path: confed
+        compare_routerid: true
+      confederation:
+        - identifier: 66
+        - peers: 20
+        - peers: 55
+      default:
+        local_pref: 100
+      router_id: 192.1.2.9
+    neighbor:
+      - address: 192.0.2.25
+        disable_connected_check: true
+        timers:
+          holdtime: 30
+          keepalive: 10
+        remote_as: 102
+      - address: 203.0.113.5
+        ebgp_multihop: 2
+        remote_as: 101
+        update_source: 192.0.2.25
+      - address: 5001::64
+        remote_as: 103
+    timers:
+      keepalive: 35

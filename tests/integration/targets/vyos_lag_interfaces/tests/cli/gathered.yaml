@@ -14,7 +14,7 @@
     - name: Assert that gathered dicts was correctly generated
       assert:
         that:
-          - "{{ populate | symmetric_difference(result['gathered']) |length == 0 }}"
+          - populate | symmetric_difference(result['gathered']) |length == 0
 
   always:
     - include_tasks: _remove_bond.yaml

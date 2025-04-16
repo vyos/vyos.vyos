@@ -59,7 +59,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         )
 
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_global.firewall_global.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.firewall_global.firewall_global.get_os_version",
         )
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = "1.4"
@@ -111,7 +111,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                             afi="ipv6",
                             ip_src_route=True,
                             icmp_redirects=dict(receive=False),
-                        )
+                        ),
                     ],
                     group=dict(
                         address_group=[
@@ -156,12 +156,12 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                                 name="TELNET",
                                 description="This group has the telnet ports",
                                 members=[dict(port="23")],
-                            )
+                            ),
                         ],
                     ),
                 ),
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set firewall group address-group MGMT-HOSTS address 192.0.1.1",
@@ -184,12 +184,10 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "set firewall group port-group TELNET",
             "set firewall global-options ip-src-route 'enable'",
             "set firewall global-options receive-redirects 'disable'",
-            "set firewall global-options send-redirects 'enable'",
             "set firewall global-options config-trap 'enable'",
-            "set firewall global-options ipv6-src-route 'enable'",
             "set firewall global-options ipv6-receive-redirects 'disable'",
             "set firewall global-options state-policy established action 'accept'",
-            "set firewall global-options state-policy established log 'enable'",
+            "set firewall global-options state-policy established log",
             "set firewall global-options state-policy established log-level 'emerg'",
             "set firewall global-options state-policy invalid action 'reject'",
             "set firewall global-options broadcast-ping 'enable'",
@@ -287,7 +285,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                             dict(
                                 afi="ipv4",
                                 name="RND",
-                                description="This group has the Management network addresses",
+                                # Deleted the description here.
                                 members=[dict(address="192.0.2.0/24")],
                             ),
                             dict(
@@ -314,9 +312,12 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "delete firewall group address-group RND-HOSTS address 192.0.2.5",
             "delete firewall global-options all-ping",
             "delete firewall global-options state-policy related",
+            "delete firewall global-options ipv6-src-route",
+            "delete firewall global-options send-redirects",
             "set firewall global-options state-policy invalid action 'reject'",
             "set firewall group address-group RND-HOSTS address 192.0.2.7",
             "set firewall group address-group RND-HOSTS address 192.0.2.9",
+            "delete firewall group network-group RND description",
             "delete firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::1",
             "set firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::2",
             "delete firewall group port-group SSH port 22",
@@ -329,6 +330,10 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             dict(
                 config=dict(
                     ping=dict(all=True),
+                    route_redirects=[
+                        dict(ip_src_route=True, afi="ipv6"),
+                        dict(icmp_redirects=dict(send=True), afi="ipv4"),
+                    ],
                     state_policy=[
                         dict(connection_type="related", action="accept", log_level="alert"),
                     ],
@@ -442,6 +447,8 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "delete firewall group address-group RND-HOSTS address 192.0.2.3",
             "delete firewall group address-group RND-HOSTS address 192.0.2.5",
             "delete firewall global-options all-ping",
+            "delete firewall global-options ipv6-src-route",
+            "delete firewall global-options send-redirects",
             "set firewall global-options state-policy related action 'drop'",
             "delete firewall global-options state-policy related log-level",
             "set firewall global-options state-policy invalid action 'reject'",
@@ -456,5 +463,5 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
 
     def test_vyos_firewall_global_set_01_deleted(self):
         set_module_args(dict(config=dict(), state="deleted"))
-        commands = ["delete firewall global-options"]
+        commands = ["delete firewall"]
         self.execute_module(changed=True, commands=commands)

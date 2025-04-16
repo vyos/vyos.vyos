@@ -1,0 +1,5 @@
+---
+sections:
+  - title: Platform VyOS
+    toctree:
+      - platform_vyos

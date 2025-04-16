@@ -5,7 +5,7 @@
 - include_tasks: _populate.yaml
 
 - block:
-    - name: Delete firewall rule set.
+    - name: Delete firewall rule set
       register: result
       vyos.vyos.vyos_firewall_rules: &id001
         config:

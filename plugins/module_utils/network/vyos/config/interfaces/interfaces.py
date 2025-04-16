@@ -275,7 +275,9 @@ class Interfaces(ConfigBase):
             commands.append(
                 self._compute_commands(key=key, interface=want_copy["name"], remove=True),
             )
-        if have_copy["enabled"] is False and not ('enabled' in want_copy and want_copy["enabled"] is False):
+        if have_copy["enabled"] is False and not (
+            "enabled" in want_copy and want_copy["enabled"] is False
+        ):
             commands.append(
                 self._compute_commands(key="enabled", value=True, interface=want_copy["name"]),
             )
@@ -284,10 +286,15 @@ class Interfaces(ConfigBase):
             for have_vif in have_vifs:
                 want_vif = search_obj_in_list(have_vif["vlan_id"], want_vifs, key="vlan_id")
                 if not want_vif:
-                    want_vif = {
-                        "vlan_id": have_vif["vlan_id"],
-                        "enabled": True,
-                    }
+                    commands.append(
+                        self._compute_commands(
+                            key="",
+                            interface=want_copy["name"],
+                            vif=have_vif["vlan_id"],
+                            remove=True,
+                        ),
+                    )
+                    continue
 
                 for key in dict_delete(have_vif, want_vif).keys():
                     if key == "enabled":
@@ -300,27 +307,27 @@ class Interfaces(ConfigBase):
                             remove=True,
                         ),
                     )
-                if have_vif["enabled"] is False:
-                    commands.append(
-                        self._compute_commands(
-                            key="enabled",
-                            value=True,
-                            interface=want_copy["name"],
-                            vif=want_vif["vlan_id"],
-                        ),
-                    )
         return commands
 
     def _compute_commands(self, interface, key, vif=None, value=None, remove=False):
-        intf_context = "interfaces {0} {1}".format(get_interface_type(interface), interface)
+        interface_type = get_interface_type(interface)
+        if not interface_type:
+            self._module.fail_json(
+                msg="interface {0} is not a valid interface type".format(interface),
+            )
+        intf_context = "interfaces {0} {1}".format(interface_type, interface)
         set_cmd = "set {0}".format(intf_context)
         del_cmd = "delete {0}".format(intf_context)
 
         if vif:
             set_cmd = set_cmd + (" vif {0}".format(vif))
             del_cmd = del_cmd + (" vif {0}".format(vif))
-
-        if key == "enabled":
+        if key == "" or key is None:
+            if not remove:
+                command = "{0}".format(set_cmd)
+            else:
+                command = "{0}".format(del_cmd)
+        elif key == "enabled":
             if not value:
                 command = "{0} disable".format(set_cmd)
             else:

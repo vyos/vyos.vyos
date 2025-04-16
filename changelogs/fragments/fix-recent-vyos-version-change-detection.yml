@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - vyos_config - Fix change detection for recent Vyos versions

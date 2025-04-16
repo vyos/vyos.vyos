@@ -1,14 +1,12 @@
 ---
 - name: Ensure required interfaces are present in running-config
-  vars:
+  vyos.vyos.vyos_config:
     lines: |-
       set interfaces ethernet eth0 address dhcp
       set interfaces ethernet eth0 speed auto
       set interfaces ethernet eth0 duplex auto
-      set interfaces ethernet eth1
+      set interfaces ethernet eth1 address 192.0.2.1/24
       set interfaces ethernet eth2
       delete interfaces loopback lo
-  ignore_errors: "{{ result.failed }}"
-  register: result
-  ansible.netcommon.cli_config:
-    config: "{{ lines }}"
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

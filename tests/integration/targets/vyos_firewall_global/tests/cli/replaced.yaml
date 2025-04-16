@@ -8,50 +8,7 @@
     - name: Replace device configurations of listed firewall with provided configurations
       register: result
       vyos.vyos.vyos_firewall_global: &id001
-        config:
-          validation: strict
-          config_trap: true
-          log_martians: true
-          syn_cookies: true
-          twa_hazards_protection: true
-          ping:
-            all: true
-            broadcast: true
-          state_policy:
-            - connection_type: established
-              action: accept
-              log: true
-
-            - connection_type: invalid
-              action: reject
-          route_redirects:
-            - afi: ipv4
-              ip_src_route: true
-              icmp_redirects:
-                send: true
-                receive: false
-          group:
-            address_group:
-              - name: SALES-HOSTS
-                description: Sales office hosts address list
-                members:
-                  - address: 192.0.2.1
-
-                  - address: 192.0.2.2
-
-                  - address: 192.0.2.3
-
-              - name: ENG-HOSTS
-                description: Sales office hosts address list
-                members:
-                  - address: 192.0.3.1
-
-                  - address: 192.0.3.2
-            network_group:
-              - name: MGMT
-                description: This group has the Management network addresses
-                members:
-                  - address: 192.0.1.0/24
+        config: "{{ replaced['config'] }}"
         state: replaced
 
     - name: Assert that correct set of commands were generated

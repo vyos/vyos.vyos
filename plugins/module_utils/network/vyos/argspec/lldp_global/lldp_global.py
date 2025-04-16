@@ -1,3 +1,5 @@
+#
+# -*- coding: utf-8 -*-
 # Copyright 2019 Red Hat
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
@@ -22,6 +24,8 @@
 """
 The arg spec for the vyos_lldp_global module
 """
+
+
 from __future__ import absolute_import, division, print_function
 
 
@@ -38,15 +42,25 @@ class Lldp_globalArgs(object):  # pylint: disable=R0903
         "config": {
             "options": {
                 "address": {"type": "str"},
+                "addresses": {
+                    "elements": "str",
+                    "type": "list",
+                },
                 "enable": {"type": "bool"},
                 "legacy_protocols": {
-                    "choices": ["cdp", "edp", "fdp", "sonmp"],
-                    "type": "list",
+                    "choices": [
+                        "cdp",
+                        "edp",
+                        "fdp",
+                        "sonmp",
+                    ],
                     "elements": "str",
+                    "type": "list",
                 },
                 "snmp": {"type": "str"},
             },
             "type": "dict",
+            "mutually_exclusive": [["addresses", "address"]],
         },
         "running_config": {"type": "str"},
         "state": {
@@ -54,9 +68,9 @@ class Lldp_globalArgs(object):  # pylint: disable=R0903
                 "merged",
                 "replaced",
                 "deleted",
+                "gathered",
                 "rendered",
                 "parsed",
-                "gathered",
             ],
             "default": "merged",
             "type": "str",

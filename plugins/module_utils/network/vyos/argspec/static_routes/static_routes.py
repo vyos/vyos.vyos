@@ -25,6 +25,7 @@
 The arg spec for the vyos_static_routes module
 """
 
+
 from __future__ import absolute_import, division, print_function
 
 
@@ -45,7 +46,10 @@ class Static_routesArgs(object):  # pylint: disable=R0903
                     "elements": "dict",
                     "options": {
                         "afi": {
-                            "choices": ["ipv4", "ipv6"],
+                            "choices": [
+                                "ipv4",
+                                "ipv6",
+                            ],
                             "required": True,
                             "type": "str",
                         },
@@ -59,14 +63,16 @@ class Static_routesArgs(object):  # pylint: disable=R0903
                                     },
                                     "type": "dict",
                                 },
-                                "dest": {"required": True, "type": "str"},
+                                "dest": {
+                                    "required": True,
+                                    "type": "str",
+                                },
                                 "next_hops": {
                                     "elements": "dict",
                                     "options": {
                                         "admin_distance": {"type": "int"},
                                         "enabled": {"type": "bool"},
                                         "forward_router_address": {
-                                            "required": True,
                                             "type": "str",
                                         },
                                         "interface": {"type": "str"},

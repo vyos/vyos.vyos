@@ -388,3 +388,68 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
             ),
         )
         self.execute_module(changed=False, commands=[])
+
+    def test_vyos_firewall_rule_set_02_replaced(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth0.100",
+                        access_rules=[
+                            dict(
+                                afi="ipv4",
+                                rules=[dict(name="INBOUND", direction="in")],
+                            ),
+                            dict(
+                                afi="ipv6",
+                                rules=[dict(name="V6-LOCAL", direction="local")],
+                            ),
+                        ],
+                    ),
+                    dict(
+                        name="bond2",
+                        access_rules=[
+                            dict(
+                                afi="ipv4",
+                                rules=[dict(name="LOCAL", direction="local")],
+                            ),
+                            dict(
+                                afi="ipv6",
+                                rules=[dict(name="V6-LOCAL", direction="local")],
+                            ),
+                        ],
+                    ),
+                    dict(
+                        name="wg4",
+                        access_rules=[
+                            dict(
+                                afi="ipv4",
+                                rules=[dict(name="LOCAL", direction="local")],
+                            ),
+                            dict(
+                                afi="ipv6",
+                                rules=[dict(name="V6-LOCAL", direction="local")],
+                            ),
+                        ],
+                    ),
+                ],
+                state="replaced",
+            ),
+        )
+        commands = [
+            'delete interfaces ethernet eth0 firewall in name',
+            'delete interfaces ethernet eth0 firewall local name',
+            'delete interfaces ethernet eth0 firewall out name',
+            'delete interfaces ethernet eth0 firewall local ipv6-name',
+            'delete interfaces ethernet eth2 firewall in name',
+            'delete interfaces ethernet eth2 firewall local name',
+            'delete interfaces ethernet eth2 firewall out name',
+            'delete interfaces ethernet eth2 firewall local ipv6-name',
+            "set interfaces ethernet eth0 vif 100 firewall in name 'INBOUND'",
+            "set interfaces ethernet eth0 vif 100 firewall local ipv6-name 'V6-LOCAL'",
+            "set interfaces bonding bond2 firewall local name 'LOCAL'",
+            "set interfaces bonding bond2 firewall local ipv6-name 'V6-LOCAL'",
+            "set interfaces wireguard wg4 firewall local name 'LOCAL'",
+            "set interfaces wireguard wg4 firewall local ipv6-name 'V6-LOCAL'"
+        ]
+        self.execute_module(changed=True, commands=commands)

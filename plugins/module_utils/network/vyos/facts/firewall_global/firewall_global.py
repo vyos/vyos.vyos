@@ -111,7 +111,7 @@ class Firewall_globalFacts(object):
         rr_lst = []
 
         v6_attr = findall(
-            r"^set firewall (?:ipv6-src-route|ipv6-receive-redirects) (\S+)",
+            r"^set firewall (?:global-options )?(?:ipv6-src-route|ipv6-receive-redirects) (\S+)",
             conf,
             M,
         )
@@ -121,7 +121,7 @@ class Firewall_globalFacts(object):
                 rr_lst.append(obj)
 
         v4_attr = findall(
-            r"^set firewall (?:ip-src-route|receive-redirects|send-redirects) (\S+)",
+            r"^set firewall (?:global-options )?(?:ip-src-route|receive-redirects|send-redirects) (\S+)",
             conf,
             M,
         )
@@ -174,7 +174,7 @@ class Firewall_globalFacts(object):
         :return: generated rule list configuration.
         """
         sp_lst = []
-        policies = findall(r"^set firewall (?:global-options )state-policy (\S+)", conf, M)
+        policies = findall(r"^set firewall (?:global-options )?state-policy (\S+)", conf, M)
         policies = list(set(policies))  # remove redundancies
         if policies:
             rules_lst = []

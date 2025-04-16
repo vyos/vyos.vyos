@@ -1,4 +1,7 @@
 ---
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
 - name: Remove pre-existing ntp_global config
   vyos.vyos.vyos_ntp_global:
     config:

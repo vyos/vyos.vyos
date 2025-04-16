@@ -1,0 +1,9 @@
+---
+- name: Demolish environment
+  vyos.vyos.vyos_config:
+    lines: |-
+      delete interfaces bonding bond2
+      delete interfaces ethernet eth2 vif 3
+      delete interfaces ethernet eth2 vif 18
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

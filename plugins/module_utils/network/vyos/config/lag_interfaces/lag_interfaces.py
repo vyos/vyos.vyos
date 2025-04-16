@@ -300,10 +300,9 @@ class Lag_interfaces(ConfigBase):
             for key in diff_members:
                 commands.append(
                     self._compute_command(
-                        key["member"],
-                        "bond-group",
                         want["name"],
-                        type="ethernet",
+                        "member interface",
+                        key["member"],
                     ),
                 )
         return commands
@@ -337,11 +336,10 @@ class Lag_interfaces(ConfigBase):
         for member in have["members"]:
             commands.append(
                 self._compute_command(
-                    member["member"],
-                    "bond-group",
                     have["name"],
+                    "member interface",
+                    member["member"],
                     remove=True,
-                    type="ethernet",
                 ),
             )
         return commands

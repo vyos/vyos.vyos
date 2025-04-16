@@ -2,10 +2,13 @@
 - debug:
     msg: START vyos_ospfv3_interfaces parsed integration tests on connection={{ ansible_connection }}
 
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
 - name: Provide the running configuration for parsing (config to be parsed)
   register: result
   vyos.vyos.vyos_ospf_interfaces:
-    running_config: "{{ lookup('file', '_parsed.cfg') }}"
+    running_config: "{{ lookup('file', parsed_config_file) }}"
     state: parsed
 
 - assert:

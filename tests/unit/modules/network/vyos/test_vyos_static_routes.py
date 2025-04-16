@@ -58,6 +58,12 @@ class TestVyosStaticRoutesModule(TestVyosModule):
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes.Static_routesFacts.get_device_data",
         )
         self.execute_show_command = self.mock_execute_show_command.start()
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.static_routes.static_routes.get_os_version",
+        )
+        self.test_version = "1.3"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
 
     def tearDown(self):
         super(TestVyosStaticRoutesModule, self).tearDown()
@@ -108,7 +114,7 @@ class TestVyosStaticRoutesModule(TestVyosModule):
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.9'",
             "set protocols static route 192.0.2.48/28 next-hop 192.0.2.9 distance '10'",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.10'",
-            "set protocols static route 192.0.2.48/28 next-hop 192.0.2.10 next-hop-interface 'eth0'",
+            "set protocols static interface-route 192.0.2.48/28 next-hop-interface 'eth0'",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -171,7 +177,7 @@ class TestVyosStaticRoutesModule(TestVyosModule):
         commands = [
             "set protocols static route 192.0.2.48/28",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.9'",
-            "set protocols static route 192.0.2.48/28 next-hop 192.0.2.9 next-hop-interface 'eth0'",
+            "set protocols static interface-route 192.0.2.48/28 next-hop-interface 'eth0'",
             "set protocols static route 192.0.2.48/28 next-hop '192.0.2.10'",
             "set protocols static route 192.0.2.48/28 next-hop 192.0.2.10 distance '10'",
         ]

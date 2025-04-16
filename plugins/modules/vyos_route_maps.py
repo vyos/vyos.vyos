@@ -1,6 +1,6 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
-# Copyright 2021 Red Hat
+# Copyright 2024 Red Hat
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
@@ -15,13 +15,13 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 module: vyos_route_maps
-version_added: 2.3.0
-short_description: Route Map Resource Module.
+version_added: "1.0.0"
+short_description: Route Map resource module
 description:
 - This module manages route map configurations on devices running VYOS.
 author: Ashwini Mhatre (@amhatre)
 notes:
-- Tested against vyos 1.2.
+- Tested against vyos 1.3.8
 - This module works with connection C(network_cli).
 options:
     config:
@@ -259,6 +259,7 @@ options:
       - parsed
       default: merged
 """
+
 EXAMPLES = """
 # Using merged
 # Before state
@@ -914,6 +915,53 @@ EXAMPLES = """
 #         "set policy route-map test3 rule 1 match metric 3",
 #         "set policy route-map test3 rule 1 match peer 192.0.2.35"
 #     ],
+"""
+
+RETURN = """
+before:
+  description: The configuration prior to the module execution.
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
+  type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+after:
+  description: The resulting configuration after module execution.
+  returned: when changed
+  type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+commands:
+  description: The set of commands pushed to the remote device.
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
+  type: list
+  sample:
+  - "set policy route-map test3 rule 1 set local-preference 6"
+  - "set policy route-map test3 rule 1 set metric 4"
+  - "set policy route-map test3 rule 1 set tag 4"
+rendered:
+  description: The provided configuration in the task rendered in device-native format (offline).
+  returned: when I(state) is C(rendered)
+  type: list
+  sample:
+  - "set policy route-map test3 rule 1 set local-preference 6"
+  - "set policy route-map test3 rule 1 set metric 4"
+  - "set policy route-map test3 rule 1 set tag 4"
+gathered:
+  description: Facts about the network resource gathered from the remote device as structured data.
+  returned: when I(state) is C(gathered)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+parsed:
+  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
+  returned: when I(state) is C(parsed)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
 """
 
 from ansible.module_utils.basic import AnsibleModule

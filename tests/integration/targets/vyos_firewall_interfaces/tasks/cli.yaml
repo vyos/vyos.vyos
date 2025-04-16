@@ -1,4 +1,25 @@
 ---
+- name: Make sure to get facts
+  vyos.vyos.vyos_facts:
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
+  register: vyos_facts
+  when: vyos_version is not defined
+
+- name: Debug vyos_facts
+  ansible.builtin.debug:
+    var: vyos_facts
+
+- name: Pull version from facts
+  ansible.builtin.set_fact:
+    vyos_version: "{{ vyos_facts.ansible_facts.ansible_net_version.split('-')[0].split(' ')[-1] }}"
+  when: vyos_version is not defined
+
+- name: Fix '.0' versions
+  ansible.builtin.set_fact:
+    vyos_version: "{{ vyos_version }}.0"
+  when: vyos_version.count('.') == 1
+
 - name: Collect all cli test cases
   ansible.builtin.find:
     paths: "{{ role_path }}/tests/cli"
@@ -18,3 +39,4 @@
   with_items: "{{ test_items }}"
   loop_control:
     loop_var: test_case_to_run
+  when: vyos_version is version('1.4.0', '<', version_type='semver')

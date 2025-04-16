@@ -8,7 +8,7 @@ vyos.vyos.vyos_snmp_server
 **Manages snmp_server resource module**
 
 
-Version added: 2.7.0
+Version added: 1.0.0
 
 .. contents::
    :local:
@@ -510,24 +510,6 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>engine_id</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Defines the engineID.</div>
-                </td>
-            </tr>
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>port</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -670,60 +652,6 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>tsm</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">dictionary</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Specifies that the snmpd uses encryption</div>
-                </td>
-            </tr>
-                                <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>local_key</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Defines the server certificate fingerprint or key-file name.</div>
-                </td>
-            </tr>
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>port</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">integer</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Defines the port for tsm.</div>
-                </td>
-            </tr>
-
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="3">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>users</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -817,24 +745,6 @@ Parameters
                 </td>
             </tr>
 
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>engine_id</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Defines the engineID.</div>
-                </td>
-            </tr>
             <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
@@ -1218,7 +1128,7 @@ Notes
 -----
 
 .. note::
-   - Tested against vyos 1.1.8
+   - Tested against vyos 1.3.8, 1.4.1
    - This module works with connection ``network_cli``.
    - The Configuration defaults of the Vyos network devices are supposed to hinder idempotent behavior of plays
 
@@ -2065,7 +1975,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The set of commands pushed to the remote device.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">set service snmp community routers authorization &#x27;ro&#x27; set service snmp community routers client &#x27;203.0.113.10&#x27; set service snmp community routers client &#x27;203.0.113.20&#x27; set service snmp community routers network &#x27;192.0.2.0/24&#x27;</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set service snmp community routers authorization &#x27;ro&#x27;&quot;, &quot;set service snmp community routers client &#x27;203.0.113.10&#x27;&quot;, &quot;set service snmp community routers network &#x27;192.0.2.0/24&#x27;&quot;]</div>
                 </td>
             </tr>
             <tr>
@@ -2116,7 +2026,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The provided configuration in the task rendered in device-native format (offline).</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">set service snmp community routers authorization &#x27;ro&#x27; set service snmp community routers client &#x27;203.0.113.10&#x27; set service snmp community routers client &#x27;203.0.113.20&#x27; set service snmp community routers network &#x27;192.0.2.0/24&#x27;</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set service snmp community routers authorization &#x27;ro&#x27;&quot;, &quot;set service snmp community routers client &#x27;203.0.113.10&#x27;&quot;, &quot;set service snmp community routers network &#x27;192.0.2.0/24&#x27;&quot;]</div>
                 </td>
             </tr>
     </table>

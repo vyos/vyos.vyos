@@ -4,11 +4,6 @@
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
-
-__metaclass__ = type
-
 #############################################
 #                WARNING                    #
 #############################################
@@ -31,6 +26,12 @@ The arg spec for the vyos_ospfv3 module
 """
 
 
+from __future__ import absolute_import, division, print_function
+
+
+__metaclass__ = type
+
+
 class Ospfv3Args(object):  # pylint: disable=R0903
     """The arg spec for the vyos_ospfv3 module"""
 
@@ -46,6 +47,12 @@ class Ospfv3Args(object):  # pylint: disable=R0903
                         "area_id": {"type": "str"},
                         "export_list": {"type": "str"},
                         "import_list": {"type": "str"},
+                        "interface": {
+                            "aliases": ["interfaces"],
+                            "type": "list",
+                            "elements": "dict",
+                            "options": {"name": {"type": "str"}},
+                        },
                         "range": {
                             "elements": "dict",
                             "options": {

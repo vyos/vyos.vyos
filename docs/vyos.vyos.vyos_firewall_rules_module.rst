@@ -5,7 +5,7 @@
 vyos.vyos.vyos_firewall_rules
 *****************************
 
-**FIREWALL rules resource module**
+**Firewall rules resource module**
 
 
 Version added: 1.0.0
@@ -103,6 +103,7 @@ Parameters
                                     <li>drop</li>
                                     <li>reject</li>
                                     <li>accept</li>
+                                    <li>jump</li>
                         </ul>
                 </td>
                 <td>
@@ -110,6 +111,26 @@ Parameters
                         <div>drop (Drop if no prior rules are hit (default))</div>
                         <div>reject (Drop and notify source if no prior rules are hit)</div>
                         <div>accept (Accept if no prior rules are hit)</div>
+                        <div>jump (Jump to another rule-set, 1.4+)</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="4">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>default_jump_target</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Default jump target if the default action is jump.</div>
+                        <div>Only valid in 1.4 and later.</div>
+                        <div>Only valid when default_action = jump.</div>
                 </td>
             </tr>
             <tr>
@@ -155,6 +176,29 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="4">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>filter</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>input</li>
+                                    <li>output</li>
+                                    <li>forward</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Filter type (exclusive to &quot;name&quot;).</div>
+                        <div>Supported in 1.4 and later.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="4">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>name</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -165,6 +209,7 @@ Parameters
                 </td>
                 <td>
                         <div>Firewall rule set name.</div>
+                        <div>Required for 1.3- and optional for 1.4+.</div>
                 </td>
             </tr>
             <tr>
@@ -203,10 +248,17 @@ Parameters
                                     <li>reject</li>
                                     <li>accept</li>
                                     <li>inspect</li>
+                                    <li>continue</li>
+                                    <li>return</li>
+                                    <li>jump</li>
+                                    <li>queue</li>
+                                    <li>synproxy</li>
                         </ul>
                 </td>
                 <td>
                         <div>Specifying the action.</div>
+                        <div>inspect is available  &lt; 1.4</div>
+                        <div>continue, return, jump, queue, synproxy are available &gt;= 1.4</div>
                 </td>
             </tr>
             <tr>
@@ -389,6 +441,7 @@ Parameters
                 </td>
                 <td>
                         <div>Option to disable firewall rule.</div>
+                        <div>aliased to disabled</div>
                         <div style="font-size: small; color: darkgreen"><br/>aliases: disabled</div>
                 </td>
             </tr>
@@ -538,6 +591,65 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>inbound_interface</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Inbound interface.</div>
+                        <div>Only valid in 1.4 and later.</div>
+                </td>
+            </tr>
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Interface group.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>name</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Interface name.</div>
+                        <div>Can have wildcards</div>
+                </td>
+            </tr>
+
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>ipsec</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -546,10 +658,8 @@ Parameters
                 </td>
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                <br><i>VyOS 1.4 & older:</i><br>
                                     <li>match-ipsec</li>
                                     <li>match-none</li>
-                                <br><i>VyOS 1.5+ :</i><br>
                                     <li>match-ipsec-in</li>
                                     <li>match-ipsec-out</li>
                                     <li>match-none-in</li>
@@ -558,6 +668,28 @@ Parameters
                 </td>
                 <td>
                         <div>Inbound ip sec packets.</div>
+                        <div>VyOS 1.4 and older match-ipsec/match-none</div>
+                        <div>VyOS 1.5 and later require -in/-out suffixes</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>jump_target</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Jump target if the action is jump.</div>
+                        <div>Only valid in 1.4 and later.</div>
+                        <div>Only valid when action = jump.</div>
                 </td>
             </tr>
             <tr>
@@ -679,7 +811,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>Option to log packets matching rule</div>
+                        <div>Option to log packets matching rule.</div>
                 </td>
             </tr>
             <tr>
@@ -707,17 +839,17 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>p2p</b>
+                    <b>outbound_interface</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">list</span>
-                         / <span style="color: purple">elements=dictionary</span>
+                        <span style="color: purple">dictionary</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
-                        <div>P2P application packets.</div>
+                        <div>Match outbound interface.</div>
+                        <div>Only valid in 1.4 and later.</div>
                 </td>
             </tr>
                                 <tr>
@@ -727,7 +859,128 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>application</b>
+                    <b>group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Interface group.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>name</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Interface name.</div>
+                        <div>Can have wildcards</div>
+                </td>
+            </tr>
+
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>packet_length</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">list</span>
+                         / <span style="color: purple">elements=dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Packet length match.</div>
+                        <div>Only valid in 1.4 and later.</div>
+                        <div>Multiple values from 1 to 65535 and ranges are supported</div>
+                </td>
+            </tr>
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>length</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Packet length or range.</div>
+                </td>
+            </tr>
+
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>packet_length_exclude</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">list</span>
+                         / <span style="color: purple">elements=dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Packet length match.</div>
+                        <div>Only valid in 1.4 and later.</div>
+                        <div>Multiple values from 1 to 65535 and ranges are supported</div>
+                </td>
+            </tr>
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>length</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Packet length or range.</div>
+                </td>
+            </tr>
+
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>packet_type</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
@@ -735,20 +988,16 @@ Parameters
                 </td>
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>all</li>
-                                    <li>applejuice</li>
-                                    <li>bittorrent</li>
-                                    <li>directconnect</li>
-                                    <li>edonkey</li>
-                                    <li>gnutella</li>
-                                    <li>kazaa</li>
+                                    <li>broadcast</li>
+                                    <li>multicast</li>
+                                    <li>host</li>
+                                    <li>other</li>
                         </ul>
                 </td>
                 <td>
-                        <div>Name of the application.</div>
+                        <div>Packet type match.</div>
                 </td>
             </tr>
-
             <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
@@ -770,6 +1019,51 @@ Parameters
                         <div>tcp_udp Both TCP and UDP.</div>
                         <div>all All IP protocols.</div>
                         <div>(!)All IP protocols except for the specified name or number.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>queue</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Queue options.</div>
+                        <div>Only valid in 1.4 and later.</div>
+                        <div>Only valid when action = queue.</div>
+                        <div>Can be a queue number or range.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>queue_options</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>bypass</li>
+                                    <li>fanout</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Queue options.</div>
+                        <div>Only valid in 1.4 and later.</div>
+                        <div>Only valid when action = queue.</div>
                 </td>
             </tr>
             <tr>
@@ -819,13 +1113,14 @@ Parameters
                     <b>time</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">integer</span>
+                        <span style="color: purple">string</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
                         <div>Source addresses seen in the last N seconds.</div>
+                        <div>Since 1.4, this is a string of second/minute/hour</div>
                 </td>
             </tr>
 
@@ -867,6 +1162,26 @@ Parameters
                         <div>IPv4/6 address, subnet or range to match.</div>
                         <div>Match everything except the specified address, subnet or range.</div>
                         <div>Source ip address subnet or range.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>fqdn</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Fully qualified domain name.</div>
+                        <div>Available in 1.4 and later.</div>
                 </td>
             </tr>
             <tr>
@@ -1108,6 +1423,65 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>synproxy</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>SYN proxy options.</div>
+                        <div>Only valid in 1.4 and later.</div>
+                        <div>Only valid when action = synproxy.</div>
+                </td>
+            </tr>
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>mss</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">integer</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Adjust MSS (501-65535)</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>window_scale</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">integer</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Window scale (1-14).</div>
+                </td>
+            </tr>
+
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>tcp</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -1130,15 +1504,75 @@ Parameters
                     <b>flags</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">string</span>
+                        <span style="color: purple">list</span>
+                         / <span style="color: purple">elements=dictionary</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
-                        <div>TCP flags to be matched.</div>
+                        <div>list of tcp flags to be matched</div>
+                        <div>5.0 breaking change to support 1.4+ and 1.3-</div>
                 </td>
             </tr>
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>flag</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>ack</li>
+                                    <li>cwr</li>
+                                    <li>ecn</li>
+                                    <li>fin</li>
+                                    <li>psh</li>
+                                    <li>rst</li>
+                                    <li>syn</li>
+                                    <li>urg</li>
+                                    <li>all</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>TCP flag to be matched.</div>
+                        <div>syn, ack, fin, rst, urg, psh, all (1.3-)</div>
+                        <div>syn, ack, fin, rst, urg, psh, cwr, ecn (1.4+)</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>invert</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>no</li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Invert the match.</div>
+                </td>
+            </tr>
+
 
             <tr>
                     <td class="elbow-placeholder"></td>
@@ -1348,7 +1782,7 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.1.8 (helium).
+   - Tested against VyOS 1.3.8.
    - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
@@ -2021,7 +2455,6 @@ Examples
                     description: Rule 502 is configured by Ansible
                     ipsec: match-ipsec
         state: overridden
-
     #
     #
     # -------------------------
@@ -2157,6 +2590,7 @@ Examples
     #
     - name: Gather listed firewall rules with provided configurations
       vyos.vyos.vyos_firewall_rules:
+        config:
         state: gathered
     #
     #
@@ -2305,7 +2739,6 @@ Examples
                       invalid: false
                       related: true
         state: rendered
-
     #
     #
     # -------------------------
@@ -2341,7 +2774,7 @@ Examples
     # Using parsed
     #
     #
-    - name: Parsed the provided input commands.
+    - name: Parse the commands for provided configuration
       vyos.vyos.vyos_firewall_rules:
         running_config:
           "set firewall group address-group 'inbound'
@@ -2408,16 +2841,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>after</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
-                      <span style="color: purple">list</span>
+                      <span style="color: purple">dictionary</span>
                     </div>
                 </td>
                 <td>when changed</td>
                 <td>
-                            <div>The resulting configuration model invocation.</div>
+                            <div>The resulting configuration after module execution.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format
-     of the parameters above.</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
                 </td>
             </tr>
             <tr>
@@ -2426,16 +2858,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>before</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
-                      <span style="color: purple">list</span>
+                      <span style="color: purple">dictionary</span>
                     </div>
                 </td>
-                <td>always</td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
                 <td>
-                            <div>The configuration prior to the model invocation.</div>
+                            <div>The configuration prior to the module execution.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format
-     of the parameters above.</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
                 </td>
             </tr>
             <tr>
@@ -2455,6 +2886,57 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set firewall name Downlink default-action &#x27;accept&#x27;&quot;, &quot;set firewall name Downlink description &#x27;IPv4 INBOUND rule set&#x27;&quot;, &quot;set firewall name Downlink rule 501 action &#x27;accept&#x27;&quot;, &quot;set firewall name Downlink rule 502 description &#x27;Rule 502 is configured by Ansible&#x27;&quot;, &quot;set firewall name Downlink rule 502 ipsec &#x27;match-ipsec&#x27;&quot;]</div>
                 </td>
             </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>gathered</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>gathered</code></td>
+                <td>
+                            <div>Facts about the network resource gathered from the remote device as structured data.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>parsed</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>parsed</code></td>
+                <td>
+                            <div>The device native config provided in <em>running_config</em> option parsed into structured data as per module argspec.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>rendered</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>rendered</code></td>
+                <td>
+                            <div>The provided configuration in the task rendered in device-native format (offline).</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set firewall name Downlink default-action &#x27;accept&#x27;&quot;, &quot;set firewall name Downlink description &#x27;IPv4 INBOUND rule set&#x27;&quot;, &quot;set firewall name Downlink rule 501 action &#x27;accept&#x27;&quot;, &quot;set firewall name Downlink rule 502 description &#x27;Rule 502 is configured by Ansible&#x27;&quot;, &quot;set firewall name Downlink rule 502 ipsec &#x27;match-ipsec&#x27;&quot;]</div>
+                </td>
+            </tr>
     </table>
     <br/><br/>
 
@@ -2467,3 +2949,4 @@ Authors
 ~~~~~~~
 
 - Rohit Thakur (@rohitthakur2590)
+- Gaige B. Paulsen (@gaige)

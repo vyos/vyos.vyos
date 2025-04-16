@@ -1,16 +1,11 @@
 ---
 - ansible.builtin.include_tasks: _remove_config.yaml
 
-- name: Setup
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
+- name: Setup {{ vyos_version }}
+  vyos.vyos.vyos_config:
+    lines: "{{ populate_config }}"
   vars:
-    lines: |-
-      set interfaces ethernet eth1 firewall in name 'INBOUND'
-      set interfaces ethernet eth1 firewall out name 'OUTBOUND'
-      set interfaces ethernet eth1 firewall local name 'LOCAL'
-      set interfaces ethernet eth1 firewall local ipv6-name 'V6-LOCAL'
-      set interfaces ethernet eth2 firewall in name 'INBOUND'
-      set interfaces ethernet eth2 firewall out name 'OUTBOUND'
-      set interfaces ethernet eth2 firewall local name 'LOCAL'
-      set interfaces ethernet eth2 firewall local ipv6-name 'V6-LOCAL'
-  ansible.netcommon.cli_config:
-    config: "{{ lines }}"
+    ansible_connection: ansible.netcommon.network_cli

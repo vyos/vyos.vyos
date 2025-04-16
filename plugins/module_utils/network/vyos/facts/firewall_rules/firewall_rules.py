@@ -224,7 +224,6 @@ class Firewall_rulesFacts(object):
         ]
         rule = self.parse_attr(conf, a_lst)
         r_sub = {
-            "p2p": self.parse_p2p(conf),
             "tcp": self.parse_tcp(conf),
             "icmp": self.parse_icmp(conf, "icmp"),
             "time": self.parse_time(conf, "time"),
@@ -260,7 +259,7 @@ class Firewall_rulesFacts(object):
         :return: generated config dictionary.
         """
         lengths = []
-        rule_regex = r"%s (\d+)" % attrib
+        rule_regex = r"%s (.+)$" % attrib
         found_lengths = findall(rule_regex, conf, M)
         if found_lengths:
             lengths = []
@@ -268,23 +267,6 @@ class Firewall_rulesFacts(object):
                 obj = {"length": l.strip("'")}
                 lengths.append(obj)
         return lengths
-
-    def parse_p2p(self, conf):
-        """
-        This function forms the regex to fetch the 'p2p' with in
-        'rules'
-        :param conf: configuration data.
-        :return: generated rule list configuration.
-        """
-        a_lst = []
-        applications = findall(r"p2p (?:\'*)(\d+)(?:\'*)", conf, M)
-        if applications:
-            app_lst = []
-            for r in set(applications):
-                obj = {"application": r.strip("'")}
-                app_lst.append(obj)
-            a_lst = sorted(app_lst, key=lambda i: i["application"])
-        return a_lst
 
     def parse_src_or_dest(self, conf, attrib=None):
         """
@@ -447,17 +429,6 @@ class Firewall_rulesFacts(object):
         cfg_dict["rate"] = self.parse_rate(conf, "rate")
         return cfg_dict
 
-    def parse_rate(self, conf, attrib=None):
-        """
-        This function triggers the parsing of 'rate' attributes.
-        :param conf: configuration.
-        :param attrib: 'rate'
-        :return: generated config dictionary.
-        """
-        a_lst = ["unit", "number"]
-        cfg_dict = self.parse_attr(conf, a_lst, match=attrib)
-        return cfg_dict
-
     def parse_attr(self, conf, attr_list, match=None):
         """
         This function peforms the following:
@@ -484,14 +455,20 @@ class Firewall_rulesFacts(object):
                             config[attrib] = True
                 else:
                     out = search(r"^.*" + regex + " (.+)", conf, M)
-                    if not out and attrib == "disable":
-                        out = search(r"^.*\d+" + " ('disable'$)", conf, M)
+                    if not out:
+                        if attrib == "disable":
+                            out = search(r"^.*\d+" + " (disable$)", conf, M)
+                        if attrib == 'log':
+                            out = search(r"^.*\d+" + " (log$)", conf, M)
                     if out:
+
                         val = out.group(1).strip("'")
                         if self.is_num(attrib):
                             val = int(val)
                         if attrib == "disable":
                             val = True
+                        if attrib == "log":
+                            val = "enable"
                         config[attrib] = val
         return config
 
@@ -532,3 +509,21 @@ class Firewall_rulesFacts(object):
         """
         num_set = ("time", "code", "type", "count", "burst", "number")
         return True if attrib in num_set else False
+
+    def parse_rate(self, conf, match):
+        """
+        This function triggers the parsing of 'rate' attributes.
+        :param conf: configuration.
+        :param attrib: 'rate'
+        :return: generated config dictionary.
+        """
+        config = {}
+
+        out = search(r"^.*" + match + " (.+)", conf, M)
+        if out:
+            val = out.group(1).strip("'")
+            if "/" in val:  # number/unit
+                (number, unit) = val.split("/")
+                config['number'] = number
+                config['unit'] = unit
+        return config
