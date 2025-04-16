@@ -16,8 +16,8 @@ def set_module_args(args):
         args["_ansible_remote_tmp"] = "/tmp"
     if "_ansible_keep_remote_files" not in args:
         args["_ansible_keep_remote_files"] = False
-    if "profile" not in args:
-        args["profile"] = "legacy"
+    if "_ansible_profile" not in args:
+        args["_ansible_profile"] = "legacy"
 
     args = json.dumps({"ANSIBLE_MODULE_ARGS": args})
     basic._ANSIBLE_ARGS = to_bytes(args)
