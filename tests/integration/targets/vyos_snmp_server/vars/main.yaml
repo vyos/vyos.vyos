@@ -15,6 +15,7 @@ merged:
     - set service snmp v3 user adminuser privacy encrypted-password ********
     - set service snmp v3 user adminuser group testgroup
     - set service snmp v3 view default oid 1
+    - set service snmp v3 engineid 000000000000000000000002
     - set service snmp contact admin2@ex.com
   after:
     communities:
@@ -30,6 +31,7 @@ merged:
         port: 33
       - address: 20.1.1.1
     snmp_v3:
+      engine_id: "000000000000000000000002"
       groups:
         - group: testgroup
           mode: ro
