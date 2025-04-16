@@ -1,0 +1,3 @@
+---
+trivial:
+  - util.py - Add mock _ANSIBLE_PROFILE to reflect changes to Ansible libs

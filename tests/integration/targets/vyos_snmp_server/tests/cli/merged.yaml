@@ -20,6 +20,7 @@
             - address: 192.0.2.1
               port: 33
           snmp_v3:
+            engine_id: "000000000000000000000002"
             views:
               - view: default
                 oid: 1
