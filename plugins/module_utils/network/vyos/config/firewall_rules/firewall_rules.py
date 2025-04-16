@@ -1167,12 +1167,18 @@ class Firewall_rules(ConfigBase):
             return True
         elif isinstance(w, list) and isinstance(rs, list):
             try:
-                sorted_list1 = sorted(w, key=lambda x: str(x))  # pylint: disable=unnecessary-lambda
-                sorted_list2 = sorted(
-                    rs,
-                    key=lambda x: str(x),  # pylint: disable=unnecessary-lambda
-                )
+                def comparison(x):
+                    if 'name' in x:
+                        return x['name']
+                    if 'number' in x:
+                        return x['number']
+                    return str(x)
+
+                sorted_list1 = sorted(w, key=comparison)
+                sorted_list2 = sorted(rs, key=comparison)
             except TypeError:
+                return False
+            if len(sorted_list1) != len(sorted_list2):
                 return False
             return all(self._is_same_rs(x, y) for x, y in zip(sorted_list1, sorted_list2))
         else:
