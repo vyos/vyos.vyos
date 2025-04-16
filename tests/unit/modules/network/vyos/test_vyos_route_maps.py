@@ -132,6 +132,72 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             dict(
                                 sequence=1,
                                 action="permit",
+                                match=dict(
+                                    rpki="invalid",
+                                    interface="eth2",
+                                    metric=1,
+                                    peer="1.1.1.3",
+                                    ipv6=dict(next_hop="fdda:5cc1:23:4::1f"),
+                                ),
+                                set=dict(
+                                    ipv6_next_hop=dict(
+                                        ip_type="global",
+                                        value="fdda:5cc1:23:4::1f",
+                                    ),
+                                    community=dict(value="internet"),
+                                    bgp_extcommunity_rt="22:11",
+                                    ip_next_hop="10.20.10.22",
+                                    large_community="10:20:21",
+                                    local_preference=4,
+                                    metric=5,
+                                    metric_type="type-2",
+                                    origin="egp",
+                                    originator_id="10.0.2.2",
+                                    src="10.0.2.15",
+                                    tag=4,
+                                    weight=4,
+                                ),
+                            ),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+        commands = [
+            "set policy route-map test2 rule 1 action permit",
+            "set policy route-map test2 rule 1 set bgp-extcommunity-rt 22:11",
+            "set policy route-map test2 rule 1 set ip-next-hop 10.20.10.22",
+            "set policy route-map test2 rule 1 set ipv6-next-hop global fdda:5cc1:23:4::1f",
+            "set policy route-map test2 rule 1 set large-community 10:20:21",
+            "set policy route-map test2 rule 1 set local-preference 4",
+            "set policy route-map test2 rule 1 set metric 5",
+            "set policy route-map test2 rule 1 set metric-type type-2",
+            "set policy route-map test2 rule 1 set origin egp",
+            "set policy route-map test2 rule 1 set originator-id 10.0.2.2",
+            "set policy route-map test2 rule 1 set src 10.0.2.15",
+            "set policy route-map test2 rule 1 set tag 4",
+            "set policy route-map test2 rule 1 set weight 4",
+            "set policy route-map test2 rule 1 set community internet",
+            "set policy route-map test2 rule 1 match interface eth2",
+            "set policy route-map test2 rule 1 match metric 1",
+            "set policy route-map test2 rule 1 match peer 1.1.1.3",
+            "set policy route-map test2 rule 1 match ipv6 nexthop fdda:5cc1:23:4::1f",
+            "set policy route-map test2 rule 1 match rpki invalid",
+        ]
+
+        self.execute_module(changed=True, commands=commands)
+
+    def test_route_maps_extras_merged(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        route_map="test2",
+                        entries=[
+                            dict(
+                                sequence=1,
+                                action="permit",
                                 call="2",
                                 continue_sequence=2,
                                 match=dict(
