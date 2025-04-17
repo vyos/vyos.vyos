@@ -53,12 +53,12 @@ class Vrf(ResourceModule):
         )
         self.parsers = [
             "bind_to_all",
-            "table",
-            "vni",
-            "description",
-            "disable_vrf",
-            "disable_forwarding",
-            "disable_nht",
+            "table_id",
+            # "vni",
+            # "description",
+            # "disable_vrf",
+            # "disable_forwarding",
+            # "disable_nht",
         ]
 
     def _validate_template(self):
@@ -101,6 +101,7 @@ class Vrf(ResourceModule):
         # if state is merged, merge want onto have and then compare
         if self.state == "merged":
             wantd = dict_merge(haved, wantd)
+            # self._module.fail_json(msg=str(wantd))
 
         # # if state is deleted, empty out wantd and set haved to wantd
         # if self.state == "deleted":
@@ -124,8 +125,8 @@ class Vrf(ResourceModule):
 
         self.compare(
             parsers=self.parsers,
-            want={"table_id": 100},
-            have={"table_id": {}},
+            want={"instances": [{"table_id": 100}]},
+            have={"instances": [{"table_id": {}}]},
         )
         self._module.fail_json(msg=self.commands)
 

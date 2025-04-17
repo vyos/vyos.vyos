@@ -46,7 +46,7 @@ class VrfTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "table",
+            "name": "table_id",
             "getval": re.compile(
                 r"""
                 ^set
@@ -58,7 +58,8 @@ class VrfTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "vrf name {{name}} table {{tid}}",
+            # "setval": "vrf name {{name}} table {{tid}}",
+            "setval": "vrf test",
             "compval": "table_id",
             "result": {
                 # "name": "{{ name }}",
@@ -66,111 +67,111 @@ class VrfTemplate(NetworkTemplate):
                 # "table_id": "{{ tid }}",
             },
         },
-        {
-            "name": "vni",
-            "getval": re.compile(
-                r"""
-                ^set
-                \svrf
-                \sname
-                \s(?P<name>\S+)
-                \svni
-                \s(?P<vni>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "vrf name {{name}} vni {{vni}}",
-            "compval": "vni",
-            "result": {
-                "name": "{{ name }}",
-                "vni": "{{ vni }}",
-            },
-        },
-        {
-            "name": "description",
-            "getval": re.compile(
-                r"""
-                ^set
-                \svrf
-                \s(?P<bta>bind-to-all)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "vrf name {{name}} description {{desc}}",
-            "compval": "description",
-            "result": {
-                "description": "{{ desc }}",
-            },
-        },
-        {
-            "name": "disable_vrf",
-            "getval": re.compile(
-                r"""
-                ^set
-                \svrf
-                \sname
-                \s(?P<name>\S+)
-                \s(?P<disable>disable)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "vrf name {{name}} disable",
-            "compval": "disable",
-            "result": {
-                "name": "{{ name }}",
-                "disable": "{{ True if disable is defined }}",
-            },
-        },
-        {
-            "name": "disable_forwarding",
-            "getval": re.compile(
-                r"""
-                ^set
-                \svrf
-                \sname
-                \s(?P<name>\S+)
-                \s(?P<af>\S+)
-                \s(?P<df>disable-forwarding)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "vrf name {{name}} {{ af }} disable-forwarding",
-            "compval": "address_family.disable_forwarding",
-            "result": {
-                "name": "{{ name }}",
-                "address_family": {
-                    '{{ "ipv4" if af == "ip" else "ipv6" }}': {
-                        "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
-                        "disable_forwarding": "{{ True if df is defined }}",
-                    },
-                },
-            },
-        },
-        {
-            "name": "disable_nht",
-            "getval": re.compile(
-                r"""
-                ^set
-                \svrf
-                \sname
-                \s(?P<name>\S+)
-                \s(?P<af>\S+)
-                \snht
-                \s(?P<nht>no-resolve-via-default)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "vrf name {{name}} {{ af }} nht no-resolve-via-default",
-            "compval": "address_family.no_resolve_via_default",
-            "result": {
-                "name": "{{ name }}",
-                "address_family": {
-                    '{{ "ipv4" if af == "ip" else "ipv6" }}': {
-                        "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
-                        "no_resolve_via_default": "{{ True if nht is defined }}",
-                    },
-                },
-            },
-        },
+        # {
+        #     "name": "vni",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set
+        #         \svrf
+        #         \sname
+        #         \s(?P<name>\S+)
+        #         \svni
+        #         \s(?P<vni>\S+)
+        #         $""",
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": "vrf name {{name}} vni {{vni}}",
+        #     "compval": "vni",
+        #     "result": {
+        #         "name": "{{ name }}",
+        #         "vni": "{{ vni }}",
+        #     },
+        # },
+        # {
+        #     "name": "description",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set
+        #         \svrf
+        #         \s(?P<bta>bind-to-all)
+        #         $""",
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": "vrf name {{name}} description {{desc}}",
+        #     "compval": "description",
+        #     "result": {
+        #         "description": "{{ desc }}",
+        #     },
+        # },
+        # {
+        #     "name": "disable_vrf",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set
+        #         \svrf
+        #         \sname
+        #         \s(?P<name>\S+)
+        #         \s(?P<disable>disable)
+        #         $""",
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": "vrf name {{name}} disable",
+        #     "compval": "disable",
+        #     "result": {
+        #         "name": "{{ name }}",
+        #         "disable": "{{ True if disable is defined }}",
+        #     },
+        # },
+        # {
+        #     "name": "disable_forwarding",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set
+        #         \svrf
+        #         \sname
+        #         \s(?P<name>\S+)
+        #         \s(?P<af>\S+)
+        #         \s(?P<df>disable-forwarding)
+        #         $""",
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": "vrf name {{name}} {{ af }} disable-forwarding",
+        #     "compval": "address_family.disable_forwarding",
+        #     "result": {
+        #         "name": "{{ name }}",
+        #         "address_family": {
+        #             '{{ "ipv4" if af == "ip" else "ipv6" }}': {
+        #                 "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
+        #                 "disable_forwarding": "{{ True if df is defined }}",
+        #             },
+        #         },
+        #     },
+        # },
+        # {
+        #     "name": "disable_nht",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set
+        #         \svrf
+        #         \sname
+        #         \s(?P<name>\S+)
+        #         \s(?P<af>\S+)
+        #         \snht
+        #         \s(?P<nht>no-resolve-via-default)
+        #         $""",
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": "vrf name {{name}} {{ af }} nht no-resolve-via-default",
+        #     "compval": "address_family.no_resolve_via_default",
+        #     "result": {
+        #         "name": "{{ name }}",
+        #         "address_family": {
+        #             '{{ "ipv4" if af == "ip" else "ipv6" }}': {
+        #                 "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
+        #                 "no_resolve_via_default": "{{ True if nht is defined }}",
+        #             },
+        #         },
+        #     },
+        # },
     ]
     # fmt: on
