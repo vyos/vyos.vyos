@@ -20,6 +20,9 @@ def set_module_args(args):
     args = json.dumps({"ANSIBLE_MODULE_ARGS": args})
     basic._ANSIBLE_ARGS = to_bytes(args)
 
+    profile = "legacy"
+    basic._ANSIBLE_PROFILE = profile
+
 
 class AnsibleExitJson(Exception):
     pass
