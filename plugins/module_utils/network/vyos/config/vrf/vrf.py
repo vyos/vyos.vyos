@@ -20,7 +20,7 @@ created.
 
 from copy import deepcopy
 
-# from ansible.module_utils.six import iteritems
+from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
@@ -53,12 +53,6 @@ class Vrf(ResourceModule):
         )
         self.parsers = [
             "bind_to_all",
-            "table_id",
-            # "vni",
-            # "description",
-            # "disable_vrf",
-            # "disable_forwarding",
-            # "disable_nht",
         ]
 
     def _validate_template(self):
@@ -113,21 +107,26 @@ class Vrf(ResourceModule):
         #         if k not in wantd:
         #             self.commands.append(self._tmplt.render({"route_map": k}, "route_map", True))
 
-        # for k, want in iteritems(wantd):
-        #     if isinstance(want, list):
-        #         self._compare_inststances(want=want, have=haved.pop(k, {}))
-        # else:
-        #     self.compare(
-        #         parsers=self.parsers,
-        #         want={k: want},
-        #         have={k: haved.pop(k, {})},
-        #         )
+        for k, want in iteritems(wantd):
+            if isinstance(want, list):
+                self._compare_inststances(want=want, have=haved.pop(k, {}))
+        else:
+            self.compare(
+                parsers=self.parsers,
+                want={k: want},
+                have={k: haved.pop(k, {})},
+            )
 
-        self.compare(
-            parsers=self.parsers,
-            want={"instances": [{"table_id": 100}]},
-            have={"instances": [{"table_id": {}}]},
-        )
+        # self.compare(
+        #     parsers=self.parsers,
+        #     want={
+
+        #     },
+        #     have={
+        #         "name": "vrf2",
+        #         "table_id": "200"
+        #     },
+        # )
         self._module.fail_json(msg=self.commands)
 
     # def _com
@@ -151,35 +150,24 @@ class Vrf(ResourceModule):
     def _compare_inststances(self, want, have):
         """Compare the instances of the VRF"""
         parsers = [
-            "table",
-            "vni",
-            "description",
-            "disable_vrf",
-            "disable_forwarding",
-            "disable_nht",
+            "table_id",
+            # "vni",
+            # "description",
+            # "disable_vrf",
+            # "disable_forwarding",
+            # "disable_nht",
         ]
 
         # self._module.fail_json(msg="Here")
-        self.compare(
-            parsers=self.parsers,
-            want={"bind_to_all": "test"},
-            have={},
-        )
+        # self.compare(
+        #     parsers=self.parsers,
+        #     want={"bind_to_all": "test"},
+        #     have={},
+        # )
 
-        # for entry in want:
-        #     h = {}
-        #     wname = entry.get("name")
-        #     h = next((vrf for vrf in have if vrf["name"] == wname), {})
-        #     # self._module.fail_json(msg=str(entry) + "****" + str(h))
-        #     # self.compare(parsers=parsers, want=entry, have=h)
-        #     self.compare(
-        #         parsers=parsers,
-        #         want={
-        #             "name": "vrf2",
-        #             "table_id": 100,
-        #         },
-        #         have={
-        #             "name": "vrf2",
-        #             "table_id": 200,
-        #         },
-        #     )
+        for entry in want:
+            h = {}
+            wname = entry.get("name")
+            h = next((vrf for vrf in have if vrf["name"] == wname), {})
+            # self._module.fail_json(msg=str(entry) + "****" + str(h))
+            self.compare(parsers=parsers, want=entry, have=h)
