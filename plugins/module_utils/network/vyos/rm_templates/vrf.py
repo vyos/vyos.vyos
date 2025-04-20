@@ -67,61 +67,65 @@ class VrfTemplate(NetworkTemplate):
                 "bind_to_all": "{{ True if bta is defined }}",
             },
         },
-        # {
-        #     "name": "vni",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \svrf
-        #         \sname
-        #         \s(?P<name>\S+)
-        #         \svni
-        #         \s(?P<vni>\S+)
-        #         $""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "vrf name {{name}} vni {{vni}}",
-        #     "compval": "vni",
-        #     "result": {
-        #         "name": "{{ name }}",
-        #         "vni": "{{ vni }}",
-        #     },
-        # },
-        # {
-        #     "name": "description",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \svrf
-        #         \s(?P<bta>bind-to-all)
-        #         $""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "vrf name {{name}} description {{desc}}",
-        #     "compval": "description",
-        #     "result": {
-        #         "description": "{{ desc }}",
-        #     },
-        # },
-        # {
-        #     "name": "disable_vrf",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \svrf
-        #         \sname
-        #         \s(?P<name>\S+)
-        #         \s(?P<disable>disable)
-        #         $""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "vrf name {{name}} disable",
-        #     "compval": "disable",
-        #     "result": {
-        #         "name": "{{ name }}",
-        #         "disable": "{{ True if disable is defined }}",
-        #     },
-        # },
+        {
+            "name": "vni",
+            "getval": re.compile(
+                r"""
+                ^set
+                \svrf
+                \sname
+                \s(?P<name>\S+)
+                \svni
+                \s(?P<vni>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "vrf name {{name}} vni {{vni}}",
+            "compval": "vni",
+            "result": {
+                "name": "{{ name }}",
+                "vni": "{{ vni }}",
+            },
+        },
+        {
+            "name": "description",
+            "getval": re.compile(
+                r"""
+                ^set
+                \svrf
+                \sname
+                \s(?P<name>\S+)
+                \sdescription
+                \s(?P<desc>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "vrf name {{name}} description {{description}}",
+            "compval": "description",
+            "result": {
+                "name": "{{ name }}",
+                "description": "{{ desc }}",
+            },
+        },
+        {
+            "name": "disable_vrf",
+            "getval": re.compile(
+                r"""
+                ^set
+                \svrf
+                \sname
+                \s(?P<name>\S+)
+                \s(?P<disable>disable)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "vrf name {{name}} disable",
+            "compval": "disable",
+            "result": {
+                "name": "{{ name }}",
+                "disable": "{{ True if disable is defined }}",
+            },
+        },
         # {
         #     "name": "disable_forwarding",
         #     "getval": re.compile(

@@ -109,24 +109,13 @@ class Vrf(ResourceModule):
 
         for k, want in iteritems(wantd):
             if isinstance(want, list):
-                self._compare_inststances(want=want, have=haved.pop(k, {}))
-        else:
+                self._compare_instances(want=want, have=haved.pop(k, {}))
             self.compare(
                 parsers=self.parsers,
                 want={k: want},
                 have={k: haved.pop(k, {})},
             )
 
-        # self.compare(
-        #     parsers=self.parsers,
-        #     want={
-
-        #     },
-        #     have={
-        #         "name": "vrf2",
-        #         "table_id": "200"
-        #     },
-        # )
         self._module.fail_json(msg=self.commands)
 
     # def _com
@@ -147,23 +136,16 @@ class Vrf(ResourceModule):
     #     # else:
     #     # self.compare(parsers=self.parsers, want=want, have=have)
 
-    def _compare_inststances(self, want, have):
+    def _compare_instances(self, want, have):
         """Compare the instances of the VRF"""
         parsers = [
             "table_id",
-            # "vni",
-            # "description",
-            # "disable_vrf",
+            "vni",
+            "description",
+            "disable_vrf",
             # "disable_forwarding",
             # "disable_nht",
         ]
-
-        # self._module.fail_json(msg="Here")
-        # self.compare(
-        #     parsers=self.parsers,
-        #     want={"bind_to_all": "test"},
-        #     have={},
-        # )
 
         for entry in want:
             h = {}
