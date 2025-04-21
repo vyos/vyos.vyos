@@ -34,22 +34,18 @@ class VrfTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \svrf
-                \sname
-                \s(?P<name>\S+)
-                \stable
-                \s(?P<tid>\S+)
+                \s+vrf
+                \s+name
+                \s+(?P<name>\S+)
+                \s+table
+                \s+'(?P<tid>\S+)'
                 $""",
                 re.VERBOSE,
             ),
             "setval": "vrf name {{ name }} table {{ table_id }}",
             "result": {
-                "instances": [
-                    {
-                        "name": "{{ name }}",
-                        "table_id": "{{ tid }}",
-                    },
-                ],
+                "name": "{{ name }}",
+                "table_id": "{{ tid }}",
             },
         },
         {
@@ -72,11 +68,11 @@ class VrfTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \svrf
-                \sname
-                \s(?P<name>\S+)
-                \svni
-                \s(?P<vni>\S+)
+                \s+vrf
+                \s+name
+                \s+(?P<name>\S+)
+                \s+vni
+                \s'(?P<vni>\S+)'
                 $""",
                 re.VERBOSE,
             ),

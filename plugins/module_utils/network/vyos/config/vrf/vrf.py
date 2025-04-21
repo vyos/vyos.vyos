@@ -94,18 +94,22 @@ class Vrf(ResourceModule):
 
         # if state is merged, merge want onto have and then compare
         if self.state == "merged":
-            wantd = dict_merge(haved, wantd)
-            # self._module.fail_json(msg=str(wantd))
+            wantd = dict_merge(self.have, self.want)
 
         # # if state is deleted, empty out wantd and set haved to wantd
-        # if self.state == "deleted":
-        #     haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
-        #     wantd = {}
+        if self.state == "deleted":
+            # haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
+            # haved = wantd
+            wantd = {}
 
         # if self.state in ["overridden", "replaced"]:
         #     for k, have in iteritems(haved):
         #         if k not in wantd:
         #             self.commands.append(self._tmplt.render({"route_map": k}, "route_map", True))
+
+        #             self.commands.append(self._tmplt.render({"route_map": k}, "route_map", False))
+
+        # self._module.fail_json(msg=haved)
 
         for k, want in iteritems(wantd):
             if isinstance(want, list):
@@ -116,7 +120,7 @@ class Vrf(ResourceModule):
                 have={k: haved.pop(k, {})},
             )
 
-        self._module.fail_json(msg=self.commands)
+        # self._module.fail_json(msg=self.commands)
 
     # def _com
     # pare(self, want, have):
@@ -146,10 +150,8 @@ class Vrf(ResourceModule):
             # "disable_forwarding",
             # "disable_nht",
         ]
-
         for entry in want:
             h = {}
             wname = entry.get("name")
             h = next((vrf for vrf in have if vrf["name"] == wname), {})
-            # self._module.fail_json(msg=str(entry) + "****" + str(h))
             self.compare(parsers=parsers, want=entry, have=h)
