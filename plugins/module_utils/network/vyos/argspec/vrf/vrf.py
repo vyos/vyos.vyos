@@ -40,7 +40,7 @@ class VrfArgs(object):  # pylint: disable=R0903
                     "type": "list",
                     "elements": "dict",
                     "suboptions": {
-                        "name": {"type": "str"},
+                        "name": {"required": True, "type": "str"},
                         "description": {"type": "str"},
                         "disabled": {
                             "aliases": ["disable"],

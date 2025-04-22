@@ -81,6 +81,7 @@ class Vrf(ResourceModule):
         if self.state not in ["parsed", "gathered"]:
             self.generate_commands()
             self.run_commands()
+
         return self.result
 
     def generate_commands(self):
@@ -93,14 +94,17 @@ class Vrf(ResourceModule):
         haved = deepcopy(self.have)
 
         # if state is merged, merge want onto have and then compare
-        if self.state == "merged":
+        if self.state in ["merged", "replaced"]:
             wantd = dict_merge(self.have, self.want)
 
         # # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
             # haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
             # haved = wantd
-            wantd = {}
+            # wantd = {}
+            for k, want in iteritems(wantd):
+                if k in haved:
+                    wantd = {k: None}
 
         # if self.state in ["overridden", "replaced"]:
         #     for k, have in iteritems(haved):
@@ -108,8 +112,6 @@ class Vrf(ResourceModule):
         #             self.commands.append(self._tmplt.render({"route_map": k}, "route_map", True))
 
         #             self.commands.append(self._tmplt.render({"route_map": k}, "route_map", False))
-
-        # self._module.fail_json(msg=haved)
 
         for k, want in iteritems(wantd):
             if isinstance(want, list):
