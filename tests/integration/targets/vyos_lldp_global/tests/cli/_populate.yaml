@@ -1,7 +1,8 @@
 ---
+- ansible.builtin.include_tasks: _remove_config.yaml
+
 - name: Setup
   vars:
-    lines: "set service lldp\nset service lldp legacy-protocols 'cdp'\nset service\
-      \ lldp management-address '192.0.2.17'\n"
+    lines: "set service lldp\nset service lldp legacy-protocols 'cdp'\nset service lldp management-address '192.0.2.17'\n"
   ansible.netcommon.cli_config:
-    config: '{{ lines }}'
+    config: "{{ lines }}"

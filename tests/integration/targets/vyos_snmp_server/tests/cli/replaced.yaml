@@ -1,0 +1,68 @@
+---
+- debug:
+    msg: START vyos_snmp_server replaced integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replace the existing configuration with the provided running configuration
+      register: result
+      vyos.vyos.vyos_snmp_server: &id001
+        config:
+          communities:
+            - name: bridges
+              networks: [1.1.1.0/24, 12.1.1.0/24]
+          location: RDU
+          listen_addresses:
+            - address: 192.0.2.1
+              port: 33
+          snmp_v3:
+            engine_id: "33"
+            groups:
+              - group: testgroup
+                mode: ro
+                view: default
+            users:
+              - user: adminuser
+                authentication:
+                  encrypted_key: 33f8bfd6b69ee03a184818a4daea503c9e579633
+                  type: sha
+                privacy:
+                  encrypted_key: 33f8bfd6b69ee03a184818a4daea503c9e579633
+                  type: aes
+                group: testgroup
+              - user: guestuser2
+                authentication:
+                  encrypted_key: a1aadc2ed9912c6176939ce995367861012450a3
+                  type: sha
+                privacy:
+                  encrypted_key: a1aadc2ed9912c6176939ce995367861012450a3
+                  type: aes
+                group: testgroup
+            views:
+              - view: default
+                oid: 1
+        state: replaced
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: snmp_server
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.after == ansible_facts['network_resources']['snmp_server']
+          - result.commands|length == 13
+
+    - name: Replace the existing configuration with the provided running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_snmp_server: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

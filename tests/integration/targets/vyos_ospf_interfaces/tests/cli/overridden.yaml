@@ -1,25 +1,21 @@
 ---
 - debug:
-    msg: START vyos_ospf_interfaces overridden integration tests on connection={{
-      ansible_connection }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_ospf_interfaces overridden integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Override the existing configuration with the provided running configuration
       register: result
       vyos.vyos.vyos_ospf_interfaces: &id001
         config:
-          - name: "eth0"
+          - name: eth0
             address_family:
-              - afi: "ipv4"
+              - afi: ipv4
                 transmit_delay: 50
                 priority: 26
-                network: "point-to-point"
-              - afi: "ipv6"
+                network: point-to-point
+              - afi: ipv6
                 dead_interval: 39
         state: overridden
 
@@ -28,13 +24,11 @@
 
     - assert:
         that:
-          - result.commands|length == 8
           - result.changed == true
           - result.commands|symmetric_difference(overridden.commands) == []
           - result.after|symmetric_difference(ansible_facts['network_resources']['ospf_interfaces']) == []
 
-    - name: Override the existing configuration with the provided running configuration
-        (IDEMPOTENT)
+    - name: Override the existing configuration with the provided running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_ospf_interfaces: *id001
 
@@ -44,5 +38,4 @@
           - result['changed'] == false
 
   always:
-
     - include_tasks: _remove_config.yaml

@@ -28,19 +28,26 @@ The module file for vyos_lag_interfaces
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
+---
 module: vyos_lag_interfaces
+version_added: '1.0.0'
 short_description: LAG interfaces resource module
-description: This module manages attributes of link aggregation groups on VyOS network
-  devices.
-version_added: 1.0.0
+description: This module manages attributes of link aggregation groups on VyOS network devices.
+author:
+- Rohit Thakur (@rohitthakur2590)
 notes:
-- Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
-author: Rohit Thakur (@rohitthakur2590)
+- Tested against VyOS 1.3.8.
+- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 options:
   config:
     description: A list of link aggregation group configurations.
@@ -136,21 +143,21 @@ EXAMPLES = """
 - name: Merge provided configuration with device configuration
   vyos.vyos.vyos_lag_interfaces:
     config:
-    - name: bond2
-      mode: active-backup
-      members:
-      - member: eth2
-      - member: eth1
-      hash_policy: layer2
-      primary: eth2
-
-    - name: bond3
-      mode: active-backup
-      hash_policy: layer2+3
-      members:
-      - member: eth3
-      primary: eth3
+      - name: bond2
+        mode: active-backup
+        members:
+          - member: eth2
+          - member: eth1
+        hash_policy: layer2
+        primary: eth2
+      - name: bond3
+        mode: active-backup
+        hash_policy: layer2+3
+        members:
+          - member: eth3
+        primary: eth3
     state: merged
+
 #
 #
 # -------------------------
@@ -240,11 +247,11 @@ EXAMPLES = """
 - name: Replace device configurations of listed LAGs with provided configurations
   vyos.vyos.vyos_lag_interfaces:
     config:
-    - name: bond3
-      mode: 802.3ad
-      hash_policy: layer2
-      members:
-      - member: eth3
+      - name: bond3
+        mode: 802.3ad
+        hash_policy: layer2
+        members:
+          - member: eth3
     state: replaced
 #
 #
@@ -345,14 +352,14 @@ EXAMPLES = """
 - name: Overrides all device configuration with provided configuration
   vyos.vyos.vyos_lag_interfaces:
     config:
-    - name: bond3
-      mode: active-backup
-      members:
-      - member: eth1
-      - member: eth2
-      - member: eth3
-      primary: eth3
-      hash_policy: layer2
+      - name: bond3
+        mode: active-backup
+        members:
+          - member: eth1
+          - member: eth2
+          - member: eth3
+        primary: eth3
+        hash_policy: layer2
     state: overridden
 #
 #
@@ -452,12 +459,11 @@ EXAMPLES = """
 # set interfaces ethernet eth2 bond-group 'bond2'
 # set interfaces ethernet eth3 bond-group 'bond3'
 #
-- name: Delete LAG attributes of given interfaces (Note This won't delete the interface
-    itself)
+- name: Delete LAG attributes of given interfaces (Note - This won't delete the interface itself)
   vyos.vyos.vyos_lag_interfaces:
     config:
-    - name: bond2
-    - name: bond3
+      - name: bond2
+      - name: bond3
     state: deleted
 #
 #
@@ -535,9 +541,8 @@ EXAMPLES = """
 # set interfaces ethernet eth1 bond-group 'bond0'
 # set interfaces ethernet eth2 bond-group 'bond1'
 #
-- name: Gather listed  lag interfaces with provided configurations
+- name: Gather listed lag interfaces with provided configurations
   vyos.vyos.vyos_lag_interfaces:
-    config:
     state: gathered
 #
 #
@@ -636,19 +641,20 @@ EXAMPLES = """
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_lag_interfaces:
     config:
-    - name: bond0
-      hash_policy: layer2
-      members:
-      - member: eth1
-      mode: active-backup
-      primary: eth1
-    - name: bond1
-      hash_policy: layer2+3
-      members:
-      - member: eth2
-      mode: active-backup
-      primary: eth2
+      - name: bond0
+        hash_policy: layer2
+        members:
+          - member: eth1
+        mode: active-backup
+        primary: eth1
+      - name: bond1
+        hash_policy: layer2+3
+        members:
+          - member: eth2
+        mode: active-backup
+        primary: eth2
     state: rendered
+
 #
 #
 # -------------------------
@@ -714,24 +720,22 @@ EXAMPLES = """
 #             "primary": "eth2"
 #         }
 #     ]
-
-
 """
 RETURN = """
 before:
-  description: The configuration as structured data prior to module invocation.
+  description: The configuration prior to the module invocation.
   returned: always
   type: list
   sample: >
     The configuration returned will always be in the same format
-     of the parameters above.
+    of the parameters above.
 after:
-  description: The configuration as structured data after module completion.
+  description: The resulting configuration module invocation.
   returned: when changed
   type: list
   sample: >
     The configuration returned will always be in the same format
-     of the parameters above.
+    of the parameters above.
 commands:
   description: The set of commands pushed to the remote device.
   returned: always
@@ -739,10 +743,12 @@ commands:
   sample:
     - 'set interfaces bonding bond2'
     - 'set interfaces bonding bond2 hash-policy layer2'
+
 """
 
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.lag_interfaces.lag_interfaces import (
     Lag_interfacesArgs,
 )

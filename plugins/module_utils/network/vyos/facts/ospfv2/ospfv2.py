@@ -11,21 +11,24 @@ based on the configuration.
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from re import findall, search, M
 from copy import deepcopy
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from re import M, findall, search
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv2.ospfv2 import (
     Ospfv2Args,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
 class Ospfv2Facts(object):
-
     """The vyos ospfv2 fact class"""
 
     def __init__(
@@ -34,7 +37,6 @@ class Ospfv2Facts(object):
         subspec="config",
         options="options",
     ):
-
         self._module = module
         self.argument_spec = Ospfv2Args.argument_spec
         spec = deepcopy(self.argument_spec)
@@ -99,20 +101,13 @@ class Ospfv2Facts(object):
         config["route_map"] = self.parse_leaf_list(conf, "route-map")
         config["mpls_te"] = self.parse_attrib(conf, "mpls_te", "mpls-te")
         config["areas"] = self.parse_attrib_list(conf, "area", "area_id")
-        config["parameters"] = self.parse_attrib(
-            conf, "parameters", "parameters"
-        )
-        config["neighbor"] = self.parse_attrib_list(
-            conf, "neighbor", "neighbor_id"
-        )
-        config["passive_interface"] = self.parse_leaf_list(
-            conf, "passive-interface"
-        )
-        config["redistribute"] = self.parse_attrib_list(
-            conf, "redistribute", "route_type"
-        )
-        config["passive_interface_exclude"] = self.parse_leaf_list(
-            conf, "passive-interface-exclude"
+        config["parameters"] = self.parse_attrib(conf, "parameters", "parameters")
+        config["neighbor"] = self.parse_attrib_list(conf, "neighbor", "neighbor_id")
+        config["passive_interface"] = self.parse_passive(conf, "passive-interface")
+        config["redistribute"] = self.parse_attrib_list(conf, "redistribute", "route_type")
+        config["passive_interface_exclude"] = self.parse_passive(
+            conf,
+            "passive-interface-exclude",
         )
         return config
 
@@ -168,6 +163,29 @@ class Ospfv2Facts(object):
                 lst.sort()
         return lst
 
+    def parse_passive(self, conf, attrib):
+        """
+        This function forms the regex to fetch the listed attributes
+        from the configuration data
+        :param conf: configuration data
+        :param attrib: attribute name
+        :return: generated rule list configuration
+        """
+        lst = []
+        items = []
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            if attrib == "passive-interface-exclude":
+                items = findall("^interface (?:'*)(\\S+)(?:'*) passive disable$", conf, M)
+            else:
+                items = findall("^interface (?:'*)(\\S+)(?:'*) passive$", conf, M)
+
+        items += findall(r"^" + attrib + " (?:'*)(\\S+)(?:'*)", conf, M)
+        if items:
+            for i in set(items):
+                lst.append(i.strip("'"))
+                lst.sort()
+        return lst
+
     def parse_distance(self, conf, attrib=None):
         """
         This function triggers the parsing of 'distance' attributes
@@ -199,9 +217,7 @@ class Ospfv2Facts(object):
         """
 
         cfg_dict = {}
-        cfg_dict["router_lsa"] = self.parse_attrib(
-            conf, "router_lsa", match="router-lsa"
-        )
+        cfg_dict["router_lsa"] = self.parse_attrib(conf, "router_lsa", match="router-lsa")
         return cfg_dict
 
     def parse_auto_cost(self, conf, attrib=None):
@@ -223,9 +239,7 @@ class Ospfv2Facts(object):
         """
 
         cfg_dict = {}
-        cfg_dict["originate"] = self.parse_attrib(
-            conf, "originate", "originate"
-        )
+        cfg_dict["originate"] = self.parse_attrib(conf, "originate", "originate")
         return cfg_dict
 
     def parse_area(self, conf, area_id):
@@ -241,9 +255,7 @@ class Ospfv2Facts(object):
             "area_type": self.parse_area_type(conf, "area-type"),
             "network": self.parse_network(conf),
             "range": self.parse_attrib_list(conf, "range", "address"),
-            "virtual_link": self.parse_attrib_list(
-                conf, "virtual-link", "address"
-            ),
+            "virtual_link": self.parse_attrib_list(conf, "virtual-link", "address"),
         }
         rule.update(r_sub)
         return rule
@@ -297,9 +309,7 @@ class Ospfv2Facts(object):
         """
 
         rule = self.parse_attrib(conf, "vlink")
-        r_sub = {
-            "authentication": self.parse_authentication(conf, "authentication")
-        }
+        r_sub = {"authentication": self.parse_authentication(conf, "authentication")}
         rule.update(r_sub)
         return rule
 
@@ -406,13 +416,13 @@ class Ospfv2Facts(object):
         :param match: parent node/attribute name.
         :return: generated config dictionary.
         """
-
         config = {}
         for attrib in attr_list:
             regex = self.map_regex(attrib)
 
             if match:
                 regex = match.replace("_", "-") + " " + regex
+
             if conf:
                 if self.is_bool(attrib):
                     out = conf.find(attrib.replace("_", "-"))
@@ -420,13 +430,13 @@ class Ospfv2Facts(object):
                     if match:
                         if attrib == "set" and conf.find(match) >= 1:
                             config[attrib] = True
-                        en = conf.find(match + " 'enable'")
+                        en = conf.find(match + " enable") != -1
                     if out >= 1:
                         if dis >= 1:
                             config[attrib] = False
                         else:
                             config[attrib] = True
-                    elif match and en >= 1:
+                    elif match and en:
                         config[attrib] = True
                 else:
                     out = search(r"^.*" + regex + " (.+)", conf, M)
@@ -451,9 +461,7 @@ class Ospfv2Facts(object):
             else (
                 "enable"
                 if attrib == "enabled"
-                else (
-                    "area" if attrib == "area_id" else attrib.replace("_", "-")
-                )
+                else ("area" if attrib == "area_id" else attrib.replace("_", "-"))
             )
         )
 

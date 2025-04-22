@@ -1,14 +1,10 @@
 ---
 - debug:
-    msg: START vyos_l3_interfaces rendered integration tests on connection={{ ansible_connection
-      }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_l3_interfaces rendered integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Structure provided configuration into device specific commands
       register: result
       vyos.vyos.vyos_l3_interfaces: &id001
@@ -28,8 +24,7 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ rendered['commands'] | symmetric_difference(result['rendered'])\
-            \ |length == 0 }}"
+          - "{{ rendered['commands'] | symmetric_difference(result['rendered']) |length == 0 }}"
 
     - name: Structure provided configuration into device specific commands (IDEMPOTENT)
       register: result
@@ -40,5 +35,4 @@
         that:
           - result['changed'] == false
   always:
-
     - include_tasks: _remove_config.yaml

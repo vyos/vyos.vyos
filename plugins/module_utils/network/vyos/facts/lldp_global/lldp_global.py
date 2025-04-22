@@ -11,14 +11,14 @@ based on the configuration.
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from re import findall, M
 from copy import deepcopy
+from re import M, findall
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.lldp_global.lldp_global import (
     Lldp_globalArgs,
 )
@@ -41,6 +41,9 @@ class Lldp_globalFacts(object):
 
         self.generated_spec = utils.generate_dict(facts_argument_spec)
 
+    def get_config(self, connection):
+        return connection.get("show configuration commands | grep lldp")
+
     def populate_facts(self, connection, ansible_facts, data=None):
         """Populate the facts for lldp_global
         :param connection: the device connection
@@ -50,7 +53,7 @@ class Lldp_globalFacts(object):
         :returns: facts
         """
         if not data:
-            data = connection.get_config()
+            data = self.get_config(connection)
 
         objs = {}
         lldp_output = findall(r"^set service lldp (\S+)", data, M)
@@ -84,14 +87,12 @@ class Lldp_globalFacts(object):
         :rtype: dictionary
         :returns: The generated config
         """
-        protocol_conf = "\n".join(
-            filter(lambda x: ("legacy-protocols" in x), conf)
-        )
-        att_conf = "\n".join(
-            filter(lambda x: ("legacy-protocols" not in x), conf)
-        )
-        config = self.parse_attribs(["snmp", "address"], att_conf)
+        protocol_conf = "\n".join(filter(lambda x: ("legacy-protocols" in x), conf))
+        att_conf = "\n".join(filter(lambda x: ("snmp" in x), conf))
+        addr_conf = "\n".join(filter(lambda x: ("management-address" in x), conf))
+        config = self.parse_attribs(["snmp"], att_conf)
         config["legacy_protocols"] = self.parse_protocols(protocol_conf)
+        config["addresses"] = self.parse_addresses(addr_conf)
         return utils.remove_empties(config)
 
     def parse_protocols(self, conf):
@@ -103,6 +104,16 @@ class Lldp_globalFacts(object):
                 for protocol in protocols:
                     protocol_support.append(protocol.strip("'"))
         return protocol_support
+
+    def parse_addresses(self, conf):
+        management_addresses = None
+        if conf:
+            addresses = findall(r"^.*management-address (.+)", conf, M)
+            if addresses:
+                management_addresses = []
+                for protocol in addresses:
+                    management_addresses.append(protocol.strip("'"))
+        return management_addresses
 
     def parse_attribs(self, attribs, conf):
         config = {}

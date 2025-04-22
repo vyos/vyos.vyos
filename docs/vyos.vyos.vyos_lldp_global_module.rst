@@ -61,7 +61,24 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>This argument defines management-address.</div>
+                        <div>Exactly one management address (exclusive with addresses). Deprecated in favor of addresses. To be removed in 7.0.0.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>addresses</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">list</span>
+                         / <span style="color: purple">elements=string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>One or more management addresses. The management address is used to identify the management interface of the system. Only addresses connected to the system will be transmitted.</div>
                 </td>
             </tr>
             <tr>
@@ -172,8 +189,8 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.1.8 (helium).
-   - This module works with connection ``network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
+   - Tested against VyOS 1.3.8
+   - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
 
@@ -193,10 +210,11 @@ Examples
       vyos.vyos.vyos_lldp_global:
         config:
           legacy_protocols:
-          - fdp
-          - cdp
+            - fdp
+            - cdp
           snmp: enable
-          address: 192.0.2.11
+          addresses:
+            - 192.0.2.11
         state: merged
     #
     #
@@ -204,32 +222,26 @@ Examples
     # Module Execution Results
     # ------------------------
     #
-    # "before": []
+    #  before": {}
     #
-    # "commands": [
-    #        "set service lldp legacy-protocols fdp",
-    #        "set service lldp legacy-protocols cdp",
-    #        "set service lldp snmp enable",
-    #        "set service lldp management-address '192.0.2.11'"
-    #    ]
+    #  commands": [
+    #    "set service lldp legacy-protocols fdp",
+    #    "set service lldp legacy-protocols cdp",
+    #    "set service lldp snmp enable",
+    #    "set service lldp management-address '192.0.2.11'"
+    #  ]
     #
-    # "after": [
-    #        {
-    #            "snmp": "enable"
-    #        },
-    #        {
-    #            "address": "192.0.2.11"
-    #        },
-    #        {
-    #            "legacy_protocols": [
-    #                "cdp",
-    #                "fdp"
-    #            ]
-    #        }
-    #        {
-    #            "enable": true
-    #        }
+    #  after": {
+    #    "snmp": "enable"
+    #    "addresses": [
+    #        "192.0.2.11"
     #    ]
+    #    "legacy_protocols": [
+    #        "cdp",
+    #        "fdp"
+    #    ]
+    #    "enable": true
+    #  }
     #
     # After state:
     # -------------
@@ -255,10 +267,11 @@ Examples
       vyos.vyos.vyos_lldp_global:
         config:
           legacy_protocols:
-          - edp
-          - sonmp
-          - cdp
-          address: 192.0.2.14
+            - edp
+            - sonmp
+            - cdp
+          addresses:
+            - 192.0.2.14
         state: replaced
     #
     #
@@ -267,46 +280,38 @@ Examples
     # ------------------------
     #
     #
-    # "before": [
-    #        {
-    #            "snmp": "enable"
-    #        },
-    #        {
-    #            "address": "192.0.2.11"
-    #        },
-    #        {
-    #            "legacy_protocols": [
-    #                "cdp",
-    #                "fdp"
-    #            ]
-    #        }
-    #        {
-    #            "enable": true
-    #        }
+    # "before": {
+    #    "snmp": "enable"
+    #    "addresses": [
+    #        "192.0.2.11"
     #    ]
+    #    "legacy_protocols": [
+    #        "cdp",
+    #        "fdp"
+    #    ]
+    #    "enable": true
+    #  }
+    #
     # "commands": [
     #        "delete service lldp snmp",
     #        "delete service lldp legacy-protocols fdp",
+    #        "delete service lldp management-address '192.0.2.11'",
     #        "set service lldp management-address '192.0.2.14'",
     #        "set service lldp legacy-protocols edp",
     #        "set service lldp legacy-protocols sonmp"
     #    ]
     #
-    # "after": [
-    #        {
-    #            "address": "192.0.2.14"
-    #        },
-    #        {
-    #            "legacy_protocols": [
-    #                "cdp",
-    #                "edp",
-    #                "sonmp"
-    #            ]
-    #        }
-    #        {
-    #            "enable": true
-    #        }
+    # "after": {
+    #    "addresses": [
+    #        "192.0.2.14"
     #    ]
+    #    "legacy_protocols": [
+    #        "cdp",
+    #        "edp",
+    #        "sonmp"
+    #    ]
+    #    "enable": true
+    #  }
     #
     # After state:
     # -------------
@@ -339,32 +344,26 @@ Examples
     # Module Execution Results
     # ------------------------
     #
-    # "before": [
-    #        {
-    #            "address": "192.0.2.14"
-    #        },
-    #        {
-    #            "legacy_protocols": [
-    #                "cdp",
-    #                "edp",
-    #                "sonmp"
-    #            ]
-    #        }
-    #        {
-    #            "enable": true
-    #        }
+    # "before": {
+    #    "addresses": [
+    #       "192.0.2.14"
     #    ]
+    #    "legacy_protocols": [
+    #       "cdp",
+    #       "edp",
+    #       "sonmp"
+    #    ]
+    #    "enable": true
+    #  }
     #
     #  "commands": [
-    #       "delete service lldp management-address",
-    #        "delete service lldp legacy-protocols"
-    #    ]
+    #     "delete service lldp management-address",
+    #     "delete service lldp legacy-protocols"
+    #  ]
     #
-    # "after": [
-    #        {
-    #            "enable": true
-    #        }
-    #          ]
+    # "after": {
+    #    "enable": true
+    #  }
     #
     # After state
     # ------------
@@ -391,8 +390,7 @@ Examples
     # Module Execution Result
     # -------------------------
     #
-    #    "gathered": [
-    # {
+    #    "gathered": {
     #        "config_trap": true,
     #        "group": {
     #            "address_group": [
@@ -481,10 +479,11 @@ Examples
     - name: Render the commands for provided  configuration
       vyos.vyos.vyos_lldp_global:
         config:
-          address: 192.0.2.17
+          addresses:
+            - 192.0.2.17
           enable: true
           legacy_protocols:
-          - cdp
+            - cdp
         state: rendered
     #
     #
@@ -494,10 +493,10 @@ Examples
     #
     #
     # "rendered": [
-    #         "set service lldp legacy-protocols 'cdp'",
-    #         "set service lldp",
-    #         "set service lldp management-address '192.0.2.17'"
-    #     ]
+    #    "set service lldp legacy-protocols 'cdp'",
+    #    "set service lldp",
+    #    "set service lldp management-address '192.0.2.17'"
+    #  ]
     #
 
 
@@ -519,14 +518,15 @@ Examples
     #
     #
     # "parsed": {
-    #         "address": "192.0.2.11",
-    #         "enable": true,
-    #         "legacy_protocols": [
-    #             "cdp",
-    #             "fdp"
-    #         ]
-    #     }
-    #
+    #    "addresses": [
+    #       "192.0.2.11"
+    #    ]
+    #    "enable": true,
+    #    "legacy_protocols": [
+    #       "cdp",
+    #       "fdp"
+    #    ]
+    #  }
 
 
 
@@ -548,16 +548,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>after</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
-                      <span style="color: purple">list</span>
+                      <span style="color: purple">dictionary</span>
                     </div>
                 </td>
                 <td>when changed</td>
                 <td>
-                            <div>The configuration as structured data after module completion.</div>
+                            <div>The resulting configuration after module invocation.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format
-     of the parameters above.</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format of the parameters above.</div>
                 </td>
             </tr>
             <tr>
@@ -566,16 +565,15 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>before</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
-                      <span style="color: purple">list</span>
+                      <span style="color: purple">dictionary</span>
                     </div>
                 </td>
                 <td>always</td>
                 <td>
-                            <div>The configuration as structured data prior to module invocation.</div>
+                            <div>The configuration prior to the module invocation.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format
-     of the parameters above.</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">The configuration returned will always be in the same format of the parameters above.</div>
                 </td>
             </tr>
             <tr>

@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -19,15 +20,14 @@ created.
 
 
 from ansible.module_utils.six import iteritems
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
+    ResourceModule,
+)
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     dict_merge,
 )
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.resource_module import (
-    ResourceModule,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
-)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.route_maps import (
     Route_mapsTemplate,
 )
@@ -116,18 +116,14 @@ class Route_maps(ResourceModule):
 
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
-            haved = {
-                k: v for k, v in iteritems(haved) if k in wantd or not wantd
-            }
+            haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
             wantd = {}
 
         # remove superfluous config for overridden and deleted
         if self.state in ["overridden", "deleted"]:
             for k, have in iteritems(haved):
                 if k not in wantd:
-                    self.commands.append(
-                        self._tmplt.render({"route_map": k}, "route_map", True)
-                    )
+                    self.commands.append(self._tmplt.render({"route_map": k}, "route_map", True))
 
         for wk, want in iteritems(wantd):
             self._compare(want=want, have=haved.pop(wk, {}))
@@ -154,7 +150,6 @@ class Route_maps(ResourceModule):
                 for x in data["entries"]:
                     x.update({"route_map": rmap})
                 data["entries"] = {
-                    (rmap, entry.get("sequence")): entry
-                    for entry in data["entries"]
+                    (rmap, entry.get("sequence")): entry for entry in data["entries"]
                 }
         return entry

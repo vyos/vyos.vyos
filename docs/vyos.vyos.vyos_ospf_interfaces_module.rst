@@ -471,29 +471,29 @@ Examples
 
     # @vyos:~$ show configuration commands | match "ospf"
 
-      - name: Merge provided configuration with device configuration
-        vyos.vyos.vyos_ospf_interfaces:
-          config:
-            - name: "eth1"
-              address_family:
-                - afi: "ipv4"
-                  transmit_delay: 50
-                  priority: 26
-                  network: "point-to-point"
-                - afi: "ipv6"
-                  dead_interval: 39
-            - name: "bond2"
-              address_family:
-                - afi: "ipv4"
-                  transmit_delay: 45
-                  bandwidth: 70
-                  authentication:
-                    md5_key:
-                      key_id: 10
-                      key: "1111111111232345"
-                - afi: "ipv6"
-                  passive: True
-          state: merged
+    - name: Merge provided configuration with device configuration
+      vyos.vyos.vyos_ospf_interfaces:
+        config:
+          - name: "eth1"
+            address_family:
+              - afi: "ipv4"
+                transmit_delay: 50
+                priority: 26
+                network: "point-to-point"
+              - afi: "ipv6"
+                dead_interval: 39
+          - name: "bond2"
+            address_family:
+              - afi: "ipv4"
+                transmit_delay: 45
+                bandwidth: 70
+                authentication:
+                  md5_key:
+                    key_id: 10
+                    key: "1111111111232345"
+              - afi: "ipv6"
+                passive: true
+        state: merged
 
     # After State:
     # --------------
@@ -580,9 +580,6 @@ Examples
     #        "set interfaces bonding bond2 ipv6 ospfv3 passive"
     #    ],
 
-
-
-
     # Using replaced:
 
     # Before State:
@@ -598,22 +595,22 @@ Examples
     # set interfaces ethernet eth1 ip ospf transmit-delay '50'
     # set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
 
-      - name: Replace provided configuration with device configuration
-        vyos.vyos.vyos_ospf_interfaces:
-          config:
-            - name: "eth1"
-              address_family:
-                - afi: "ipv4"
-                  cost: 100
-                - afi: "ipv6"
-                  ifmtu: 33
-            - name: "bond2"
-              address_family:
-                - afi: "ipv4"
-                  transmit_delay: 45
-                - afi: "ipv6"
-                  passive: True
-          state: replaced
+    - name: Replace provided configuration with device configuration
+      vyos.vyos.vyos_ospf_interfaces:
+        config:
+          - name: "eth1"
+            address_family:
+              - afi: "ipv4"
+                cost: 100
+              - afi: "ipv6"
+                ifmtu: 33
+          - name: "bond2"
+            address_family:
+              - afi: "ipv4"
+                transmit_delay: 45
+              - afi: "ipv6"
+                passive: true
+        state: replaced
 
     # After State:
     # -----------
@@ -742,17 +739,18 @@ Examples
     # set interfaces ethernet eth1 ipv6 ospfv3 ifmtu '33'
     # vyos@vyos:~$
 
-      - name: Override device configuration with provided configuration
-        vyos.vyos.vyos_ospf_interfaces:
-          config:
-            - name: "eth0"
-              address_family:
-                - afi: "ipv4"
-                  cost: 100
-                - afi: "ipv6"
-                  ifmtu: 33
-                  passive: True
-          state: overridden
+    - name: Override device configuration with provided configuration
+      vyos.vyos.vyos_ospf_interfaces:
+        config:
+          - name: "eth0"
+            address_family:
+              - afi: "ipv4"
+                cost: 100
+              - afi: "ipv6"
+                ifmtu: 33
+                passive: true
+        state: overridden
+
     # After State:
     # -----------
 
@@ -871,11 +869,11 @@ Examples
     # set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
     # vyos@vyos:~$
 
-      - name: Delete device configuration
-        vyos.vyos.vyos_ospf_interfaces:
-          config:
-            - name: "eth0"
-          state: deleted
+    - name: Delete device configuration
+      vyos.vyos.vyos_ospf_interfaces:
+        config:
+          - name: "eth0"
+        state: deleted
 
     # After State:
     # -----------
@@ -1018,10 +1016,10 @@ Examples
     # set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
     #
 
-      - name: parse configs
-        vyos.vyos.vyos_ospf_interfaces:
-          running_config: "{{ lookup('file', './parsed.cfg') }}"
-          state: parsed
+    - name: parse configs
+      vyos.vyos.vyos_ospf_interfaces:
+        running_config: "{{ lookup('file', './parsed.cfg') }}"
+        state: parsed
 
     # Module Execution:
     # ----------------
@@ -1082,29 +1080,29 @@ Examples
     # Using rendered:
     # --------------
 
-      - name: Render
-        vyos.vyos.vyos_ospf_interfaces:
-          config:
-            - name: "eth1"
-              address_family:
-                - afi: "ipv4"
-                  transmit_delay: 50
-                  priority: 26
-                  network: "point-to-point"
-                - afi: "ipv6"
-                  dead_interval: 39
-            - name: "bond2"
-              address_family:
-                - afi: "ipv4"
-                  transmit_delay: 45
-                  bandwidth: 70
-                  authentication:
-                    md5_key:
-                      key_id: 10
-                      key: "1111111111232345"
-                - afi: "ipv6"
-                  passive: True
-          state: rendered
+    - name: Render
+      vyos.vyos.vyos_ospf_interfaces:
+        config:
+          - name: "eth1"
+            address_family:
+              - afi: "ipv4"
+                transmit_delay: 50
+                priority: 26
+                network: "point-to-point"
+              - afi: "ipv6"
+                dead_interval: 39
+          - name: "bond2"
+            address_family:
+              - afi: "ipv4"
+                transmit_delay: 45
+                bandwidth: 70
+                authentication:
+                  md5_key:
+                    key_id: 10
+                    key: "1111111111232345"
+              - afi: "ipv6"
+                passive: true
+        state: rendered
 
     # Module Execution:
     # ----------------
@@ -1137,9 +1135,9 @@ Examples
     # set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
     # vyos@vyos:~$
 
-      - name: gather configs
-        vyos.vyos.vyos_ospf_interfaces:
-          state: gathered
+    - name: gather configs
+      vyos.vyos.vyos_ospf_interfaces:
+        state: gathered
 
     # Module Execution:
     # -----------------
@@ -1192,6 +1190,123 @@ Examples
     #    ],
 
 
+
+Return Values
+-------------
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html#common-return-values>`_, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=0 cellpadding=0 class="documentation-table">
+        <tr>
+            <th colspan="1">Key</th>
+            <th>Returned</th>
+            <th width="100%">Description</th>
+        </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>after</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>when changed</td>
+                <td>
+                            <div>The resulting configuration after module execution.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>before</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
+                <td>
+                            <div>The configuration prior to the module execution.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>commands</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
+                <td>
+                            <div>The set of commands pushed to the remote device.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key &#x27;1111111111232345&#x27;&quot;, &quot;set interfaces bonding bond2 ip ospf bandwidth &#x27;70&#x27;&quot;, &quot;set interfaces bonding bond2 ip ospf transmit-delay &#x27;45&#x27;&quot;]</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>gathered</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>gathered</code></td>
+                <td>
+                            <div>Facts about the network resource gathered from the remote device as structured data.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>parsed</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>parsed</code></td>
+                <td>
+                            <div>The device native config provided in <em>running_config</em> option parsed into structured data as per module argspec.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>rendered</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>rendered</code></td>
+                <td>
+                            <div>The provided configuration in the task rendered in device-native format (offline).</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key &#x27;1111111111232345&#x27;&quot;, &quot;set interfaces bonding bond2 ip ospf bandwidth &#x27;70&#x27;&quot;, &quot;set interfaces bonding bond2 ip ospf transmit-delay &#x27;45&#x27;&quot;]</div>
+                </td>
+            </tr>
+    </table>
+    <br/><br/>
 
 
 Status

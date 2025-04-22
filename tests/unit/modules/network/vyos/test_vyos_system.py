@@ -18,30 +18,30 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from unittest.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_system
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosSystemModule(TestVyosModule):
-
     module = vyos_system
 
     def setUp(self):
         super(TestVyosSystemModule, self).setUp()
 
         self.mock_get_config = patch(
-            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.get_config"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.load_config"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.load_config",
         )
         self.load_config = self.mock_load_config.start()
 
@@ -51,7 +51,7 @@ class TestVyosSystemModule(TestVyosModule):
         self.mock_get_config.stop()
         self.mock_load_config.stop()
 
-    def load_fixtures(self, commands=None):
+    def load_fixtures(self, commands=None, filename=None):
         self.get_config.return_value = load_fixture("vyos_config_config.cfg")
 
     def test_vyos_system_hostname(self):
@@ -80,9 +80,7 @@ class TestVyosSystemModule(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_system_domain_search(self):
-        set_module_args(
-            dict(domain_search=["foo.example.com", "bar.example.com"])
-        )
+        set_module_args(dict(domain_search=["foo.example.com", "bar.example.com"]))
         commands = [
             "set system domain-search domain 'foo.example.com'",
             "set system domain-search domain 'bar.example.com'",
@@ -100,7 +98,7 @@ class TestVyosSystemModule(TestVyosModule):
                 host_name="router",
                 domain_name="example.com",
                 name_server=["8.8.8.8", "8.8.4.4"],
-            )
+            ),
         )
         result = self.execute_module()
         self.assertEqual([], result["commands"])

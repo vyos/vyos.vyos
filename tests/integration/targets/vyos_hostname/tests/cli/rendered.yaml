@@ -1,0 +1,20 @@
+---
+- debug:
+    msg: START vyos_hostname rendered integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Render the given configuration in the form of native commands
+      register: result
+      vyos.vyos.vyos_hostname:
+        config:
+          hostname: vyosTest
+        state: rendered
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.rendered|symmetric_difference(merged.commands) == []
+  always:
+    - include_tasks: _remove_config.yaml

@@ -31,9 +31,9 @@
 - name: check that version info is present
   assert:
     that:
-      - result.ansible_facts.ansible_net_version in vyos_version.stdout_lines[0][0]
-      - result.ansible_facts.ansible_net_model in vyos_version.stdout_lines[0][9]
-      - result.ansible_facts.ansible_net_serialnum in vyos_version.stdout_lines[0][10]
+      - result.ansible_facts.ansible_net_version in (vyos_version.stdout_lines[0] | select('search', 'Version:') | list | first)
+      - result.ansible_facts.ansible_net_model in (vyos_version.stdout_lines[0] | select('search', 'Hardware model:') | list | first)
+      - result.ansible_facts.ansible_net_serialnum in (vyos_version.stdout_lines[0] | select('search', 'Hardware S/N:') | list | first)
 
 - name: check that config info is present
   assert:
@@ -51,5 +51,27 @@
   assert:
     that:
       - result.changed == false
-      - "{{ result['ansible_facts']['available_network_resources'] | symmetric_difference(result['ansible_facts']['ansible_net_gather_network_resources']) |length\
-          \ == 0 }}"
+      - "{{
+        result['ansible_facts']['available_network_resources']
+        | symmetric_difference(
+        result['ansible_facts']['ansible_net_gather_network_resources']
+        )
+        | length == 0
+        }}"
+
+- name: test getting default facts
+  register: result
+  vyos.vyos.vyos_facts:
+
+- assert:
+    that:
+      - result.changed == false
+      - "'default' in result.ansible_facts.ansible_net_gather_subset"
+      - "'config' not in result.ansible_facts.ansible_net_gather_subset"
+      - result.ansible_facts.ansible_net_hostname is defined
+      - result.ansible_facts.ansible_net_model is defined
+      - result.ansible_facts.ansible_net_python_version is defined
+      - result.ansible_facts.ansible_net_serialnum is defined
+      - result.ansible_facts.ansible_net_system is defined
+      - result.ansible_facts.ansible_net_version is defined
+      - result.ansible_facts.ansible_network_resources == {}

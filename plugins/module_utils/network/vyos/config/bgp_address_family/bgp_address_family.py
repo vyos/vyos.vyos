@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -20,18 +21,25 @@ created.
 import re
 
 from ansible.module_utils.six import iteritems
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
+    ResourceModule,
+)
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
     dict_merge,
 )
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.resource_module import (
-    ResourceModule,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import (
-    Facts,
-)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_address_family import (
     Bgp_address_familyTemplate,
 )
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_address_family_14 import (
+    Bgp_address_familyTemplate14,
+)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Bgp_address_family(ResourceModule):
@@ -49,12 +57,30 @@ class Bgp_address_family(ResourceModule):
         )
         self.parsers = []
 
+    def _validate_template(self):
+        version = get_os_version(self._module)
+        if LooseVersion(version) >= LooseVersion("1.4"):
+            self._tmplt = Bgp_address_familyTemplate14()
+        else:
+            self._tmplt = Bgp_address_familyTemplate()
+
+    def parse(self):
+        """ override parse to check template """
+        self._validate_template()
+        return super().parse()
+
+    def get_parser(self, name):
+        """get_parsers"""
+        self._validate_template()
+        return super().get_parser(name)
+
     def execute_module(self):
         """Execute the module
 
         :rtype: A dictionary
         :returns: The result from module execution
         """
+        self._validate_template()
         if self.state not in ["parsed", "gathered"]:
             self.generate_commands()
             self.run_commands()
@@ -67,18 +93,15 @@ class Bgp_address_family(ResourceModule):
         wantd = {}
         haved = {}
 
-        if (
-            self.want.get("as_number") == self.have.get("as_number")
-            or not self.have
-        ):
+        if (self.want.get("as_number") == self.have.get("as_number") or
+                not self.have or
+                LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")):
             if self.want:
                 wantd = {self.want["as_number"]: self.want}
             if self.have:
                 haved = {self.have["as_number"]: self.have}
         else:
-            self._module.fail_json(
-                msg="Only one bgp instance is allowed per device"
-            )
+            self._module.fail_json(msg="Only one bgp instance is allowed per device")
 
         # turn all lists of dicts into dicts prior to merge
         for entry in wantd, haved:
@@ -108,6 +131,9 @@ class Bgp_address_family(ResourceModule):
         the `want` and `have` data with the `parsers` defined
         for the Bgp_address_family network resource.
         """
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            self._compare_asn(want, have)
+
         self._compare_af(want, have)
         self._compare_neighbors(want, have)
         # Do the negation first
@@ -133,9 +159,7 @@ class Bgp_address_family(ResourceModule):
         for name, entry in iteritems(haf):
             if name not in waf.keys() and self.state == "replaced":
                 continue
-            self._compare_lists(
-                {}, entry, as_number=have["as_number"], afi=name
-            )
+            self._compare_lists({}, entry, as_number=have["as_number"], afi=name)
 
     def _delete_af(self, want, have):
         for as_num, entry in iteritems(want):
@@ -151,7 +175,7 @@ class Bgp_address_family(ResourceModule):
                                     },
                                     "address_family",
                                     True,
-                                )
+                                ),
                             )
             for neigh, neigh_entry in iteritems(entry.get("neighbors", {})):
                 if have.get("neighbors"):
@@ -162,20 +186,17 @@ class Bgp_address_family(ResourceModule):
                                     self._tmplt.render(
                                         {
                                             "as_number": as_num,
-                                            "neighbors": {
-                                                "neighbor_address": neigh
-                                            },
+                                            "neighbors": {"neighbor_address": neigh},
                                         },
                                         "neighbors",
                                         True,
-                                    )
+                                    ),
                                 )
                             else:
                                 for k in neigh_entry["address_family"].keys():
                                     if (
                                         hnentry.get("address_family")
-                                        and k
-                                        in hnentry["address_family"].keys()
+                                        and k in hnentry["address_family"].keys()
                                     ):
                                         self.commands.append(
                                             self._tmplt.render(
@@ -183,14 +204,12 @@ class Bgp_address_family(ResourceModule):
                                                     "as_number": as_num,
                                                     "neighbors": {
                                                         "neighbor_address": neigh,
-                                                        "address_family": {
-                                                            "afi": k
-                                                        },
+                                                        "address_family": {"afi": k},
                                                     },
                                                 },
                                                 "neighbors.address_family",
                                                 True,
-                                            )
+                                            ),
                                         )
 
     def _compare_neighbors(self, want, have):
@@ -240,9 +259,7 @@ class Bgp_address_family(ResourceModule):
                                         "neighbor_address": name,
                                         "address_family": {
                                             "afi": afi,
-                                            k: hneigh[name]["address_family"][
-                                                afi
-                                            ].pop(k, {}),
+                                            k: hneigh[name]["address_family"][afi].pop(k, {}),
                                         },
                                     },
                                 }
@@ -263,7 +280,7 @@ class Bgp_address_family(ResourceModule):
                             },
                             "neighbors",
                             True,
-                        )
+                        ),
                     )
                 continue
 
@@ -282,13 +299,21 @@ class Bgp_address_family(ResourceModule):
     def _compare_lists(self, want, have, as_number, afi):
         parsers = [
             "aggregate_address",
+            "network",
             "network.backdoor",
             "network.path_limit",
             "network.route_map",
+            "redistribute",
             "redistribute.metric",
             "redistribute.route_map",
             "redistribute.table",
         ]
+
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+            delete_asn = ""
+        else:
+            delete_asn = " " + str(as_number)
+
         for attrib in ["redistribute", "networks", "aggregate_address"]:
             wdict = want.pop(attrib, {})
             hdict = have.pop(attrib, {})
@@ -314,13 +339,13 @@ class Bgp_address_family(ResourceModule):
                 attrib = re.sub("_", "-", attrib)
                 attrib = re.sub("networks", "network", attrib)
                 self.commands.append(
-                    "delete protocols bgp "
-                    + str(as_number)
+                    "delete protocols bgp"
+                    + delete_asn
                     + " "
                     + "address-family "
                     + afi
                     + " "
-                    + attrib
+                    + attrib,
                 )
                 hdict = {}
             for key, entry in iteritems(hdict):
@@ -332,6 +357,19 @@ class Bgp_address_family(ResourceModule):
                         "address_family": {"afi": afi, attrib: entry},
                     },
                 )
+        # de-duplicate child commands if parent command is present
+        for val in (self.commands):
+            for val2 in self.commands:
+                if val != val2 and val2.startswith(val):
+                    self.commands.remove(val2)
+
+    def _compare_asn(self, want, have):
+        if want.get("as_number") and not have.get("as_number"):
+            self.commands.append(
+                "set protocols bgp "
+                + "system-as "
+                + str(want.get("as_number")),
+            )
 
     def _bgp_af_list_to_dict(self, entry):
         for name, proc in iteritems(entry):

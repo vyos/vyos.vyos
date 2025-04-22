@@ -1,0 +1,270 @@
+---
+merged_commands:
+  - set firewall ipv6 name UPLINK default-action 'accept'
+  - set firewall ipv6 name UPLINK description 'This is ipv6 specific rule-set'
+  - set firewall ipv6 name UPLINK rule 1 action 'accept'
+  - set firewall ipv6 name UPLINK rule 1
+  - set firewall ipv6 name UPLINK rule 1 description 'Fwipv6-Rule 1 is configured by Ansible'
+  - set firewall ipv6 name UPLINK rule 1 protocol 'tcp'
+  - set firewall ipv6 name UPLINK rule 2 action 'accept'
+  - set firewall ipv6 name UPLINK rule 2
+  - set firewall ipv6 name UPLINK rule 2 description 'Fwipv6-Rule 2 is configured by Ansible'
+  - set firewall ipv6 name UPLINK rule 2 protocol 'tcp'
+  - set firewall ipv4 name INBOUND default-action 'accept'
+  - set firewall ipv4 name INBOUND description 'IPv4 INBOUND rule set'
+  - set firewall ipv4 name INBOUND rule 101 action 'accept'
+  - set firewall ipv4 name INBOUND rule 101 disable
+  - set firewall ipv4 name INBOUND rule 101
+  - set firewall ipv4 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'
+  - set firewall ipv4 name INBOUND rule 101 protocol 'tcp'
+  - set firewall ipv4 name INBOUND rule 102 action 'reject'
+  - set firewall ipv4 name INBOUND rule 102 disable
+  - set firewall ipv4 name INBOUND rule 102
+  - set firewall ipv4 name INBOUND rule 102 description 'Rule 102 is configured by Ansible'
+  - set firewall ipv4 name INBOUND rule 102 protocol 'tcp'
+  - set firewall ipv4 name INBOUND rule 103 description 'Rule 103 is configured by Ansible'
+  - set firewall ipv4 name INBOUND rule 103 destination group address-group inbound
+  - set firewall ipv4 name INBOUND rule 103
+  - set firewall ipv4 name INBOUND rule 103 source address 192.0.2.0
+  - set firewall ipv4 name INBOUND rule 103 state established
+  - set firewall ipv4 name INBOUND rule 103 state related
+  - set firewall ipv4 name INBOUND rule 103 action 'accept'
+
+populate_config:
+  - set firewall group address-group 'inbound'
+  - set firewall ipv6 name UPLINK default-action 'accept'
+  - set firewall ipv6 name UPLINK description 'This is ipv6 specific rule-set'
+  - set firewall ipv6 name UPLINK rule 1 action 'accept'
+  - set firewall ipv6 name UPLINK rule 1 description 'Fwipv6-Rule 1 is configured by Ansible'
+  - set firewall ipv6 name UPLINK rule 1 protocol 'tcp'
+  - set firewall ipv6 name UPLINK rule 2 action 'accept'
+  - set firewall ipv6 name UPLINK rule 2 description 'Fwipv6-Rule 2 is configured by Ansible'
+  - set firewall ipv6 name UPLINK rule 2 protocol 'tcp'
+  - set firewall ipv4 name INBOUND default-action 'accept'
+  - set firewall ipv4 name INBOUND description 'IPv4 INBOUND rule set'
+  - set firewall ipv4 name INBOUND rule 101 action 'accept'
+  - set firewall ipv4 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'
+  - set firewall ipv4 name INBOUND rule 101 protocol 'tcp'
+  - set firewall ipv4 name INBOUND rule 102 action 'reject'
+  - set firewall ipv4 name INBOUND rule 102 description 'Rule 102 is configured by Ansible'
+  - set firewall ipv4 name INBOUND rule 102 protocol 'tcp'
+  - set firewall ipv4 name INBOUND rule 103 action 'accept'
+  - set firewall ipv4 name INBOUND rule 103 description 'Rule 103 is configured by Ansible'
+  - set firewall ipv4 name INBOUND rule 103 destination group address-group 'inbound'
+  - set firewall ipv4 name INBOUND rule 103 source address '192.0.2.0'
+  - set firewall ipv4 name INBOUND rule 103 state established
+  - set firewall ipv4 name INBOUND rule 103 state related
+
+remove_config:
+  - delete firewall ipv4
+  - delete firewall ipv6
+
+parsed_config_file: "_parsed_config_1_4.cfg"
+
+replaced_commands:
+  - delete firewall ipv6 name UPLINK rule 1
+  - delete firewall ipv6 name UPLINK rule 2
+  - delete firewall ipv4 name INBOUND rule 102
+  - delete firewall ipv4 name INBOUND rule 103
+  - set firewall ipv4 name INBOUND rule 104 action 'reject'
+  - set firewall ipv4 name INBOUND rule 104 description 'Rule 104 is configured by Ansible'
+  - set firewall ipv4 name INBOUND rule 104
+  - set firewall ipv4 name INBOUND rule 104 protocol 'udp'
+
+overridden_commands:
+  - delete firewall ipv6 name UPLINK
+  - delete firewall ipv4 name INBOUND
+  - set firewall ipv4 name Downlink default-action 'accept'
+  - set firewall ipv4 name Downlink description 'IPv4 INBOUND rule set'
+  - set firewall ipv4 name Downlink rule 501 action 'accept'
+  - set firewall ipv4 name Downlink rule 501
+  - set firewall ipv4 name Downlink rule 501 description 'Rule 501 is configured by Ansible'
+  - set firewall ipv4 name Downlink rule 501 protocol 'tcp'
+  - set firewall ipv4 name Downlink rule 502 action 'reject'
+  - set firewall ipv4 name Downlink rule 502
+  - set firewall ipv4 name Downlink rule 502 description 'Rule 502 is configured by Ansible'
+  - set firewall ipv4 name Downlink rule 502 protocol 'tcp'
+
+rendered:
+  commands:
+    - set firewall ipv6 name UPLINK default-action 'accept'
+    - set firewall ipv6 name UPLINK description 'This is ipv6 specific rule-set'
+    - set firewall ipv4 name INBOUND default-action 'accept'
+    - set firewall ipv4 name INBOUND description 'IPv4 INBOUND rule set'
+    - set firewall ipv4 name INBOUND rule 101 action 'accept'
+    - set firewall ipv4 name INBOUND rule 101
+    - set firewall ipv4 name INBOUND rule 101 description 'Rule 101 is configured by Ansible'
+    - set firewall ipv4 name INBOUND rule 101 protocol 'tcp'
+    - set firewall ipv4 name INBOUND rule 102 action 'reject'
+    - set firewall ipv4 name INBOUND rule 102
+    - set firewall ipv4 name INBOUND rule 102 description 'Rule 102 is configured by Ansible'
+    - set firewall ipv4 name INBOUND rule 102 protocol 'tcp'
+    - set firewall ipv4 name INBOUND rule 103 description 'Rule 103 is configured by Ansible'
+    - set firewall ipv4 name INBOUND rule 103 destination group address-group inbound
+    - set firewall ipv4 name INBOUND rule 103
+    - set firewall ipv4 name INBOUND rule 103 source address 192.0.2.0
+    - set firewall ipv4 name INBOUND rule 103 state established
+    - set firewall ipv4 name INBOUND rule 103 state related
+    - set firewall ipv4 name INBOUND rule 103 action 'accept'
+deleted_rs:
+  commands:
+    - delete firewall ipv6 name UPLINK
+    - delete firewall ipv4 name INBOUND
+  after: []
+deleted_afi_all:
+  commands:
+    - delete firewall ipv6
+    - delete firewall ipv4
+  after: []
+
+state_dict:
+  established: true
+  related: true
+
+replaced_diff_01:
+  config:
+    - afi: ipv6
+      rule_sets:
+        - name: UPLINK
+          description: This is ipv6 specific rule-set
+          default_action: accept
+          rules:
+            - number: 1
+              action: accept
+              description: Fwipv6-Rule 1 is configured by Ansible
+              protocol: tcp
+            - number: 2
+              action: accept
+              description: Fwipv6-Rule 2 is configured by Ansible
+              protocol: tcp
+    - afi: ipv4
+      rule_sets:
+        - name: INBOUND
+          description: IPv4 INBOUND rule set
+          default_action: accept
+          rules:
+            - number: 101
+              action: reject
+              description: Rule 101 is configured by Ansible
+              protocol: tcp
+            - number: 102
+              action: reject
+              description: Rule 102 is configured by Ansible
+              protocol: tcp
+            - number: 103
+              action: accept
+              description: Rule 103 is configured by Ansible
+              destination:
+                group:
+                  address_group: inbound
+              source:
+                address: 192.0.2.0
+              state: "{{ state_dict }}"
+  diff: |-
+    [firewall ipv4 name INBOUND rule 101]
+    - action \"accept\"
+    + action \"reject\"
+
+
+    [edit]
+
+replaced_diff_02:
+  config:
+    - afi: ipv6
+      rule_sets:
+        - name: UPLINK
+          description: This is ipv6 specific rule-set
+          default_action: accept
+          rules:
+            - number: 1
+              action: accept
+              description: Fwipv6-Rule 1 is configured by Ansible
+              protocol: tcp
+            - number: 2
+              action: accept
+              description: Fwipv6-Rule 2 is configured by Ansible
+              protocol: tcp
+    - afi: ipv4
+      rule_sets:
+        - name: INBOUND
+          description: IPv4 INBOUND rule set
+          default_action: accept
+          rules:
+            - number: 101
+              action: reject
+              description: Rule 101 is configured by Ansible
+              protocol: tcp
+            - number: 102
+              action: accept
+              description: Rule 102 is configured by Ansible
+              protocol: udp
+            - number: 103
+              action: accept
+              description: Rule 103 is configured by Ansible
+              destination:
+                group:
+                  address_group: inbound
+              source:
+                address: 192.0.2.0
+              state: "{{ state_dict }}"
+  diff: |-
+    [firewall ipv4 name INBOUND rule 102]
+    - action \"reject\"
+    + action \"accept\"
+    - protocol \"tcp\"
+    + protocol \"udp\"
+
+
+    [edit]
+
+replaced_diff_03:
+  config:
+    - afi: ipv6
+      rule_sets:
+        - name: UPLINK
+          description: This is ipv6 specific rule-set
+          default_action: accept
+          rules:
+            - number: 1
+              action: reject
+              description: Fwipv6-Rule 1 is configured by Ansible
+              protocol: udp
+            - number: 2
+              action: accept
+              description: Fwipv6-Rule 2 is configured by Ansible
+              protocol: tcp
+    - afi: ipv4
+      rule_sets:
+        - name: INBOUND
+          description: IPv4 INBOUND rule set
+          default_action: accept
+          rules:
+            - number: 101
+              action: reject
+              description: Rule 101 is configured by Ansible
+              protocol: tcp
+            - number: 102
+              action: accept
+              description: Rule 102 is configured by Ansible
+              protocol: tcp
+            - number: 103
+              action: accept
+              description: Rule 103 is configured by Ansible
+              destination:
+                group:
+                  address_group: inbound
+              source:
+                address: 192.0.2.0
+              state: "{{ state_dict }}"
+  diff: |-
+    [firewall ipv4 name INBOUND rule 102]
+    - protocol \"udp\"
+    + protocol \"tcp\"
+    [firewall ipv6 name UPLINK rule 1]
+    - action \"accept\"
+    + action \"reject\"
+    - protocol \"tcp\"
+    + protocol \"udp\"
+
+
+    [edit]

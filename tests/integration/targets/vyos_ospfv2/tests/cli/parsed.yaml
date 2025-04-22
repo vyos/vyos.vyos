@@ -1,13 +1,18 @@
 ---
 - debug:
-    msg: START vyos_ospfv2 parsed integration tests on connection={{ ansible_connection
-      }}
+    msg: START vyos_ospfv2 parsed integration tests on connection={{ ansible_connection }}
+
+- name: ensure facts
+  include_tasks: _get_version.yaml
 
 - name: Parse externally provided ospfv2 config to agnostic model
   register: result
   vyos.vyos.vyos_ospfv2:
-    running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
+    running_config: "{{ lookup('file', parsed_config_file) }}"
     state: parsed
+
+- debug:
+    msg: "{{ parsed['after'] }}"
 
 - name: Assert that config was correctly parsed
   assert:

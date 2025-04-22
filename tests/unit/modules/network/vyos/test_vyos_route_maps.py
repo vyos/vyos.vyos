@@ -18,39 +18,35 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from unittest.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_route_maps
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosRouteMapsModule(TestVyosModule):
-
     module = vyos_route_maps
 
     def setUp(self):
         super(TestVyosRouteMapsModule, self).setUp()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
-        self.get_resource_connection_facts = (
-            self.mock_get_resource_connection_facts.start()
-        )
+        self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.route_maps.route_maps.Route_mapsFacts.get_config"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.route_maps.route_maps.Route_mapsFacts.get_config",
         )
 
         self.execute_show_command = self.mock_execute_show_command.start()
@@ -61,7 +57,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
         self.mock_get_resource_connection_facts.stop()
         self.mock_execute_show_command.stop()
 
-    def load_fixtures(self, commands=None, transport="cli", filename=None):
+    def load_fixtures(self, commands=None, filename=None):
         if filename is None:
             filename = "vyos_route_maps_config.cfg"
 
@@ -105,12 +101,12 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     tag=5,
                                     weight=4,
                                 ),
-                            )
+                            ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -149,12 +145,12 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     tag=4,
                                     weight=4,
                                 ),
-                            )
+                            ),
                         ],
-                    )
+                    ),
                 ],
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set policy route-map test2 rule 1 action permit",
@@ -214,12 +210,12 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     tag=4,
                                     weight=4,
                                 ),
-                            )
+                            ),
                         ],
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "delete policy route-map test3 rule 1 match interface eth2",
@@ -266,12 +262,12 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     tag=5,
                                     weight=4,
                                 ),
-                            )
+                            ),
                         ],
                     ),
                 ],
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -304,12 +300,12 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     tag=4,
                                     weight=4,
                                 ),
-                            )
+                            ),
                         ],
-                    )
+                    ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         commands = [
             "delete policy route-map test3",
@@ -366,12 +362,12 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     tag=5,
                                     weight=4,
                                 ),
-                            )
+                            ),
                         ],
                     ),
                 ],
                 state="overridden",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -409,7 +405,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     tag=5,
                                     weight=4,
                                 ),
-                            )
+                            ),
                         ],
                     ),
                     dict(
@@ -430,7 +426,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                     ),
                 ],
                 state="rendered",
-            )
+            ),
         )
         rendered_cmds = [
             "set policy route-map test3 rule 1 action permit",
@@ -465,7 +461,6 @@ class TestVyosRouteMapsModule(TestVyosModule):
         )
 
     def test_yos_route_maps_parsed(self):
-
         parsed_str = (
             "set policy route-map test3 rule 1 action 'permit'"
             "\nset policy route-map test3 rule 1 match interface 'eth2'\nset policy route-map test3 rule 1 match ipv6 nexthop"
@@ -510,7 +505,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             "tag": "5",
                             "weight": "4",
                         },
-                    }
+                    },
                 ],
                 "route_map": "test3",
             },
@@ -550,7 +545,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             "tag": "5",
                             "weight": "4",
                         },
-                    }
+                    },
                 ],
                 "route_map": "test3",
             },
@@ -578,12 +573,12 @@ class TestVyosRouteMapsModule(TestVyosModule):
                                     tag=5,
                                     weight=4,
                                 ),
-                            )
+                            ),
                         ],
                     ),
                 ],
                 state="deleted",
-            )
+            ),
         )
         commands = ["delete policy route-map test3"]
         self.execute_module(changed=True, commands=commands)

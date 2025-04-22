@@ -1,23 +1,17 @@
 ---
 - debug:
-    msg: START vyos_interfaces replaced integration tests on connection={{ ansible_connection
-      }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_interfaces replaced integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Replace device configurations of listed interfaces with provided configurations
       register: result
       vyos.vyos.vyos_interfaces: &id001
         config:
-
           - name: eth1
             description: Replaced by Ansible
             vifs:
-
               - vlan_id: 100
                 description: VIF 100 - Replaced by Ansible
 
@@ -29,22 +23,33 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ replaced['commands'] | symmetric_difference(result['commands'])\
-            \ |length == 0 }}"
+          - replaced['commands'] | symmetric_difference(result['commands']) |length == 0
+
+    - debug:
+        var: populate | symmetric_difference(result['before'])
 
     - name: Assert that before dicts are correctly generated
       assert:
         that:
-          - "{{ populate | symmetric_difference(result['before']) |length == 0 }}"
+          - populate | symmetric_difference(result['before']) |length == 0
+
+    - debug:
+        var: replaced['after'] | symmetric_difference(result['after'])
 
     - name: Assert that after dict is correctly generated
       assert:
         that:
-          - "{{ replaced['after'] | symmetric_difference(result['after']) |length\
-            \ == 0 }}"
+          - replaced['after'] | symmetric_difference(result['after']) |length == 0
 
-    - name: Replace device configurations of listed interfaces with provided configurarions
-        (IDEMPOTENT)
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: interfaces
+
+    - name: Assert that the facts and the after dict are the same
+      assert:
+        that:
+          - result.after == ansible_facts['network_resources']['interfaces']
+
+    - name: Replace device configurations of listed interfaces with provided configurarions (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_interfaces: *id001
 
@@ -56,8 +61,6 @@
     - name: Assert that before dict is correctly generated
       assert:
         that:
-          - "{{ replaced['after'] | symmetric_difference(result['before']) |length\
-            \ == 0 }}"
+          - replaced['after'] | symmetric_difference(result['before']) |length == 0
   always:
-
     - include_tasks: _remove_config.yaml

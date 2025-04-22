@@ -1,0 +1,15 @@
+---
+- debug:
+    msg: START vyos_hostname parsed integration tests on connection={{ ansible_connection }}
+
+- name: Provide the running configuration for parsing (config to be parsed)
+  register: result
+  vyos.vyos.vyos_hostname:
+    running_config: "{{ lookup('file', '_parsed.cfg') }}"
+    state: parsed
+
+- name: Assert that config was correctly parsed
+  assert:
+    that:
+      - result.changed == false
+      - result.parsed == merged.after

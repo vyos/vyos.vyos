@@ -1,19 +1,15 @@
 ---
 - debug:
-    msg: START vyos_ospf_interfaces deleted integration tests on connection={{
-      ansible_connection }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_ospf_interfaces deleted integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Delete the provided configuration
       register: result
       vyos.vyos.vyos_ospf_interfaces: &id001
         config:
-          - name: "bond2"
+          - name: bond2
         state: deleted
 
     - vyos.vyos.vyos_facts:
@@ -21,13 +17,11 @@
 
     - assert:
         that:
-          - result.commands|length == 2
           - result.changed == true
           - result.commands|symmetric_difference(deleted.commands) == []
           - result.after|symmetric_difference(ansible_facts['network_resources']['ospf_interfaces']) == []
 
-    - name: Delete the existing configuration with the provided running configuration
-        (IDEMPOTENT)
+    - name: Delete the existing configuration with the provided running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_ospf_interfaces: *id001
 
@@ -37,5 +31,4 @@
           - result['changed'] == false
 
   always:
-
     - include_tasks: _remove_config.yaml

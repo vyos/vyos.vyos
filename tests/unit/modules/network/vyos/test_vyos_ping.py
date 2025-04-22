@@ -18,24 +18,24 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from unittest.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_ping
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosPingModule(TestVyosModule):
-
     module = vyos_ping
 
     def setUp(self):
         super(TestVyosPingModule, self).setUp()
         self.mock_run_commands = patch(
-            "ansible_collections.vyos.vyos.plugins.modules.vyos_ping.run_commands"
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_ping.run_commands",
         )
         self.run_commands = self.mock_run_commands.start()
 
@@ -43,7 +43,7 @@ class TestVyosPingModule(TestVyosModule):
         super(TestVyosPingModule, self).tearDown()
         self.mock_run_commands.stop()
 
-    def load_fixtures(self, commands=None):
+    def load_fixtures(self, commands=None, filename=None):
         def load_from_file(*args, **kwargs):
             commands = kwargs["commands"]
             output = list()

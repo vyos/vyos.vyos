@@ -1,0 +1,58 @@
+---
+merged_commands:
+  - set interfaces ethernet eth0 ip ospf cost 50
+  - set interfaces ethernet eth0 ip ospf priority 26
+  - set interfaces ethernet eth0 ipv6 ospfv3 mtu-ignore
+  - set interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
+  - set interfaces ethernet eth2 vif 3 ip ospf cost 60
+  - set interfaces ethernet eth2 vif 3 ip ospf priority 40
+  - set interfaces bonding bond2 ip ospf transmit-delay 45
+  - set interfaces bonding bond2 ipv6 ospfv3 passive
+
+populate_commands:
+  - set interfaces ethernet eth0 ip ospf cost 50
+  - set interfaces ethernet eth0 ip ospf priority 26
+  - set interfaces ethernet eth0 ipv6 ospfv3 mtu-ignore
+  - set interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
+  - set interfaces ethernet eth2 vif 18 ip ospf cost 80
+  - set interfaces bonding bond2 ip ospf transmit-delay 45
+  - set interfaces bonding bond2 ipv6 ospfv3 passive
+
+remove_commands:
+  - delete interfaces ethernet eth0 ip ospf
+  - delete interfaces ethernet eth0 ipv6 ospfv3
+  - delete interfaces ethernet eth1 ip ospf
+  - delete interfaces ethernet eth1 ipv6 ospfv3
+  - delete interfaces ethernet eth2 vif 3 ip ospf
+  - delete interfaces bonding bond1 ip ospf
+  - delete interfaces bonding bond1 ipv6 ospfv3
+  - delete interfaces bonding bond2 ip ospf
+  - delete interfaces bonding bond2 ipv6 ospfv3
+  - delete interfaces bonding bond2
+
+parsed_config_file: "_parsed_config_1_3.cfg"
+
+replaced_commands:
+  - set interfaces ethernet eth0 ip ospf transmit-delay 50
+  - set interfaces ethernet eth0 ip ospf network point-to-point
+  - set interfaces ethernet eth0 ipv6 ospfv3 dead-interval 39
+  - delete interfaces ethernet eth0 ip ospf cost 50
+  - delete interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
+  - delete interfaces ethernet eth0 ipv6 ospfv3 mtu-ignore
+  - set interfaces bonding bond2 ip ospf bandwidth 70
+  - set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key ********
+
+overridden_commands:
+  - delete interfaces bonding bond2 ip ospf
+  - delete interfaces bonding bond2 ipv6 ospfv3
+  - delete interfaces ethernet eth2 vif 18 ip ospf
+  - set interfaces ethernet eth0 ip ospf transmit-delay 50
+  - set interfaces ethernet eth0 ip ospf network point-to-point
+  - set interfaces ethernet eth0 ipv6 ospfv3 dead-interval 39
+  - delete interfaces ethernet eth0 ip ospf cost 50
+  - delete interfaces ethernet eth0 ipv6 ospfv3 instance-id 33
+  - delete interfaces ethernet eth0 ipv6 ospfv3 mtu-ignore
+
+deleted_commands:
+  - delete interfaces bonding bond2 ip ospf
+  - delete interfaces bonding bond2 ipv6 ospfv3

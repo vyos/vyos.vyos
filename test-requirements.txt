@@ -1,7 +1,4 @@
-black ; python_version > '3.5'
-flake8
-mock
-pexpect
+# Unit test runner
+pytest-ansible
 pytest-xdist
-yamllint
-coverage==4.5.4
+pytest-cov

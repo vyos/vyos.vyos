@@ -18,51 +18,61 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from ansible_collections.vyos.vyos.tests.unit.compat.mock import patch
+from unittest.mock import patch
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_ospfv3
-from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
-    set_module_args,
-)
+from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
 from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosOspfv3Module(TestVyosModule):
-
     module = vyos_ospfv3
 
     def setUp(self):
         super(TestVyosOspfv3Module, self).setUp()
         self.mock_get_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
         )
         self.get_config = self.mock_get_config.start()
 
         self.mock_load_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.load_config",
         )
         self.load_config = self.mock_load_config.start()
 
         self.mock_get_resource_connection_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection",
         )
-        self.get_resource_connection_config = (
-            self.mock_get_resource_connection_config.start()
-        )
+        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
 
         self.mock_get_resource_connection_facts = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
         )
-        self.get_resource_connection_facts = (
-            self.mock_get_resource_connection_facts.start()
-        )
+        self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3.Ospfv3Facts.get_device_data"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3.Ospfv3Facts.get_device_data",
         )
 
         self.execute_show_command = self.mock_execute_show_command.start()
+
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv3.ospfv3.get_os_version",
+        )
+
+        self.test_version = "1.3"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
+        self.mock_facts_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3.get_os_version",
+        )
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = self.test_version
+        self.maxDiff = None
 
     def tearDown(self):
         super(TestVyosOspfv3Module, self).tearDown()
@@ -72,7 +82,7 @@ class TestVyosOspfv3Module(TestVyosModule):
         self.mock_load_config.stop()
         self.mock_execute_show_command.stop()
 
-    def load_fixtures(self, commands=None, transport="cli", filename=None):
+    def load_fixtures(self, commands=None, filename=None):
         if filename is None:
             filename = "vyos_ospfv3_config.cfg"
 
@@ -98,6 +108,7 @@ class TestVyosOspfv3Module(TestVyosModule):
                                 dict(address="2001:db20::/32"),
                                 dict(address="2001:db30::/32"),
                             ],
+                            interfaces=[dict(name="eth0")],
                         ),
                         dict(
                             area_id="3",
@@ -106,7 +117,7 @@ class TestVyosOspfv3Module(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set protocols ospfv3 redistribute bgp",
@@ -115,6 +126,50 @@ class TestVyosOspfv3Module(TestVyosModule):
             "set protocols ospfv3 area 2 range 2001:db20::/32",
             "set protocols ospfv3 area 2 range 2001:db30::/32",
             "set protocols ospfv3 area '2'",
+            "set protocols ospfv3 area 2 interface eth0",
+            "set protocols ospfv3 area 2 export-list export1",
+            "set protocols ospfv3 area 2 import-list import1",
+            "set protocols ospfv3 area '3'",
+            "set protocols ospfv3 area 3 range 2001:db40::/32",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_ospfv3_merged_new_config14(self):
+        self.get_os_version.return_value = "1.4"
+        set_module_args(
+            dict(
+                config=dict(
+                    redistribute=[dict(route_type="bgp")],
+                    parameters=dict(router_id="192.0.2.10"),
+                    areas=[
+                        dict(
+                            area_id="2",
+                            export_list="export1",
+                            import_list="import1",
+                            range=[
+                                dict(address="2001:db10::/32"),
+                                dict(address="2001:db20::/32"),
+                                dict(address="2001:db30::/32"),
+                            ],
+                            interfaces=[dict(name="eth0")],
+                        ),
+                        dict(
+                            area_id="3",
+                            range=[dict(address="2001:db40::/32")],
+                        ),
+                    ],
+                ),
+                state="merged",
+            ),
+        )
+        commands = [
+            "set protocols ospfv3 redistribute bgp",
+            "set protocols ospfv3 parameters router-id '192.0.2.10'",
+            "set protocols ospfv3 area 2 range 2001:db10::/32",
+            "set protocols ospfv3 area 2 range 2001:db20::/32",
+            "set protocols ospfv3 area 2 range 2001:db30::/32",
+            "set protocols ospfv3 area '2'",
+            "set protocols ospfv3 interface eth0 area 2",
             "set protocols ospfv3 area 2 export-list export1",
             "set protocols ospfv3 area 2 import-list import1",
             "set protocols ospfv3 area '3'",
@@ -144,7 +199,7 @@ class TestVyosOspfv3Module(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -175,7 +230,7 @@ class TestVyosOspfv3Module(TestVyosModule):
                     ],
                 ),
                 state="merged",
-            )
+            ),
         )
         commands = [
             "set protocols ospfv3 redistribute bgp",
@@ -208,7 +263,7 @@ class TestVyosOspfv3Module(TestVyosModule):
                     ],
                 ),
                 state="replaced",
-            )
+            ),
         )
         commands = [
             "set protocols ospfv3 redistribute bgp",
@@ -243,7 +298,7 @@ class TestVyosOspfv3Module(TestVyosModule):
                     ],
                 ),
                 state="replaced",
-            )
+            ),
         )
         self.execute_module(changed=False, commands=[])
 
@@ -254,9 +309,7 @@ class TestVyosOspfv3Module(TestVyosModule):
 
     def test_vyos_ospfv3_gathered(self):
         set_module_args(dict(state="gathered"))
-        result = self.execute_module(
-            changed=False, filename="vyos_ospfv3_config.cfg"
-        )
+        result = self.execute_module(changed=False, filename="vyos_ospfv3_config.cfg")
         gather_dict = {
             "areas": [
                 {
@@ -328,7 +381,7 @@ set protocols ospfv3 redistribute 'bgp'"""
                     ],
                 ),
                 state="rendered",
-            )
+            ),
         )
         commands = [
             "set protocols ospfv3 redistribute bgp",
@@ -343,6 +396,4 @@ set protocols ospfv3 redistribute 'bgp'"""
             "set protocols ospfv3 area 3 range 2001:db40::/32",
         ]
         result = self.execute_module(changed=False)
-        self.assertEqual(
-            sorted(result["rendered"]), sorted(commands), result["rendered"]
-        )
+        self.assertEqual(sorted(result["rendered"]), sorted(commands), result["rendered"])

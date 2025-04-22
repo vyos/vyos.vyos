@@ -25,7 +25,9 @@
 The arg spec for the vyos_firewall_global module
 """
 
+
 from __future__ import absolute_import, division, print_function
+
 
 __metaclass__ = type
 
@@ -46,7 +48,10 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                             "elements": "dict",
                             "options": {
                                 "afi": {
-                                    "choices": ["ipv4", "ipv6"],
+                                    "choices": [
+                                        "ipv4",
+                                        "ipv6",
+                                    ],
                                     "default": "ipv4",
                                     "type": "str",
                                 },
@@ -56,7 +61,10 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                                     "options": {"address": {"type": "str"}},
                                     "type": "list",
                                 },
-                                "name": {"required": True, "type": "str"},
+                                "name": {
+                                    "required": True,
+                                    "type": "str",
+                                },
                             },
                             "type": "list",
                         },
@@ -64,7 +72,10 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                             "elements": "dict",
                             "options": {
                                 "afi": {
-                                    "choices": ["ipv4", "ipv6"],
+                                    "choices": [
+                                        "ipv4",
+                                        "ipv6",
+                                    ],
                                     "default": "ipv4",
                                     "type": "str",
                                 },
@@ -74,7 +85,10 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                                     "options": {"address": {"type": "str"}},
                                     "type": "list",
                                 },
-                                "name": {"required": True, "type": "str"},
+                                "name": {
+                                    "required": True,
+                                    "type": "str",
+                                },
                             },
                             "type": "list",
                         },
@@ -87,7 +101,10 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                                     "options": {"port": {"type": "str"}},
                                     "type": "list",
                                 },
-                                "name": {"required": True, "type": "str"},
+                                "name": {
+                                    "required": True,
+                                    "type": "str",
+                                },
                             },
                             "type": "list",
                         },
@@ -106,7 +123,10 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                     "elements": "dict",
                     "options": {
                         "afi": {
-                            "choices": ["ipv4", "ipv6"],
+                            "choices": [
+                                "ipv4",
+                                "ipv6",
+                            ],
                             "required": True,
                             "type": "str",
                         },
@@ -125,21 +145,46 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                     "elements": "dict",
                     "options": {
                         "action": {
-                            "choices": ["accept", "drop", "reject"],
+                            "choices": [
+                                "accept",
+                                "drop",
+                                "reject",
+                            ],
                             "type": "str",
                         },
                         "connection_type": {
-                            "choices": ["established", "invalid", "related"],
+                            "choices": [
+                                "established",
+                                "invalid",
+                                "related",
+                            ],
                             "type": "str",
                         },
                         "log": {"type": "bool"},
+                        "log_level": {
+                            "choices": [
+                                "emerg",
+                                "alert",
+                                "crit",
+                                "err",
+                                "warn",
+                                "notice",
+                                "info",
+                                "debug",
+                            ],
+                            "type": "str",
+                        },
                     },
                     "type": "list",
                 },
                 "syn_cookies": {"type": "bool"},
                 "twa_hazards_protection": {"type": "bool"},
                 "validation": {
-                    "choices": ["strict", "loose", "disable"],
+                    "choices": [
+                        "strict",
+                        "loose",
+                        "disable",
+                    ],
                     "type": "str",
                 },
             },

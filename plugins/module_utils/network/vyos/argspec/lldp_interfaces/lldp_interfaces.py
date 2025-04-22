@@ -25,7 +25,9 @@
 The arg spec for the vyos_lldp_interfaces module
 """
 
+
 from __future__ import absolute_import, division, print_function
+
 
 __metaclass__ = type
 
@@ -43,32 +45,25 @@ class Lldp_interfacesArgs(object):  # pylint: disable=R0903
                 "enable": {"default": True, "type": "bool"},
                 "location": {
                     "options": {
-                        "civic_based": {
-                            "options": {
-                                "ca_info": {
-                                    "elements": "dict",
-                                    "options": {
-                                        "ca_type": {"type": "int"},
-                                        "ca_value": {"type": "str"},
-                                    },
-                                    "type": "list",
-                                },
-                                "country_code": {
-                                    "required": True,
-                                    "type": "str",
-                                },
-                            },
-                            "type": "dict",
-                        },
                         "coordinate_based": {
                             "options": {
                                 "altitude": {"type": "int"},
                                 "datum": {
-                                    "choices": ["WGS84", "NAD83", "MLLW"],
+                                    "choices": [
+                                        "WGS84",
+                                        "NAD83",
+                                        "MLLW",
+                                    ],
                                     "type": "str",
                                 },
-                                "latitude": {"required": True, "type": "str"},
-                                "longitude": {"required": True, "type": "str"},
+                                "latitude": {
+                                    "required": True,
+                                    "type": "str",
+                                },
+                                "longitude": {
+                                    "required": True,
+                                    "type": "str",
+                                },
                             },
                             "type": "dict",
                         },
@@ -88,8 +83,8 @@ class Lldp_interfacesArgs(object):  # pylint: disable=R0903
                 "overridden",
                 "deleted",
                 "rendered",
-                "gathered",
                 "parsed",
+                "gathered",
             ],
             "default": "merged",
             "type": "str",

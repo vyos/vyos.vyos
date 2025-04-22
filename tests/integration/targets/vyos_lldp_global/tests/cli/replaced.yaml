@@ -1,14 +1,10 @@
 ---
 - debug:
-    msg: START vyos_lldp_global replaced integration tests on connection={{ ansible_connection
-      }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_lldp_global replaced integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _populate.yaml
 
 - block:
-
     - name: Replace device configurations of LLDP service with provided configurations
       register: result
       vyos.vyos.vyos_lldp_global: &id001
@@ -23,21 +19,19 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ replaced['commands'] | symmetric_difference(result['commands'])\
-            \ |length == 0 }}"
+          - replaced['commands'] | symmetric_difference(result['commands']) |length == 0
 
     - name: Assert that before dicts are correctly generated
       assert:
         that:
-          - "{{ populate == result['before'] }}"
+          - populate == result['before']
 
     - name: Assert that after dict is correctly generated
       assert:
         that:
-          - "{{ replaced['after'] == result['after'] }}"
+          - replaced['after'] == result['after']
 
-    - name: Replace device configurations of LLDP service with provided configurarions
-        (IDEMPOTENT)
+    - name: Replace device configurations of LLDP service with provided configurarions (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_lldp_global: *id001
 
@@ -49,7 +43,6 @@
     - name: Assert that before dict is correctly generated
       assert:
         that:
-          - "{{ replaced['after'] == result['before'] }}"
+          - replaced['after'] == result['before']
   always:
-
     - include_tasks: _remove_config.yaml

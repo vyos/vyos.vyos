@@ -1,0 +1,6 @@
+---
+bugfixes:
+  - vyos_ospfv3 - added support for adding interfaces to areas
+trivial:
+  - vyos_ospfv3 - updated unit test suites to include area interfaces
+  - vyos_ospfv3 - added v1.4 unit test

@@ -1,0 +1,38 @@
+---
+- debug:
+    msg: START vyos_hostname replaced integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replace the provided configuration with the existing running configuration
+      register: result
+      vyos.vyos.vyos_hostname: &id001
+        config:
+          hostname: vyosTest
+        state: replaced
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: hostname
+
+    - assert:
+        that:
+          - result.commands|length == 1
+          - result.changed == true
+          - result.commands|symmetric_difference(merged.commands) == []
+          - result.after == ansible_facts['network_resources']['hostname']
+          - result.after == merged.after
+
+    - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_hostname: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

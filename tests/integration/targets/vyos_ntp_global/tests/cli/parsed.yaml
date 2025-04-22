@@ -1,14 +1,15 @@
 ---
 - debug:
-    msg: START vyos_ntp_global parsed integration tests on connection={{ ansible_connection
-      }}
+    msg: START vyos_ntp_global parsed integration tests on connection={{ ansible_connection }}
+
+- name: ensure version
+  include_tasks: _get_version.yaml
 
 - name: Provide the running configuration for parsing (config to be parsed)
   register: result
   vyos.vyos.vyos_ntp_global:
-    running_config: "{{ lookup('file', '_parsed.cfg') }}"
+    running_config: "{{ parsed.config }}"
     state: parsed
-
 
 - name: Assert that config was correctly parsed
   assert:

@@ -74,7 +74,6 @@
   register: result
   vyos.vyos.vyos_vlan: &id004
     aggregate:
-
       - vlan_id: 101
         name: voice
         interfaces: eth0

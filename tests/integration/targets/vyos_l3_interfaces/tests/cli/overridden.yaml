@@ -1,27 +1,20 @@
 ---
 - debug:
-    msg: START vyos_l3_interfaces merged integration tests on connection={{ ansible_connection
-      }}
+    msg: START vyos_l3_interfaces merged integration tests on connection={{ ansible_connection }}
 
-- include_tasks: _remove_config.yaml
+- include_tasks: _populate.yaml
 
 - block:
-
-    - include_tasks: _populate.yaml
-
     - name: Overrides all device configuration with provided configuration
       register: result
       vyos.vyos.vyos_l3_interfaces: &id001
         config:
-
           - name: eth0
             ipv4:
-
               - address: dhcp
 
           - name: eth1
             ipv4:
-
               - address: 192.0.2.15/24
         state: overridden
 
@@ -33,14 +26,12 @@
     - name: Assert that correct commands were generated
       assert:
         that:
-          - "{{ overridden['commands'] | symmetric_difference(result['commands'])\
-            \ |length == 0 }}"
+          - "{{ overridden['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
     - name: Assert that after dicts were correctly generated
       assert:
         that:
-          - "{{ overridden['after'] | symmetric_difference(result['after']) |length\
-            \ == 0 }}"
+          - "{{ overridden['after'] | symmetric_difference(result['after']) |length == 0 }}"
 
     - name: Overrides all device configuration with provided configurations (IDEMPOTENT)
       register: result
@@ -54,8 +45,6 @@
     - name: Assert that before dicts were correctly generated
       assert:
         that:
-          - "{{ overridden['after'] | symmetric_difference(result['before']) |length\
-            \ == 0 }}"
+          - "{{ overridden['after'] | symmetric_difference(result['before']) |length == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

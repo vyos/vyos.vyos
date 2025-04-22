@@ -16,7 +16,7 @@
 - name: Check that multiple duplicate lines collapse into a single commands
   assert:
     that:
-      - '{{ result.commands|length }} == 1'
+      - result.commands|length == 1
 
 - name: Check that set is correctly prepended
   assert:
@@ -45,20 +45,20 @@
   register: result
   vyos.vyos.config:
     lines:
-      - set system login user esa level admin
+      - set system login user esa full-name 'ESA admin'
       - set system login user esa authentication encrypted-password '!abc!'
-      - set system login user vyos level admin
+      - set system login user vyos full-name 'VyOS admin'
       - set system login user vyos authentication encrypted-password 'abc'
 
 - assert:
     that:
-      - '{{ result.filtered|length }} == 2'
+      - result.filtered|length == 2
 
 - name: Remove interface description and delete temp user
   vyos.vyos.config: &cleanup
     lines:
-      - "delete interfaces ethernet eth0 description TEST-INTF"
-      - "delete system login user test_user"
+      - delete interfaces ethernet eth0 description TEST-INTF
+      - delete system login user test_user
 
 - name: Use src with module alias
   register: result
@@ -71,7 +71,7 @@
       - '"set interfaces ethernet eth0 description TEST-INTF" in result.commands'
       - '"set system login user test_user" in result.commands'
 
-- name: "Restore hostname to {{ inventory_hostname }} and delete temp user"
+- name: Restore hostname to {{ inventory_hostname }} and delete temp user
   vyos.vyos.config: *cleanup
 
 - name: use module alias to take configuration backup
@@ -80,7 +80,7 @@
     backup: true
     backup_options:
       filename: backup_with_alias.cfg
-      dir_path: '{{ role_path }}/backup_test_dir/{{ inventory_hostname_short }}'
+      dir_path: "{{ role_path }}/backup_test_dir/{{ inventory_hostname_short }}"
 
 - assert:
     that:
@@ -88,7 +88,7 @@
 
 - name: check if the backup file-4 exist
   find:
-    paths: '{{ role_path }}/backup_test_dir/{{ inventory_hostname_short }}/backup_with_alias.cfg'
+    paths: "{{ role_path }}/backup_test_dir/{{ inventory_hostname_short }}/backup_with_alias.cfg"
   register: backup_file
   connection: local
 

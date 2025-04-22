@@ -1,0 +1,85 @@
+---
+merged_commands:
+  - set firewall group address-group MGMT-HOSTS address 192.0.1.1
+  - set firewall group address-group MGMT-HOSTS address 192.0.1.3
+  - set firewall group address-group MGMT-HOSTS address 192.0.1.5
+  - set firewall group address-group MGMT-HOSTS description 'This group has the Management hosts address list'
+  - set firewall group address-group MGMT-HOSTS
+  - set firewall group network-group MGMT network 192.0.1.0/24
+  - set firewall group network-group MGMT description 'This group has the Management network addresses'
+  - set firewall group network-group MGMT
+  - set firewall global-options ip-src-route 'enable'
+  - set firewall global-options receive-redirects 'disable'
+  - set firewall global-options send-redirects 'enable'
+  - set firewall global-options state-policy established action 'accept'
+  - set firewall global-options state-policy established log
+  - set firewall global-options state-policy invalid action 'reject'
+  - set firewall global-options broadcast-ping 'enable'
+  - set firewall global-options all-ping 'enable'
+  - set firewall global-options log-martians 'enable'
+  - set firewall global-options twa-hazards-protection 'enable'
+  - set firewall global-options syn-cookies 'enable'
+  - set firewall global-options source-validation 'strict'
+
+populate_commands:
+  - set firewall global-options all-ping 'enable'
+  - set firewall global-options broadcast-ping 'enable'
+  - set firewall group address-group MGMT-HOSTS address '192.0.1.1'
+  - set firewall group address-group MGMT-HOSTS address '192.0.1.3'
+  - set firewall group address-group MGMT-HOSTS address '192.0.1.5'
+  - set firewall group address-group MGMT-HOSTS description 'This group has the Management hosts address list'
+  - set firewall group network-group MGMT description 'This group has the Management network addresses'
+  - set firewall group network-group MGMT network '192.0.1.0/24'
+  - set firewall global-options ip-src-route 'enable'
+  - set firewall global-options log-martians 'enable'
+  - set firewall global-options receive-redirects 'disable'
+  - set firewall global-options send-redirects 'enable'
+  - set firewall global-options source-validation 'strict'
+  - set firewall global-options state-policy established action 'accept'
+  - set firewall global-options state-policy established log
+  - set firewall global-options state-policy invalid action 'reject'
+  - set firewall global-options syn-cookies 'enable'
+  - set firewall global-options twa-hazards-protection 'enable'
+
+replaced_commands:
+  - delete firewall group address-group MGMT-HOSTS
+  - set firewall group address-group SALES-HOSTS address 192.0.2.1
+  - set firewall group address-group SALES-HOSTS address 192.0.2.2
+  - set firewall group address-group SALES-HOSTS address 192.0.2.3
+  - set firewall group address-group SALES-HOSTS description 'Sales office hosts address list'
+  - set firewall group address-group SALES-HOSTS
+  - set firewall group address-group ENG-HOSTS address 192.0.3.1
+  - set firewall group address-group ENG-HOSTS address 192.0.3.2
+  - set firewall group address-group ENG-HOSTS description 'Sales office hosts address list'
+  - set firewall group address-group ENG-HOSTS
+
+rendered_commands:
+  - set firewall group address-group SALES-HOSTS address 192.0.2.1
+  - set firewall group address-group SALES-HOSTS address 192.0.2.2
+  - set firewall group address-group SALES-HOSTS address 192.0.2.3
+  - set firewall group address-group SALES-HOSTS description 'Sales office hosts address list'
+  - set firewall group address-group SALES-HOSTS
+  - set firewall group address-group ENG-HOSTS address 192.0.3.1
+  - set firewall group address-group ENG-HOSTS address 192.0.3.2
+  - set firewall group address-group ENG-HOSTS description 'Sales office hosts address list'
+  - set firewall group address-group ENG-HOSTS
+  - set firewall group network-group MGMT network 192.0.1.0/24
+  - set firewall group network-group MGMT description 'This group has the Management network addresses'
+  - set firewall group network-group MGMT
+  - set firewall global-options ip-src-route 'enable'
+  - set firewall global-options receive-redirects 'disable'
+  - set firewall global-options send-redirects 'enable'
+  - set firewall global-options state-policy established action 'accept'
+  - set firewall global-options state-policy established log
+  - set firewall global-options state-policy invalid action 'reject'
+  - set firewall global-options broadcast-ping 'enable'
+  - set firewall global-options all-ping 'enable'
+  - set firewall global-options log-martians 'enable'
+  - set firewall global-options twa-hazards-protection 'enable'
+  - set firewall global-options syn-cookies 'enable'
+  - set firewall global-options source-validation 'strict'
+
+deleted_commands:
+  - "delete firewall"
+
+parsed_config_file: "_parsed_config_1_4.cfg"

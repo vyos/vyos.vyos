@@ -1,3 +1,5 @@
+#
+# -*- coding: utf-8 -*-
 # Copyright 2019 Red Hat
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
@@ -23,7 +25,9 @@
 The arg spec for the vyos_interfaces module
 """
 
+
 from __future__ import absolute_import, division, print_function
+
 
 __metaclass__ = type
 
@@ -39,21 +43,39 @@ class InterfacesArgs(object):  # pylint: disable=R0903
             "elements": "dict",
             "options": {
                 "description": {"type": "str"},
-                "duplex": {"choices": ["full", "half", "auto"]},
-                "enabled": {"default": True, "type": "bool"},
+                "duplex": {
+                    "choices": ["full", "half", "auto"],
+                    "type": "str",
+                },
+                "enabled": {
+                    "aliases": ["enable"],
+                    "default": True,
+                    "type": "bool",
+                },
                 "mtu": {"type": "int"},
                 "name": {"required": True, "type": "str"},
                 "speed": {
-                    "choices": ["auto", "10", "100", "1000", "2500", "10000"],
+                    "choices": [
+                        "auto",
+                        "10",
+                        "100",
+                        "1000",
+                        "2500",
+                        "10000",
+                    ],
                     "type": "str",
                 },
                 "vifs": {
                     "elements": "dict",
                     "options": {
-                        "vlan_id": {"type": "int"},
                         "description": {"type": "str"},
-                        "enabled": {"default": True, "type": "bool"},
+                        "enabled": {
+                            "aliases": ["enable"],
+                            "default": True,
+                            "type": "bool",
+                        },
                         "mtu": {"type": "int"},
+                        "vlan_id": {"type": "int"},
                     },
                     "type": "list",
                 },
@@ -68,8 +90,8 @@ class InterfacesArgs(object):  # pylint: disable=R0903
                 "overridden",
                 "deleted",
                 "rendered",
-                "parsed",
                 "gathered",
+                "parsed",
             ],
             "default": "merged",
             "type": "str",

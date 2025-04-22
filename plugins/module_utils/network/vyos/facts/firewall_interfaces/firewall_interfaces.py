@@ -11,13 +11,14 @@ based on the configuration.
 """
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-from re import findall, search, M
 from copy import deepcopy
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
-    utils,
-)
+from re import M, findall, search
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_interfaces.firewall_interfaces import (
     Firewall_interfacesArgs,
 )
@@ -57,20 +58,17 @@ class Firewall_interfacesFacts(object):
             # using mock data instead
             data = self.get_device_data(connection)
         objs = []
-        interfaces = findall(
-            r"^set interfaces ethernet (?:\'*)(\S+)(?:\'*)", data, M
-        )
+        # Search all set from configuration with set interface, including ethernet and bonding
+        interfaces_raw = findall(r"^set interfaces \S+ (\S+) firewall (?:\'*)", data, M)
+        interfaces_vif = findall(r"^set interfaces \S+ (\S+) vif (\d+)* firewall (?:\'*)", data, M)
+        interfaces = interfaces_raw + interfaces_vif
         if interfaces:
             objs = self.get_names(data, interfaces)
-        ansible_facts["ansible_network_resources"].pop(
-            "firewall_interfaces", None
-        )
+        ansible_facts["ansible_network_resources"].pop("firewall_interfaces", None)
         facts = {}
         if objs:
             facts["firewall_interfaces"] = []
-            params = utils.validate_config(
-                self.argument_spec, {"config": objs}
-            )
+            params = utils.validate_config(self.argument_spec, {"config": objs})
             for cfg in params["config"]:
                 facts["firewall_interfaces"].append(utils.remove_empties(cfg))
 
@@ -88,10 +86,22 @@ class Firewall_interfacesFacts(object):
         """
         names = []
         for r in set(interfaces):
-            int_regex = r" %s .+$" % r.strip("'")
-            cfg = findall(int_regex, data, M)
-            fi = self.render_config(cfg)
-            fi["name"] = r.strip("'")
+            myvif = None
+            if isinstance(r, tuple):
+                myinterface, myvif = r
+            else:
+                myinterface = r
+            # Parse interfaces that contains string or tuple when the interface is in a vlan
+            if myvif is not None:
+                int_regex = r" %s vif \d+ firewall .+$" % myinterface
+                cfg = findall(int_regex, data, M)
+                fi = self.render_config(cfg)
+                fi["name"] = myinterface + "." + myvif
+            else:
+                int_regex = r" %s firewall .+$" % myinterface
+                cfg = findall(int_regex, data, M)
+                fi = self.render_config(cfg)
+                fi["name"] = myinterface
             names.append(fi)
         if names:
             names = sorted(names, key=lambda i: i["name"])
@@ -127,9 +137,7 @@ class Firewall_interfacesFacts(object):
             if config:
                 ar_lst.append(config)
         if v6_ar:
-            v6_conf = "\n".join(
-                findall(r"(^.*?%s.*?$)" % " ipv6-name", conf, M)
-            )
+            v6_conf = "\n".join(findall(r"(^.*?%s.*?$)" % " ipv6-name", conf, M))
             config = self.parse_int_rules(v6_conf, "ipv6")
             if config:
                 ar_lst.append(config)

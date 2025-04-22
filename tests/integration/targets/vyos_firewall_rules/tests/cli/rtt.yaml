@@ -1,52 +1,47 @@
 ---
 - debug:
-    msg: START vyos_firewall_rules round trip integration tests on connection={{
-      ansible_connection }}
+    msg: START vyos_firewall_rules round trip integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
 
 - include_tasks: _remove_config.yaml
 
 - block:
-
     - name: Apply the provided configuration (base config)
       register: base_config
       vyos.vyos.vyos_firewall_rules:
         config:
-
           - afi: ipv6
             rule_sets:
-
               - name: UPLINK
                 description: This is ipv6 specific rule-set
                 default_action: accept
                 rules:
-
                   - number: 1
                     action: accept
                     description: Fwipv6-Rule 1 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
 
                   - number: 2
                     action: accept
                     description: Fwipv6-Rule 2 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
 
           - afi: ipv4
             rule_sets:
-
               - name: INBOUND
                 description: IPv4 INBOUND rule set
                 default_action: accept
                 rules:
-
                   - number: 101
                     action: accept
                     description: Rule 101 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
 
                   - number: 102
                     action: reject
                     description: Rule 102 is configured by Ansible
-                    ipsec: match-ipsec
+                    protocol: tcp
         state: merged
 
     - name: Gather firewall_rules facts
@@ -60,15 +55,12 @@
       register: result
       vyos.vyos.vyos_firewall_rules:
         config:
-
           - afi: ipv4
             rule_sets:
-
               - name: INBOUND
                 description: IPv4 INBOUND rule set
                 default_action: accept
                 rules:
-
                   - number: 103
                     action: accept
                     description: Rule 103 is configured by Ansible
@@ -83,8 +75,7 @@
 
     - name: Assert that changes were applied
       assert:
-        that: "{{ round_trip['after'] | symmetric_difference(result['after']) |length\
-          \ == 0 }}"
+        that: "{{ round_trip['after'] | symmetric_difference(result['after']) |length == 0 }}"
 
     - name: Revert back to base config using facts round trip
       register: revert
@@ -94,8 +85,6 @@
 
     - name: Assert that config was reverted
       assert:
-        that: "{{ base_config['after'] | symmetric_difference(revert['after']) |length\
-          \ == 0 }}"
+        that: "{{ base_config['after'] | symmetric_difference(revert['after']) |length == 0 }}"
   always:
-
     - include_tasks: _remove_config.yaml

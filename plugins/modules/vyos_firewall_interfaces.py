@@ -28,16 +28,27 @@ The module file for vyos_firewall_interfaces
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
+---
 module: vyos_firewall_interfaces
-short_description: FIREWALL interfaces resource module
-description: Manage firewall rules of interfaces on VyOS network devices.
-version_added: 1.0.0
+version_added: '1.0.0'
+short_description: Firewall interfaces resource module
+description: Manage firewall rules of interfaces on VyOS network devices. (1.3-)
 author:
 - Rohit Thakur (@rohitthakur2590)
+notes:
+- Deprecated in VyOS 1.4+, firewalls are no longer connected directly to interfaces.
+  See the Firewall Configuration documentation for how to establish a
+  connection betwen the firewall rulesets and the flow, interface, or zone.
 options:
   config:
     description: A list of firewall rules options for interfaces.
@@ -91,7 +102,7 @@ options:
       for every task in a playbook.  The I(running_config) argument allows the implementer
       to pass in the configuration to use as the base config for comparison. This
       value of this option should be the output received from device by executing
-      command C(show configuration commands | grep 'firewall'
+      command C(show configuration commands | grep 'firewall').
     type: str
   state:
     description:
@@ -106,7 +117,6 @@ options:
     - rendered
     - gathered
     default: merged
-
 """
 EXAMPLES = """
 # Using merged
@@ -123,34 +133,34 @@ EXAMPLES = """
 - name: Merge the provided configuration with the existing running configuration
   vyos.vyos.vyos_firewall_interfaces:
     config:
-    - access_rules:
-      - afi: ipv4
-        rules:
-        - name: INBOUND
-          direction: in
-        - name: OUTBOUND
-          direction: out
-        - name: LOCAL
-          direction: local
-      - afi: ipv6
-        rules:
-        - name: V6-LOCAL
-          direction: local
-      name: eth1
-    - access_rules:
-      - afi: ipv4
-        rules:
-        - name: INBOUND
-          direction: in
-        - name: OUTBOUND
-          direction: out
-        - name: LOCAL
-          direction: local
-      - afi: ipv6
-        rules:
-        - name: V6-LOCAL
-          direction: local
-      name: eth3
+      - access_rules:
+          - afi: ipv4
+            rules:
+              - name: INBOUND
+                direction: in
+              - name: OUTBOUND
+                direction: out
+              - name: LOCAL
+                direction: local
+          - afi: ipv6
+            rules:
+              - name: V6-LOCAL
+                direction: local
+        name: eth1
+      - access_rules:
+          - afi: ipv4
+            rules:
+              - name: INBOUND
+                direction: in
+              - name: OUTBOUND
+                direction: out
+              - name: LOCAL
+                direction: local
+          - afi: ipv6
+            rules:
+              - name: V6-LOCAL
+                direction: local
+        name: eth3
     state: merged
 #
 #
@@ -274,205 +284,121 @@ EXAMPLES = """
 
 
 # Using merged
-#
+
 # Before state:
 # -------------
-#
-# vyos@vyos:~$ show configuration commands| grep firewall
-# set firewall ipv6-name 'V6-LOCAL'
-# set firewall name 'INBOUND'
-# set firewall name 'LOCAL'
-# set firewall name 'OUTBOUND'
-# set interfaces ethernet eth1 firewall in name 'INBOUND'
-# set interfaces ethernet eth1 firewall local ipv6-name 'V6-LOCAL'
-# set interfaces ethernet eth1 firewall local name 'LOCAL'
-# set interfaces ethernet eth1 firewall out name 'OUTBOUND'
-# set interfaces ethernet eth3 firewall in name 'INBOUND'
-# set interfaces ethernet eth3 firewall local ipv6-name 'V6-LOCAL'
-# set interfaces ethernet eth3 firewall local name 'LOCAL'
-# set interfaces ethernet eth3 firewall out name 'OUTBOUND'
-#
-- name: Merge the provided configuration with the existing running configuration
-  vyos.vyos.vyos_firewall_interfaces:
+# vyos@vyos:~$ show configuration commands | grep interfaces
+# set interfaces bonding 'bond0'
+# set interfaces bonding 'bond1'
+# set interfaces bonding bond2 'ip'
+# set interfaces bonding bond2 'ipv6'
+# set interfaces ethernet eth0 address 'dhcp'
+# set interfaces ethernet eth0 duplex 'auto'
+# set interfaces ethernet eth0 'ip'
+# set interfaces ethernet eth0 'ipv6'
+# set interfaces ethernet eth0 smp_affinity 'auto'
+# set interfaces ethernet eth0 speed 'auto'
+# set interfaces ethernet 'eth1'
+# set interfaces ethernet 'eth2'
+
+- name: Merge provided configuration with device configuration
+  vyos.vyos.vyos_interfaces:
     config:
-    - access_rules:
-      - afi: ipv4
-        rules:
-        - name: OUTBOUND
-          direction: in
-        - name: INBOUND
-          direction: out
-      name: eth1
+      - name: eth2
+        description: Configured by Ansible
+        enabled: true
+        vifs:
+          - vlan_id: 200
+            description: VIF 200 - ETH2
+      - name: eth3
+        description: Configured by Ansible
+        mtu: 1500
+      - name: bond1
+        description: Bond - 1
+        mtu: 1200
+      - name: vti2
+        description: VTI - 2
+        enabled: false
     state: merged
-#
-#
-# -------------------------
-# Module Execution Result
-# -------------------------
-#
-#    "before": [
-#        {
-#            "name": "eth0"
-#        },
-#        {
-#            "access_rules": [
-#                {
-#                    "afi": "ipv4",
-#                    "rules": [
-#                        {
-#                            "direction": "in",
-#                            "name": "INBOUND"
-#                        },
-#                        {
-#                            "direction": "local",
-#                            "name": "LOCAL"
-#                        },
-#                        {
-#                            "direction": "out",
-#                            "name": "OUTBOUND"
-#                        }
-#                    ]
-#                },
-#                {
-#                    "afi": "ipv6",
-#                    "rules": [
-#                        {
-#                            "direction": "local",
-#                            "name": "V6-LOCAL"
-#                        }
-#                    ]
-#                }
-#            ],
-#            "name": "eth1"
-#        },
-#        {
-#            "name": "eth2"
-#        },
-#        {
-#            "access_rules": [
-#                {
-#                    "afi": "ipv4",
-#                    "rules": [
-#                        {
-#                            "direction": "in",
-#                            "name": "INBOUND"
-#                        },
-#                        {
-#                            "direction": "local",
-#                            "name": "LOCAL"
-#                        },
-#                        {
-#                            "direction": "out",
-#                            "name": "OUTBOUND"
-#                        }
-#                    ]
-#                },
-#                {
-#                    "afi": "ipv6",
-#                    "rules": [
-#                        {
-#                            "direction": "local",
-#                            "name": "V6-LOCAL"
-#                        }
-#                    ]
-#                }
-#            ],
-#            "name": "eth3"
-#        }
-#    ]
-#
-#    "commands": [
-#       "set interfaces ethernet eth1 firewall in name 'OUTBOUND'",
-#       "set interfaces ethernet eth1 firewall out name 'INBOUND'"
-#    ]
-#
-#    "after": [
-#        {
-#            "name": "eth0"
-#        },
-#        {
-#            "access_rules": [
-#                {
-#                    "afi": "ipv4",
-#                    "rules": [
-#                        {
-#                            "direction": "in",
-#                            "name": "OUTBOUND"
-#                        },
-#                        {
-#                            "direction": "local",
-#                            "name": "LOCAL"
-#                        },
-#                        {
-#                            "direction": "out",
-#                            "name": "INBOUND"
-#                        }
-#                    ]
-#                },
-#                {
-#                    "afi": "ipv6",
-#                    "rules": [
-#                        {
-#                            "direction": "local",
-#                            "name": "V6-LOCAL"
-#                        }
-#                    ]
-#                }
-#            ],
-#            "name": "eth1"
-#        },
-#        {
-#            "name": "eth2"
-#        },
-#        {
-#            "access_rules": [
-#                {
-#                    "afi": "ipv4",
-#                    "rules": [
-#                        {
-#                            "direction": "in",
-#                            "name": "INBOUND"
-#                        },
-#                        {
-#                            "direction": "local",
-#                            "name": "LOCAL"
-#                        },
-#                        {
-#                            "direction": "out",
-#                            "name": "OUTBOUND"
-#                        }
-#                    ]
-#                },
-#                {
-#                    "afi": "ipv6",
-#                    "rules": [
-#                        {
-#                            "direction": "local",
-#                            "name": "V6-LOCAL"
-#                        }
-#                    ]
-#                }
-#            ],
-#            "name": "eth3"
-#        }
-#    ]
-#
+
+# Task Output
+# -----------
+# before:
+# - enabled: true
+#   name: lo
+# - enabled: true
+#   name: eth3
+# - enabled: true
+#   name: eth2
+# - enabled: true
+#   name: eth1
+# - duplex: auto
+#   enabled: true
+#   name: eth0
+#   speed: auto
+# commands:
+# - set interfaces ethernet eth2 description 'Configured by Ansible'
+# - set interfaces ethernet eth2 vif 200
+# - set interfaces ethernet eth2 vif 200 description 'VIF 200 - ETH2'
+# - set interfaces ethernet eth3 description 'Configured by Ansible'
+# - set interfaces ethernet eth3 mtu '1500'
+# - set interfaces bonding bond1
+# - set interfaces bonding bond1 description 'Bond - 1'
+# - set interfaces bonding bond1 mtu '1200'
+# - set interfaces vti vti2
+# - set interfaces vti vti2 description 'VTI - 2'
+# - set interfaces vti vti2 disable
+# after:
+# - description: Bond - 1
+#   enabled: true
+#   mtu: 1200
+#   name: bond1
+# - enabled: true
+#   name: lo
+# - description: VTI - 2
+#   enabled: false
+#   name: vti2
+# - description: Configured by Ansible
+#   enabled: true
+#   mtu: 1500
+#   name: eth3
+# - description: Configured by Ansible
+#   enabled: true
+#   name: eth2
+#   vifs:
+#   - description: VIF 200 - ETH2
+#     enabled: true
+#     vlan_id: '200'
+# - enabled: true
+#   name: eth1
+# - duplex: auto
+#   enabled: true
+#   name: eth0
+#   speed: auto
+
 # After state:
-# -------------
-#
-# vyos@vyos:~$ show configuration commands| grep firewall
-# set firewall ipv6-name 'V6-LOCAL'
-# set firewall name 'INBOUND'
-# set firewall name 'LOCAL'
-# set firewall name 'OUTBOUND'
-# set interfaces ethernet eth1 firewall in name 'OUTBOUND'
-# set interfaces ethernet eth1 firewall local ipv6-name 'V6-LOCAL'
-# set interfaces ethernet eth1 firewall local name 'LOCAL'
-# set interfaces ethernet eth1 firewall out name 'INBOUND'
-# set interfaces ethernet eth3 firewall in name 'INBOUND'
-# set interfaces ethernet eth3 firewall local ipv6-name 'V6-LOCAL'
-# set interfaces ethernet eth3 firewall local name 'LOCAL'
-# set interfaces ethernet eth3 firewall out name 'OUTBOUND'
+# ------------
+# vyos@vyos:~$ show configuration commands | grep interfaces
+# set interfaces bonding bond1 description 'Bond - 1'
+# set interfaces bonding bond1 mtu '1200'
+# set interfaces ethernet eth0 address 'dhcp'
+# set interfaces ethernet eth0 address 'dhcpv6'
+# set interfaces ethernet eth0 duplex 'auto'
+# set interfaces ethernet eth0 hw-id '08:00:27:30:f0:22'
+# set interfaces ethernet eth0 smp-affinity 'auto'
+# set interfaces ethernet eth0 speed 'auto'
+# set interfaces ethernet eth1 hw-id '08:00:27:ea:0f:b9'
+# set interfaces ethernet eth1 smp-affinity 'auto'
+# set interfaces ethernet eth2 description 'Configured by Ansible'
+# set interfaces ethernet eth2 hw-id '08:00:27:c2:98:23'
+# set interfaces ethernet eth2 smp-affinity 'auto'
+# set interfaces ethernet eth2 vif 200 description 'VIF 200 - ETH2'
+# set interfaces ethernet eth3 description 'Configured by Ansible'
+# set interfaces ethernet eth3 hw-id '08:00:27:43:70:8c'
+# set interfaces ethernet eth3 mtu '1500'
+# set interfaces loopback lo
+# set interfaces vti vti2 description 'VTI - 2'
+# set interfaces vti vti2 disable
 
 
 # Using replaced
@@ -494,26 +420,27 @@ EXAMPLES = """
 # set interfaces ethernet eth3 firewall local name 'LOCAL'
 # set interfaces ethernet eth3 firewall out name 'OUTBOUND'
 #
-- name: Replace device configurations of listed firewall interfaces with provided
+- name: >-
+    Replace device configurations of listed firewall interfaces with provided
     configurations
   vyos.vyos.vyos_firewall_interfaces:
     config:
-    - name: eth1
-      access_rules:
-      - afi: ipv4
-        rules:
-        - name: OUTBOUND
-          direction: out
-      - afi: ipv6
-        rules:
-        - name: V6-LOCAL
-          direction: local
-    - name: eth3
-      access_rules:
-      - afi: ipv4
-        rules:
-        - name: INBOUND
-          direction: in
+      - name: eth1
+        access_rules:
+          - afi: ipv4
+            rules:
+              - name: OUTBOUND
+                direction: out
+          - afi: ipv6
+            rules:
+              - name: V6-LOCAL
+                direction: local
+      - name: eth3
+        access_rules:
+          - afi: ipv4
+            rules:
+              - name: INBOUND
+                direction: in
     state: replaced
 #
 #
@@ -682,12 +609,12 @@ EXAMPLES = """
 - name: Overrides all device configuration with provided configuration
   vyos.vyos.vyos_firewall_interfaces:
     config:
-    - name: eth3
-      access_rules:
-      - afi: ipv4
-        rules:
-        - name: INBOUND
-          direction: out
+      - name: eth3
+        access_rules:
+          - afi: ipv4
+            rules:
+              - name: INBOUND
+                direction: out
     state: overridden
 #
 #
@@ -745,7 +672,7 @@ EXAMPLES = """
 #        "delete interfaces ethernet eth1 firewall",
 #        "delete interfaces ethernet eth3 firewall in name",
 #        "set interfaces ethernet eth3 firewall out name 'INBOUND'"
-#
+#    ]
 #
 #    "after": [
 #        {
@@ -809,8 +736,8 @@ EXAMPLES = """
 - name: Delete firewall interfaces based on interface name.
   vyos.vyos.vyos_firewall_interfaces:
     config:
-    - name: eth1
-    - name: eth3
+      - name: eth1
+      - name: eth3
     state: deleted
 #
 #
@@ -893,20 +820,7 @@ EXAMPLES = """
 #        "delete interfaces ethernet eth3 firewall"
 #    ]
 #
-# "after": [
-#        {
-#            "name": "eth0"
-#        },
-#        {
-#            "name": "eth1"
-#        },
-#        {
-#            "name": "eth2"
-#        },
-#        {
-#            "name": "eth3"
-#        }
-#    ]
+#    "after" : []
 # After state
 # ------------
 # vyos@vyos# run show configuration commands | grep firewall
@@ -938,10 +852,10 @@ EXAMPLES = """
 - name: Delete firewall interfaces config per afi.
   vyos.vyos.vyos_firewall_interfaces:
     config:
-    - name: eth1
-      access_rules:
-      - afi: ipv4
-      - afi: ipv6
+      - name: eth1
+        access_rules:
+          - afi: ipv4
+          - afi: ipv6
     state: deleted
 #
 #
@@ -986,8 +900,14 @@ EXAMPLES = """
 #
 - name: Delete firewall interfaces config when empty config provided.
   vyos.vyos.vyos_firewall_interfaces:
-    config:
     state: deleted
+# After state
+# ------------
+# vyos@vyos# run show configuration commands | grep firewall
+# set firewall ipv6-name 'V6-LOCAL'
+# set firewall name 'INBOUND'
+# set firewall name 'LOCAL'
+# set firewall name 'OUTBOUND'
 #
 #
 # ------------------------
@@ -999,13 +919,6 @@ EXAMPLES = """
 #        "delete interfaces ethernet eth1 firewall"
 #    ]
 #
-# After state
-# ------------
-# vyos@vyos# run show configuration commands | grep firewall
-# set firewall ipv6-name 'V6-LOCAL'
-# set firewall name 'INBOUND'
-# set firewall name 'LOCAL'
-# set firewall name 'OUTBOUND'
 
 
 # Using parsed
@@ -1121,7 +1034,6 @@ EXAMPLES = """
 #
 - name: Gather listed firewall interfaces.
   vyos.vyos.vyos_firewall_interfaces:
-    config:
     state: gathered
 #
 #
@@ -1198,16 +1110,16 @@ EXAMPLES = """
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_firewall_interfaces:
     config:
-    - name: eth2
-      access_rules:
-      - afi: ipv4
-        rules:
-        - direction: in
-          name: INGRESS
-        - direction: out
-          name: OUTGRESS
-        - direction: local
-          name: DROP
+      - name: eth2
+        access_rules:
+          - afi: ipv4
+            rules:
+              - name: INGRESS
+                direction: in
+              - name: OUTGRESS
+                direction: out
+              - name: DROP
+                direction: local
     state: rendered
 #
 #
@@ -1222,24 +1134,22 @@ EXAMPLES = """
 #        "set interfaces ethernet eth2 firewall local name 'DROP'",
 #        "set interfaces ethernet eth2 firewall local ipv6-name 'LOCAL'"
 #    ]
-
-
 """
 RETURN = """
 before:
-  description: The configuration prior to the model invocation.
-  returned: always
-  type: list
+  description: The configuration prior to the module execution.
+  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
+  type: dict
   sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
+    This output will always be in the same format as the
+    module argspec.
 after:
-  description: The resulting configuration model invocation.
+  description: The resulting configuration after module execution.
   returned: when changed
-  type: list
+  type: dict
   sample: >
-    The configuration returned will always be in the same format
-     of the parameters above.
+    This output will always be in the same format as the
+    module argspec.
 commands:
   description: The set of commands pushed to the remote device.
   returned: always
@@ -1247,10 +1157,33 @@ commands:
   sample:
     - "set interfaces ethernet eth1 firewall local ipv6-name 'V6-LOCAL'"
     - "set interfaces ethernet eth3 firewall in name 'INBOUND'"
+rendered:
+  description: The provided configuration in the task rendered in device-native format (offline).
+  returned: when I(state) is C(rendered)
+  type: list
+  sample:
+    - "set interfaces ethernet eth1 firewall local ipv6-name 'V6-LOCAL'"
+    - "set interfaces ethernet eth3 firewall in name 'INBOUND'"
+gathered:
+  description: Facts about the network resource gathered from the remote device as structured data.
+  returned: when I(state) is C(gathered)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+parsed:
+  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
+  returned: when I(state) is C(parsed)
+  type: list
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+
 """
 
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.firewall_interfaces.firewall_interfaces import (
     Firewall_interfacesArgs,
 )
@@ -1268,6 +1201,7 @@ def main():
     required_if = [
         ("state", "merged", ("config",)),
         ("state", "replaced", ("config",)),
+        ("state", "rendered", ("config",)),
         ("state", "overridden", ("config",)),
         ("state", "parsed", ("running_config",)),
     ]

@@ -4,10 +4,6 @@
 # GNU General Public License v3.0+
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
-from __future__ import absolute_import, division, print_function
-
-__metaclass__ = type
-
 #############################################
 #                WARNING                    #
 #############################################
@@ -30,6 +26,12 @@ The arg spec for the vyos_ospfv2 module
 """
 
 
+from __future__ import absolute_import, division, print_function
+
+
+__metaclass__ = type
+
+
 class Ospfv2Args(object):  # pylint: disable=R0903
     """The arg spec for the vyos_ospfv2 module"""
 
@@ -39,72 +41,6 @@ class Ospfv2Args(object):  # pylint: disable=R0903
     argument_spec = {
         "config": {
             "options": {
-                "auto_cost": {
-                    "options": {"reference_bandwidth": {"type": "int"}},
-                    "type": "dict",
-                },
-                "default_information": {
-                    "options": {
-                        "originate": {
-                            "options": {
-                                "always": {"type": "bool"},
-                                "metric": {"type": "int"},
-                                "metric_type": {"type": "int"},
-                                "route_map": {"type": "str"},
-                            },
-                            "type": "dict",
-                        }
-                    },
-                    "type": "dict",
-                },
-                "default_metric": {"type": "int"},
-                "distance": {
-                    "options": {
-                        "global": {"type": "int"},
-                        "ospf": {
-                            "options": {
-                                "external": {"type": "int"},
-                                "inter_area": {"type": "int"},
-                                "intra_area": {"type": "int"},
-                            },
-                            "type": "dict",
-                        },
-                    },
-                    "type": "dict",
-                },
-                "log_adjacency_changes": {
-                    "choices": ["detail"],
-                    "type": "str",
-                },
-                "max_metric": {
-                    "options": {
-                        "router_lsa": {
-                            "options": {
-                                "administrative": {"type": "bool"},
-                                "on_shutdown": {"type": "int"},
-                                "on_startup": {"type": "int"},
-                            },
-                            "type": "dict",
-                        }
-                    },
-                    "type": "dict",
-                },
-                "mpls_te": {
-                    "options": {
-                        "enabled": {"type": "bool"},
-                        "router_address": {"type": "str"},
-                    },
-                    "type": "dict",
-                },
-                "neighbor": {
-                    "elements": "dict",
-                    "options": {
-                        "neighbor_id": {"type": "str"},
-                        "poll_interval": {"type": "int"},
-                        "priority": {"type": "int"},
-                    },
-                    "type": "list",
-                },
                 "areas": {
                     "elements": "dict",
                     "options": {
@@ -140,13 +76,19 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                             "type": "dict",
                         },
                         "authentication": {
-                            "choices": ["plaintext-password", "md5"],
+                            "choices": [
+                                "plaintext-password",
+                                "md5",
+                            ],
                             "type": "str",
                         },
                         "network": {
                             "elements": "dict",
                             "options": {
-                                "address": {"required": True, "type": "str"}
+                                "address": {
+                                    "required": True,
+                                    "type": "str",
+                                },
                             },
                             "type": "list",
                         },
@@ -161,7 +103,11 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                             "type": "list",
                         },
                         "shortcut": {
-                            "choices": ["default", "disable", "enable"],
+                            "choices": [
+                                "default",
+                                "disable",
+                                "enable",
+                            ],
                             "type": "str",
                         },
                         "virtual_link": {
@@ -175,15 +121,15 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                                             "options": {
                                                 "key_id": {"type": "int"},
                                                 "md5_key": {
-                                                    "type": "str",
                                                     "no_log": True,
+                                                    "type": "str",
                                                 },
                                             },
                                             "type": "list",
                                         },
                                         "plaintext_password": {
-                                            "type": "str",
                                             "no_log": True,
+                                            "type": "str",
                                         },
                                     },
                                     "type": "dict",
@@ -195,6 +141,72 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                             },
                             "type": "list",
                         },
+                    },
+                    "type": "list",
+                },
+                "auto_cost": {
+                    "options": {"reference_bandwidth": {"type": "int"}},
+                    "type": "dict",
+                },
+                "default_information": {
+                    "options": {
+                        "originate": {
+                            "options": {
+                                "always": {"type": "bool"},
+                                "metric": {"type": "int"},
+                                "metric_type": {"type": "int"},
+                                "route_map": {"type": "str"},
+                            },
+                            "type": "dict",
+                        },
+                    },
+                    "type": "dict",
+                },
+                "default_metric": {"type": "int"},
+                "distance": {
+                    "options": {
+                        "global": {"type": "int"},
+                        "ospf": {
+                            "options": {
+                                "external": {"type": "int"},
+                                "inter_area": {"type": "int"},
+                                "intra_area": {"type": "int"},
+                            },
+                            "type": "dict",
+                        },
+                    },
+                    "type": "dict",
+                },
+                "log_adjacency_changes": {
+                    "choices": ["detail"],
+                    "type": "str",
+                },
+                "max_metric": {
+                    "options": {
+                        "router_lsa": {
+                            "options": {
+                                "administrative": {"type": "bool"},
+                                "on_shutdown": {"type": "int"},
+                                "on_startup": {"type": "int"},
+                            },
+                            "type": "dict",
+                        },
+                    },
+                    "type": "dict",
+                },
+                "mpls_te": {
+                    "options": {
+                        "enabled": {"type": "bool"},
+                        "router_address": {"type": "str"},
+                    },
+                    "type": "dict",
+                },
+                "neighbor": {
+                    "elements": "dict",
+                    "options": {
+                        "neighbor_id": {"type": "str"},
+                        "poll_interval": {"type": "int"},
+                        "priority": {"type": "int"},
                     },
                     "type": "list",
                 },
@@ -215,10 +227,13 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                     },
                     "type": "dict",
                 },
-                "passive_interface": {"type": "list", "elements": "str"},
-                "passive_interface_exclude": {
-                    "type": "list",
+                "passive_interface": {
                     "elements": "str",
+                    "type": "list",
+                },
+                "passive_interface_exclude": {
+                    "elements": "str",
+                    "type": "list",
                 },
                 "redistribute": {
                     "elements": "dict",
@@ -239,7 +254,7 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                     },
                     "type": "list",
                 },
-                "route_map": {"type": "list", "elements": "str"},
+                "route_map": {"elements": "str", "type": "list"},
                 "timers": {
                     "options": {
                         "refresh": {
@@ -255,7 +270,7 @@ class Ospfv2Args(object):  # pylint: disable=R0903
                                         "max_holdtime": {"type": "int"},
                                     },
                                     "type": "dict",
-                                }
+                                },
                             },
                             "type": "dict",
                         },

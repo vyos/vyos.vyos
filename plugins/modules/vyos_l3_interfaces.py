@@ -28,23 +28,31 @@ The module file for vyos_l3_interfaces
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
+ANSIBLE_METADATA = {
+    "metadata_version": "1.1",
+    "status": ["preview"],
+    "supported_by": "network",
+}
 
 DOCUMENTATION = """
+---
 module: vyos_l3_interfaces
-short_description: L3 interfaces resource module
+version_added: '1.0.0'
+short_description: Layer 3 interfaces resource module.
 description: This module manages the L3 interface attributes on VyOS network devices.
-version_added: 1.0.0
 notes:
-- Tested against VyOS 1.1.8 (helium).
-- This module works with connection C(network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
+- Tested against VyOS 1.3.
+- This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
-- Nilashish Chakraborty (@NilashishC)
 - Rohit Thakur (@rohitthakur2590)
+- Nilashish Chakraborty (@nilashishc)
 options:
   config:
-    description: The provided L3 interfaces configuration.
+    description:
+    - The provided L3 interfaces configuration.
     type: list
     elements: dict
     suboptions:
@@ -72,36 +80,38 @@ options:
           address:
             description:
             - IPv6 address of the interface.
+            - C(auto-config) to use SLAAC to chose an address.
             type: str
       vifs:
         description:
-        - Virtual sub-interfaces L3 configurations.
+        - List of virtual sub-interfaces (VIFs) of the interface.
         elements: dict
         type: list
         suboptions:
           vlan_id:
             description:
-            - Identifier for the virtual sub-interface.
+            - Identifier for the VIF.
             type: int
           ipv4:
             description:
-            - List of IPv4 addresses of the virtual interface.
+            - List of IPv4 addresses of the VIF.
             type: list
             elements: dict
             suboptions:
               address:
                 description:
-                - IPv4 address of the virtual interface.
+                - IPv4 address of the VIF.
                 type: str
           ipv6:
             description:
-            - List of IPv6 addresses of the virtual interface.
+            - List of IPv6 addresses of the VIF.
             type: list
             elements: dict
             suboptions:
               address:
                 description:
-                - IPv6 address of the virtual interface.
+                - IPv6 address of the virtual VIF
+                - C(auto-config) to use SLAAC to chose an address.
                 type: str
   running_config:
     description:
@@ -121,9 +131,9 @@ options:
     - replaced
     - overridden
     - deleted
-    - parsed
-    - gathered
     - rendered
+    - gathered
+    - parsed
     default: merged
 """
 EXAMPLES = """
@@ -141,26 +151,25 @@ EXAMPLES = """
 - name: Merge provided configuration with device configuration
   vyos.vyos.vyos_l3_interfaces:
     config:
-    - name: eth2
-      ipv4:
-      - address: 192.0.2.10/28
-      - address: 198.51.100.40/27
-      ipv6:
-      - address: 2001:db8:100::2/32
-      - address: 2001:db8:400::10/32
-
-    - name: eth3
-      ipv4:
-      - address: 203.0.113.65/26
-      vifs:
-      - vlan_id: 101
+      - name: eth2
         ipv4:
-        - address: 192.0.2.71/28
-        - address: 198.51.100.131/25
-      - vlan_id: 102
+          - address: 192.0.2.10/28
+          - address: 198.51.100.40/27
         ipv6:
-        - address: 2001:db8:1000::5/38
-        - address: 2001:db8:1400::3/38
+          - address: '2001:db8:100::2/32'
+          - address: '2001:db8:400::10/32'
+      - name: eth3
+        ipv4:
+          - address: 203.0.113.65/26
+        vifs:
+          - vlan_id: 101
+            ipv4:
+              - address: 192.0.2.71/28
+              - address: 198.51.100.131/25
+          - vlan_id: 102
+            ipv6:
+              - address: '2001:db8:1000::5/38'
+              - address: '2001:db8:1400::3/38'
     state: merged
 
 # After state:
@@ -209,13 +218,13 @@ EXAMPLES = """
 - name: Replace device configurations of listed interfaces with provided configurations
   vyos.vyos.vyos_l3_interfaces:
     config:
-    - name: eth2
-      ipv4:
-      - address: 192.0.2.10/24
+      - name: eth2
+        ipv4:
+          - address: 192.0.2.10/24
 
-    - name: eth3
-      ipv6:
-      - address: 2001:db8::11/32
+      - name: eth3
+        ipv6:
+          - address: '2001:db8::11/32'
     state: replaced
 
 # After state:
@@ -265,11 +274,11 @@ EXAMPLES = """
 - name: Overrides all device configuration with provided configuration
   vyos.vyos.vyos_l3_interfaces:
     config:
-    - name: eth0
-      ipv4:
-      - address: dhcp
-      ipv6:
-      - address: dhcpv6
+      - name: eth0
+        ipv4:
+          - address: dhcp
+        ipv6:
+          - address: dhcpv6
     state: overridden
 
 # After state
@@ -313,13 +322,12 @@ EXAMPLES = """
 # set interfaces ethernet eth3 vif 102 address '2001:db8:4000::3/34'
 # set interfaces ethernet eth3 vif 102 address '2001:db8:4000::2/34'
 
-- name: Delete L3 attributes of given interfaces (Note - This won't delete the interface
-    itself)
+- name: Delete L3 attributes of given interfaces (Note - This won't delete the interface itself)
   vyos.vyos.vyos_l3_interfaces:
     config:
-    - name: eth1
-    - name: eth2
-    - name: eth3
+      - name: eth1
+      - name: eth2
+      - name: eth3
     state: deleted
 
 # After state
@@ -357,7 +365,6 @@ EXAMPLES = """
 #
 - name: Gather listed l3 interfaces with provided configurations
   vyos.vyos.vyos_l3_interfaces:
-    config:
     state: gathered
 #
 #
@@ -426,17 +433,18 @@ EXAMPLES = """
 - name: Render the commands for provided  configuration
   vyos.vyos.vyos_l3_interfaces:
     config:
-    - name: eth1
-      ipv4:
-      - address: 192.0.2.14/24
-    - name: eth2
-      ipv4:
-      - address: 192.0.2.10/24
-      - address: 192.0.2.11/24
-      ipv6:
-      - address: 2001:db8::10/32
-      - address: 2001:db8::12/32
+      - name: eth1
+        ipv4:
+          - address: 192.0.2.14/24
+      - name: eth2
+        ipv4:
+          - address: 192.0.2.10/24
+          - address: 192.0.2.11/24
+        ipv6:
+          - address: '2001:db8::10/32'
+          - address: '2001:db8::12/32'
     state: rendered
+
 #
 #
 # -------------------------
@@ -510,33 +518,35 @@ EXAMPLES = """
 #             "name": "eth0"
 #         }
 #     ]
-
-
 """
 RETURN = """
 before:
-  description: The configuration as structured data prior to module invocation.
+  description: The configuration prior to the module invocation.
   returned: always
   type: list
   sample: >
     The configuration returned will always be in the same format
-     of the parameters above.
+    of the parameters above.
 after:
-  description: The configuration as structured data after module completion.
+  description: The resulting configuration module invocation.
   returned: when changed
   type: list
   sample: >
     The configuration returned will always be in the same format
-     of the parameters above.
+    of the parameters above.
 commands:
   description: The set of commands pushed to the remote device.
   returned: always
   type: list
-  sample: ['set interfaces ethernet eth1 192.0.2.14/2', 'set interfaces ethernet eth3 vif 101 address 198.51.100.130/25']
+  sample:
+    - 'set interfaces ethernet eth1 192.0.2.14/2'
+    - 'set interfaces ethernet eth3 vif 101 address 198.51.100.130/25'
+
 """
 
 
 from ansible.module_utils.basic import AnsibleModule
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.l3_interfaces.l3_interfaces import (
     L3_interfacesArgs,
 )
