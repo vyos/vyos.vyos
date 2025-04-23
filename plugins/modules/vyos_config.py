@@ -67,6 +67,7 @@ options:
     default: line
     choices:
     - line
+    - smart
     - none
   backup:
     description:
@@ -140,6 +141,7 @@ EXAMPLES = """
 
 - name: render a Jinja2 template onto the VyOS router
   vyos.vyos.vyos_config:
+    match: smart
     src: vyos_template.j2
 
 - name: for idempotency, use full-form commands
@@ -330,7 +332,7 @@ def main():
     argument_spec = dict(
         src=dict(type="path"),
         lines=dict(type="list", elements="str"),
-        match=dict(default="line", choices=["line", "none"]),
+        match=dict(default="line", choices=["line", "smart", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
         config=dict(),
         backup=dict(type="bool", default=False),
@@ -360,7 +362,7 @@ def main():
         diff = run_commands(module, commands=["configure", "compare saved"])[1]
         if diff not in {
             "[edit]",
-            "No changes between working and saved configurations.\n\n[edit]"
+            "No changes between working and saved configurations.\n\n[edit]",
         }:
             if not module.check_mode:
                 run_commands(module, commands=["save"])

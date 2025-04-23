@@ -49,11 +49,13 @@ import re
 from ansible.errors import AnsibleConnectionFailure
 from ansible.module_utils._text import to_text
 from ansible.module_utils.common._collections_compat import Mapping
+from ansible.plugins.cliconf import CliconfBase
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import (
     NetworkConfig,
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import to_list
-from ansible_collections.ansible.netcommon.plugins.plugin_utils.cliconf_base import CliconfBase
+
+from ansible_collections.vyos.vyos.plugins.cliconf_utils.vyosconf import VyosConf
 
 
 class Cliconf(CliconfBase):
@@ -253,6 +255,11 @@ class Cliconf(CliconfBase):
         if diff_match == "none":
             diff["config_diff"] = list(candidate_commands)
             return diff
+        if diff_match == "smart":
+            running_conf = VyosConf(running.splitlines())
+            candidate_conf = VyosConf(candidate_commands)
+            diff["config_diff"] = running_conf.diff_commands_to(candidate_conf)
+            return diff
 
         running_commands = [str(c).replace("'", "") for c in running.splitlines()]
 
@@ -323,7 +330,7 @@ class Cliconf(CliconfBase):
     def get_option_values(self):
         return {
             "format": ["text", "set"],
-            "diff_match": ["line", "none"],
+            "diff_match": ["line", "smart", "none"],
             "diff_replace": [],
             "output": [],
         }
