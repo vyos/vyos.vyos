@@ -60,6 +60,7 @@ class VrfArgs(object):  # pylint: disable=R0903
                 "merged",
                 "purged",
                 "replaced",
+                "overridden",
                 "gathered",
                 "rendered",
                 "parsed",

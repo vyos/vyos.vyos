@@ -97,18 +97,35 @@ class Vrf(ResourceModule):
         if self.state in ["merged", "replaced"]:
             wantd = dict_merge(self.have, self.want)
 
-        # # if state is deleted, empty out wantd and set haved to wantd
+        # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
             # haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
             # haved = wantd
             # wantd = {}
             for k, want in iteritems(wantd):
                 if k in haved:
-                    wantd = {k: None}
+                    if isinstance(want, list):
+                        for entry in want:
+                            # self._module.fail_json(msg=haved)
+                            wname = entry.get("name")
+                            haved["instances"] = [
+                                i for i in haved.get("instances", []) if i.get("name") != wname
+                            ]
+                            self.commands.append("delete vrf name {}".format(wname))
+                wantd.update({k: None})
 
-        # if self.state in ["overridden", "replaced"]:
-        #     for k, have in iteritems(haved):
-        #         if k not in wantd:
+        if self.state in ["overridden"]:
+            for k, have in iteritems(haved):
+                if k not in wantd:
+                    wantd.update({k: None})
+                    # self._module.fail_json(msg=wantd)
+                    # self._module.fail_json(msg=have)
+                    # self.compare(
+                    #     parsers=self.parsers,
+                    #     want={k: None},
+                    #     have={k: have},
+                    # )
+
         #             self.commands.append(self._tmplt.render({"route_map": k}, "route_map", True))
 
         #             self.commands.append(self._tmplt.render({"route_map": k}, "route_map", False))
@@ -121,8 +138,7 @@ class Vrf(ResourceModule):
                 want={k: want},
                 have={k: haved.pop(k, {})},
             )
-
-        # self._module.fail_json(msg=self.commands)
+        self._module.fail_json(msg=self.commands)
 
     # def _com
     # pare(self, want, have):
