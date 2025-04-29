@@ -35,11 +35,11 @@ class VrfArgs(object):  # pylint: disable=R0903
         "config": {
             "type": "dict",
             "options": {
-                "bind_to_all": {"type": "bool"},
+                "bind_to_all": {"type": "bool", "default": False},
                 "instances": {
                     "type": "list",
                     "elements": "dict",
-                    "suboptions": {
+                    "options": {
                         "name": {"required": True, "type": "str"},
                         "description": {"type": "str"},
                         "disabled": {
@@ -58,7 +58,6 @@ class VrfArgs(object):  # pylint: disable=R0903
             "choices": [
                 "deleted",
                 "merged",
-                "purged",
                 "replaced",
                 "overridden",
                 "gathered",
