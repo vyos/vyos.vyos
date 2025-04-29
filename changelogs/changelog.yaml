@@ -62,6 +62,9 @@ releases:
       - description: Manage VLANs on VyOS network devices
         name: vyos_vlan
         namespace: ""
+      - description: Manage VRF on VyOS network devices
+        name: vyos_vrf
+        namespace: ""
     plugins:
       cliconf:
         - description: Use vyos cliconf to run command on VyOS platform
