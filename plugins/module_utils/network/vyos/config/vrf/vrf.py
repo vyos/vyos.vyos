@@ -98,37 +98,18 @@ class Vrf(ResourceModule):
             wantd = dict_merge(self.have, self.want)
 
         # if state is deleted, empty out wantd and set haved to wantd
-        if self.state == "deleted":
-            # haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
-            # haved = wantd
-            # wantd = {}
+        if self.state in ["deleted", "overridden"]:
             for k, want in iteritems(wantd):
                 if k in haved:
                     if isinstance(want, list):
                         for entry in want:
-                            # self._module.fail_json(msg=haved)
                             wname = entry.get("name")
                             haved["instances"] = [
                                 i for i in haved.get("instances", []) if i.get("name") != wname
                             ]
                             self.commands.append("delete vrf name {}".format(wname))
-                wantd.update({k: None})
-
-        if self.state in ["overridden"]:
-            for k, have in iteritems(haved):
-                if k not in wantd:
+                if self.state == "deleted":
                     wantd.update({k: None})
-                    # self._module.fail_json(msg=wantd)
-                    # self._module.fail_json(msg=have)
-                    # self.compare(
-                    #     parsers=self.parsers,
-                    #     want={k: None},
-                    #     have={k: have},
-                    # )
-
-        #             self.commands.append(self._tmplt.render({"route_map": k}, "route_map", True))
-
-        #             self.commands.append(self._tmplt.render({"route_map": k}, "route_map", False))
 
         for k, want in iteritems(wantd):
             if isinstance(want, list):
@@ -138,25 +119,6 @@ class Vrf(ResourceModule):
                 want={k: want},
                 have={k: haved.pop(k, {})},
             )
-        self._module.fail_json(msg=self.commands)
-
-    # def _com
-    # pare(self, want, have):
-    #     """Leverages the base class `compare()` method and
-    #     populates the list of commands to be run by comparing
-    #     the `want` and `have` data with the `parsers` defined
-    #     for the Ntp network resource.
-    #     """
-    #     # self._module.fail_json(msg=str(want))
-    #     if isinstance(want, list):
-    #         self._compare_inststances(want=want, have=have)
-    #     else:
-    #         self.compare(parsers=self.parsers, want=want, have=have)
-    #     # self._module.fail_json(msg="Here")
-    #     # if "options" in want:
-    #     #     self.compare(parsers="options", want=want, have=have)
-    #     # else:
-    #     # self.compare(parsers=self.parsers, want=want, have=have)
 
     def _compare_instances(self, want, have):
         """Compare the instances of the VRF"""
