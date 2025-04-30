@@ -99,17 +99,25 @@ class Vrf(ResourceModule):
 
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state in ["deleted", "overridden"]:
-            for k, want in iteritems(wantd):
-                if k in haved:
+            w = wantd
+            h = haved
+            for k, want in iteritems(w):
+                if k in h and h[k]:
                     if isinstance(want, list):
                         for entry in want:
                             wname = entry.get("name")
-                            haved["instances"] = [
-                                i for i in haved.get("instances", []) if i.get("name") != wname
+                            h["instances"] = [
+                                i for i in h.get("instances", []) if i.get("name") != wname
                             ]
                             self.commands.append("delete vrf name {}".format(wname))
-                if self.state == "deleted":
-                    wantd.update({k: None})
+                    else:
+                        self.commands.append("delete vrf {}".format(k.replace("_", "-")))
+            wantd.pop(k)
+            haved.pop(k)
+
+            # if self.state == "deleted":
+            #
+            #
 
         for k, want in iteritems(wantd):
             if isinstance(want, list):
@@ -119,6 +127,7 @@ class Vrf(ResourceModule):
                 want={k: want},
                 have={k: haved.pop(k, {})},
             )
+        # self._module.fail_json(msg=self.commands)
 
     def _compare_instances(self, want, have):
         """Compare the instances of the VRF"""
