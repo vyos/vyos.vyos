@@ -97,27 +97,37 @@ class Vrf(ResourceModule):
         if self.state in ["merged", "replaced"]:
             wantd = dict_merge(self.have, self.want)
 
-        # if state is deleted, empty out wantd and set haved to wantd
-        if self.state in ["deleted", "overridden"]:
-            w = wantd
-            h = haved
+        # if state is deleted, delete and empty out wantd
+        if self.state == "deleted":
+            w = deepcopy(wantd)
             for k, want in iteritems(w):
-                if k in h and h[k]:
+                if not (k in haved and haved[k]):
+                    del wantd[k]
+                else:
                     if isinstance(want, list):
                         for entry in want:
                             wname = entry.get("name")
-                            h["instances"] = [
-                                i for i in h.get("instances", []) if i.get("name") != wname
+                            haved["instances"] = [
+                                i for i in haved.get("instances", []) if i.get("name") != wname
                             ]
                             self.commands.append("delete vrf name {}".format(wname))
                     else:
                         self.commands.append("delete vrf {}".format(k.replace("_", "-")))
-            wantd.pop(k)
-            haved.pop(k)
+                        del wantd[k]
 
-            # if self.state == "deleted":
-            #
-            #
+        if self.state == "overridden":
+            w = deepcopy(wantd)
+            h = deepcopy(haved)
+            for k, want in iteritems(w):
+                if k in haved and haved[k] != want:
+                    if isinstance(want, list):
+                        for entry in want:
+                            wname = entry.get("name")
+                            haved["instances"] = [
+                                i for i in haved.get("instances", []) if i.get("name") != wname
+                            ]
+                            self.commands.append("delete vrf name {}".format(wname))
+            # self._module.fail_json(msg=haved)
 
         for k, want in iteritems(wantd):
             if isinstance(want, list):
