@@ -127,6 +127,7 @@ class Vrf(ResourceModule):
                                 i for i in haved.get("instances", []) if i.get("name") != wname
                             ]
                             self.commands.append("delete vrf name {}".format(wname))
+                            self.commands.append("commit")
             # self._module.fail_json(msg=haved)
 
         for k, want in iteritems(wantd):
