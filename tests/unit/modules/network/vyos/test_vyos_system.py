@@ -45,11 +45,26 @@ class TestVyosSystemModule(TestVyosModule):
         )
         self.load_config = self.mock_load_config.start()
 
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.get_os_version",
+        )
+        self.test_version = "1.2"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
+        self.mock_facts_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.get_os_version",
+        )
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = self.test_version
+        self.maxDiff = None
+
     def tearDown(self):
         super(TestVyosSystemModule, self).tearDown()
 
         self.mock_get_config.stop()
         self.mock_load_config.stop()
+        self.mock_get_os_version.stop()
+        self.mock_facts_get_os_version.stop()
 
     def load_fixtures(self, commands=None, filename=None):
         self.get_config.return_value = load_fixture("vyos_config_config.cfg")
