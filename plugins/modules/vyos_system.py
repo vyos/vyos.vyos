@@ -16,14 +16,8 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
+
 from __future__ import absolute_import, division, print_function
-
-from re import M, findall
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
-    LooseVersion,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
 __metaclass__ = type
@@ -101,11 +95,16 @@ EXAMPLES = """
       - sub1.example.com
       - sub2.example.com
 """
+from re import M, findall
 
 from ansible.module_utils.basic import AnsibleModule
 
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     get_config,
+    get_os_version,
     load_config,
 )
 
