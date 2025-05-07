@@ -103,6 +103,12 @@ options:
                 extcommunity_soo:
                   type: str
                   description: Set Site of Origin value. ASN:nn_or_IP_address:nn VPN extended community
+                extcommunity_bandwidth:
+                  type: str
+                  description: Set Bandwidth of Origin value. 1-25600|cumulative|num-multipaths VPN extended community
+                extcommunity_bandwidth_non_transitive:
+                  type: bool
+                  description: Set the bandwidth extended community encoded as non-transitive True/False VPN extended community
                 ip_next_hop:
                   type: str
                   description: IP address.
@@ -146,6 +152,9 @@ options:
                 weight:
                   type: str
                   description: Border Gateway Protocol (BGP) weight attribute. Example <0-4294967295>
+                table:
+                  type: str
+                  description: Set prefixes to table. Example <1-200>
             match:
               description: Route parameters to match.
               type: dict
@@ -226,6 +235,10 @@ options:
                   type: str
                   description: RPKI validation value.
                   choices: [ "notfound", "invalid", "valid" ]
+                protocol:
+                  type: str
+                  description: Source protocol to match.
+                  choices: [ "babel","bgp","connected","isis","kernel","ospf","ospfv3","rip","ripng","static","table","vnc" ]
             on_match:
               type: dict
               description: Exit policy on matches.
