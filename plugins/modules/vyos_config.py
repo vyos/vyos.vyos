@@ -292,6 +292,7 @@ def sanitize_config(config, result):
 def run(module, result):
     # get the current active config from the node or passed in via
     # the config param
+
     config = module.params["config"] or get_config(module)
 
     # create the candidate config object from the arguments
@@ -366,7 +367,7 @@ def main():
         diff = run_commands(module, commands=["configure", "compare saved"])[1]
         if diff not in {
             "[edit]",
-            "No changes between working and saved configurations.\n\n[edit]"
+            "No changes between working and saved configurations.\n\n[edit]",
         }:
             if not module.check_mode:
                 run_commands(module, commands=["save"])
