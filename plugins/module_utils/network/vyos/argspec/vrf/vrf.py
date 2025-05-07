@@ -42,8 +42,8 @@ class VrfArgs(object):  # pylint: disable=R0903
                     "options": {
                         "name": {"required": True, "type": "str"},
                         "description": {"type": "str"},
-                        "disabled": {
-                            "aliases": ["disable"],
+                        "disable": {
+                            "aliases": ["disabled"],
                             "default": False,
                             "type": "bool",
                         },

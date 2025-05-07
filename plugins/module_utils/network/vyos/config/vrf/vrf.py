@@ -123,12 +123,16 @@ class Vrf(ResourceModule):
                     if isinstance(want, list):
                         for entry in want:
                             wname = entry.get("name")
-                            haved["instances"] = [
-                                i for i in haved.get("instances", []) if i.get("name") != wname
-                            ]
-                            self.commands.append("delete vrf name {}".format(wname))
-                            self.commands.append("commit")
-            # self._module.fail_json(msg=haved)
+                            hdict = next(
+                                (inst for inst in haved["instances"] if inst["name"] == wname),
+                                None,
+                            )
+                            if entry != hdict:
+                                haved["instances"] = [
+                                    i for i in haved.get("instances", []) if i.get("name") != wname
+                                ]
+                                self.commands.append("delete vrf name {}".format(wname))
+                                self.commands.append("commit")
 
         for k, want in iteritems(wantd):
             if isinstance(want, list):
