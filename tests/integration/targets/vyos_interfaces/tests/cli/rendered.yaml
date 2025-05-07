@@ -11,9 +11,13 @@
         config:
           - name: eth0
             enabled: true
+            duplex: auto
+            speed: auto
           - name: eth1
             description: Configured by Ansible - Interface 1
             mtu: 1500
+            duplex: auto
+            speed: auto
             enabled: true
             vifs:
               - vlan_id: 100
