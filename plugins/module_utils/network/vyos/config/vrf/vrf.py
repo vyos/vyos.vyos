@@ -92,7 +92,7 @@ class Vrf(ResourceModule):
         haved = {}
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
-
+        self._module.fail_json(msg=haved)
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged", "replaced"]:
             wantd = dict_merge(self.have, self.want)

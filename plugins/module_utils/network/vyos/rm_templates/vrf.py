@@ -122,56 +122,55 @@ class VrfTemplate(NetworkTemplate):
                 "disable": "{{ True if disable is defined }}",
             },
         },
-        # {
-        #     "name": "disable_forwarding",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \svrf
-        #         \sname
-        #         \s(?P<name>\S+)
-        #         \s(?P<af>\S+)
-        #         \s(?P<df>disable-forwarding)
-        #         $""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "vrf name {{name}} {{ af }} disable-forwarding",
-        #     "compval": "address_family.disable_forwarding",
-        #     "result": {
-        #         "name": "{{ name }}",
-        #         "address_family": {
-        #             '{{ "ipv4" if af == "ip" else "ipv6" }}': {
-        #                 "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
-        #                 "disable_forwarding": "{{ True if df is defined }}",
-        #             },
-        #         },
-        #     },
-        # },
-        # {
-        #     "name": "disable_nht",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \svrf
-        #         \sname
-        #         \s(?P<name>\S+)
-        #         \s(?P<af>\S+)
-        #         \snht
-        #         \s(?P<nht>no-resolve-via-default)
-        #         $""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "vrf name {{name}} {{ af }} nht no-resolve-via-default",
-        #     "compval": "address_family.no_resolve_via_default",
-        #     "result": {
-        #         "name": "{{ name }}",
-        #         "address_family": {
-        #             '{{ "ipv4" if af == "ip" else "ipv6" }}': {
-        #                 "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
-        #                 "no_resolve_via_default": "{{ True if nht is defined }}",
-        #             },
-        #         },
-        #     },
-        # },
+        {
+            "name": "disable_forwarding",
+            "getval": re.compile(
+                r"""
+                ^set
+                \svrf
+                \sname
+                \s(?P<name>\S+)
+                \s(?P<af>\S+)
+                \s(?P<df>disable-forwarding)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "vrf name {{name}} {{ af }} disable-forwarding",
+            "result": {
+                "name": "{{ name }}",
+                "address_family": {
+                    '{{ "ipv4" if af == "ip" else "ipv6" }}': {
+                        "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
+                        "disable_forwarding": "{{ True if df is defined }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "disable_nht",
+            "getval": re.compile(
+                r"""
+                ^set
+                \svrf
+                \sname
+                \s(?P<name>\S+)
+                \s(?P<af>\S+)
+                \snht
+                \s(?P<nht>no-resolve-via-default)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "vrf name {{name}} {{ af }} nht no-resolve-via-default",
+            "compval": "address_family.no_resolve_via_default",
+            "result": {
+                "name": "{{ name }}",
+                "address_family": {
+                    '{{ "ipv4" if af == "ip" else "ipv6" }}': {
+                        "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
+                        "no_resolve_via_default": "{{ True if nht is defined }}",
+                    },
+                },
+            },
+        },
     ]
     # fmt: on
