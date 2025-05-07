@@ -12,6 +12,8 @@ merged:
   commands:
     - set interfaces ethernet eth1 description 'Configured by Ansible - Interface 1'
     - set interfaces ethernet eth1 mtu '1500'
+    - set interfaces ethernet eth1 duplex 'auto'
+    - set interfaces ethernet eth1 speed 'auto'
     - set interfaces ethernet eth1 vif 100 description 'Eth1 - VIF 100'
     - set interfaces ethernet eth1 vif 100 mtu '1404'
     - set interfaces ethernet eth1 vif 101 description 'Eth1 - VIF 101'
@@ -27,6 +29,8 @@ merged:
       description: Configured by Ansible - Interface 1
       mtu: 1500
       enabled: true
+      duplex: auto
+      speed: auto
       vifs:
         - vlan_id: 100
           description: Eth1 - VIF 100
@@ -44,6 +48,8 @@ populate:
     enabled: true
     description: Configured by Ansible
     mtu: 1500
+    duplex: auto
+    speed: auto
     vifs:
       - vlan_id: 200
         enabled: true
@@ -52,6 +58,8 @@ populate:
     enabled: true
     description: Configured by Ansible
     mtu: 1500
+    duplex: auto
+    speed: auto
     vifs:
       - vlan_id: 200
         enabled: true
@@ -63,10 +71,14 @@ populate:
 replaced:
   commands:
     - delete interfaces ethernet eth1 mtu
+    - delete interfaces ethernet eth1 speed
+    - delete interfaces ethernet eth1 duplex
     - delete interfaces ethernet eth1 vif 200
     - set interfaces ethernet eth1 description 'Replaced by Ansible'
     - set interfaces ethernet eth1 vif 100 description 'VIF 100 - Replaced by Ansible'
     - delete interfaces ethernet eth2 vif 200
+    - delete interfaces ethernet eth2 speed
+    - delete interfaces ethernet eth2 duplex
     - set interfaces ethernet eth2 description 'Replaced by Ansible'
     - set interfaces ethernet eth2 mtu '1400'
   after:
@@ -107,8 +119,12 @@ overridden:
   commands:
     - delete interfaces ethernet eth1 description
     - delete interfaces ethernet eth1 mtu
+    - delete interfaces ethernet eth1 speed
+    - delete interfaces ethernet eth1 duplex
     - delete interfaces ethernet eth1 vif 200
     - delete interfaces ethernet eth2 vif 200
+    - delete interfaces ethernet eth2 speed
+    - delete interfaces ethernet eth2 duplex
     - set interfaces ethernet eth2 description 'Overridden by Ansible'
     - set interfaces ethernet eth2 mtu '1402'
   after:
@@ -124,6 +140,10 @@ overridden:
       mtu: 1402
 rendered:
   commands:
+    - set interfaces ethernet eth0 duplex 'auto'
+    - set interfaces ethernet eth0 speed 'auto'
+    - set interfaces ethernet eth1 duplex 'auto'
+    - set interfaces ethernet eth1 speed 'auto'
     - set interfaces ethernet eth1 description 'Configured by Ansible - Interface 1'
     - set interfaces ethernet eth1 mtu '1500'
     - set interfaces ethernet eth1 vif 100 description 'Eth1 - VIF 100'
@@ -137,9 +157,13 @@ deleted:
     - delete interfaces ethernet eth1 description
     - delete interfaces ethernet eth1 mtu
     - delete interfaces ethernet eth1 vif 200
+    - delete interfaces ethernet eth1 speed
+    - delete interfaces ethernet eth1 duplex
     - delete interfaces ethernet eth2 description
     - delete interfaces ethernet eth2 mtu
     - delete interfaces ethernet eth2 vif 200
+    - delete interfaces ethernet eth2 speed
+    - delete interfaces ethernet eth2 duplex
   after:
     - name: eth0
       enabled: true
@@ -149,6 +173,7 @@ deleted:
       enabled: true
     - name: eth2
       enabled: true
+
 round_trip:
   after:
     - name: eth0
