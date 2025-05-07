@@ -49,6 +49,19 @@ class VrfArgs(object):  # pylint: disable=R0903
                         },
                         "table_id": {"type": "int"},
                         "vni": {"type": "int"},
+                        "address_family": {
+                            "type": "list",
+                            "elements": "dict",
+                            "options": {
+                                "afi": {
+                                    "type": "str",
+                                    "choices": ["ipv4", "ipv6"],
+                                    "required": True,
+                                },
+                                "disable_forwarding": {"type": "bool", "default": False},
+                                "no_resolve_via_default": {"type": "bool", "default": False},
+                            },
+                        },
                     },
                 },
             },
