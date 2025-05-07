@@ -25,6 +25,17 @@
     that:
       - result.changed == false
 
+- name: configure simple config command while match = 'none'
+  register: result
+  vyos.vyos.vyos_config:
+    lines: set system host-name foo
+    match: none
+
+- assert:
+    that:
+      - result.changed == true
+      - "'set system host-name foo' in result.commands"
+
 - name: Delete services
   vyos.vyos.vyos_config: &id001
     lines:

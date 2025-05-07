@@ -25,16 +25,10 @@
         that:
           - replaced['commands'] | symmetric_difference(result['commands']) |length == 0
 
-    - debug:
-        var: populate | symmetric_difference(result['before'])
-
     - name: Assert that before dicts are correctly generated
       assert:
         that:
           - populate | symmetric_difference(result['before']) |length == 0
-
-    - debug:
-        var: replaced['after'] | symmetric_difference(result['after'])
 
     - name: Assert that after dict is correctly generated
       assert:

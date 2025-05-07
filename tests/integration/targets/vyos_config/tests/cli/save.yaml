@@ -6,7 +6,7 @@
     lines: set system host-name {{ inventory_hostname_short }}
     match: none
 
-- name: configure hostaname and save
+- name: configure hostname and save
   register: result
   vyos.vyos.vyos_config:
     lines: set system host-name foo
@@ -17,7 +17,7 @@
       - result.changed == true
       - "'set system host-name foo' in result.commands"
 
-- name: configure hostaname and don't save
+- name: configure hostname and don't save
   register: result
   vyos.vyos.vyos_config:
     lines: set system host-name bar
