@@ -288,6 +288,7 @@ def sanitize_config(config, result):
 def run(module, result):
     # get the current active config from the node or passed in via
     # the config param
+
     config = module.params["config"] or get_config(module)
 
     # create the candidate config object from the arguments
