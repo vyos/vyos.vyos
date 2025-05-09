@@ -92,7 +92,7 @@ class Vrf(ResourceModule):
         haved = {}
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
-        self._module.fail_json(msg=haved)
+        # self._module.fail_json(msg=str(haved))
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged", "replaced"]:
             wantd = dict_merge(self.have, self.want)
@@ -142,7 +142,7 @@ class Vrf(ResourceModule):
                 want={k: want},
                 have={k: haved.pop(k, {})},
             )
-        # self._module.fail_json(msg=self.commands)
+        self._module.fail_json(msg=self.commands)
 
     def _compare_instances(self, want, have):
         """Compare the instances of the VRF"""
@@ -157,5 +157,42 @@ class Vrf(ResourceModule):
         for entry in want:
             h = {}
             wname = entry.get("name")
-            h = next((vrf for vrf in have if vrf["name"] == wname), {})
+            # h = next((vrf for vrf in have if vrf["name"] == wname), {})
+            h = {
+                k: v
+                for vrf in have
+                if vrf.get("name") == wname
+                for k, v in vrf.items()
+                if k != "address_family"
+            }
             self.compare(parsers=parsers, want=entry, have=h)
+            if "address_family" in entry:
+                self._compare_addr_family(want, have)
+
+    def _compare_addr_family(self, want, have):
+
+        parsers = [
+            "disable_forwarding",
+            "disable_nht",
+        ]
+
+        wdict = want.get("address_family", {})
+        hdict = have.get("address_family", {})
+        wname = want.get("name")
+        hname = have.get("name")
+        for name, entry in iteritems(wdict):
+            for key, param in iteritems(entry):
+                w_addr = {"afi": name, key: param}
+                h_addr = {}
+                if hdict.get(name):
+                    h_addr = {"afi": name, key: hdict[name].pop(key, {})}
+                w = {"name": wname, "address_family": w_addr}
+                h = {"name": hname, "address_family": h_addr}
+                self.compare(parsers=parsers, want=w, have=h)
+        for name, entry in iteritems(hdict):
+            for key, param in iteritems(entry):
+                h_addr = {"afi": name, key: param}
+                w_addr = {}
+                w = {"name": wname, "address_family": w_addr}
+                h = {"name": hname, "address_family": h_addr}
+                self.compare(parsers=parsers, want=w, have=h)

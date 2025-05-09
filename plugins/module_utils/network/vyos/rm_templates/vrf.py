@@ -123,6 +123,29 @@ class VrfTemplate(NetworkTemplate):
             },
         },
         {
+            "name": "address_family",
+            "getval": re.compile(
+                r"""
+                ^set
+                \svrf
+                \sname
+                \s(?P<name>\S+)
+                \s(?P<af>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "vrf name {{name}} {{ af }}",
+            'compval': "name",
+            "result": {
+                "name": "{{ name }}",
+                "address_family": {
+                    '{{ "ipv4" if af == "ip" else "ipv6" }}': {
+                        "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
+                    },
+                },
+            },
+        },
+        {
             "name": "disable_forwarding",
             "getval": re.compile(
                 r"""
@@ -136,6 +159,7 @@ class VrfTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "vrf name {{name}} {{ af }} disable-forwarding",
+            "compval": "address_family.disable_forwarding",
             "result": {
                 "name": "{{ name }}",
                 "address_family": {

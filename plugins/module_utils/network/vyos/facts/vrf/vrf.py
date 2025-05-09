@@ -79,9 +79,9 @@ class VrfFacts(object):
                 if "bind_to_all" in objs:
                     vrf_facts.update(objs)
                 if "name" in objs:
-                    # name = objs["instances"].get("name")
-                    # attrib = {k: v for k, v in objs["instances"].items() if k != 'name'}
-                    # instances.update({name: attrib})
+                    for key, afiv in [("address_family", "afi")]:
+                        if key in objs and objs[key]:
+                            objs[key] = list(objs[key].values())
                     instances.append(objs)
 
         if instances:
