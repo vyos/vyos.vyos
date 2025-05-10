@@ -69,7 +69,9 @@ def get_config(module, flags=None, format=None):
     flags = [] if flags is None else flags
     global _DEVICE_CONFIGS
 
-    if _DEVICE_CONFIGS != {} or module.params["match"] == "none":
+    if _DEVICE_CONFIGS != {} or (
+        module.params["match"] is not None and module.params["match"] == "none"
+    ):
         return to_text(_DEVICE_CONFIGS)
     else:
         connection = get_connection(module)
