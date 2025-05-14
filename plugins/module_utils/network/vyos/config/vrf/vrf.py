@@ -92,7 +92,11 @@ class Vrf(ResourceModule):
         haved = {}
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
-        # self._module.fail_json(msg=str(haved))
+
+        for entry in wantd, haved:
+            self._vrf_inst_list_to_dict(entry)
+
+        self._module.fail_json(msg=str(wantd))
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged", "replaced"]:
             wantd = dict_merge(self.have, self.want)
@@ -164,10 +168,11 @@ class Vrf(ResourceModule):
                 if k != "address_family"
             }
             self.compare(parsers=parsers, want=entry, have=h)
-            if "address_family" in entry:
-                for entry in want, have:
-                    self._vrf_inst_list_to_dict(entry)
-                self._compare_addr_family(want, have)
+            # if "address_family" in entry:
+            #     for afi in want, have:
+            #         # self._vrf_inst_list_to_dict(afi)
+            #     self._module.fail_json(msg=want)
+            #     self._compare_addr_family(want, have)
 
     def _compare_addr_family(self, want, have):
         """Compare the address families of the VRF"""
@@ -197,17 +202,16 @@ class Vrf(ResourceModule):
                 self.compare(parsers=parsers, want=w, have=h)
 
     def _vrf_inst_list_to_dict(self, entry):
-        self._module.fail_json(msg=entry)
-        # data["address_family"] = {
+        # for data in entry:
+        #     data["address_family"] = {
+        #         af["afi"]: af for af in data["address_family"]
+        #         }
+        #     #
 
-    # af["afi"]: af for af in data["address_family"]
-
-
-# }
-# for name, family in iteritems(entry):
-#     if "address_family" in family:
-#         addr_dict = {}
-#         for entry in family.get("address_family", []):
-#             addr_dict.update({entry["afi"]: entry})
-#         family["address_family"] = addr_dict
-#         self._ospf_int_list_to_dict(family["address_family"])
+        for name, family in iteritems(entry):
+            if "address_family" in family:
+                addr_dict = {}
+                for entry in family.get("address_family", []):
+                    addr_dict.update({entry["afi"]: entry})
+                family["address_family"] = addr_dict
+                self._ospf_int_list_to_dict(family["address_family"])
