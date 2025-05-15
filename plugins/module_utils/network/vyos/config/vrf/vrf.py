@@ -93,13 +93,10 @@ class Vrf(ResourceModule):
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
 
-        for entry in wantd, haved:
-            self._vrf_inst_list_to_dict(entry)
-
-        self._module.fail_json(msg=str(wantd))
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged", "replaced"]:
             wantd = dict_merge(self.have, self.want)
+        # self._module.fail_json(msg="Want: " + str(wantd) + "**** H:  " + str(haved))
 
         # if state is deleted, delete and empty out wantd
         if self.state == "deleted":
@@ -156,6 +153,7 @@ class Vrf(ResourceModule):
             "description",
             "disable_vrf",
         ]
+
         for entry in want:
             h = {}
             wname = entry.get("name")
@@ -167,51 +165,40 @@ class Vrf(ResourceModule):
                 for k, v in vrf.items()
                 if k != "address_family"
             }
+
             self.compare(parsers=parsers, want=entry, have=h)
-            # if "address_family" in entry:
-            #     for afi in want, have:
-            #         # self._vrf_inst_list_to_dict(afi)
-            #     self._module.fail_json(msg=want)
-            #     self._compare_addr_family(want, have)
+
+            if "address_family" in entry:
+                hdict = next((item for item in have if item["name"] == wname), None)
+                # self._module.fail_json(msg="entry: " + str(entry) + "**** hdict:  " + str(hdict))
+
+                self._compare_addr_family(entry, hdict)
 
     def _compare_addr_family(self, want, have):
         """Compare the address families of the VRF"""
         parsers = [
+            "address_family",
             "disable_forwarding",
             "disable_nht",
         ]
-        wdict = want.get("address_family", {})
-        hdict = have.get("address_family", {})
-        wname = want.get("name")
-        hname = have.get("name")
-        for name, entry in iteritems(wdict):
-            for key, param in iteritems(entry):
-                w_addr = {"afi": name, key: param}
-                h_addr = {}
-                if hdict.get(name):
-                    h_addr = {"afi": name, key: hdict[name].pop(key, {})}
-                w = {"name": wname, "address_family": w_addr}
-                h = {"name": hname, "address_family": h_addr}
-                self.compare(parsers=parsers, want=w, have=h)
-        for name, entry in iteritems(hdict):
-            for key, param in iteritems(entry):
-                h_addr = {"afi": name, key: param}
-                w_addr = {}
-                w = {"name": wname, "address_family": w_addr}
-                h = {"name": hname, "address_family": h_addr}
-                self.compare(parsers=parsers, want=w, have=h)
+        # self._module.fail_json(msg="wafi: " + str(want) + "**** Hafi:  " + str(have))
+
+        wafi = self._vrf_inst_list_to_dict(want)
+        hafi = self._vrf_inst_list_to_dict(have)
+        # wafi = {
+        #         "name": "vrf-test",
+        #         "address_family": {
+        #             "ipv4": {
+        #                 "afi": "ipv4",
+        #             },
+        #         }
+        #     }
+        self.compare(parsers=parsers, want=wafi, have=hafi)
 
     def _vrf_inst_list_to_dict(self, entry):
-        # for data in entry:
-        #     data["address_family"] = {
-        #         af["afi"]: af for af in data["address_family"]
-        #         }
-        #     #
-
-        for name, family in iteritems(entry):
-            if "address_family" in family:
-                addr_dict = {}
-                for entry in family.get("address_family", []):
-                    addr_dict.update({entry["afi"]: entry})
-                family["address_family"] = addr_dict
-                self._ospf_int_list_to_dict(family["address_family"])
+        if entry and "address_family" in entry:
+            address_family_dict = {f"{af['afi']}:": af for af in entry.get("address_family", [])}
+            return {
+                "name": entry["name"],
+                "address_family": address_family_dict,
+            }

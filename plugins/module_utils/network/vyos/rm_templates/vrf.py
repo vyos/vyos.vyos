@@ -130,12 +130,12 @@ class VrfTemplate(NetworkTemplate):
                 \svrf
                 \sname
                 \s(?P<name>\S+)
-                \s(?P<af>\S+)
+                \s(?P<af>ip|ipv6)
                 $""",
                 re.VERBOSE,
             ),
             "setval": "vrf name {{name}} {{ af }}",
-            'compval': "name",
+            'compval': "address_family",
             "result": {
                 "name": "{{ name }}",
                 "address_family": {
@@ -153,7 +153,7 @@ class VrfTemplate(NetworkTemplate):
                 \svrf
                 \sname
                 \s(?P<name>\S+)
-                \s(?P<af>\S+)
+                \s(?P<af>ip|ipv6)
                 \s(?P<df>disable-forwarding)
                 $""",
                 re.VERBOSE,
@@ -178,7 +178,7 @@ class VrfTemplate(NetworkTemplate):
                 \svrf
                 \sname
                 \s(?P<name>\S+)
-                \s(?P<af>\S+)
+                \s(?P<af>ip|ipv6)
                 \snht
                 \s(?P<nht>no-resolve-via-default)
                 $""",
