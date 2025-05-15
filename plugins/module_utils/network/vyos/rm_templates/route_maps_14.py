@@ -22,10 +22,10 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 )
 
 
-class Route_mapsTemplate(NetworkTemplate):
+class Route_mapsTemplate14(NetworkTemplate):
     def __init__(self, lines=None):
         prefix = {"set": "set", "remove": "delete"}
-        super(Route_mapsTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix)
+        super(Route_mapsTemplate14, self).__init__(lines=lines, tmplt=self, prefix=prefix)
 
     # fmt: off
     PARSERS = [
@@ -283,12 +283,12 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_as_path_exclude",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sas-path-exclude\s(?P<as>\S+)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sas-path\sexclude\s(?P<as>\S+)
                 *$""",
                 re.VERBOSE,
             ),
             "compval": "set.as_path_exclude",
-            "setval": "policy route-map {{route_map}} rule {{sequence}} set as-path-exclude {{set.as_path_exclude}}",
+            "setval": "policy route-map {{route_map}} rule {{sequence}} set as-path exclude {{set.as_path_exclude}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -310,12 +310,12 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_as_path_prepend",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sas-path-prepend\s(?P<as>.*)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sas-path\sprepend\s(?P<as>.*)
                 $""",
                 re.VERBOSE,
             ),
             "compval": "set.as_path_prepend",
-            "setval": "policy route-map {{route_map}} rule {{sequence}} set as-path-prepend '{{set.as_path_prepend}}'",
+            "setval": "policy route-map {{route_map}} rule {{sequence}} set as-path prepend '{{set.as_path_prepend}}'",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -448,13 +448,13 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_extcommunity_rt",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity-rt\s(?P<extcommunity_rt>\S+)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity\srt\s(?P<extcommunity_rt>\S+)
                 *$""",
                 re.VERBOSE,
             ),
             "compval": "set.extcommunity_rt",
             "setval": "policy route-map {{route_map}} rule {{sequence}} "
-                      "set extcommunity-rt {{set.extcommunity_rt}}",
+                      "set extcommunity rt {{set.extcommunity_rt}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -476,13 +476,13 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_extcommunity_soo",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity-soo\s(?P<extcommunity_soo>\S+)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity\ssoo\s(?P<extcommunity_soo>\S+)
                 *$""",
                 re.VERBOSE,
             ),
             "compval": "set.extcommunity_soo",
             "setval": "policy route-map {{route_map}} rule {{sequence}} "
-                      "set extcommunity-soo {{set.extcommunity_soo}}",
+                      "set extcommunity soo {{set.extcommunity_soo}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -492,7 +492,7 @@ class Route_mapsTemplate(NetworkTemplate):
                                 {
                                     "sequence": "{{sequence}}",
                                     "set": {
-                                        "extcommunity_soo": "{{set.extcommunity_soo}}",
+                                        "extcommunity_soo": "{{extcommunity_soo}}",
                                     },
                                 },
                         },
@@ -621,13 +621,13 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_large_community",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\slarge-community\s(?P<large_community>\S+)
-                *$""",
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\slarge-community\s(?P<op>none|replace\s(?P<large_community>\S+))
+                $""",
                 re.VERBOSE,
             ),
             "compval": "set.large_community",
             "setval": "policy route-map {{route_map}} rule {{sequence}} "
-                      "set large-community {{set.large_community}}",
+                      "set large-community {{set.large_community if set.large_community == 'none' else 'replace ' + set.large_community}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -637,7 +637,7 @@ class Route_mapsTemplate(NetworkTemplate):
                                 {
                                     "sequence": "{{sequence}}",
                                     "set": {
-                                        "large_community": "{{large_community}}",
+                                        "large_community": "{{op if op == 'none' else large_community}}",
                                     },
                                 },
                         },
@@ -901,13 +901,13 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_community",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\scommunity\s(?P<value>\S+)
-                *$""",
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\scommunity\s(?P<op>none|replace\s(?P<value>\S+))
+                $""",
                 re.VERBOSE,
             ),
             "compval": "set.community.value",
             "setval": "policy route-map {{route_map}} rule {{sequence}} "
-                      "set community {{set.community.value}}",
+                      "set community {{set.community.value if set.community.value == 'none' else 'replace ' + set.community.value}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
@@ -918,7 +918,7 @@ class Route_mapsTemplate(NetworkTemplate):
                                     "sequence": "{{sequence}}",
                                     "set": {
                                         "community": {
-                                            "value": "{{value}}",
+                                            "value": "{{op if op == 'none' else value}}",
                                         },
                                     },
                                 },
