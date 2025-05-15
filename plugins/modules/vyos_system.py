@@ -134,8 +134,6 @@ def config_to_dict(module):
                 config["domain_name"] = config_line[0][1]
             elif config_line[0][0] == "domain-search":
                 config["domain_search"].append(config_line[0][1])
-            elif config_line[0][0] == "domain-search":
-                config["domain_search"].append(config_line[0][1])
             elif config_line[0][0] == "name-server":
                 config["name_server"].append(config_line[0][1])
     return config
