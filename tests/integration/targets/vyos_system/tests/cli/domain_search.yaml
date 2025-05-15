@@ -1,0 +1,43 @@
+---
+- debug: msg="START cli/domain_search.yaml on connection={{ ansible_connection }}"
+
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
+- name: setup
+  ignore_errors: true
+  vyos.vyos.vyos_system:
+    domain_search:
+      - nbg.bufanda.ke
+    state: absent
+
+- name: configure domain search setting
+  register: result
+  vyos.vyos.vyos_system:
+    domain_search:
+      - nbg.bufanda.ke
+
+- assert:
+    that:
+      - result.changed == true
+      - result.commands|length == 1
+      - "{{ merged['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+- name: configure domain search setting
+  register: result
+  vyos.vyos.vyos_system:
+    domain_search:
+      - nbg.bufanda.ke
+
+- assert:
+    that:
+      - result.changed == false
+
+- name: teardown
+  ignore_errors: true
+  vyos.vyos.vyos_system:
+    domain_search:
+      - nbg.bufanda.ke
+    state: absent
+
+- debug: msg="END cli/basic.yaml on connection={{ ansible_connection }}"

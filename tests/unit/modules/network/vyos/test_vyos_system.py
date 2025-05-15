@@ -45,11 +45,26 @@ class TestVyosSystemModule(TestVyosModule):
         )
         self.load_config = self.mock_load_config.start()
 
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.get_os_version",
+        )
+        self.test_version = "1.2"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
+        self.mock_facts_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.get_os_version",
+        )
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = self.test_version
+        self.maxDiff = None
+
     def tearDown(self):
         super(TestVyosSystemModule, self).tearDown()
 
         self.mock_get_config.stop()
         self.mock_load_config.stop()
+        self.mock_get_os_version.stop()
+        self.mock_facts_get_os_version.stop()
 
     def load_fixtures(self, commands=None, filename=None):
         self.get_config.return_value = load_fixture("vyos_config_config.cfg")
@@ -108,6 +123,70 @@ class TestVyosSystemModule(TestVyosModule):
         commands = [
             "delete system host-name",
             "delete system domain-search domain",
+            "delete system domain-name",
+            "delete system name-server",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+
+class TestVyosSystemModule14(TestVyosModule):
+    module = vyos_system
+
+    def setUp(self):
+        super(TestVyosSystemModule14, self).setUp()
+
+        self.mock_get_config = patch(
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.get_config",
+        )
+        self.get_config = self.mock_get_config.start()
+
+        self.mock_load_config = patch(
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.load_config",
+        )
+        self.load_config = self.mock_load_config.start()
+
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.get_os_version",
+        )
+        self.test_version = "1.4"
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = self.test_version
+        self.mock_facts_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_system.get_os_version",
+        )
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = self.test_version
+        self.maxDiff = None
+
+    def tearDown(self):
+        super(TestVyosSystemModule14, self).tearDown()
+
+        self.mock_get_config.stop()
+        self.mock_load_config.stop()
+        self.mock_get_os_version.stop()
+        self.mock_facts_get_os_version.stop()
+
+    def load_fixtures(self, commands=None, filename=None):
+        self.get_config.return_value = load_fixture("vyos_config_config.cfg")
+
+    def test_vyos_system_domain_search(self):
+        set_module_args(dict(domain_search=["foo.example.com", "bar.example.com"]))
+        commands = [
+            "set system domain-search 'foo.example.com'",
+            "set system domain-search 'bar.example.com'",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_system_clear_domain_search(self):
+        set_module_args(dict(domain_search=[]))
+        commands = ["delete system domain-search"]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_system_clear_all(self):
+        set_module_args(dict(state="absent"))
+        commands = [
+            "delete system host-name",
+            "delete system domain-search",
             "delete system domain-name",
             "delete system name-server",
         ]

@@ -16,6 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 #
+
 from __future__ import absolute_import, division, print_function
 
 
@@ -94,21 +95,27 @@ EXAMPLES = """
       - sub1.example.com
       - sub2.example.com
 """
+from re import M, findall
 
 from ansible.module_utils.basic import AnsibleModule
 
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     get_config,
+    get_os_version,
     load_config,
 )
 
 
-def spec_key_to_device_key(key):
+def spec_key_to_device_key(key, module):
     device_key = key.replace("_", "-")
 
-    # domain-search is longer than just it's key
+    # domain-search differs in 1.3- and 1.4+
     if device_key == "domain-search":
-        device_key += " domain"
+        if LooseVersion(get_os_version(module)) <= LooseVersion("1.3"):
+            device_key += " domain"
 
     return device_key
 
@@ -119,19 +126,20 @@ def config_to_dict(module):
     config = {"domain_search": [], "name_server": []}
 
     for line in data.split("\n"):
-        if line.startswith("set system host-name"):
-            config["host_name"] = line[22:-1]
-        elif line.startswith("set system domain-name"):
-            config["domain_name"] = line[24:-1]
-        elif line.startswith("set system domain-search domain"):
-            config["domain_search"].append(line[33:-1])
-        elif line.startswith("set system name-server"):
-            config["name_server"].append(line[24:-1])
-
+        config_line = findall(r"^set system\s+(\S+)(?:\s+domain)?\s+'([^']+)'", line, M)
+        if config_line:
+            if config_line[0][0] == "host-name":
+                config["host_name"] = config_line[0][1]
+            elif config_line[0][0] == "domain-name":
+                config["domain_name"] = config_line[0][1]
+            elif config_line[0][0] == "domain-search":
+                config["domain_search"].append(config_line[0][1])
+            elif config_line[0][0] == "name-server":
+                config["name_server"].append(config_line[0][1])
     return config
 
 
-def spec_to_commands(want, have):
+def spec_to_commands(want, have, module):
     commands = []
 
     state = want.pop("state")
@@ -140,7 +148,7 @@ def spec_to_commands(want, have):
     if state == "absent" and all(v is None for v in want.values()):
         # Clear everything
         for key in have:
-            commands.append("delete system %s" % spec_key_to_device_key(key))
+            commands.append("delete system %s" % spec_key_to_device_key(key, module))
 
     for key in want:
         if want[key] is None:
@@ -148,7 +156,7 @@ def spec_to_commands(want, have):
 
         current = have.get(key)
         proposed = want[key]
-        device_key = spec_key_to_device_key(key)
+        device_key = spec_key_to_device_key(key, module)
 
         # These keys are lists which may need to  be reconciled with the device
         if key in ["domain_search", "name_server"]:
@@ -201,7 +209,7 @@ def main():
     want = map_param_to_obj(module)
     have = config_to_dict(module)
 
-    commands = spec_to_commands(want, have)
+    commands = spec_to_commands(want, have, module)
     result["commands"] = commands
 
     if commands:
