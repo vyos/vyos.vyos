@@ -122,7 +122,9 @@ class Cliconf(CliconfBase):
         out = self.send_command(command)
         return out
 
-    def edit_config(self, candidate=None, commit=True, replace=None, comment=None):
+    def edit_config(
+        self, candidate=None, commit=True, replace=None, comment=None, confirm=None
+    ):
         resp = {}
         operations = self.get_device_operations()
         self.check_edit_config_capability(operations, candidate, commit, replace, comment)
@@ -143,7 +145,7 @@ class Cliconf(CliconfBase):
         if diff_config:
             if commit:
                 try:
-                    self.commit(comment)
+                    self.commit(comment, confirm)
                 except AnsibleConnectionFailure as e:
                     msg = "commit failed: %s" % e.message
                     self.discard_changes()
@@ -191,12 +193,18 @@ class Cliconf(CliconfBase):
             check_all=check_all,
         )
 
-    def commit(self, comment=None):
-        if comment:
-            command = 'commit comment "{0}"'.format(comment)
+    def commit(self, comment=None, confirm=None):
+        if confirm:
+            if comment:
+                command = 'commit-confirm {0} comment {1}'.format(confirm, comment)
+            else:
+                command = 'commit-confirm {0}'.format(confirm)
         else:
-            command = "commit"
-        self.send_command(command)
+            if comment:
+                command = 'commit {0}'.format(comment)
+            else:
+                command = "commit"
+        self.send_command(command, "Proceed?", "\n")
 
     def discard_changes(self):
         self.send_command("exit discard")
