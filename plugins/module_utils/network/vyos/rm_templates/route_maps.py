@@ -392,13 +392,13 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_comm_list",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\smatch\scommmunity\scommunity-list\s(?P<comm_list>\S+)
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\smatch\scommunity\scommunity-list\s(?P<comm_list>\S+)
                 *$""",
                 re.VERBOSE,
             ),
-            "compval": "match.commmunity.community_list",
+            "compval": "match.community.community_list",
             "setval": "policy route-map {{route_map}} rule {{sequence}} "
-                      "match commmunity community-list {{set.comm_list.comm_list}}",
+                      "match community community-list {{set.comm_list.comm_list}}",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
