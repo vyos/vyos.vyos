@@ -5,7 +5,6 @@
       set interfaces ethernet eth0 address dhcp
       set interfaces ethernet eth0 speed auto
       set interfaces ethernet eth0 duplex auto
-      # Remove IP address from eth1 for lag tests
       set interfaces ethernet eth1
       set interfaces ethernet eth2
       delete interfaces loopback lo
