@@ -4,6 +4,113 @@ Vyos Collection Release Notes
 
 .. contents:: Topics
 
+v6.0.0
+======
+
+Release Summary
+---------------
+
+This is the first significant release from the VyOS community for these modules.
+This release is focussed on 1.3+ of VyOS and will be the last major release to
+support 1.3 fully. Although efforts have been made to maintain compatibility
+with the existing vyos collection modules, there have  breaking changes where
+necessary to configuration parameters. Please review all changes carefully before updating.
+
+Major Changes
+-------------
+
+- bgp modules - Added support for 1.4+ "system-as". 1.3 embedded as_number is still supported
+- vyos bgp modules - Many configuration attributes moved from `bgp_global` to `bgp_address_family` module (see documentation).
+- vyos_bgp_address_family - Aligned with version 1.3+ configuration - aggregate_address, maximum_paths, network, and redistribute moved from `bgp_global` module. These are now Address-family specific. Many neighbor attributes also moved from `vyos_bgp_global` to `vyos_bgp_address_family` module.
+- vyos_bgp_global - Aligned with version 1.3+ configuration - aggregate_address, maximum_paths, network, and redistribute Removed to `bgp_address_family` module.
+- vyos_user - add support for encrypted password specification
+- vyos_user - add support for public-key authentication
+
+Minor Changes
+-------------
+
+- README.md - Add Communication section with Forum information.
+- vyos_bgp_address_family - Redistribute, network stanza - added support for modifiers (metric, backdoor etc as per T6829)
+- vyos_bgp_global - Added support for `solo` neighbor attribute
+- vyos_config - block get_config call if match is set to "none"
+- vyos_facts - added `network_os_major_version` to facts
+- vyos_firewall_global - Added support for input, output, and forward chains (1.4+)
+- vyos_firewall_global - Added support for log-level in state-policy (1.4+)
+- vyos_firewall_global - with 1.4+, use the the global keyword to define global firewall rules
+- vyos_firewall_interfaces - added support for VIF interfaces
+- vyos_firewall_interfaces - enable support for 1.4 firewall
+- vyos_firewall_interfaces - expanded firewall interface types to match existing types
+- vyos_firewall_rules - Add support for diff mode for rulesets
+- vyos_firewall_rules - Added support for 1.4+ firewall rules
+- vyos_firewall_rules - Fixed comparing of firewall rules
+- vyos_firewall_rules - added support for 1.5+ firewall `match-ipsec-in`, `match-ipsec-out`, `match-none-in`, `match-none-out`
+- vyos_firewall_rules - added support for packet-length-exclude for 1.4+ and the states
+- vyos_l3_interfaces - make l3_interfaces pick up loopback interfaces
+- vyos_lldp_global -  address is now addresses, with appropriate coercion for existing address keys
+- vyos_ntp_global - Added ntp options for 1.5+ (interleave, ptp)
+- vyos_ntp_global - Added support for VyOS 1.4+ (chronyd vs ntpd)
+- vyos_ntp_global - Added syntax for allow_client in 1.4+
+- vyos_ospf_interaces - support for 1.4 ospf interfaces
+- vyos_ospf_interfaces - add support for VyOS 1.3- virtual interfaces
+- vyos_ospf_interfaces - add support for VyOS 1.4+, which moved interface configuration from the interfaces to ospf/ospfv3 interfaces configuration
+- vyos_route_maps - add support for as-path-prepend policy option
+
+Breaking Changes / Porting Guide
+--------------------------------
+
+- Removed `vyos_logging`. Use `vyos_logging_global` instead.
+- lldp_global - if "address" is available, merge will cause it to be added, in contrast to the previous behavior where it was replaced. When used in replace mode, it will remove any existing addresses and replace them with the new one.
+- vyos_bgp_address_family - Support for 1.3+ VyOS only
+- vyos_bgp_global - Support for 1.3+ VyOS only
+- vyos_firewall_rules - removed p2p options as they have been removed prior to 1.3 of VyOS
+- vyos_firewall_rules - tcp.flags is now a list with an inversion flag to support 1.4+ firewall rules, but still supports 1.3-
+- vyos_lldp_global - civic_address is no longer a valid key (removed prior to 1.3)
+- vyos_logging_global - For 1.4, `protocol` is an attribute of the syslog host, not the facility
+- vyos_snmp_server - no longer works with versions prior to 1.3
+- vyos_snmp_server - parameter `engine_id` is no longer a `user` or `trap_target` parameter and is now a `snmp_v3` parameter
+- vyos_snmp_server - parameters `encrypted-key` and `plaintext-key` are now `encrypted-password` and `plaintext-password`
+- vyos_user - explicit support for version 1.3+ only
+- vyos_user - removed level (and its alias, role) they were removed in 1.3
+
+Deprecated Features
+-------------------
+
+- vyos_bgp_global - no_ipv4_unicast - deprecated for use with VyOS 1.4+, use `ipv4_unicast` instead
+- vyos_firewall_interfaces - deprecated for use with VyOS 1.4+, firewalls are no longer connected directly to interfaces. See the Firewall Configuration documentation for how to establish a connection betwen the firewall rulesets and the flow, interface, or zone.
+- vyos_lldp_global - `address` is deprecated, use `addresses` instead. To be removed in 7.0.0.
+- vyos_logging_global - `protocol` is deprecated for 1.4 and later, use `facility` instead. To be removed in next major version where supprot for 1.3 is removed
+
+Bugfixes
+--------
+
+- vyos_config - Fix change detection for recent Vyos versions
+- vyos_firewall_global - Fix removing last member of a firewall group.
+- vyos_firewall_global - Fixed ipv6 route-redirects and tests
+- vyos_firewall_global - Fixed parsing of global-options (1.4+)
+- vyos_firewall_global - Fixed state-policy deletion (partial and full)
+- vyos_firewall_global - fixed behavior for stanzas processing by facts in 1.4+ (e.g. present/absent stanza vs enable/disable)
+- vyos_firewall_global - fixed the facts parsers to include state-policies, redirect
+- vyos_firewall_rules - Allow deleting of firewall description.
+- vyos_firewall_rules - Fix limit parameter processing
+- vyos_firewall_rules - fixed behavior for log, disable attributes
+- vyos_firewall_rules - fixed behavior for override and replaced states
+- vyos_interfaces - fixed bug where 'replace' would delete an active disable and not reinstate it
+- vyos_interfaces - fixed over-zealous handling of disable, which could catch other interface items that are disabled.
+- vyos_l3_interfaces - fix delete in interfaces to remove vif completely if in affected interface
+- vyos_l3_interfaces - fix override in interfaces to remove vif completely if not present in new config
+- vyos_l3_interfaces - fix replace in interfaces to remove vif completely if not present in new config
+- vyos_logging_global - Fixed v1.3 and before when `protocol` and `level` were set for the same host
+- vyos_ospf_interfaces - fixed get_config to cater for unordered command lists in 1.4+
+- vyos_ospfv2 - passive-interface processing for 1.3- and 1.4+
+- vyos_ospfv3 - added support for adding interfaces to areas
+- vyos_static routes - fixed the facts, argspecs, config to include interface-routes
+- vyos_user - fix handling of `full-name` in parser and module
+
+Known Issues
+------------
+
+- existing code for 1.3 facility protocol and facility level are not compatible, only one will be set and level is the priority.
+
 v5.0.0
 ======
 
