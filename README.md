@@ -6,7 +6,7 @@
 
 The Ansible VyOS collection includes a variety of Ansible content to help automate the management of VyOS network appliances.
 
-This collection has been tested against VyOS 1.3.8, 1.4.1 and the current rolling release for 1.5. Where possible,
+This collection has been tested against VyOS 1.3.8, 1.4.2 and the current rolling release for 1.5. Where possible,
 compatibility with older versions of VyOS are maintained but not guaranteed.
 
 ## Communication
@@ -20,7 +20,7 @@ compatibility with older versions of VyOS are maintained but not guaranteed.
 <!--start requires_ansible-->
 ## Ansible version compatibility
 
-This collection has been tested against following Ansible versions: **>=2.15.0**.
+This collection has been tested against following Ansible versions: **>=2.16.0**.
 
 For collections that support Ansible 2.9, please ensure you update your `network_os` to use the
 fully qualified collection name (for example, `cisco.ios.ios`).
@@ -232,8 +232,8 @@ Major Version | Ansible Support | VyOS Support | Details
 --- | --- | --- | ---
 4.1.0 | 2.15 | 1.1.2 | Final release for the 4.x series
 5.0.0 | 2.16 | 1.1.2 | First relase under VyOS control as a separate collection
-6.0.0 | 2.18 | 1.3.8 | *Planned* release for supporting VyOS 1.3.8+
-7.0.0 | x.xx | 1.4.x | *Prospective* release deprecating incompatible 1.3.x modules
+6.0.0 | 2.18 | 1.3.8 | Release for supporting VyOS 1.3.8+
+7.0.0 | x.xx | 1.4.x | *Planned* release deprecating incompatible 1.3.x modules
 
 Note:
 - Unreleased versions are not guaranteed to be released as described.
