@@ -47,7 +47,7 @@ author:
 - Rohit Thakur (@rohitthakur2590)
 - Gaige B. Paulsen (@gaige)
 notes:
-- Tested against VyOS 1.3.8.
+- Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5.
 - This module works with connection C(ansible.netcommon.network_cli).
   See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 
