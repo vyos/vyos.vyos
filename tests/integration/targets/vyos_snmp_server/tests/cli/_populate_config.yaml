@@ -2,6 +2,7 @@
 - name: setup
   vyos.vyos.vyos_config:
     lines:
+      - set interface ethernet eth1 address 192.0.2.1/24
       - set interface ethernet eth2 address 20.1.1.1/24
       - set service snmp community switches authorization rw
       - set service snmp community bridges client 1.1.1.1
