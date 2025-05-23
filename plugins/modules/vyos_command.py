@@ -86,7 +86,7 @@ options:
     default: 1
     type: int
 notes:
-- Tested against VyOS 1.1.8 (helium).
+- Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5.
 - Running C(show system boot-messages all) will cause the module to hang since VyOS
   is using a custom pager setting to display the output of that command.
 - If a command sent to the device requires answering a prompt, it is possible to pass
