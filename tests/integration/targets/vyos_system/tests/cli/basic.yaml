@@ -55,9 +55,9 @@
   ignore_errors: true
   vyos.vyos.vyos_config:
     lines:
-      - delete system name-server name-server 192.0.2.1
-      - delete system name-server name-server 192.0.2.2
-      - delete system name-server name-server 192.0.2.3
+      - delete system name-server 192.0.2.1
+      - delete system name-server 192.0.2.2
+      - delete system name-server 192.0.2.3
     match: none
 
 - debug: msg="END cli/basic.yaml on connection={{ ansible_connection }}"
