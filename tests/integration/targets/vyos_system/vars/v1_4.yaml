@@ -1,0 +1,4 @@
+---
+merged:
+  commands:
+    - set system domain-search 'nbg.bufanda.ke'
