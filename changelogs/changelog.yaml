@@ -600,6 +600,7 @@ releases:
       - T7260-remove-last-firewall-group-member.yaml
       - T7284-delete_firewall_description.yml
       - T7329_snmp_server_support.yml
+      - T7391_domain_search.yaml
       - bgp_address_family.yaml
       - bgp_global.yaml
       - cliconf.yml
@@ -609,6 +610,7 @@ releases:
       - firewall_rules.yml
       - firewall_rules_diff.yml
       - fix-recent-vyos-version-change-detection.yml
+      - integration_tests_fixes.yml
       - interfaces_update.yml
       - ntp_global.yaml
       - resource_updates.yml
