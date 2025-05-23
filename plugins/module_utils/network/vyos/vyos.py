@@ -68,6 +68,7 @@ def get_capabilities(module):
 def get_config(module, flags=None, format=None):
     flags = [] if flags is None else flags
     global _DEVICE_CONFIGS
+
     # If _DEVICE_CONFIGS is non-empty and module.params["match"] is "none",
     # return the cached device configurations. This avoids redundant calls
     # to the connection when no specific match criteria are provided.
