@@ -1,8 +1,0 @@
----
-minor_changes:
-  - vyos_firewall_rules - added support for packet-length-exclude for 1.4+ and the states
-bugfixes:
-  - vyos_firewall_rules - fixed behavior for override and replaced states
-  - vyos_firewall_rules - fixed behavior for log, disable attributes
-trivial:
-  - vyos_firewall_rules - added a separate test suite test_vyos_firewall_rules14.py

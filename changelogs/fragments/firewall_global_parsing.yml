@@ -1,3 +1,0 @@
----
-bugfixes:
-  - vyos_firewall_global - Fixed parsing of global-options (1.4+)

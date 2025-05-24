@@ -34,7 +34,7 @@ version_added: 1.0.0
 extends_documentation_fragment:
 - vyos.vyos.vyos
 notes:
-- Tested against VyOS 1.1.8 (helium).
+- Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5.
 - This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 options:
   host_name:

@@ -1,8 +1,0 @@
----
-minor_changes:
-  - vyos_firewall_global - with 1.4+, use the the global keyword to define global firewall rules
-  - vyos_firewall_global - Added support for input, output, and forward chains (1.4+)
-  - vyos_firewall_global - Added support for log-level in state-policy (1.4+)
-bugfixes:
-  - vyos_firewall_global - Fixed ipv6 route-redirects and tests
-  - vyos_firewall_global - Fixed state-policy deletion (partial and full)

@@ -1,3 +1,0 @@
-trivial:
-  - update galaxy.yml for release version 6.0.0
-  - update fragments to include modules, re-align with requirements

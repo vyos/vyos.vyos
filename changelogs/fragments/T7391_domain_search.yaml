@@ -1,4 +1,0 @@
----
-trivial:
-  - vyos_system - Added support for domain_search for 1.4+
-  - test_vyos_system - Added test for domain_search

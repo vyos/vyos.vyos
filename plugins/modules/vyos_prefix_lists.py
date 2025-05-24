@@ -21,7 +21,7 @@ description:
 version_added: 2.4.0
 author: Priyam Sahoo (@priyamsahoo)
 notes:
-  - Tested against VyOS 1.1.8 (helium)
+  - Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5
   - This module works with connection C(network_cli)
 options:
   config:

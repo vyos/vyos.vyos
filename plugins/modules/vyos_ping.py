@@ -30,7 +30,7 @@ module: vyos_ping
 short_description: Tests reachability using ping from VyOS network devices
 description:
 - Tests reachability using ping from a VyOS device to a remote destination.
-- Tested against VyOS 1.1.8 (helium)
+- Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5
 - For a general purpose network module, see the M(ansible.netcommon.net_ping) module.
 - For Windows targets, use the M(ansible.windows.win_ping) module instead.
 - For targets running Python, use the M(ansible.builtin.ping) module instead.
@@ -73,7 +73,7 @@ options:
     - present
     default: present
 notes:
-- Tested against VyOS 1.1.8 (helium).
+- Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5.
 - For a general purpose network module, see the M(ansible.netcommon.net_ping) module.
 - For Windows targets, use the M(ansible.windows.win_ping) module instead.
 - For targets running Python, use the M(ansible.builtin.ping) module instead.

@@ -18,7 +18,7 @@ Version added: 1.0.0
 Synopsis
 --------
 - This module manages BGP address family configuration of interfaces on devices running VYOS.
-- Tested against VYOS 1.3, 1.4
+- Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5
 
 
 

@@ -1,3 +1,0 @@
----
-minor_changes:
-  - vyos_facts - added `network_os_major_version` to facts

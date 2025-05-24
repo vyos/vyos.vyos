@@ -1,4 +1,0 @@
----
-trivial:
-  - prepare_vyos_tests - fix dependency script for intergration tests to run on e1000e vNiC
-  - vyos_snmp_server - add SNMPv3 engine ID to vars and merged.yaml and rendered.yaml to meet 1.4.x and 1.5.x requirements

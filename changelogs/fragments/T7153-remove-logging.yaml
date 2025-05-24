@@ -1,3 +1,0 @@
----
-breaking_changes:
-  - Removed `vyos_logging`. Use `vyos_logging_global` instead.

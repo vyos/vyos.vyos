@@ -1,3 +1,0 @@
----
-minor_changes:
-  - vyos_config - block get_config call if match is set to "none"

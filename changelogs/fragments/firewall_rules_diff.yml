@@ -1,3 +1,0 @@
----
-minor_changes:
-  - vyos_firewall_rules - Add support for diff mode for rulesets
