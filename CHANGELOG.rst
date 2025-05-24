@@ -111,6 +111,11 @@ Known Issues
 
 - existing code for 1.3 facility protocol and facility level are not compatible, only one will be set and level is the priority.
 
+Documentation Changes
+---------------------
+
+- Updated tested versions
+
 v5.0.0
 ======
 
