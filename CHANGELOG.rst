@@ -115,6 +115,7 @@ Documentation Changes
 ---------------------
 
 - Updated tested versions
+- Updates to module documentation
 
 v5.0.0
 ======

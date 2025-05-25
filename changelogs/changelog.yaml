@@ -501,6 +501,7 @@ releases:
           instead. To be removed in next major version where supprot for 1.3 is removed
       doc_changes:
         - Updated tested versions
+        - Updates to module documentation
       known_issues:
         - existing code for 1.3 facility protocol and facility level are not compatible,
           only one will be set and level is the priority.
@@ -606,6 +607,7 @@ releases:
       - bgp_address_family.yaml
       - bgp_global.yaml
       - cliconf.yml
+      - doc_updates.yaml
       - doc_updates.yaml
       - firewall_global_14.yml
       - firewall_global_parsing.yml
