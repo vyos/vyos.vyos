@@ -97,7 +97,6 @@ class VrfTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "vrf name {{name}} description {{description}}",
-            "compval": "description",
             "result": {
                 "name": "{{ name }}",
                 "description": "{{ desc }}",
@@ -191,7 +190,7 @@ class VrfTemplate(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if af == "ip" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
-                        "no_resolve_via_default": "{{ True if nht is defined }}",
+                        "nht_no_resolve_via_default": "{{ True if nht is defined }}",
                     },
                 },
             },

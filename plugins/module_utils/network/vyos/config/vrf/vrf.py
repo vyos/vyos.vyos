@@ -21,11 +21,9 @@ created.
 from copy import deepcopy
 
 from ansible.module_utils.six import iteritems
+from ansible.plugins.filter.core import combine
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
-)
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    dict_merge,
 )
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
@@ -36,6 +34,11 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.versi
     LooseVersion,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+
+# from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+#     dict_merge,
+# )
 
 
 class Vrf(ResourceModule):
@@ -93,10 +96,14 @@ class Vrf(ResourceModule):
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
 
+        # w = self._converter(wantd)
+        # h = self._converter(haved)
+
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged", "replaced"]:
-            wantd = dict_merge(self.have, self.want)
-        # self._module.fail_json(msg="Want: " + str(wantd) + "**** H:  " + str(haved))
+            # wantd = dict_merge(wantd, haved)
+            wantd = haved | combine(wantd, recursive=True)
+            # self._module.fail_json(msg="Want: " + str(wantd) + "**** H:  " + str(haved))
 
         # if state is deleted, delete and empty out wantd
         if self.state == "deleted":
@@ -153,6 +160,7 @@ class Vrf(ResourceModule):
             "description",
             "disable_vrf",
         ]
+        # self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
 
         for entry in want:
             h = {}
@@ -185,14 +193,17 @@ class Vrf(ResourceModule):
 
         wafi = self._vrf_inst_list_to_dict(want)
         hafi = self._vrf_inst_list_to_dict(have)
-        # wafi = {
-        #         "name": "vrf-test",
-        #         "address_family": {
-        #             "ipv4": {
-        #                 "afi": "ipv4",
-        #             },
-        #         }
-        #     }
+        wafi = {
+            "name": "vrf-red",
+            "address_family": {
+                "ipv4": {
+                    "afi": "ipv4",
+                    "nht_no_resolve_via_default": False,
+                },
+            },
+        }
+        hafi = {}
+        # self._module.fail_json(msg="wafi: " + str(wafi) + " **** hafi:  " + str(hafi))
         self.compare(parsers=parsers, want=wafi, have=hafi)
 
     def _vrf_inst_list_to_dict(self, entry):
@@ -202,3 +213,13 @@ class Vrf(ResourceModule):
                 "name": entry["name"],
                 "address_family": address_family_dict,
             }
+
+    def _converter(self, data):
+        for instance in data["instances"]:
+            if "address_family" in instance and isinstance(instance["address_family"], list):
+                af_dict = {}
+                for af in instance["address_family"]:
+                    afi_key = f"{af['afi']}:"
+                    af_dict[afi_key] = af
+                instance["address_family"] = af_dict
+        return data

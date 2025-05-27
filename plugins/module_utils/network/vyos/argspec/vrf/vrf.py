@@ -58,7 +58,7 @@ class VrfArgs(object):  # pylint: disable=R0903
                                     "choices": ["ipv4", "ipv6"],
                                 },
                                 "disable_forwarding": {"type": "bool", "default": False},
-                                "no_resolve_via_default": {"type": "bool", "default": False},
+                                "nht_no_resolve_via_default": {"type": "bool", "default": False},
                             },
                         },
                     },
