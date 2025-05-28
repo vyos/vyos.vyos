@@ -117,16 +117,16 @@ class TestVyosNTPModule(TestVyosModule):
         )
 
         commands = [
-            "set system ntp allow-clients address 10.2.2.0/24",
-            "set system ntp allow-clients address 10.3.3.0/24",
-            "set system ntp listen-address 10.3.4.1",
-            "set system ntp listen-address 10.4.5.1",
-            "set system ntp server server4 dynamic",
-            "set system ntp server server4 preempt",
-            "set system ntp server server5 dynamic",
-            "set system ntp server server5 noselect",
-            "set system ntp server server5 preempt",
-            "set system ntp server server5 prefer",
+            "set service ntp allow-clients address 10.2.2.0/24",
+            "set service ntp allow-clients address 10.3.3.0/24",
+            "set service ntp listen-address 10.3.4.1",
+            "set service ntp listen-address 10.4.5.1",
+            "set service ntp server server4 dynamic",
+            "set service ntp server server4 preempt",
+            "set service ntp server server5 dynamic",
+            "set service ntp server server5 noselect",
+            "set service ntp server server5 preempt",
+            "set service ntp server server5 prefer",
         ]
 
         self.execute_module(changed=True, commands=commands)
@@ -157,22 +157,22 @@ class TestVyosNTPModule(TestVyosModule):
             ),
         )
         commands = [
-            "delete system ntp allow-clients address 10.1.1.0/24",
-            "delete system ntp allow-clients address 10.1.2.0/24",
-            "delete system ntp listen-address 10.2.3.1",
-            "delete system ntp listen-address 10.4.3.1",
-            "delete system ntp server server1",
-            "delete system ntp server server3",
-            "set system ntp allow-clients address 10.3.4.0/24",
-            "set system ntp allow-clients address 10.4.5.0/24",
-            "set system ntp listen-address 10.3.3.1",
-            "set system ntp listen-address 10.4.4.1",
-            "set system ntp server server4 noselect",
-            "set system ntp server server4 prefer",
-            "set system ntp server server6 noselect",
-            "set system ntp server server6 dynamic",
-            "set system ntp server server6 prefer",
-            "set system ntp server server6 preempt",
+            "delete service ntp allow-clients address 10.1.1.0/24",
+            "delete service ntp allow-clients address 10.1.2.0/24",
+            "delete service ntp listen-address 10.2.3.1",
+            "delete service ntp listen-address 10.4.3.1",
+            "delete service ntp server server1",
+            "delete service ntp server server3",
+            "set service ntp allow-clients address 10.3.4.0/24",
+            "set service ntp allow-clients address 10.4.5.0/24",
+            "set service ntp listen-address 10.3.3.1",
+            "set service ntp listen-address 10.4.4.1",
+            "set service ntp server server4 noselect",
+            "set service ntp server server4 prefer",
+            "set service ntp server server6 noselect",
+            "set service ntp server server6 dynamic",
+            "set service ntp server server6 prefer",
+            "set service ntp server server6 preempt",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -213,17 +213,17 @@ class TestVyosNTPModule(TestVyosModule):
             ),
         )
         commands = [
-            "delete system ntp allow-clients address 10.1.1.0/24",
-            "delete system ntp allow-clients address 10.1.2.0/24",
-            "delete system ntp listen-address 10.2.3.1",
-            "delete system ntp listen-address 10.4.3.1",
-            "delete system ntp server server1",
-            "delete system ntp server server3",
-            "set system ntp allow-clients address 10.9.9.0/24",
-            "set system ntp listen-address 10.9.9.1",
-            "set system ntp server server9",
-            "set system ntp server server6 noselect",
-            "set system ntp server server6 dynamic",
+            "delete service ntp allow-clients address 10.1.1.0/24",
+            "delete service ntp allow-clients address 10.1.2.0/24",
+            "delete service ntp listen-address 10.2.3.1",
+            "delete service ntp listen-address 10.4.3.1",
+            "delete service ntp server server1",
+            "delete service ntp server server3",
+            "set service ntp allow-clients address 10.9.9.0/24",
+            "set service ntp listen-address 10.9.9.1",
+            "set service ntp server server9",
+            "set service ntp server server6 noselect",
+            "set service ntp server server6 dynamic",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -264,15 +264,15 @@ class TestVyosNTPModule(TestVyosModule):
             ),
         )
         rendered_commands = [
-            "set system ntp allow-clients address 10.7.7.0/24",
-            "set system ntp allow-clients address 10.8.8.0/24",
-            "set system ntp listen-address 10.7.9.1",
-            "set system ntp server server79",
-            "set system ntp server server46 noselect",
-            "set system ntp server server46 dynamic",
-            "set system ntp server time1.vyos.net",
-            "set system ntp server time2.vyos.net",
-            "set system ntp server time3.vyos.net",
+            "set service ntp allow-clients address 10.7.7.0/24",
+            "set service ntp allow-clients address 10.8.8.0/24",
+            "set service ntp listen-address 10.7.9.1",
+            "set service ntp server server79",
+            "set service ntp server server46 noselect",
+            "set service ntp server server46 dynamic",
+            "set service ntp server time1.vyos.net",
+            "set service ntp server time2.vyos.net",
+            "set service ntp server time3.vyos.net",
         ]
         result = self.execute_module(changed=False)
         self.assertEqual(
@@ -283,16 +283,16 @@ class TestVyosNTPModule(TestVyosModule):
 
     def test_ntp_parsed(self):
         commands = (
-            "set system ntp allow-clients address 10.7.7.0/24",
-            "set system ntp allow-clients address 10.6.7.0/24",
-            "set system ntp listen-address 10.7.9.1",
-            "set system ntp listen-address 10.7.7.1",
-            "set system ntp server check",
-            "set system ntp server server46 noselect",
-            "set system ntp server server46 prefer",
-            "set system ntp server time1.vyos.net",
-            "set system ntp server time2.vyos.net",
-            "set system ntp server time3.vyos.net",
+            "set service ntp allow-clients address 10.7.7.0/24",
+            "set service ntp allow-clients address 10.6.7.0/24",
+            "set service ntp listen-address 10.7.9.1",
+            "set service ntp listen-address 10.7.7.1",
+            "set service ntp server check",
+            "set service ntp server server46 noselect",
+            "set service ntp server server46 prefer",
+            "set service ntp server time1.vyos.net",
+            "set service ntp server time2.vyos.net",
+            "set service ntp server time3.vyos.net",
         )
         parsed_str = "\n".join(commands)
         set_module_args(dict(running_config=parsed_str, state="parsed"))
@@ -346,14 +346,14 @@ class TestVyosNTPModule(TestVyosModule):
             ),
         )
         commands = [
-            "delete system ntp allow-clients",  # 10.1.1.0/24",
-            "delete system ntp listen-address",  # 10.2.3.1",
-            "delete system ntp server server1",
-            "delete system ntp server server3",
-            "delete system ntp server time1.vyos.net",
-            "delete system ntp server time2.vyos.net",
-            "delete system ntp server time3.vyos.net",
-            "delete system ntp",
+            "delete service ntp allow-clients",  # 10.1.1.0/24",
+            "delete service ntp listen-address",  # 10.2.3.1",
+            "delete service ntp server server1",
+            "delete service ntp server server3",
+            "delete service ntp server time1.vyos.net",
+            "delete service ntp server time2.vyos.net",
+            "delete service ntp server time3.vyos.net",
+            "delete service ntp",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -365,14 +365,14 @@ class TestVyosNTPModule(TestVyosModule):
             ),
         )
         commands = [
-            "delete system ntp allow-clients",
-            "delete system ntp listen-address",
-            "delete system ntp server server1",
-            "delete system ntp server server3",
-            "delete system ntp server time1.vyos.net",
-            "delete system ntp server time2.vyos.net",
-            "delete system ntp server time3.vyos.net",
-            "delete system ntp",
+            "delete service ntp allow-clients",
+            "delete service ntp listen-address",
+            "delete service ntp server server1",
+            "delete service ntp server server3",
+            "delete service ntp server time1.vyos.net",
+            "delete service ntp server time2.vyos.net",
+            "delete service ntp server time3.vyos.net",
+            "delete service ntp",
         ]
         self.execute_module(changed=True, commands=commands)
 
