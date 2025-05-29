@@ -19,6 +19,7 @@ Synopsis
 --------
 - This module manages BGP global configuration of interfaces on devices running VYOS.
 - Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5
+- The provided examples of commands are valid for VyOS 1.4+
 
 
 
@@ -1381,33 +1382,34 @@ Examples
 
     # After State
     # vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
-    # set protocols bgp 65536 aggregate-address 192.0.2.0/24 'summary-only'
-    # set protocols bgp 65536 aggregate-address 203.0.113.0/24 'as-set'
-    # set protocols bgp 65536 maximum-paths ebgp '20'
-    # set protocols bgp 65536 maximum-paths ibgp '55'
-    # set protocols bgp 65536 neighbor 192.0.2.25 'disable-connected-check'
-    # set protocols bgp 65536 neighbor 192.0.2.25 timers holdtime '30'
-    # set protocols bgp 65536 neighbor 192.0.2.25 timers keepalive '10'
-    # set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'as-path'
-    # set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'med'
-    # set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'next-hop'
-    # set protocols bgp 65536 neighbor 203.0.113.5 ebgp-multihop '2'
-    # set protocols bgp 65536 neighbor 203.0.113.5 remote-as '101'
-    # set protocols bgp 65536 neighbor 203.0.113.5 update-source '192.0.2.25'
-    # set protocols bgp 65536 neighbor 5001::64 distribute-list export '20'
-    # set protocols bgp 65536 neighbor 5001::64 distribute-list import '40'
-    # set protocols bgp 65536 neighbor 5001::64 maximum-prefix '34'
-    # set protocols bgp 65536 network 192.1.13.0/24 'backdoor'
-    # set protocols bgp 65536 parameters bestpath as-path 'confed'
-    # set protocols bgp 65536 parameters bestpath 'compare-routerid'
-    # set protocols bgp 65536 parameters confederation identifier '66'
-    # set protocols bgp 65536 parameters confederation peers '20'
-    # set protocols bgp 65536 parameters confederation peers '55'
-    # set protocols bgp 65536 parameters default 'no-ipv4-unicast'
-    # set protocols bgp 65536 parameters router-id '192.1.2.9'
-    # set protocols bgp 65536 redistribute connected route-map 'map01'
-    # set protocols bgp 65536 redistribute kernel metric '45'
-    # set protocols bgp 65536 timers keepalive '35'
+    # set protocols bgp system-as 65536
+    # set protocols bgp aggregate-address 192.0.2.0/24 'summary-only'
+    # set protocols bgp aggregate-address 203.0.113.0/24 'as-set'
+    # set protocols bgp maximum-paths ebgp '20'
+    # set protocols bgp maximum-paths ibgp '55'
+    # set protocols bgp neighbor 192.0.2.25 'disable-connected-check'
+    # set protocols bgp neighbor 192.0.2.25 timers holdtime '30'
+    # set protocols bgp neighbor 192.0.2.25 timers keepalive '10'
+    # set protocols bgp neighbor 203.0.113.5 attribute-unchanged 'as-path'
+    # set protocols bgp neighbor 203.0.113.5 attribute-unchanged 'med'
+    # set protocols bgp neighbor 203.0.113.5 attribute-unchanged 'next-hop'
+    # set protocols bgp neighbor 203.0.113.5 ebgp-multihop '2'
+    # set protocols bgp neighbor 203.0.113.5 remote-as '101'
+    # set protocols bgp neighbor 203.0.113.5 update-source '192.0.2.25'
+    # set protocols bgp neighbor 5001::64 distribute-list export '20'
+    # set protocols bgp neighbor 5001::64 distribute-list import '40'
+    # set protocols bgp neighbor 5001::64 maximum-prefix '34'
+    # set protocols bgp network 192.1.13.0/24 'backdoor'
+    # set protocols bgp parameters bestpath as-path 'confed'
+    # set protocols bgp parameters bestpath 'compare-routerid'
+    # set protocols bgp parameters confederation identifier '66'
+    # set protocols bgp parameters confederation peers '20'
+    # set protocols bgp parameters confederation peers '55'
+    # set protocols bgp parameters default 'no-ipv4-unicast'
+    # set protocols bgp parameters router-id '192.1.2.9'
+    # set protocols bgp redistribute connected route-map 'map01'
+    # set protocols bgp redistribute kernel metric '45'
+    # set protocols bgp timers keepalive '35'
     # vyos@vyos:~$
     #
     # # Module Execution:
@@ -1513,33 +1515,33 @@ Examples
     #     "before": {},
     #     "changed": true,
     #     "commands": [
-    #         "set protocols bgp 65536 neighbor 192.0.2.25 disable-connected-check",
-    #         "set protocols bgp 65536 neighbor 192.0.2.25 timers holdtime 30",
-    #         "set protocols bgp 65536 neighbor 192.0.2.25 timers keepalive 10",
-    #         "set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged as-path",
-    #         "set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged med",
-    #         "set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged next-hop",
-    #         "set protocols bgp 65536 neighbor 203.0.113.5 ebgp-multihop 2",
-    #         "set protocols bgp 65536 neighbor 203.0.113.5 remote-as 101",
-    #         "set protocols bgp 65536 neighbor 203.0.113.5 update-source 192.0.2.25",
-    #         "set protocols bgp 65536 neighbor 5001::64 maximum-prefix 34",
-    #         "set protocols bgp 65536 neighbor 5001::64 distribute-list export 20",
-    #         "set protocols bgp 65536 neighbor 5001::64 distribute-list import 40",
-    #         "set protocols bgp 65536 redistribute kernel metric 45",
-    #         "set protocols bgp 65536 redistribute connected route-map map01",
-    #         "set protocols bgp 65536 network 192.1.13.0/24 backdoor",
-    #         "set protocols bgp 65536 aggregate-address 203.0.113.0/24 as-set",
-    #         "set protocols bgp 65536 aggregate-address 192.0.2.0/24 summary-only",
-    #         "set protocols bgp 65536 parameters bestpath as-path confed",
-    #         "set protocols bgp 65536 parameters bestpath compare-routerid",
-    #         "set protocols bgp 65536 parameters default no-ipv4-unicast",
-    #         "set protocols bgp 65536 parameters router-id 192.1.2.9",
-    #         "set protocols bgp 65536 parameters confederation peers 20",
-    #         "set protocols bgp 65536 parameters confederation peers 55",
-    #         "set protocols bgp 65536 parameters confederation identifier 66",
-    #         "set protocols bgp 65536 maximum-paths ebgp 20",
-    #         "set protocols bgp 65536 maximum-paths ibgp 55",
-    #         "set protocols bgp 65536 timers keepalive 35"
+    #         "set protocols bgp neighbor 192.0.2.25 disable-connected-check",
+    #         "set protocols bgp neighbor 192.0.2.25 timers holdtime 30",
+    #         "set protocols bgp neighbor 192.0.2.25 timers keepalive 10",
+    #         "set protocols bgp neighbor 203.0.113.5 attribute-unchanged as-path",
+    #         "set protocols bgp neighbor 203.0.113.5 attribute-unchanged med",
+    #         "set protocols bgp neighbor 203.0.113.5 attribute-unchanged next-hop",
+    #         "set protocols bgp neighbor 203.0.113.5 ebgp-multihop 2",
+    #         "set protocols bgp neighbor 203.0.113.5 remote-as 101",
+    #         "set protocols bgp neighbor 203.0.113.5 update-source 192.0.2.25",
+    #         "set protocols bgp neighbor 5001::64 maximum-prefix 34",
+    #         "set protocols bgp neighbor 5001::64 distribute-list export 20",
+    #         "set protocols bgp neighbor 5001::64 distribute-list import 40",
+    #         "set protocols bgp redistribute kernel metric 45",
+    #         "set protocols bgp redistribute connected route-map map01",
+    #         "set protocols bgp network 192.1.13.0/24 backdoor",
+    #         "set protocols bgp aggregate-address 203.0.113.0/24 as-set",
+    #         "set protocols bgp aggregate-address 192.0.2.0/24 summary-only",
+    #         "set protocols bgp parameters bestpath as-path confed",
+    #         "set protocols bgp parameters bestpath compare-routerid",
+    #         "set protocols bgp parameters default no-ipv4-unicast",
+    #         "set protocols bgp parameters router-id 192.1.2.9",
+    #         "set protocols bgp parameters confederation peers 20",
+    #         "set protocols bgp parameters confederation peers 55",
+    #         "set protocols bgp parameters confederation identifier 66",
+    #         "set protocols bgp maximum-paths ebgp 20",
+    #         "set protocols bgp maximum-paths ibgp 55",
+    #         "set protocols bgp timers keepalive 35"
     #     ],
 
     # Using replaced:
@@ -1548,33 +1550,34 @@ Examples
     # Before state:
 
     # vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
-    # set protocols bgp 65536 aggregate-address 192.0.2.0/24 'summary-only'
-    # set protocols bgp 65536 aggregate-address 203.0.113.0/24 'as-set'
-    # set protocols bgp 65536 maximum-paths ebgp '20'
-    # set protocols bgp 65536 maximum-paths ibgp '55'
-    # set protocols bgp 65536 neighbor 192.0.2.25 'disable-connected-check'
-    # set protocols bgp 65536 neighbor 192.0.2.25 timers holdtime '30'
-    # set protocols bgp 65536 neighbor 192.0.2.25 timers keepalive '10'
-    # set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'as-path'
-    # set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'med'
-    # set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'next-hop'
-    # set protocols bgp 65536 neighbor 203.0.113.5 ebgp-multihop '2'
-    # set protocols bgp 65536 neighbor 203.0.113.5 remote-as '101'
-    # set protocols bgp 65536 neighbor 203.0.113.5 update-source '192.0.2.25'
-    # set protocols bgp 65536 neighbor 5001::64 distribute-list export '20'
-    # set protocols bgp 65536 neighbor 5001::64 distribute-list import '40'
-    # set protocols bgp 65536 neighbor 5001::64 maximum-prefix '34'
-    # set protocols bgp 65536 network 192.1.13.0/24 'backdoor'
-    # set protocols bgp 65536 parameters bestpath as-path 'confed'
-    # set protocols bgp 65536 parameters bestpath 'compare-routerid'
-    # set protocols bgp 65536 parameters confederation identifier '66'
-    # set protocols bgp 65536 parameters confederation peers '20'
-    # set protocols bgp 65536 parameters confederation peers '55'
-    # set protocols bgp 65536 parameters default 'no-ipv4-unicast'
-    # set protocols bgp 65536 parameters router-id '192.1.2.9'
-    # set protocols bgp 65536 redistribute connected route-map 'map01'
-    # set protocols bgp 65536 redistribute kernel metric '45'
-    # set protocols bgp 65536 timers keepalive '35'
+    # set protocols bgp system-as 65536
+    # set protocols bgp aggregate-address 192.0.2.0/24 'summary-only'
+    # set protocols bgp aggregate-address 203.0.113.0/24 'as-set'
+    # set protocols bgp maximum-paths ebgp '20'
+    # set protocols bgp maximum-paths ibgp '55'
+    # set protocols bgp neighbor 192.0.2.25 'disable-connected-check'
+    # set protocols bgp neighbor 192.0.2.25 timers holdtime '30'
+    # set protocols bgp neighbor 192.0.2.25 timers keepalive '10'
+    # set protocols bgp neighbor 203.0.113.5 attribute-unchanged 'as-path'
+    # set protocols bgp neighbor 203.0.113.5 attribute-unchanged 'med'
+    # set protocols bgp neighbor 203.0.113.5 attribute-unchanged 'next-hop'
+    # set protocols bgp neighbor 203.0.113.5 ebgp-multihop '2'
+    # set protocols bgp neighbor 203.0.113.5 remote-as '101'
+    # set protocols bgp neighbor 203.0.113.5 update-source '192.0.2.25'
+    # set protocols bgp neighbor 5001::64 distribute-list export '20'
+    # set protocols bgp neighbor 5001::64 distribute-list import '40'
+    # set protocols bgp neighbor 5001::64 maximum-prefix '34'
+    # set protocols bgp network 192.1.13.0/24 'backdoor'
+    # set protocols bgp parameters bestpath as-path 'confed'
+    # set protocols bgp parameters bestpath 'compare-routerid'
+    # set protocols bgp parameters confederation identifier '66'
+    # set protocols bgp parameters confederation peers '20'
+    # set protocols bgp parameters confederation peers '55'
+    # set protocols bgp parameters default 'no-ipv4-unicast'
+    # set protocols bgp parameters router-id '192.1.2.9'
+    # set protocols bgp redistribute connected route-map 'map01'
+    # set protocols bgp redistribute kernel metric '45'
+    # set protocols bgp timers keepalive '35'
     # vyos@vyos:~$
 
     - name: Replace
@@ -1599,11 +1602,12 @@ Examples
     # After state:
 
     # vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
-    # set protocols bgp 65536 neighbor 192.0.2.40 advertisement-interval '72'
-    # set protocols bgp 65536 neighbor 192.0.2.40 capability orf prefix-list 'receive'
-    # set protocols bgp 65536 network 203.0.113.0/24 route-map 'map01'
-    # set protocols bgp 65536 parameters bestpath as-path 'confed'
-    # set protocols bgp 65536 redistribute static route-map 'map01'
+    # set protocols bgp system-as 65536
+    # set protocols bgp neighbor 192.0.2.40 advertisement-interval '72'
+    # set protocols bgp neighbor 192.0.2.40 capability orf prefix-list 'receive'
+    # set protocols bgp network 203.0.113.0/24 route-map 'map01'
+    # set protocols bgp parameters bestpath as-path 'confed'
+    # set protocols bgp redistribute static route-map 'map01'
     # vyos@vyos:~$
     #
     #
@@ -1738,26 +1742,26 @@ Examples
     #     },
     #     "changed": true,
     #     "commands": [
-    #         "delete protocols bgp 65536 timers",
-    #         "delete protocols bgp 65536 maximum-paths ",
-    #         "delete protocols bgp 65536 maximum-paths ",
-    #         "delete protocols bgp 65536 parameters router-id 192.1.2.9",
-    #         "delete protocols bgp 65536 parameters default",
-    #         "delete protocols bgp 65536 parameters confederation",
-    #         "delete protocols bgp 65536 parameters bestpath compare-routerid",
-    #         "delete protocols bgp 65536 aggregate-address",
-    #         "delete protocols bgp 65536 network 192.1.13.0/24",
-    #         "delete protocols bgp 65536 redistribute kernel",
-    #         "delete protocols bgp 65536 redistribute kernel",
-    #         "delete protocols bgp 65536 redistribute connected",
-    #         "delete protocols bgp 65536 redistribute connected",
-    #         "delete protocols bgp 65536 neighbor 5001::64",
-    #         "delete protocols bgp 65536 neighbor 203.0.113.5",
-    #         "delete protocols bgp 65536 neighbor 192.0.2.25",
-    #         "set protocols bgp 65536 neighbor 192.0.2.40 advertisement-interval 72",
-    #         "set protocols bgp 65536 neighbor 192.0.2.40 capability orf prefix-list receive",
-    #         "set protocols bgp 65536 redistribute static route-map map01",
-    #         "set protocols bgp 65536 network 203.0.113.0/24 route-map map01"
+    #         "delete protocols bgp timers",
+    #         "delete protocols bgp maximum-paths ",
+    #         "delete protocols bgp maximum-paths ",
+    #         "delete protocols bgp parameters router-id 192.1.2.9",
+    #         "delete protocols bgp parameters default",
+    #         "delete protocols bgp parameters confederation",
+    #         "delete protocols bgp parameters bestpath compare-routerid",
+    #         "delete protocols bgp aggregate-address",
+    #         "delete protocols bgp network 192.1.13.0/24",
+    #         "delete protocols bgp redistribute kernel",
+    #         "delete protocols bgp redistribute kernel",
+    #         "delete protocols bgp redistribute connected",
+    #         "delete protocols bgp redistribute connected",
+    #         "delete protocols bgp neighbor 5001::64",
+    #         "delete protocols bgp neighbor 203.0.113.5",
+    #         "delete protocols bgp neighbor 192.0.2.25",
+    #         "set protocols bgp neighbor 192.0.2.40 advertisement-interval 72",
+    #         "set protocols bgp neighbor 192.0.2.40 capability orf prefix-list receive",
+    #         "set protocols bgp redistribute static route-map map01",
+    #         "set protocols bgp network 203.0.113.0/24 route-map map01"
     #     ],
 
     # Using deleted:
@@ -1766,11 +1770,12 @@ Examples
     # Before state:
 
     # vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
-    # set protocols bgp 65536 neighbor 192.0.2.40 advertisement-interval '72'
-    # set protocols bgp 65536 neighbor 192.0.2.40 capability orf prefix-list 'receive'
-    # set protocols bgp 65536 network 203.0.113.0/24 route-map 'map01'
-    # set protocols bgp 65536 parameters bestpath as-path 'confed'
-    # set protocols bgp 65536 redistribute static route-map 'map01'
+    # set protocols bgp system-as 65536
+    # set protocols bgp neighbor 192.0.2.40 advertisement-interval '72'
+    # set protocols bgp neighbor 192.0.2.40 capability orf prefix-list 'receive'
+    # set protocols bgp network 203.0.113.0/24 route-map 'map01'
+    # set protocols bgp parameters bestpath as-path 'confed'
+    # set protocols bgp redistribute static route-map 'map01'
     # vyos@vyos:~$
 
     - name: Delete configuration
@@ -1822,10 +1827,10 @@ Examples
     #     },
     #     "changed": true,
     #     "commands": [
-    #         "delete protocols bgp 65536 neighbor 192.0.2.40",
-    #         "delete protocols bgp 65536 redistribute",
-    #         "delete protocols bgp 65536 network",
-    #         "delete protocols bgp 65536 parameters"
+    #         "delete protocols bgp neighbor 192.0.2.40",
+    #         "delete protocols bgp redistribute",
+    #         "delete protocols bgp network",
+    #         "delete protocols bgp parameters"
     #     ],
 
     # Using purged:
@@ -1833,33 +1838,34 @@ Examples
     # Before state:
 
     # vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
-    # set protocols bgp 65536 aggregate-address 192.0.2.0/24 'summary-only'
-    # set protocols bgp 65536 aggregate-address 203.0.113.0/24 'as-set'
-    # set protocols bgp 65536 maximum-paths ebgp '20'
-    # set protocols bgp 65536 maximum-paths ibgp '55'
-    # set protocols bgp 65536 neighbor 192.0.2.25 'disable-connected-check'
-    # set protocols bgp 65536 neighbor 192.0.2.25 timers holdtime '30'
-    # set protocols bgp 65536 neighbor 192.0.2.25 timers keepalive '10'
-    # set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'as-path'
-    # set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'med'
-    # set protocols bgp 65536 neighbor 203.0.113.5 attribute-unchanged 'next-hop'
-    # set protocols bgp 65536 neighbor 203.0.113.5 ebgp-multihop '2'
-    # set protocols bgp 65536 neighbor 203.0.113.5 remote-as '101'
-    # set protocols bgp 65536 neighbor 203.0.113.5 update-source '192.0.2.25'
-    # set protocols bgp 65536 neighbor 5001::64 distribute-list export '20'
-    # set protocols bgp 65536 neighbor 5001::64 distribute-list import '40'
-    # set protocols bgp 65536 neighbor 5001::64 maximum-prefix '34'
-    # set protocols bgp 65536 network 192.1.13.0/24 'backdoor'
-    # set protocols bgp 65536 parameters bestpath as-path 'confed'
-    # set protocols bgp 65536 parameters bestpath 'compare-routerid'
-    # set protocols bgp 65536 parameters confederation identifier '66'
-    # set protocols bgp 65536 parameters confederation peers '20'
-    # set protocols bgp 65536 parameters confederation peers '55'
-    # set protocols bgp 65536 parameters default 'no-ipv4-unicast'
-    # set protocols bgp 65536 parameters router-id '192.1.2.9'
-    # set protocols bgp 65536 redistribute connected route-map 'map01'
-    # set protocols bgp 65536 redistribute kernel metric '45'
-    # set protocols bgp 65536 timers keepalive '35'
+    # set protocols bgp system-as 65536
+    # set protocols bgp aggregate-address 192.0.2.0/24 'summary-only'
+    # set protocols bgp aggregate-address 203.0.113.0/24 'as-set'
+    # set protocols bgp maximum-paths ebgp '20'
+    # set protocols bgp maximum-paths ibgp '55'
+    # set protocols bgp neighbor 192.0.2.25 'disable-connected-check'
+    # set protocols bgp neighbor 192.0.2.25 timers holdtime '30'
+    # set protocols bgp neighbor 192.0.2.25 timers keepalive '10'
+    # set protocols bgp neighbor 203.0.113.5 attribute-unchanged 'as-path'
+    # set protocols bgp neighbor 203.0.113.5 attribute-unchanged 'med'
+    # set protocols bgp neighbor 203.0.113.5 attribute-unchanged 'next-hop'
+    # set protocols bgp neighbor 203.0.113.5 ebgp-multihop '2'
+    # set protocols bgp neighbor 203.0.113.5 remote-as '101'
+    # set protocols bgp neighbor 203.0.113.5 update-source '192.0.2.25'
+    # set protocols bgp neighbor 5001::64 distribute-list export '20'
+    # set protocols bgp neighbor 5001::64 distribute-list import '40'
+    # set protocols bgp neighbor 5001::64 maximum-prefix '34'
+    # set protocols bgp network 192.1.13.0/24 'backdoor'
+    # set protocols bgp parameters bestpath as-path 'confed'
+    # set protocols bgp parameters bestpath 'compare-routerid'
+    # set protocols bgp parameters confederation identifier '66'
+    # set protocols bgp parameters confederation peers '20'
+    # set protocols bgp parameters confederation peers '55'
+    # set protocols bgp parameters default 'no-ipv4-unicast'
+    # set protocols bgp parameters router-id '192.1.2.9'
+    # set protocols bgp redistribute connected route-map 'map01'
+    # set protocols bgp redistribute kernel metric '45'
+    # set protocols bgp timers keepalive '35'
     # vyos@vyos:~$
 
 
@@ -1985,26 +1991,27 @@ Examples
 
     # Before state:
     # vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
-    # set protocols bgp 65536 neighbor 192.0.2.43 advertisement-interval '72'
-    # set protocols bgp 65536 neighbor 192.0.2.43 capability 'dynamic'
-    # set protocols bgp 65536 neighbor 192.0.2.43 'disable-connected-check'
-    # set protocols bgp 65536 neighbor 192.0.2.43 timers holdtime '30'
-    # set protocols bgp 65536 neighbor 192.0.2.43 timers keepalive '10'
-    # set protocols bgp 65536 neighbor 203.0.113.0 address-family 'ipv6-unicast'
-    # set protocols bgp 65536 neighbor 203.0.113.0 capability orf prefix-list 'receive'
-    # set protocols bgp 65536 network 203.0.113.0/24 route-map 'map01'
-    # set protocols bgp 65536 parameters 'always-compare-med'
-    # set protocols bgp 65536 parameters bestpath as-path 'confed'
-    # set protocols bgp 65536 parameters bestpath 'compare-routerid'
-    # set protocols bgp 65536 parameters dampening half-life '33'
-    # set protocols bgp 65536 parameters dampening max-suppress-time '20'
-    # set protocols bgp 65536 parameters dampening re-use '60'
-    # set protocols bgp 65536 parameters dampening start-suppress-time '5'
-    # set protocols bgp 65536 parameters default 'no-ipv4-unicast'
-    # set protocols bgp 65536 parameters distance global external '66'
-    # set protocols bgp 65536 parameters distance global internal '20'
-    # set protocols bgp 65536 parameters distance global local '10'
-    # set protocols bgp 65536 redistribute static route-map 'map01'
+    # set protocols bgp system-as 65536
+    # set protocols bgp neighbor 192.0.2.43 advertisement-interval '72'
+    # set protocols bgp neighbor 192.0.2.43 capability 'dynamic'
+    # set protocols bgp neighbor 192.0.2.43 'disable-connected-check'
+    # set protocols bgp neighbor 192.0.2.43 timers holdtime '30'
+    # set protocols bgp neighbor 192.0.2.43 timers keepalive '10'
+    # set protocols bgp neighbor 203.0.113.0 address-family 'ipv6-unicast'
+    # set protocols bgp neighbor 203.0.113.0 capability orf prefix-list 'receive'
+    # set protocols bgp network 203.0.113.0/24 route-map 'map01'
+    # set protocols bgp parameters 'always-compare-med'
+    # set protocols bgp parameters bestpath as-path 'confed'
+    # set protocols bgp parameters bestpath 'compare-routerid'
+    # set protocols bgp parameters dampening half-life '33'
+    # set protocols bgp parameters dampening max-suppress-time '20'
+    # set protocols bgp parameters dampening re-use '60'
+    # set protocols bgp parameters dampening start-suppress-time '5'
+    # set protocols bgp parameters default 'no-ipv4-unicast'
+    # set protocols bgp parameters distance global external '66'
+    # set protocols bgp parameters distance global internal '20'
+    # set protocols bgp parameters distance global local '10'
+    # set protocols bgp redistribute static route-map 'map01'
     # vyos@vyos:~$ ^C
     # vyos@vyos:~$
 
@@ -2041,26 +2048,27 @@ Examples
 
     # Before state:
     # vyos@vyos:~$ show configuration commands |  match "set protocols bgp"
-    # set protocols bgp 65536 neighbor 192.0.2.43 advertisement-interval '72'
-    # set protocols bgp 65536 neighbor 192.0.2.43 capability 'dynamic'
-    # set protocols bgp 65536 neighbor 192.0.2.43 'disable-connected-check'
-    # set protocols bgp 65536 neighbor 192.0.2.43 timers holdtime '30'
-    # set protocols bgp 65536 neighbor 192.0.2.43 timers keepalive '10'
-    # set protocols bgp 65536 neighbor 203.0.113.0 address-family 'ipv6-unicast'
-    # set protocols bgp 65536 neighbor 203.0.113.0 capability orf prefix-list 'receive'
-    # set protocols bgp 65536 network 203.0.113.0/24 route-map 'map01'
-    # set protocols bgp 65536 parameters 'always-compare-med'
-    # set protocols bgp 65536 parameters bestpath as-path 'confed'
-    # set protocols bgp 65536 parameters bestpath 'compare-routerid'
-    # set protocols bgp 65536 parameters dampening half-life '33'
-    # set protocols bgp 65536 parameters dampening max-suppress-time '20'
-    # set protocols bgp 65536 parameters dampening re-use '60'
-    # set protocols bgp 65536 parameters dampening start-suppress-time '5'
-    # set protocols bgp 65536 parameters default 'no-ipv4-unicast'
-    # set protocols bgp 65536 parameters distance global external '66'
-    # set protocols bgp 65536 parameters distance global internal '20'
-    # set protocols bgp 65536 parameters distance global local '10'
-    # set protocols bgp 65536 redistribute static route-map 'map01'
+    # set protocols bgp system-as 65536
+    # set protocols bgp neighbor 192.0.2.43 advertisement-interval '72'
+    # set protocols bgp neighbor 192.0.2.43 capability 'dynamic'
+    # set protocols bgp neighbor 192.0.2.43 'disable-connected-check'
+    # set protocols bgp neighbor 192.0.2.43 timers holdtime '30'
+    # set protocols bgp neighbor 192.0.2.43 timers keepalive '10'
+    # set protocols bgp neighbor 203.0.113.0 address-family 'ipv6-unicast'
+    # set protocols bgp neighbor 203.0.113.0 capability orf prefix-list 'receive'
+    # set protocols bgp network 203.0.113.0/24 route-map 'map01'
+    # set protocols bgp parameters 'always-compare-med'
+    # set protocols bgp parameters bestpath as-path 'confed'
+    # set protocols bgp parameters bestpath 'compare-routerid'
+    # set protocols bgp parameters dampening half-life '33'
+    # set protocols bgp parameters dampening max-suppress-time '20'
+    # set protocols bgp parameters dampening re-use '60'
+    # set protocols bgp parameters dampening start-suppress-time '5'
+    # set protocols bgp parameters default 'no-ipv4-unicast'
+    # set protocols bgp parameters distance global external '66'
+    # set protocols bgp parameters distance global internal '20'
+    # set protocols bgp parameters distance global local '10'
+    # set protocols bgp redistribute static route-map 'map01'
     # vyos@vyos:~$ ^C
 
     - name: gather configs
@@ -2134,26 +2142,26 @@ Examples
 
     # parsed.cfg
 
-    # set protocols bgp 65536 neighbor 192.0.2.43 advertisement-interval '72'
-    # set protocols bgp 65536 neighbor 192.0.2.43 capability 'dynamic'
-    # set protocols bgp 65536 neighbor 192.0.2.43 'disable-connected-check'
-    # set protocols bgp 65536 neighbor 192.0.2.43 timers holdtime '30'
-    # set protocols bgp 65536 neighbor 192.0.2.43 timers keepalive '10'
-    # set protocols bgp 65536 neighbor 203.0.113.0 address-family 'ipv6-unicast'
-    # set protocols bgp 65536 neighbor 203.0.113.0 capability orf prefix-list 'receive'
-    # set protocols bgp 65536 network 203.0.113.0/24 route-map 'map01'
-    # set protocols bgp 65536 parameters 'always-compare-med'
-    # set protocols bgp 65536 parameters bestpath as-path 'confed'
-    # set protocols bgp 65536 parameters bestpath 'compare-routerid'
-    # set protocols bgp 65536 parameters dampening half-life '33'
-    # set protocols bgp 65536 parameters dampening max-suppress-time '20'
-    # set protocols bgp 65536 parameters dampening re-use '60'
-    # set protocols bgp 65536 parameters dampening start-suppress-time '5'
-    # set protocols bgp 65536 parameters default 'no-ipv4-unicast'
-    # set protocols bgp 65536 parameters distance global external '66'
-    # set protocols bgp 65536 parameters distance global internal '20'
-    # set protocols bgp 65536 parameters distance global local '10'
-    # set protocols bgp 65536 redistribute static route-map 'map01'
+    # set protocols bgp neighbor 192.0.2.43 advertisement-interval '72'
+    # set protocols bgp neighbor 192.0.2.43 capability 'dynamic'
+    # set protocols bgp neighbor 192.0.2.43 'disable-connected-check'
+    # set protocols bgp neighbor 192.0.2.43 timers holdtime '30'
+    # set protocols bgp neighbor 192.0.2.43 timers keepalive '10'
+    # set protocols bgp neighbor 203.0.113.0 address-family 'ipv6-unicast'
+    # set protocols bgp neighbor 203.0.113.0 capability orf prefix-list 'receive'
+    # set protocols bgp network 203.0.113.0/24 route-map 'map01'
+    # set protocols bgp parameters 'always-compare-med'
+    # set protocols bgp parameters bestpath as-path 'confed'
+    # set protocols bgp parameters bestpath 'compare-routerid'
+    # set protocols bgp parameters dampening half-life '33'
+    # set protocols bgp parameters dampening max-suppress-time '20'
+    # set protocols bgp parameters dampening re-use '60'
+    # set protocols bgp parameters dampening start-suppress-time '5'
+    # set protocols bgp parameters default 'no-ipv4-unicast'
+    # set protocols bgp parameters distance global external '66'
+    # set protocols bgp parameters distance global internal '20'
+    # set protocols bgp parameters distance global local '10'
+    # set protocols bgp redistribute static route-map 'map01'
 
     - name: parse configs
       vyos.vyos.vyos_bgp_global:
@@ -2272,25 +2280,25 @@ Examples
 
     # Module Execution:
     # "rendered": [
-    #         "set protocols bgp 65536 neighbor 192.0.2.43 disable-connected-check",
-    #         "set protocols bgp 65536 neighbor 192.0.2.43 advertisement-interval 72",
-    #         "set protocols bgp 65536 neighbor 192.0.2.43 capability dynamic",
-    #         "set protocols bgp 65536 neighbor 192.0.2.43 timers holdtime 30",
-    #         "set protocols bgp 65536 neighbor 192.0.2.43 timers keepalive 10",
-    #         "set protocols bgp 65536 neighbor 203.0.113.0 capability orf prefix-list receive",
-    #         "set protocols bgp 65536 redistribute static route-map map01",
-    #         "set protocols bgp 65536 network 203.0.113.0/24 route-map map01",
-    #         "set protocols bgp 65536 parameters always-compare-med",
-    #         "set protocols bgp 65536 parameters dampening half-life 33",
-    #         "set protocols bgp 65536 parameters dampening max-suppress-time 20",
-    #         "set protocols bgp 65536 parameters dampening re-use 60",
-    #         "set protocols bgp 65536 parameters dampening start-suppress-time 5",
-    #         "set protocols bgp 65536 parameters distance global internal 20",
-    #         "set protocols bgp 65536 parameters distance global local 10",
-    #         "set protocols bgp 65536 parameters distance global external 66",
-    #         "set protocols bgp 65536 parameters bestpath as-path confed",
-    #         "set protocols bgp 65536 parameters bestpath compare-routerid",
-    #         "set protocols bgp 65536 parameters default no-ipv4-unicast"
+    #         "set protocols bgp neighbor 192.0.2.43 disable-connected-check",
+    #         "set protocols bgp neighbor 192.0.2.43 advertisement-interval 72",
+    #         "set protocols bgp neighbor 192.0.2.43 capability dynamic",
+    #         "set protocols bgp neighbor 192.0.2.43 timers holdtime 30",
+    #         "set protocols bgp neighbor 192.0.2.43 timers keepalive 10",
+    #         "set protocols bgp neighbor 203.0.113.0 capability orf prefix-list receive",
+    #         "set protocols bgp redistribute static route-map map01",
+    #         "set protocols bgp network 203.0.113.0/24 route-map map01",
+    #         "set protocols bgp parameters always-compare-med",
+    #         "set protocols bgp parameters dampening half-life 33",
+    #         "set protocols bgp parameters dampening max-suppress-time 20",
+    #         "set protocols bgp parameters dampening re-use 60",
+    #         "set protocols bgp parameters dampening start-suppress-time 5",
+    #         "set protocols bgp parameters distance global internal 20",
+    #         "set protocols bgp parameters distance global local 10",
+    #         "set protocols bgp parameters distance global external 66",
+    #         "set protocols bgp parameters bestpath as-path confed",
+    #         "set protocols bgp parameters bestpath compare-routerid",
+    #         "set protocols bgp parameters default no-ipv4-unicast"
     #     ]
 
 
@@ -2355,7 +2363,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The set of commands pushed to the remote device.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set protocols bgp 65536 redistribute static route-map map01&#x27;, &#x27;set protocols bgp 65536 network 203.0.113.0/24 route-map map01&#x27;, &#x27;set protocols bgp 65536 parameters always-compare-med&#x27;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set protocols bgp redistribute static route-map map01&#x27;, &#x27;set protocols bgp network 203.0.113.0/24 route-map map01&#x27;, &#x27;set protocols bgp parameters always-compare-med&#x27;]</div>
                 </td>
             </tr>
             <tr>
@@ -2406,7 +2414,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The provided configuration in the task rendered in device-native format (offline).</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set protocols bgp 65536 redistribute static route-map map01&#x27;, &#x27;set protocols bgp 65536 network 203.0.113.0/24 route-map map01&#x27;, &#x27;set protocols bgp 65536 parameters always-compare-med&#x27;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set protocols bgp redistribute static route-map map01&#x27;, &#x27;set protocols bgp network 203.0.113.0/24 route-map map01&#x27;, &#x27;set protocols bgp parameters always-compare-med&#x27;]</div>
                 </td>
             </tr>
     </table>

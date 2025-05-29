@@ -1642,6 +1642,7 @@ Notes
 
 .. note::
    - Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5
+   - The provided examples of commands are valid for VyOS 1.4+
    - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
 
 
@@ -1740,8 +1741,8 @@ Examples
     #       "set protocols ospf parameters opaque-lsa",
     #       "set protocols ospf parameters abr-type 'cisco'",
     #       "set protocols ospf parameters rfc1583-compatibility",
-    #       "set protocols ospf passive-interface eth1",
-    #       "set protocols ospf passive-interface eth2",
+    #       "set protocols ospf interface 'eth1' passive",
+    #       "set protocols ospf interface 'eth2' passive",
     #       "set protocols ospf max-metric router-lsa on-shutdown 10",
     #       "set protocols ospf max-metric router-lsa administrative",
     #       "set protocols ospf max-metric router-lsa on-startup 10",
@@ -1885,8 +1886,8 @@ Examples
     # set protocols ospf parameters 'opaque-lsa'
     # set protocols ospf parameters 'rfc1583-compatibility'
     # set protocols ospf parameters router-id '192.0.1.1'
-    # set protocols ospf passive-interface 'eth1'
-    # set protocols ospf passive-interface 'eth2'
+    # set protocols ospf interface 'eth1' passive
+    # set protocols ospf interface 'eth2' passive
     # set protocols ospf redistribute bgp metric '10'
     # set protocols ospf redistribute bgp metric-type '2'
 
@@ -2148,8 +2149,8 @@ Examples
     # set protocols ospf parameters 'opaque-lsa'
     # set protocols ospf parameters 'rfc1583-compatibility'
     # set protocols ospf parameters router-id '192.0.1.1'
-    # set protocols ospf passive-interface 'eth1'
-    # set protocols ospf passive-interface 'eth2'
+    # set protocols ospf interface 'eth1' passive
+    # set protocols ospf interface 'eth2' passive
     # set protocols ospf redistribute bgp metric '10'
     # set protocols ospf redistribute bgp metric-type '2'
 
@@ -2185,8 +2186,8 @@ Examples
     # set protocols ospf parameters 'opaque-lsa'
     # set protocols ospf parameters 'rfc1583-compatibility'
     # set protocols ospf parameters router-id '192.0.1.1'
-    # set protocols ospf passive-interface 'eth1'
-    # set protocols ospf passive-interface 'eth2'
+    # set protocols ospf interface 'eth1' passive
+    # set protocols ospf interface 'eth2' passive
     # set protocols ospf redistribute bgp metric '10'
     # set protocols ospf redistribute bgp metric-type '2'
     #
@@ -2343,7 +2344,7 @@ Examples
     #    }
     #
     # "commands": [
-    #     "delete protocols ospf passive-interface eth2",
+    #     "delete protocols ospf interface 'eth2' passive",
     #     "delete protocols ospf area 3",
     #     "delete protocols ospf area 4 range 192.0.3.0/24 cost",
     #     "delete protocols ospf area 4 range 192.0.3.0/24",
@@ -2475,7 +2476,7 @@ Examples
     # set protocols ospf parameters 'opaque-lsa'
     # set protocols ospf parameters 'rfc1583-compatibility'
     # set protocols ospf parameters router-id '192.0.1.1'
-    # set protocols ospf passive-interface 'eth1'
+    # set protocols ospf interface 'eth1' passive
     # set protocols ospf redistribute bgp metric '10'
     # set protocols ospf redistribute bgp metric-type '2'
 
@@ -2563,8 +2564,8 @@ Examples
     #       "set protocols ospf parameters opaque-lsa",
     #       "set protocols ospf parameters abr-type 'cisco'",
     #       "set protocols ospf parameters rfc1583-compatibility",
-    #       "set protocols ospf passive-interface eth1",
-    #       "set protocols ospf passive-interface eth2",
+    #       "set protocols ospf interface 'eth1' passive",
+    #       "set protocols ospf interface 'eth2' passive",
     #       "set protocols ospf max-metric router-lsa on-shutdown 10",
     #       "set protocols ospf max-metric router-lsa administrative",
     #       "set protocols ospf max-metric router-lsa on-startup 10",
@@ -2619,8 +2620,8 @@ Examples
           set protocols ospf parameters 'opaque-lsa'
           set protocols ospf parameters 'rfc1583-compatibility'
           set protocols ospf parameters router-id '192.0.1.1'
-          set protocols ospf passive-interface 'eth1'
-          set protocols ospf passive-interface 'eth2'
+          set protocols ospf interface 'eth1' passive
+          set protocols ospf interface 'eth2' passive
           set protocols ospf redistribute bgp metric '10'
           set protocols ospf redistribute bgp metric-type '2'
         state: parsed
@@ -2756,8 +2757,8 @@ Examples
     # set protocols ospf parameters 'opaque-lsa'
     # set protocols ospf parameters 'rfc1583-compatibility'
     # set protocols ospf parameters router-id '192.0.1.1'
-    # set protocols ospf passive-interface 'eth1'
-    # set protocols ospf passive-interface 'eth2'
+    # set protocols ospf interface 'eth1' passive
+    # set protocols ospf interface 'eth2' passive
     # set protocols ospf redistribute bgp metric '10'
     # set protocols ospf redistribute bgp metric-type '2'
     #
@@ -2892,8 +2893,8 @@ Examples
     # set protocols ospf parameters 'opaque-lsa'
     # set protocols ospf parameters 'rfc1583-compatibility'
     # set protocols ospf parameters router-id '192.0.1.1'
-    # set protocols ospf passive-interface 'eth1'
-    # set protocols ospf passive-interface 'eth2'
+    # set protocols ospf interface 'eth1' passive
+    # set protocols ospf interface 'eth2' passive
     # set protocols ospf redistribute bgp metric '10'
     # set protocols ospf redistribute bgp metric-type '2'
 
@@ -2929,8 +2930,8 @@ Examples
     # set protocols ospf parameters 'opaque-lsa'
     # set protocols ospf parameters 'rfc1583-compatibility'
     # set protocols ospf parameters router-id '192.0.1.1'
-    # set protocols ospf passive-interface 'eth1'
-    # set protocols ospf passive-interface 'eth2'
+    # set protocols ospf interface 'eth1' passive
+    # set protocols ospf interface 'eth2' passive
     # set protocols ospf redistribute bgp metric '10'
     # set protocols ospf redistribute bgp metric-type '2'
     #
@@ -3108,7 +3109,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The set of commands pushed to the remote device.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set protocols ospf parameters router-id 192.0.1.1&#x27;, &quot;set protocols ospf passive-interface &#x27;eth1&#x27;&quot;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set protocols ospf parameters router-id 192.0.1.1&#x27;, &quot;set protocols ospf interface &#x27;eth1&#x27; passive&quot;]</div>
                 </td>
             </tr>
     </table>

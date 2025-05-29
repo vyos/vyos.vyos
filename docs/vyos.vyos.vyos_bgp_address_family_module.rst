@@ -19,6 +19,7 @@ Synopsis
 --------
 - This module manages BGP address family configuration of interfaces on devices running VYOS.
 - Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5
+- The provided examples of commands are valid for VyOS 1.4+
 
 
 
@@ -1214,17 +1215,18 @@ Examples
 
     # After State:
     # vyos@vyos:~$ show configuration commands | match "set protocols bgp"
-    # set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map 'map01'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export '10'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix '45'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map export 'map01'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map import 'map01'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast weight '50'
+    # set protocols bgp system-as 100
+    # set protocols bgp address-family ipv4-unicast redistribute static metric '50'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map 'map01'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export '10'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix '45'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast route-map export 'map01'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast route-map import 'map01'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast weight '50'
     # vyos@vyos:~$
     #
     # Module Execution:
@@ -1292,17 +1294,17 @@ Examples
     #     "before": {},
     #     "changed": true,
     #     "commands": [
-    #         "set protocols bgp 100 address-family ipv4-unicast redistribute static metric 50",
-    #         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number 4",
-    #         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast as-override",
-    #         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med",
-    #         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map map01",
-    #         "set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export 10",
-    #         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix 45",
-    #         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self",
-    #         "set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map export map01",
-    #         "set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map import map01",
-    #         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast weight 50"
+    #         "set protocols bgp address-family ipv4-unicast redistribute static metric 50",
+    #         "set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number 4",
+    #         "set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast as-override",
+    #         "set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med",
+    #         "set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map map01",
+    #         "set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export 10",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix 45",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast route-map export map01",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast route-map import map01",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast weight 50"
     #     ],
     #
 
@@ -1311,17 +1313,18 @@ Examples
     # Before state:
 
     # vyos@vyos:~$ show configuration commands | match "set protocols bgp"
-    # set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map 'map01'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export '10'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix '45'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map export 'map01'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map import 'map01'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast weight '50'
+    # set protocols bgp system-as 100
+    # set protocols bgp address-family ipv4-unicast redistribute static metric '50'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map 'map01'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export '10'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix '45'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast route-map export 'map01'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast route-map import 'map01'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast weight '50'
     # vyos@vyos:~$
 
     - name: Replace provided configuration with device configuration
@@ -1351,15 +1354,16 @@ Examples
     # After State:
     #
     # vyos@vyos:~$ show configuration commands | match "set protocols bgp"
-    # set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast maximum-prefix '45'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast nexthop-self
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast allowas-in number '4'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast as-override
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast attribute-unchanged med
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast default-originate route-map 'map01'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast distribute-list export '10'
+    # set protocols bgp system-as 100
+    # set protocols bgp address-family ipv4-unicast redistribute static metric '50'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast maximum-prefix '45'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast nexthop-self
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast allowas-in number '4'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast as-override
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast attribute-unchanged med
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast default-originate route-map 'map01'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast distribute-list export '10'
     # vyos@vyos:~$
     #
     #
@@ -1478,39 +1482,40 @@ Examples
     #     },
     #     "changed": true,
     #     "commands": [
-    #         "delete protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list",
-    #         "delete protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate",
-    #         "delete protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged",
-    #         "delete protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast as-override",
-    #         "delete protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in",
-    #         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast weight",
-    #         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast route-map",
-    #         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self",
-    #         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix",
-    #         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast allowas-in number 4",
-    #         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast as-override",
-    #         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast attribute-unchanged med",
-    #         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv6-unicast default-originate route-map map01",
-    #         "set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast distribute-list export 10",
-    #         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv6-unicast maximum-prefix 45",
-    #         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv6-unicast nexthop-self"
+    #         "delete protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list",
+    #         "delete protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate",
+    #         "delete protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged",
+    #         "delete protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast as-override",
+    #         "delete protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in",
+    #         "delete protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast weight",
+    #         "delete protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast route-map",
+    #         "delete protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self",
+    #         "delete protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast allowas-in number 4",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast as-override",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast attribute-unchanged med",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast default-originate route-map map01",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast distribute-list export 10",
+    #         "set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast maximum-prefix 45",
+    #         "set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast nexthop-self"
     #     ],
 
 
     # Using overridden
     # vyos@vyos:~$ show configuration commands | match "set protocols bgp"
-    # set protocols bgp 100 address-family ipv4-unicast network 35.1.1.0/24 backdoor
-    # set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
-    # set protocols bgp 100 address-family ipv6-unicast aggregate-address 6601:1:1:1::/64 summary-only
-    # set protocols bgp 100 address-family ipv6-unicast network 5001:1:1:1::/64 route-map 'map01'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast maximum-prefix '45'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast nexthop-self
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast allowas-in number '4'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast as-override
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast attribute-unchanged med
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast default-originate route-map 'map01'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast distribute-list export '10'
+    # set protocols bgp system-as 100
+    # set protocols bgp address-family ipv4-unicast network 35.1.1.0/24 backdoor
+    # set protocols bgp address-family ipv4-unicast redistribute static metric '50'
+    # set protocols bgp address-family ipv6-unicast aggregate-address 6601:1:1:1::/64 summary-only
+    # set protocols bgp address-family ipv6-unicast network 5001:1:1:1::/64 route-map 'map01'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast maximum-prefix '45'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast nexthop-self
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast allowas-in number '4'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast as-override
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast attribute-unchanged med
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast default-originate route-map 'map01'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast distribute-list export '10'
     # vyos@vyos:~$
 
     - name: Override
@@ -1540,13 +1545,14 @@ Examples
     # After State
 
     # vyos@vyos:~$ show configuration commands | match "set protocols bgp"
-    # set protocols bgp 100 address-family ipv4-unicast aggregate-address 60.9.2.0/24 summary-only
-    # set protocols bgp 100 address-family ipv6-unicast redistribute static metric '50'
-    # set protocols bgp 100 neighbor 20.33.1.1/24
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast maximum-prefix '45'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast nexthop-self
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast route-map import 'map01'
+    # set protocols bgp system-as 100
+    # set protocols bgp address-family ipv4-unicast aggregate-address 60.9.2.0/24 summary-only
+    # set protocols bgp address-family ipv6-unicast redistribute static metric '50'
+    # set protocols bgp neighbor 20.33.1.1/24
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast maximum-prefix '45'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast nexthop-self
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast route-map import 'map01'
     # vyos@vyos:~$
 
 
@@ -1671,21 +1677,21 @@ Examples
     #     },
     #     "changed": true,
     #     "commands": [
-    #         "delete protocols bgp 100 neighbor 20.33.1.1/24 address-family",
-    #         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv6-unicast distribute-list",
-    #         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv6-unicast default-originate",
-    #         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast attribute-unchanged",
-    #         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast as-override",
-    #         "delete protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast allowas-in",
-    #         "delete protocols bgp 100 address-family ipv6 aggregate-address",
-    #         "delete protocols bgp 100 address-family ipv6 network",
-    #         "delete protocols bgp 100 address-family ipv4 network",
-    #         "delete protocols bgp 100 address-family ipv4 redistribute",
-    #         "set protocols bgp 100 address-family ipv4-unicast aggregate-address 60.9.2.0/24 summary-only",
-    #         "set protocols bgp 100 address-family ipv6-unicast redistribute static metric 50",
-    #         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv6-unicast maximum-prefix 45",
-    #         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv6-unicast nexthop-self",
-    #         "set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast route-map import map01"
+    #         "delete protocols bgp neighbor 20.33.1.1/24 address-family",
+    #         "delete protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast distribute-list",
+    #         "delete protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast default-originate",
+    #         "delete protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast attribute-unchanged",
+    #         "delete protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast as-override",
+    #         "delete protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast allowas-in",
+    #         "delete protocols bgp address-family ipv6 aggregate-address",
+    #         "delete protocols bgp address-family ipv6 network",
+    #         "delete protocols bgp address-family ipv4 network",
+    #         "delete protocols bgp address-family ipv4 redistribute",
+    #         "set protocols bgp address-family ipv4-unicast aggregate-address 60.9.2.0/24 summary-only",
+    #         "set protocols bgp address-family ipv6-unicast redistribute static metric 50",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast maximum-prefix 45",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast nexthop-self",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast route-map import map01"
     #     ],
     #
 
@@ -1694,22 +1700,23 @@ Examples
     # Before State:
 
     # vyos@vyos:~$ show configuration commands | match "set protocols bgp"
-    # set protocols bgp 100 address-family ipv4-unicast aggregate-address 60.9.2.0/24 summary-only
-    # set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
-    # set protocols bgp 100 address-family ipv6-unicast redistribute static metric '50'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map 'map01'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export '10'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix '45'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map export 'map01'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map import 'map01'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast weight '50'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast maximum-prefix '45'
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast nexthop-self
-    # set protocols bgp 100 neighbor 100.11.34.12 address-family ipv6-unicast route-map import 'map01'
+    # set protocols bgp system-as 100
+    # set protocols bgp address-family ipv4-unicast aggregate-address 60.9.2.0/24 summary-only
+    # set protocols bgp address-family ipv4-unicast redistribute static metric '50'
+    # set protocols bgp address-family ipv6-unicast redistribute static metric '50'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map 'map01'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export '10'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix '45'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast route-map export 'map01'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast route-map import 'map01'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast weight '50'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast maximum-prefix '45'
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast nexthop-self
+    # set protocols bgp neighbor 100.11.34.12 address-family ipv6-unicast route-map import 'map01'
     # vyos@vyos:~$
 
     - name: Delete
@@ -1729,11 +1736,12 @@ Examples
     # After State:
 
     # vyos@vyos:~$ show configuration commands | match "set protocols bgp"
-    # set protocols bgp 100 address-family ipv6-unicast redistribute static metric '50'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
-    # set protocols bgp 100 neighbor 100.11.34.12
+    # set protocols bgp system-as 100
+    # set protocols bgp address-family ipv6-unicast redistribute static metric '50'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
+    # set protocols bgp neighbor 100.11.34.12
     # vyos@vyos:~$
     #
     #
@@ -1856,9 +1864,9 @@ Examples
     #     },
     #     "changed": true,
     #     "commands": [
-    #         "delete protocols bgp 100 address-family ipv4-unicast",
-    #         "delete protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast",
-    #         "delete protocols bgp 100 neighbor 100.11.34.12 address-family"
+    #         "delete protocols bgp address-family ipv4-unicast",
+    #         "delete protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast",
+    #         "delete protocols bgp neighbor 100.11.34.12 address-family"
     #     ],
     #
 
@@ -1948,15 +1956,16 @@ Examples
     # Native config:
 
     # vyos@vyos:~$ show configuration commands | match "set protocols bgp"
-    # set protocols bgp 100 address-family ipv4-unicast network 35.1.1.0/24 backdoor
-    # set protocols bgp 100 address-family ipv4-unicast redistribute static metric '50'
-    # set protocols bgp 100 address-family ipv6-unicast aggregate-address 6601:1:1:1::/64 summary-only
-    # set protocols bgp 100 address-family ipv6-unicast network 5001:1:1:1::/64 route-map 'map01'
-    # set protocols bgp 100 address-family ipv6-unicast redistribute static metric '50'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
-    # set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
-    # set protocols bgp 100 neighbor 100.11.34.12
+    # set protocols bgp system-as 100
+    # set protocols bgp address-family ipv4-unicast network 35.1.1.0/24 backdoor
+    # set protocols bgp address-family ipv4-unicast redistribute static metric '50'
+    # set protocols bgp address-family ipv6-unicast aggregate-address 6601:1:1:1::/64 summary-only
+    # set protocols bgp address-family ipv6-unicast network 5001:1:1:1::/64 route-map 'map01'
+    # set protocols bgp address-family ipv6-unicast redistribute static metric '50'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number '4'
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast as-override
+    # set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med
+    # set protocols bgp neighbor 100.11.34.12
 
     - name: gather configs
       vyos.vyos.vyos_bgp_address_family:
@@ -2060,17 +2069,17 @@ Examples
     # Module Execution:
 
     # "rendered": [
-    #         "set protocols bgp 100 address-family ipv4-unicast redistribute static metric 50",
-    #         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number 4",
-    #         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast as-override",
-    #         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med",
-    #         "set protocols bgp 100  neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map map01",
-    #         "set protocols bgp 100 neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export 10",
-    #         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix 45",
-    #         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self",
-    #         "set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map export map01",
-    #         "set protocols bgp 100 neighbor 100.11.34.12 address-family ipv4-unicast route-map import map01",
-    #         "set protocols bgp 100  neighbor 100.11.34.12 address-family ipv4-unicast weight 50"
+    #         "set protocols bgp address-family ipv4-unicast redistribute static metric 50",
+    #         "set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast allowas-in number 4",
+    #         "set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast as-override",
+    #         "set protocols bgp neighbor 20.33.1.1/24 address-family ipv4-unicast attribute-unchanged med",
+    #         "set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast default-originate route-map map01",
+    #         "set protocols bgp neighbor 20.33.1.1/24 address-family ipv6-unicast distribute-list export 10",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast maximum-prefix 45",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast nexthop-self",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast route-map export map01",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast route-map import map01",
+    #         "set protocols bgp neighbor 100.11.34.12 address-family ipv4-unicast weight 50"
     #     ]
 
 

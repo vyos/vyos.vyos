@@ -47,6 +47,7 @@ description:
 version_added: '1.0.0'
 notes:
 - Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5.
+- The provided examples of commands are valid for VyOS 1.4+
 - This module works with connection C(ansible.netcommon.network_cli).
   See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
@@ -373,7 +374,7 @@ EXAMPLES = """
 #        "set firewall global-options send-redirects 'enable'",
 #        "set firewall global-options config-trap 'enable'",
 #        "set firewall global-options state-policy established action 'accept'",
-#        "set firewall global-options state-policy established log 'enable'",
+#        "set firewall global-options state-policy established log,
 #        "set firewall global-options state-policy established log-level 'emerg'",
 #        "set firewall global-options state-policy invalid action 'reject'",
 #        "set firewall global-options broadcast-ping 'enable'",
@@ -1189,7 +1190,7 @@ EXAMPLES = """
 #        "set firewall global-options send-redirects 'enable'",
 #        "set firewall global-options config-trap 'enable'",
 #        "set firewall global-options state-policy established action 'accept'",
-#        "set firewall global-options state-policy established log 'enable'",
+#        "set firewall global-options state-policy established log,
 #        "set firewall global-options state-policy invalid action 'reject'",
 #        "set firewall global-options broadcast-ping 'enable'",
 #        "set firewall global-options all-ping 'enable'",
