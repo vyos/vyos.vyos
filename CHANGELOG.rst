@@ -114,6 +114,7 @@ Known Issues
 Documentation Changes
 ---------------------
 
+- Miscellaneous documentation updates
 - Updated tested versions
 - Updates to module documentation
 

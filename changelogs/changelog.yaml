@@ -500,6 +500,7 @@ releases:
         - vyos_logging_global - `protocol` is deprecated for 1.4 and later, use `facility`
           instead. To be removed in next major version where supprot for 1.3 is removed
       doc_changes:
+        - Miscellaneous documentation updates
         - Updated tested versions
         - Updates to module documentation
       known_issues:
@@ -618,6 +619,7 @@ releases:
       - integration_tests_fixes.yml
       - interfaces_update.yml
       - ntp_global.yaml
+      - pre-6.0.0-doc-update.yaml
       - resource_updates.yml
       - snmp_server.yml
       - test_module_patch.yml
