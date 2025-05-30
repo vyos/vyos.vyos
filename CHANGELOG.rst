@@ -76,7 +76,7 @@ Deprecated Features
 -------------------
 
 - vyos_bgp_global - no_ipv4_unicast - deprecated for use with VyOS 1.4+, use `ipv4_unicast` instead
-- vyos_firewall_interfaces - deprecated for use with VyOS 1.4+, firewalls are no longer connected directly to interfaces. See the Firewall Configuration documentation for how to establish a connection betwen the firewall rulesets and the flow, interface, or zone.
+- vyos_firewall_interfaces - deprecated for use with VyOS 1.4+, firewalls are no longer connected directly to interfaces. See the Firewall Configuration documentation for how to establish a connection between the firewall rulesets and the flow, interface, or zone.
 - vyos_lldp_global - `address` is deprecated, use `addresses` instead. To be removed in 7.0.0.
 - vyos_logging_global - `protocol` is deprecated for 1.4 and later, use `facility` instead. To be removed in next major version where supprot for 1.3 is removed
 
