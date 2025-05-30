@@ -10,11 +10,7 @@ v6.0.0
 Release Summary
 ---------------
 
-This is the first significant release from the VyOS community for these modules.
-This release is focussed on 1.3+ of VyOS and will be the last major release to
-support 1.3 fully. Although efforts have been made to maintain compatibility
-with the existing vyos collection modules, there have  breaking changes where
-necessary to configuration parameters. Please review all changes carefully before updating.
+This is the first significant release from the VyOS community for these modules. This release is focussed on 1.3+ of VyOS and will be the last major release to support 1.3 fully. Although efforts have been made to maintain compatibility with the existing vyos collection modules, there have  breaking changes where necessary to configuration parameters. Please review all changes carefully before updating.
 
 Major Changes
 -------------

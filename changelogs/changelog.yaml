@@ -555,14 +555,11 @@ releases:
         - vyos_route_maps - add support for as-path-prepend policy option
       release_summary:
         "This is the first significant release from the VyOS community
-        for these modules.
-
-        This release is focussed on 1.3+ of VyOS and will be the last major release
-        to support 1.3 fully. Although efforts have been made to maintain compatibility
-        with the existing vyos collection modules, there have  breaking changes where
-        necessary to configuration parameters. Please review all changes carefully
-        before updating.
-        "
+        for these modules. This release is focussed on 1.3+ of VyOS and will be the
+        last major release to support 1.3 fully. Although efforts have been made to
+        maintain compatibility with the existing vyos collection modules, there have  breaking
+        changes where necessary to configuration parameters. Please review all changes
+        carefully before updating. "
     fragments:
       - 0-readme.yml
       - 6.0.0.yml
