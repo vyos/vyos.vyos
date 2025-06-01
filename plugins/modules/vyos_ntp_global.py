@@ -22,7 +22,7 @@ description:
 author:
 - Varshitha Yataluru (@YVarshitha)
 notes:
-- Tested against vyos 1.3.8
+- Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5
 - This module works with connection C(network_cli).
 - "VyOS v.1.4+ uses chronyd, and path changes from `system` to `service`"
 options:
