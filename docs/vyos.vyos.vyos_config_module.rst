@@ -208,7 +208,7 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.3.8, 1.4.2 and current rolling release for 1.5.
+   - Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025.
    - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
    - To ensure idempotency and correct diff the configuration lines in the relevant module options should be similar to how they appear if present in the running configuration on device including the indentation.
    - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
