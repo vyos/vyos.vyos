@@ -173,53 +173,64 @@ class Vrf(ResourceModule):
                 for k, v in vrf.items()
                 if k != "address_family"
             }
-
             self.compare(parsers=parsers, want=entry, have=h)
 
             if "address_family" in entry:
-                hdict = next((item for item in have if item["name"] == wname), None)
-                # self._module.fail_json(msg="entry: " + str(entry) + "**** hdict:  " + str(hdict))
+                wafi = {"name": wname, "address_family": entry.get("address_family", [])}
+                # hdict = next((item for item in have if item["name"] == wname), None)
+                hdict = next((d for d in have if d.get("name") == wname), None)
 
-                self._compare_addr_family(entry, hdict)
+                hafi = {
+                    "name": (hdict or {"name": wname})["name"],
+                    "address_family": hdict.get("address_family", []) if hdict else [],
+                }
+
+                # self._module.fail_json(msg="wafi: " + str(wafi) + "**** hafi:  " + str(hafi))
+
+                self._compare_addr_family(wafi, hafi)
 
     def _compare_addr_family(self, want, have):
         """Compare the address families of the VRF"""
-        parsers = [
-            "address_family",
+        afi_parsers = [
+            # "address_family",
             "disable_forwarding",
             "disable_nht",
         ]
-        # self._module.fail_json(msg="wafi: " + str(want) + "**** Hafi:  " + str(have))
+        # self._module.fail_json(msg="wAfi: " + str(want) + "**** hAfi:  " + str(have))
 
-        wafi = self._vrf_inst_list_to_dict(want)
-        hafi = self._vrf_inst_list_to_dict(have)
-        wafi = {
-            "name": "vrf-red",
-            "address_family": {
-                "ipv4": {
-                    "afi": "ipv4",
-                    "nht_no_resolve_via_default": False,
-                },
-            },
-        }
-        hafi = {}
+        wafi = self.afi_to_list(want)
+        hafi = self.afi_to_list(have)
+
+        # wafi = {'name': 'vrf-red', 'afi': 'ipv', 'disable_forwarding': False}
+        # hafi = {'name': 'vrf-red', 'afi': 'ip', 'disable_forwarding': True}
+
+        lookup = {(d["name"], d["afi"]): d for d in hafi}
+        pairs = [(d1, lookup.get((d1["name"], d1["afi"]), {})) for d1 in wafi]
+
+        for wafd, hafd in pairs:
+            self.compare(parsers=afi_parsers, want=wafd, have=hafd)
         # self._module.fail_json(msg="wafi: " + str(wafi) + " **** hafi:  " + str(hafi))
-        self.compare(parsers=parsers, want=wafi, have=hafi)
+        # self.compare(parsers=afi_parsers, want=wafi, have=hafi)
 
-    def _vrf_inst_list_to_dict(self, entry):
-        if entry and "address_family" in entry:
-            address_family_dict = {f"{af['afi']}:": af for af in entry.get("address_family", [])}
-            return {
-                "name": entry["name"],
-                "address_family": address_family_dict,
-            }
+    def afi_to_dict(self, data):
+        name = data.get("name", "")
+        af_list = data.get("address_family", [])
 
-    def _converter(self, data):
-        for instance in data["instances"]:
-            if "address_family" in instance and isinstance(instance["address_family"], list):
-                af_dict = {}
-                for af in instance["address_family"]:
-                    afi_key = f"{af['afi']}:"
-                    af_dict[afi_key] = af
-                instance["address_family"] = af_dict
-        return data
+        afi_dict = {"name": name, "ip": {}, "ipv6": {}}
+
+        for af in af_list:
+            afi = af.get("afi")
+            if afi in ("ipv4", "ipv6"):
+                afi_dict["ip" if afi == "ipv4" else "ipv6"] = {
+                    k: v for k, v in af.items() if k != "afi"
+                }
+
+        return afi_dict
+
+    def afi_to_list(self, data):
+        """Convert address family dict to list"""
+
+        return [
+            {"name": data["name"], **{**af, "afi": "ip" if af["afi"] == "ipv4" else af["afi"]}}
+            for af in data["address_family"]
+        ]
