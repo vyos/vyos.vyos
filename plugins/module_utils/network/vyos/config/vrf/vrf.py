@@ -96,9 +96,6 @@ class Vrf(ResourceModule):
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
 
-        # w = self._converter(wantd)
-        # h = self._converter(haved)
-
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged", "replaced"]:
             # wantd = dict_merge(wantd, haved)
@@ -200,9 +197,6 @@ class Vrf(ResourceModule):
 
         wafi = self.afi_to_list(want)
         hafi = self.afi_to_list(have)
-
-        # wafi = {'name': 'vrf-red', 'afi': 'ipv', 'disable_forwarding': False}
-        # hafi = {'name': 'vrf-red', 'afi': 'ip', 'disable_forwarding': True}
 
         lookup = {(d["name"], d["afi"]): d for d in hafi}
         pairs = [(d1, lookup.get((d1["name"], d1["afi"]), {})) for d1 in wafi]

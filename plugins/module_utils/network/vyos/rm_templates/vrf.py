@@ -215,5 +215,31 @@ class VrfTemplate(NetworkTemplate):
                 }],
             },
         },
+        {
+            "name": "route_maps",
+            "getval": re.compile(
+                r"""
+                ^set
+                \svrf
+                \sname
+                \s(?P<name>\S+)
+                \s(?P<af>ip|ipv6)
+                \sprotocol
+                \s(?P<proto>\S+)
+                \sroute-map
+                \s'(?P<rm>\S+)'
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "vrf name {{name}} {{ afi }} protocol {{ proto }} route-map {{ rm }}",
+            "compval": "nht_no_resolve_via_default",
+            "result": {
+                "name": "{{ name }}",
+                "address_family": [{
+                    "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
+                    "nht_no_resolve_via_default": "{{ True if nht is defined }}",
+                }],
+            },
+        },
     ]
     # fmt: on
