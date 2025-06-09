@@ -36,11 +36,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.versi
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
-# from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-#     dict_merge,
-# )
-
-
 class Vrf(ResourceModule):
     """
     The vyos_vrf config class
@@ -192,36 +187,21 @@ class Vrf(ResourceModule):
             # "address_family",
             "disable_forwarding",
             "disable_nht",
-            "route_maps",
         ]
         # self._module.fail_json(msg="wAfi: " + str(want) + "**** hAfi:  " + str(have))
 
         wafi = self.afi_to_list(want)
-        hafi = self.afi_to_list(have)
+        hafi = self.afi_to_list(self._dedup_afi_rm(have))
 
         lookup = {(d["name"], d["afi"]): d for d in hafi}
         pairs = [(d1, lookup.get((d1["name"], d1["afi"]), {})) for d1 in wafi]
 
         for wafd, hafd in pairs:
+            # self._module.fail_json(msg="wAfd: " + str(wafd) + "**** hAfd:  " + str(hafd))
             if "route_maps" in wafd:
-                self._module.fail_json(msg="wafd: " + str(wafd) + " **** hafd:  " + str(hafd))
+                self._compare_route_maps(wafd, hafd)
             self.compare(parsers=afi_parsers, want=wafd, have=hafd)
         # self.compare(parsers=afi_parsers, want=wafi, have=hafi)
-
-    def afi_to_dict(self, data):
-        name = data.get("name", "")
-        af_list = data.get("address_family", [])
-
-        afi_dict = {"name": name, "ip": {}, "ipv6": {}}
-
-        for af in af_list:
-            afi = af.get("afi")
-            if afi in ("ipv4", "ipv6"):
-                afi_dict["ip" if afi == "ipv4" else "ipv6"] = {
-                    k: v for k, v in af.items() if k != "afi"
-                }
-
-        return afi_dict
 
     def afi_to_list(self, data):
         """Convert address family dict to list"""
@@ -230,3 +210,35 @@ class Vrf(ResourceModule):
             {"name": data["name"], **{**af, "afi": "ip" if af["afi"] == "ipv4" else af["afi"]}}
             for af in data["address_family"]
         ]
+
+    def _compare_route_maps(self, wafd, hafd):
+        want_rms = wafd.get("route_maps", [])
+        have_rms = hafd.get("route_maps", [])
+
+        for want in want_rms:
+            match = next(
+                (
+                    h
+                    for h in have_rms
+                    if h["name"] == want["name"] and h["protocol"] == want["protocol"]
+                ),
+                {},
+            )
+            base = {"name": wafd["name"], "afi": wafd["afi"]}
+
+            self.compare(
+                parsers="route_maps",
+                want={**base, "route_maps": want},
+                have={**base, "route_maps": match},
+            )
+
+    def _dedup_afi_rm(self, data):
+        merged = {}
+        for af in data.get("address_family", []):
+            afi = af["afi"]
+            if afi not in merged:
+                # Copy all non-route_maps keys
+                merged[afi] = {k: v for k, v in af.items() if k != "route_maps"}
+                merged[afi]["route_maps"] = []
+            merged[afi]["route_maps"].extend(af.get("route_maps", []))
+        return {"name": data["name"], "address_family": list(merged.values())}

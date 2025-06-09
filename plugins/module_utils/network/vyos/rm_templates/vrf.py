@@ -231,8 +231,9 @@ class VrfTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "vrf name {{name}} {{ afi }} protocol {{ proto }} route-map {{ rm }}",
-            "compval": "route_maps.name",
+            "setval": "vrf name {{name}} {{ afi }} protocol {{ route_maps.protocol }} route-map {{ route_maps.name }}",
+            "compval": "route_maps",
+            "remval": "vrf name {{name}} {{ afi }} protocol {{ route_maps.protocol }}",
             "result": {
                 "name": "{{ name }}",
                 "address_family": [{
