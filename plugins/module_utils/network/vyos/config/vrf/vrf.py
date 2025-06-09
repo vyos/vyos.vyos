@@ -192,6 +192,7 @@ class Vrf(ResourceModule):
             # "address_family",
             "disable_forwarding",
             "disable_nht",
+            "route_maps",
         ]
         # self._module.fail_json(msg="wAfi: " + str(want) + "**** hAfi:  " + str(have))
 
@@ -202,8 +203,9 @@ class Vrf(ResourceModule):
         pairs = [(d1, lookup.get((d1["name"], d1["afi"]), {})) for d1 in wafi]
 
         for wafd, hafd in pairs:
+            if "route_maps" in wafd:
+                self._module.fail_json(msg="wafd: " + str(wafd) + " **** hafd:  " + str(hafd))
             self.compare(parsers=afi_parsers, want=wafd, have=hafd)
-        # self._module.fail_json(msg="wafi: " + str(wafi) + " **** hafi:  " + str(hafi))
         # self.compare(parsers=afi_parsers, want=wafi, have=hafi)
 
     def afi_to_dict(self, data):

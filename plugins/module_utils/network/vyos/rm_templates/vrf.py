@@ -232,12 +232,15 @@ class VrfTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "vrf name {{name}} {{ afi }} protocol {{ proto }} route-map {{ rm }}",
-            "compval": "nht_no_resolve_via_default",
+            "compval": "route_maps.name",
             "result": {
                 "name": "{{ name }}",
                 "address_family": [{
                     "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
-                    "nht_no_resolve_via_default": "{{ True if nht is defined }}",
+                    "route_maps": [{
+                        "name": "{{ rm }}",
+                        "protocol": "{{ proto }}",
+                    }],
                 }],
             },
         },
