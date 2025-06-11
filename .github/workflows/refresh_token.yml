@@ -7,7 +7,7 @@ on:
 
 jobs:
     refresh:
-        uses: ansible/devtools/.github/workflows/ah_token_refresh.yml@main
+        uses: ansible/devtools/.github/workflows/ah_token_refresh.yml@v22.5.0
         with:
             environment: release
         secrets:
