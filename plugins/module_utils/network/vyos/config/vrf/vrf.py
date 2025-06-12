@@ -91,6 +91,8 @@ class Vrf(ResourceModule):
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
 
+        # self._module.fail_json(msg="WanT: " + str(self.want) + "**** H:  " + str(self.have))
+
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged", "replaced"]:
             # wantd = dict_merge(wantd, haved)
@@ -142,7 +144,7 @@ class Vrf(ResourceModule):
                 want={k: want},
                 have={k: haved.pop(k, {})},
             )
-        self._module.fail_json(msg=self.commands)
+        # self._module.fail_json(msg=self.commands)
 
     def _compare_instances(self, want, have):
         """Compare the instances of the VRF"""
@@ -191,7 +193,7 @@ class Vrf(ResourceModule):
         # self._module.fail_json(msg="wAfi: " + str(want) + "**** hAfi:  " + str(have))
 
         wafi = self.afi_to_list(want)
-        hafi = self.afi_to_list(self._dedup_afi_rm(have))
+        hafi = self.afi_to_list(have)
 
         lookup = {(d["name"], d["afi"]): d for d in hafi}
         pairs = [(d1, lookup.get((d1["name"], d1["afi"]), {})) for d1 in wafi]
@@ -220,7 +222,7 @@ class Vrf(ResourceModule):
                 (
                     h
                     for h in have_rms
-                    if h["name"] == want["name"] and h["protocol"] == want["protocol"]
+                    if h["rm_name"] == want["rm_name"] and h["protocol"] == want["protocol"]
                 ),
                 {},
             )
@@ -231,14 +233,3 @@ class Vrf(ResourceModule):
                 want={**base, "route_maps": want},
                 have={**base, "route_maps": match},
             )
-
-    def _dedup_afi_rm(self, data):
-        merged = {}
-        for af in data.get("address_family", []):
-            afi = af["afi"]
-            if afi not in merged:
-                # Copy all non-route_maps keys
-                merged[afi] = {k: v for k, v in af.items() if k != "route_maps"}
-                merged[afi]["route_maps"] = []
-            merged[afi]["route_maps"].extend(af.get("route_maps", []))
-        return {"name": data["name"], "address_family": list(merged.values())}

@@ -83,7 +83,7 @@ class VrfFacts(object):
                     #     if key in objs and objs[key]:
                     #         # self._module.fail_json(msg=str(objs[key]))
                     #         objs[key] = list(objs[key].values())
-                    instances.append(objs)
+                    instances.append(self._normalise_instance(objs))
 
         if instances:
             vrf_facts.update({"instances": instances})
@@ -103,3 +103,38 @@ class VrfFacts(object):
             facts["vrf"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
         return ansible_facts
+
+    def _normalise_instance(self, instance):
+        n_inst = instance.copy()
+        af_map = {}
+
+        for af in instance.get("address_family", []):
+            afi = af.get("afi")
+            if not afi:
+                continue
+
+            if afi not in af_map:
+                af_map[afi] = {"afi": afi}
+
+            for k, v in af.items():
+                if k == "afi":
+                    continue
+                elif k == "route_maps":
+                    if "route_maps" not in af_map[afi]:
+                        af_map[afi]["route_maps"] = []
+                    af_map[afi]["route_maps"].extend(v)
+                else:
+                    af_map[afi][k] = v
+
+        for afi_data in af_map.values():
+            if "route_maps" in afi_data:
+                seen = []
+                deduped = []
+                for item in afi_data["route_maps"]:
+                    if item not in seen:
+                        seen.append(item)
+                        deduped.append(item)
+                afi_data["route_maps"] = deduped
+
+        n_inst["address_family"] = list(af_map.values())
+        return n_inst

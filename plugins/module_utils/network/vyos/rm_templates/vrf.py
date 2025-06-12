@@ -231,7 +231,7 @@ class VrfTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "vrf name {{name}} {{ afi }} protocol {{ route_maps.protocol }} route-map {{ route_maps.name }}",
+            "setval": "vrf name {{name}} {{ afi }} protocol {{ route_maps.protocol }} route-map {{ route_maps.rm_name }}",
             "compval": "route_maps",
             "remval": "vrf name {{name}} {{ afi }} protocol {{ route_maps.protocol }}",
             "result": {
@@ -239,7 +239,7 @@ class VrfTemplate(NetworkTemplate):
                 "address_family": [{
                     "afi": '{{ "ipv4" if af == "ip" else "ipv6" }}',
                     "route_maps": [{
-                        "name": "{{ rm }}",
+                        "rm_name": "{{ rm }}",
                         "protocol": "{{ proto }}",
                     }],
                 }],

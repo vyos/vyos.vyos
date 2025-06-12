@@ -63,7 +63,7 @@ class VrfArgs(object):  # pylint: disable=R0903
                                     "type": "list",
                                     "elements": "dict",
                                     "options": {
-                                        "name": {"type": "str", "required": True},
+                                        "rm_name": {"type": "str", "required": True},
                                         "protocol": {
                                             "type": "str",
                                             "choices": [
