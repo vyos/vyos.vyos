@@ -18,7 +18,7 @@ description:
 - This module provides declarative management of VLANs on VyOS network devices.
 version_added: 1.0.0
 notes:
-- Tested against VyOS 1.1.8 (helium).
+- Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025.
 - This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 options:
   name:

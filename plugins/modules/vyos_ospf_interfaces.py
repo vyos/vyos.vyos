@@ -19,6 +19,7 @@ version_added: 1.2.0
 short_description: OSPF Interfaces Resource Module.
 description:
 - This module manages OSPF configuration of interfaces on devices running VYOS.
+- The provided examples of commands are valid for VyOS 1.4+
 author: Gomathi Selvi Srinivasan (@GomathiselviS)
 options:
   config:
@@ -173,14 +174,14 @@ EXAMPLES = """
 # --------------
 
 # vyos@vyos:~$ show configuration commands | match "ospf"
-# set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key '1111111111232345'
-# set interfaces bonding bond2 ip ospf bandwidth '70'
-# set interfaces bonding bond2 ip ospf transmit-delay '45'
-# set interfaces bonding bond2 ipv6 ospfv3 'passive'
-# set interfaces ethernet eth1 ip ospf network 'point-to-point'
-# set interfaces ethernet eth1 ip ospf priority '26'
-# set interfaces ethernet eth1 ip ospf transmit-delay '50'
-# set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
+# set protocols ospf interface bond2 authentication md5 key-id 10 md5-key '1111111111232345'
+# set protocols ospf interface bond2 bandwidth '70'
+# set protocols ospf interface bond2 transmit-delay '45'
+# set protocols ospfv3 interface bond2 'passive'
+# set protocols ospf interface eth1 network 'point-to-point'
+# set protocols ospf interface eth1 priority '26'
+# set protocols ospf interface eth1 transmit-delay '50'
+# set protocols ospfv3 interface eth1 dead-interval '39'
 
 # "after": [
 #        "
@@ -244,14 +245,14 @@ EXAMPLES = """
 #    ],
 #    "changed": true,
 #    "commands": [
-#        "set interfaces ethernet eth1 ip ospf transmit-delay 50",
-#        "set interfaces ethernet eth1 ip ospf priority 26",
-#        "set interfaces ethernet eth1 ip ospf network point-to-point",
-#        "set interfaces ethernet eth1 ipv6 ospfv3 dead-interval 39",
-#        "set interfaces bonding bond2 ip ospf transmit-delay 45",
-#        "set interfaces bonding bond2 ip ospf bandwidth 70",
-#        "set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key 1111111111232345",
-#        "set interfaces bonding bond2 ipv6 ospfv3 passive"
+#        "set protocols ospf interface eth1 transmit-delay 50",
+#        "set protocols ospf interface eth1 priority 26",
+#        "set protocols ospf interface eth1 network point-to-point",
+#        "set protocols ospfv3 interface eth1 dead-interval 39",
+#        "set protocols ospf interface bond2 transmit-delay 45",
+#        "set protocols ospf interface bond2 bandwidth 70",
+#        "set protocols ospf interface bond2 authentication md5 key-id 10 md5-key 1111111111232345",
+#        "set protocols ospfv3 interface bond2 passive"
 #    ],
 
 # Using replaced:
@@ -260,14 +261,14 @@ EXAMPLES = """
 # ------------
 
 # vyos@vyos:~$ show configuration commands | match "ospf"
-# set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key '1111111111232345'
-# set interfaces bonding bond2 ip ospf bandwidth '70'
-# set interfaces bonding bond2 ip ospf transmit-delay '45'
-# set interfaces bonding bond2 ipv6 ospfv3 'passive'
-# set interfaces ethernet eth1 ip ospf network 'point-to-point'
-# set interfaces ethernet eth1 ip ospf priority '26'
-# set interfaces ethernet eth1 ip ospf transmit-delay '50'
-# set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
+# set protocols ospf interface bond2 authentication md5 key-id 10 md5-key '1111111111232345'
+# set protocols ospf interface bond2 bandwidth '70'
+# set protocols ospf interface bond2 transmit-delay '45'
+# set protocols ospfv3 interface bond2 'passive'
+# set protocols ospf interface eth1 network 'point-to-point'
+# set protocols ospf interface eth1 priority '26'
+# set protocols ospf interface eth1 transmit-delay '50'
+# set protocols ospfv3 interface eth1 dead-interval '39'
 
 - name: Replace provided configuration with device configuration
   vyos.vyos.vyos_ospf_interfaces:
@@ -290,10 +291,10 @@ EXAMPLES = """
 # -----------
 
 # vyos@vyos:~$ show configuration commands | match "ospf"
-# set interfaces bonding bond2 ip ospf transmit-delay '45'
-# set interfaces bonding bond2 ipv6 ospfv3 'passive'
-# set interfaces ethernet eth1 ip ospf cost '100'
-# set interfaces ethernet eth1 ipv6 ospfv3 ifmtu '33'
+# set protocols ospf interface bond2 transmit-delay '45'
+# set protocols ospfv3 interface bond2 'passive'
+# set protocols ospf interface eth1 cost '100'
+# set protocols ospfv3 interface eth1 ifmtu '33'
 # vyos@vyos:~$
 
 # Module Execution
@@ -383,14 +384,14 @@ EXAMPLES = """
 #    ],
 #    "changed": true,
 #    "commands": [
-#        "set interfaces ethernet eth1 ip ospf cost 100",
-#        "set interfaces ethernet eth1 ipv6 ospfv3 ifmtu 33",
-#        "delete interfaces ethernet eth1 ip ospf network point-to-point",
-#        "delete interfaces ethernet eth1 ip ospf priority 26",
-#        "delete interfaces ethernet eth1 ip ospf transmit-delay 50",
-#        "delete interfaces ethernet eth1 ipv6 ospfv3 dead-interval 39",
-#        "delete interfaces bonding bond2 ip ospf authentication",
-#        "delete interfaces bonding bond2 ip ospf bandwidth 70"
+#        "set protocols ospf interface eth1 cost 100",
+#        "set protocols ospfv3 interface eth1 ifmtu 33",
+#        "delete protocols ospf interface eth1 network point-to-point",
+#        "delete protocols ospf interface eth1 priority 26",
+#        "delete protocols ospf interface eth1 transmit-delay 50",
+#        "delete protocols ospfv3 interface eth1 dead-interval 39",
+#        "delete protocols ospf interface bond2 authentication",
+#        "delete protocols ospf interface bond2 bandwidth 70"
 #    ],
 #
 
@@ -401,16 +402,16 @@ EXAMPLES = """
 # ------------
 
 # vyos@vyos:~$ show configuration commands | match "ospf"
-# set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key '1111111111232345'
-# set interfaces bonding bond2 ip ospf bandwidth '70'
-# set interfaces bonding bond2 ip ospf transmit-delay '45'
-# set interfaces bonding bond2 ipv6 ospfv3 'passive'
-# set interfaces ethernet eth1 ip ospf cost '100'
-# set interfaces ethernet eth1 ip ospf network 'point-to-point'
-# set interfaces ethernet eth1 ip ospf priority '26'
-# set interfaces ethernet eth1 ip ospf transmit-delay '50'
-# set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
-# set interfaces ethernet eth1 ipv6 ospfv3 ifmtu '33'
+# set protocols ospf interface bond2 authentication md5 key-id 10 md5-key '1111111111232345'
+# set protocols ospf interface bond2 bandwidth '70'
+# set protocols ospf interface bond2 transmit-delay '45'
+# set protocols ospfv3 interface bond2 'passive'
+# set protocols ospf interface eth1 cost '100'
+# set protocols ospf interface eth1 network 'point-to-point'
+# set protocols ospf interface eth1 priority '26'
+# set protocols ospf interface eth1 transmit-delay '50'
+# set protocols ospfv3 interface eth1 dead-interval '39'
+# set protocols ospfv3 interface eth1 ifmtu '33'
 # vyos@vyos:~$
 
 - name: Override device configuration with provided configuration
@@ -429,9 +430,9 @@ EXAMPLES = """
 # -----------
 
 # 200~vyos@vyos:~$ show configuration commands | match "ospf"
-# set interfaces ethernet eth0 ip ospf cost '100'
-# set interfaces ethernet eth0 ipv6 ospfv3 ifmtu '33'
-# set interfaces ethernet eth0 ipv6 ospfv3 'passive'
+# set protocols ospf interface eth0 cost '100'
+# set protocols ospfv3 interface eth0 ifmtu '33'
+# set protocols ospfv3 interface eth0 'passive'
 # vyos@vyos:~$
 #
 #
@@ -513,13 +514,13 @@ EXAMPLES = """
 #     ],
 #     "changed": true,
 #     "commands": [
-#         "delete interfaces bonding bond2 ip ospf",
-#         "delete interfaces bonding bond2 ipv6 ospfv3",
-#         "delete interfaces ethernet eth1 ip ospf",
-#         "delete interfaces ethernet eth1 ipv6 ospfv3",
-#         "set interfaces ethernet eth0 ip ospf cost 100",
-#         "set interfaces ethernet eth0 ipv6 ospfv3 ifmtu 33",
-#         "set interfaces ethernet eth0 ipv6 ospfv3 passive"
+#         "delete protocols ospf interface bond2",
+#         "delete protocols ospfv3 interface bond2",
+#         "delete protocols ospf interface eth1",
+#         "delete protocols ospfv3 interface eth1",
+#         "set protocols ospf interface eth0 cost 100",
+#         "set protocols ospfv3 interface eth0 ifmtu 33",
+#         "set protocols ospfv3 interface eth0 passive"
 #     ],
 #
 
@@ -530,17 +531,17 @@ EXAMPLES = """
 # -------------
 
 # vyos@vyos:~$ show configuration commands | match "ospf"
-# set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key '1111111111232345'
-# set interfaces bonding bond2 ip ospf bandwidth '70'
-# set interfaces bonding bond2 ip ospf transmit-delay '45'
-# set interfaces bonding bond2 ipv6 ospfv3 'passive'
-# set interfaces ethernet eth0 ip ospf cost '100'
-# set interfaces ethernet eth0 ipv6 ospfv3 ifmtu '33'
-# set interfaces ethernet eth0 ipv6 ospfv3 'passive'
-# set interfaces ethernet eth1 ip ospf network 'point-to-point'
-# set interfaces ethernet eth1 ip ospf priority '26'
-# set interfaces ethernet eth1 ip ospf transmit-delay '50'
-# set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
+# set protocols ospf interface bond2 authentication md5 key-id 10 md5-key '1111111111232345'
+# set protocols ospf interface bond2 bandwidth '70'
+# set protocols ospf interface bond2 transmit-delay '45'
+# set protocols ospfv3 interface bond2 'passive'
+# set protocols ospf interface eth0 cost '100'
+# set protocols ospfv3 interface eth0 ifmtu '33'
+# set protocols ospfv3 interface eth0 'passive'
+# set protocols ospf interface eth1 network 'point-to-point'
+# set protocols ospf interface eth1 priority '26'
+# set protocols ospf interface eth1 transmit-delay '50'
+# set protocols ospfv3 interface eth1 dead-interval '39'
 # vyos@vyos:~$
 
 - name: Delete device configuration
@@ -553,14 +554,14 @@ EXAMPLES = """
 # -----------
 
 # vyos@vyos:~$ show configuration commands | match "ospf"
-# set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key '1111111111232345'
-# set interfaces bonding bond2 ip ospf bandwidth '70'
-# set interfaces bonding bond2 ip ospf transmit-delay '45'
-# set interfaces bonding bond2 ipv6 ospfv3 'passive'
-# set interfaces ethernet eth1 ip ospf network 'point-to-point'
-# set interfaces ethernet eth1 ip ospf priority '26'
-# set interfaces ethernet eth1 ip ospf transmit-delay '50'
-# set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
+# set protocols ospf interface bond2 authentication md5 key-id 10 md5-key '1111111111232345'
+# set protocols ospf interface bond2 bandwidth '70'
+# set protocols ospf interface bond2 transmit-delay '45'
+# set protocols ospfv3 interface bond2 'passive'
+# set protocols ospf interface eth1 network 'point-to-point'
+# set protocols ospf interface eth1 priority '26'
+# set protocols ospf interface eth1 transmit-delay '50'
+# set protocols ospfv3 interface eth1 dead-interval '39'
 # vyos@vyos:~$
 #
 #
@@ -669,25 +670,25 @@ EXAMPLES = """
 #     ],
 #     "changed": true,
 #     "commands": [
-#         "delete interfaces ethernet eth0 ip ospf",
-#         "delete interfaces ethernet eth0 ipv6 ospfv3"
+#         "delete protocols ospf interface eth0",
+#         "delete protocols ospfv3 interface eth0"
 #     ],
 #
 # Using parsed:
 # parsed.cfg:
 
-# set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key '1111111111232345'
-# set interfaces bonding bond2 ip ospf bandwidth '70'
-# set interfaces bonding bond2 ip ospf transmit-delay '45'
-# set interfaces bonding bond2 ipv6 ospfv3 'passive'
-# set interfaces ethernet eth0 ip ospf cost '50'
-# set interfaces ethernet eth0 ip ospf priority '26'
-# set interfaces ethernet eth0 ipv6 ospfv3 instance-id '33'
-# set interfaces ethernet eth0 ipv6 ospfv3 'mtu-ignore'
-# set interfaces ethernet eth1 ip ospf network 'point-to-point'
-# set interfaces ethernet eth1 ip ospf priority '26'
-# set interfaces ethernet eth1 ip ospf transmit-delay '50'
-# set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
+# set protocols ospf interface bond2 authentication md5 key-id 10 md5-key '1111111111232345'
+# set protocols ospf interface bond2 bandwidth '70'
+# set protocols ospf interface bond2 transmit-delay '45'
+# set protocols ospfv3 interface bond2 'passive'
+# set protocols ospf interface eth0 cost '50'
+# set protocols ospf interface eth0 priority '26'
+# set protocols ospfv3 interface eth0 instance-id '33'
+# set protocols ospfv3 interface eth0 'mtu-ignore'
+# set protocols ospf interface eth1 network 'point-to-point'
+# set protocols ospf interface eth1 priority '26'
+# set protocols ospf interface eth1 transmit-delay '50'
+# set protocols ospfv3 interface eth1 dead-interval '39'
 #
 
 - name: parse configs
@@ -782,14 +783,14 @@ EXAMPLES = """
 # ----------------
 
 #    "rendered": [
-#        "set interfaces ethernet eth1 ip ospf transmit-delay 50",
-#        "set interfaces ethernet eth1 ip ospf priority 26",
-#        "set interfaces ethernet eth1 ip ospf network point-to-point",
-#        "set interfaces ethernet eth1 ipv6 ospfv3 dead-interval 39",
-#        "set interfaces bonding bond2 ip ospf transmit-delay 45",
-#        "set interfaces bonding bond2 ip ospf bandwidth 70",
-#        "set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key 1111111111232345",
-#        "set interfaces bonding bond2 ipv6 ospfv3 passive"
+#        "set protocols ospf interface eth1 transmit-delay 50",
+#        "set protocols ospf interface eth1 priority 26",
+#        "set protocols ospf interface eth1 network point-to-point",
+#        "set protocols ospfv3 interface eth1 dead-interval 39",
+#        "set protocols ospf interface bond2 transmit-delay 45",
+#        "set protocols ospf interface bond2 bandwidth 70",
+#        "set protocols ospf interface bond2 authentication md5 key-id 10 md5-key 1111111111232345",
+#        "set protocols ospfv3 interface bond2 passive"
 #    ]
 #
 
@@ -799,14 +800,14 @@ EXAMPLES = """
 # Native Config:
 
 # vyos@vyos:~$ show configuration commands | match "ospf"
-# set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key '1111111111232345'
-# set interfaces bonding bond2 ip ospf bandwidth '70'
-# set interfaces bonding bond2 ip ospf transmit-delay '45'
-# set interfaces bonding bond2 ipv6 ospfv3 'passive'
-# set interfaces ethernet eth1 ip ospf network 'point-to-point'
-# set interfaces ethernet eth1 ip ospf priority '26'
-# set interfaces ethernet eth1 ip ospf transmit-delay '50'
-# set interfaces ethernet eth1 ipv6 ospfv3 dead-interval '39'
+# set protocols ospf interface bond2 authentication md5 key-id 10 md5-key '1111111111232345'
+# set protocols ospf interface bond2 bandwidth '70'
+# set protocols ospf interface bond2 transmit-delay '45'
+# set protocols ospfv3 interface bond2 'passive'
+# set protocols ospf interface eth1 network 'point-to-point'
+# set protocols ospf interface eth1 priority '26'
+# set protocols ospf interface eth1 transmit-delay '50'
+# set protocols ospfv3 interface eth1 dead-interval '39'
 # vyos@vyos:~$
 
 - name: gather configs
@@ -884,17 +885,17 @@ commands:
   returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
   type: list
   sample:
-   - "set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key '1111111111232345'"
-   - "set interfaces bonding bond2 ip ospf bandwidth '70'"
-   - "set interfaces bonding bond2 ip ospf transmit-delay '45'"
+   - "set protocols ospf interface bond2 authentication md5 key-id 10 md5-key '1111111111232345'"
+   - "set protocols ospf interface bond2 bandwidth '70'"
+   - "set protocols ospf interface bond2 transmit-delay '45'"
 rendered:
   description: The provided configuration in the task rendered in device-native format (offline).
   returned: when I(state) is C(rendered)
   type: list
   sample:
-   - "set interfaces bonding bond2 ip ospf authentication md5 key-id 10 md5-key '1111111111232345'"
-   - "set interfaces bonding bond2 ip ospf bandwidth '70'"
-   - "set interfaces bonding bond2 ip ospf transmit-delay '45'"
+   - "set protocols ospf interface bond2 authentication md5 key-id 10 md5-key '1111111111232345'"
+   - "set protocols ospf interface bond2 bandwidth '70'"
+   - "set protocols ospf interface bond2 transmit-delay '45'"
 gathered:
   description: Facts about the network resource gathered from the remote device as structured data.
   returned: when I(state) is C(gathered)

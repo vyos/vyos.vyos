@@ -18,7 +18,7 @@ Version added: 1.0.0
 Synopsis
 --------
 - Tests reachability using ping from a VyOS device to a remote destination.
-- Tested against VyOS 1.1.8 (helium)
+- Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025
 - For a general purpose network module, see the :ref:`ansible.netcommon.net_ping <ansible.netcommon.net_ping_module>` module.
 - For Windows targets, use the :ref:`ansible.windows.win_ping <ansible.windows.win_ping_module>` module instead.
 - For targets running Python, use the :ref:`ansible.builtin.ping <ansible.builtin.ping_module>` module instead.
@@ -156,7 +156,7 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.1.8 (helium).
+   - Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025.
    - For a general purpose network module, see the :ref:`ansible.netcommon.net_ping <ansible.netcommon.net_ping_module>` module.
    - For Windows targets, use the :ref:`ansible.windows.win_ping <ansible.windows.win_ping_module>` module instead.
    - For targets running Python, use the :ref:`ansible.builtin.ping <ansible.builtin.ping_module>` module instead.

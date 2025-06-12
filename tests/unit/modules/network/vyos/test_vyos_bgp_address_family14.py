@@ -45,13 +45,13 @@ class TestVyosBgpafModule14(TestVyosModule):
         )
         self.execute_show_command = self.mock_execute_show_command.start()
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_address_family.bgp_address_family.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_address_family.bgp_address_family.get_os_version",
         )
         self.test_version = "1.4"
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = self.test_version
         self.mock_facts_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family.get_os_version",
         )
         self.get_facts_os_version = self.mock_facts_get_os_version.start()
         self.get_facts_os_version.return_value = self.test_version
@@ -425,46 +425,6 @@ class TestVyosBgpafModule14(TestVyosModule):
 
         self.execute_module(changed=True, commands=commands)
 
-    # def test_vyos_bgp_address_family_incorrect_instance(self):
-    #     set_module_args(
-    #         dict(
-    #             state="overridden",
-    #             config=dict(
-    #                 as_number=100,
-    #                 address_family=[
-    #                     dict(
-    #                         afi="ipv4",
-    #                         networks=[
-    #                             dict(prefix="192.1.13.0/24", route_map="map01"),
-    #                         ],
-    #                     ),
-    #                     dict(
-    #                         afi="ipv6",
-    #                         redistribute=[dict(protocol="ospfv3", metric=20)],
-    #                     ),
-    #                 ],
-    #                 neighbors=[
-    #                     dict(
-    #                         neighbor_address="192.10.21.25",
-    #                         address_family=[
-    #                             dict(
-    #                                 afi="ipv4",
-    #                                 route_map=[dict(action="import", route_map="map01")],
-    #                             ),
-    #                             dict(
-    #                                 afi="ipv6",
-    #                                 distribute_list=[dict(action="export", acl=10)],
-    #                                 route_server_client=True,
-    #                             ),
-    #                         ],
-    #                     ),
-    #                 ],
-    #             ),
-    #         ),
-    #     )
-    #     result = self.execute_module(failed=True)
-    #     self.assertIn("Only one bgp instance is allowed per device", result["msg"])
-
     def test_vyos_bgp_address_family_rendered(self):
         set_module_args(
             dict(
@@ -708,7 +668,7 @@ class TestVyosBgpafModule14(TestVyosModule):
         )
         self.execute_module(changed=False, commands=[])
 
-    def test_vyos_bgp_address_family_replaced_asn(self):
+    def test_vyos_bgp_address_family_replaced_asn2(self):
         set_module_args(
             dict(
                 state="replaced",
@@ -764,7 +724,7 @@ class TestVyosBgpafModule14(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
-    def test_vyos_bgp_address_family_overridden_asn(self):
+    def test_vyos_bgp_address_family_overridden_asn2(self):
         set_module_args(
             dict(
                 state="overridden",
@@ -842,13 +802,13 @@ class TestVyosBgpafOpsModule14(TestVyosModule):
         )
         self.execute_show_command = self.mock_execute_show_command.start()
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_address_family.bgp_address_family.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_address_family.bgp_address_family.get_os_version",
         )
         self.test_version = "1.4"
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = self.test_version
         self.mock_facts_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family.get_os_version",
         )
         self.get_facts_os_version = self.mock_facts_get_os_version.start()
         self.get_facts_os_version.return_value = self.test_version
@@ -911,13 +871,13 @@ class TestVyosBgpafOpsModule14(TestVyosModule):
                             ],
                             redistribute=[
                                 dict(protocol="ospf", metric=25),
-                            ]
+                            ],
                         ),
                         dict(
                             afi="ipv6",
                             redistribute=[
                                 dict(protocol="ospfv3", metric=20),
-                                dict(protocol="ripng")
+                                dict(protocol="ripng"),
                             ],
                         ),
                     ],
@@ -948,13 +908,13 @@ class TestVyosBgpafOpsModule14(TestVyosModule):
                             ],
                             redistribute=[
                                 dict(protocol="ospf", metric=25),
-                            ]
+                            ],
                         ),
                         dict(
                             afi="ipv6",
                             redistribute=[
                                 dict(protocol="ospfv3", metric=20),
-                                dict(protocol="ripng")
+                                dict(protocol="ripng"),
                             ],
                         ),
                     ],
@@ -982,7 +942,7 @@ class TestVyosBgpafOpsModule14(TestVyosModule):
                             afi="ipv4",
                             networks=[
                                 dict(prefix="192.2.13.0/24"),
-                            ]
+                            ],
                         ),
                         dict(
                             afi="ipv6",

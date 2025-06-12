@@ -45,7 +45,8 @@ short_description: OSPFv2 resource module
 description: This resource module configures and manages attributes of OSPFv2 routes
   on VyOS network devices.
 notes:
-- Tested against VyOS 1.3.8
+- Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025
+- The provided examples of commands are valid for VyOS 1.4+
 - This module works with connection C(ansible.netcommon.network_cli).
   See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
@@ -456,8 +457,8 @@ EXAMPLES = """
 #       "set protocols ospf parameters opaque-lsa",
 #       "set protocols ospf parameters abr-type 'cisco'",
 #       "set protocols ospf parameters rfc1583-compatibility",
-#       "set protocols ospf passive-interface eth1",
-#       "set protocols ospf passive-interface eth2",
+#       "set protocols ospf interface 'eth1' passive",
+#       "set protocols ospf interface 'eth2' passive",
 #       "set protocols ospf max-metric router-lsa on-shutdown 10",
 #       "set protocols ospf max-metric router-lsa administrative",
 #       "set protocols ospf max-metric router-lsa on-startup 10",
@@ -601,8 +602,8 @@ EXAMPLES = """
 # set protocols ospf parameters 'opaque-lsa'
 # set protocols ospf parameters 'rfc1583-compatibility'
 # set protocols ospf parameters router-id '192.0.1.1'
-# set protocols ospf passive-interface 'eth1'
-# set protocols ospf passive-interface 'eth2'
+# set protocols ospf interface 'eth1' passive
+# set protocols ospf interface 'eth2' passive
 # set protocols ospf redistribute bgp metric '10'
 # set protocols ospf redistribute bgp metric-type '2'
 
@@ -864,8 +865,8 @@ EXAMPLES = """
 # set protocols ospf parameters 'opaque-lsa'
 # set protocols ospf parameters 'rfc1583-compatibility'
 # set protocols ospf parameters router-id '192.0.1.1'
-# set protocols ospf passive-interface 'eth1'
-# set protocols ospf passive-interface 'eth2'
+# set protocols ospf interface 'eth1' passive
+# set protocols ospf interface 'eth2' passive
 # set protocols ospf redistribute bgp metric '10'
 # set protocols ospf redistribute bgp metric-type '2'
 
@@ -901,8 +902,8 @@ EXAMPLES = """
 # set protocols ospf parameters 'opaque-lsa'
 # set protocols ospf parameters 'rfc1583-compatibility'
 # set protocols ospf parameters router-id '192.0.1.1'
-# set protocols ospf passive-interface 'eth1'
-# set protocols ospf passive-interface 'eth2'
+# set protocols ospf interface 'eth1' passive
+# set protocols ospf interface 'eth2' passive
 # set protocols ospf redistribute bgp metric '10'
 # set protocols ospf redistribute bgp metric-type '2'
 #
@@ -1059,7 +1060,7 @@ EXAMPLES = """
 #    }
 #
 # "commands": [
-#     "delete protocols ospf passive-interface eth2",
+#     "delete protocols ospf interface 'eth2' passive",
 #     "delete protocols ospf area 3",
 #     "delete protocols ospf area 4 range 192.0.3.0/24 cost",
 #     "delete protocols ospf area 4 range 192.0.3.0/24",
@@ -1191,7 +1192,7 @@ EXAMPLES = """
 # set protocols ospf parameters 'opaque-lsa'
 # set protocols ospf parameters 'rfc1583-compatibility'
 # set protocols ospf parameters router-id '192.0.1.1'
-# set protocols ospf passive-interface 'eth1'
+# set protocols ospf interface 'eth1' passive
 # set protocols ospf redistribute bgp metric '10'
 # set protocols ospf redistribute bgp metric-type '2'
 
@@ -1279,8 +1280,8 @@ EXAMPLES = """
 #       "set protocols ospf parameters opaque-lsa",
 #       "set protocols ospf parameters abr-type 'cisco'",
 #       "set protocols ospf parameters rfc1583-compatibility",
-#       "set protocols ospf passive-interface eth1",
-#       "set protocols ospf passive-interface eth2",
+#       "set protocols ospf interface 'eth1' passive",
+#       "set protocols ospf interface 'eth2' passive",
 #       "set protocols ospf max-metric router-lsa on-shutdown 10",
 #       "set protocols ospf max-metric router-lsa administrative",
 #       "set protocols ospf max-metric router-lsa on-startup 10",
@@ -1335,8 +1336,8 @@ EXAMPLES = """
       set protocols ospf parameters 'opaque-lsa'
       set protocols ospf parameters 'rfc1583-compatibility'
       set protocols ospf parameters router-id '192.0.1.1'
-      set protocols ospf passive-interface 'eth1'
-      set protocols ospf passive-interface 'eth2'
+      set protocols ospf interface 'eth1' passive
+      set protocols ospf interface 'eth2' passive
       set protocols ospf redistribute bgp metric '10'
       set protocols ospf redistribute bgp metric-type '2'
     state: parsed
@@ -1472,8 +1473,8 @@ EXAMPLES = """
 # set protocols ospf parameters 'opaque-lsa'
 # set protocols ospf parameters 'rfc1583-compatibility'
 # set protocols ospf parameters router-id '192.0.1.1'
-# set protocols ospf passive-interface 'eth1'
-# set protocols ospf passive-interface 'eth2'
+# set protocols ospf interface 'eth1' passive
+# set protocols ospf interface 'eth2' passive
 # set protocols ospf redistribute bgp metric '10'
 # set protocols ospf redistribute bgp metric-type '2'
 #
@@ -1608,8 +1609,8 @@ EXAMPLES = """
 # set protocols ospf parameters 'opaque-lsa'
 # set protocols ospf parameters 'rfc1583-compatibility'
 # set protocols ospf parameters router-id '192.0.1.1'
-# set protocols ospf passive-interface 'eth1'
-# set protocols ospf passive-interface 'eth2'
+# set protocols ospf interface 'eth1' passive
+# set protocols ospf interface 'eth2' passive
 # set protocols ospf redistribute bgp metric '10'
 # set protocols ospf redistribute bgp metric-type '2'
 
@@ -1645,8 +1646,8 @@ EXAMPLES = """
 # set protocols ospf parameters 'opaque-lsa'
 # set protocols ospf parameters 'rfc1583-compatibility'
 # set protocols ospf parameters router-id '192.0.1.1'
-# set protocols ospf passive-interface 'eth1'
-# set protocols ospf passive-interface 'eth2'
+# set protocols ospf interface 'eth1' passive
+# set protocols ospf interface 'eth2' passive
 # set protocols ospf redistribute bgp metric '10'
 # set protocols ospf redistribute bgp metric-type '2'
 #
@@ -1781,7 +1782,7 @@ commands:
   type: list
   sample:
     - "set protocols ospf parameters router-id 192.0.1.1"
-    - "set protocols ospf passive-interface 'eth1'"
+    - "set protocols ospf interface 'eth1' passive"
 
 """
 
