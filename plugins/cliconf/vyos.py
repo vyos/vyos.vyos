@@ -138,7 +138,6 @@ class Cliconf(CliconfBase):
             requests.append(cmd["command"])
         out = self.get("compare")
         out = to_text(out, errors="surrogate_or_strict")
-        out = out.replace("\u0000", "")
         diff_config = out if not out.startswith("No changes") else None
 
         if diff_config:
