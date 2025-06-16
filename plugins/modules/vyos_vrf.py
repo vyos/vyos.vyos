@@ -130,10 +130,11 @@ EXAMPLES = """
 
 # # Before state:
 # # -------------
-#   vyos@vyos:~$ show configuration commands | grep ntp
-#     set service ntp server time1.vyos.net
-#     set service ntp server time2.vyos.net
-#     set service ntp server time3.vyos.net
+#   vyos@vyos:~$ show configuration commands |  match 'set vrf'
+#      set vrf name vrf-blue description 'blue-vrf'
+#      set vrf name vrf-blue disable
+#      set vrf name vrf-blue table '100'
+#      set vrf name vrf-blue vni '1000'
 #   vyos@vyos:~$
 
 # # Task
@@ -149,55 +150,66 @@ EXAMPLES = """
         - server: 203.0.113.0
           options:
             - prefer
-
+    - name: Merge provided configuration with device configuration
+      vyos.vyos.vyos_vrf:
+        config:
+          instances:
+            - name: "vrf-green"
+              description: "green-vrf"
+              table_id: 110
+              vni: 1010
 
 # Task output:
 # -------------
-#        "after": {
-#         "allow_clients": [
-#            "10.6.6.0/24"
-#        ],
-#        "listen_addresses": [
-#            "10.1.3.1"
-#        ],
-#        "servers": [
-#            {
-#                "server": "ser",
-#                "options": [
-#                    "prefer"
-#                ]
-#            },
-#            {
-#                "server": "time1.vyos.net"
-#            },
-#            {
-#                "server": "time2.vyos.net"
-#            },
-#            {
-#                "server": "time3.vyos.net"
-#            }
-#        ]
-#    },
-#    "before": {
-#    },
-#    "changed": true,
-#    "commands": [
-#        "set service ntp allow-clients address 10.6.6.0/24",
-#        "set service ntp listen-address 10.1.3.1",
-#        "set service ntp server 203.0.113.0 prefer"
-#    ]
+    # "after": {
+    #     "bind_to_all": false,
+    #     "instances": [
+    #         {
+    #             "description": "blue-vrf",
+    #             "disable": true,
+    #             "name": "vrf-blue",
+    #             "table_id": 100,
+    #             "vni": 1000
+    #         },
+    #         {
+    #             "description": "green-vrf",
+    #             "disable": false,
+    #             "name": "vrf-green",
+    #             "table_id": 110,
+    #             "vni": 1010
+    #         }
+    #     ]
+    # },
+    # "before": {
+    #     "bind_to_all": false,
+    #     "instances": [
+    #         {
+    #             "description": "blue-vrf",
+    #             "disable": true,
+    #             "name": "vrf-blue",
+    #             "table_id": 100,
+    #             "vni": 1000
+    #         }
+    #     ]
+    # },
+    # "changed": true,
+    # "commands": [
+    #     "set vrf name vrf-green table 110",
+    #     "set vrf name vrf-green vni 1010",
+    #     "set vrf name vrf-green description green-vrf"
+    # ]
 
 # After state:
 # # -------------
-#        vyos@vyos:~$ show configuration commands | grep ntp
-#        set service ntp allow-clients address '10.6.6.0/24'
-#        set service ntp listen-address '10.1.3.1'
-#        set service ntp server 203.0.113.0 prefer,
-#        set service ntp server time1.vyos.net
-#        set service ntp server time2.vyos.net
-#        set service ntp server time3.vyos.net
-#        vyos@vyos:~$
-
+#   vyos@vyos:~$ show configuration commands |  match 'set vrf'
+#     set vrf name vrf-blue description 'blue-vrf'
+#     set vrf name vrf-blue disable
+#     set vrf name vrf-blue table '100'
+#     set vrf name vrf-blue vni '1000'
+#     set vrf name vrf-green description 'green-vrf'
+#     set vrf name vrf-green table '110'
+#     set vrf name vrf-green vni '1010'
+#   vyos@vyos:~$
 
 # # -------------------
 # # 2. Using replaced
