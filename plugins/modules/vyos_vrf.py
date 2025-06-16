@@ -22,7 +22,7 @@ description:
 author:
 - Evgeny Molotkov (@omnom62)
 notes:
-- Tested against vyos 1.4+
+- Tested against vyos 1.5-stream-2025-Q1
 - This module works with connection C(network_cli).
 options:
   config:
@@ -55,14 +55,57 @@ options:
           vni:
             description: Virtual Network Identifier
             type: int
+          address_family:
+            type: list
+            elements: dict
+            description: Address family configuration
+            suboptions:
+              afi:
+                description: Address family identifier
+                type: str
+                choices:
+                - ipv4
+                - ipv6
+              disable_forwarding:
+                default: false
+                description: Disable forwarding for this address family
+                type: bool
+              nht_no_resolve_via_default:
+                default: false
+                description: Disable next-hop resolution via default route
+                type: bool
+              route_maps:
+                description: List of route maps for this address family
+                type: list
+                elements: dict
+                suboptions:
+                  rm_name:
+                    description: Route map name
+                    type: str
+                    required: true
+                  protocol:
+                    description: Protocol to which the route map applies
+                    type: str
+                    choices:
+                    - any
+                    - babel
+                    - bgp
+                    - connected
+                    - eigrp
+                    - isis
+                    - kernel
+                    - ospf
+                    - rip
+                    - static
+                    - table
   running_config:
     description:
     - This option is used only with state I(parsed).
     - The value of this option should be the output received from the VYOS device by
-      executing the command B(show configuration commands | grep ntp).
+      executing the command B(show configuration commands |  match "set vrf").
     - The states I(replaced) and I(overridden) have identical
       behaviour for this module.
-    - The state I(parsed) reads the configuration from C(show configuration commands | grep ntp) option and
+    - The state I(parsed) reads the configuration from C(show configuration commands |  match "set vrf") option and
       transforms it into Ansible structured data as per the resource module's argspec
       and the value is then returned in the I(parsed) key within the result.
     type: str

@@ -286,3 +286,25 @@ def in_target_not_none(h, key):
     :return: True/False.
     """
     return True if h and key in h and h[key] is not None else False
+
+
+def combine(a, b, recursive=False, list_merge="replace"):
+    """
+    Merge two dictionaries (shallow or deep).
+    :param a: dict
+    :param b: dict
+    :param recursive: bool, deep merge
+    :param list_merge: str, only 'replace' is supported (default Ansible behavior)
+    """
+    if not isinstance(a, dict) or not isinstance(b, dict):
+        raise ValueError("combine expects two dictionaries")
+
+    result = a.copy()
+
+    for k, v in b.items():
+        if recursive and k in result and isinstance(result[k], dict) and isinstance(v, dict):
+            result[k] = combine(result[k], v, recursive=True, list_merge=list_merge)
+        else:
+            result[k] = v
+
+    return result

@@ -11,7 +11,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The vyos_ntp config file.
+The vyos_vrf config file.
 It is in this file where the current configuration (as dict)
 is compared to the provided configuration (as dict) and the command set
 necessary to bring the current configuration to its desired end-state is
@@ -21,7 +21,6 @@ created.
 from copy import deepcopy
 
 from ansible.module_utils.six import iteritems
-from ansible.plugins.filter.core import combine
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
@@ -30,10 +29,14 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.vrf import (
     VrfTemplate,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import combine
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
     LooseVersion,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+
+# from ansible.plugins.filter.core import combine
 
 
 class Vrf(ResourceModule):
@@ -96,7 +99,8 @@ class Vrf(ResourceModule):
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged", "replaced"]:
             # wantd = dict_merge(wantd, haved)
-            wantd = haved | combine(wantd, recursive=True)
+            # wantd = haved | combine(wantd, recursive=True)
+            wantd = combine(haved, wantd, recursive=True)
             # self._module.fail_json(msg="Want: " + str(wantd) + "**** H:  " + str(haved))
 
         # if state is deleted, delete and empty out wantd
