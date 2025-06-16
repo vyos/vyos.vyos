@@ -37,7 +37,7 @@ options:
         description: Virtual Routing and Forwarding instance
         type: list
         elements: dict
-        options:
+        suboptions:
           name:
             description: VRF instance name
             required: true
@@ -60,26 +60,24 @@ options:
             type: list
             elements: dict
             description: Address family configuration
-            options:
+            suboptions:
               afi:
                 description: Address family identifier
                 type: str
-                choices:
-                - ipv4
-                - ipv6
+                choices: ['ipv4', 'ipv6']
               disable_forwarding:
-                default: false
+                default: False
                 description: Disable forwarding for this address family
                 type: bool
               nht_no_resolve_via_default:
-                default: false
+                default: False
                 description: Disable next-hop resolution via default route
                 type: bool
               route_maps:
                 description: List of route maps for this address family
                 type: list
                 elements: dict
-                options:
+                suboptions:
                   rm_name:
                     description: Route map name
                     type: str
