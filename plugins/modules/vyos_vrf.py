@@ -37,9 +37,10 @@ options:
         description: Virtual Routing and Forwarding instance
         type: list
         elements: dict
-        suboptions:
+        options:
           name:
             description: VRF instance name
+            required: true
             type: str
           description:
             description: Description
@@ -59,7 +60,7 @@ options:
             type: list
             elements: dict
             description: Address family configuration
-            suboptions:
+            options:
               afi:
                 description: Address family identifier
                 type: str
@@ -78,7 +79,7 @@ options:
                 description: List of route maps for this address family
                 type: list
                 elements: dict
-                suboptions:
+                options:
                   rm_name:
                     description: Route map name
                     type: str
