@@ -139,25 +139,14 @@ EXAMPLES = """
 
 # # Task
 # # -------------
-- name: Replace the existing ntp config with the new config
-  vyos.vyos.vyos_ntp_global:
-    config:
-      allow_clients:
-        - 10.6.6.0/24
-      listen_addresses:
-        - 10.1.3.1
-      servers:
-        - server: 203.0.113.0
-          options:
-            - prefer
-    - name: Merge provided configuration with device configuration
-      vyos.vyos.vyos_vrf:
-        config:
-          instances:
-            - name: "vrf-green"
-              description: "green-vrf"
-              table_id: 110
-              vni: 1010
+  - name: Merge provided configuration with device configuration
+    vyos.vyos.vyos_vrf:
+      config:
+        instances:
+          - name: "vrf-green"
+            description: "green-vrf"
+            table_id: 110
+            vni: 1010
 
 # Task output:
 # -------------
@@ -217,145 +206,158 @@ EXAMPLES = """
 
 # # Before state:
 # # -------------
-#    vyos@vyos:~$ show configuration commands | grep ntp
-#    set service ntp allow-clients address '10.4.9.0/24'
-#    set service ntp allow-clients address '10.4.7.0/24'
-#    set service ntp allow-clients address '10.1.2.0/24'
-#    set service ntp allow-clients address '10.2.3.0/24'
-#    set service ntp listen-address '10.1.9.16'
-#    set service ntp listen-address '10.5.3.2'
-#    set service ntp listen-address '10.7.9.21'
-#    set service ntp listen-address '10.8.9.4'
-#    set service ntp listen-address '10.4.5.1'
-#    set service ntp server 10.3.6.5 noselect
-#    set service ntp server 10.3.6.5 dynamic
-#    set service ntp server 10.3.6.5 preempt
-#    set service ntp server 10.3.6.5 prefer
-#    set service ntp server server4 noselect
-#    set service ntp server server4 dynamic
-#    set service ntp server server5
-#    set service ntp server time1.vyos.net
-#    set service ntp server time2.vyos.net
-#    set service ntp server time3.vyos.net
-#    vyos@vyos:~$
+    # vyos@vyos:~$ show configuration commands |  match 'set vrf'
+      # set vrf bind-to-all
+      # set vrf name vrf-blue description 'blue-vrf'
+      # set vrf name vrf-blue table '100'
+      # set vrf name vrf-blue vni '1000'
+      # set vrf name vrf-red description 'red-vrf'
+      # set vrf name vrf-red disable
+      # set vrf name vrf-red ip disable-forwarding
+      # set vrf name vrf-red ip protocol kernel route-map 'rm1'
+      # set vrf name vrf-red ip protocol rip route-map 'rm1'
+      # set vrf name vrf-red table '101'
+      # set vrf name vrf-red vni '1001'
+      # vyos@vyos:~$
+
 
 # # Task
 # # -------------
-- name: Replace the existing ntp config with the new config
-  vyos.vyos.vyos_ntp_global:
-    config:
-      allow_clients:
-        - 10.6.6.0/24
-      listen_addresses:
-        - 10.1.3.1
-      servers:
-        - server: 203.0.113.0
-          options:
-            - prefer
-    state: replaced
-
+  - name: Merge provided configuration with device configuration
+    vyos.vyos.vyos_vrf:
+      config:
+        bind_to_all: true
+        instances:
+          - name: "vrf-blue"
+            description: "blue-vrf"
+            disable: false
+            table_id: 100
+            vni: 1002
+          - name: "vrf-red"
+            description: "red-vrf"
+            disable: false
+            table_id: 101
+            vni: 1001
+            address_family:
+              - afi: "ipv4"
+                disable_forwarding: false
+                route_maps:
+                  - rm_name: "rm1"
+                    protocol: "kernel"
+                  - rm_name: "rm1"
+                    protocol: "ospf"
+              - afi: "ipv6"
+                nht_no_resolve_via_default: true
+      state: replaced
 
 # # Task output:
 # # -------------
-#        "after": {
-#         "allow_clients": [
-#            "10.6.6.0/24"
-#        ],
-#        "listen_addresses": [
-#            "10.1.3.1"
-#        ],
-#        "servers": [
-#            {
-#                "server": "ser",
-#                "options": [
-#                    "prefer"
-#                ]
-#            },
-#            {
-#                "server": "time1.vyos.net"
-#            },
-#            {
-#                "server": "time2.vyos.net"
-#            },
-#            {
-#                "server": "time3.vyos.net"
-#            }
-#        ]
-#    },
-#    "before": {
-#        "allow_clients": [
-#            "10.4.7.0/24",
-#            "10.2.3.0/24",
-#            "10.1.2.0/24",
-#            "10.4.9.0/24"
-#        ],
-#        "listen_addresses": [
-#            "10.7.9.21",
-#            "10.4.5.1",
-#            "10.5.3.2",
-#            "10.8.9.4",
-#            "10.1.9.16"
-#        ],
-#        "servers": [
-#            {
-#                "server": "10.3.6.5",
-#                "options": [
-#                    "noselect",
-#                    "dynamic",
-#                    "preempt",
-#                    "prefer"
-#                ]
-#            },
-#            {
-#                "server": "server4",
-#                "options": [
-#                    "noselect",
-#                    "dynamic"
-#                ]
-#            },
-#            {
-#                "server": "server5"
-#            },
-#            {
-#                "server": "time1.vyos.net"
-#            },
-#            {
-#                "server": "time2.vyos.net"
-#            },
-#            {
-#                "server": "time3.vyos.net"
-#            }
-#        ]
-#    },
-#    "changed": true,
-#    "commands": [
-#        "delete service ntp allow-clients address 10.4.7.0/24",
-#        "delete service ntp allow-clients address 10.2.3.0/24",
-#        "delete service ntp allow-clients address 10.1.2.0/24",
-#        "delete service ntp allow-clients address 10.4.9.0/24",
-#        "delete service ntp listen-address 10.7.9.21",
-#        "delete service ntp listen-address 10.4.5.1",
-#        "delete service ntp listen-address 10.5.3.2",
-#        "delete service ntp listen-address 10.8.9.4",
-#        "delete service ntp listen-address 10.1.9.16",
-#        "delete service ntp server 10.3.6.5",
-#        "delete service ntp server server4",
-#        "delete service ntp server server5",
-#        "set service ntp allow-clients address 10.6.6.0/24",
-#        "set service ntp listen-address 10.1.3.1",
-#        "set service ntp server 203.0.113.0 prefer"
-#    ]
+  # "after": {
+  #     "bind_to_all": true,
+  #     "instances": [
+  #         {
+  #             "description": "blue-vrf",
+  #             "disable": false,
+  #             "name": "vrf-blue",
+  #             "table_id": 100,
+  #             "vni": 1002
+  #         },
+  #         {
+  #             "address_family": [
+  #                 {
+  #                     "afi": "ipv4",
+  #                     "disable_forwarding": false,
+  #                     "nht_no_resolve_via_default": false,
+  #                     "route_maps": [
+  #                         {
+  #                             "protocol": "kernel",
+  #                             "rm_name": "rm1"
+  #                         },
+  #                         {
+  #                             "protocol": "ospf",
+  #                             "rm_name": "rm1"
+  #                         },
+  #                         {
+  #                             "protocol": "rip",
+  #                             "rm_name": "rm1"
+  #                         }
+  #                     ]
+  #                 },
+  #                 {
+  #                     "afi": "ipv6",
+  #                     "disable_forwarding": false,
+  #                     "nht_no_resolve_via_default": true
+  #                 }
+  #             ],
+  #             "description": "red-vrf",
+  #             "disable": false,
+  #             "name": "vrf-red",
+  #             "table_id": 101,
+  #             "vni": 1001
+  #         }
+  #     ]
+  # },
+  # "before": {
+  #     "bind_to_all": true,
+  #     "instances": [
+  #         {
+  #             "description": "blue-vrf",
+  #             "disable": false,
+  #             "name": "vrf-blue",
+  #             "table_id": 100,
+  #             "vni": 1000
+  #         },
+  #         {
+  #             "address_family": [
+  #                 {
+  #                     "afi": "ipv4",
+  #                     "disable_forwarding": true,
+  #                     "nht_no_resolve_via_default": false,
+  #                     "route_maps": [
+  #                         {
+  #                             "protocol": "kernel",
+  #                             "rm_name": "rm1"
+  #                         },
+  #                         {
+  #                             "protocol": "rip",
+  #                             "rm_name": "rm1"
+  #                         }
+  #                     ]
+  #                 }
+  #             ],
+  #             "description": "red-vrf",
+  #             "disable": true,
+  #             "name": "vrf-red",
+  #             "table_id": 101,
+  #             "vni": 1001
+  #         }
+  #     ]
+  # },
+  # "changed": true,
+  # "commands": [
+  #     "set vrf name vrf-blue vni 1002",
+  #     "delete vrf name vrf-red disable",
+  #     "set vrf name vrf-red ip protocol ospf route-map rm1",
+  #     "delete vrf name vrf-red ip disable-forwarding",
+  #     "set vrf name vrf-red ipv6 nht no-resolve-via-default"
+  # ]
 
 # After state:
 # # -------------
-#        vyos@vyos:~$ show configuration commands | grep ntp
-#        set service ntp allow-clients address '10.6.6.0/24'
-#        set service ntp listen-address '10.1.3.1'
-#        set service ntp server 203.0.113.0 prefer,
-#        set service ntp server time1.vyos.net
-#        set service ntp server time2.vyos.net
-#        set service ntp server time3.vyos.net
-#        vyos@vyos:~$
+    # vyos@vyos:~$
+      # set vrf bind-to-all
+      # set vrf name vrf-blue description 'blue-vrf'
+      # set vrf name vrf-blue table '100'
+      # set vrf name vrf-blue vni '1002'
+      # set vrf name vrf-red description 'red-vrf'
+      # set vrf name vrf-red ip protocol kernel route-map 'rm1'
+      # set vrf name vrf-red ip protocol ospf route-map 'rm1'
+      # set vrf name vrf-red ip protocol rip route-map 'rm1'
+      # set vrf name vrf-red ipv6 nht no-resolve-via-default
+      # set vrf name vrf-red table '101'
+      # set vrf name vrf-red vni '1001'
+    # vyos@vyos:~$
+
 
 # # -------------------
 # # 3. Using overridden
@@ -363,207 +365,237 @@ EXAMPLES = """
 
 # # Before state:
 # # -------------
-#        vyos@vyos:~$ show configuration commands | grep ntp
-#        set service ntp allow-clients address '10.6.6.0/24'
-#        set service ntp listen-address '10.1.3.1'
-#        set service ntp server 203.0.113.0 prefer,
-#        set service ntp server time1.vyos.net
-#        set service ntp server time2.vyos.net
-#        set service ntp server time3.vyos.net
-#        vyos@vyos:~$
+  # vyos@vyos:~$ show configuration commands |  match 'set vrf'
+    # set vrf bind-to-all
+    # set vrf name vrf-blue description 'blue-vrf'
+    # set vrf name vrf-blue table '100'
+    # set vrf name vrf-blue vni '1000'
+    # set vrf name vrf-red description 'red-vrf'
+    # set vrf name vrf-red disable
+    # set vrf name vrf-red ip disable-forwarding
+    # set vrf name vrf-red ip protocol kernel route-map 'rm1'
+    # set vrf name vrf-red ip protocol rip route-map 'rm1'
+    # set vrf name vrf-red table '101'
+    # set vrf name vrf-red vni '1001'
+  # vyos@vyos:~$
 
 # Task
 # -------------
-- name: Override ntp config
-  vyos.vyos.vyos_ntp_global:
-    config:
-      allow_clients:
-        - 10.3.3.0/24
-      listen_addresses:
-        - 10.7.8.1
-      servers:
-        - server: server1
-          options:
-            - dynamic
-            - prefer
-
-        - server: server2
-          options:
-            - noselect
-            - preempt
-
-        - server: serv
-    state: overridden
+  - name: Overridden provided configuration with device configuration
+    vyos.vyos.vyos_vrf:
+      config:
+        bind_to_all: true
+        instances:
+          - name: "vrf-blue"
+            description: "blue-vrf"
+            disable: true
+            table_id: 100
+            vni: 1000
+          - name: "vrf-red"
+            description: "red-vrf"
+            disable: true
+            table_id: 101
+            vni: 1001
+            address_family:
+              - afi: "ipv4"
+                disable_forwarding: false
+                route_maps:
+                  - rm_name: "rm1"
+                    protocol: "kernel"
+                  - rm_name: "rm1"
+                    protocol: "rip"
+              - afi: "ipv6"
+                nht_no_resolve_via_default: false
+      state: overridden
 
 # # Task output:
 # # -------------
-#            "after": {
-#                "allow_clients": [
-#                    "10.3.3.0/24"
-#                ],
-#                "listen_addresses": [
-#                    "10.7.8.1"
-#                ],
-#                "servers": [
-#                    {
-#                "server": "serv"
-#            },
-#            {
-#                "server": "server1",
-#                "options": [
-#                    "dynamic",
-#                    "prefer"
-#                ]
-#            },
-#            {
-#                "server": "server2",
-#                "options": [
-#                    "noselect",
-#                    "preempt"
-#                ]
-#            },
-#            {
-#                "server": "time1.vyos.net"
-#            },
-#            {
-#                "server": "time2.vyos.net"
-#            },
-#            {
-#                "server": "time3.vyos.net"
-#            }
-#                ]
-#            },
-#            "before": {
-#                "allow_clients": [
-#                    "10.6.6.0/24"
-#                ],
-#                "listen_addresses": [
-#                    "10.1.3.1"
-#                ],
-#                "servers": [
-#                    {
-#                        "server": "ser",
-#                        "options": [
-#                            "prefer"
-#                        ]
-#                    },
-#                    {
-#                        "server": "time1.vyos.net"
-#                    },
-#                    {
-#                        "server": "time2.vyos.net"
-#                    },
-#                    {
-#                        "server": "time3.vyos.net"
-#                    }
-#                ]
-#            },
-#            "changed": true,
-#            "commands": [
-#                "delete service ntp allow-clients address 10.6.6.0/24",
-#                "delete service ntp listen-address 10.1.3.1",
-#                "delete service ntp server ser",
-#                "set service ntp allow-clients address 10.3.3.0/24",
-#                "set service ntp listen-address 10.7.8.1",
-#                "set service ntp server server1 dynamic",
-#                "set service ntp server server1 prefer",
-#                "set service ntp server server2 noselect",
-#                "set service ntp server server2 preempt",
-#                "set service ntp server serv"
-#            ]
+    "after": {
+        "bind_to_all": true,
+        "instances": [
+            {
+                "description": "blue-vrf",
+                "disable": true,
+                "name": "vrf-blue",
+                "table_id": 100,
+                "vni": 1000
+            },
+            {
+                "address_family": [
+                    {
+                        "afi": "ipv4",
+                        "disable_forwarding": false,
+                        "nht_no_resolve_via_default": false,
+                        "route_maps": [
+                            {
+                                "protocol": "kernel",
+                                "rm_name": "rm1"
+                            },
+                            {
+                                "protocol": "rip",
+                                "rm_name": "rm1"
+                            }
+                        ]
+                    }
+                ],
+                "description": "red-vrf",
+                "disable": true,
+                "name": "vrf-red",
+                "table_id": 101,
+                "vni": 1001
+            }
+        ]
+    },
+    "before": {
+        "bind_to_all": true,
+        "instances": [
+            {
+                "description": "blue-vrf",
+                "disable": false,
+                "name": "vrf-blue",
+                "table_id": 100,
+                "vni": 1000
+            },
+            {
+                "address_family": [
+                    {
+                        "afi": "ipv4",
+                        "disable_forwarding": true,
+                        "nht_no_resolve_via_default": false,
+                        "route_maps": [
+                            {
+                                "protocol": "kernel",
+                                "rm_name": "rm1"
+                            },
+                            {
+                                "protocol": "rip",
+                                "rm_name": "rm1"
+                            }
+                        ]
+                    }
+                ],
+                "description": "red-vrf",
+                "disable": true,
+                "name": "vrf-red",
+                "table_id": 101,
+                "vni": 1001
+            }
+        ]
+    },
+    "changed": true,
+    "commands": [
+        "delete vrf name vrf-blue",
+        "commit",
+        "delete vrf name vrf-red",
+        "commit",
+        "set vrf name vrf-blue table 100",
+        "set vrf name vrf-blue vni 1000",
+        "set vrf name vrf-blue description blue-vrf",
+        "set vrf name vrf-blue disable",
+        "set vrf name vrf-red table 101",
+        "set vrf name vrf-red vni 1001",
+        "set vrf name vrf-red description red-vrf",
+        "set vrf name vrf-red disable",
+        "set vrf name vrf-red ip protocol kernel route-map rm1",
+        "set vrf name vrf-red ip protocol rip route-map rm1"
+    ]
 
 # After state:
 # # -------------
-#        vyos@vyos:~$ show configuration commands | grep ntp
-#        set service ntp allow-clients address '10.3.3.0/24'
-#        set service ntp listen-address '10.7.8.1'
-#        set service ntp server serv
-#        set service ntp server server1 dynamic
-#        set service ntp server server1 prefer
-#        set service ntp server server2 noselect
-#        set service ntp server server2 preempt
-#        set service ntp server time1.vyos.net
-#        set service ntp server time2.vyos.net
-#        set service ntp server time3.vyos.net
-#        vyos@vyos:~$
+    # vyos@vyos:~$ show configuration commands |  match 'set vrf'
+    #   set vrf bind-to-all
+    #   set vrf name vrf-blue description 'blue-vrf'
+    #   set vrf name vrf-blue disable
+    #   set vrf name vrf-blue table '100'
+    #   set vrf name vrf-blue vni '1000'
+    #   set vrf name vrf-red description 'red-vrf'
+    #   set vrf name vrf-red disable
+    #   set vrf name vrf-red ip protocol kernel route-map 'rm1'
+    #   set vrf name vrf-red ip protocol rip route-map 'rm1'
+    #   set vrf name vrf-red table '101'
+    #   set vrf name vrf-red vni '1001'
+    # vyos@vyos:~$
 
 # 4. Using gathered
 # -------------------
 
 # # Before state:
 # # -------------
-#        vyos@vyos:~$ show configuration commands | grep ntp
-#        set service ntp allow-clients address '10.3.3.0/24'
-#        set service ntp listen-address '10.7.8.1'
-#        set service ntp server serv
-#        set service ntp server server1 dynamic
-#        set service ntp server server1 prefer
-#        set service ntp server server2 noselect
-#        set service ntp server server2 preempt
-#        set service ntp server time1.vyos.net
-#        set service ntp server time2.vyos.net
-#        set service ntp server time3.vyos.net
-#        vyos@vyos:~$
+    # vyos@vyos:~$ show configuration commands |  match 'set vrf'
+    #   set vrf bind-to-all
+    #   set vrf name vrf-blue description 'blue-vrf'
+    #   set vrf name vrf-blue table '100'
+    #   set vrf name vrf-blue vni '1000'
+    #   set vrf name vrf-red description 'red-vrf'
+    #   set vrf name vrf-red disable
+    #   set vrf name vrf-red ip disable-forwarding
+    #   set vrf name vrf-red ip protocol kernel route-map 'rm1'
+    #   set vrf name vrf-red ip protocol rip route-map 'rm1'
+    #   set vrf name vrf-red table '101'
+    #   set vrf name vrf-red vni '1001'
+    # vyos@vyos:~$
 
 # Task
 # -------------
-- name: Gather ntp config
-  vyos.vyos.vyos_ntp_global:
+- name: Gather provided configuration with device configuration
+  vyos.vyos.vyos_vrf:
+    config:
     state: gathered
 
 # # Task output:
 # # -------------
-#        "gathered": {
-#                "allow_clients": [
-#                    "10.3.3.0/24"
-#                ],
-#                "listen_addresses": [
-#                    "10.7.8.1"
-#                ],
-#                "servers": [
-#                    {
-#                        "server": "serv"
-#                    },
-#                    {
-#                        "server": "server1",
-#                        "options": [
-#                            "dynamic",
-#                            "prefer"
-#                        ]
-#                    },
-#                    {
-#                         "server": "server2",
-#                         "options": [
-#                             "noselect",
-#                             "preempt"
-#                         ]
-#                     },
-#                     {
-#                          "server": "time1.vyos.net"
-#                     },
-#                     {
-#                         "server": "time2.vyos.net"
-#                     },
-#                     {
-#                         "server": "time3.vyos.net"
-#                     }
-#                ]
-#            }
+    "gathered": {
+        "bind_to_all": true,
+        "instances": [
+            {
+                "description": "blue-vrf",
+                "disable": false,
+                "name": "vrf-blue",
+                "table_id": 100,
+                "vni": 1000
+            },
+            {
+                "address_family": [
+                    {
+                        "afi": "ipv4",
+                        "disable_forwarding": true,
+                        "nht_no_resolve_via_default": false,
+                        "route_maps": [
+                            {
+                                "protocol": "kernel",
+                                "rm_name": "rm1"
+                            },
+                            {
+                                "protocol": "rip",
+                                "rm_name": "rm1"
+                            }
+                        ]
+                    }
+                ],
+                "description": "red-vrf",
+                "disable": true,
+                "name": "vrf-red",
+                "table_id": 101,
+                "vni": 1001
+            }
+        ]
+    }
 
 # After state:
 # # -------------
-#        vyos@vyos:~$ show configuration commands | grep ntp
-#        set service ntp allow-clients address '10.3.3.0/24'
-#        set service ntp listen-address '10.7.8.1'
-#        set service ntp server serv
-#        set service ntp server server1 dynamic
-#        set service ntp server server1 prefer
-#        set service ntp server server2 noselect
-#        set service ntp server server2 preempt
-#        set service ntp server time1.vyos.net
-#        set service ntp server time2.vyos.net
-#        set service ntp server time3.vyos.net
-#        vyos@vyos:~$
+    # vyos@vyos:~$ show configuration commands |  match 'set vrf'
+    #   set vrf bind-to-all
+    #   set vrf name vrf-blue description 'blue-vrf'
+    #   set vrf name vrf-blue table '100'
+    #   set vrf name vrf-blue vni '1000'
+    #   set vrf name vrf-red description 'red-vrf'
+    #   set vrf name vrf-red disable
+    #   set vrf name vrf-red ip disable-forwarding
+    #   set vrf name vrf-red ip protocol kernel route-map 'rm1'
+    #   set vrf name vrf-red ip protocol rip route-map 'rm1'
+    #   set vrf name vrf-red table '101'
+    #   set vrf name vrf-red vni '1001'
+    # vyos@vyos:~$
 
 
 # # -------------------
@@ -572,95 +604,115 @@ EXAMPLES = """
 
 # # Before state:
 # # -------------
-#        vyos@vyos:~$ show configuration commands | grep ntp
-#        set service ntp allow-clients address '10.3.3.0/24'
-#        set service ntp listen-address '10.7.8.1'
-#        set service ntp server serv
-#        set service ntp server server1 dynamic
-#        set service ntp server server1 prefer
-#        set service ntp server server2 noselect
-#        set service ntp server server2 preempt
-#        set service ntp server time1.vyos.net
-#        set service ntp server time2.vyos.net
-#        set service ntp server time3.vyos.net
-#        vyos@vyos:~$
+    # vyos@vyos:~$ show configuration commands |  match 'set vrf'
+    #   set vrf bind-to-all
+    #   set vrf name vrf-blue description 'blue-vrf'
+    #   set vrf name vrf-blue table '100'
+    #   set vrf name vrf-blue vni '1000'
+    #   set vrf name vrf-red description 'red-vrf'
+    #   set vrf name vrf-red disable
+    #   set vrf name vrf-red ip disable-forwarding
+    #   set vrf name vrf-red ip protocol kernel route-map 'rm1'
+    #   set vrf name vrf-red ip protocol rip route-map 'rm1'
+    #   set vrf name vrf-red table '101'
+    #   set vrf name vrf-red vni '1001'
+    # vyos@vyos:~$
 
 # # Task
 # # -------------
-- name: Delete ntp config
-  vyos.vyos.vyos_ntp_global:
+- name: Replace provided configuration with device configuration
+  vyos.vyos.vyos_vrf:
+    config:
+      bind_to_all: false
+      instances:
+        - name: "vrf-blue"
     state: deleted
 
 
 # # Task output:
 # # -------------
-#            "after": {
-#                "servers": [
-#                    {
-#                        "server": "time1.vyos.net"
-#                    },
-#                    {
-#                       "server": "time2.vyos.net"
-#                    },
-#                    {
-#                        "server": "time3.vyos.net"
-#                    }
-#                ]
-#            },
-#            "before": {
-#                "allow_clients": [
-#                    "10.3.3.0/24"
-#                ],
-#                "listen_addresses": [
-#                    "10.7.8.1"
-#                ],
-#                "servers": [
-#                    {
-#                        "server": "serv"
-#                    },
-#                    {
-#                        "server": "server1",
-#                        "options": [
-#                            "dynamic",
-#                            "prefer"
-#                        ]
-#                    },
-#                    {
-#                          "server": "server2",
-#                          "options": [
-#                              "noselect",
-#                              "preempt"
-#                          ]
-#                      },
-#                      {
-#                          "server": "time1.vyos.net"
-#                      },
-#                      {
-#                          "server": "time2.vyos.net"
-#                      },
-#                      {
-#                          "server": "time3.vyos.net"
-#                      }
-#                ]
-#            },
-#            "changed": true,
-#            "commands": [
-#                "delete service ntp allow-clients",
-#                "delete service ntp listen-address",
-#                "delete service ntp server serv",
-#                "delete service ntp server server1",
-#                "delete service ntp server server2"
-#
-#            ]
+    # "after": {
+    #     "bind_to_all": false,
+    #     "instances": [
+    #         {
+    #             "address_family": [
+    #                 {
+    #                     "afi": "ipv4",
+    #                     "disable_forwarding": true,
+    #                     "nht_no_resolve_via_default": false,
+    #                     "route_maps": [
+    #                         {
+    #                             "protocol": "kernel",
+    #                             "rm_name": "rm1"
+    #                         },
+    #                         {
+    #                             "protocol": "rip",
+    #                             "rm_name": "rm1"
+    #                         }
+    #                     ]
+    #                 }
+    #             ],
+    #             "description": "red-vrf",
+    #             "disable": true,
+    #             "name": "vrf-red",
+    #             "table_id": 101,
+    #             "vni": 1001
+    #         }
+    #     ]
+    # },
+    # "before": {
+    #     "bind_to_all": true,
+    #     "instances": [
+    #         {
+    #             "description": "blue-vrf",
+    #             "disable": false,
+    #             "name": "vrf-blue",
+    #             "table_id": 100,
+    #             "vni": 1000
+    #         },
+    #         {
+    #             "address_family": [
+    #                 {
+    #                     "afi": "ipv4",
+    #                     "disable_forwarding": true,
+    #                     "nht_no_resolve_via_default": false,
+    #                     "route_maps": [
+    #                         {
+    #                             "protocol": "kernel",
+    #                             "rm_name": "rm1"
+    #                         },
+    #                         {
+    #                             "protocol": "rip",
+    #                             "rm_name": "rm1"
+    #                         }
+    #                     ]
+    #                 }
+    #             ],
+    #             "description": "red-vrf",
+    #             "disable": true,
+    #             "name": "vrf-red",
+    #             "table_id": 101,
+    #             "vni": 1001
+    #         }
+    #     ]
+    # },
+    # "changed": true,
+    # "commands": [
+    #     "delete vrf bind-to-all",
+    #     "delete vrf name vrf-blue"
+    # ]
 
 # After state:
 # # -------------
-#        vyos@vyos:~$ show configuration commands | grep ntp
-#        set service ntp server time1.vyos.net
-#        set service ntp server time2.vyos.net
-#        set service ntp server time3.vyos.net
-#        vyos@vyos:~$
-
+    # vyos@vyos:~$ show configuration commands |  match 'set vrf'
+    #   set vrf name vrf-red description 'red-vrf'
+    #   set vrf name vrf-red disable
+    #   set vrf name vrf-red ip disable-forwarding
+    #   set vrf name vrf-red ip protocol kernel route-map 'rm1'
+    #   set vrf name vrf-red ip protocol rip route-map 'rm1'
+    #   set vrf name vrf-red table '101'
+    #   set vrf name vrf-red vni '1001'
+    # vyos@vyos:~$
 
 # # -------------------
 # # 6. Using rendered
@@ -668,105 +720,140 @@ EXAMPLES = """
 
 # # Before state:
 # # -------------
-#        vyos@vyos:~$ show configuration commands | grep ntp
-#        set service ntp server time1.vyos.net
-#        set service ntp server time2.vyos.net
-#        set service ntp server time3.vyos.net
-#        vyos@vyos:~$
+    # vyos@vyos:~$ show configuration commands |  match 'set vrf'
+    #   set vrf name vrf-red description 'red-vrf'
+    #   set vrf name vrf-red disable
+    #   set vrf name vrf-red ip disable-forwarding
+    #   set vrf name vrf-red ip protocol kernel route-map 'rm1'
+    #   set vrf name vrf-red ip protocol rip route-map 'rm1'
+    #   set vrf name vrf-red table '101'
+    #   set vrf name vrf-red vni '1001'
+    # vyos@vyos:~$
 
 # Task
 # -------------
-- name: Render ntp config
-  vyos.vyos.vyos_ntp_global:
-    config:
-      allow_clients:
-        - 10.7.7.0/24
-        - 10.8.8.0/24
-      listen_addresses:
-        - 10.7.9.1
-      servers:
-        - server: server7
-        - server: server45
-          options:
-            - noselect
-            - prefer
-            - pool
-        - server: time1.vyos.net
-        - server: time2.vyos.net
-        - server: time3.vyos.net
-      state: rendered
+    - name: Render provided configuration with device configuration
+      vyos.vyos.vyos_vrf:
+        config:
+          bind_to_all: true
+          instances:
+            - name: "vrf-green"
+              description: "green-vrf"
+              disabled: true
+              table_id: 105
+              vni: 1000
+            - name: "vrf-amber"
+              description: "amber-vrf"
+              disable: false
+              table_id: 111
+              vni: 1001
+              address_family:
+                - afi: "ipv4"
+                  disable_forwarding: true
+                  route_maps:
+                    - rm_name: "rm1"
+                      protocol: "kernel"
+                    - rm_name: "rm1"
+                      protocol: "ospf"
+                - afi: "ipv6"
+                  nht_no_resolve_via_default: false
+        state: rendered
 
 # # Task output:
 # # -------------
-#           "rendered": [
-#                "set service ntp allow-clients address 10.7.7.0/24",
-#                "set service ntp allow-clients address 10.8.8.0/24",
-#                "set service ntp listen-address 10.7.9.1",
-#                "set service ntp server server7",
-#                "set service ntp server server45 noselect",
-#                "set service ntp server server45 prefer",
-#                "set service ntp server server45 pool",
-#                "set service ntp server time1.vyos.net",
-#                "set service ntp server time2.vyos.net",
-#                "set service ntp server time3.vyos.net"
-#            ]
-
+  # "rendered": [
+  #     "set vrf bind-to-all",
+  #     "set vrf name vrf-green table 105",
+  #     "set vrf name vrf-green vni 1000",
+  #     "set vrf name vrf-green description green-vrf",
+  #     "set vrf name vrf-green disable",
+  #     "set vrf name vrf-amber table 111",
+  #     "set vrf name vrf-amber vni 1001",
+  #     "set vrf name vrf-amber description amber-vrf",
+  #     "set vrf name vrf-amber ip protocol kernel route-map rm1",
+  #     "set vrf name vrf-amber ip protocol ospf route-map rm1",
+  #     "set vrf name vrf-amber ip disable-forwarding"
+  # ]
 
 # # -------------------
 # # 7. Using parsed
 # # -------------------
 
-# # sample_config.cfg:
+# # vrf_parsed.cfg:
 # # -------------
-#           "set service ntp allow-clients address 10.7.7.0/24",
-#           "set service ntp listen-address 10.7.9.1",
-#           "set service ntp server server45 noselect",
-#           "set service ntp allow-clients addres 10.8.6.0/24",
-#           "set service ntp listen-address 10.5.4.1",
-#           "set service ntp server server45 dynamic",
-#           "set service ntp server time1.vyos.net",
-#           "set service ntp server time2.vyos.net",
-#           "set service ntp server time3.vyos.net"
+# set vrf bind-to-all
+# set vrf name vrf1 description 'red'
+# set vrf name vrf1 disable
+# set vrf name vrf1 table 101
+# set vrf name vrf1 vni 501
+# set vrf name vrf2 description 'blah2'
+# set vrf name vrf2 disable
+# set vrf name vrf2 table 102
+# set vrf name vrf2 vni 102
+# set vrf name vrf1 ip disable-forwarding
+# set vrf name vrf1 ip nht no-resolve-via-default
+# set vrf name vrf-red ip protocol kernel route-map 'rm1'
+# set vrf name vrf-red ip protocol ospf route-map 'rm1'
+# set vrf name vrf-red ipv6 nht no-resolve-via-default
 
 # Task:
 # -------------
-- name: Parse externally provided ntp configuration
-  vyos.vyos.vyos_ntp_global:
-    running_config: "{{ lookup('file', './sample_config.cfg') }}"
+- name: Parse provided configuration with device configuration
+  vyos.vyos.vyos_vrf:
+    running_config: "{{ lookup('file', './vrf_parsed.cfg') }}"
     state: parsed
+
 
 # # Task output:
 # # -------------
-#           parsed = {
-#                "allow_clients": [
-#                    "10.7.7.0/24",
-#                    "10.8.6.0/24
-#                ],
-#                "listen_addresses": [
-#                    "10.5.4.1",
-#                    "10.7.9.1"
-#                ],
-#                "servers": [
-#                    {
-#                        "server": "server45",
-#                        "options": [
-#                            "noselect",
-#                            "dynamic"
-#
-#                        ]
-#                    },
-#                    {
-#                        "server": "time1.vyos.net"
-#                    },
-#                    {
-#                        "server": "time2.vyos.net"
-#                    },
-#                    {
-#                        "server": "time3.vyos.net"
-#                    }
-#
-#                ]
-#            }
+"parsed": {
+        "bind_to_all": true,
+        "instances": [
+            {
+                "address_family": [
+                    {
+                        "afi": "ipv4",
+                        "disable_forwarding": true,
+                        "nht_no_resolve_via_default": true
+                    }
+                ],
+                "description": "red",
+                "disable": true,
+                "name": "vrf1"
+            },
+            {
+                "description": "blah2",
+                "disable": true,
+                "name": "vrf2"
+            },
+            {
+                "address_family": [
+                    {
+                        "afi": "ipv4",
+                        "disable_forwarding": false,
+                        "nht_no_resolve_via_default": false,
+                        "route_maps": [
+                            {
+                                "protocol": "kernel",
+                                "rm_name": "rm1"
+                            },
+                            {
+                                "protocol": "ospf",
+                                "rm_name": "rm1"
+                            }
+                        ]
+                    },
+                    {
+                        "afi": "ipv6",
+                        "disable_forwarding": false,
+                        "nht_no_resolve_via_default": true
+                    }
+                ],
+                "disable": false,
+                "name": "vrf-red"
+            }
+        ]
+    }
 """
 
 RETURN = """
