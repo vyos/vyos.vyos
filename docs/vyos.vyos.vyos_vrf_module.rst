@@ -681,95 +681,95 @@ Examples
 
     # # Task output:
     # # -------------
-        "after": {
-            "bind_to_all": true,
-            "instances": [
-                {
-                    "description": "blue-vrf",
-                    "disable": true,
-                    "name": "vrf-blue",
-                    "table_id": 100,
-                    "vni": 1000
-                },
-                {
-                    "address_family": [
-                        {
-                            "afi": "ipv4",
-                            "disable_forwarding": false,
-                            "nht_no_resolve_via_default": false,
-                            "route_maps": [
-                                {
-                                    "protocol": "kernel",
-                                    "rm_name": "rm1"
-                                },
-                                {
-                                    "protocol": "rip",
-                                    "rm_name": "rm1"
-                                }
-                            ]
-                        }
-                    ],
-                    "description": "red-vrf",
-                    "disable": true,
-                    "name": "vrf-red",
-                    "table_id": 101,
-                    "vni": 1001
-                }
-            ]
-        },
-        "before": {
-            "bind_to_all": true,
-            "instances": [
-                {
-                    "description": "blue-vrf",
-                    "disable": false,
-                    "name": "vrf-blue",
-                    "table_id": 100,
-                    "vni": 1000
-                },
-                {
-                    "address_family": [
-                        {
-                            "afi": "ipv4",
-                            "disable_forwarding": true,
-                            "nht_no_resolve_via_default": false,
-                            "route_maps": [
-                                {
-                                    "protocol": "kernel",
-                                    "rm_name": "rm1"
-                                },
-                                {
-                                    "protocol": "rip",
-                                    "rm_name": "rm1"
-                                }
-                            ]
-                        }
-                    ],
-                    "description": "red-vrf",
-                    "disable": true,
-                    "name": "vrf-red",
-                    "table_id": 101,
-                    "vni": 1001
-                }
-            ]
-        },
-        "changed": true,
-        "commands": [
-            "delete vrf name vrf-blue",
-            "commit",
-            "delete vrf name vrf-red",
-            "commit",
-            "set vrf name vrf-blue table 100",
-            "set vrf name vrf-blue vni 1000",
-            "set vrf name vrf-blue description blue-vrf",
-            "set vrf name vrf-blue disable",
-            "set vrf name vrf-red table 101",
-            "set vrf name vrf-red vni 1001",
-            "set vrf name vrf-red description red-vrf",
-            "set vrf name vrf-red disable",
-            "set vrf name vrf-red ip protocol kernel route-map rm1",
-            "set vrf name vrf-red ip protocol rip route-map rm1"
-        ]
+        # "after": {
+        #     "bind_to_all": true,
+        #     "instances": [
+        #         {
+        #             "description": "blue-vrf",
+        #             "disable": true,
+        #             "name": "vrf-blue",
+        #             "table_id": 100,
+        #             "vni": 1000
+        #         },
+        #         {
+        #             "address_family": [
+        #                 {
+        #                     "afi": "ipv4",
+        #                     "disable_forwarding": false,
+        #                     "nht_no_resolve_via_default": false,
+        #                     "route_maps": [
+        #                         {
+        #                             "protocol": "kernel",
+        #                             "rm_name": "rm1"
+        #                         },
+        #                         {
+        #                             "protocol": "rip",
+        #                             "rm_name": "rm1"
+        #                         }
+        #                     ]
+        #                 }
+        #             ],
+        #             "description": "red-vrf",
+        #             "disable": true,
+        #             "name": "vrf-red",
+        #             "table_id": 101,
+        #             "vni": 1001
+        #         }
+        #     ]
+        # },
+        # "before": {
+        #     "bind_to_all": true,
+        #     "instances": [
+        #         {
+        #             "description": "blue-vrf",
+        #             "disable": false,
+        #             "name": "vrf-blue",
+        #             "table_id": 100,
+        #             "vni": 1000
+        #         },
+        #         {
+        #             "address_family": [
+        #                 {
+        #                     "afi": "ipv4",
+        #                     "disable_forwarding": true,
+        #                     "nht_no_resolve_via_default": false,
+        #                     "route_maps": [
+        #                         {
+        #                             "protocol": "kernel",
+        #                             "rm_name": "rm1"
+        #                         },
+        #                         {
+        #                             "protocol": "rip",
+        #                             "rm_name": "rm1"
+        #                         }
+        #                     ]
+        #                 }
+        #             ],
+        #             "description": "red-vrf",
+        #             "disable": true,
+        #             "name": "vrf-red",
+        #             "table_id": 101,
+        #             "vni": 1001
+        #         }
+        #     ]
+        # },
+        # "changed": true,
+        # "commands": [
+        #     "delete vrf name vrf-blue",
+        #     "commit",
+        #     "delete vrf name vrf-red",
+        #     "commit",
+        #     "set vrf name vrf-blue table 100",
+        #     "set vrf name vrf-blue vni 1000",
+        #     "set vrf name vrf-blue description blue-vrf",
+        #     "set vrf name vrf-blue disable",
+        #     "set vrf name vrf-red table 101",
+        #     "set vrf name vrf-red vni 1001",
+        #     "set vrf name vrf-red description red-vrf",
+        #     "set vrf name vrf-red disable",
+        #     "set vrf name vrf-red ip protocol kernel route-map rm1",
+        #     "set vrf name vrf-red ip protocol rip route-map rm1"
+        # ]
 
     # After state:
     # # -------------
@@ -808,49 +808,49 @@ Examples
 
     # Task
     # -------------
-    - name: Gather provided configuration with device configuration
-      vyos.vyos.vyos_vrf:
-        config:
-        state: gathered
+    # - name: Gather provided configuration with device configuration
+    #   vyos.vyos.vyos_vrf:
+    #     config:
+    #     state: gathered
 
     # # Task output:
     # # -------------
-        "gathered": {
-            "bind_to_all": true,
-            "instances": [
-                {
-                    "description": "blue-vrf",
-                    "disable": false,
-                    "name": "vrf-blue",
-                    "table_id": 100,
-                    "vni": 1000
-                },
-                {
-                    "address_family": [
-                        {
-                            "afi": "ipv4",
-                            "disable_forwarding": true,
-                            "nht_no_resolve_via_default": false,
-                            "route_maps": [
-                                {
-                                    "protocol": "kernel",
-                                    "rm_name": "rm1"
-                                },
-                                {
-                                    "protocol": "rip",
-                                    "rm_name": "rm1"
-                                }
-                            ]
-                        }
-                    ],
-                    "description": "red-vrf",
-                    "disable": true,
-                    "name": "vrf-red",
-                    "table_id": 101,
-                    "vni": 1001
-                }
-            ]
-        }
+        # "gathered": {
+        #     "bind_to_all": true,
+        #     "instances": [
+        #         {
+        #             "description": "blue-vrf",
+        #             "disable": false,
+        #             "name": "vrf-blue",
+        #             "table_id": 100,
+        #             "vni": 1000
+        #         },
+        #         {
+        #             "address_family": [
+        #                 {
+        #                     "afi": "ipv4",
+        #                     "disable_forwarding": true,
+        #                     "nht_no_resolve_via_default": false,
+        #                     "route_maps": [
+        #                         {
+        #                             "protocol": "kernel",
+        #                             "rm_name": "rm1"
+        #                         },
+        #                         {
+        #                             "protocol": "rip",
+        #                             "rm_name": "rm1"
+        #                         }
+        #                     ]
+        #                 }
+        #             ],
+        #             "description": "red-vrf",
+        #             "disable": true,
+        #             "name": "vrf-red",
+        #             "table_id": 101,
+        #             "vni": 1001
+        #         }
+        #     ]
+        # }
 
     # After state:
     # # -------------
@@ -891,13 +891,13 @@ Examples
 
     # # Task
     # # -------------
-    - name: Replace provided configuration with device configuration
-      vyos.vyos.vyos_vrf:
-        config:
-          bind_to_all: false
-          instances:
-            - name: "vrf-blue"
-        state: deleted
+    # - name: Replace provided configuration with device configuration
+    #   vyos.vyos.vyos_vrf:
+    #     config:
+    #       bind_to_all: false
+    #       instances:
+    #         - name: "vrf-blue"
+    #     state: deleted
 
 
     # # Task output:
@@ -1003,32 +1003,32 @@ Examples
 
     # Task
     # -------------
-        - name: Render provided configuration with device configuration
-          vyos.vyos.vyos_vrf:
-            config:
-              bind_to_all: true
-              instances:
-                - name: "vrf-green"
-                  description: "green-vrf"
-                  disabled: true
-                  table_id: 105
-                  vni: 1000
-                - name: "vrf-amber"
-                  description: "amber-vrf"
-                  disable: false
-                  table_id: 111
-                  vni: 1001
-                  address_family:
-                    - afi: "ipv4"
-                      disable_forwarding: true
-                      route_maps:
-                        - rm_name: "rm1"
-                          protocol: "kernel"
-                        - rm_name: "rm1"
-                          protocol: "ospf"
-                    - afi: "ipv6"
-                      nht_no_resolve_via_default: false
-            state: rendered
+        # - name: Render provided configuration with device configuration
+        #   vyos.vyos.vyos_vrf:
+        #     config:
+        #       bind_to_all: true
+        #       instances:
+        #         - name: "vrf-green"
+        #           description: "green-vrf"
+        #           disabled: true
+        #           table_id: 105
+        #           vni: 1000
+        #         - name: "vrf-amber"
+        #           description: "amber-vrf"
+        #           disable: false
+        #           table_id: 111
+        #           vni: 1001
+        #           address_family:
+        #             - afi: "ipv4"
+        #               disable_forwarding: true
+        #               route_maps:
+        #                 - rm_name: "rm1"
+        #                   protocol: "kernel"
+        #                 - rm_name: "rm1"
+        #                   protocol: "ospf"
+        #             - afi: "ipv6"
+        #               nht_no_resolve_via_default: false
+        #     state: rendered
 
     # # Task output:
     # # -------------
@@ -1069,62 +1069,62 @@ Examples
 
     # Task:
     # -------------
-    - name: Parse provided configuration with device configuration
-      vyos.vyos.vyos_vrf:
-        running_config: "{{ lookup('file', './vrf_parsed.cfg') }}"
-        state: parsed
+    # - name: Parse provided configuration with device configuration
+    #   vyos.vyos.vyos_vrf:
+    #     running_config: "{{ lookup('file', './vrf_parsed.cfg') }}"
+    #     state: parsed
 
 
     # # Task output:
     # # -------------
-    "parsed": {
-            "bind_to_all": true,
-            "instances": [
-                {
-                    "address_family": [
-                        {
-                            "afi": "ipv4",
-                            "disable_forwarding": true,
-                            "nht_no_resolve_via_default": true
-                        }
-                    ],
-                    "description": "red",
-                    "disable": true,
-                    "name": "vrf1"
-                },
-                {
-                    "description": "blah2",
-                    "disable": true,
-                    "name": "vrf2"
-                },
-                {
-                    "address_family": [
-                        {
-                            "afi": "ipv4",
-                            "disable_forwarding": false,
-                            "nht_no_resolve_via_default": false,
-                            "route_maps": [
-                                {
-                                    "protocol": "kernel",
-                                    "rm_name": "rm1"
-                                },
-                                {
-                                    "protocol": "ospf",
-                                    "rm_name": "rm1"
-                                }
-                            ]
-                        },
-                        {
-                            "afi": "ipv6",
-                            "disable_forwarding": false,
-                            "nht_no_resolve_via_default": true
-                        }
-                    ],
-                    "disable": false,
-                    "name": "vrf-red"
-                }
-            ]
-        }
+    # "parsed": {
+    #         "bind_to_all": true,
+    #         "instances": [
+    #             {
+    #                 "address_family": [
+    #                     {
+    #                         "afi": "ipv4",
+    #                         "disable_forwarding": true,
+    #                         "nht_no_resolve_via_default": true
+    #                     }
+    #                 ],
+    #                 "description": "red",
+    #                 "disable": true,
+    #                 "name": "vrf1"
+    #             },
+    #             {
+    #                 "description": "blah2",
+    #                 "disable": true,
+    #                 "name": "vrf2"
+    #             },
+    #             {
+    #                 "address_family": [
+    #                     {
+    #                         "afi": "ipv4",
+    #                         "disable_forwarding": false,
+    #                         "nht_no_resolve_via_default": false,
+    #                         "route_maps": [
+    #                             {
+    #                                 "protocol": "kernel",
+    #                                 "rm_name": "rm1"
+    #                             },
+    #                             {
+    #                                 "protocol": "ospf",
+    #                                 "rm_name": "rm1"
+    #                             }
+    #                         ]
+    #                     },
+    #                     {
+    #                         "afi": "ipv6",
+    #                         "disable_forwarding": false,
+    #                         "nht_no_resolve_via_default": true
+    #                     }
+    #                 ],
+    #                 "disable": false,
+    #                 "name": "vrf-red"
+    #             }
+    #         ]
+    #     }
 
 
 
