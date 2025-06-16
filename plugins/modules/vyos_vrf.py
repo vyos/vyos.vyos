@@ -139,14 +139,14 @@ EXAMPLES = """
 
 # # Task
 # # -------------
-  - name: Merge provided configuration with device configuration
-    vyos.vyos.vyos_vrf:
-      config:
-        instances:
-          - name: "vrf-green"
-            description: "green-vrf"
-            table_id: 110
-            vni: 1010
+  # - name: Merge provided configuration with device configuration
+  #   vyos.vyos.vyos_vrf:
+  #     config:
+  #       instances:
+  #         - name: "vrf-green"
+  #           description: "green-vrf"
+  #           table_id: 110
+  #           vni: 1010
 
 # Task output:
 # -------------
@@ -223,32 +223,32 @@ EXAMPLES = """
 
 # # Task
 # # -------------
-  - name: Merge provided configuration with device configuration
-    vyos.vyos.vyos_vrf:
-      config:
-        bind_to_all: true
-        instances:
-          - name: "vrf-blue"
-            description: "blue-vrf"
-            disable: false
-            table_id: 100
-            vni: 1002
-          - name: "vrf-red"
-            description: "red-vrf"
-            disable: false
-            table_id: 101
-            vni: 1001
-            address_family:
-              - afi: "ipv4"
-                disable_forwarding: false
-                route_maps:
-                  - rm_name: "rm1"
-                    protocol: "kernel"
-                  - rm_name: "rm1"
-                    protocol: "ospf"
-              - afi: "ipv6"
-                nht_no_resolve_via_default: true
-      state: replaced
+  # - name: Merge provided configuration with device configuration
+  #   vyos.vyos.vyos_vrf:
+  #     config:
+  #       bind_to_all: true
+  #       instances:
+  #         - name: "vrf-blue"
+  #           description: "blue-vrf"
+  #           disable: false
+  #           table_id: 100
+  #           vni: 1002
+  #         - name: "vrf-red"
+  #           description: "red-vrf"
+  #           disable: false
+  #           table_id: 101
+  #           vni: 1001
+  #           address_family:
+  #             - afi: "ipv4"
+  #               disable_forwarding: false
+  #               route_maps:
+  #                 - rm_name: "rm1"
+  #                   protocol: "kernel"
+  #                 - rm_name: "rm1"
+  #                   protocol: "ospf"
+  #             - afi: "ipv6"
+  #               nht_no_resolve_via_default: true
+  #     state: replaced
 
 # # Task output:
 # # -------------
@@ -381,32 +381,32 @@ EXAMPLES = """
 
 # Task
 # -------------
-  - name: Overridden provided configuration with device configuration
-    vyos.vyos.vyos_vrf:
-      config:
-        bind_to_all: true
-        instances:
-          - name: "vrf-blue"
-            description: "blue-vrf"
-            disable: true
-            table_id: 100
-            vni: 1000
-          - name: "vrf-red"
-            description: "red-vrf"
-            disable: true
-            table_id: 101
-            vni: 1001
-            address_family:
-              - afi: "ipv4"
-                disable_forwarding: false
-                route_maps:
-                  - rm_name: "rm1"
-                    protocol: "kernel"
-                  - rm_name: "rm1"
-                    protocol: "rip"
-              - afi: "ipv6"
-                nht_no_resolve_via_default: false
-      state: overridden
+  # - name: Overridden provided configuration with device configuration
+  #   vyos.vyos.vyos_vrf:
+  #     config:
+  #       bind_to_all: true
+  #       instances:
+  #         - name: "vrf-blue"
+  #           description: "blue-vrf"
+  #           disable: true
+  #           table_id: 100
+  #           vni: 1000
+  #         - name: "vrf-red"
+  #           description: "red-vrf"
+  #           disable: true
+  #           table_id: 101
+  #           vni: 1001
+  #           address_family:
+  #             - afi: "ipv4"
+  #               disable_forwarding: false
+  #               route_maps:
+  #                 - rm_name: "rm1"
+  #                   protocol: "kernel"
+  #                 - rm_name: "rm1"
+  #                   protocol: "rip"
+  #             - afi: "ipv6"
+  #               nht_no_resolve_via_default: false
+  #     state: overridden
 
 # # Task output:
 # # -------------
