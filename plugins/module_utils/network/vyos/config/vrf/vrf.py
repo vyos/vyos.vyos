@@ -106,6 +106,9 @@ class Vrf(ResourceModule):
         # if state is deleted, delete and empty out wantd
         if self.state == "deleted":
             w = deepcopy(wantd)
+            if w == {}:
+                self.commands.append("delete vrf")
+                return
             for k, want in iteritems(w):
                 if not (k in haved and haved[k]):
                     del wantd[k]
