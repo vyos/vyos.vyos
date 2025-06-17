@@ -75,17 +75,55 @@ class TestVyosVrfModule(TestVyosModule):
         self.execute_show_command.side_effect = load_from_file
 
     def test_vrf_merged_idempotent(self):
+        # set_module_args(
+        #     dict(
+        #         config=dict(
+        #             allow_clients=["10.1.1.0/24", "10.1.2.0/24"],
+        #             listen_addresses=["10.2.3.1", "10.4.3.1"],
+        #             servers=[
+        #                 dict(server="server1"),
+        #                 dict(server="server3", options=["noselect", "dynamic"]),
+        #                 dict(server="time1.vyos.net"),
+        #                 dict(server="time2.vyos.net"),
+        #                 dict(server="time3.vyos.net"),
+        #             ],
+        #         ),
+        #         state="merged",
+        #     ),
+        # )
         set_module_args(
             dict(
                 config=dict(
-                    allow_clients=["10.1.1.0/24", "10.1.2.0/24"],
-                    listen_addresses=["10.2.3.1", "10.4.3.1"],
-                    servers=[
-                        dict(server="server1"),
-                        dict(server="server3", options=["noselect", "dynamic"]),
-                        dict(server="time1.vyos.net"),
-                        dict(server="time2.vyos.net"),
-                        dict(server="time3.vyos.net"),
+                    bind_to_all=True,
+                    instances=[
+                        dict(
+                            name="vrf-blue",
+                            description="blue-vrf",
+                            disable=False,
+                            table_id=100,
+                            vni=1000,
+                        ),
+                        dict(
+                            name="vrf-red",
+                            description="red-vrf",
+                            disable=True,
+                            table_id=101,
+                            vni=1001,
+                            address_family=[
+                                dict(
+                                    afi="ipv4",
+                                    disable_forwarding=True,
+                                    route_maps=[
+                                        dict(rm_name="rm1", protocol="kernel"),
+                                        dict(rm_name="rm1", protocol="rip"),
+                                    ],
+                                ),
+                                dict(
+                                    afi="ipv6",
+                                    nht_no_resolve_via_default=False,
+                                ),
+                            ],
+                        ),
                     ],
                 ),
                 state="merged",
@@ -93,44 +131,32 @@ class TestVyosVrfModule(TestVyosModule):
         )
         self.execute_module(changed=False, commands=[])
 
+    def test_vrf_merged(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    bind_to_all=True,
+                    instances=[
+                        dict(
+                            name="vrf-green",
+                            description="green-vrf",
+                            table_id=110,
+                            vni=1010,
+                        ),
+                    ],
+                ),
+                state="merged",
+            ),
+        )
 
-#     def test_ntp_merged(self):
-#         set_module_args(
-#             dict(
-#                 config=dict(
-#                     allow_clients=["10.2.2.0/24", "10.3.3.0/24"],
-#                     listen_addresses=["10.3.4.1", "10.4.5.1"],
-#                     servers=[
-#                         dict(server="server4", options=["dynamic", "preempt"]),
-#                         dict(
-#                             server="server5",
-#                             options=[
-#                                 "noselect",
-#                                 "dynamic",
-#                                 "preempt",
-#                                 "prefer",
-#                             ],
-#                         ),
-#                     ],
-#                 ),
-#                 state="merged",
-#             ),
-#         )
+        commands = [
+            "set vrf name vrf-green table 110",
+            "set vrf name vrf-green vni 1010",
+            "set vrf name vrf-green description green-vrf",
+        ]
 
-#         commands = [
-#             "set system ntp allow-clients address 10.2.2.0/24",
-#             "set system ntp allow-clients address 10.3.3.0/24",
-#             "set system ntp listen-address 10.3.4.1",
-#             "set system ntp listen-address 10.4.5.1",
-#             "set system ntp server server4 dynamic",
-#             "set system ntp server server4 preempt",
-#             "set system ntp server server5 dynamic",
-#             "set system ntp server server5 noselect",
-#             "set system ntp server server5 preempt",
-#             "set system ntp server server5 prefer",
-#         ]
+        self.execute_module(changed=True, commands=commands)
 
-#         self.execute_module(changed=True, commands=commands)
 
 #     def test_ntp_replaced(self):
 #         set_module_args(
