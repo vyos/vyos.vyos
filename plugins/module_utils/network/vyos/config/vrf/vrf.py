@@ -107,7 +107,7 @@ class Vrf(ResourceModule):
         if self.state == "deleted":
             w = deepcopy(wantd)
             if w == {}:
-                self.commands.append("delete vrf")
+                self.commands = ["delete vrf"]
                 return
             for k, want in iteritems(w):
                 if not (k in haved and haved[k]):
@@ -137,6 +137,7 @@ class Vrf(ResourceModule):
                                 None,
                             )
                             if entry != hdict:
+                                # self._module.fail_json(msg="Want: " + str(entry) + "**** H:  " + str(hdict))
                                 haved["instances"] = [
                                     i for i in haved.get("instances", []) if i.get("name") != wname
                                 ]

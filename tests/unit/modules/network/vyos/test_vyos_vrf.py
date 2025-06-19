@@ -105,7 +105,7 @@ class TestVyosVrfModule(TestVyosModule):
                                 ),
                                 dict(
                                     afi="ipv6",
-                                    nht_no_resolve_via_default=False,
+                                    nht_no_resolve_via_default=True,
                                 ),
                             ],
                         ),
@@ -172,7 +172,7 @@ class TestVyosVrfModule(TestVyosModule):
                                 ),
                                 dict(
                                     afi="ipv6",
-                                    nht_no_resolve_via_default=True,
+                                    nht_no_resolve_via_default=False,
                                 ),
                             ],
                         ),
@@ -185,7 +185,7 @@ class TestVyosVrfModule(TestVyosModule):
             "set vrf name vrf-blue description blue-vrf-replaced",
             "set vrf name vrf-blue disable",
             "delete vrf name vrf-red ip disable-forwarding",
-            "set vrf name vrf-red ipv6 nht no-resolve-via-default",
+            "delete vrf name vrf-red ipv6 nht no-resolve-via-default",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -219,7 +219,7 @@ class TestVyosVrfModule(TestVyosModule):
                                 ),
                                 dict(
                                     afi="ipv6",
-                                    nht_no_resolve_via_default=False,
+                                    nht_no_resolve_via_default=True,
                                 ),
                             ],
                         ),
@@ -258,46 +258,46 @@ class TestVyosVrfModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
-    # def test_vrf_overridden_idempotent(self):
-    #     set_module_args(
-    #         dict(
-    #             config=dict(
-    #                 bind_to_all=True,
-    #                 instances=[
-    #                     dict(
-    #                         name="vrf-blue",
-    #                         description="blue-vrf",
-    #                         disable=False,
-    #                         table_id=100,
-    #                         vni=1000,
-    #                     ),
-    #                     dict(
-    #                         name="vrf-red",
-    #                         description="red-vrf",
-    #                         disable=True,
-    #                         table_id=101,
-    #                         vni=1001,
-    #                         address_family=[
-    #                             dict(
-    #                                 afi="ipv4",
-    #                                 disable_forwarding=True,
-    #                                 route_maps=[
-    #                                     dict(rm_name="rm1", protocol="kernel"),
-    #                                     dict(rm_name="rm1", protocol="rip"),
-    #                                 ],
-    #                             ),
-    #                             dict(
-    #                                 afi="ipv6",
-    #                                 nht_no_resolve_via_default=False,
-    #                             ),
-    #                         ],
-    #                     ),
-    #                 ],
-    #             ),
-    #             state="overridden",
-    #         ),
-    #     )
-    #     self.execute_module(changed=False, commands=[])
+    def test_vrf_overridden_idempotent(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    bind_to_all=True,
+                    instances=[
+                        dict(
+                            name="vrf-blue",
+                            description="blue-vrf",
+                            disable=False,
+                            table_id=100,
+                            vni=1000,
+                        ),
+                        dict(
+                            name="vrf-red",
+                            description="red-vrf",
+                            disable=True,
+                            table_id=101,
+                            vni=1001,
+                            address_family=[
+                                dict(
+                                    afi="ipv4",
+                                    disable_forwarding=True,
+                                    route_maps=[
+                                        dict(rm_name="rm1", protocol="kernel"),
+                                        dict(rm_name="rm1", protocol="rip"),
+                                    ],
+                                ),
+                                dict(
+                                    afi="ipv6",
+                                    nht_no_resolve_via_default=True,
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+                state="overridden",
+            ),
+        )
+        self.execute_module(changed=False, commands=[])
 
     def test_vrf_rendered(self):
         set_module_args(
@@ -458,6 +458,11 @@ class TestVyosVrfModule(TestVyosModule):
                                 },
                             ],
                         },
+                        {
+                            "afi": "ipv6",
+                            "disable_forwarding": False,
+                            "nht_no_resolve_via_default": True,
+                        },
                     ],
                     "description": "red-vrf",
                     "disable": True,
@@ -474,7 +479,7 @@ class TestVyosVrfModule(TestVyosModule):
         set_module_args(
             dict(
                 config=dict(
-                    bind_to_all=False,
+                    bind_to_all=True,
                     instances=[
                         dict(
                             name="vrf-blue",
@@ -490,14 +495,13 @@ class TestVyosVrfModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
-    # def test_vrf__all_deleted(self):
-    #     set_module_args(
-    #         dict(
-    #             config=dict({}),
-    #             state="deleted",
-    #         ),
-    #     )
-    #     commands = [
-    #         "delete vrf",
-    #     ]
-    #     self.execute_module(changed=True, commands=commands)
+    def test_vrf_all_deleted(self):
+        set_module_args(
+            dict(
+                state="deleted",
+            ),
+        )
+        commands = [
+            "delete vrf",
+        ]
+        self.execute_module(changed=True, commands=commands)
