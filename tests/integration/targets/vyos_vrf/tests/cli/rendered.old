@@ -1,0 +1,38 @@
+---
+- debug:
+    msg: START vyos_route_maps rendered integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Structure provided configuration into device specific commands
+      register: result
+      vyos.vyos.vyos_route_maps:
+        config:
+          - route_map: test1
+            entries:
+              - sequence: 1
+                description: test
+                action: permit
+                continue_sequence: 2
+          - route_map: test3
+            entries:
+              - sequence: 1
+                action: permit
+                match:
+                  metric: 1
+                  peer: 192.0.2.32
+                set:
+                  local_preference: 4
+                  metric: 5
+                  metric_type: type-1
+                  origin: egp
+                  originator_id: 192.0.2.34
+                  tag: 5
+                  weight: 4
+        state: rendered
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.rendered|symmetric_difference(merged.commands) == []

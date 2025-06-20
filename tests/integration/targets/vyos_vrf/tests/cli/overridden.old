@@ -1,0 +1,49 @@
+---
+- debug:
+    msg: START vyos_route_maps overridden integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Override the existing configuration with the provided running configuration
+      register: result
+      vyos.vyos.vyos_route_maps: &id001
+        config:
+          - route_map: test3
+            entries:
+              - sequence: 1
+                action: permit
+                match:
+                  metric: 3
+                  peer: 192.0.2.35
+                set:
+                  local_preference: 6
+                  metric: 4
+                  metric_type: type-1
+                  origin: egp
+                  originator_id: 192.0.2.34
+                  tag: 4
+                  weight: 4
+        state: overridden
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: route_maps
+
+    - assert:
+        that:
+          - result.commands|length == 8
+          - result.changed == true
+          - result.commands|symmetric_difference(overridden.commands) == []
+          - result.after|symmetric_difference(ansible_facts['network_resources']['route_maps']) == []
+
+    - name: Override the existing configuration with the provided running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_route_maps: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml
