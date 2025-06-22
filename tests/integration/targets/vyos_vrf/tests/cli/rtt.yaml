@@ -9,6 +9,7 @@
       register: baseconfig
       vyos.vyos.vyos_vrf:
         config:
+          bind_to_all: true
           instances:
             - name: "vrf-green"
               description: "green-vrf"
@@ -21,40 +22,38 @@
 
     - assert:
         that:
-          - baseconfig.commands|length == 4
           - baseconfig.changed == true
           - baseconfig.commands|symmetric_difference(merged.commands) == []
           - baseconfig.after|symmetric_difference(ansible_facts['network_resources']['vrf']) == []
 
-    # - name: Merge the existing configuration with the provided running configuration
-    #   register: result
-    #   vyos.vyos.vyos_vrf:
-    #     config:
-    #       - route_map: test2
-    #         entries:
-    #           - sequence: 1
-    #             action: permit
-    #             match:
-    #               metric: 3
-    #               peer: 192.0.2.35
-    #             set:
-    #               local_preference: 6
-    #               metric: 4
-    #               metric_type: type-1
-    #               origin: egp
-    #               originator_id: 192.0.2.34
-    #               tag: 4
-    #               weight: 4
+    - name: Merge the existing configuration with the provided running configuration
+      register: result
+      vyos.vyos.vyos_vrf:
+        config:
+          instances:
+            - name: "vrf-blue"
+              description: "blue-vrf"
+              disable: true
+              table_id: 100
+              vni: 1000
+            - name: "vrf-green"
+              description: "green-vrf"
+              table_id: 110
+              vni: 1010
+              address_family:
+                - afi: "ipv4"
+                  disable_forwarding: true
+        state: merged
 
-    # - name: Revert back to base config using facts round trip
-    #   register: revert
-    #   vyos.vyos.vyos_vrf:
-    #     config: "{{ ansible_facts['network_resources']['route_maps'] }}"
-    #     state: overridden
+    - name: Revert back to base config using facts round trip
+      register: revert
+      vyos.vyos.vyos_vrf:
+        config: "{{ ansible_facts['network_resources']['vrf'] }}"
+        state: overridden
 
-    # - name: Assert that config was reverted
-    #   assert:
-    #     that: baseconfig.after == revert.after
+    - name: Assert that config was reverted
+      assert:
+        that: baseconfig.after == revert.after
 
   always:
     - include_tasks: _remove_config.yaml

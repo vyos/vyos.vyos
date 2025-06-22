@@ -1,0 +1,47 @@
+---
+- debug:
+    msg: START vyos_vrf replaced integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace  the provided configuration with the existing running configuration
+      register: result
+      vyos.vyos.vyos_vrf: &id001
+        config:
+          instances:
+            - name: "vrf-blue"
+              description: "blue-vrf"
+              disable: true
+              table_id: 100
+              vni: 1000
+            - name: "vrf-red"
+              description: "Vermillion_VRF"
+              disable: false
+              table_id: 101
+              vni: 1011
+              address_family:
+                - afi: "ipv6"
+                  nht_no_resolve_via_default: false
+        state: replaced
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: vrf
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands|symmetric_difference(replaced.commands) == []
+          - result.after|symmetric_difference(ansible_facts['network_resources']['vrf']) == []
+
+    - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vrf: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

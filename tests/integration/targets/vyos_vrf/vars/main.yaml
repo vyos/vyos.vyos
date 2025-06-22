@@ -1,11 +1,12 @@
 ---
 merged:
-  before: []
+  before:
+    bind_to_all: false
   commands:
-    - delete vrf bind-to-all
     - set vrf name vrf-green table 110
     - set vrf name vrf-green vni 1010
     - set vrf name vrf-green description green-vrf
+
   after:
     - route_map: test3
       entries:
@@ -31,13 +32,12 @@ merged:
 
 replaced:
   commands:
-    - delete policy route-map test3 rule 1 set ip-next-hop 192.0.2.33
-    - set policy route-map test3 rule 1 set local-preference 6
-    - set policy route-map test3 rule 1 set metric 4
-    - set policy route-map test3 rule 1 set tag 4
-    - delete policy route-map test3 rule 1 set community none
-    - set policy route-map test3 rule 1 match metric 3
-    - set policy route-map test3 rule 1 match peer 192.0.2.35
+    - delete vrf bind-to-all
+    - set vrf name vrf-blue disable
+    - set vrf name vrf-red vni 1011
+    - set vrf name vrf-red description Vermillion_VRF
+    - delete vrf name vrf-red disable
+    - delete vrf name vrf-red ipv6 nht no-resolve-via-default
   after:
     - route_map: test2
       entries:
