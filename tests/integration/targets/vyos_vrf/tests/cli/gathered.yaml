@@ -1,0 +1,19 @@
+---
+- debug:
+    msg: START vyos_vrf gathered integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Gather config from the device in structured format.
+      register: result
+      vyos.vyos.vyos_vrf:
+        state: gathered
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: vrf
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.gathered|symmetric_difference(ansible_facts['network_resources']['vrf']) == []
