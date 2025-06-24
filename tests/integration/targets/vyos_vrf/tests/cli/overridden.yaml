@@ -12,7 +12,7 @@
           instances:
             - name: "vrf-blue"
               description: "blue-vrf"
-              disable: True
+              disable: true
               table_id: 103
               vni: 1002
         state: overridden
