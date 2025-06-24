@@ -1,5 +1,0 @@
----
-trivial:
-  - vyos interfaces tests - adjust for loopback being removed in `vyos_l3_interfaces`
-  - vyos interfaces tests - fixed `vyos_interfaces` for 1.5+
-  - actions - update codecov updloader to version 5

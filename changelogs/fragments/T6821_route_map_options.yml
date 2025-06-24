@@ -1,3 +1,0 @@
----
-minor_changes:
-  - vyos_route_maps - add support for as-path-prepend policy option
