@@ -12,3 +12,5 @@
     that:
       - result.changed == false
       - result.parsed|symmetric_difference(merged.after) == []
+
+- include_tasks: _remove_config.yaml

@@ -60,7 +60,7 @@ class VrfTemplate(NetworkTemplate):
             ),
             "setval": "vrf bind-to-all",
             "result": {
-                "bind_to_all": "{{ True if bta is defined }}",
+                "bind_to_all": "{{ True if bta is defined else {} }}",
             },
         },
         {

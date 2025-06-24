@@ -1,11 +1,11 @@
 ---
 - debug:
-    msg: START vyos_route_maps empty_config integration tests on connection={{ ansible_connection }}
+    msg: START vyos_vrf empty_config integration tests on connection={{ ansible_connection }}
 
 - name: Merged with empty config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_route_maps:
+  vyos.vyos.vyos_vrf:
     config:
     state: merged
 
@@ -16,7 +16,7 @@
 - name: Replaced with empty config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_route_maps:
+  vyos.vyos.vyos_vrf:
     config:
     state: replaced
 
@@ -27,7 +27,7 @@
 - name: Overridden with empty config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_route_maps:
+  vyos.vyos.vyos_vrf:
     config:
     state: overridden
 
@@ -38,7 +38,7 @@
 - name: Parsed with empty running_config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_route_maps:
+  vyos.vyos.vyos_vrf:
     running_config:
     state: parsed
 
@@ -49,10 +49,12 @@
 - name: Rendered with empty config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_route_maps:
+  vyos.vyos.vyos_vrf:
     config:
     state: rendered
 
 - assert:
     that:
       - result.msg == 'value of config parameter must not be empty for state rendered'
+
+- include_tasks: _remove_config.yaml

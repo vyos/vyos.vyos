@@ -17,3 +17,6 @@
         that:
           - result.changed == false
           - result.gathered|symmetric_difference(ansible_facts['network_resources']['vrf']) == []
+
+  always:
+    - include_tasks: _remove_config.yaml

@@ -38,64 +38,37 @@ replaced:
     - set vrf name vrf-red description Vermillion_VRF
     - delete vrf name vrf-red disable
     - delete vrf name vrf-red ipv6 nht no-resolve-via-default
-  after:
-    - route_map: test2
-      entries:
-        - sequence: 1
-          description: test
-          action: permit
-        - sequence: 1
-          action: permit
-          on_match:
-            goto: 4
-    - route_map: test3
-      entries:
-        - sequence: 1
-          action: permit
-          match:
-            metric: 3
-            peer: 192.0.2.35
-          set:
-            local_preference: 6
-            metric: 4
-            metric_type: type-1
-            origin: egp
-            originator_id: 192.0.2.34
-            tag: 4
-            weight: 4
+  after: []
 
 overridden:
   commands:
-    - delete policy route-map test2
-    - delete policy route-map test3 rule 1 set ip-next-hop 192.0.2.33
-    - set policy route-map test3 rule 1 set local-preference 6
-    - set policy route-map test3 rule 1 set metric 4
-    - set policy route-map test3 rule 1 set tag 4
-    - delete policy route-map test3 rule 1 set community none
-    - set policy route-map test3 rule 1 match metric 3
-    - set policy route-map test3 rule 1 match peer 192.0.2.35
-  after:
-    - route_map: test3
-      entries:
-        - sequence: 1
-          action: permit
-          match:
-            metric: 3
-            peer: 192.0.2.35
-          set:
-            local_preference: 6
-            metric: 4
-            metric_type: type-1
-            origin: egp
-            originator_id: 192.0.2.34
-            tag: 4
-            weight: 4
+    - delete vrf name vrf-blue
+    - commit
+    - set vrf name vrf-blue table 103
+    - set vrf name vrf-blue vni 1002
+    - set vrf name vrf-blue description blue-vrf
+    - set vrf name vrf-blue disable
+    - delete vrf bind-to-all
+  after: []
 
 deleted:
   commands:
-    - delete policy route-map test2
-    - delete policy route-map test3
+    - delete vrf
   after: []
+
+rendered:
+  commands:
+    - set vrf bind-to-all
+    - set vrf name vrf-green table 105
+    - set vrf name vrf-green vni 1000
+    - set vrf name vrf-green description green-vrf
+    - set vrf name vrf-green disable
+    - set vrf name vrf-amber table 111
+    - set vrf name vrf-amber vni 1001
+    - set vrf name vrf-amber description amber-vrf
+    - set vrf name vrf-amber ip protocol kernel route-map rm1
+    - set vrf name vrf-amber ip protocol ospf route-map rm1
+    - set vrf name vrf-amber ip disable-forwarding
 
 populate_config:
   - set vrf bind-to-all
