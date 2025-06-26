@@ -11,6 +11,6 @@
 - assert:
     that:
       - result.changed == false
-      - result.parsed|symmetric_difference(merged.after) == []
+      - result.parsed|symmetric_difference(merged.before) == []
 
 - include_tasks: _remove_config.yaml

@@ -2,14 +2,14 @@
 - debug:
     msg: START vyos_vrf merged integration tests on connection={{ ansible_connection }}
 
-- include_tasks: _remove_config.yaml
+- include_tasks: _populate.yaml
 
 - block:
     - name: Merge the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_vrf: &id001
         config:
-          # bind_to_all: true
+          bind_to_all: true
           instances:
             - name: "vrf-green"
               description: "green-vrf"
@@ -22,7 +22,6 @@
 
     - assert:
         that:
-          # - result.commands|length == 13
           - result.changed == true
           - result.commands|symmetric_difference(merged.commands) == []
           - result.after|symmetric_difference(ansible_facts['network_resources']['vrf']) == []

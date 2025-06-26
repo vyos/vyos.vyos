@@ -1,7 +1,28 @@
 ---
 merged:
   before:
-    bind_to_all: false
+    bind_to_all: true
+    instances:
+      - name: "vrf-blue"
+        description: "blue-vrf"
+        disable: false
+        table_id: 100
+        vni: 1000
+      - name: "vrf-red"
+        description: "red-vrf"
+        disable: true
+        table_id: 101
+        vni: 1001
+        address_family:
+          - afi: "ipv4"
+            disable_forwarding: true
+            route_maps:
+              - rm_name: "rm1"
+                protocol: "kernel"
+              - rm_name: "rm1"
+                protocol: "rip"
+          - afi: "ipv6"
+            nht_no_resolve_via_default: true
   commands:
     - set vrf name vrf-green table 110
     - set vrf name vrf-green vni 1010
@@ -29,6 +50,10 @@ merged:
                 protocol: "rip"
           - afi: "ipv6"
             nht_no_resolve_via_default: true
+      - name: "vrf-green"
+        description: "green-vrf"
+        table_id: 110
+        vni: 1010
 
 replaced:
   commands:
