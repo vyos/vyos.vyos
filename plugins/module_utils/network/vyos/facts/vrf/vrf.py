@@ -69,6 +69,7 @@ class VrfFacts(object):
         instances = []
         vrf_parser = VrfTemplate(lines=[], module=self._module)
         resources = self.get_config_set(data, connection)
+
         for resource in resources:
             vrf_parser = VrfTemplate(
                 lines=resource.split("\n"),
@@ -98,6 +99,9 @@ class VrfFacts(object):
                 redact=True,
             ),
         )
+
+        if not resources:
+            params["config"].pop("bind_to_all", None)
 
         if params.get("config"):
             facts["vrf"] = params["config"]

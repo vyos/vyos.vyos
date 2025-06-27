@@ -16,19 +16,19 @@
           - result.changed == true
           - result.commands|symmetric_difference(deleted.commands) == []
 
-    # - name: Assert that the after dicts were correctly generated
-    #   assert:
-    #     that:
-    #       - "{{ deleted['after'] | symmetric_difference(result['after']) |length == 0 }}"
+    - name: Assert that the after dicts were correctly generated
+      assert:
+        that:
+          - result.after|symmetric_difference(deleted.after) == []
 
-    # - name: Delete the existing configuration with the provided running configuration (IDEMPOTENT)
-    #   register: result
-    #   vyos.vyos.vyos_vrf: *id001
+    - name: Delete the existing configuration with the provided running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vrf: *id001
 
-    # - name: Assert that the previous task was idempotent
-    #   assert:
-    #     that:
-    #       - result['changed'] == false
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
 
   always:
     - include_tasks: _remove_config.yaml
