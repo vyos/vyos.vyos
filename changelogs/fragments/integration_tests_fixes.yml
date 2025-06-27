@@ -1,4 +1,0 @@
----
-trivial:
-  - prepare_vyos_firewall - Remove IP address from eth1 for lag tests
-  - vyos_snmp_server - add IP address for 1.4+ OS variants
