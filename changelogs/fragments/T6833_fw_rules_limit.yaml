@@ -1,3 +1,0 @@
----
-bugfixes:
-  - vyos_firewall_rules - Fix limit parameter processing

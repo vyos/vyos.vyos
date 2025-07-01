@@ -44,7 +44,7 @@ version_added: '1.0.0'
 short_description: LLDP interfaces resource module
 description: This module manages attributes of lldp interfaces on VyOS network devices.
 notes:
-- Tested against VyOS 1.3.8
+- Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025
 - This module works with connection C(ansible.netcommon.network_cli).
   See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:

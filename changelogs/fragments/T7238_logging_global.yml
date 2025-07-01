@@ -1,3 +1,0 @@
----
-trivial:
-  - vyos_logging_global - fix get_version in integration tests

@@ -47,7 +47,7 @@ description:
 - This module supports managing base attributes of Ethernet, Bonding,
   VXLAN, Loopback and Virtual Tunnel Interfaces.
 notes:
-- Tested against VyOS 1.3.8
+- Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025
 - This module works with connection C(ansible.netcommon.network_cli).
   See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
