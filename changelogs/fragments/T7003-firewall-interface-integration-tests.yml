@@ -1,3 +1,0 @@
----
-trivial:
-  - fix integration tests for `firewall_interfaces` for v1.3-
