@@ -19,16 +19,6 @@
 from __future__ import absolute_import, division, print_function
 
 
-DOCUMENTATION = """
----
-module: vyos
-short_description: VyOS-specific action plugin
-description:
-  - This plugin provides VyOS-specific action plugin functionality.
-  - It can preprocess or modify module arguments before passing them to the VyOS modules.
-author:
-  - VyOS Networks (@vyos)
-"""
 __metaclass__ = type
 
 from ansible.utils.display import Display
