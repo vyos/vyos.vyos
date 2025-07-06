@@ -25,6 +25,9 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
     ResourceModule,
 )
 
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global import (
+    Bgp_global,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.vrf import (
     VrfTemplate,
@@ -55,6 +58,7 @@ class Vrf(ResourceModule):
         self.parsers = [
             "bind_to_all",
         ]
+        self.bgp = Bgp_global(module)
 
     def _validate_template(self):
         version = get_os_version(self._module)
@@ -152,7 +156,7 @@ class Vrf(ResourceModule):
                 want={k: want},
                 have={k: haved.pop(k, {})},
             )
-        # self._module.fail_json(msg=self.commands)
+        self._module.fail_json(msg=self.commands)
 
     def _compare_instances(self, want, have):
         """Compare the instances of the VRF"""
@@ -190,6 +194,24 @@ class Vrf(ResourceModule):
                 # self._module.fail_json(msg="wafi: " + str(wafi) + "**** hafi:  " + str(hafi))
 
                 self._compare_addr_family(wafi, hafi)
+
+            if "protocols" in entry:
+                for protocol_name in entry["protocols"]:
+                    protocol_module = self._load_protocol_module(protocol_name)
+                    if protocol_name == "bgp":
+                        protocol_module.want = entry["protocols"][protocol_name]
+                        protocol_module.have = {}
+                        protocol_module.generate_commands()
+                    elif protocol_name in ["ospf", "ospfv3", "static"]:
+                        protocol_module._module.params["config"] = entry["protocols"][protocol_name]
+                        protocol_module.state = self.state
+                        protocol_module.commands = protocol_module.set_config({})
+                    self.commands.extend(
+                        [
+                            cmd.replace("protocols", "vrf name " + wname + " protocols", 1)
+                            for cmd in protocol_module.commands
+                        ],
+                    )
 
     def _compare_addr_family(self, want, have):
         """Compare the address families of the VRF"""
@@ -241,3 +263,31 @@ class Vrf(ResourceModule):
                 want={**base, "route_maps": want},
                 have={**base, "route_maps": match},
             )
+
+    def _load_protocol_module(self, protocol_name):
+        if protocol_name == "bgp":
+            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global import (
+                Bgp_global,
+            )
+
+            return Bgp_global(self._module)
+        elif protocol_name == "ospf":
+            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv2.ospfv2 import (
+                Ospfv2,
+            )
+
+            return Ospfv2(self._module)
+        elif protocol_name == "ospfv3":
+            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv3.ospfv3 import (
+                Ospfv3,
+            )
+
+            return Ospfv3(self._module)
+        elif protocol_name == "static":
+            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.static_routes.static_routes import (
+                Static_routes,
+            )
+
+            return Static_routes(self._module)
+        else:
+            self._module.fail_json(msg="The protocol is not supported")
