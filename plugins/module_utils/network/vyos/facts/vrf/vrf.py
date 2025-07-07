@@ -76,6 +76,16 @@ class VrfFacts(object):
                 module=self._module,
             )
             objs = vrf_parser.parse()
+
+            if objs and "protocols" in resource:
+
+                protocol_lines = []
+                for line in resource.strip().split("\n"):
+                    if "protocols" in line:
+                        idx = line.index("protocols")
+                        protocol_lines.append("set " + line[idx:])
+                objs["protocols"] = self._parse_protocols("\n".join(protocol_lines))
+
             if objs:
                 if "bind_to_all" in objs:
                     vrf_facts.update(objs)
@@ -106,7 +116,7 @@ class VrfFacts(object):
         if params.get("config"):
             facts["vrf"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
-        # self._module.fail_json(msg=ansible_facts)
+        self._module.fail_json(msg=ansible_facts)
         return ansible_facts
 
     def _normalise_instance(self, instance):
@@ -143,3 +153,58 @@ class VrfFacts(object):
 
         n_inst["address_family"] = list(af_map.values())
         return n_inst
+
+    def _parse_protocols(self, protocols):
+        """Parse protocols and return a dictionary"""
+
+        protocol_chunks = {}
+        parsed_protocols = {}
+
+        for line in protocols.split("\n"):
+            parts = line.split()
+            if len(parts) > 2 and parts[0] == "set" and parts[1] == "protocols":
+                protocol = parts[2]
+                protocol_chunks.setdefault(protocol, []).append(line)
+
+        # Join lines per protocol with '\n'
+        protocol_strings = {proto: "\n".join(lines) for proto, lines in protocol_chunks.items()}
+
+        for protocol_name, protocol_string in protocol_strings.items():
+            protocol_module = self._load_protocol_module(protocol_name)
+            protocol_dict = protocol_module.populate_facts(
+                connection=self._module._connection,
+                ansible_facts={"ansible_network_resources": {}},
+                data=protocol_string,
+            )
+            parsed_protocols[protocol_name] = protocol_dict.get("ansible_network_resources")
+
+        self._module.fail_json(msg=parsed_protocols)
+        return parsed_protocols
+
+    def _load_protocol_module(self, protocol_name):
+        if protocol_name == "bgp":
+            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global import (
+                Bgp_globalFacts,
+            )
+
+            return Bgp_globalFacts(self._module)
+        elif protocol_name == "ospf":
+            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv2.ospfv2 import (
+                Ospfv2Facts,
+            )
+
+            return Ospfv2Facts(self._module)
+        elif protocol_name == "ospfv3":
+            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3 import (
+                Ospfv3Facts,
+            )
+
+            return Ospfv3Facts(self._module)
+        elif protocol_name == "static":
+            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes import (
+                Static_routesFacts,
+            )
+
+            return Static_routesFacts(self._module)
+        else:
+            self._module.fail_json(msg="The protocol is not supported")
