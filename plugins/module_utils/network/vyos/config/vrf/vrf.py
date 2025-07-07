@@ -199,6 +199,7 @@ class Vrf(ResourceModule):
                 for protocol_name in entry["protocols"]:
                     protocol_module = self._load_protocol_module(protocol_name)
                     if protocol_name == "bgp":
+                        protocol_module._validate_template()
                         protocol_module.want = entry["protocols"][protocol_name]
                         protocol_module.have = {}
                         protocol_module.generate_commands()
