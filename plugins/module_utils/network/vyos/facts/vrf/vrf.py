@@ -116,7 +116,7 @@ class VrfFacts(object):
         if params.get("config"):
             facts["vrf"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
-        self._module.fail_json(msg=ansible_facts)
+        # self._module.fail_json(msg=ansible_facts)
         return ansible_facts
 
     def _normalise_instance(self, instance):
@@ -166,7 +166,6 @@ class VrfFacts(object):
                 protocol = parts[2]
                 protocol_chunks.setdefault(protocol, []).append(line)
 
-        # Join lines per protocol with '\n'
         protocol_strings = {proto: "\n".join(lines) for proto, lines in protocol_chunks.items()}
 
         for protocol_name, protocol_string in protocol_strings.items():
@@ -176,9 +175,11 @@ class VrfFacts(object):
                 ansible_facts={"ansible_network_resources": {}},
                 data=protocol_string,
             )
-            parsed_protocols[protocol_name] = protocol_dict.get("ansible_network_resources")
+            parsed_protocols[protocol_name] = list(
+                protocol_dict.get("ansible_network_resources").values(),
+            )[0]
 
-        self._module.fail_json(msg=parsed_protocols)
+        # self._module.fail_json(msg=parsed_protocols)
         return parsed_protocols
 
     def _load_protocol_module(self, protocol_name):

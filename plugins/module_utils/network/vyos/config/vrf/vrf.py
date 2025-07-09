@@ -18,6 +18,8 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
+# import importlib
+
 from copy import deepcopy
 
 from ansible.module_utils.six import iteritems
@@ -198,21 +200,38 @@ class Vrf(ResourceModule):
             if "protocols" in entry:
                 for protocol_name in entry["protocols"]:
                     protocol_module = self._load_protocol_module(protocol_name)
+                    w_p_dict = entry["protocols"][protocol_name]
+                    h_p_dict = next(
+                        (
+                            v.get("protocols", {}).get(protocol_name)
+                            for v in have
+                            if v.get("name") == wname
+                        ),
+                        {},
+                    )
                     if protocol_name == "bgp":
                         protocol_module._validate_template()
-                        protocol_module.want = entry["protocols"][protocol_name]
-                        protocol_module.have = {}
+                        protocol_module.want = w_p_dict
+                        protocol_module.have = h_p_dict
                         protocol_module.generate_commands()
-                    elif protocol_name in ["ospf", "ospfv3", "static"]:
-                        protocol_module._module.params["config"] = entry["protocols"][protocol_name]
+                    elif protocol_name in [
+                        # "ospf",
+                        # "ospfv3",
+                        "static",
+                    ]:
+                        self._module.fail_json(msg=str(protocol_module))
+                        protocol_module._module.params["config"] = w_p_dict
                         protocol_module.state = self.state
-                        protocol_module.commands = protocol_module.set_config({})
+                        self._module.fail_json(msg=str(protocol_module.set_config(h_p_dict)))
+
+                        protocol_module.commands = protocol_module.set_config(h_p_dict)
                     self.commands.extend(
                         [
                             cmd.replace("protocols", "vrf name " + wname + " protocols", 1)
                             for cmd in protocol_module.commands
                         ],
                     )
+                    protocol_module = None  # Clear the module to free resources
 
     def _compare_addr_family(self, want, have):
         """Compare the address families of the VRF"""
