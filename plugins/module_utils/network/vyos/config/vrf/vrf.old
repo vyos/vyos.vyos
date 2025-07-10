@@ -18,6 +18,8 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
+import importlib
+
 from copy import deepcopy
 
 from ansible.module_utils.six import iteritems
@@ -27,15 +29,6 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global import (
     Bgp_global,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv2.ospfv2 import (
-    Ospfv2,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv3.ospfv3 import (
-    Ospfv3,
-)
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.static_routes.static_routes import (
-    Static_routes,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.vrf import (
@@ -67,6 +60,7 @@ class Vrf(ResourceModule):
         self.parsers = [
             "bind_to_all",
         ]
+        self.bgp = Bgp_global(module)
 
     def _validate_template(self):
         version = get_os_version(self._module)
@@ -205,8 +199,7 @@ class Vrf(ResourceModule):
 
             if "protocols" in entry:
                 for protocol_name in entry["protocols"]:
-                    # protocol_module = self._load_protocol_module(protocol_name)
-                    # protocol_commands = []
+                    protocol_module = self._load_protocol_module(protocol_name)
                     w_p_dict = entry["protocols"][protocol_name]
                     h_p_dict = next(
                         (
@@ -217,39 +210,28 @@ class Vrf(ResourceModule):
                         {},
                     )
                     if protocol_name == "bgp":
-                        bgp_module = Bgp_global(self._module)
-                        bgp_module._validate_template()
-                        bgp_module.want = w_p_dict
-                        bgp_module.have = h_p_dict
-                        bgp_module.generate_commands()
-                        protocol_commands = bgp_module.commands
-                    elif protocol_name == "ospf":
-                        ospfv2_module = Ospfv2(self._module)
-                        ospfv2_module._module.params["config"] = w_p_dict
-                        ospfv2_module.state = self.state
-                        protocol_commands = ospfv2_module.set_config(h_p_dict)
-                    elif protocol_name == "ospfv3":
-                        ospfv3_module = Ospfv3(self._module)
-                        ospfv3_module._module.params["config"] = w_p_dict
-                        ospfv3_module.state = self.state
-                        protocol_commands = ospfv3_module.set_config(h_p_dict)
-                    elif protocol_name == "static":
-                        static_routes_module = Static_routes(self._module)
-                        static_routes_module._module.params["config"] = w_p_dict
-                        static_routes_module.state = self.state
-                        # protocol_commands = static_routes_module.set_config(h_p_dict)
-                        self._module.fail_json(msg=str(h_p_dict))
-                        # self._module.fail_json(msg=
-                    else:
-                        self._module.fail_json(
-                            msg="The protocol {} is not supported".format(protocol_name),
-                        )
+                        protocol_module._validate_template()
+                        protocol_module.want = w_p_dict
+                        protocol_module.have = h_p_dict
+                        protocol_module.generate_commands()
+                    elif protocol_name in [
+                        # "ospf",
+                        # "ospfv3",
+                        "static",
+                    ]:
+                        self._module.fail_json(msg=str(protocol_module))
+                        protocol_module._module.params["config"] = w_p_dict
+                        protocol_module.state = self.state
+                        self._module.fail_json(msg=str(protocol_module.set_config(h_p_dict)))
+
+                        protocol_module.commands = protocol_module.set_config(h_p_dict)
                     self.commands.extend(
                         [
                             cmd.replace("protocols", "vrf name " + wname + " protocols", 1)
-                            for cmd in protocol_commands
+                            for cmd in protocol_module.commands
                         ],
                     )
+                    protocol_module = None  # Clear the module to free resources
 
     def _compare_addr_family(self, want, have):
         """Compare the address families of the VRF"""
