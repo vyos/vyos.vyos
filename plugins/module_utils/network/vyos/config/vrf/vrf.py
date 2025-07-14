@@ -237,9 +237,9 @@ class Vrf(ResourceModule):
                         static_routes_module = Static_routes(self._module)
                         static_routes_module._module.params["config"] = w_p_dict
                         static_routes_module.state = self.state
-                        # protocol_commands = static_routes_module.set_config(h_p_dict)
-                        self._module.fail_json(msg=str(h_p_dict))
-                        # self._module.fail_json(msg=
+                        protocol_commands = static_routes_module.set_config(h_p_dict)
+                        # self._module.fail_json(msg=str(w_p_dict))
+                        # self._module.fail_json(msg="here!")
                     else:
                         self._module.fail_json(
                             msg="The protocol {} is not supported".format(protocol_name),
@@ -302,30 +302,31 @@ class Vrf(ResourceModule):
                 have={**base, "route_maps": match},
             )
 
-    def _load_protocol_module(self, protocol_name):
-        if protocol_name == "bgp":
-            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global import (
-                Bgp_global,
-            )
+    # def _load_protocol_module(self, protocol_name):
+    #     if protocol_name == "bgp":
+    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global import (
+    #             Bgp_global,
+    #         )
 
-            return Bgp_global(self._module)
-        elif protocol_name == "ospf":
-            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv2.ospfv2 import (
-                Ospfv2,
-            )
+    #         return Bgp_global(self._module)
+    #     elif protocol_name == "ospf":
+    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv2.ospfv2 import (
+    #             Ospfv2,
+    #         )
 
-            return Ospfv2(self._module)
-        elif protocol_name == "ospfv3":
-            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv3.ospfv3 import (
-                Ospfv3,
-            )
+    #         return Ospfv2(self._module)
+    #     elif protocol_name == "ospfv3":
+    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv3.ospfv3 import (
+    #             Ospfv3,
+    #         )
 
-            return Ospfv3(self._module)
-        elif protocol_name == "static":
-            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.static_routes.static_routes import (
-                Static_routes,
-            )
+    #         return Ospfv3(self._module)
+    #     elif protocol_name == "static":
+    #         self._module.fail_json(msg="here!")
+    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.static_routes.static_routes import (
+    #             Static_routes,
+    #         )
 
-            return Static_routes(self._module)
-        else:
-            self._module.fail_json(msg="The protocol is not supported")
+    #         return Static_routes(self._module)
+    #     else:
+    #         self._module.fail_json(msg="The protocol is not supported")

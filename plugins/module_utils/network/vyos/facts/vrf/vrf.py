@@ -20,6 +20,18 @@ import re
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.vrf.vrf import VrfArgs
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global import (
+    Bgp_globalFacts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv2.ospfv2 import (
+    Ospfv2Facts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3 import (
+    Ospfv3Facts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes import (
+    Static_routesFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.vrf import (
     VrfTemplate,
 )
@@ -169,43 +181,92 @@ class VrfFacts(object):
         protocol_strings = {proto: "\n".join(lines) for proto, lines in protocol_chunks.items()}
 
         for protocol_name, protocol_string in protocol_strings.items():
-            protocol_module = self._load_protocol_module(protocol_name)
-            protocol_dict = protocol_module.populate_facts(
-                connection=self._module._connection,
-                ansible_facts={"ansible_network_resources": {}},
-                data=protocol_string,
-            )
-            parsed_protocols[protocol_name] = list(
-                protocol_dict.get("ansible_network_resources").values(),
-            )[0]
+            # protocol_module = self._load_protocol_module(protocol_name)
+            protocol_dict = {}
+            # protocol_dict = protocol_module.populate_facts(
+            #     connection=self._module._connection,
+            #     ansible_facts={"ansible_network_resources": {}},
+            #     data=protocol_string,
+            # )
+            # parsed_protocols[protocol_name] = list(
+            #     protocol_dict.get("ansible_network_resources").values(),
+            # )[0]
+
+            if protocol_name == "bgp":
+                bgp_module = Bgp_globalFacts(self._module)
+                protocol_dict = bgp_module.populate_facts(
+                    connection=self._module._connection,
+                    ansible_facts={"ansible_network_resources": {}},
+                    data=protocol_string,
+                )
+                parsed_protocols[protocol_name] = list(
+                    protocol_dict.get("ansible_network_resources").values(),
+                )[0]
+
+            elif protocol_name == "ospf":
+                ospf_module = Ospfv2Facts(self._module)
+                protocol_dict = ospf_module.populate_facts(
+                    connection=self._module._connection,
+                    ansible_facts={"ansible_network_resources": {}},
+                    data=protocol_string,
+                )
+                parsed_protocols[protocol_name] = list(
+                    protocol_dict.get("ansible_network_resources").values(),
+                )[0]
+
+            elif protocol_name == "ospfv3":
+                ospfv3_module = Ospfv3Facts(self._module)
+                protocol_dict = ospfv3_module.populate_facts(
+                    connection=self._module._connection,
+                    ansible_facts={"ansible_network_resources": {}},
+                    data=protocol_string,
+                )
+                parsed_protocols[protocol_name] = list(
+                    protocol_dict.get("ansible_network_resources").values(),
+                )[0]
+
+            elif protocol_name == "static":
+                static_routes_module = Static_routesFacts(self._module)
+                # self._module.fail_json(msg=protocol_string)
+                protocol_dict = static_routes_module.populate_facts(
+                    connection=self._module._connection,
+                    ansible_facts={"ansible_network_resources": {}},
+                    data=protocol_string,
+                )
+                parsed_protocols[protocol_name] = list(
+                    protocol_dict.get("ansible_network_resources").values(),
+                )[0]
+                # parsed_protocols[protocol_name] = []
+            else:
+                self._module.fail_json(msg="The protocol is not supported" + protocol_name)
 
         # self._module.fail_json(msg=parsed_protocols)
         return parsed_protocols
 
-    def _load_protocol_module(self, protocol_name):
-        if protocol_name == "bgp":
-            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global import (
-                Bgp_globalFacts,
-            )
+    # def _load_protocol_module(self, protocol_name):
+    #     if protocol_name == "bgp":
+    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global import (
+    #             Bgp_globalFacts,
+    #         )
 
-            return Bgp_globalFacts(self._module)
-        elif protocol_name == "ospf":
-            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv2.ospfv2 import (
-                Ospfv2Facts,
-            )
+    #         return Bgp_globalFacts(self._module)
+    #     elif protocol_name == "ospf":
+    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv2.ospfv2 import (
+    #             Ospfv2Facts,
+    #         )
 
-            return Ospfv2Facts(self._module)
-        elif protocol_name == "ospfv3":
-            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3 import (
-                Ospfv3Facts,
-            )
+    #         return Ospfv2Facts(self._module)
+    #     elif protocol_name == "ospfv3":
+    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3 import (
+    #             Ospfv3Facts,
+    #         )
 
-            return Ospfv3Facts(self._module)
-        elif protocol_name == "static":
-            from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes import (
-                Static_routesFacts,
-            )
+    #         return Ospfv3Facts(self._module)
+    #     elif protocol_name == "static":
+    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes import (
+    #             Static_routesFacts,
+    #         )
 
-            return Static_routesFacts(self._module)
-        else:
-            self._module.fail_json(msg="The protocol is not supported")
+    #         return Static_routesFacts(self._module)
+    #     else:
+    #         self._module.fail_json(msg="The protocol is not supported")
