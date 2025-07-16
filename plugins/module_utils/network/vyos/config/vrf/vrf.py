@@ -164,7 +164,7 @@ class Vrf(ResourceModule):
                 want={k: want},
                 have={k: haved.pop(k, {})},
             )
-        self._module.fail_json(msg=self.commands)
+        # self._module.fail_json(msg=self.commands)
 
     def _compare_instances(self, want, have):
         """Compare the instances of the VRF"""
@@ -205,12 +205,12 @@ class Vrf(ResourceModule):
 
             if "protocols" in entry:
                 for protocol_name in entry["protocols"]:
-                    # protocol_module = self._load_protocol_module(protocol_name)
-                    # protocol_commands = []
+
                     w_p_dict = entry["protocols"][protocol_name]
+
                     h_p_dict = next(
                         (
-                            v.get("protocols", {}).get(protocol_name)
+                            v.get("protocols", {}).get(protocol_name, {})
                             for v in have
                             if v.get("name") == wname
                         ),
@@ -237,9 +237,9 @@ class Vrf(ResourceModule):
                         static_routes_module = Static_routes(self._module)
                         static_routes_module._module.params["config"] = w_p_dict
                         static_routes_module.state = self.state
+                        # self._module.fail_json(msg=str(h_p_dict))
+                        # self._module.fail_json(msg="wafi: " + str(w_p_dict) + "**** hafi:  " + str(h_p_dict))
                         protocol_commands = static_routes_module.set_config(h_p_dict)
-                        # self._module.fail_json(msg=str(w_p_dict))
-                        # self._module.fail_json(msg="here!")
                     else:
                         self._module.fail_json(
                             msg="The protocol {} is not supported".format(protocol_name),
