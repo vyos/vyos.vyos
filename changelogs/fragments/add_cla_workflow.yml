@@ -1,4 +1,4 @@
 ---
 trivial:
   - cla-check.yml - Add a workflow for the checking and signing of Contributor License Agreement (CLA)
-  
+
