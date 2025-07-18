@@ -44,7 +44,6 @@ Name | Description
 ### Modules
 Name | Description
 --- | ---
-[vyos.vyos.vyos](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_module.rst)|Stub module for VyOS action plugin
 [vyos.vyos.vyos_banner](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_banner_module.rst)|Manage multiline banners on VyOS devices
 [vyos.vyos.vyos_bgp_address_family](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_bgp_address_family_module.rst)|BGP Address Family resource module
 [vyos.vyos.vyos_bgp_global](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_bgp_global_module.rst)|BGP global resource module

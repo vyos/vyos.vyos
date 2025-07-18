@@ -29,15 +29,6 @@ from ansible_collections.ansible.netcommon.plugins.action.network import (
 
 display = Display()
 
-DOCUMENTATION = """
-module: vyos
-short_description: VyOS action plugin
-description:
-    - This action plugin is used to run VyOS modules.
-    - It is used to handle the connection and execution of the modules.
-author: VyOS Community
-"""
-
 
 class ActionModule(ActionNetworkModule):
     def run(self, tmp=None, task_vars=None):
