@@ -242,31 +242,3 @@ class VrfFacts(object):
 
         # self._module.fail_json(msg=parsed_protocols)
         return parsed_protocols
-
-    # def _load_protocol_module(self, protocol_name):
-    #     if protocol_name == "bgp":
-    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global import (
-    #             Bgp_globalFacts,
-    #         )
-
-    #         return Bgp_globalFacts(self._module)
-    #     elif protocol_name == "ospf":
-    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv2.ospfv2 import (
-    #             Ospfv2Facts,
-    #         )
-
-    #         return Ospfv2Facts(self._module)
-    #     elif protocol_name == "ospfv3":
-    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ospfv3.ospfv3 import (
-    #             Ospfv3Facts,
-    #         )
-
-    #         return Ospfv3Facts(self._module)
-    #     elif protocol_name == "static":
-    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes import (
-    #             Static_routesFacts,
-    #         )
-
-    #         return Static_routesFacts(self._module)
-    #     else:
-    #         self._module.fail_json(msg="The protocol is not supported")

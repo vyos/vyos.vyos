@@ -27,9 +27,27 @@ __metaclass__ = type
 The arg spec for the vyos_vrf module
 """
 
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.bgp_global.bgp_global import (
+    Bgp_globalArgs,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv2.ospfv2 import (
+    Ospfv2Args,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ospfv3.ospfv3 import (
+    Ospfv3Args,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.static_routes.static_routes import (
+    Static_routesArgs,
+)
+
 
 class VrfArgs(object):  # pylint: disable=R0903
     """The arg spec for the vyos_vrf module"""
+
+    bgp_argument_spec = Bgp_globalArgs.argument_spec["config"]
+    static_routes_argument_spec = Static_routesArgs.argument_spec["config"]
+    ospfv2_argument_spec = Ospfv2Args.argument_spec["config"]
+    ospfv3_argument_spec = Ospfv3Args.argument_spec["config"]
 
     argument_spec = {
         "config": {
@@ -87,10 +105,10 @@ class VrfArgs(object):  # pylint: disable=R0903
                         "protocols": {
                             "type": "dict",
                             "options": {
-                                "bgp": {"type": "dict"},
-                                "ospf": {"type": "dict"},
-                                "ospfv3": {"type": "dict"},
-                                "static": {"type": "list"},
+                                "bgp": bgp_argument_spec,
+                                "ospf": ospfv2_argument_spec,
+                                "ospfv3": ospfv3_argument_spec,
+                                "static": static_routes_argument_spec,
                             },
                         },
                     },
