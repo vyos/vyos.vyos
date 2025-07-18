@@ -21,6 +21,15 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+DOCUMENTATION = """
+module: vyos
+short_description: VyOS action plugin
+description:
+    - This action plugin is used to run VyOS modules.
+    - It is used to handle the connection and execution of the modules.
+author: VyOS Community
+"""
+
 from ansible.utils.display import Display
 from ansible_collections.ansible.netcommon.plugins.action.network import (
     ActionModule as ActionNetworkModule,
