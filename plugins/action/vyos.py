@@ -21,6 +21,14 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
+from ansible.utils.display import Display
+from ansible_collections.ansible.netcommon.plugins.action.network import (
+    ActionModule as ActionNetworkModule,
+)
+
+
+display = Display()
+
 DOCUMENTATION = """
 module: vyos
 short_description: VyOS action plugin
@@ -29,14 +37,6 @@ description:
     - It is used to handle the connection and execution of the modules.
 author: VyOS Community
 """
-
-from ansible.utils.display import Display
-from ansible_collections.ansible.netcommon.plugins.action.network import (
-    ActionModule as ActionNetworkModule,
-)
-
-
-display = Display()
 
 
 class ActionModule(ActionNetworkModule):
