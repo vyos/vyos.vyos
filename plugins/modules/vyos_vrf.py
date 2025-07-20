@@ -97,6 +97,23 @@ options:
                     - rip
                     - static
                     - table
+          protocols:
+            type: dict
+            elements: dict
+            description: Protocol configuration
+            suboptions:
+              bgp:
+                description: BGP protocol configuration
+                type: dict
+              ospf:
+                description: OSPFv2 protocol configuration
+                type: dict
+              ospfv3:
+                description: OSPFv3 protocol configuration
+                type: dict
+              static:
+                description: Static Routes protocol configuration
+                type: dict
   running_config:
     description:
     - This option is used only with state I(parsed).
