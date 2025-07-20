@@ -105,15 +105,19 @@ options:
               bgp:
                 description: BGP protocol configuration
                 type: dict
+                undocumented: true
               ospf:
                 description: OSPFv2 protocol configuration
                 type: dict
+                undocumented: true
               ospfv3:
                 description: OSPFv3 protocol configuration
                 type: dict
+                undocumented: true
               static:
                 description: Static Routes protocol configuration
                 type: dict
+                undocumented: true
   running_config:
     description:
     - This option is used only with state I(parsed).
