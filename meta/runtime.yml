@@ -1,5 +1,11 @@
 ---
-requires_ansible: "<=2.17.0"
+requires_ansible: ">=2.15.0"
+excluded_versions:
+  - ".*a.*" # alpha
+  - ".*b.*" # beta
+  - ".*rc.*" # release candidate
+  - ".*dev.*" # development
+  - "devel" # named devel branch
 plugin_routing:
   modules:
     banner:
