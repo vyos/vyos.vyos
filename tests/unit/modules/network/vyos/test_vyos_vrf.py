@@ -108,6 +108,22 @@ class TestVyosVrfModule(TestVyosModule):
                                     nht_no_resolve_via_default=True,
                                 ),
                             ],
+                            # protocols = dict(
+                            #     bgp=dict(
+                            #         as_number=65000,
+                            #         neighbor=[
+                            #             dict(
+                            #                 address="192.0.2.1",
+                            #                 remote_as=65002,
+                            #             ),
+                            #             dict(
+                            #                 address="1.1.1.3",
+                            #                 remote_as=400,
+                            #                 passive=True,
+                            #             ),
+                            #         ],
+                            #     ),
+                            # ),
                         ),
                     ],
                 ),
