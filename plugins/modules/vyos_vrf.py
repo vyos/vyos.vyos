@@ -22,7 +22,7 @@ description:
 author:
 - Evgeny Molotkov (@omnom62)
 notes:
-- Tested against vyos 1.5-stream-2025-Q1
+- Tested against vyos 1.4.2 and 1.5-stream-2025-Q1
 - This module works with connection C(network_cli).
 options:
   config:
@@ -102,11 +102,214 @@ options:
             elements: dict
             description: Protocol configuration
             suboptions:
-            _undocumented:
-              - bgp
-              - ospf
-              - ospfv3
-              - static
+              bgp:
+                type: dict
+                description: BGP configuration
+                suboptions:
+                  as_number:
+                    description:
+                    - AS number
+                    type: int
+                  address_family:
+                    description: BGP address-family parameters.
+                    type: list
+                    elements: dict
+                    suboptions:
+                      afi:
+                        description: BGP address family settings.
+                        type: str
+                        choices: ['ipv4', 'ipv6']
+                      aggregate_address:
+                        description:
+                          - BGP aggregate network.
+                        type: list
+                        elements: dict
+                        suboptions:
+                          prefix:
+                            description: BGP aggregate network.
+                            type: str
+                          as_set:
+                            description: Generate AS-set path information for this aggregate address.
+                            type: bool
+                          summary_only:
+                            description: Announce the aggregate summary network only.
+                            type: bool
+                      networks:
+                        description: BGP network
+                        type: list
+                        elements: dict
+                        suboptions:
+                          prefix:
+                            description: BGP network address
+                            type: str
+                          path_limit:
+                            description: AS path hop count limit
+                            type: int
+                          backdoor:
+                            description: Network as a backdoor route.
+                            type: bool
+                          route_map:
+                            description: Route-map to modify route attributes
+                            type: str
+                      redistribute:
+                        description: Redistribute routes from other protocols into BGP
+                        type: list
+                        elements: dict
+                        suboptions:
+                          protocol:
+                            description: types of routes to be redistributed.
+                            type: str
+                            choices: ['connected', 'kernel', 'ospf', 'ospfv3', 'rip', 'ripng', 'static']
+                          table:
+                            description: Redistribute non-main Kernel Routing Table.
+                            type: str
+                          route_map:
+                            description: Route map to filter redistributed routes
+                            type: str
+                          metric:
+                            description: Metric for redistributed routes.
+                            type: int
+                  neighbors:
+                    description: BGP neighbor
+                    type: list
+                    elements: dict
+                    suboptions:
+                      neighbor_address:
+                        description: BGP neighbor address (v4/v6).
+                        type: str
+                      address_family:
+                        description: address family.
+                        type: list
+                        elements: dict
+                        suboptions:
+                          afi:
+                            description: BGP neighbor parameters.
+                            type: str
+                            choices: ['ipv4', 'ipv6']
+                          allowas_in:
+                            description: Number of occurrences of AS number.
+                            type: int
+                          as_override:
+                            description:  AS for routes sent to this neighbor to be the local AS.
+                            type: bool
+                          attribute_unchanged:
+                            description: BGP attributes are sent unchanged.
+                            type: dict
+                            suboptions:
+                                as_path:
+                                  description: as_path attribute
+                                  type: bool
+                                med:
+                                  description: med attribute
+                                  type: bool
+                                next_hop:
+                                  description: next_hop attribute
+                                  type: bool
+                          capability:
+                            description: Advertise capabilities to this neighbor.
+                            type: dict
+                            suboptions:
+                              dynamic:
+                                description: Advertise dynamic capability to this neighbor.
+                                type: bool
+                              orf:
+                                description: Advertise ORF capability to this neighbor.
+                                type: str
+                                choices: ['send', 'receive']
+                          default_originate:
+                            description: Send default route to this neighbor
+                            type: str
+                          distribute_list:
+                            description:  Access-list to filter route updates to/from this neighbor.
+                            type: list
+                            elements: dict
+                            suboptions:
+                              action:
+                                description:  Access-list to filter outgoing/incoming route updates to this neighbor
+                                type: str
+                                choices: ['export', 'import']
+                              acl:
+                                description: Access-list number.
+                                type: int
+                          filter_list:
+                            description: As-path-list to filter route updates to/from this neighbor.
+                            type: list
+                            elements: dict
+                            suboptions:
+                              action:
+                                description: filter outgoing/incoming route updates
+                                type: str
+                                choices: ['export', 'import']
+                              path_list:
+                                description: As-path-list to filter
+                                type: str
+                          maximum_prefix:
+                            description:  Maximum number of prefixes to accept from this neighbor
+                              nexthop-self Nexthop for routes sent to this neighbor to be the local router.
+                            type: int
+                          nexthop_local:
+                            description:  Nexthop attributes.
+                            type: bool
+                          nexthop_self:
+                            description:  Nexthop for routes sent to this neighbor to be the local router.
+                            type: bool
+                          peer_group:
+                            description:  IPv4 peer group for this peer
+                            type: str
+                          prefix_list:
+                            description: Prefix-list to filter route updates to/from this neighbor.
+                            type: list
+                            elements: dict
+                            suboptions:
+                              action:
+                                description: filter outgoing/incoming route updates
+                                type: str
+                                choices: ['export', 'import']
+                              prefix_list:
+                                description: Prefix-list to filter
+                                type: str
+                          remove_private_as:
+                            description: Remove private AS numbers from AS path in outbound route updates
+                            type: bool
+                          route_map:
+                            description: Route-map to filter route updates to/from this neighbor.
+                            type: list
+                            elements: dict
+                            suboptions:
+                              action:
+                                description: filter outgoing/incoming route updates
+                                type: str
+                                choices: ['export', 'import']
+                              route_map:
+                                description: route-map to filter
+                                type: str
+                          route_reflector_client:
+                            description: Neighbor as a route reflector client
+                            type: bool
+                          route_server_client:
+                            description: Neighbor is route server client
+                            type: bool
+                          soft_reconfiguration:
+                            description: Soft reconfiguration for neighbor
+                            type: bool
+                          unsupress_map:
+                            description:  Route-map to selectively unsuppress suppressed routes
+                            type: str
+                          weight:
+                            description: Default weight for routes from this neighbor
+                            type: int
+              ospf:
+                type: dict
+                description: OSPFv2 configuration
+                elements: dict
+              ospfv3:
+                type: dict
+                description: OSPFv3 configuration
+                elements: dict
+              static:
+                type: dict
+                description: Static routes configuration
+                elements: dict
   running_config:
     description:
     - This option is used only with state I(parsed).
