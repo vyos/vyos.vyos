@@ -20,7 +20,7 @@ short_description: Logging resource module
 description: This module manages the logging attributes of Vyos network devices
 author: Sagar Paul (@KB-perByte)
 notes:
-  - Tested against vyos 1.3.8+
+  - Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025
   - This module works with connection C(network_cli).
   - The Configuration defaults of the Vyos network devices
     are supposed to hinder idempotent behavior of plays
