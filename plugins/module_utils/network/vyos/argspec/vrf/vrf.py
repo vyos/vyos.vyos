@@ -103,7 +103,8 @@ class VrfArgs(object):  # pylint: disable=R0903
                             },
                         },
                         "protocols": {
-                            "type": "dict",
+                            "type": "list",
+                            "elements": "dict",
                             "options": {
                                 "bgp": bgp_argument_spec,
                                 "ospf": ospfv2_argument_spec,

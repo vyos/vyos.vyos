@@ -98,7 +98,7 @@ options:
                     - static
                     - table
           protocols:
-            type: dict
+            type: list
             elements: dict
             description: Protocol configuration
             suboptions:
@@ -108,208 +108,652 @@ options:
                 suboptions:
                   as_number:
                     description:
-                    - AS number
+                    - AS number.
                     type: int
-                  address_family:
-                    description: BGP address-family parameters.
-                    type: list
-                    elements: dict
-                    suboptions:
-                      afi:
-                        description: BGP address family settings.
-                        type: str
-                        choices: ['ipv4', 'ipv6']
-                      aggregate_address:
-                        description:
-                          - BGP aggregate network.
-                        type: list
-                        elements: dict
-                        suboptions:
-                          prefix:
-                            description: BGP aggregate network.
-                            type: str
-                          as_set:
-                            description: Generate AS-set path information for this aggregate address.
-                            type: bool
-                          summary_only:
-                            description: Announce the aggregate summary network only.
-                            type: bool
-                      networks:
-                        description: BGP network
-                        type: list
-                        elements: dict
-                        suboptions:
-                          prefix:
-                            description: BGP network address
-                            type: str
-                          path_limit:
-                            description: AS path hop count limit
-                            type: int
-                          backdoor:
-                            description: Network as a backdoor route.
-                            type: bool
-                          route_map:
-                            description: Route-map to modify route attributes
-                            type: str
-                      redistribute:
-                        description: Redistribute routes from other protocols into BGP
-                        type: list
-                        elements: dict
-                        suboptions:
-                          protocol:
-                            description: types of routes to be redistributed.
-                            type: str
-                            choices: ['connected', 'kernel', 'ospf', 'ospfv3', 'rip', 'ripng', 'static']
-                          table:
-                            description: Redistribute non-main Kernel Routing Table.
-                            type: str
-                          route_map:
-                            description: Route map to filter redistributed routes
-                            type: str
-                          metric:
-                            description: Metric for redistributed routes.
-                            type: int
-                  neighbors:
+                  #maximum_paths: --> moved to address-family before 1.3
+                  neighbor:
                     description: BGP neighbor
                     type: list
                     elements: dict
                     suboptions:
-                      neighbor_address:
-                        description: BGP neighbor address (v4/v6).
+                      address:
+                        description:
+                        - BGP neighbor address (v4/v6).
                         type: str
-                      address_family:
-                        description: address family.
+                      advertisement_interval:
+                        description:
+                        - Minimum interval for sending routing updates.
+                        type: int
+                      capability:
+                        description:
+                        - Advertise capabilities to this neighbor.
+                        type: dict
+                        suboptions:
+                          dynamic:
+                            description:
+                            - Advertise dynamic capability to this neighbor.
+                            type: bool
+                          extended_nexthop:
+                            description:
+                            - Advertise extended nexthop capability to this neighbor.
+                            type: bool
+                      default_originate:
+                        description:
+                        - Send default route to this neighbor
+                        type: str
+                      description:
+                        description:
+                        - Description of the neighbor
+                        type: str
+                      disable_capability_negotiation:
+                        description:
+                        - Disbale capability negotiation with the neighbor
+                        type: bool
+                      disable_connected_check:
+                        description:
+                        - Disable check to see if EBGP peer's address is a connected route.
+                        type: bool
+                      disable_send_community:
+                        description:
+                        - Disable sending community attributes to this neighbor.
+                        type: str
+                        choices: ['extended', 'standard']
+                      ebgp_multihop:
+                        description:
+                          - Allow this EBGP neighbor to not be on a directly connected network. Specify
+                            the number hops.
+                        type: int
+                      local_as:
+                        description: local as number not to be prepended to updates from EBGP peers
+                        type: int
+                      override_capability:
+                        description: Ignore capability negotiation with specified neighbor.
+                        type: bool
+                      passive:
+                        description: Do not initiate a session with this neighbor
+                        type: bool
+                      password:
+                        description: BGP MD5 password
+                        type: str
+                      peer_group_name:
+                        description: IPv4 peer group for this peer
+                        type: str
+                      peer_group:
+                        description: True if all the configs under this neighbor key is for peer group template.
+                        type: bool
+                      port:
+                        description: Neighbor's BGP port
+                        type: int
+                      remote_as:
+                        description: Neighbor BGP AS number
+                        type: int
+                      shutdown:
+                        description: Administratively shut down neighbor
+                        type: bool
+                      solo: # <-- added in 1.3
+                        description: Do not send back prefixes learned from the neighbor
+                        type: bool
+                      strict_capability_match:
+                        description: Enable strict capability negotiation
+                        type: bool
+                      timers:
+                        description: Neighbor timers
+                        type: dict
+                        suboptions:
+                          connect:
+                            description: BGP connect timer for this neighbor.
+                            type: int
+                          holdtime:
+                            description: BGP hold timer for this neighbor
+                            type: int
+                          keepalive:
+                            description: BGP keepalive interval for this neighbor
+                            type: int
+                      ttl_security:
+                        description: Number of the maximum number of hops to the BGP peer
+                        type: int
+                      update_source:
+                        description: Source IP of routing updates
+                        type: str
+                  timers:
+                    description: BGP protocol timers
+                    type: dict
+                    suboptions:
+                      keepalive:
+                        description: Keepalive interval
+                        type: int
+                      holdtime:
+                        description: Hold time interval
+                        type: int
+                  bgp_params:
+                    description: BGP parameters
+                    type: dict
+                    suboptions:
+                      always_compare_med:
+                        description: Always compare MEDs from different neighbors
+                        type: bool
+                      bestpath:
+                        description: Default bestpath selection mechanism
+                        type: dict
+                        suboptions:
+                          as_path:
+                            description: AS-path attribute comparison parameters
+                            type: str
+                            choices: ['confed', 'ignore']
+                          compare_routerid:
+                            description: Compare the router-id for identical EBGP paths
+                            type: bool
+                          med:
+                            description: MED attribute comparison parameters
+                            type: str
+                            choices: ['confed', 'missing-as-worst']
+                      cluster_id:
+                        description: Route-reflector cluster-id
+                        type: str
+                      confederation:
+                        description: AS confederation parameters
                         type: list
                         elements: dict
                         suboptions:
-                          afi:
-                            description: BGP neighbor parameters.
-                            type: str
-                            choices: ['ipv4', 'ipv6']
-                          allowas_in:
-                            description: Number of occurrences of AS number.
+                          identifier:
+                            description: Confederation AS identifier
                             type: int
-                          as_override:
-                            description:  AS for routes sent to this neighbor to be the local AS.
-                            type: bool
-                          attribute_unchanged:
-                            description: BGP attributes are sent unchanged.
-                            type: dict
-                            suboptions:
-                                as_path:
-                                  description: as_path attribute
-                                  type: bool
-                                med:
-                                  description: med attribute
-                                  type: bool
-                                next_hop:
-                                  description: next_hop attribute
-                                  type: bool
-                          capability:
-                            description: Advertise capabilities to this neighbor.
-                            type: dict
-                            suboptions:
-                              dynamic:
-                                description: Advertise dynamic capability to this neighbor.
-                                type: bool
-                              orf:
-                                description: Advertise ORF capability to this neighbor.
-                                type: str
-                                choices: ['send', 'receive']
-                          default_originate:
-                            description: Send default route to this neighbor
-                            type: str
-                          distribute_list:
-                            description:  Access-list to filter route updates to/from this neighbor.
-                            type: list
-                            elements: dict
-                            suboptions:
-                              action:
-                                description:  Access-list to filter outgoing/incoming route updates to this neighbor
-                                type: str
-                                choices: ['export', 'import']
-                              acl:
-                                description: Access-list number.
-                                type: int
-                          filter_list:
-                            description: As-path-list to filter route updates to/from this neighbor.
-                            type: list
-                            elements: dict
-                            suboptions:
-                              action:
-                                description: filter outgoing/incoming route updates
-                                type: str
-                                choices: ['export', 'import']
-                              path_list:
-                                description: As-path-list to filter
-                                type: str
-                          maximum_prefix:
-                            description:  Maximum number of prefixes to accept from this neighbor
-                              nexthop-self Nexthop for routes sent to this neighbor to be the local router.
+                          peers:
+                            description: Peer ASs in the BGP confederation
                             type: int
-                          nexthop_local:
-                            description:  Nexthop attributes.
-                            type: bool
-                          nexthop_self:
-                            description:  Nexthop for routes sent to this neighbor to be the local router.
-                            type: bool
-                          peer_group:
-                            description:  IPv4 peer group for this peer
-                            type: str
-                          prefix_list:
-                            description: Prefix-list to filter route updates to/from this neighbor.
-                            type: list
-                            elements: dict
-                            suboptions:
-                              action:
-                                description: filter outgoing/incoming route updates
-                                type: str
-                                choices: ['export', 'import']
-                              prefix_list:
-                                description: Prefix-list to filter
-                                type: str
-                          remove_private_as:
-                            description: Remove private AS numbers from AS path in outbound route updates
-                            type: bool
-                          route_map:
-                            description: Route-map to filter route updates to/from this neighbor.
-                            type: list
-                            elements: dict
-                            suboptions:
-                              action:
-                                description: filter outgoing/incoming route updates
-                                type: str
-                                choices: ['export', 'import']
-                              route_map:
-                                description: route-map to filter
-                                type: str
-                          route_reflector_client:
-                            description: Neighbor as a route reflector client
-                            type: bool
-                          route_server_client:
-                            description: Neighbor is route server client
-                            type: bool
-                          soft_reconfiguration:
-                            description: Soft reconfiguration for neighbor
-                            type: bool
-                          unsupress_map:
-                            description:  Route-map to selectively unsuppress suppressed routes
-                            type: str
-                          weight:
-                            description: Default weight for routes from this neighbor
+                      dampening:
+                        description: Enable route-flap dampening
+                        type: dict
+                        suboptions:
+                          half_life:
+                            description: Half-life penalty in seconds
                             type: int
+                          max_suppress_time:
+                            description: Maximum duration to suppress a stable route
+                            type: int
+                          re_use:
+                            description: Time to start reusing a route
+                            type: int
+                          start_suppress_time:
+                            description: When to start suppressing a route
+                            type: int
+                      default:
+                        description: BGP defaults
+                        type: dict
+                        suboptions:
+                          local_pref:
+                            description: Default local preference
+                            type: int
+                          no_ipv4_unicast:
+                            description: |
+                              Deactivate IPv4 unicast for a peer by default
+                              Deprecated: Unavailable after 1.4
+                            type: bool
+                      deterministic_med:
+                        description: Compare MEDs between different peers in the same AS
+                        type: bool
+                      disable_network_import_check:
+                        description: Disable IGP route check for network statements
+                        type: bool
+                      distance:
+                        description: Administrative distances for BGP routes
+                        type: list
+                        elements: dict
+                        suboptions:
+                          type:
+                            description: Type of route
+                            type: str
+                            choices: ['external', 'internal', 'local']
+                          value:
+                            description: distance
+                            type: int
+                          prefix:
+                            description: Administrative distance for a specific BGP prefix
+                            type: int
+                      enforce_first_as:
+                        description: Require first AS in the path to match peer's AS
+                        type: bool
+                      graceful_restart:
+                        description: Maximum time to hold onto restarting peer's stale paths
+                        type: int
+                      log_neighbor_changes:
+                        description: Log neighbor up/down changes and reset reason
+                        type: bool
+                      no_client_to_client_reflection:
+                        description: Disable client to client route reflection
+                        type: bool
+                      no_fast_external_failover:
+                        description: Disable immediate session reset if peer's connected link goes down
+                        type: bool
+                      router_id:
+                        description: BGP router-id
+                        type: str
+                      scan_time:
+                        description: BGP route scanner interval
+                        type: int
               ospf:
                 type: dict
                 description: OSPFv2 configuration
-                elements: dict
+                suboptions:
+                  areas:
+                    description: OSPFv2 area.
+                    type: list
+                    elements: dict
+                    suboptions:
+                      area_id:
+                        description: OSPFv2 area identity.
+                        type: str
+                      area_type:
+                        description: Area type.
+                        type: dict
+                        suboptions:
+                          normal:
+                            description: Normal OSPFv2 area.
+                            type: bool
+                          nssa:
+                            description: NSSA OSPFv2 area.
+                            type: dict
+                            suboptions:
+                              set:
+                                description: Enabling NSSA.
+                                type: bool
+                              default_cost:
+                                description: Summary-default cost of NSSA area.
+                                type: int
+                              no_summary:
+                                description: Do not inject inter-area routes into stub.
+                                type: bool
+                              translate:
+                                description: NSSA-ABR.
+                                type: str
+                                choices: [always, candidate, never]
+                          stub:
+                            description: Stub OSPFv2 area.
+                            type: dict
+                            suboptions:
+                              set:
+                                description: Enabling stub.
+                                type: bool
+                              default_cost:
+                                description: Summary-default cost of stub area.
+                                type: int
+                              no_summary:
+                                description: Do not inject inter-area routes into stub.
+                                type: bool
+                      authentication:
+                        description: OSPFv2 area authentication type.
+                        type: str
+                        choices: [plaintext-password, md5]
+                      network:
+                        description: OSPFv2 network.
+                        type: list
+                        elements: dict
+                        suboptions:
+                          address:
+                            required: true
+                            description: OSPFv2 IPv4 network address.
+                            type: str
+                      range:
+                        description: Summarize routes matching prefix (border routers only).
+                        type: list
+                        elements: dict
+                        suboptions:
+                          address:
+                            description: border router IPv4 address.
+                            type: str
+                          cost:
+                            description: Metric for this range.
+                            type: int
+                          not_advertise:
+                            description: Don't advertise this range.
+                            type: bool
+                          substitute:
+                            description: Announce area range (IPv4 address) as another prefix.
+                            type: str
+                      shortcut:
+                        description: Area's shortcut mode.
+                        type: str
+                        choices: [default, disable, enable]
+                      virtual_link:
+                        description: Virtual link address.
+                        type: list
+                        elements: dict
+                        suboptions:
+                          address:
+                            description: virtual link address.
+                            type: str
+                          authentication:
+                            description: OSPFv2 area authentication type.
+                            type: dict
+                            suboptions:
+                              md5:
+                                description: MD5 key id based authentication.
+                                type: list
+                                elements: dict
+                                suboptions:
+                                  key_id:
+                                    description: MD5 key id.
+                                    type: int
+                                  md5_key:
+                                    description: MD5 key.
+                                    type: str
+                              plaintext_password:
+                                description: Plain text password.
+                                type: str
+                          dead_interval:
+                            description: Interval after which a neighbor is declared dead.
+                            type: int
+                          hello_interval:
+                            description: Interval between hello packets.
+                            type: int
+                          retransmit_interval:
+                            description: Interval between retransmitting lost link state advertisements.
+                            type: int
+                          transmit_delay:
+                            description: Link state transmit delay.
+                            type: int
+                  log_adjacency_changes:
+                    description: Log changes in adjacency state.
+                    type: str
+                    choices: [detail]
+                  max_metric:
+                    description: OSPFv2 maximum/infinite-distance metric.
+                    type: dict
+                    suboptions:
+                      router_lsa:
+                        description: Advertise own Router-LSA with infinite distance (stub router).
+                        type: dict
+                        suboptions:
+                          administrative:
+                            description: Administratively apply, for an indefinite period.
+                            type: bool
+                          on_shutdown:
+                            description: Time to advertise self as stub-router.
+                            type: int
+                          on_startup:
+                            description: Time to advertise self as stub-router
+                            type: int
+                  auto_cost:
+                    description: Calculate OSPFv2 interface cost according to bandwidth.
+                    type: dict
+                    suboptions:
+                      reference_bandwidth:
+                        description: Reference bandwidth cost in Mbits/sec.
+                        type: int
+                  default_information:
+                    description: Control distribution of default information.
+                    type: dict
+                    suboptions:
+                      originate:
+                        description: Distribute a default route.
+                        type: dict
+                        suboptions:
+                          always:
+                            description: Always advertise default route.
+                            type: bool
+                          metric:
+                            description: OSPFv2 default metric.
+                            type: int
+                          metric_type:
+                            description: OSPFv2 Metric types for default routes.
+                            type: int
+                          route_map:
+                            description: Route map references.
+                            type: str
+                  default_metric:
+                    description: Metric of redistributed routes
+                    type: int
+                  distance:
+                    description: Administrative distance.
+                    type: dict
+                    suboptions:
+                      global:
+                        description: Global OSPFv2 administrative distance.
+                        type: int
+                      ospf:
+                        description: OSPFv2 administrative distance.
+                        type: dict
+                        suboptions:
+                          external:
+                            description: Distance for external routes.
+                            type: int
+                          inter_area:
+                            description: Distance for inter-area routes.
+                            type: int
+                          intra_area:
+                            description: Distance for intra-area routes.
+                            type: int
+                  mpls_te:
+                    description: MultiProtocol Label Switching-Traffic Engineering (MPLS-TE) parameters.
+                    type: dict
+                    suboptions:
+                      enabled:
+                        description: Enable MPLS-TE functionality.
+                        type: bool
+                      router_address:
+                        description: Stable IP address of the advertising router.
+                        type: str
+                  neighbor:
+                    description: Neighbor IP address.
+                    type: list
+                    elements: dict
+                    suboptions:
+                      neighbor_id:
+                        description: Identity (number/IP address) of neighbor.
+                        type: str
+                      poll_interval:
+                        description: Seconds between dead neighbor polling interval.
+                        type: int
+                      priority:
+                        description: Neighbor priority.
+                        type: int
+                  parameters:
+                    description: OSPFv2 specific parameters.
+                    type: dict
+                    suboptions:
+                      abr_type:
+                        description: OSPFv2 ABR Type.
+                        type: str
+                        choices: [cisco, ibm, shortcut, standard]
+                      opaque_lsa:
+                        description: Enable the Opaque-LSA capability (rfc2370).
+                        type: bool
+                      rfc1583_compatibility:
+                        description: Enable rfc1583 criteria for handling AS external routes.
+                        type: bool
+                      router_id:
+                        description: Override the default router identifier.
+                        type: str
+                  passive_interface:
+                    description: Suppress routing updates on an interface.
+                    type: list
+                    elements: str
+                  passive_interface_exclude:
+                    description: Interface to exclude when using passive-interface default.
+                    type: list
+                    elements: str
+                  redistribute:
+                    description: Redistribute information from another routing protocol.
+                    type: list
+                    elements: dict
+                    suboptions:
+                      route_type:
+                        description: Route type to redistribute.
+                        type: str
+                        choices: [bgp, connected, kernel, rip, static]
+                      metric:
+                        description: Metric for redistribution routes.
+                        type: int
+                      metric_type:
+                        description: OSPFv2 Metric types.
+                        type: int
+                      route_map:
+                        description: Route map references.
+                        type: str
+                  route_map:
+                    description: Filter routes installed in local route map.
+                    type: list
+                    elements: str
+                  timers:
+                    description: Adjust routing timers.
+                    type: dict
+                    suboptions:
+                      refresh:
+                        description: Adjust refresh parameters.
+                        type: dict
+                        suboptions:
+                          timers:
+                            description: refresh timer.
+                            type: int
+                      throttle:
+                        description: Throttling adaptive timers.
+                        type: dict
+                        suboptions:
+                          spf:
+                            description: OSPFv2 SPF timers.
+                            type: dict
+                            suboptions:
+                              delay:
+                                description: Delay (msec) from first change received till SPF
+                                  calculation.
+                                type: int
+                              initial_holdtime:
+                                description: Initial hold time(msec) between consecutive SPF calculations.
+                                type: int
+                              max_holdtime:
+                                description: maximum hold time (sec).
+                                type: int
               ospfv3:
                 type: dict
                 description: OSPFv3 configuration
-                elements: dict
+                suboptions:
+                  areas:
+                    description: OSPFv3 area.
+                    type: list
+                    elements: dict
+                    suboptions:
+                      area_id:
+                        description: OSPFv3 Area name/identity.
+                        type: str
+                      export_list:
+                        description: Name of export-list.
+                        type: str
+                      import_list:
+                        description: Name of import-list.
+                        type: str
+                      interface:
+                        description: Enable OSPVv3 on an interface for this area.
+                        aliases: ['interfaces']
+                        type: list
+                        elements: dict
+                        suboptions:
+                          name:
+                            description: Interface name.
+                            type: str
+                      range:
+                        description: Summarize routes matching prefix (border routers only).
+                        type: list
+                        elements: dict
+                        suboptions:
+                          address:
+                            description: border router IPv4 address.
+                            type: str
+                          advertise:
+                            description: Advertise this range.
+                            type: bool
+                          not_advertise:
+                            description: Don't advertise this range.
+                            type: bool
+                  parameters:
+                    description: OSPFv3 specific parameters.
+                    type: dict
+                    suboptions:
+                      router_id:
+                        description: Override the default router identifier.
+                        type: str
+                  redistribute:
+                    description: Redistribute information from another routing protocol.
+                    type: list
+                    elements: dict
+                    suboptions:
+                      route_type:
+                        description: Route type to redistribute.
+                        type: str
+                        choices:
+                        - bgp
+                        - connected
+                        - kernel
+                        - ripng
+                        - static
+                      route_map:
+                        description: Route map references.
+                        type: str
               static:
-                type: dict
+                type: list
                 description: Static routes configuration
                 elements: dict
+                suboptions:
+                  address_families:
+                    description: A dictionary specifying the address family to which the static
+                      route(s) belong.
+                    type: list
+                    elements: dict
+                    suboptions:
+                      afi:
+                        description:
+                        - Specifies the type of route.
+                        type: str
+                        choices:
+                        - ipv4
+                        - ipv6
+                        required: true
+                      routes:
+                        description: A dictionary that specify the static route configurations.
+                        type: list
+                        elements: dict
+                        suboptions:
+                          dest:
+                            description:
+                            - An IPv4/v6 address in CIDR notation that specifies the destination
+                              network for the static route.
+                            type: str
+                            required: true
+                          blackhole_config:
+                            description:
+                            - Configured to silently discard packets.
+                            type: dict
+                            suboptions:
+                              type:
+                                description:
+                                - This is to configure only blackhole.
+                                type: str
+                              distance:
+                                description:
+                                - Distance for the route.
+                                type: int
+                          next_hops:
+                            description:
+                            - Next hops to the specified destination.
+                            type: list
+                            elements: dict
+                            suboptions:
+                              forward_router_address:
+                                description:
+                                - The IP address of the next hop that can be used to reach the
+                                  destination network.
+                                type: str
+                              enabled:
+                                description:
+                                - Disable IPv4/v6 next-hop static route.
+                                type: bool
+                              admin_distance:
+                                description:
+                                - Distance value for the route.
+                                type: int
+                              interface:
+                                description:
+                                - Name of the outgoing interface.
+                                type: str
   running_config:
     description:
     - This option is used only with state I(parsed).
@@ -1144,6 +1588,13 @@ def main():
         ],
         supports_check_mode=True,
     )
+
+    module._undocumented = [
+        "config.instances[].protocols.bgp",
+        "config.instances[].protocols.ospf",
+        "config.instances[].protocols.ospfv3",
+        "config.instances[].protocols.static",
+    ]
 
     result = Vrf(module).execute_module()
     module.exit_json(**result)
