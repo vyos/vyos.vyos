@@ -45,7 +45,7 @@ short_description: LLDP global resource module
 description: This module manages link layer discovery protocol (LLDP) attributes on
   VyOS devices.
 notes:
-- Tested against VyOS 1.3.8
+- Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025
 - This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 author:
 - Rohit Thakur (@rohitthakur2590)

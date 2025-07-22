@@ -1,0 +1,3 @@
+---
+trivial:
+  - test_requirements.txt - Add missing Py3.13 typing_extenstions lib

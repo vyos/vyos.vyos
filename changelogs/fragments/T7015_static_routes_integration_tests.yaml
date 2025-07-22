@@ -1,3 +1,0 @@
----
-trivial:
-  - vyos_static_routes - Fixed for v1.3- and 1.4+
