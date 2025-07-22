@@ -109,7 +109,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                         ),
                         dict(
                             afi="ipv6",
-                            ip_src_route=True,
+                            ip_src_route=False,
                             icmp_redirects=dict(receive=False),
                         ),
                     ],
@@ -185,6 +185,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "set firewall global-options ip-src-route 'enable'",
             "set firewall global-options receive-redirects 'disable'",
             "set firewall global-options config-trap 'enable'",
+            "set firewall global-options ipv6-src-route 'disable'",
             "set firewall global-options ipv6-receive-redirects 'disable'",
             "set firewall global-options state-policy established action 'accept'",
             "set firewall global-options state-policy established log",
