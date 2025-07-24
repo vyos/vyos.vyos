@@ -98,8 +98,9 @@ options:
                     - static
                     - table
           protocols:
-            type: list
-            elements: dict
+            # type: list # sanity
+            # elements: dict
+            type: dict
             description: Protocol configuration
             suboptions:
               bgp:
