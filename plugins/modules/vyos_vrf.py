@@ -1590,13 +1590,6 @@ def main():
         supports_check_mode=True,
     )
 
-    module._undocumented = [
-        "config.instances[].protocols.bgp",
-        "config.instances[].protocols.ospf",
-        "config.instances[].protocols.ospfv3",
-        "config.instances[].protocols.static",
-    ]
-
     result = Vrf(module).execute_module()
     module.exit_json(**result)
 
