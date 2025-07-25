@@ -49,6 +49,7 @@ jobs:
         uses: ansible/ansible-content-actions/.github/actions/add_tox_ansible@main
       - name: Run tox sanity tests
         run: >-
+          echo "Running tox sanity tests for ${{ matrix.entry.name }}"
           python -m tox --ansible -e ${{ matrix.entry.name }} --conf
           tox-ansible.ini
         env:
