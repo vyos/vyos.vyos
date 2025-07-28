@@ -15,6 +15,16 @@
               description: "green-vrf"
               table_id: 110
               vni: 1010
+            - name: "vrf-pink"
+              description: "pink-vrf"
+              table_id: 111
+              vni: 1111
+              protocols:
+                bgp:
+                  as_number: 65005
+                  neighbor:
+                    - address: 192.0.5.1
+                      remote_as: 65012
         state: merged
 
     - vyos.vyos.vyos_facts:

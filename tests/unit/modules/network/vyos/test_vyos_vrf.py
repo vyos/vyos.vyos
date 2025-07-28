@@ -45,8 +45,6 @@ class TestVyosVrfModule(TestVyosModule):
         )
         self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
-        self._connection = self.mock_get_resource_connection_facts.start()
-
         self.mock_execute_show_command = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vrf.vrf.VrfFacts.get_config",
         )

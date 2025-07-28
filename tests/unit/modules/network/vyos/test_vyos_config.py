@@ -64,6 +64,8 @@ class TestVyosConfigModule(TestVyosModule):
         self.conn.edit_config = MagicMock()
         self.running_config = load_fixture("vyos_config_config.cfg")
 
+        self._connection = self.mock_connection()
+
     def tearDown(self):
         super(TestVyosConfigModule, self).tearDown()
 
@@ -76,6 +78,11 @@ class TestVyosConfigModule(TestVyosModule):
         config_file = "vyos_config_config.cfg"
         self.get_config.return_value = load_fixture(config_file)
         self.load_config.return_value = None
+
+    def mock_connection(self):
+        """Fixture to provide a mock connection object"""
+        mock = MagicMock()
+        return mock
 
     def test_vyos_config_unchanged(self):
         src = load_fixture("vyos_config_config.cfg")
