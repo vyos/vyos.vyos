@@ -23,6 +23,13 @@
               address_family:
                 - afi: "ipv6"
                   nht_no_resolve_via_default: false
+            - name: "vrf-pink"
+              protocols:
+                ospf:
+                  default_information:
+                    originate:
+                      always: true
+                      metric: 20
         state: replaced
 
     - vyos.vyos.vyos_facts:

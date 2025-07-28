@@ -115,10 +115,17 @@ overridden:
   commands:
     - delete vrf name vrf-blue
     - commit
+    - delete vrf name vrf-pink
+    - commit
     - set vrf name vrf-blue table 103
     - set vrf name vrf-blue vni 1002
     - set vrf name vrf-blue description blue-vrf
     - set vrf name vrf-blue disable
+    - set vrf name vrf-pink table 111
+    - set vrf name vrf-pink vni 1111
+    - set vrf name vrf-pink description pink-vrf
+    - set vrf name vrf-pink protocols bgp system-as 65005
+    - set vrf name vrf-pink protocols bgp neighbor 192.0.2.1 remote-as 65002
     - delete vrf bind-to-all
   after: []
 
@@ -134,6 +141,58 @@ rendered:
     - set vrf name vrf-green vni 1000
     - set vrf name vrf-green description green-vrf
     - set vrf name vrf-green disable
+    - set vrf name vrf-green protocols bgp system-as 65000
+    - set vrf name vrf-green protocols bgp neighbor 192.0.2.1 remote-as 65002
+    - set vrf name vrf-green protocols bgp neighbor 1.1.1.3 passive
+    - set vrf name vrf-green protocols bgp neighbor 1.1.1.3 remote-as 400
+    - set vrf name vrf-green protocols ospf log-adjacency-changes 'detail'
+    - set vrf name vrf-green protocols ospf max-metric router-lsa administrative
+    - set vrf name vrf-green protocols ospf max-metric router-lsa on-shutdown 10
+    - set vrf name vrf-green protocols ospf max-metric router-lsa on-startup 10
+    - set vrf name vrf-green protocols ospf default-information originate always
+    - set vrf name vrf-green protocols ospf default-information originate metric 10
+    - set vrf name vrf-green protocols ospf default-information originate metric-type 2
+    - set vrf name vrf-green protocols ospf mpls-te router-address '192.0.11.12'
+    - set vrf name vrf-green protocols ospf auto-cost reference-bandwidth '2'
+    - set vrf name vrf-green protocols ospf neighbor 192.0.11.12
+    - set vrf name vrf-green protocols ospf neighbor 192.0.11.12 poll-interval 10
+    - set vrf name vrf-green protocols ospf neighbor 192.0.11.12 priority 2
+    - set vrf name vrf-green protocols ospf redistribute bgp
+    - set vrf name vrf-green protocols ospf redistribute bgp metric 10
+    - set vrf name vrf-green protocols ospf redistribute bgp metric-type 2
+    - set vrf name vrf-green protocols ospf parameters router-id '192.0.1.1'
+    - set vrf name vrf-green protocols ospf parameters rfc1583-compatibility
+    - set vrf name vrf-green protocols ospf parameters abr-type 'cisco'
+    - set vrf name vrf-green protocols ospf area '2'
+    - set vrf name vrf-green protocols ospf area 2 area-type normal
+    - set vrf name vrf-green protocols ospf area 2 authentication plaintext-password
+    - set vrf name vrf-green protocols ospf area 2 shortcut enable
+    - set vrf name vrf-green protocols ospf area '3'
+    - set vrf name vrf-green protocols ospf area 3 area-type nssa
+    - set vrf name vrf-green protocols ospf area '4'
+    - set vrf name vrf-green protocols ospf area 4 area-type stub default-cost 20
+    - set vrf name vrf-green protocols ospf area 4 network 192.0.2.0/24
+    - set vrf name vrf-green protocols ospf area 4 range 192.0.3.0/24
+    - set vrf name vrf-green protocols ospf area 4 range 192.0.3.0/24 cost 10
+    - set vrf name vrf-green protocols ospf area 4 range 192.0.4.0/24
+    - set vrf name vrf-green protocols ospf area 4 range 192.0.4.0/24 cost 12
+    - set vrf name vrf-green protocols ospfv3 area '2'
+    - set vrf name vrf-green protocols ospfv3 area 2 export-list export1
+    - set vrf name vrf-green protocols ospfv3 area 2 import-list import1
+    - set vrf name vrf-green protocols ospfv3 area 2 range 2001:db10::/32
+    - set vrf name vrf-green protocols ospfv3 area 2 range 2001:db20::/32
+    - set vrf name vrf-green protocols ospfv3 area 2 range 2001:db30::/32
+    - set vrf name vrf-green protocols ospfv3 area '3'
+    - set vrf name vrf-green protocols ospfv3 area 3 range 2001:db40::/32
+    - set vrf name vrf-green protocols ospfv3 parameters router-id '192.0.2.10'
+    - set vrf name vrf-green protocols ospfv3 redistribute bgp
+    - set vrf name vrf-green protocols static route 192.0.2.0/24
+    - set vrf name vrf-green protocols static route 192.0.2.0/24 blackhole distance '10'
+    - set vrf name vrf-green protocols static route 192.0.2.0/24 next-hop '203.0.113.1'
+    - set vrf name vrf-green protocols static route 192.0.2.0/24 next-hop '203.0.113.2'
+    - set vrf name vrf-green protocols static route6 2001:db8::/32
+    - set vrf name vrf-green protocols static route6 2001:db8::/32 blackhole distance '20'
+    - set vrf name vrf-green protocols static route6 2001:db8::/32 next-hop '2001:db8::1'
     - set vrf name vrf-amber table 111
     - set vrf name vrf-amber vni 1001
     - set vrf name vrf-amber description amber-vrf

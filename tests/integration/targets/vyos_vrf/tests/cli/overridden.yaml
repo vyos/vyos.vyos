@@ -15,6 +15,16 @@
               disable: true
               table_id: 103
               vni: 1002
+            - name: "vrf-pink"
+              description: "pink-vrf"
+              table_id: 111
+              vni: 1111
+              protocols:
+                bgp:
+                  as_number: 65005
+                  neighbor:
+                    - address: 192.0.2.1
+                      remote_as: 65002
         state: overridden
 
     - vyos.vyos.vyos_facts:
