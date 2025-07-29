@@ -24,12 +24,14 @@
                 - afi: "ipv6"
                   nht_no_resolve_via_default: false
             - name: "vrf-pink"
+              table_id: 111
               protocols:
                 ospf:
                   default_information:
                     originate:
                       always: true
                       metric: 20
+                      metric_type: 1
         state: replaced
 
     - vyos.vyos.vyos_facts:

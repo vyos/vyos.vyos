@@ -109,6 +109,18 @@ replaced:
     - set vrf name vrf-red description Vermillion_VRF
     - delete vrf name vrf-red disable
     - delete vrf name vrf-red ipv6 nht no-resolve-via-default
+    - delete vrf name vrf-pink vni 1111
+    - delete vrf name vrf-pink description pink-vrf
+    - delete vrf name vrf-pink protocols ospf log-adjacency-changes 'detail'
+    - delete vrf name vrf-pink protocols ospf auto-cost
+    - delete vrf name vrf-pink protocols ospf max-metric
+    - delete vrf name vrf-pink protocols ospf mpls-te
+    - delete vrf name vrf-pink protocols ospf area
+    - delete vrf name vrf-pink protocols ospf parameters
+    - delete vrf name vrf-pink protocols ospf neighbor
+    - delete vrf name vrf-pink protocols ospf redistribute
+    - set vrf name vrf-pink protocols ospf default-information originate metric 20
+    - set vrf name vrf-pink protocols ospf default-information originate metric-type 1
   after: []
 
 overridden:
