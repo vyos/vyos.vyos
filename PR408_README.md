@@ -36,7 +36,7 @@ The module supports the following states:
 
 Initial coonfiguration
 
-````
+```
  - set vrf bind-to-all
   - set vrf name vrf-blue description 'blue-vrf'
   - set vrf name vrf-blue table '100'
@@ -104,40 +104,42 @@ Initial coonfiguration
   - set vrf name vrf-pink protocols static route6 2001:db8::/32
   - set vrf name vrf-pink protocols static route6 2001:db8::/32 blackhole distance '20'
   - set vrf name vrf-pink protocols static route6 2001:db8::/32 next-hop '2001:db8::1'
+```
 
 Module configuration
+
 ```yaml
-      vyos.vyos.vyos_vrf:
-        config:
-          instances:
-            - name: "vrf-blue"
-              description: "blue-vrf"
-              disable: true
-              table_id: 100
-              vni: 1000
-            - name: "vrf-red"
-              description: "Vermillion_VRF"
-              disable: false
-              table_id: 101
-              vni: 1011
-              address_family:
-                - afi: "ipv6"
-                  nht_no_resolve_via_default: false
-            - name: "vrf-pink"
-              table_id: 111
-              protocols:
-                ospf:
-                  default_information:
-                    originate:
-                      always: true
-                      metric: 20
-                      metric_type: 1
-        state: replaced
+vyos.vyos.vyos_vrf:
+  config:
+    instances:
+      - name: "vrf-blue"
+        description: "blue-vrf"
+        disable: true
+        table_id: 100
+        vni: 1000
+      - name: "vrf-red"
+        description: "Vermillion_VRF"
+        disable: false
+        table_id: 101
+        vni: 1011
+        address_family:
+          - afi: "ipv6"
+            nht_no_resolve_via_default: false
+      - name: "vrf-pink"
+        table_id: 111
+        protocols:
+          ospf:
+            default_information:
+              originate:
+                always: true
+                metric: 20
+                metric_type: 1
+  state: replaced
+```
 
 Will result in
 
 ````
-
 - delete vrf bind-to-all
 - set vrf name vrf-blue disable
 - set vrf name vrf-red vni 1011
@@ -156,5 +158,6 @@ Will result in
 - delete vrf name vrf-pink protocols ospf redistribute
 - set vrf name vrf-pink protocols ospf default-information originate metric 20
 - set vrf name vrf-pink protocols ospf default-information originate metric-type 1
-
+```
 ---
+````
