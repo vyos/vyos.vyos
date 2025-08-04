@@ -1,0 +1,50 @@
+---
+- debug:
+    msg: START vyos_vrf overridden integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Override the existing configuration with the provided running configuration
+      register: result
+      vyos.vyos.vyos_vrf: &id001
+        config:
+          instances:
+            - name: "vrf-blue"
+              description: "blue-vrf"
+              disable: true
+              table_id: 103
+              vni: 1002
+            - name: "vrf-pink"
+              description: "pink-vrf"
+              table_id: 111
+              vni: 1111
+              protocols:
+                bgp:
+                  as_number: 65005
+                  neighbor:
+                    - address: 192.0.2.1
+                      remote_as: 65002
+        state: overridden
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: vrf
+
+    - assert:
+        that:
+          # - result.commands|length == 8
+          - result.changed == true
+          - result.commands|symmetric_difference(overridden.commands) == []
+          - result.after|symmetric_difference(ansible_facts['network_resources']['vrf']) == []
+
+    - name: Override the existing configuration with the provided running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vrf: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

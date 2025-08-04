@@ -1,0 +1,12 @@
+---
+- ansible.builtin.include_tasks: _remove_rm.yaml
+
+- name: Add Route Map
+  ansible.netcommon.cli_config:
+    config: |-
+      set policy route-map rm1 rule 10 action 'permit'
+      set policy route-map rm1 rule 10 match peer '192.0.2.32'
+      set policy route-map rm1 rule 10 set aggregator as '100'
+      set policy route-map rm1 rule 10 set as-path exclude '111'
+      set policy route-map rm1 rule 10 set large-community none
+      set policy route-map rm1 rule 10 set metric '5'
