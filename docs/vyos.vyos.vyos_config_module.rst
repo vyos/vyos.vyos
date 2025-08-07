@@ -158,8 +158,8 @@ Parameters
                 </td>
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li><div style="color: blue"><b>line</b>&nbsp;&larr;</div></li>
-                                    <li>none</li>
+                                    <li>line</li>
+                                    <li><div style="color: blue"><b>none</b>&nbsp;&larr;</div></li>
                         </ul>
                 </td>
                 <td>
