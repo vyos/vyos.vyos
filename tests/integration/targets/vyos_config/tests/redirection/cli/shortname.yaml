@@ -36,6 +36,7 @@
   register: result
   vyos.vyos.config:
     lines: delete interfaces loopback lo
+    match: line
 
 - assert:
     that:

@@ -64,7 +64,7 @@ options:
       C(none) the active configuration is ignored and the configuration is always
       loaded.
     type: str
-    default: line
+    default: none
     choices:
     - line
     - none
@@ -132,6 +132,7 @@ EXAMPLES = """
       - set system host-name {{ inventory_hostname }}
       - set service lldp
       - delete service dhcp-server
+    match: line
 
 - name: backup and load from file
   vyos.vyos.vyos_config:
@@ -147,6 +148,7 @@ EXAMPLES = """
     lines:
       # - set int eth eth2 description 'OUTSIDE'
       - set interface ethernet eth2 description 'OUTSIDE'
+    match: line
 
 - name: configurable backup path
   vyos.vyos.vyos_config:
@@ -331,7 +333,7 @@ def main():
     argument_spec = dict(
         src=dict(type="path"),
         lines=dict(type="list", elements="str"),
-        match=dict(default="line", choices=["line", "none"]),
+        match=dict(default="none", choices=["line", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
         config=dict(),
         backup=dict(type="bool", default=False),

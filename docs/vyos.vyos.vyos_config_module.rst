@@ -158,8 +158,8 @@ Parameters
                 </td>
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li><div style="color: blue"><b>line</b>&nbsp;&larr;</div></li>
-                                    <li>none</li>
+                                    <li>line</li>
+                                    <li><div style="color: blue"><b>none</b>&nbsp;&larr;</div></li>
                         </ul>
                 </td>
                 <td>
@@ -226,6 +226,7 @@ Examples
           - set system host-name {{ inventory_hostname }}
           - set service lldp
           - delete service dhcp-server
+        match: line
 
     - name: backup and load from file
       vyos.vyos.vyos_config:
@@ -241,6 +242,7 @@ Examples
         lines:
           # - set int eth eth2 description 'OUTSIDE'
           - set interface ethernet eth2 description 'OUTSIDE'
+        match: line
 
     - name: configurable backup path
       vyos.vyos.vyos_config:
