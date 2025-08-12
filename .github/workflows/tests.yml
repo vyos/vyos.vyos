@@ -13,16 +13,6 @@ on: # yamllint disable-line rule:truthy
     - cron: 0 0 * * *
 
 jobs:
-  setup-env:
-    runs-on: ubuntu-latest
-    outputs:
-      python-version: 3.12
-    steps:
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: python --version
-
   changelog:
     uses: ansible/ansible-content-actions/.github/workflows/changelog.yaml@main
     if: github.event_name == 'pull_request'
@@ -31,10 +21,8 @@ jobs:
   ansible-lint:
     uses: ansible/ansible-content-actions/.github/workflows/ansible_lint.yaml@main
   sanity:
-    needs: setup-env
     uses: ansible/ansible-content-actions/.github/workflows/sanity.yaml@main
   unit-galaxy:
-    needs: setup-env
     uses: ansible/ansible-content-actions/.github/workflows/unit.yaml@main
   unit-source:
     uses: ansible-network/github_actions/.github/workflows/unit_source.yml@main
