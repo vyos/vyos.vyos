@@ -279,7 +279,7 @@ class Cliconf(CliconfBase):
                     item = re.sub(r"delete", "set", item)
 
                     for entry in running_commands:
-                        if entry.startswith(item + " ") and line not in visited:
+                        if re.match(rf"^{re.escape(item)}\b", entry) and line not in visited:
                             updates.append(line)
                             visited.add(line)
 
