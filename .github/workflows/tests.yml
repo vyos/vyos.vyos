@@ -24,11 +24,11 @@ jobs:
   ansible-lint:
     uses: ansible/ansible-content-actions/.github/workflows/ansible_lint.yaml@main
   sanity:
-    if: false
     uses: ansible/ansible-content-actions/.github/workflows/sanity.yaml@main
-  unit-galaxy:
     if: false
+  unit-galaxy:
     uses: ansible/ansible-content-actions/.github/workflows/unit.yaml@main
+    if: false
   unit-source:
     uses: ansible-network/github_actions/.github/workflows/unit_source.yml@main
     with:
