@@ -12,6 +12,9 @@ on: # yamllint disable-line rule:truthy
   schedule:
     - cron: 0 0 * * *
 
+env:
+  PYTHON_VERSION: 3.12
+
 jobs:
   changelog:
     uses: ansible/ansible-content-actions/.github/workflows/changelog.yaml@main
