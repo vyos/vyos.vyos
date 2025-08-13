@@ -27,6 +27,7 @@ jobs:
     if: false
     uses: ansible/ansible-content-actions/.github/workflows/sanity.yaml@main
   unit-galaxy:
+    if: false
     uses: ansible/ansible-content-actions/.github/workflows/unit.yaml@main
   unit-source:
     uses: ansible-network/github_actions/.github/workflows/unit_source.yml@main
