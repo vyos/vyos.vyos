@@ -256,27 +256,38 @@ class Cliconf(CliconfBase):
 
         running_commands = [str(c).replace("'", "") for c in running.splitlines()]
 
+        # raise ValueError(running)
+
         updates = list()
         visited = set()
 
         for line in candidate_commands:
+
             item = str(line).replace("'", "")
 
             if not item.startswith("set") and not item.startswith("delete"):
                 raise ValueError("line must start with either `set` or `delete`")
 
             elif item.startswith("set") and item not in running_commands:
+
                 updates.append(line)
 
             elif item.startswith("delete"):
+
                 if not running_commands:
                     updates.append(line)
                 else:
+
                     item = re.sub(r"delete", "set", item)
                     for entry in running_commands:
                         if entry.startswith(item) and line not in visited:
+
                             updates.append(line)
                             visited.add(line)
+                        elif entry.startswith(item) and entry in [
+                            str(c).replace("'", "") for c in candidate_commands
+                        ]:
+                            updates.append(entry)
 
         diff["config_diff"] = list(updates)
         return diff

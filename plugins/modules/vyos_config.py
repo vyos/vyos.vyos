@@ -64,7 +64,7 @@ options:
       C(none) the active configuration is ignored and the configuration is always
       loaded.
     type: str
-    default: none
+    default: line
     choices:
     - line
     - none
@@ -333,7 +333,7 @@ def main():
     argument_spec = dict(
         src=dict(type="path"),
         lines=dict(type="list", elements="str"),
-        match=dict(default="none", choices=["line", "none"]),
+        match=dict(default="line", choices=["line", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
         config=dict(),
         backup=dict(type="bool", default=False),

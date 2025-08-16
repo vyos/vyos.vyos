@@ -80,7 +80,7 @@ class TestVyosConfigModule(TestVyosModule):
     def test_vyos_config_unchanged(self):
         src = load_fixture("vyos_config_config.cfg")
         self.conn.get_diff = MagicMock(return_value=self.cliconf_obj.get_diff(src, src))
-        set_module_args(dict(src=src, match="line"))
+        set_module_args(dict(src=src))
         self.execute_module()
 
     def test_vyos_config_src(self):
@@ -98,7 +98,7 @@ class TestVyosConfigModule(TestVyosModule):
 
     def test_vyos_config_src_brackets(self):
         src = load_fixture("vyos_config_src_brackets.cfg")
-        set_module_args(dict(src=src, match="line"))
+        set_module_args(dict(src=src))
         commands = [
             "set interfaces ethernet eth0 address 10.10.10.10/24",
             "set policy route testroute rule 1 set table 10",

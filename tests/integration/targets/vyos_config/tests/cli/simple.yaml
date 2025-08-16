@@ -20,7 +20,6 @@
   register: result
   vyos.vyos.vyos_config:
     lines: set system host-name foo
-    match: line
 
 - assert:
     that:
