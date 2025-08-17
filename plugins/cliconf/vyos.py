@@ -260,7 +260,6 @@ class Cliconf(CliconfBase):
         visited = set()
 
         for line in candidate_commands:
-            # raise ValueError(line)
 
             item = str(line).replace("'", "")
 
