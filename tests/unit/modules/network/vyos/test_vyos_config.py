@@ -140,3 +140,15 @@ class TestVyosConfigModule(TestVyosModule):
             return_value=self.cliconf_obj.get_diff(candidate, None, diff_match="none"),
         )
         self.execute_module(changed=True, commands=lines, sort=False)
+
+    def test_vyos_config_resubmit(self):
+        lines = [
+            "delete system name-server 8.8.4.4",
+            "set system name-server 8.8.4.4",
+        ]
+        set_module_args(dict(lines=lines))
+        candidate = "\n".join(lines)
+        self.conn.get_diff = MagicMock(
+            return_value=self.cliconf_obj.get_diff(candidate, self.running_config),
+        )
+        self.execute_module(changed=True, commands=lines, sort=False)
