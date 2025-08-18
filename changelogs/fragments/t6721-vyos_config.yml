@@ -1,0 +1,6 @@
+---
+bugfixes:
+  - vyos_config - Setting match="none" by default; updates to the documentation and tests
+    - The `match` parameter is now set to `none` by default in the `vyos_config` module.
+    - This change ensures that the module does not attempt to match existing configuration lines unless explicitly specified.
+    - Documentation and tests have been updated accordingly to reflect this change.

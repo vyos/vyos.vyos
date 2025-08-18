@@ -1,0 +1,49 @@
+---
+- debug: msg="START cli/resubmit.yaml on connection={{ ansible_connection }}"
+
+- name: setup
+  vyos.vyos.vyos_config:
+    lines: delete firewall group network-group
+
+- name: setup
+  register: result
+  vyos.vyos.vyos_config:
+    lines:
+      - set firewall group network-group PUBLIC_DNS network '1.1.1.1/32'
+      - set firewall group network-group PUBLIC_DNS network '8.8.8.8/32'
+      - set firewall group network-group PUBLIC_DNS network '9.9.9.9/32'
+    match: none
+
+- assert:
+    that:
+      - result.changed == true
+      - item in result.commands
+  loop:
+    - "set firewall group network-group PUBLIC_DNS network '9.9.9.9/32'"
+    - "set firewall group network-group PUBLIC_DNS network '1.1.1.1/32'"
+    - "set firewall group network-group PUBLIC_DNS network '8.8.8.8/32'"
+
+- name: Ensure single transaction for resubmitted configuration (delete then provision)
+  register: result
+  vyos.vyos.vyos_config:
+    lines:
+      - delete firewall group network-group PUBLIC_DNS
+      - set firewall group network-group PUBLIC_DNS network '1.1.1.1/32'
+      - set firewall group network-group PUBLIC_DNS network '8.8.8.8/32'
+      - set firewall group network-group PUBLIC_DNS network '9.9.9.9/32'
+
+- assert:
+    that:
+      - result.changed == true
+      - item in result.commands
+  loop:
+    - "delete firewall group network-group PUBLIC_DNS"
+    - "set firewall group network-group PUBLIC_DNS network 9.9.9.9/32"
+    - "set firewall group network-group PUBLIC_DNS network 1.1.1.1/32"
+    - "set firewall group network-group PUBLIC_DNS network 8.8.8.8/32"
+
+- name: teardown
+  vyos.vyos.vyos_config:
+    lines: delete firewall group network-group PUBLIC_DNS
+
+- debug: msg="END cli/resubmit.yaml on connection={{ ansible_connection }}"
