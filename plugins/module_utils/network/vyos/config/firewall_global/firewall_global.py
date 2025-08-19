@@ -28,13 +28,16 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
-    list_diff_want_only,
     in_target_not_none,
+    list_diff_want_only,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
     LooseVersion,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    get_os_version,
+    load_config,
+)
 
 
 class Firewall_global(ConfigBase):
@@ -75,6 +78,13 @@ class Firewall_global(ConfigBase):
         warnings = list()
         commands = list()
 
+        try:
+            self._module.params["comment"]
+        except KeyError:
+            comment = []
+        else:
+            comment = self._module.params["comment"]
+
         if self.state in self.ACTION_STATES:
             existing_firewall_global_facts = self.get_firewall_global_facts()
         else:
@@ -82,6 +92,12 @@ class Firewall_global(ConfigBase):
 
         if self.state in self.ACTION_STATES or self.state == "rendered":
             commands.extend(self.set_config(existing_firewall_global_facts))
+
+        if commands and self._module._diff:
+            commit = not self._module.check_mode
+            diff = load_config(self._module, commands, commit=commit, comment=comment)
+            if diff:
+                result["diff"] = {"prepared": str(diff)}
 
         if commands and self.state in self.ACTION_STATES:
             if not self._module.check_mode:
@@ -369,11 +385,17 @@ class Firewall_global(ConfigBase):
                                 )
                         elif not opr and key in l_set:
                             if key == "name" and self._is_grp_del(h, want, key):
-                                if commands[-1] == cmd + " " + want["name"] + " " + self._grp_type(attr):
+                                if commands[-1] == cmd + " " + want["name"] + " " + self._grp_type(
+                                    attr,
+                                ):
                                     commands.pop()
                                 commands.append(cmd + " " + want["name"])
                                 continue
-                            if not (h and in_target_not_none(h, key)) and not self._is_grp_del(h, want, "name"):
+                            if not (h and in_target_not_none(h, key)) and not self._is_grp_del(
+                                h,
+                                want,
+                                "name",
+                            ):
                                 commands.append(cmd + " " + want["name"] + " " + key)
                         elif key == "members":
                             commands.extend(
@@ -435,11 +457,7 @@ class Firewall_global(ConfigBase):
                     )
             elif not opr and not have:
                 commands.append(
-                    cmd
-                    + " "
-                    + name
-                    + " "
-                    + self._grp_type(type),
+                    cmd + " " + name + " " + self._grp_type(type),
                 )
         return commands
 
