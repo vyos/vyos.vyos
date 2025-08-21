@@ -10,11 +10,13 @@
       vyos.vyos.vyos_firewall_global: &id001
         config: "{{ replaced['config'] }}"
         state: replaced
+      diff: true
 
     - name: Assert that correct set of commands were generated
       assert:
         that:
           - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+          - "{{ result['diff'] | length > 0 }}"
 
     - name: Assert that before dicts are correctly generated
       assert:
