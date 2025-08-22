@@ -28,11 +28,13 @@
     - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_firewall_global: *id001
+      diff: true
 
     - name: Assert that the previous task was idempotent
       assert:
         that:
           - result['changed'] == false
+          - result['diff'] is not defined
 
     - name: Assert that before dicts were correctly generated
       assert:

@@ -10,17 +10,11 @@
       vyos.vyos.vyos_firewall_global: &id001
         config: "{{ replaced['config'] }}"
         state: replaced
-      diff: true
 
     - name: Assert that correct set of commands were generated
       assert:
         that:
           - "{{ replaced['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
-          - "{{ result['diff'] | length > 0 }}"
-          - '"MGMT-HOSTS" in result.diff.prepared'
-          - '"ENG-HOSTS" in result.diff.prepared'
-          - '"SALES-HOSTS" in result.diff.prepared'
-          - '"192.0.2.3" in result.diff.prepared'
 
     - name: Assert that before dicts are correctly generated
       assert:
@@ -47,5 +41,19 @@
       assert:
         that:
           - "{{ replaced['after'] == result['before'] }}"
+
+    - name: Replace device configurations and test diff mode
+      register: result
+      vyos.vyos.vyos_firewall_global:
+        config: "{{ diffed }}"
+        state: replaced
+      diff: true
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - '''+ network "1.1.1.1/32"'' in result.diff.prepared'
+          - '''- network "192.0.1.0/24"'' in result.diff.prepared'
+
   always:
     - include_tasks: _remove_config.yaml

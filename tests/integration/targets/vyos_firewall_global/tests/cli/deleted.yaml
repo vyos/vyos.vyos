@@ -16,12 +16,7 @@
       assert:
         that:
           - "{{ populate == result['before'] }}"
-          - '"global-options" in result.diff.prepared'
-          - '"all-ping" in result.diff.prepared'
-          - '"MGMT-HOSTS" in result.diff.prepared'
-          - '"192.0.1.5" in result.diff.prepared'
-          - '"network-group MGMT" in result.diff.prepared'
-          - '"192.0.1.0/24" in result.diff.prepared'
+          - '''-             network "192.0.1.0/24"'' in result.diff.prepared'
 
     - name: Assert that the correct set of commands were generated
       assert:
