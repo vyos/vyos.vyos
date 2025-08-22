@@ -2,6 +2,8 @@
 - debug:
     msg: START vyos_firewall_global merged integration tests on connection={{ ansible_connection }}
 
+- include_tasks: _get_version.yaml
+
 - include_tasks: _remove_config.yaml
 
 - block:
@@ -40,5 +42,18 @@
       assert:
         that:
           - "{{ merged['after'] == result['before'] }}"
+
+    - name: Prepare device configurationsfor diff mode test
+      register: result
+      vyos.vyos.vyos_firewall_global:
+        config: "{{ merged['diff_config'] }}"
+        state: merged
+      diff: true
+
+    - name: Assert that correct diff of commands were generated
+      assert:
+        that:
+          - '''+ network "1.1.1.1/32"'' in result.diff.prepared'
+
   always:
     - include_tasks: _remove_config.yaml

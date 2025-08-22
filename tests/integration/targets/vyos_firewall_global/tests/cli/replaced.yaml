@@ -45,11 +45,11 @@
     - name: Replace device configurations and test diff mode
       register: result
       vyos.vyos.vyos_firewall_global:
-        config: "{{ diffed }}"
+        config: "{{ replaced['diff_config'] }}"
         state: replaced
       diff: true
 
-    - name: Assert that correct set of commands were generated
+    - name: Assert that correct diff of commands were generated
       assert:
         that:
           - '''+ network "1.1.1.1/32"'' in result.diff.prepared'
