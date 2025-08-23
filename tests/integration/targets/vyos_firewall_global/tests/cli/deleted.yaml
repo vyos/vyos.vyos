@@ -16,8 +16,10 @@
       assert:
         that:
           - "{{ populate == result['before'] }}"
-          - ('-             network "192.0.1.0/24"' in result.diff.prepared) or
-            ("-            network 192.0.1.0/24" in result.diff.prepared)
+          - item in result.diff.prepared
+      loop: "{{ deleted_diff }}"
+      loop_control:
+        loop_var: item
 
     - name: Assert that the correct set of commands were generated
       assert:

@@ -53,7 +53,10 @@
     - name: Assert that correct diff of commands were generated
       assert:
         that:
-          - ('+ network "1.1.1.1/32"' in result.diff.prepared) or
-            ('+network 1.1.1.1/32' in result.diff.prepared)
+          - item in result.diff.prepared
+      loop: "{{ merged_diff }}"
+      loop_control:
+        loop_var: item
+
   always:
     - include_tasks: _remove_config.yaml
