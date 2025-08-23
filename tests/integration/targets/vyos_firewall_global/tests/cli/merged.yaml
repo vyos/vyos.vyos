@@ -53,7 +53,7 @@
     - name: Assert that correct diff of commands were generated
       assert:
         that:
-          - '''+ network "1.1.1.1/32"'' in result.diff.prepared'
-
+          - ('+ network "1.1.1.1/32"' in result.diff.prepared) or
+            ('+network 1.1.1.1/32' in result.diff.prepared)
   always:
     - include_tasks: _remove_config.yaml

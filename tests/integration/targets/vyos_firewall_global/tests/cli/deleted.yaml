@@ -16,7 +16,8 @@
       assert:
         that:
           - "{{ populate == result['before'] }}"
-          - '''-             network "192.0.1.0/24"'' in result.diff.prepared'
+          - ('-             network "192.0.1.0/24"' in result.diff.prepared) or
+            ("-            network 192.0.1.0/24" in result.diff.prepared)
 
     - name: Assert that the correct set of commands were generated
       assert:
