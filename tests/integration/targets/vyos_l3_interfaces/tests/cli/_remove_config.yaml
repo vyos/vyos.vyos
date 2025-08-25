@@ -9,3 +9,10 @@
     loop_var: intf
   ansible.netcommon.cli_config:
     config: "{{ lines }}"
+
+- name: Reset eth0 ipv6 autoconf
+  vars:
+    lines: |-
+      delete interfaces ethernet eth0 ipv6 address autoconf
+  ansible.netcommon.cli_config:
+    config: "{{ lines }}"

@@ -127,7 +127,7 @@ class L3_interfaces(ConfigBase):
         :returns: the commands necessary to migrate the current configuration
                   to the desired configuration
         """
-        want = self._module.params["config"]
+        want = self.mutate_autoconfig(self._module.params["config"])
         have = existing_l3_interfaces_facts
         resp = self.set_state(want, have)
         return to_list(resp)
@@ -296,12 +296,11 @@ class L3_interfaces(ConfigBase):
         return commands
 
     def _compute_commands(self, interface, key, vif=None, value=None, remove=False):
-        if value == "auto-config":
+        if value == "autoconf":
             intf_context = "interfaces {0} {1} ipv6".format(
                 get_interface_type(interface),
                 interface,
             )
-            value = "autoconf"
         else:
             intf_context = "interfaces {0} {1}".format(get_interface_type(interface), interface)
 
@@ -328,3 +327,12 @@ class L3_interfaces(ConfigBase):
         updates.extend(diff_list_of_dicts(want.get("ipv6", []), have.get("ipv6", [])))
 
         return updates
+
+    def mutate_autoconfig(self, obj):
+        if isinstance(obj, dict):
+            return dict(map(lambda kv: (kv[0], self.mutate_autoconfig(kv[1])), obj.items()))
+        if isinstance(obj, list):
+            return list(map(self.mutate_autoconfig, obj))
+        if isinstance(obj, str):
+            return obj.replace("auto-config", "autoconf")
+        return obj

@@ -7,6 +7,7 @@ merged:
     - name: eth1
     - name: eth2
   commands:
+    - set interfaces ethernet eth0 ipv6 address 'autoconf'
     - set interfaces ethernet eth1 address '192.0.2.10/24'
     - set interfaces ethernet eth1 address '2001:db8::10/32'
     - set interfaces ethernet eth2 address '198.51.100.10/24'
@@ -16,6 +17,8 @@ merged:
     - name: eth0
       ipv4:
         - address: dhcp
+      ipv6:
+        - address: autoconf
     - name: eth1
       ipv4:
         - address: 192.0.2.10/24
