@@ -56,10 +56,23 @@ replaced:
     - set interfaces ethernet eth2 address '2001:db8::11/32'
     - delete interfaces ethernet eth1 address '192.0.2.14/24'
     - set interfaces ethernet eth1 address '192.0.2.19/24'
+  af_commands:
+    - delete interfaces ethernet eth2 address '2001:db8::11/32'
+    - set interfaces ethernet eth2 ipv6 address 'autoconf'
   after:
     - name: eth2
       ipv6:
         - address: 2001:db8::11/32
+    - name: eth1
+      ipv4:
+        - address: 192.0.2.19/24
+    - name: eth0
+      ipv4:
+        - address: dhcp
+  af_after:
+    - name: eth2
+      ipv6:
+        - address: autoconf
     - name: eth1
       ipv4:
         - address: 192.0.2.19/24

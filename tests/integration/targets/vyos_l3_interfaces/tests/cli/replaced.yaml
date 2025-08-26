@@ -46,5 +46,44 @@
       assert:
         that:
           - "{{ replaced['after'] | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Replace device configurations (autoconf)
+      register: result
+      vyos.vyos.vyos_l3_interfaces: &id002
+        config:
+          - name: eth2
+            ipv6:
+              - address: auto-config
+        state: replaced
+
+    - name: Assert that correct set of commands were generated (autoconf)
+      assert:
+        that:
+          - "{{ replaced['af_commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that before dict is correctly generated (autoconf)
+      assert:
+        that:
+          - "{{ replaced['after'] | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Assert that after dict is correctly generated
+      assert:
+        that:
+          - "{{ replaced['af_after'] | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Replace device autoconf configurations (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_l3_interfaces: *id002
+
+    - name: Assert that task was idempotent (autoconf)
+      assert:
+        that:
+          - result['changed'] == false
+
+    - name: Assert that before dict is correctly generated (autoconf)
+      assert:
+        that:
+          - "{{ replaced['af_after'] | symmetric_difference(result['before']) |length == 0 }}"
+
   always:
     - include_tasks: _remove_config.yaml
