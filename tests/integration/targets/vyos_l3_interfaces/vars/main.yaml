@@ -87,6 +87,7 @@ overridden:
     - delete interfaces ethernet eth2 address '192.0.2.11/24'
     - delete interfaces ethernet eth2 address '2001:db8::10/32'
     - delete interfaces ethernet eth2 address '2001:db8::12/32'
+    - set interfaces ethernet eth2 ipv6 address 'autoconf'
   after:
     - name: eth0
       ipv4:
@@ -95,6 +96,8 @@ overridden:
       ipv4:
         - address: 192.0.2.15/24
     - name: eth2
+      ipv6:
+        - address: auto-config
 parsed:
   after:
     - name: eth1
