@@ -80,7 +80,7 @@ class L3_interfaces(ConfigBase):
         commands = list()
 
         if self.state in self.ACTION_STATES:
-            existing_l3_interfaces_facts = self.get_l3_interfaces_facts()
+            existing_l3_interfaces_facts = self.mutate_autoconfig(self.get_l3_interfaces_facts())
         else:
             existing_l3_interfaces_facts = []
 
@@ -96,11 +96,11 @@ class L3_interfaces(ConfigBase):
             result["commands"] = commands
 
         if self.state in self.ACTION_STATES or self.state == "gathered":
-            changed_l3_interfaces_facts = self.get_l3_interfaces_facts()
+            changed_l3_interfaces_facts = self.mutate_autoconfig(self.get_l3_interfaces_facts())
         elif self.state == "rendered":
             result["rendered"] = commands
         elif self.state == "parsed":
-            running_config = self._module.params["running_config"]
+            running_config = self.mutate_autoconfig(self._module.params["running_config"])
             if not running_config:
                 self._module.fail_json(
                     msg="value of running_config parameter must not be empty for state parsed",
@@ -128,7 +128,7 @@ class L3_interfaces(ConfigBase):
                   to the desired configuration
         """
         want = self._module.params["config"]
-        have = self.mutate_autoconfig(existing_l3_interfaces_facts)
+        have = existing_l3_interfaces_facts
         resp = self.set_state(want, have)
         return to_list(resp)
 
