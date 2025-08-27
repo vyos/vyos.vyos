@@ -127,8 +127,8 @@ class L3_interfaces(ConfigBase):
         :returns: the commands necessary to migrate the current configuration
                   to the desired configuration
         """
-        want = self.mutate_autoconfig(self._module.params["config"])
-        have = existing_l3_interfaces_facts
+        want = self._module.params["config"]
+        have = self.mutate_autoconfig(existing_l3_interfaces_facts)
         resp = self.set_state(want, have)
         return to_list(resp)
 
@@ -174,6 +174,7 @@ class L3_interfaces(ConfigBase):
                 elif state == "replaced":
                     commands.extend(self._state_replaced(item, obj_in_have))
 
+        commands = [command.replace("auto-config", "autoconf") for command in commands]
         return commands
 
     def _state_replaced(self, want, have):
@@ -247,7 +248,6 @@ class L3_interfaces(ConfigBase):
                                 vif=want_vif["vlan_id"],
                             ),
                         )
-
         return commands
 
     def _state_deleted(self, want, have):
@@ -296,7 +296,7 @@ class L3_interfaces(ConfigBase):
         return commands
 
     def _compute_commands(self, interface, key, vif=None, value=None, remove=False):
-        if value == "autoconf":
+        if value == "auto-config":
             intf_context = "interfaces {0} {1} ipv6".format(
                 get_interface_type(interface),
                 interface,
@@ -334,5 +334,5 @@ class L3_interfaces(ConfigBase):
         if isinstance(obj, list):
             return list(map(self.mutate_autoconfig, obj))
         if isinstance(obj, str):
-            return obj.replace("auto-config", "autoconf")
+            return obj.replace("autoconf", "auto-config")
         return obj
