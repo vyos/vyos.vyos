@@ -304,12 +304,6 @@ class L3_interfaces(ConfigBase):
                 get_interface_type(interface),
                 interface,
             )
-        elif value == "auto-config" and vif is not None:
-            intf_context = "interfaces {0} {1} vif {2} ipv6".format(
-                get_interface_type(interface),
-                interface,
-                vif,
-            )
         else:
             intf_context = "interfaces {0} {1}".format(get_interface_type(interface), interface)
 
@@ -317,15 +311,14 @@ class L3_interfaces(ConfigBase):
         del_cmd = "delete {0}".format(intf_context)
 
         if vif:
-            set_cmd = set_cmd + (" vif {0}".format(vif))
-            del_cmd = del_cmd + (" vif {0}".format(vif))
+            suffix = " ipv6" if value == "auto-config" else ""
+            set_cmd += f" vif {vif}{suffix}"
+            del_cmd += f" vif {vif}{suffix}"
 
         if remove:
             command = "{0} {1} '{2}'".format(del_cmd, key, value)
         else:
             command = "{0} {1} '{2}'".format(set_cmd, key, value)
-
-        self._module.fail_json(msg=command)
 
         return command
 
