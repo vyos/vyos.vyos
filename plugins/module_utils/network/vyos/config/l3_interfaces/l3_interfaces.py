@@ -299,10 +299,16 @@ class L3_interfaces(ConfigBase):
         return commands
 
     def _compute_commands(self, interface, key, vif=None, value=None, remove=False):
-        if value == "auto-config":
+        if value == "auto-config" and vif is None:
             intf_context = "interfaces {0} {1} ipv6".format(
                 get_interface_type(interface),
                 interface,
+            )
+        elif value == "auto-config" and vif is not None:
+            intf_context = "interfaces {0} {1} vif {2} ipv6".format(
+                get_interface_type(interface),
+                interface,
+                vif,
             )
         else:
             intf_context = "interfaces {0} {1}".format(get_interface_type(interface), interface)
@@ -319,7 +325,7 @@ class L3_interfaces(ConfigBase):
         else:
             command = "{0} {1} '{2}'".format(set_cmd, key, value)
 
-        # self._module.fail_json(msg=command)
+        self._module.fail_json(msg=command)
 
         return command
 
