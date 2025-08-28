@@ -151,10 +151,18 @@ deleted:
     - delete interfaces ethernet eth2 address '2001:db8::10/32'
     - delete interfaces ethernet eth2 address '2001:db8::12/32'
   commands_slaac:
-    - delete interfaces ethernet eth0 ipv6 address 'autoconf'
+    - delete interfaces ethernet eth1 ipv6 address 'autoconf'
   after:
     - name: eth0
       ipv4:
         - address: dhcp
     - name: eth1
+    - name: eth2
+  before_slaac:
+    - name: eth0
+      ipv4:
+        - address: dhcp
+    - name: eth1
+      ipv6:
+        - address: auto-config
     - name: eth2
