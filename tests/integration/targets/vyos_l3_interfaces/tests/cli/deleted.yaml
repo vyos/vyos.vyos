@@ -48,6 +48,11 @@
           - name: eth1
             ipv6:
               - address: auto-config
+          - name: eth2
+            vifs:
+              - vlan_id: 101
+                ipv6:
+                  - address: auto-config
         state: replaced
 
     - name: Delete SLACC auto-config of given interfaces
@@ -55,6 +60,7 @@
       vyos.vyos.vyos_l3_interfaces:
         config:
           - name: eth1
+          - name: eth2
         state: deleted
 
     - name: Assert that the before dicts were correctly generated (SLAAC)

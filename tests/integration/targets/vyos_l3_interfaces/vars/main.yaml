@@ -10,29 +10,34 @@ merged:
     - set interfaces ethernet eth0 ipv6 address 'autoconf'
     - set interfaces ethernet eth1 address '192.0.2.10/24'
     - set interfaces ethernet eth1 address '2001:db8::10/32'
+    - set interfaces ethernet eth1 vif 102 ipv6 address 'autoconf'
     - set interfaces ethernet eth2 address '198.51.100.10/24'
     - set interfaces ethernet eth2 vif 101 address '198.51.100.130/25'
     - set interfaces ethernet eth2 vif 101 address '2001:db8::20/32'
   after:
-    - name: eth0
-      ipv4:
-        - address: dhcp
-      ipv6:
-        - address: auto-config
-    - name: eth1
-      ipv4:
-        - address: 192.0.2.10/24
-      ipv6:
-        - address: 2001:db8::10/32
-    - name: eth2
-      ipv4:
+    - ipv4:
         - address: 198.51.100.10/24
+      name: eth2
       vifs:
-        - vlan_id: 101
-          ipv4:
+        - ipv4:
             - address: 198.51.100.130/25
           ipv6:
             - address: 2001:db8::20/32
+          vlan_id: 101
+    - ipv4:
+        - address: dhcp
+      ipv6:
+        - address: auto-config
+      name: eth0
+    - ipv4:
+        - address: 192.0.2.10/24
+      ipv6:
+        - address: 2001:db8::10/32
+      name: eth1
+      vifs:
+        - ipv6:
+            - address: auto-config
+          vlan_id: 102
 populate:
   - name: eth1
     ipv4:
@@ -52,6 +57,10 @@ populate_slaac:
   - name: eth1
     ipv4:
       - address: 192.0.2.14/24
+    vifs:
+      - vlan_id: 102
+        ipv6:
+          - address: auto-config
   - name: eth2
     ipv4:
       - address: 192.0.2.10/24
@@ -76,6 +85,8 @@ replaced:
   af_commands:
     - delete interfaces ethernet eth2 address '2001:db8::11/32'
     - set interfaces ethernet eth2 ipv6 address 'autoconf'
+    - delete interfaces ethernet eth1 address '192.0.2.19/24'
+    - set interfaces ethernet eth1 vif 102 ipv6 address 'autoconf'
   after:
     - name: eth2
       ipv6:
@@ -91,8 +102,10 @@ replaced:
       ipv6:
         - address: auto-config
     - name: eth1
-      ipv4:
-        - address: 192.0.2.19/24
+      vifs:
+        - vlan_id: 102
+          ipv6:
+            - address: auto-config
     - name: eth0
       ipv4:
         - address: dhcp
@@ -100,10 +113,11 @@ overridden:
   commands:
     - delete interfaces ethernet eth1 address '192.0.2.14/24'
     - set interfaces ethernet eth1 address '192.0.2.15/24'
-    - delete interfaces ethernet eth2 address '192.0.2.10/24'
+    - set interfaces ethernet eth1 vif 102 ipv6 address 'autoconf'
     - delete interfaces ethernet eth2 address '192.0.2.11/24'
-    - delete interfaces ethernet eth2 address '2001:db8::10/32'
+    - delete interfaces ethernet eth2 address '192.0.2.10/24'
     - delete interfaces ethernet eth2 address '2001:db8::12/32'
+    - delete interfaces ethernet eth2 address '2001:db8::10/32'
     - set interfaces ethernet eth2 ipv6 address 'autoconf'
   after:
     - name: eth0
@@ -112,6 +126,10 @@ overridden:
     - name: eth1
       ipv4:
         - address: 192.0.2.15/24
+      vifs:
+        - vlan_id: 102
+          ipv6:
+            - address: auto-config
     - name: eth2
       ipv6:
         - address: auto-config
@@ -125,6 +143,10 @@ parsed:
         - address: 192.0.2.10/24
       ipv6:
         - address: 2001:db8::10/32
+      vifs:
+        - vlan_id: 102
+          ipv6:
+            - address: auto-config
     - name: eth2
       ipv4:
         - address: 198.51.100.10/24
@@ -138,10 +160,13 @@ rendered:
   commands:
     - set interfaces ethernet eth0 ipv6 address 'autoconf'
     - set interfaces ethernet eth1 address '192.0.2.14/24'
+    - set interfaces ethernet eth1 vif 102 ipv6 address 'autoconf'
     - set interfaces ethernet eth2 address '192.0.2.11/24'
     - set interfaces ethernet eth2 address '192.0.2.10/24'
-    - set interfaces ethernet eth2 address '2001:db8::10/32'
     - set interfaces ethernet eth2 address '2001:db8::12/32'
+    - set interfaces ethernet eth2 address '2001:db8::10/32'
+    - set interfaces ethernet eth2 vif 101 address '198.51.100.130/25'
+    - set interfaces ethernet eth2 vif 101 address '2001:db8::20/32'
 
 deleted:
   commands:
@@ -152,6 +177,7 @@ deleted:
     - delete interfaces ethernet eth2 address '2001:db8::12/32'
   commands_slaac:
     - delete interfaces ethernet eth1 ipv6 address 'autoconf'
+    - delete interfaces ethernet eth2 vif 101 ipv6 address 'autoconf'
   after:
     - name: eth0
       ipv4:
@@ -166,3 +192,7 @@ deleted:
       ipv6:
         - address: auto-config
     - name: eth2
+      vifs:
+        - vlan_id: 101
+          ipv6:
+            - address: auto-config

@@ -13,6 +13,6 @@
 - name: Reset eth0 ipv6 autoconf
   vars:
     lines: |-
-      delete interfaces ethernet eth0 ipv6 address autoconf
+      delete interfaces ethernet eth0 ipv6
   ansible.netcommon.cli_config:
     config: "{{ lines }}"

@@ -25,13 +25,18 @@
         that:
           - result['changed'] == false
 
-    - name: Merge the provided configuration for SLAAC tesitn
+    - name: Merge the provided configuration for SLAAC tesitng
       register: result
       vyos.vyos.vyos_l3_interfaces:
         config:
           - name: eth0
             ipv6:
               - address: auto-config
+          - name: eth1
+            vifs:
+              - vlan_id: 102
+                ipv6:
+                  - address: auto-config
         state: merged
 
     - name: Gather the provided configuration with the existing running configuration

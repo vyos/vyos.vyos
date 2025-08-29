@@ -132,6 +132,7 @@ class L3_interfaces(ConfigBase):
         """
         want = self._module.params["config"]
         have = existing_l3_interfaces_facts
+
         resp = self.set_state(want, have)
         return to_list(resp)
 

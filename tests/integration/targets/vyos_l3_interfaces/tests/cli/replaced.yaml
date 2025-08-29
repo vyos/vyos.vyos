@@ -54,6 +54,11 @@
           - name: eth2
             ipv6:
               - address: auto-config
+          - name: eth1
+            vifs:
+              - vlan_id: 102
+                ipv6:
+                  - address: auto-config
         state: replaced
 
     - name: Assert that correct set of commands were generated (autoconf)
