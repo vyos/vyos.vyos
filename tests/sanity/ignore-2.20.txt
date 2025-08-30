@@ -1,2 +1,2 @@
 plugins/action/vyos.py action-plugin-docs # base class for deprecated network platform modules using `connection: local`
-ansible-bad-import-from *
+plugins/** ansible-bad-import-from
