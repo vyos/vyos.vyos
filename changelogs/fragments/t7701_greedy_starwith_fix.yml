@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - cliconf/vyos.py - Fixed greedy matching in configuration parsing
