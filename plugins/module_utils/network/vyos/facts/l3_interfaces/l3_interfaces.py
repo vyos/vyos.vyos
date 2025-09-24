@@ -20,7 +20,7 @@ import re
 
 from copy import deepcopy
 
-from ansible.module_utils.six import iteritems
+# from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.l3_interfaces.l3_interfaces import (
@@ -139,7 +139,7 @@ class L3_interfacesFacts(object):
                 else:
                     config["ipv6"].append({"address": item})
 
-        for key, value in iteritems(config):
+        for key, value in config.items():
             if value == []:
                 config[key] = None
 

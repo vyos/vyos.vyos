@@ -17,7 +17,7 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
-from ansible.module_utils.six import iteritems
+# from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
@@ -27,16 +27,15 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ospf_interfaces import (
-    Ospf_interfacesTemplate
+    Ospf_interfacesTemplate,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ospf_interfaces_14 import (
-    Ospf_interfacesTemplate14
+    Ospf_interfacesTemplate14,
 )
-
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Ospf_interfaces(ResourceModule):
@@ -77,7 +76,7 @@ class Ospf_interfaces(ResourceModule):
             self._tmplt = Ospf_interfacesTemplate()
 
     def parse(self):
-        """ override parse to check template """
+        """override parse to check template"""
         self._validate_template()
         return super().parse()
 
@@ -119,12 +118,12 @@ class Ospf_interfaces(ResourceModule):
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
             h_del = {}
-            for k, v in iteritems(haved):
+            for k, v in haved.items():
                 if k in wantd or not wantd:
                     h_del.update({k: v})
             haved = h_del
             have_int = []
-            for k, have in iteritems(haved):
+            for k, have in haved.items():
                 if k in wantd:
                     have_int.append(k)
                     self._remove_ospf_int(have)
@@ -132,7 +131,7 @@ class Ospf_interfaces(ResourceModule):
 
         if self.state == "overridden":
             have_int = []
-            for k, have in iteritems(haved):
+            for k, have in haved.items():
                 if k not in wantd:
                     have_int.append(k)
                     self._remove_ospf_int(have)
@@ -142,17 +141,17 @@ class Ospf_interfaces(ResourceModule):
             # removing the interfaces from haved that are already negated
             for interface in have_int:
                 haved.pop(interface)
-            for k, have in iteritems(haved):
+            for k, have in haved.items():
                 if k not in wantd:
                     self._compare(want={}, have=have)
 
-        for k, want in iteritems(wantd):
+        for k, want in wantd.items():
             self._compare(want=want, have=haved.pop(k, {}))
 
     def _remove_ospf_int(self, entry):
         int_name = entry.get("name", {})
         int_addr = entry.get("address_family", {})
-        for k, addr in iteritems(int_addr):
+        for k, addr in int_addr.items():
             rem_entry = {"name": int_name, "address_family": {"afi": k}}
             self.addcmd(rem_entry, "ip_ospf", True)
 
@@ -169,8 +168,8 @@ class Ospf_interfaces(ResourceModule):
         hdict = have.get("address_family", {})
         wname = want.get("name")
         hname = have.get("name")
-        for name, entry in iteritems(wdict):
-            for key, param in iteritems(entry):
+        for name, entry in wdict.items():
+            for key, param in entry.items():
                 w_addr = {"afi": name, key: param}
                 h_addr = {}
                 if hdict.get(name):
@@ -178,8 +177,8 @@ class Ospf_interfaces(ResourceModule):
                 w = {"name": wname, "address_family": w_addr}
                 h = {"name": hname, "address_family": h_addr}
                 self.compare(parsers=self.parsers, want=w, have=h)
-        for name, entry in iteritems(hdict):
-            for key, param in iteritems(entry):
+        for name, entry in hdict.items():
+            for key, param in entry.items():
                 h_addr = {"afi": name, key: param}
                 w_addr = {}
                 w = {"name": wname, "address_family": w_addr}
@@ -187,7 +186,7 @@ class Ospf_interfaces(ResourceModule):
                 self.compare(parsers=self.parsers, want=w, have=h)
 
     def _ospf_int_list_to_dict(self, entry):
-        for name, family in iteritems(entry):
+        for name, family in entry.items():
             if "address_family" in family:
                 addr_dict = {}
                 for entry in family.get("address_family", []):

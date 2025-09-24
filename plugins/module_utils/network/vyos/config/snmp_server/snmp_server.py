@@ -20,7 +20,7 @@ created.
 
 import re
 
-from ansible.module_utils.six import iteritems
+# from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
@@ -107,13 +107,13 @@ class Snmp_server(ResourceModule):
         """
         self._compare_lists(want, have)
         self._compare_snmp_v3(want, have)
-        for key, value in iteritems(want):
+        for key, value in want.items():
             self.compare(
                 parsers=self.parsers,
                 want={key: value},
                 have={key: have.pop(key, "")},
             )
-        for key, entry in iteritems(have):
+        for key, entry in have.items():
             if entry:
                 self.compare(parsers=self.parsers, want={}, have={key: entry})
 
@@ -125,10 +125,10 @@ class Snmp_server(ResourceModule):
         for attrib in parsers:
             wdict = get_from_dict(want, attrib) or {}
             hdict = get_from_dict(have, attrib) or {}
-            for key, entry in iteritems(wdict):
+            for key, entry in wdict.items():
                 # self.addcmd(entry, attrib, False)
                 if attrib == "communities":
-                    for k, v in iteritems(entry):
+                    for k, v in entry.items():
                         if k in ["clients", "networks"]:
                             v.sort()
                         h = {}
@@ -153,9 +153,9 @@ class Snmp_server(ResourceModule):
                     )
                 have.pop(attrib, {})
             # remove remaining items in have for replaced
-            for key, entry in iteritems(hdict):
+            for key, entry in hdict.items():
                 if attrib == "communities":
-                    for k, v in iteritems(entry):
+                    for k, v in entry.items():
                         if k != "name":
                             self.compare(
                                 parsers="communities",
@@ -188,9 +188,9 @@ class Snmp_server(ResourceModule):
         for attrib in attribute_dict.keys():
             wattrib = get_from_dict(wdict, attrib) or {}
             hattrib = get_from_dict(hdict, attrib) or {}
-            for key, entry in iteritems(wattrib):
+            for key, entry in wattrib.items():
                 self._compare_snmp_v3_auth_privacy(entry, hattrib.get(key, {}), attrib)
-                for k, v in iteritems(entry):
+                for k, v in entry.items():
                     if k != attribute_dict[attrib]:
                         h = {}
                         if hattrib.get(key):
@@ -217,11 +217,11 @@ class Snmp_server(ResourceModule):
                             have=h,
                         )
             # remove remaining items in have for replaced
-            for key, entry in iteritems(hattrib):
+            for key, entry in hattrib.items():
                 self._compare_snmp_v3_auth_privacy({}, entry, attrib)
                 self.compare(parsers=parsers, want={}, have={"snmp_v3": {attrib: entry}})
             hdict.pop(attrib, {})
-        for key, entry in iteritems(wdict):
+        for key, entry in wdict.items():
             # self.addcmd(entry, attrib, False)
             self.compare(
                 parsers="snmp_v3.engine_id",
@@ -229,7 +229,7 @@ class Snmp_server(ResourceModule):
                 have={"snmp_v3": {key: hdict.pop(key, {})}},
             )
         # remove remaining items in have for replaced
-        for key, entry in iteritems(hdict):
+        for key, entry in hdict.items():
             self.compare(parsers=parsers, want={}, have={"snmp_v3": {key: entry}})
 
     def _compare_snmp_v3_auth_privacy(self, wattrib, hattrib, attrib):
@@ -244,7 +244,7 @@ class Snmp_server(ResourceModule):
                 primary_key = "user"
             else:
                 primary_key = "address"
-            for key, entry in iteritems(wattrib):
+            for key, entry in wattrib.items():
                 if key != primary_key and key in ["authentication", "privacy"]:
                     self.compare(
                         parsers=parsers,
@@ -265,7 +265,7 @@ class Snmp_server(ResourceModule):
                             },
                         },
                     )
-            for key, entry in iteritems(hattrib):
+            for key, entry in hattrib.items():
                 if key != primary_key and key in ["authentication", "privacy"]:
                     self.compare(
                         parsers=parsers,
@@ -291,13 +291,13 @@ class Snmp_server(ResourceModule):
             "views": "view",
             "trap_targets": "address",
         }
-        for k, v in iteritems(param_dict):
+        for k, v in param_dict.items():
             if k in entry:
                 a_dict = {}
                 for el in entry[k]:
                     a_dict.update({el[v]: el})
                 entry[k] = a_dict
-        for k, v in iteritems(v3_param_dict):
+        for k, v in v3_param_dict.items():
             if entry.get("snmp_v3") and k in entry.get("snmp_v3"):
                 a_dict = {}
                 for el in entry["snmp_v3"][k]:

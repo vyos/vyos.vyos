@@ -17,7 +17,7 @@ based on the configuration.
 
 import re
 
-from ansible.module_utils.six import iteritems
+# from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.snmp_server.snmp_server import (
@@ -63,7 +63,7 @@ class Snmp_serverFacts(object):
         if objs:
             if "communities" in objs:
                 for k in objs["communities"].values():
-                    for param, val in iteritems(k):
+                    for param, val in k.items():
                         if param in ["clients", "networks"]:
                             if None in val:
                                 val.remove(None)

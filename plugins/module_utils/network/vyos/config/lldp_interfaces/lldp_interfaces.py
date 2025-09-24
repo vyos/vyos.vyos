@@ -16,7 +16,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-from ansible.module_utils.six import iteritems
+# from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
@@ -285,7 +285,7 @@ class Lldp_interfaces(ConfigBase):
                 have_dict = have_location_type.get("coordinate_based") or {}
             location_type = "coordinate-based"
             updates = dict_diff(have_dict, want_dict)
-            for key, value in iteritems(updates):
+            for key, value in updates.items():
                 if value:
                     commands.append(self._compute_command(set_cmd + location_type, key, str(value)))
 
@@ -319,7 +319,7 @@ class Lldp_interfaces(ConfigBase):
             if is_dict_element_present(have_location_type, "coordinate_based"):
                 have_dict = have_location_type.get("coordinate_based") or {}
                 location_type = "coordinate-based"
-                for key, value in iteritems(have_dict):
+                for key, value in have_dict.items():
                     only_in_have = key_value_in_dict(key, value, want_dict)
                     if not only_in_have:
                         commands.append(

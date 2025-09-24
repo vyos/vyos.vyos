@@ -18,7 +18,7 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
-from ansible.module_utils.six import iteritems
+# from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
@@ -118,10 +118,10 @@ class Bgp_global(ResourceModule):
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "purged":
             h_del = {}
-            for k, v in iteritems(haved):
+            for k, v in haved.items():
                 if k in wantd or not wantd:
                     h_del.update({k: v})
-            for num, entry in iteritems(h_del):
+            for num, entry in h_del.items():
                 self.commands.append(self._tmplt.render({"as_number": num}, "router", True))
             wantd = {}
 
@@ -129,7 +129,7 @@ class Bgp_global(ResourceModule):
             self._compare(want={}, have=self.have)
             wantd = {}
 
-        for k, want in iteritems(wantd):
+        for k, want in wantd.items():
             self._compare(want=want, have=haved.pop(k, {}))
 
     def _compare(self, want, have):
@@ -144,7 +144,7 @@ class Bgp_global(ResourceModule):
         parsers = ["maximum_paths", "timers"]
         self._compare_neighbor(want, have)
         self._compare_bgp_params(want, have)
-        for name, entry in iteritems(want):
+        for name, entry in want.items():
             if name != "as_number":
                 self.compare(
                     parsers=parsers,
@@ -154,7 +154,7 @@ class Bgp_global(ResourceModule):
                         name: have.pop(name, {}),
                     },
                 )
-        for name, entry in iteritems(have):
+        for name, entry in have.items():
             if name != "as_number":
                 self.compare(
                     parsers=parsers,
@@ -217,7 +217,7 @@ class Bgp_global(ResourceModule):
         hneigh = have.pop("neighbor", {})
         self._compare_neigh_lists(wneigh, hneigh)
 
-        for name, entry in iteritems(wneigh):
+        for name, entry in wneigh.items():
             for k, v in entry.items():
                 if k == "address":
                     continue
@@ -233,7 +233,7 @@ class Bgp_global(ResourceModule):
                     },
                     have={"as_number": want["as_number"], "neighbor": h},
                 )
-        for name, entry in iteritems(hneigh):
+        for name, entry in hneigh.items():
             if name not in wneigh.keys():
                 if self._check_af(name):
                     msg = "Use the _bgp_address_family module to delete the address_family under neighbor {0}, before replacing/deleting the neighbor.".format(
@@ -281,7 +281,7 @@ class Bgp_global(ResourceModule):
 
         wbgp = want.pop("bgp_params", {})
         hbgp = have.pop("bgp_params", {})
-        for name, entry in iteritems(wbgp):
+        for name, entry in wbgp.items():
             if name == "confederation":
                 if entry != hbgp.pop(name, {}):
                     self.addcmd(
@@ -325,7 +325,7 @@ class Bgp_global(ResourceModule):
         if not wbgp and hbgp:
             self.commands.append("delete protocols bgp" + self._asn_mod + " parameters")
             hbgp = {}
-        for name, entry in iteritems(hbgp):
+        for name, entry in hbgp.items():
             if name == "confederation":
                 self.commands.append(
                     "delete protocols bgp" + self._asn_mod + " parameters confederation",
@@ -362,7 +362,7 @@ class Bgp_global(ResourceModule):
         ]:
             wdict = want.pop(attrib, {})
             hdict = have.pop(attrib, {})
-            for key, entry in iteritems(wdict):
+            for key, entry in wdict.items():
                 if entry != hdict.pop(key, {}):
                     self.addcmd(entry, "neighbor.{0}".format(attrib), False)
             # remove remaining items in have for replaced
@@ -370,7 +370,7 @@ class Bgp_global(ResourceModule):
                 self.addcmd(entry, "neighbor.{0}".format(attrib), True)
 
     def _bgp_global_list_to_dict(self, entry):
-        for name, proc in iteritems(entry):
+        for name, proc in entry.items():
             if "neighbor" in proc:
                 neigh_dict = {}
                 for entry in proc.get("neighbor", []):

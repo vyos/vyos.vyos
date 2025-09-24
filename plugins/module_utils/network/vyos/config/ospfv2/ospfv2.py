@@ -17,7 +17,7 @@ __metaclass__ = type
 
 from copy import deepcopy
 
-from ansible.module_utils.six import iteritems
+# from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
@@ -33,9 +33,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils
     _is_w_same,
     list_diff_want_only,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Ospfv2(ConfigBase):
@@ -222,7 +223,7 @@ class Ospfv2(ConfigBase):
         w = deepcopy(remove_empties(want))
         leaf = ("default_metric", "log_adjacency_changes")
         if w:
-            for key, val in iteritems(w):
+            for key, val in w.items():
                 if opr and key in leaf and not _is_w_same(w, have, key):
                     commands.append(self._form_attr_cmd(attr=key, val=_bool_to_str(val), opr=opr))
                 elif not opr and key in leaf and not _in_target(have, key):
@@ -290,7 +291,7 @@ class Ospfv2(ConfigBase):
                 ),
             }
             leaf = leaf_dict[attr]
-            for item, value in iteritems(want[attr]):
+            for item, value in want[attr].items():
                 if opr and item in leaf and not _is_w_same(want[attr], h, item):
                     if item == "enabled":
                         item = "enable"
@@ -336,10 +337,22 @@ class Ospfv2(ConfigBase):
                     command = cmd + attr.replace("_", "-") + " "
                     if attr == "network":
                         command += member["address"]
-                    elif attr == "passive_interface" and member != "default" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-                        command = command.replace("passive-interface", "interface") + member + " passive"
-                    elif attr == "passive_interface_exclude" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-                        command = command.replace("passive-interface-exclude", "interface") + member + " passive disable"
+                    elif (
+                        attr == "passive_interface"
+                        and member != "default"
+                        and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+                    ):
+                        command = (
+                            command.replace("passive-interface", "interface") + member + " passive"
+                        )
+                    elif attr == "passive_interface_exclude" and LooseVersion(
+                        get_os_version(self._module),
+                    ) >= LooseVersion("1.4"):
+                        command = (
+                            command.replace("passive-interface-exclude", "interface")
+                            + member
+                            + " passive disable"
+                        )
                     else:
                         command += member
                     commands.append(command)
@@ -352,10 +365,21 @@ class Ospfv2(ConfigBase):
                                     cmd + attr.replace("_", "-") + " " + member["address"],
                                 )
                         elif member not in h:
-                            if attr == "passive_interface" and member != "default" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
+                            if (
+                                attr == "passive_interface"
+                                and member != "default"
+                                and LooseVersion(get_os_version(self._module))
+                                >= LooseVersion("1.4")
+                            ):
                                 commands.append(cmd + "interface" + " " + member + " passive")
-                            elif attr == "passive_interface_exclude" and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
-                                command = command.replace("passive-interface-exclude", "interface") + member + " passive disable"
+                            elif attr == "passive_interface_exclude" and LooseVersion(
+                                get_os_version(self._module),
+                            ) >= LooseVersion("1.4"):
+                                command = (
+                                    command.replace("passive-interface-exclude", "interface")
+                                    + member
+                                    + " passive disable"
+                                )
                             else:
                                 commands.append(cmd + attr.replace("_", "-") + " " + member)
                 else:
@@ -394,7 +418,7 @@ class Ospfv2(ConfigBase):
             commands.append(cmd + attr.replace("_", "-"))
         elif w:
             for w_item in w:
-                for key, val in iteritems(w_item):
+                for key, val in w_item.items():
                     if not cmd:
                         cmd = self._compute_command(opr=opr)
                     h_item = self.search_obj_in_have(h, w_item, name[attr])
@@ -502,7 +526,7 @@ class Ospfv2(ConfigBase):
             commands.append(self._compute_command(attr=attr, opr=opr))
         elif w:
             for w_item in w:
-                for key, val in iteritems(w_item):
+                for key, val in w_item.items():
                     if not cmd:
                         cmd = self._compute_command(opr=opr)
                     h_item = self.search_obj_in_have(h, w_item, name[attr])
@@ -599,7 +623,7 @@ class Ospfv2(ConfigBase):
                 leaf = leaf_dict[attr]
                 if h and key in h.keys():
                     h_attrib = h.get(key) or {}
-                for item, val in iteritems(w[key]):
+                for item, val in w[key].items():
                     if opr and item in leaf and not _is_w_same(w[key], h_attrib, item):
                         if item in ("administrative", "always") and val:
                             commands.append(
@@ -660,7 +684,7 @@ class Ospfv2(ConfigBase):
                         self._form_attr_cmd(key="area", attr=w_area["area_id"], opr=opr),
                     )
                 else:
-                    for key, val in iteritems(w_area):
+                    for key, val in w_area.items():
                         if opr and key in l_set and not _is_w_same(w_area, h_area, key):
                             if key == "area_id":
                                 commands.append(
@@ -733,7 +757,7 @@ class Ospfv2(ConfigBase):
                 if w_area:
                     if h_type and key in h_type.keys():
                         h_area = h_type.get(key) or {}
-                    for item, val in iteritems(w_type[key]):
+                    for item, val in w_type[key].items():
                         if (
                             opr
                             and item in a_type[key]

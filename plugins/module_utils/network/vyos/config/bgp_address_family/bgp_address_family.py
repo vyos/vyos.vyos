@@ -20,7 +20,7 @@ created.
 
 import re
 
-from ansible.module_utils.six import iteritems
+# from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
@@ -32,14 +32,13 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_address_family import (
     Bgp_address_familyTemplate,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_address_family_14 import (
     Bgp_address_familyTemplate14,
 )
-
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Bgp_address_family(ResourceModule):
@@ -65,7 +64,7 @@ class Bgp_address_family(ResourceModule):
             self._tmplt = Bgp_address_familyTemplate()
 
     def parse(self):
-        """ override parse to check template """
+        """override parse to check template"""
         self._validate_template()
         return super().parse()
 
@@ -93,9 +92,11 @@ class Bgp_address_family(ResourceModule):
         wantd = {}
         haved = {}
 
-        if (self.want.get("as_number") == self.have.get("as_number") or
-                not self.have or
-                LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")):
+        if (
+            self.want.get("as_number") == self.have.get("as_number")
+            or not self.have
+            or LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
+        ):
             if self.want:
                 wantd = {self.want["as_number"]: self.want}
             if self.have:
@@ -113,16 +114,16 @@ class Bgp_address_family(ResourceModule):
 
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
-            for k, have in iteritems(haved):
+            for k, have in haved.items():
                 self._delete_af(wantd, have)
             wantd = {}
 
         if self.state == "overridden":
-            for k, have in iteritems(haved):
+            for k, have in haved.items():
                 if k not in wantd:
                     self._compare(want={}, have=have)
 
-        for k, want in iteritems(wantd):
+        for k, want in wantd.items():
             self._compare(want=want, have=haved.pop(k, {}))
 
     def _compare(self, want, have):
@@ -149,23 +150,23 @@ class Bgp_address_family(ResourceModule):
     def _compare_af(self, want, have):
         waf = want.get("address_family", {})
         haf = have.get("address_family", {})
-        for name, entry in iteritems(waf):
+        for name, entry in waf.items():
             self._compare_lists(
                 entry,
                 have=haf.get(name, {}),
                 as_number=want["as_number"],
                 afi=name,
             )
-        for name, entry in iteritems(haf):
+        for name, entry in haf.items():
             if name not in waf.keys() and self.state == "replaced":
                 continue
             self._compare_lists({}, entry, as_number=have["as_number"], afi=name)
 
     def _delete_af(self, want, have):
-        for as_num, entry in iteritems(want):
-            for afi, af_entry in iteritems(entry.get("address_family", {})):
+        for as_num, entry in want.items():
+            for afi, af_entry in entry.get("address_family", {}).items():
                 if have.get("address_family"):
-                    for hafi, hentry in iteritems(have["address_family"]):
+                    for hafi, hentry in have["address_family"].items():
                         if hafi == afi:
                             self.commands.append(
                                 self._tmplt.render(
@@ -177,9 +178,9 @@ class Bgp_address_family(ResourceModule):
                                     True,
                                 ),
                             )
-            for neigh, neigh_entry in iteritems(entry.get("neighbors", {})):
+            for neigh, neigh_entry in entry.get("neighbors", {}).items():
                 if have.get("neighbors"):
-                    for hneigh, hnentry in iteritems(have["neighbors"]):
+                    for hneigh, hnentry in have["neighbors"].items():
                         if hneigh == neigh:
                             if not neigh_entry.get("address_family"):
                                 self.commands.append(
@@ -239,9 +240,9 @@ class Bgp_address_family(ResourceModule):
         ]
         wneigh = want.get("neighbors", {})
         hneigh = have.get("neighbors", {})
-        for name, entry in iteritems(wneigh):
-            for afi, af_entry in iteritems(entry.get("address_family")):
-                for k, val in iteritems(af_entry):
+        for name, entry in wneigh.items():
+            for afi, af_entry in entry.get("address_family").items():
+                for k, val in af_entry.items():
                     w = {
                         "as_number": want["as_number"],
                         "neighbors": {
@@ -268,7 +269,7 @@ class Bgp_address_family(ResourceModule):
                         want=w,
                         have=h,
                     )
-        for name, entry in iteritems(hneigh):
+        for name, entry in hneigh.items():
             if name not in wneigh.keys():
                 # remove surplus config for overridden and replaced
                 if self.state != "replaced":
@@ -284,9 +285,9 @@ class Bgp_address_family(ResourceModule):
                     )
                 continue
 
-            for hafi, haf_entry in iteritems(entry.get("address_family")):
+            for hafi, haf_entry in entry.get("address_family").items():
                 # remove surplus configs for given neighbor - replace and overridden
-                for k, val in iteritems(haf_entry):
+                for k, val in haf_entry.items():
                     h = {
                         "as_number": have["as_number"],
                         "neighbors": {
@@ -317,7 +318,7 @@ class Bgp_address_family(ResourceModule):
         for attrib in ["redistribute", "networks", "aggregate_address"]:
             wdict = want.pop(attrib, {})
             hdict = have.pop(attrib, {})
-            for key, entry in iteritems(wdict):
+            for key, entry in wdict.items():
                 if entry != hdict.get(key, {}):
                     self.compare(
                         parsers=parsers,
@@ -348,7 +349,7 @@ class Bgp_address_family(ResourceModule):
                     + attrib,
                 )
                 hdict = {}
-            for key, entry in iteritems(hdict):
+            for key, entry in hdict.items():
                 self.compare(
                     parsers=parsers,
                     want={},
@@ -358,7 +359,7 @@ class Bgp_address_family(ResourceModule):
                     },
                 )
         # de-duplicate child commands if parent command is present
-        for val in (self.commands):
+        for val in self.commands:
             for val2 in self.commands:
                 if val != val2 and val2.startswith(val):
                     self.commands.remove(val2)
@@ -366,13 +367,11 @@ class Bgp_address_family(ResourceModule):
     def _compare_asn(self, want, have):
         if want.get("as_number") and not have.get("as_number"):
             self.commands.append(
-                "set protocols bgp "
-                + "system-as "
-                + str(want.get("as_number")),
+                "set protocols bgp " + "system-as " + str(want.get("as_number")),
             )
 
     def _bgp_af_list_to_dict(self, entry):
-        for name, proc in iteritems(entry):
+        for name, proc in entry.items():
             if "address_family" in proc:
                 af_dict = {}
                 for entry in proc.get("address_family"):
