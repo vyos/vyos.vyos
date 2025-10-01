@@ -264,6 +264,16 @@ class L3_interfaces(ConfigBase):
         commands = []
         want_copy = deepcopy(remove_empties(want))
         have_copy = deepcopy(have)
+        if all(v in (None, {}, []) for k, v in want_copy.items() if k != "name"):
+            commands.append(
+                self._compute_commands(
+                    key=None,
+                    value=None,
+                    interface=want_copy["name"],
+                    remove=True,
+                ),
+            )
+            return commands
 
         want_vifs = want_copy.pop("vifs", [])
         have_vifs = have_copy.pop("vifs", [])
@@ -316,8 +326,10 @@ class L3_interfaces(ConfigBase):
             set_cmd += f" vif {vif}{suffix}"
             del_cmd += f" vif {vif}{suffix}"
 
-        if remove:
+        if remove and key and value:
             command = "{0} {1} '{2}'".format(del_cmd, key, value)
+        elif remove and not (key and value):
+            command = "{0}".format(del_cmd)
         else:
             command = "{0} {1} '{2}'".format(set_cmd, key, value)
 
