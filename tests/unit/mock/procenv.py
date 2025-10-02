@@ -33,9 +33,6 @@ from ansible.module_utils._text import to_bytes
 from ansible_collections.vyos.vyos.tests.unit.compat import unittest
 
 
-# from ansible.module_utils.six import PY3
-
-
 @contextmanager
 def swap_stdin_and_argv(stdin_data="", argv_data=tuple()):
     """

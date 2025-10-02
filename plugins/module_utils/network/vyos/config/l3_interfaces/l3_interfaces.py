@@ -19,7 +19,6 @@ __metaclass__ = type
 
 from copy import deepcopy
 
-# from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )

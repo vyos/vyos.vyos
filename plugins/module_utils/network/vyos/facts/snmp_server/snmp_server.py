@@ -17,7 +17,6 @@ based on the configuration.
 
 import re
 
-# from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.snmp_server.snmp_server import (

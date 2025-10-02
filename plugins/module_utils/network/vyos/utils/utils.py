@@ -11,9 +11,6 @@ __metaclass__ = type
 from ansible.module_utils.basic import missing_required_lib
 
 
-# from ansible.module_utils.six import iteritems
-
-
 try:
     import ipaddress
 
