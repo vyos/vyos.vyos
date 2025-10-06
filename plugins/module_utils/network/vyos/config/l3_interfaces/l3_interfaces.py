@@ -264,48 +264,50 @@ class L3_interfaces(ConfigBase):
         commands = []
         want_copy = deepcopy(remove_empties(want))
         have_copy = deepcopy(have)
-        if all(v in (None, {}, []) for k, v in want_copy.items() if k != "name"):
-            commands.append(
-                self._compute_commands(
-                    key=None,
-                    value=None,
-                    interface=want_copy["name"],
-                    remove=True,
-                ),
-            )
-            return commands
 
-        want_vifs = want_copy.pop("vifs", [])
-        have_vifs = have_copy.pop("vifs", [])
-
-        for update in self._get_updates(have_copy, want_copy):
-            for key, value in iteritems(update):
+        if have_copy is not None:
+            if all(v in (None, {}, []) for k, v in want_copy.items() if k != "name"):
                 commands.append(
                     self._compute_commands(
-                        key=key,
-                        value=value,
+                        key=None,
+                        value=None,
                         interface=want_copy["name"],
                         remove=True,
                     ),
                 )
+                return commands
 
-        if have_vifs:
-            for have_vif in have_vifs:
-                want_vif = search_obj_in_list(have_vif["vlan_id"], want_vifs, key="vlan_id")
-                if not want_vif:
-                    want_vif = {"vlan_id": have_vif["vlan_id"]}
+            want_vifs = want_copy.pop("vifs", [])
+            have_vifs = have_copy.pop("vifs", [])
 
-                for update in self._get_updates(have_vif, want_vif):
-                    for key, value in iteritems(update):
-                        commands.append(
-                            self._compute_commands(
-                                key=key,
-                                interface=want_copy["name"],
-                                value=value,
-                                vif=want_vif["vlan_id"],
-                                remove=True,
-                            ),
-                        )
+            if have_vifs:
+                for have_vif in have_vifs:
+                    want_vif = search_obj_in_list(have_vif["vlan_id"], want_vifs, key="vlan_id")
+                    if not want_vif:
+                        want_vif = {"vlan_id": have_vif["vlan_id"]}
+
+                    for update in self._get_updates(have_vif, want_vif):
+                        for key, value in iteritems(update):
+                            commands.append(
+                                self._compute_commands(
+                                    key=key,
+                                    interface=want_copy["name"],
+                                    value=value,
+                                    vif=want_vif["vlan_id"],
+                                    remove=True,
+                                ),
+                            )
+
+            for update in self._get_updates(have_copy, want_copy):
+                for key, value in iteritems(update):
+                    commands.append(
+                        self._compute_commands(
+                            key=key,
+                            value=value,
+                            interface=want_copy["name"],
+                            remove=True,
+                        ),
+                    )
 
         return commands
 
