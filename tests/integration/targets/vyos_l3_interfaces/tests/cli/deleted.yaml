@@ -71,7 +71,7 @@
     - name: Assert that the correct set of commands were generated (SLAAC)
       assert:
         that:
-          - "{{ deleted['commands_slaac'] | symmetric_difference(result['commands']) |length == 0 }}"
+          - "{{ deleted['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
     - name: Assert that the after dicts were correctly generated (SLAAC)
       assert:
