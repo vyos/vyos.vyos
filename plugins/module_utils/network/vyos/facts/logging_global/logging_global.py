@@ -15,7 +15,6 @@ for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
 
-from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.logging_global.logging_global import (
@@ -38,7 +37,7 @@ class Logging_globalFacts(object):
 
     def process_facts(self, objFinal):
         if objFinal:
-            for ke, vl in iteritems(objFinal):
+            for ke, vl in objFinal.items():
                 if ke == "files":
                     _files = []
                     for k, v in vl.items():

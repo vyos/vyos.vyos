@@ -17,7 +17,6 @@ __metaclass__ = type
 
 from copy import deepcopy
 
-from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
@@ -206,7 +205,7 @@ class Firewall_global(ConfigBase):
             "twa_hazards_protection",
         )
         if want:
-            for key, val in iteritems(want):
+            for key, val in want.items():
                 if val and key in b_set and not have:
                     commands.append(self._form_attr_cmd(attr=key, opr=False))
                 elif val and key in b_set and have and key in have and have[key] != val:
@@ -216,7 +215,7 @@ class Firewall_global(ConfigBase):
         elif not want and have:
             commands.append(self._compute_command(opr=False))
         elif have:
-            for key, val in iteritems(have):
+            for key, val in have.items():
                 if val and key in b_set:
                     commands.append(self._form_attr_cmd(attr=key, opr=False))
                 else:
@@ -263,7 +262,7 @@ class Firewall_global(ConfigBase):
             "twa_hazards_protection",
         )
         if w_fg:
-            for key, val in iteritems(w_fg):
+            for key, val in w_fg.items():
                 if opr and key in l_set and not (h and self._is_w_same(w_fg, h, key)):
                     commands.append(
                         self._form_attr_cmd(attr=key, val=self._bool_to_str(val), opr=opr),
@@ -297,13 +296,13 @@ class Firewall_global(ConfigBase):
         if h:
             h_ping = h.get(attr) or {}
         if self._is_root_del(w[attr], h_ping, attr):
-            for item, value in iteritems(h[attr]):
+            for item, value in h[attr].items():
                 if not opr and item in l_set:
                     commands.append(self._form_attr_cmd(attr=item, opr=opr))
         elif w[attr]:
             if h and attr in h.keys():
                 h_ping = h.get(attr) or {}
-            for item, value in iteritems(w[attr]):
+            for item, value in w[attr].items():
                 if (
                     opr
                     and item in l_set
@@ -367,7 +366,7 @@ class Firewall_global(ConfigBase):
                     cmd = self._compute_command(key="group", attr="ipv6-" + attr, opr=opr)
                 else:
                     cmd = self._compute_command(key="group", attr=attr, opr=opr)
-                for key, val in iteritems(want):
+                for key, val in want.items():
                     if val:
                         if opr and key in l_set and not (h and self._is_w_same(want, h, key)):
                             if key == "name":
@@ -494,7 +493,7 @@ class Firewall_global(ConfigBase):
             if want:
                 for w in want:
                     h = self.search_attrib_in_have(have, w, "connection_type")
-                    for key, val in iteritems(w):
+                    for key, val in w.items():
                         if val and key != "connection_type":
                             if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
                                 if key == "log" and LooseVersion(
@@ -567,7 +566,7 @@ class Firewall_global(ConfigBase):
                     else:
                         afi = None
                     afi = None
-                for key, val in iteritems(w):
+                for key, val in w.items():
                     if val and key != "afi":
                         if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
                             commands.append(
@@ -625,7 +624,7 @@ class Firewall_global(ConfigBase):
         if w[attr]:
             if h and attr in h.keys():
                 h_red = h.get(attr) or {}
-            for item, value in iteritems(w[attr]):
+            for item, value in w[attr].items():
                 if opr and item in l_set and not (h_red and self._is_w_same(w[attr], h_red, item)):
                     commands.append(
                         self._form_attr_cmd(
