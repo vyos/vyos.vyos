@@ -20,7 +20,6 @@ created.
 
 from copy import deepcopy
 
-from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
@@ -92,7 +91,7 @@ class Logging_global(ResourceModule):
         if self.state in ["overridden", "replaced"]:
             if wantd != haved:
                 wantx, havex = self.call_op(wantd, haved, "overridden")
-                for k, have in iteritems(havex):
+                for k, have in havex.items():
                     if k not in wantx:
                         self._compare(want={}, have=have)
 
@@ -102,7 +101,7 @@ class Logging_global(ResourceModule):
         if self.state == "merged":
             wantd = dict_merge(haved, wantd)
 
-        for k, want in iteritems(wantd):
+        for k, want in wantd.items():
             self._compare(want=want, have=haved.pop(k, {}))
 
     def _compare(self, want, have):
@@ -116,12 +115,12 @@ class Logging_global(ResourceModule):
 
     def operation_rep(self, params):
         op_val = dict()
-        for k, val in iteritems(params):
+        for k, val in params.items():
             if k in ["console", "global_params"]:
                 mod_val = deepcopy(val)
                 op_val.update(self.flatten_facility({k: mod_val}))
             elif k in ["files", "hosts", "users"]:
-                for m, n in iteritems(val):
+                for m, n in val.items():
                     mod_n = deepcopy(n)
                     if mod_n.get("archive"):
                         del mod_n["archive"]
@@ -160,18 +159,18 @@ class Logging_global(ResourceModule):
 
     def flatten_facility(self, param):
         temp_param = dict()
-        for element, val in iteritems(param):
+        for element, val in param.items():
             if element in ["console", "global_params", "syslog"]:
                 if element != "syslog" and val.get("facilities"):
-                    for k, v in iteritems(val.get("facilities")):
+                    for k, v in val.get("facilities").items():
                         temp_param[k + element] = {element: {"facilities": v}}
                     del val["facilities"]
                 if val:
                     temp_param[element] = {element: val}
             if element in ["files", "hosts", "users"]:
-                for k, v in iteritems(val):
+                for k, v in val.items():
                     if v.get("facilities"):
-                        for pk, dat in iteritems(v.get("facilities")):
+                        for pk, dat in v.get("facilities").items():
                             temp_param[pk + k] = {
                                 element: {
                                     "facilities": dat,
@@ -197,7 +196,7 @@ class Logging_global(ResourceModule):
                 "hosts": "hostname",
                 "users": "username",
             }
-            for element, val in iteritems(param):
+            for element, val in param.items():
                 if element == "facilities":  # only with recursion call
                     _tem_par = {}
                     for par in val:

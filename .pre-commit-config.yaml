@@ -7,9 +7,11 @@ ci:
 
 repos:
   - repo: https://github.com/ansible-network/collection_prep
-    rev: 1.1.1
+    rev: 1.1.2
     hooks:
       - id: update-docs
+        additional_dependencies:
+          - "ansible-core==2.18.*"
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
