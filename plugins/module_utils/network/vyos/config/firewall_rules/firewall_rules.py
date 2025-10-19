@@ -17,7 +17,6 @@ __metaclass__ = type
 
 from copy import deepcopy
 
-from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
@@ -315,7 +314,7 @@ class Firewall_rules(ConfigBase):
             h_rs = deepcopy(remove_empties(have))
             h_rules = h_rs.pop("rules", None)
         if w_rs:
-            for key, val in iteritems(w_rs):
+            for key, val in w_rs.items():
                 if opr and key in l_set and not (h_rs and self._is_w_same(w_rs, h_rs, key)):
                     if key == "enable_default_log":
                         if val and (not h_rs or key not in h_rs or not h_rs[key]):
@@ -366,7 +365,7 @@ class Firewall_rules(ConfigBase):
                 h = self.search_rules_in_have_rs(h_rules, w["number"])
                 if w != h and self.state == "replaced":
                     h = {}
-                for key, val in iteritems(w):
+                for key, val in w.items():
                     if val:
                         if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
                             if key == "disable":
@@ -464,7 +463,7 @@ class Firewall_rules(ConfigBase):
         if w[attr]:
             if h and attr in h.keys():
                 h_state = h.get(attr) or {}
-            for item, val in iteritems(w[attr]):
+            for item, val in w[attr].items():
                 if (
                     opr
                     and item in l_set
@@ -527,7 +526,7 @@ class Firewall_rules(ConfigBase):
         if w[attr]:
             if h and attr in h.keys():
                 h_recent = h.get(attr) or {}
-            for item, val in iteritems(w[attr]):
+            for item, val in w[attr].items():
                 if (
                     opr
                     and item in l_set
@@ -555,7 +554,7 @@ class Firewall_rules(ConfigBase):
         if w[attr]:
             if h and attr in h.keys():
                 h_icmp = h.get(attr) or {}
-            for item, val in iteritems(w[attr]):
+            for item, val in w[attr].items():
                 if (
                     opr
                     and item in l_set
@@ -598,7 +597,7 @@ class Firewall_rules(ConfigBase):
         if w[attr]:
             if h and attr in h.keys():
                 h_if = h.get(attr) or {}
-            for item, val in iteritems(w[attr]):
+            for item, val in w[attr].items():
                 if opr and item in l_set and not (h_if and self._is_w_same(w[attr], h_if, item)):
                     commands.append(
                         cmd
@@ -633,7 +632,7 @@ class Firewall_rules(ConfigBase):
         if w[attr]:
             if h and attr in h.keys():
                 h_time = h.get(attr) or {}
-            for item, val in iteritems(w[attr]):
+            for item, val in w[attr].items():
                 if (
                     opr
                     and item in l_set
@@ -862,7 +861,7 @@ class Firewall_rules(ConfigBase):
                 h_group = {}
                 if h and h.get(attr) and key in h[attr].keys():
                     h_group = h[attr].get(key)
-                for item, val in iteritems(group):
+                for item, val in group.items():
                     if val:
                         if (
                             opr
@@ -1167,11 +1166,12 @@ class Firewall_rules(ConfigBase):
             return True
         elif isinstance(w, list) and isinstance(rs, list):
             try:
+
                 def comparison(x):
-                    if 'name' in x:
-                        return x['name']
-                    if 'number' in x:
-                        return x['number']
+                    if "name" in x:
+                        return x["name"]
+                    if "number" in x:
+                        return x["number"]
                     return str(x)
 
                 sorted_list1 = sorted(w, key=comparison)
