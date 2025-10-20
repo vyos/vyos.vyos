@@ -286,7 +286,7 @@ class L3_interfaces(ConfigBase):
                         want_vif = {"vlan_id": have_vif["vlan_id"]}
 
                     for update in self._get_updates(have_vif, want_vif):
-                        for key, value in iteritems(update):
+                        for key, value in update.items():
                             commands.append(
                                 self._compute_commands(
                                     key=key,
@@ -298,7 +298,7 @@ class L3_interfaces(ConfigBase):
                             )
 
             for update in self._get_updates(have_copy, want_copy):
-                for key, value in iteritems(update):
+                for key, value in update.items():
                     commands.append(
                         self._compute_commands(
                             key=key,
