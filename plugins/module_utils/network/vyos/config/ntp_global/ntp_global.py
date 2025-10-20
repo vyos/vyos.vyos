@@ -18,7 +18,6 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
-from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
@@ -93,16 +92,16 @@ class Ntp_global(ResourceModule):
 
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
-            haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
+            haved = {k: v for k, v in haved.items() if k in wantd or not wantd}
             wantd = {}
 
             commandlist = self._commandlist(haved)
             servernames = self._servernames(haved)
             # removing the servername and commandlist from the list after deleting it from haved
             # iterate through the top-level items to delete
-            for k, have in iteritems(haved):
+            for k, have in haved.items():
                 if k not in wantd:
-                    for hk, hval in iteritems(have):
+                    for hk, hval in have.items():
                         if hk == "allow_clients" and hk in commandlist:
                             self.commands.append(
                                 self._tmplt.render({"": hk}, "allow_clients_delete", True),
@@ -130,7 +129,7 @@ class Ntp_global(ResourceModule):
             commandlist = self._commandlist(haved)
             servernames = self._servernames(haved)
 
-            for k, have in iteritems(haved):
+            for k, have in haved.items():
                 if k not in wantd:
                     if "server" not in have:
                         self._compareoverride(want={}, have=have)
@@ -139,7 +138,7 @@ class Ntp_global(ResourceModule):
                         self._compareoverride(want={}, have=have)
                         servernames.remove(have["server"])
 
-        for k, want in iteritems(wantd):
+        for k, want in wantd.items():
             self._compare(want=want, have=haved.pop(k, {}))
 
     def _compare(self, want, have):
@@ -155,7 +154,7 @@ class Ntp_global(ResourceModule):
 
     def _compareoverride(self, want, have):
         # do not delete configuration with options level
-        for i, val in iteritems(have):
+        for i, val in have.items():
             if i == "options":
                 pass
             else:
@@ -163,12 +162,12 @@ class Ntp_global(ResourceModule):
 
     def _ntp_list_to_dict(self, entry):
         servers_dict = {}
-        for k, data in iteritems(entry):
+        for k, data in entry.items():
             if k == "servers":
                 for value in data:
                     if "options" in value:
                         result = self._serveroptions_list_to_dict(value)
-                        for res, resvalue in iteritems(result):
+                        for res, resvalue in result.items():
                             servers_dict.update({res: resvalue})
                     else:
                         servers_dict.update({value["server"]: value})
@@ -179,7 +178,7 @@ class Ntp_global(ResourceModule):
 
     def _serveroptions_list_to_dict(self, entry):
         serveroptions_dict = {}
-        for Opk, Op in iteritems(entry):
+        for Opk, Op in entry.items():
             if Opk == "options":
                 for val in Op:
                     dict = {}
@@ -190,16 +189,16 @@ class Ntp_global(ResourceModule):
 
     def _commandlist(self, haved):
         commandlist = []
-        for k, have in iteritems(haved):
-            for ck, cval in iteritems(have):
+        for k, have in haved.items():
+            for ck, cval in have.items():
                 if ck != "options" and ck not in commandlist:
                     commandlist.append(ck)
         return commandlist
 
     def _servernames(self, haved):
         servernames = []
-        for k, have in iteritems(haved):
-            for sk, sval in iteritems(have):
+        for k, have in haved.items():
+            for sk, sval in have.items():
                 if sk != "options" and sval not in servernames:
                     servernames.append(sval)
         return servernames
