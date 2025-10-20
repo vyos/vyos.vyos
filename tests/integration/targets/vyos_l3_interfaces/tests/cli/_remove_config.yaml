@@ -1,7 +1,10 @@
 ---
 - name: Remove Config
   vars:
-    lines: "delete interfaces ethernet \"{{ intf }}\" address\ndelete interfaces ethernet \"{{ intf }}\" vif\ndelete interfaces ethernet \"{{ intf }}\" ipv6\n"
+    lines: |
+      delete interfaces ethernet "{{ intf }}" address
+      delete interfaces ethernet "{{ intf }}" vif
+      delete interfaces ethernet "{{ intf }}" ipv6
   loop:
     - eth1
     - eth2
