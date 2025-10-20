@@ -9,7 +9,6 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 from ansible.module_utils.basic import missing_required_lib
-from ansible.module_utils.six import iteritems
 
 
 try:
@@ -198,7 +197,7 @@ def key_value_in_dict(have_key, have_value, want_dict):
     :param want_dict:
     :return:
     """
-    for key, value in iteritems(want_dict):
+    for key, value in want_dict.items():
         if key == have_key and value == have_value:
             return True
     return False
@@ -270,7 +269,7 @@ def _is_w_same(w, h, key):
 
 def _in_target(h, key):
     """
-    This function checks whether the target exist and key present in target config.
+    This functi checks whether the target exist and key present in target config.
     :param h: target config.
     :param key: attribute name.
     :return: True/False.
