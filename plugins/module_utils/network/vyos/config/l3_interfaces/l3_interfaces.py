@@ -19,7 +19,6 @@ __metaclass__ = type
 
 from copy import deepcopy
 
-from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
@@ -231,7 +230,7 @@ class L3_interfaces(ConfigBase):
         have_vifs = have_copy.pop("vifs", [])
 
         for update in self._get_updates(want_copy, have_copy):
-            for key, value in iteritems(update):
+            for key, value in update.items():
                 commands.append(
                     self._compute_commands(key=key, value=value, interface=want_copy["name"]),
                 )
@@ -243,7 +242,7 @@ class L3_interfaces(ConfigBase):
                     have_vif = {}
 
                 for update in self._get_updates(want_vif, have_vif):
-                    for key, value in iteritems(update):
+                    for key, value in update.items():
                         commands.append(
                             self._compute_commands(
                                 key=key,
