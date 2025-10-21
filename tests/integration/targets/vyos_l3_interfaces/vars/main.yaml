@@ -7,7 +7,6 @@ merged:
     - name: eth1
     - name: eth2
   commands:
-    - set interfaces ethernet eth0 ipv6 address 'autoconf'
     - set interfaces ethernet eth1 address '192.0.2.10/24'
     - set interfaces ethernet eth1 address '2001:db8::10/32'
     - set interfaces ethernet eth1 vif 102 ipv6 address 'autoconf'
@@ -26,8 +25,6 @@ merged:
           vlan_id: 101
     - ipv4:
         - address: dhcp
-      ipv6:
-        - address: auto-config
       name: eth0
     - ipv4:
         - address: 192.0.2.10/24
@@ -71,8 +68,6 @@ populate_slaac:
   - name: eth0
     ipv4:
       - address: dhcp
-    ipv6:
-      - address: auto-config
 replaced:
   commands:
     - delete interfaces ethernet eth2 address '192.0.2.10/24'
@@ -135,9 +130,6 @@ overridden:
         - address: auto-config
 parsed:
   after:
-    - name: eth0
-      ipv6:
-        - address: auto-config
     - name: eth1
       ipv4:
         - address: 192.0.2.10/24
@@ -158,7 +150,6 @@ parsed:
             - address: 2001:db8::20/32
 rendered:
   commands:
-    - set interfaces ethernet eth0 ipv6 address 'autoconf'
     - set interfaces ethernet eth1 address '192.0.2.14/24'
     - set interfaces ethernet eth1 vif 102 ipv6 address 'autoconf'
     - set interfaces ethernet eth2 address '192.0.2.11/24'
