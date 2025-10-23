@@ -42,10 +42,28 @@ class VrrpFacts(object):
         config_dict = {}
         for config_line in data.splitlines():
             vrrp_grp = re.search(r"set high-availability vrrp group (\S+).*", config_line)
+            vrrp_snmp = re.search(r"set high-availability vrrp snmp", config_line)
+            vrrp_gp = re.search(
+                r"set high-availability vrrp global-parameters (\S+).*",
+                config_line,
+            )
+            vrrp_sg = re.search(r"set high-availability vrrp sync-group (\S+).*", config_line)
             vrrp_vsrv = re.search(r"set high-availability virtual-server (\S+).*", config_line)
             vrrp_disable = re.search(r"set high-availability disable", config_line)
             if vrrp_disable:
                 config_dict["disable"] = config_dict.get("disable", "") + config_line + "\n"
+            if vrrp_gp:
+                config_dict["global_parameters"] = (
+                    config_dict.get(vrrp_gp.group(1), "") + config_line + "\n"
+                )
+            if vrrp_vsrv:
+                config_dict["virtual_server"] = (
+                    config_dict.get(vrrp_vsrv.group(1), "") + config_line + "\n"
+                )
+            if vrrp_sg:
+                config_dict["sync_group"] = (
+                    config_dict.get(vrrp_sg.group(1), "") + config_line + "\n"
+                )
             if vrrp_grp:
                 config_dict[vrrp_grp.group(1)] = (
                     config_dict.get(vrrp_grp.group(1), "") + config_line + "\n"
@@ -70,6 +88,9 @@ class VrrpFacts(object):
             data = self.get_device_data(connection)
 
         vrrp_facts = {}
+        groups = []
+        sync_groups = []
+        vsvrs = []
         resources = self.get_config_set(data, connection)
 
         for resource in resources:
@@ -78,19 +99,21 @@ class VrrpFacts(object):
                 module=self._module,
             )
             objs = vrrp_parser.parse()
-            self._module.fail_json(msg=str(resource.split("\n")) + str(objs))
+            # self._module.fail_json(msg=str(resource.split("\n")) + "******" + str(objs))
             if objs:
-                self._module.fail_json(msg=str(objs))
+                if "disable" in objs:
+                    vrrp_facts.update(objs)
+                if "group" in objs:
+                    groups.append(objs)
+                if "virtual_server" in objs:
+                    vsvrs.append(objs)
+                if "sync_group" in objs:
+                    sync_groups.append(objs)
 
-        # for resource in data.splitlines():
-        #     if "address-family" not in resource:
-        #         config_lines.append(re.sub("'", "", resource))
-        #
-        # vrrp_parser = VrrpTemplate(lines=config_lines, module=self._module)
-        #
-        # objs = vrrp_parser.parse()
-        # self._module.fail_json(msg=objs)
+        if groups:
+            vrrp_facts.update({"groups": groups})
 
+        self._module.fail_json(msg=str(vrrp_facts))
         ansible_facts["ansible_network_resources"].pop("vrrp", None)
 
         params = utils.remove_empties(

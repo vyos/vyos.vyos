@@ -36,6 +36,14 @@ class VrrpArgs(object):  # pylint: disable=R0903
             "type": "dict",
             "options": {
                 "disable": {"aliases": ["disabled"], "type": "bool", "default": False},
+                "virtual_server": {
+                    "type": "list",
+                    "elements": "dict",
+                    "options": {
+                        "name": {"required": True, "type": "str"},
+                        "address": {"type": "str"},
+                    },
+                },
             },
         },
         "state": {

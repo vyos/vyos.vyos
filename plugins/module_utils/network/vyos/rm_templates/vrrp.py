@@ -51,21 +51,6 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "vg_global_garp_interval",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \s(?P<disable>disable)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability disable",
-            "result": {
-                "disable": "{{ True if disable is defined }}",
-            },
-        },
-        {
             "name": "vg_addr",
             "getval": re.compile(
                 r"""
@@ -206,7 +191,7 @@ class VrrpTemplate(NetworkTemplate):
                 \sgroup
                 \s(?P<group>\S+)
                 \sdescription
-                \s(?P<adv_int>\S+)
+                \s(?P<description>.*)
                 $""",
                 re.VERBOSE,
             ),
