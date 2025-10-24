@@ -453,6 +453,167 @@ class VrrpTemplate(NetworkTemplate):
                 },
             },
         },
-
+        {
+            "name": "vg_gp_version",
+            "getval": re.compile(
+                r"""
+                ^set
+                \shigh-availability
+                \svrrp
+                \sglobal-parameters
+                \sversion
+                \s(?P<version>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "high-availability vrrp global-parameters version {{version}}",
+            "compval": "global_parameters.version",
+            "result": {
+                "global_parameters": {
+                    "version": "{{ version }}",
+                },
+            },
+        },
+        {
+            "name": "gp_startup_delay",
+            "getval": re.compile(
+                r"""
+                ^set
+                \shigh-availability
+                \svrrp
+                \sglobal-parameters
+                \sstartup-delay
+                \s(?P<startup_delay>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "high-availability vrrp global-parameters startup-delay {{startup_delay}}",
+            "compval": "global_parameters.startup_delay",
+            "result": {
+                "global_parameters": {
+                    "startup_delay": "{{ startup_delay }}",
+                },
+            },
+        },
+        {
+            "name": "gp_garp_interval",
+            "getval": re.compile(
+                r"""
+                ^set
+                \shigh-availability
+                \svrrp
+                \sglobal-parameters
+                \sgarp
+                \sinterval
+                \s(?P<interval>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "high-availability vrrp global-parameters garp interval {{interval}}",
+            "compval": "global_parameters.garp.interval",
+            "result": {
+                "global_parameters": {
+                    "garp": {
+                        "interval": "{{ interval }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "gp_garp_master_delay",
+            "getval": re.compile(
+                r"""
+                ^set
+                \shigh-availability
+                \svrrp
+                \sglobal-parameters
+                \sgarp
+                \smaster-delay
+                \s(?P<master_delay>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "high-availability vrrp global-parameters garp master-delay {{master_delay}}",
+            "compval": "global_parameters.garp.master_delay",
+            "result": {
+                "global_parameters": {
+                    "garp": {
+                        "master_delay": "{{ master_delay }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "gp_garp_master_refresh",
+            "getval": re.compile(
+                r"""
+                ^set
+                \shigh-availability
+                \svrrp
+                \sglobal-parameters
+                \sgarp
+                \smaster-refresh
+                \s(?P<master_refresh>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "high-availability vrrp global-parameters garp master-refresh {{master_refresh}}",
+            "compval": "global_parameters.garp.master_refresh",
+            "result": {
+                "global_parameters": {
+                    "garp": {
+                        "master_refresh": "{{ master_refresh }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "gp_garp_master_refresh_repeat",
+            "getval": re.compile(
+                r"""
+                ^set
+                \shigh-availability
+                \svrrp
+                \sglobal-parameters
+                \sgarp
+                \smaster-refresh-repeat
+                \s(?P<master_refresh_repeat>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "high-availability vrrp global-parameters garp master-refresh_repeat {{master_refresh_repeat}}",
+            "compval": "global_parameters.garp.master_refersh_repeat",
+            "result": {
+                "global_parameters": {
+                    "garp": {
+                        "master_refresh_repeat": "{{ master_refresh_repeat }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "gp_garp_master_repeat",
+            "getval": re.compile(
+                r"""
+                ^set
+                \shigh-availability
+                \svrrp
+                \sglobal-parameters
+                \sgarp
+                \smaster-refresh-repeat
+                \s(?P<master_refresh_repeat>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "high-availability vrrp global-parameters garp master-refresh-repeat {{master_refresh_repeat}}",
+            "compval": "global_parameters.garp.master_refersh_repeat",
+            "result": {
+                "global_parameters": {
+                    "garp": {
+                        "master_refresh_repeat": "{{ master_refresh_repeat }}",
+                    },
+                },
+            },
+        },
     ]
     # fmt: on

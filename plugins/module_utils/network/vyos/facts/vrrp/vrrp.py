@@ -92,14 +92,14 @@ class VrrpFacts(object):
         sync_groups = []
         vsvrs = []
         resources = self.get_config_set(data, connection)
-
+        self._module.fail_json(msg=resources)
         for resource in resources:
             vrrp_parser = VrrpTemplate(
                 lines=resource.split("\n"),
                 module=self._module,
             )
             objs = vrrp_parser.parse()
-            # self._module.fail_json(msg=str(resource.split("\n")) + "******" + str(objs))
+            self._module.fail_json(msg=str(resource.split("\n")) + "******" + str(objs))
             if objs:
                 if "disable" in objs:
                     vrrp_facts.update(objs)
