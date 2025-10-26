@@ -33,6 +33,21 @@ class VrrpTemplate(NetworkTemplate):
             module=module,
         )
 
+    def _tmplt_vsrvs(config_data):
+        config_data = config_data["virtual-server"]
+        command = []
+        # cmd = "service snmp v3 group {group}".format(**config_data)
+        # if "mode" in config_data:
+        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+        #     command.append(mode_cmd)
+        # if "seclevel" in config_data:
+        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+        #     command.append(sec_cmd)
+        # if "view" in config_data:
+        #     view_cmd = cmd + " view {view}".format(**config_data)
+        #     command.append(view_cmd)
+        return command
+
     # fmt: off
     PARSERS = [
         {
@@ -611,6 +626,42 @@ class VrrpTemplate(NetworkTemplate):
                 "global_parameters": {
                     "garp": {
                         "master_refresh_repeat": "{{ master_refresh_repeat }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "virtual_servers",
+            "getval": re.compile(
+                r"""
+                ^set
+                \shigh-availability\svirtual-server
+                \s+(?P<alias>\S+)
+                \s*(?P<address>address\s\S+)*
+                \s*(?P<alg>algorithm\s\S+)*
+                \s*(?P<delay_loop>delay-loop\s\S+)*
+                \s*(?P<fwmet>forward-method\s\S+)*
+                \s*(?P<fwmark>fwmark\s\S+)*
+                \s*(?P<ptime>persistence-timeout\s\S+)*
+                \s*(?P<port>port\s\S+)*
+                \s*(?P<proto>protocol\s\S+)*
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vsrvs,
+            # "compval": "global_parameters.garp.master_refersh_repeat",
+            "result": {
+                "virtual_servers": {
+                    "{{ alias }}": {
+                        "alias": "{{ alias }}",
+                        "address": "{{ address.split(" ")[1] if address is defined else None }}",
+                        "algorithm": "{{ alg.split(" ")[1] if alo is defined else None }}",
+                        "delay_loop": "{{ delay_loop.split(" ")[1] if delay_loop is defined else None }}",
+                        "forward_method": "{{ fwmet.split(" ")[1] if fwmet is defined else None }}",
+                        "fwmark": "{{ fwmark.split(" ")[1] if fwmark is defined else None }}",
+                        "persistence_timeout": "{{ ptime.split(" ")[1] if ptime is defined else None }}",
+                        "port": "{{ port.split(" ")[1] if port is defined else None }}",
+                        "protocol": "{{ proto.split(" ")[1] if proto is defined else None }}",
                     },
                 },
             },
