@@ -29,15 +29,33 @@
     - name: Replace device configurations of listed firewall  with provided configurarions (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_firewall_global: *id001
+      diff: true
 
     - name: Assert that task was idempotent
       assert:
         that:
           - result['changed'] == false
+          - result['diff'] is not defined
 
     - name: Assert that before dict is correctly generated
       assert:
         that:
           - "{{ replaced['after'] == result['before'] }}"
+
+    - name: Replace device configurations and test diff mode
+      register: result
+      vyos.vyos.vyos_firewall_global:
+        config: "{{ replaced['diff_config'] }}"
+        state: replaced
+      diff: true
+
+    - name: Assert that correct diff of commands were generated
+      assert:
+        that:
+          - item in result.diff.prepared
+      loop: "{{ replaced_diff }}"
+      loop_control:
+        loop_var: item
+
   always:
     - include_tasks: _remove_config.yaml
