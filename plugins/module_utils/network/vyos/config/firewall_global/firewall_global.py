@@ -551,7 +551,7 @@ class Firewall_global(ConfigBase):
                         afi = None
                     afi = None
                 for key, val in w.items():
-                    if val and key != "afi":
+                    if val is not None and key != "afi":
                         if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
                             commands.append(
                                 self._form_attr_cmd(
