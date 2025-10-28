@@ -57,9 +57,7 @@ class VrrpFacts(object):
                     config_dict.get(vrrp_gp.group(1), "") + config_line + "\n"
                 )
             if vrrp_vsrv:
-                config_dict["virtual_server"] = (
-                    config_dict.get(vrrp_vsrv.group(1), "") + config_line + "\n"
-                )
+                config_dict["virtual_server"] = config_dict.get(vrrp_vsrv, "") + config_line + "\n"
             if vrrp_sg:
                 config_dict["sync_group"] = (
                     config_dict.get(vrrp_sg.group(1), "") + config_line + "\n"
@@ -86,13 +84,12 @@ class VrrpFacts(object):
 
         if not data:
             data = self.get_device_data(connection)
-
         vrrp_facts = {}
         groups = []
         sync_groups = []
         vsvrs = []
         resources = self.get_config_set(data, connection)
-        self._module.fail_json(msg=resources)
+        self._module.fail_json(msg="test: " + str(resources))
         for resource in resources:
             vrrp_parser = VrrpTemplate(
                 lines=resource.split("\n"),
