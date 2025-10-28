@@ -93,6 +93,36 @@ class VrrpTemplate(NetworkTemplate):
         #     command.append(view_cmd)
         return command
 
+    def _tmplt_vrrp_gp(config_data):
+        config_data = config_data["vrrp"]["global-parameters"]
+        command = []
+        # cmd = "service snmp v3 group {group}".format(**config_data)
+        # if "mode" in config_data:
+        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+        #     command.append(mode_cmd)
+        # if "seclevel" in config_data:
+        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+        #     command.append(sec_cmd)
+        # if "view" in config_data:
+        #     view_cmd = cmd + " view {view}".format(**config_data)
+        #     command.append(view_cmd)
+        return command
+
+    def _tmplt_vrrp_gp_garp(config_data):
+        config_data = config_data["vrrp"]["global-parameters"]["garp"]
+        command = []
+        # cmd = "service snmp v3 group {group}".format(**config_data)
+        # if "mode" in config_data:
+        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+        #     command.append(mode_cmd)
+        # if "seclevel" in config_data:
+        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+        #     command.append(sec_cmd)
+        # if "view" in config_data:
+        #     view_cmd = cmd + " view {view}".format(**config_data)
+        #     command.append(view_cmd)
+        return command
+
     # fmt: off
     PARSERS = [
         {
@@ -514,168 +544,6 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "vg_gp_version",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sglobal-parameters
-                \sversion
-                \s(?P<version>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp global-parameters version {{version}}",
-            "compval": "global_parameters.version",
-            "result": {
-                "global_parameters": {
-                    "version": "{{ version }}",
-                },
-            },
-        },
-        {
-            "name": "gp_startup_delay",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sglobal-parameters
-                \sstartup-delay
-                \s(?P<startup_delay>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp global-parameters startup-delay {{startup_delay}}",
-            "compval": "global_parameters.startup_delay",
-            "result": {
-                "global_parameters": {
-                    "startup_delay": "{{ startup_delay }}",
-                },
-            },
-        },
-        {
-            "name": "gp_garp_interval",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sglobal-parameters
-                \sgarp
-                \sinterval
-                \s(?P<interval>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp global-parameters garp interval {{interval}}",
-            "compval": "global_parameters.garp.interval",
-            "result": {
-                "global_parameters": {
-                    "garp": {
-                        "interval": "{{ interval }}",
-                    },
-                },
-            },
-        },
-        {
-            "name": "gp_garp_master_delay",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sglobal-parameters
-                \sgarp
-                \smaster-delay
-                \s(?P<master_delay>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp global-parameters garp master-delay {{master_delay}}",
-            "compval": "global_parameters.garp.master_delay",
-            "result": {
-                "global_parameters": {
-                    "garp": {
-                        "master_delay": "{{ master_delay }}",
-                    },
-                },
-            },
-        },
-        {
-            "name": "gp_garp_master_refresh",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sglobal-parameters
-                \sgarp
-                \smaster-refresh
-                \s(?P<master_refresh>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp global-parameters garp master-refresh {{master_refresh}}",
-            "compval": "global_parameters.garp.master_refresh",
-            "result": {
-                "global_parameters": {
-                    "garp": {
-                        "master_refresh": "{{ master_refresh }}",
-                    },
-                },
-            },
-        },
-        {
-            "name": "gp_garp_master_refresh_repeat",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sglobal-parameters
-                \sgarp
-                \smaster-refresh-repeat
-                \s(?P<master_refresh_repeat>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp global-parameters garp master-refresh_repeat {{master_refresh_repeat}}",
-            "compval": "global_parameters.garp.master_refersh_repeat",
-            "result": {
-                "global_parameters": {
-                    "garp": {
-                        "master_refresh_repeat": "{{ master_refresh_repeat }}",
-                    },
-                },
-            },
-        },
-        {
-            "name": "gp_garp_master_repeat",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sglobal-parameters
-                \sgarp
-                \smaster-refresh-repeat
-                \s(?P<master_refresh_repeat>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp global-parameters garp master-refresh-repeat {{master_refresh_repeat}}",
-            "compval": "global_parameters.garp.master_refersh_repeat",
-            "result": {
-                "global_parameters": {
-                    "garp": {
-                        "master_refresh_repeat": "{{ master_refresh_repeat }}",
-                    },
-                },
-            },
-        },
-        {
             "name": "virtual_servers",
             "getval": re.compile(
                 r"""
@@ -825,6 +693,57 @@ class VrrpTemplate(NetworkTemplate):
                             "master": "{{ master if master is defined else None }}",
                             "stop": "{{ stop if stop is defined else None }}",
                         },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.global_parameters.garp",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\sglobal-parameters
+                \s+garp
+                (?:\s+interval\s+(?P<interval>\S+))?
+                (?:\s+master-delay\s+(?P<master_delay>\S+))?
+                (?:\s+master-refresh\s+(?P<master_refresh>\S+))?
+                (?:\s+master-refresh-repeat\s+(?P<master_refresh_repeat>\S+))?
+                (?:\s+master-repeat\s+(?P<master_repeat>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_gp_garp,
+            "result": {
+                "vrrp": {
+                    "global_parameters": {
+                        "garp": {
+                            "interval": "{{ interval if interval is defined else None }}",
+                            "master-delay": "{{ master_delay if master_delay is defined else None }}",
+                            "master-refresh": "{{ master_refresh if master_refresh is defined else None }}",
+                            "master-refresh-repeat": "{{ master_refresh_repeat if master_refresh_repeat is defined else None }}",
+                            "master-repeat": "{{ master_repeat if master_repeat is defined else None }}",
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.global_parameters",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\sglobal-parameters
+                (?:\s+startup-delay\s+(?P<startup_delay>\S+))?
+                (?:\s+version\s+(?P<version>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_gp,
+            "result": {
+                "vrrp": {
+                    "global_parameters": {
+                        "startup-delay": "{{ startup_delay if startup_delay is defined else None }}",
+                        "version": "{{ version if version is defined else None }}",
                     },
                 },
             },
