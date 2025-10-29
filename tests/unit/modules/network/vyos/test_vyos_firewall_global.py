@@ -109,7 +109,7 @@ class TestVyosFirewallGlobalModule(TestVyosModule):
                         ),
                         dict(
                             afi="ipv6",
-                            ip_src_route=True,
+                            ip_src_route=False,
                             icmp_redirects=dict(receive=False),
                         ),
                     ],
@@ -183,6 +183,7 @@ class TestVyosFirewallGlobalModule(TestVyosModule):
             "set firewall group port-group TELNET description 'This group has the telnet ports'",
             "set firewall group port-group TELNET",
             "set firewall ip-src-route 'enable'",
+            "set firewall ipv6-src-route 'disable'",
             "set firewall receive-redirects 'disable'",
             "set firewall config-trap 'enable'",
             "set firewall ipv6-receive-redirects 'disable'",
