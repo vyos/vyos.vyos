@@ -211,7 +211,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     "required": True,
                                     "type": "int",
                                 },
-                                "offload-target": {"type": "str"},
+                                "offload_target": {"type": "str"},
                                 "outbound_interface": {
                                     "options": {
                                         "group": {"type": "str"},
