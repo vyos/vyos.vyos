@@ -85,6 +85,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                         "jump",
                                         "queue",
                                         "synproxy",
+                                        "offload",
                                     ],
                                     "type": "str",
                                 },
