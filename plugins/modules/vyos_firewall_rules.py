@@ -135,6 +135,7 @@ options:
                 - continue
                 - return
                 - jump
+                - offload
                 - queue
                 - synproxy
               destination:
@@ -309,6 +310,10 @@ options:
                   - Option to log packets matching rule.
                 type: str
                 choices: ['disable', 'enable']
+              offload_target:
+                description:
+                  - Match flowtable object.
+                type: str
               outbound_interface:
                 description:
                   - Match outbound interface.
