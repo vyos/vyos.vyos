@@ -699,11 +699,13 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
                 config=[
                     dict(afi="ipv4", rule_sets=[dict(name="V4-INGRESS")]),
                     dict(afi="ipv6", rule_sets=[dict(name="V6-INGRESS")]),
+                    dict(afi="ipv4", rule_sets=[dict(name="V4-OFFLOAD")]),
                 ],
                 state="deleted",
             ),
         )
         commands = [
+            "delete firewall name V4-OFFLOAD",
             "delete firewall name V4-INGRESS",
             "delete firewall ipv6-name V6-INGRESS",
         ]
@@ -1098,6 +1100,7 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
             "delete firewall name V4-INGRESS",
             "delete firewall name EGRESS",
             "delete firewall name MULTIPLE-RULE",
+            "delete firewall name V4-OFFLOAD",
             "set firewall name MULTIPLE-RULE default-action 'drop'",
             "set firewall name MULTIPLE-RULE rule 1",
             "set firewall name MULTIPLE-RULE rule 1 action 'accept'",
@@ -1179,6 +1182,7 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
             "delete firewall name V4-INGRESS",
             "delete firewall name EGRESS",
             "delete firewall name MULTIPLE-RULE",
+            "delete firewall name V4-OFFLOAD",
             "set firewall name V4-INGRESS rule 101",
             "set firewall name V4-INGRESS description 'This is IPv4 INGRESS rule set'",
             "set firewall name V4-INGRESS default-action 'accept'",
@@ -1236,6 +1240,16 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
                                         number="2",
                                         action="drop",
                                         protocol="all",
+                                    ),
+                                ],
+                            ),
+                            dict(
+                                name="V4-OFFLOAD",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="offload",
+                                        offload_target="test",
                                     ),
                                 ],
                             ),
