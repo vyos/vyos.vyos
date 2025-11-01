@@ -966,6 +966,32 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
         )
         self.execute_module(changed=False, commands=[])
 
+    def test_vyos_firewall_v4v6_rule_sets_rule_rep_idem_03(self):
+        """Test if plugin correctly has no effect if there is no change in the configuration"""
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="V4-OFFLOAD",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="offload",
+                                        offload_target="test",
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+                state="replaced",
+            ),
+        )
+        self.execute_module(changed=False, commands=[])
+
     def test_vyos_firewall_v4v6_rule_sets_rule_mer_idem_01(self):
         """Test if plugin correctly has no effect if there is no change in the configuration"""
         set_module_args(
@@ -994,6 +1020,72 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
                             dict(
                                 name="EGRESS",
                                 default_action="reject",
+                            ),
+                        ],
+                    ),
+                    dict(
+                        afi="ipv6",
+                        rule_sets=[
+                            dict(
+                                name="V6-INGRESS",
+                                default_action="accept",
+                            ),
+                            dict(
+                                name="EGRESS",
+                                default_action="reject",
+                                rules=[
+                                    dict(
+                                        icmp=dict(type_name="echo-request"),
+                                        number=20,
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+        self.execute_module(changed=False, commands=[])
+
+    def test_vyos_firewall_v4v6_rule_sets_rule_mer_idem_02(self):
+        """Test if plugin correctly has no effect if there is no change in the configuration"""
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="V4-INGRESS",
+                                description="This is IPv4 V4-INGRESS rule set",
+                                default_action="accept",
+                                enable_default_log=True,
+                                rules=[
+                                    dict(
+                                        number="101",
+                                        action="accept",
+                                        description="Rule 101 is configured by Ansible",
+                                        ipsec="match-ipsec",
+                                        protocol="icmp",
+                                        fragment="match-frag",
+                                        disable=True,
+                                    ),
+                                ],
+                            ),
+                            dict(
+                                name="EGRESS",
+                                default_action="reject",
+                            ),
+                            dict(
+                                name="V4-OFFLOAD",
+                                rules=[
+                                    dict(
+                                        number="1",
+                                        action="offload",
+                                        offload_target="test",
+                                    ),
+                                ],
                             ),
                         ],
                     ),
