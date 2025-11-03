@@ -207,6 +207,10 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                         address_group=[
                             dict(
                                 afi="ipv4",
+                                name="A-EMPTY",
+                            ),
+                            dict(
+                                afi="ipv4",
                                 name="RND-HOSTS",
                                 description="This group has the Management hosts address lists",
                                 members=[
@@ -323,6 +327,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             ),
         )
         commands = [
+            "delete firewall group address-group A-EMPTY",
             "delete firewall group address-group RND-HOSTS address 192.0.2.3",
             "delete firewall group address-group RND-HOSTS address 192.0.2.5",
             "delete firewall group address-group DELETE-HOSTS address",
@@ -356,6 +361,10 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                     ],
                     group=dict(
                         address_group=[
+                            dict(
+                                afi="ipv4",
+                                name="A-EMPTY",
+                            ),
                             dict(
                                 afi="ipv4",
                                 name="RND-HOSTS",
@@ -484,6 +493,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             ),
         )
         commands = [
+            "delete firewall group address-group A-EMPTY",
             "delete firewall group address-group RND-HOSTS address 192.0.2.3",
             "delete firewall group address-group RND-HOSTS address 192.0.2.5",
             "delete firewall group address-group ZONE-TEST address 1.2.3.4",
