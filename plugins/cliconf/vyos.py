@@ -242,7 +242,9 @@ class Cliconf(CliconfBase):
 
         set_format = candidate.startswith("set") or candidate.startswith("delete")
         candidate_obj = NetworkConfig(indent=4, contents=candidate)
+
         if not set_format:
+
             config = [c.line for c in candidate_obj.items]
             commands = list()
             # this filters out less specific lines
@@ -256,6 +258,7 @@ class Cliconf(CliconfBase):
             candidate_commands = ["set %s" % cmd.replace(" {", "") for cmd in commands]
 
         else:
+
             candidate_commands = str(candidate).strip().split("\n")
 
         if diff_match == "none":
@@ -277,12 +280,14 @@ class Cliconf(CliconfBase):
                 updates.append(line)
 
             elif item.startswith("delete"):
+
                 if not running_commands:
                     updates.append(line)
                 else:
                     item = re.sub(r"delete", "set", item)
+
                     for entry in running_commands:
-                        if entry.startswith(item) and line not in visited:
+                        if re.match(rf"^{re.escape(item)}\b", entry) and line not in visited:
                             updates.append(line)
                             visited.add(line)
 
