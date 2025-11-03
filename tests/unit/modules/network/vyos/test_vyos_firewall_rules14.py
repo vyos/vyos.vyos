@@ -984,6 +984,17 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
         )
         self.execute_module(changed=False, commands=[])
 
+    def test_vyos_firewall_v4_rule_sets_del_05(self):
+        """Test if plugin correctly removes existing rule set"""
+        set_module_args(
+            dict(
+                config=[dict(afi="ipv4", rule_sets=[dict(name="V4-OFFLOAD")])],
+                state="deleted",
+            ),
+        )
+        commands = ["delete firewall ipv4 name V4-OFFLOAD"]
+        self.execute_module(changed=True, commands=commands)
+
     def test_vyos_firewall_v4v6_rule_sets_rule_rep_01(self):
         """Test if plugin correctly replaces a particular rule set(s)
         without affecting the others
@@ -1151,6 +1162,16 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                                         protocol="icmp",
                                         disable=True,
                                         log="enable",
+                                    ),
+                                ],
+                            ),
+                            dict(
+                                name="V4-OFFLOAD",
+                                rules=[
+                                    dict(
+                                        number="105",
+                                        action="offload",
+                                        offload_target="test",
                                     ),
                                 ],
                             ),
