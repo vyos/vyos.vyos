@@ -368,7 +368,7 @@ class Firewall_global(ConfigBase):
                                 )
                         elif not opr and key in l_set:
                             if key == "name" and self._is_grp_del(h, want, key):
-                                if commands[-1] == cmd + " " + want["name"] + " " + self._grp_type(
+                                if len(commands) > 0 and commands[-1] == cmd + " " + want["name"] + " " + self._grp_type(
                                     attr,
                                 ):
                                     commands.pop()
