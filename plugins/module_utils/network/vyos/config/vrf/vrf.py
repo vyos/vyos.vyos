@@ -20,7 +20,6 @@ created.
 
 from copy import deepcopy
 
-from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
@@ -121,7 +120,7 @@ class Vrf(ResourceModule):
             if w == {} and haved != {}:
                 self.commands = ["delete vrf"]
                 return
-            for k, want in iteritems(w):
+            for k, want in w.items():
                 if not (k in haved and haved[k]):
                     del wantd[k]
                 else:
@@ -139,7 +138,7 @@ class Vrf(ResourceModule):
         if self.state == "overridden":
             w = deepcopy(wantd)
             h = deepcopy(haved)
-            for k, want in iteritems(w):
+            for k, want in w.items():
                 if k in haved and haved[k] != want:
                     if isinstance(want, list):
                         for entry in want:
@@ -156,7 +155,7 @@ class Vrf(ResourceModule):
                                 self.commands.append("delete vrf name {}".format(wname))
                                 self.commands.append("commit")
 
-        for k, want in iteritems(wantd):
+        for k, want in wantd.items():
             if isinstance(want, list):
                 self._compare_instances(want=want, have=haved.pop(k, {}))
             self.compare(
