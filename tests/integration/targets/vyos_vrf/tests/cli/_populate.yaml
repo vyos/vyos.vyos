@@ -1,0 +1,10 @@
+---
+- ansible.builtin.include_tasks: _remove_config.yaml
+
+- ansible.builtin.include_tasks: _add_rm.yaml
+
+- name: Setup
+  vyos.vyos.vyos_config:
+    lines: "{{ populate_config }}"
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
