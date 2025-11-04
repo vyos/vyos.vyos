@@ -123,6 +123,96 @@ class VrrpTemplate(NetworkTemplate):
         #     command.append(view_cmd)
         return command
 
+    def _tmplt_vrrp_group(config_data):
+        config_data = config_data["vrrp"]["group"]
+        command = []
+        # cmd = "service snmp v3 group {group}".format(**config_data)
+        # if "mode" in config_data:
+        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+        #     command.append(mode_cmd)
+        # if "seclevel" in config_data:
+        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+        #     command.append(sec_cmd)
+        # if "view" in config_data:
+        #     view_cmd = cmd + " view {view}".format(**config_data)
+        #     command.append(view_cmd)
+        return command
+
+    def _tmplt_vrrp_group_track(config_data):
+        config_data = config_data["vrrp"]["group"]["track"]
+        command = []
+        # cmd = "service snmp v3 group {group}".format(**config_data)
+        # if "mode" in config_data:
+        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+        #     command.append(mode_cmd)
+        # if "seclevel" in config_data:
+        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+        #     command.append(sec_cmd)
+        # if "view" in config_data:
+        #     view_cmd = cmd + " view {view}".format(**config_data)
+        #     command.append(view_cmd)
+        return command
+
+    def _tmplt_vrrp_group_hc(config_data):
+        config_data = config_data["vrrp"]["group"]["health-check"]
+        command = []
+        # cmd = "service snmp v3 group {group}".format(**config_data)
+        # if "mode" in config_data:
+        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+        #     command.append(mode_cmd)
+        # if "seclevel" in config_data:
+        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+        #     command.append(sec_cmd)
+        # if "view" in config_data:
+        #     view_cmd = cmd + " view {view}".format(**config_data)
+        #     command.append(view_cmd)
+        return command
+
+    def _tmplt_vrrp_group_ts(config_data):
+        config_data = config_data["vrrp"]["group"]["transcription-script"]
+        command = []
+        # cmd = "service snmp v3 group {group}".format(**config_data)
+        # if "mode" in config_data:
+        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+        #     command.append(mode_cmd)
+        # if "seclevel" in config_data:
+        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+        #     command.append(sec_cmd)
+        # if "view" in config_data:
+        #     view_cmd = cmd + " view {view}".format(**config_data)
+        #     command.append(view_cmd)
+        return command
+
+    def _tmplt_vrrp_group_garp(config_data):
+        config_data = config_data["vrrp"]["group"]["garp"]
+        command = []
+        # cmd = "service snmp v3 group {group}".format(**config_data)
+        # if "mode" in config_data:
+        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+        #     command.append(mode_cmd)
+        # if "seclevel" in config_data:
+        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+        #     command.append(sec_cmd)
+        # if "view" in config_data:
+        #     view_cmd = cmd + " view {view}".format(**config_data)
+        #     command.append(view_cmd)
+        return command
+
+    def _tmplt_vrrp_group_auth(config_data):
+        config_data = config_data["vrrp"]["group"]["authentication"]
+        command = []
+        # cmd = "service snmp v3 group {group}".format(**config_data)
+        # if "mode" in config_data:
+        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+        #     command.append(mode_cmd)
+        # if "seclevel" in config_data:
+        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+        #     command.append(sec_cmd)
+        # if "view" in config_data:
+        #     view_cmd = cmd + " view {view}".format(**config_data)
+        #     command.append(view_cmd)
+        return command
+
     # fmt: off
     PARSERS = [
         {
@@ -230,351 +320,36 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "vg_priority",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \spriority
-                \s(?P<priority>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} priority {{priority}}",
-            "compval": "priority",
-            "result": {
-                "group": "{{ group }}",
-                "priority": "{{ priority }}",
-            },
-        },
-        {
-            "name": "vg_advertise_interval",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \sadvertise-interval
-                \s(?P<adv_int>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} advertise-interval {{adv_int}}",
-            "compval": "advertise_interval",
-            "result": {
-                "group": "{{ group }}",
-                "advertise_interval": "{{ adv_int }}",
-            },
-        },
-        {
-            "name": "vg_description",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \sdescription
-                \s(?P<description>.*)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} description {{description}}",
-            "compval": "description",
-            "result": {
-                "group": "{{ group }}",
-                "description": "{{ description }}",
-            },
-        },
-        {
-            "name": "vg_vrid",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \svrid
-                \s(?P<vrid>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} vrid {{vrid}}",
-            "compval": "vrid",
-            "result": {
-                "group": "{{ group }}",
-                "vrid": "{{ vrid }}",
-            },
-        },
-        {
-            "name": "vg_no_preempt",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \s(?P<np>no-preempt)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} no-preempt",
-            "compval": "no_preempt",
-            "result": {
-                "group": "{{ group }}",
-                "no_preempt": "{{ True if np is defined }}",
-            },
-        },
-        {
-            "name": "vg_preempt_delay",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \spreempt-delay
-                \s(?P<prd>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} preempt-delay {{prd}}",
-            "compval": "preempt_delay",
-            "result": {
-                "group": "{{ group }}",
-                "preempt-delay": "{{ prd }}",
-            },
-        },
-        {
-            "name": "vg_authentication_password",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \sauthentication
-                \spassword
-                \s(?P<pass>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} authentication password {{pass}}",
-            "compval": "pass",
-            "result": {
-                "group": "{{ group }}",
-                "authentication": {
-                    "password": "{{ pass }}",
-                },
-            },
-        },
-        {
-            "name": "vg_authentication_type",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \sauthentication
-                \stype
-                \s(?P<type>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} authentication type {{type}}",
-            "compval": "type",
-            "result": {
-                "group": "{{ group }}",
-                "authentication": {
-                    "password": "{{ type }}",
-                },
-            },
-        },
-        {
-            "name": "vg_rfc3768",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \srfc3768-compatibility
-                \s(?P<rfc3768>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} rfc3768-compatibility {{rfc3768}}",
-            "compval": "rfc3768_compatibility",
-            "result": {
-                "group": "{{ group }}",
-                "rfc3768_compatibility": "{{ True if rfc3768 is defined }}",
-            },
-        },
-        {
-            "name": "vg_garp_interval",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \sgarp
-                \sinterval
-                \s(?P<garp_int>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} garp interval {{garp_int}}",
-            "compval": "interval",
-            "result": {
-                "group": "{{ group }}",
-                "garp": {
-                        "interval": "{{ garp_int}}",
-                },
-            },
-        },
-        {
-            "name": "vg_garp_master_delay",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \sgarp
-                \smaster-delay
-                \s(?P<garp_mdelay>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} garp master-delay {{garp_mdelay}}",
-            "compval": "master_delay",
-            "result": {
-                "group": "{{ group }}",
-                "garp": {
-                        "master_delay": "{{ garp_mdelay }}",
-                },
-            },
-        },
-        {
-            "name": "vg_garp_master_refresh",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \sgarp
-                \smaster-refresh
-                \s(?P<garp_mrefresh>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} garp master-refresh {{garp_mrefresh}}",
-            "compval": "master_refresh",
-            "result": {
-                "group": "{{ group }}",
-                "garp": {
-                        "master_refresh": "{{ garp_mrefresh }}",
-                },
-            },
-        },
-        {
-            "name": "vg_garp_master_refresh_repeat",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \sgarp
-                \smaster-refresh-repeat
-                \s(?P<garp_mrefresh_repeat>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} garp master-refresh-repeat {{garp_mrefresh_repeat}}",
-            "compval": "master_refresh_repeat",
-            "result": {
-                "group": "{{ group }}",
-                "garp": {
-                        "master_refresh_repeat": "{{ garp_mrefresh_repeat }}",
-                },
-            },
-        },
-        {
-            "name": "vg_garp_master_repeat",
-            "getval": re.compile(
-                r"""
-                ^set
-                \shigh-availability
-                \svrrp
-                \sgroup
-                \s(?P<group>\S+)
-                \sgarp
-                \smaster-repeat
-                \s(?P<garp_mrepeat>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "high-availability vrrp group {{group}} garp master-repeat {{garp_mrepeat}}",
-            "compval": "master_repeat",
-            "result": {
-                "group": "{{ group }}",
-                "garp": {
-                        "master_repeat": "{{ garp_mrepeat }}",
-                },
-            },
-        },
-        {
             "name": "virtual_servers",
             "getval": re.compile(
                 r"""
-                ^set
-                \shigh-availability\svirtual-server
+                ^set\shigh-availability\svirtual-server
                 \s+(?P<alias>\S+)
-                \s*(?P<address>address\s\S+)*
-                \s*(?P<alg>algorithm\s\S+)*
-                \s*(?P<delay_loop>delay-loop\s\S+)*
-                \s*(?P<fwmet>forward-method\s\S+)*
-                \s*(?P<fwmark>fwmark\s\S+)*
-                \s*(?P<ptime>persistence-timeout\s\S+)*
-                \s*(?P<port>port\s\S+)*
-                \s*(?P<proto>protocol\s\S+)*
-                $""",
+                (?:\s+address\s+(?P<address>\S+))?
+                (?:\s+algorithm\s+(?P<algorithm>\S+))?
+                (?:\s+delay-loop\s+(?P<delay_loop>\S+))?
+                (?:\s+forward-method\s+(?P<forward_method>\S+))?
+                (?:\s+fwmark\s+(?P<fwmark>\S+))?
+                (?:\s+persistence-timeout\s+(?P<persistence_timeout>\S+))?
+                (?:\s+port\s+(?P<port>\S+))?
+                (?:\s+protocol\s+(?P<protocol>\S+))?
+                $
+                """,
                 re.VERBOSE,
             ),
             "setval": _tmplt_vsrvs,
-            # "compval": "global_parameters.garp.master_refersh_repeat",
             "result": {
                 "virtual_servers": {
                     "{{ alias }}": {
                         "alias": "{{ alias }}",
-                        "address": "{{ address.split(" ")[1] if address is defined else None }}",
-                        "algorithm": "{{ alg.split(" ")[1] if alo is defined else None }}",
-                        "delay_loop": "{{ delay_loop.split(" ")[1] if delay_loop is defined else None }}",
-                        "forward_method": "{{ fwmet.split(" ")[1] if fwmet is defined else None }}",
-                        "fwmark": "{{ fwmark.split(" ")[1] if fwmark is defined else None }}",
-                        "persistence_timeout": "{{ ptime.split(" ")[1] if ptime is defined else None }}",
-                        "port": "{{ port.split(" ")[1] if port is defined else None }}",
-                        "protocol": "{{ proto.split(" ")[1] if proto is defined else None }}",
+                        "address": "{{ address if address is defined else None }}",
+                        "algorithm": "{{ algorithm if algorithm is defined else None }}",
+                        "delay_loop": "{{ delay_loop if delay_loop is defined else None }}",
+                        "forward_method": "{{ forward_method if forward_method is defined else None }}",
+                        "fwmark": "{{ fwmark if fwmark is defined else None }}",
+                        "persistence_timeout": "{{ persistence_timeout if persistence_timeout is defined else None }}",
+                        "port": "{{ port if port is defined else None }}",
+                        "protocol": "{{ protocol if protocol is defined else None }}",
                     },
                 },
             },
@@ -748,5 +523,195 @@ class VrrpTemplate(NetworkTemplate):
                 },
             },
         },
+
+        {
+            "name": "vrrp.group",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\sgroup
+                \s+(?P<group_name>\S+)
+                (?:\s+address\s+(?P<address>\S+))?
+                (?:\s+description\s+(?P<description>'.+?'|\S+))?
+                (?:\s+hello-source-address\s+(?P<hello_source>\S+))?
+                (?:\s+interface\s+(?P<interface>\S+))?
+                (?:\s+(?P<no_preempt>no-preempt))?
+                (?:\s+peer-address\s+(?P<peer_address>\S+))?
+                (?:\s+priority\s+(?P<priority>\S+))?
+                (?:\s+vrid\s+(?P<vrid>\S+))?
+                (?:\s+rfc3768-compatibility\s+(?P<rfc3768_compatibility>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group,
+            "result": {
+                "vrrp": {
+                    "groups": {
+                        "{{ group_name }}": {
+                            "name": "{{ group_name }}",
+                            "address": "{{ address if address is defined else None }}",
+                            "description": "{{ description.strip(\"'\") if description is defined else None }}",
+                            "hello-source-address": "{{ hello_source if hello_source is defined else None }}",
+                            "interface": "{{ interface if interface is defined else None }}",
+                            "no-preempt": "{{ True if no_preempt is defined else False }}",
+                            "peer-address": "{{ peer_address if peer_address is defined else None }}",
+                            "priority": "{{ priority if priority is defined else None }}",
+                            "vrid": "{{ vrid if vrid is defined else None }}",
+                            "rfc3768-compatibility": "{{ rfc3768_compatibility if rfc3768_compatibility is defined else None }}",
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.group.authentication",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\sgroup
+                \s+(?P<group_name>\S+)
+                (?:\s+password\s+(?P<password>\S+))?
+                (?:\s+type\s+(?P<type>\S+))?
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group_auth,
+            "result": {
+                "vrrp": {
+                    "groups": {
+                        "{{ group_name }}": {
+                            "name": "{{ group_name }}",
+                            "authentication": {
+                                "password": "{{ password if password is defined else None }}",
+                                "type": "{{ type if type is defined else None }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.group.garp",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\sgroup
+                \s+garp
+                (?:\s+interval\s+(?P<interval>\S+))?
+                (?:\s+master-delay\s+(?P<master_delay>\S+))?
+                (?:\s+master-refresh\s+(?P<master_refresh>\S+))?
+                (?:\s+master-refresh-repeat\s+(?P<master_refresh_repeat>\S+))?
+                (?:\s+master-repeat\s+(?P<master_repeat>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group_garp,
+            "result": {
+                "vrrp": {
+                    "group": {
+                        "garp": {
+                            "interval": "{{ interval if interval is defined else None }}",
+                            "master-delay": "{{ master_delay if master_delay is defined else None }}",
+                            "master-refresh": "{{ master_refresh if master_refresh is defined else None }}",
+                            "master-refresh-repeat": "{{ master_refresh_repeat if master_refresh_repeat is defined else None }}",
+                            "master-repeat": "{{ master_repeat if master_repeat is defined else None }}",
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.group.transition_script",
+            "getval": re.compile(
+               r"""
+               ^set\shigh-availability\svrrp\sgroup
+               \s+(?P<gname>\S+)
+               \stransition-script
+               (?:\s+backup\s+(?P<backup>\S+))?
+               (?:\s+fault\s+(?P<fault>\S+))?
+               (?:\s+master\s+(?P<master>\S+))?
+               (?:\s+stop\s+(?P<stop>\S+))?
+               $
+               """,
+               re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group_ts,
+            # "compval": "global_parameters.garp.master_refersh_repeat",
+            "result": {
+                "vrrp": {
+                    "groups": {
+                        "{{ gname }}": {
+                            "name": "{{ gname }}",
+                            "transition_script": {
+                                "backup": "{{ backup if backup is defined else None }}",
+                                "fault": "{{ fault if fault is defined else None }}",
+                                "master": "{{ master if master is defined else None }}",
+                                "stop": "{{ stop if stop is defined else None }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.group.health_check",
+            "getval": re.compile(
+               r"""
+               ^set\shigh-availability\svrrp\sgroup
+               \s+(?P<group_name>\S+)
+               \shealth-check
+               (?:\s+failure-count\s+(?P<failure_count>\S+))
+               ?(?:\s+interval\s+(?P<int>\S+))
+               ?(?:\s+ping\s+(?P<ping>\S+))
+               ?(?:\s+script\s+(?P<script>\S+))?
+               $
+               """,
+               re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group_hc,
+            # "compval": "global_parameters.garp.master_refersh_repeat",
+            "result": {
+                "vrrp": {
+                    "groups": {
+                        "{{ group_name }}": {
+                            "name": "{{ group_name }}",
+                            "health_check": {
+                                "failure_count": "{{ failure_count if failure_count is defined else None }}",
+                                "interval": "{{ int if int is defined else None }}",
+                                "ping": "{{ ping if ping is defined else None }}",
+                                "script": "{{ script if script is defined else None }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.group.track",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\sgroup
+                \s+(?P<group_name>\S+)
+                \strack
+                (?:\s+exculde-vrrp-interface\s+(?P<exclude_vrrp_inter>\S+))?
+                (?:\s+interface\s+(?P<interface>\S+))?
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group_track,
+            "result": {
+                "vrrp": {
+                    "groups": {
+                        "{{ group_name }}": {
+                            "name": "{{ group_name }}",
+                            "track": {
+                                "exclude-vrrp-interface": "{{ exclude-vrrp-inter if exclude-vrrp-inter is defined else None }}",
+                                "interface": "{{ interface if interface is defined else None }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+
     ]
     # fmt: on
