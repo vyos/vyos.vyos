@@ -98,21 +98,12 @@ class VrrpFacts(object):
                 module=self._module,
             )
             objs = vrrp_parser.parse()
-            self._module.fail_json(msg=str(resource.split("\n")) + "******" + str(objs))
-            if objs:
-                if "disable" in objs:
-                    vrrp_facts.update(objs)
-                if "group" in objs:
-                    groups.append(objs)
-                if "virtual_servers" in objs:
-                    vsvrs.append(objs)
-                if "sync_groups" in objs:
-                    sync_groups.append(objs)
-
-        if groups:
-            vrrp_facts.update({"groups": groups})
-
-        self._module.fail_json(msg=str(vrrp_facts))
+            if "virtual_servers" in objs:
+                objs["virtual_servers"] = sorted(
+                    list(objs["virtual_servers"].values()),
+                    key=lambda k, sk="alias": k[sk],
+                )
+        self._module.fail_json(msg=str(objs))
         ansible_facts["ansible_network_resources"].pop("vrrp", None)
 
         params = utils.remove_empties(
