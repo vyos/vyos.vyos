@@ -265,124 +265,124 @@ class VrrpTemplate(NetworkTemplate):
                 },
             },
         },
-        # {
-        #     "name": "virtual_servers.real_servers",
-        #     "getval": re.compile(
-        #        r"""
-        #        ^set\shigh-availability\svirtual-server
-        #        \s+(?P<alias>\S+)
-        #        \sreal-server
-        #        \s+(?P<name>\S+)
-        #        (?:\s+port\s+(?P<port>\S+))?
-        #        (?:\s+health-check\sscript\s+(?P<hcscript>\S+))?
-        #        (?:\s+connection-timeout\s+(?P<cont>\S+))?
-        #        $
-        #        """,
-        #        re.VERBOSE,
-        #     ),
-        #     "setval": _tmplt_vsrvs_rsrv,
-        #     # "compval": "global_parameters.garp.master_refersh_repeat",
-        #     "result": {
-        #         "virtual_servers": {
-        #             "{{ alias }}": {
-        #                 "alias": "{{ alias }}",
-        #                 "real_servers": {
-        #                     "{{ name }}": {
-        #                         "name": "{{ name }}",
-        #                         "port": "{{ portif port is defined else None }}",
-        #                         "health_check_script": "{{ hcscript f hcscript is defined else None }}",
-        #                         "connection_timeout": "{{ cont if cont is defined else None }}",
-        #                     },
-        #                 },
-        #             },
-        #         },
-        #     },
-        # },
-        # {
-        #     "name": "sync_group.member",
-        #     "getval": re.compile(
-        #        r"""
-        #        ^set\shigh-availability\svrrp\ssync-group
-        #        \s+(?P<sgname>\S+)
-        #        \smember
-        #        \s+(?P<member>\S+)
-        #        $
-        #        """,
-        #        re.VERBOSE,
-        #     ),
-        #     "setval": "set high-availability vrrp sync-group {{sgname}} member {{member}}",
-        #     "compval": "sync_groups.member",
-        #     "result": {
-        #         "sync_groups": {
-        #             "{{ sgname }}": {
-        #                 "name": "{{ sgname }}",
-        #                 "member": "{{ member }}",
-        #             },
-        #         },
-        #     },
-        # },
-        # {
-        #     "name": "sync_group.health_check",
-        #     "getval": re.compile(
-        #        r"""
-        #        ^set\shigh-availability\svrrp\ssync-group
-        #        \s+(?P<sgname>\S+)
-        #        \shealth-check
-        #        (?:\s+failure-count\s+(?P<failure_count>\S+))
-        #        ?(?:\s+interval\s+(?P<int>\S+))
-        #        ?(?:\s+ping\s+(?P<ping>\S+))
-        #        ?(?:\s+script\s+(?P<script>\S+))?
-        #        $
-        #        """,
-        #        re.VERBOSE,
-        #     ),
-        #     "setval": _tmplt_sgroup_hc,
-        #     # "compval": "global_parameters.garp.master_refersh_repeat",
-        #     "result": {
-        #         "sync_groups": {
-        #             "{{ sgname }}": {
-        #                 "name": "{{ sgname }}",
-        #                 "health_check": {
-        #                     "failure_count": "{{ failure_count if failure_count is defined else None }}",
-        #                     "interval": "{{ int if int is defined else None }}",
-        #                     "ping": "{{ ping if ping is defined else None }}",
-        #                     "script": "{{ script if script is defined else None }}",
-        #                 },
-        #             },
-        #         },
-        #     },
-        # },
-        # {
-        #     "name": "sync_group.transition_script",
-        #     "getval": re.compile(
-        #        r"""
-        #        ^set\shigh-availability\svrrp\ssync-group
-        #        \s+(?P<sgname>\S+)
-        #        \stransition-script
-        #        (?:\s+backup\s+(?P<backup>\S+))?
-        #        (?:\s+fault\s+(?P<fault>\S+))?
-        #        (?:\s+master\s+(?P<master>\S+))?
-        #        (?:\s+stop\s+(?P<stop>\S+))?
-        #        $
-        #        """,
-        #        re.VERBOSE,
-        #     ),
-        #     "setval": _tmplt_sgroup_ts,
-        #     # "compval": "global_parameters.garp.master_refersh_repeat",
-        #     "result": {
-        #         "sync_groups": {
-        #             "{{ sgname }}": {
-        #                 "name": "{{ sgname }}",
-        #                 "transition_script": {
-        #                     "backup": "{{ backup if backup is defined else None }}",
-        #                     "fault": "{{ fault if fault is defined else None }}",
-        #                     "master": "{{ master if master is defined else None }}",
-        #                     "stop": "{{ stop if stop is defined else None }}",
-        #                 },
-        #             },
-        #         },
-        #     },
-        # },
+        {
+            "name": "virtual_servers.real_servers",
+            "getval": re.compile(
+               r"""
+               ^set\shigh-availability\svirtual-server
+               \s+(?P<alias>\S+)
+               \sreal-server
+               \s+(?P<name>\S+)
+               (?:\s+port\s+(?P<port>\S+))?
+               (?:\s+health-check\sscript\s+(?P<hcscript>\S+))?
+               (?:\s+connection-timeout\s+(?P<cont>\S+))?
+               $
+               """,
+               re.VERBOSE,
+            ),
+            "setval": _tmplt_vsrvs_rsrv,
+            # "compval": "global_parameters.garp.master_refersh_repeat",
+            "result": {
+                "virtual_servers": {
+                    "{{ alias }}": {
+                        "alias": "{{ alias }}",
+                        "real_servers": {
+                            "{{ name }}": {
+                                "name": "{{ name }}",
+                                "port": "{{ port if port is defined else None }}",
+                                "health_check_script": "{{ hcscript if hcscript is defined else None }}",
+                                "connection_timeout": "{{ cont if cont is defined else None }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "sync_group.member",
+            "getval": re.compile(
+               r"""
+               ^set\shigh-availability\svrrp\ssync-group
+               \s+(?P<sgname>\S+)
+               \smember
+               \s+(?P<member>\S+)
+               $
+               """,
+               re.VERBOSE,
+            ),
+            "setval": "set high-availability vrrp sync-group {{sgname}} member {{member}}",
+            "compval": "sync_groups.member",
+            "result": {
+                "sync_groups": {
+                    "{{ sgname }}": {
+                        "name": "{{ sgname }}",
+                        "member": "{{ member }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "sync_group.health_check",
+            "getval": re.compile(
+               r"""
+               ^set\shigh-availability\svrrp\ssync-group
+               \s+(?P<sgname>\S+)
+               \shealth-check
+               (?:\s+failure-count\s+(?P<failure_count>\S+))
+               ?(?:\s+interval\s+(?P<int>\S+))
+               ?(?:\s+ping\s+(?P<ping>\S+))
+               ?(?:\s+script\s+(?P<script>\S+))?
+               $
+               """,
+               re.VERBOSE,
+            ),
+            "setval": _tmplt_sgroup_hc,
+            # "compval": "global_parameters.garp.master_refersh_repeat",
+            "result": {
+                "sync_groups": {
+                    "{{ sgname }}": {
+                        "name": "{{ sgname }}",
+                        "health_check": {
+                            "failure_count": "{{ failure_count if failure_count is defined else None }}",
+                            "interval": "{{ int if int is defined else None }}",
+                            "ping": "{{ ping if ping is defined else None }}",
+                            "script": "{{ script if script is defined else None }}",
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "sync_group.transition_script",
+            "getval": re.compile(
+               r"""
+               ^set\shigh-availability\svrrp\ssync-group
+               \s+(?P<sgname>\S+)
+               \stransition-script
+               (?:\s+backup\s+(?P<backup>\S+))?
+               (?:\s+fault\s+(?P<fault>\S+))?
+               (?:\s+master\s+(?P<master>\S+))?
+               (?:\s+stop\s+(?P<stop>\S+))?
+               $
+               """,
+               re.VERBOSE,
+            ),
+            "setval": _tmplt_sgroup_ts,
+            # "compval": "global_parameters.garp.master_refersh_repeat",
+            "result": {
+                "sync_groups": {
+                    "{{ sgname }}": {
+                        "name": "{{ sgname }}",
+                        "transition_script": {
+                            "backup": "{{ backup if backup is defined else None }}",
+                            "fault": "{{ fault if fault is defined else None }}",
+                            "master": "{{ master if master is defined else None }}",
+                            "stop": "{{ stop if stop is defined else None }}",
+                        },
+                    },
+                },
+            },
+        },
         # {
         #     "name": "vrrp.global_parameters.garp",
         #     "getval": re.compile(

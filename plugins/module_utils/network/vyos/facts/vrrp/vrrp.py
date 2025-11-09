@@ -70,6 +70,14 @@ class VrrpFacts(object):
                 )
         return list(config_dict.values())
 
+    def deep_merge(self, dest, src):
+        for key, value in src.items():
+            if key in dest and isinstance(dest[key], dict) and isinstance(value, dict):
+                self.deep_merge(dest[key], value)
+            else:
+                dest[key] = value
+        return dest
+
     def populate_facts(self, connection, ansible_facts, data=None):
         """Populate the facts for vrrp network resource
 
@@ -86,24 +94,21 @@ class VrrpFacts(object):
 
         if not data:
             data = self.get_device_data(connection)
-        vrrp_facts = {}
+        vrrp_facts = {"virtual_servers": {}, "sync_groups": {}}
         groups = []
-        sync_groups = []
-        vsvrs = []
         resources = self.get_config_set(data, connection)
-        # self._module.fail_json(msg=resources)
         for resource in data.splitlines():  # resources:
             vrrp_parser = VrrpTemplate(
                 lines=resource.split("\n"),
                 module=self._module,
             )
             objs = vrrp_parser.parse()
-            if "virtual_servers" in objs:
-                objs["virtual_servers"] = sorted(
-                    list(objs["virtual_servers"].values()),
-                    key=lambda k, sk="alias": k[sk],
-                )
-        self._module.fail_json(msg=str(objs))
+            for section in ("virtual_servers", "sync_groups"):
+                if section in objs:
+                    for name, data in objs[section].items():
+                        existing = vrrp_facts[section].get(name, {})
+                        vrrp_facts[section][name] = self.deep_merge(existing, data)
+        self._module.fail_json(msg=str(vrrp_facts))
         ansible_facts["ansible_network_resources"].pop("vrrp", None)
 
         params = utils.remove_empties(
@@ -112,6 +117,6 @@ class VrrpFacts(object):
 
         facts["vrrp"] = params.get("config", [])
         ansible_facts["ansible_network_resources"].update(facts)
-        self._module.fail_json(msg=ansible_facts)
+        self._module.fail_json(msg="STOP")
 
         return ansible_facts
