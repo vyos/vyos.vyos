@@ -94,23 +94,26 @@ class VrrpFacts(object):
 
         if not data:
             data = self.get_device_data(connection)
-        vrrp_facts = {"virtual_servers": {}, "sync_groups": {}}
+        vrrp_facts = {"virtual_servers": {}, "sync_groups": {}, "vrrp": {}}
         groups = []
         resources = self.get_config_set(data, connection)
-        for resource in data.splitlines():  # resources:
+        for resource in data.splitlines():
             vrrp_parser = VrrpTemplate(
                 lines=resource.split("\n"),
                 module=self._module,
             )
             objs = vrrp_parser.parse()
-            for section in ("virtual_servers", "sync_groups"):
+            if "disable" in objs:
+                vrrp_facts["disable"] = objs["disable"]
+            if "vrrp" in objs:
+                groups.append(objs)
+            for section in ("virtual_servers", "sync_groups", "vrrp"):
                 if section in objs:
                     for name, data in objs[section].items():
                         existing = vrrp_facts[section].get(name, {})
                         vrrp_facts[section][name] = self.deep_merge(existing, data)
         self._module.fail_json(msg=str(vrrp_facts))
         ansible_facts["ansible_network_resources"].pop("vrrp", None)
-
         params = utils.remove_empties(
             vrrp_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
         )
