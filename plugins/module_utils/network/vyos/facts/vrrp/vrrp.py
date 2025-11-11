@@ -95,7 +95,6 @@ class VrrpFacts(object):
         if not data:
             data = self.get_device_data(connection)
         vrrp_facts = {"virtual_servers": {}, "sync_groups": {}, "vrrp": {}}
-        groups = []
         resources = self.get_config_set(data, connection)
         for resource in data.splitlines():
             vrrp_parser = VrrpTemplate(
@@ -105,9 +104,9 @@ class VrrpFacts(object):
             objs = vrrp_parser.parse()
             if "disable" in objs:
                 vrrp_facts["disable"] = objs["disable"]
-            if "vrrp" in objs:
-                groups.append(objs)
-            for section in ("virtual_servers", "sync_groups", "vrrp"):
+            # if "vrrp" in objs:
+            #     groups.append(objs)
+            for section in ("virtual_servers", "vrrp"):
                 if section in objs:
                     for name, data in objs[section].items():
                         existing = vrrp_facts[section].get(name, {})

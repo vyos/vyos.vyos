@@ -313,10 +313,12 @@ class VrrpTemplate(NetworkTemplate):
             "setval": "set high-availability vrrp sync-group {{sgname}} member {{member}}",
             "compval": "sync_groups.member",
             "result": {
-                "sync_groups": {
-                    "{{ sgname }}": {
-                        "name": "{{ sgname }}",
-                        "member": "{{ member }}",
+                "vrrp": {
+                    "sync_groups": {
+                        "{{ sgname }}": {
+                            "name": "{{ sgname }}",
+                            "member": "{{ member }}",
+                        },
                     },
                 },
             },
@@ -339,14 +341,16 @@ class VrrpTemplate(NetworkTemplate):
             "setval": _tmplt_sgroup_hc,
             # "compval": "global_parameters.garp.master_refersh_repeat",
             "result": {
-                "sync_groups": {
-                    "{{ sgname }}": {
-                        "name": "{{ sgname }}",
-                        "health_check": {
-                            "failure_count": "{{ failure_count if failure_count is defined else None }}",
-                            "interval": "{{ int if int is defined else None }}",
-                            "ping": "{{ ping if ping is defined else None }}",
-                            "script": "{{ script if script is defined else None }}",
+                "vrrp": {
+                    "sync_groups": {
+                        "{{ sgname }}": {
+                            "name": "{{ sgname }}",
+                            "health_check": {
+                                "failure_count": "{{ failure_count if failure_count is defined else None }}",
+                                "interval": "{{ int if int is defined else None }}",
+                                "ping": "{{ ping if ping is defined else None }}",
+                                "script": "{{ script if script is defined else None }}",
+                            },
                         },
                     },
                 },
@@ -370,14 +374,16 @@ class VrrpTemplate(NetworkTemplate):
             "setval": _tmplt_sgroup_ts,
             # "compval": "global_parameters.garp.master_refersh_repeat",
             "result": {
-                "sync_groups": {
-                    "{{ sgname }}": {
-                        "name": "{{ sgname }}",
-                        "transition_script": {
-                            "backup": "{{ backup if backup is defined else None }}",
-                            "fault": "{{ fault if fault is defined else None }}",
-                            "master": "{{ master if master is defined else None }}",
-                            "stop": "{{ stop if stop is defined else None }}",
+                "vrrp": {
+                    "sync_groups": {
+                        "{{ sgname }}": {
+                            "name": "{{ sgname }}",
+                            "transition_script": {
+                                "backup": "{{ backup if backup is defined else None }}",
+                                "fault": "{{ fault if fault is defined else None }}",
+                                "master": "{{ master if master is defined else None }}",
+                                "stop": "{{ stop if stop is defined else None }}",
+                            },
                         },
                     },
                 },
@@ -520,7 +526,7 @@ class VrrpTemplate(NetworkTemplate):
             "setval": _tmplt_vrrp_group_garp,
             "result": {
                 "vrrp": {
-                    "group": {
+                    "groups": {
                         "garp": {
                             "interval": "{{ interval if interval is defined else None }}",
                             "master-delay": "{{ master_delay if master_delay is defined else None }}",

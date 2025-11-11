@@ -34,14 +34,143 @@ class VrrpArgs(object):  # pylint: disable=R0903
     argument_spec = {
         "config": {
             "type": "dict",
+            "required": False,
             "options": {
-                "disable": {"aliases": ["disabled"], "type": "bool", "default": False},
-                "virtual_server": {
+                "disable": {"type": "bool"},
+                "virtual_servers": {
                     "type": "list",
                     "elements": "dict",
                     "options": {
-                        "name": {"required": True, "type": "str"},
-                        "address": {"type": "str"},
+                        "name": {"type": "str", "required": True},
+                        "address": {"type": "str", "required": True},
+                        "algorithm": {
+                            "type": "str",
+                            "choices": ["round_robin", "weighted_round_robin", "least_connection"],
+                        },
+                        "delay_loop": {"type": "str"},
+                        "forward_method": {"type": "str", "choices": ["direct", "nat"]},
+                        "fwmark": {"type": "str"},
+                        "persistence_timeout": {"type": "str"},
+                        "port": {"type": "str"},
+                        "protocol": {"type": "str", "choices": ["tcp", "udp"]},
+                        "real_server": {
+                            "type": "list",
+                            "elements": "dict",
+                            "options": {
+                                "address": {"type": "str", "required": True},
+                                "port": {"type": "str"},
+                                "health_check_script": {"type": "str"},
+                            },
+                        },
+                    },
+                },
+                "vrrp": {
+                    "type": "dict",
+                    "options": {
+                        "global_parameters": {
+                            "type": "dict",
+                            "options": {
+                                "garp": {
+                                    "type": "dict",
+                                    "options": {
+                                        "interval": {"type": "int"},
+                                        "master_delay": {"type": "int"},
+                                        "master_refresh": {"type": "int"},
+                                        "master_refresh_repeat": {"type": "int"},
+                                        "master_repeat": {"type": "int"},
+                                    },
+                                },
+                            },
+                        },
+                        "groups": {
+                            "type": "list",
+                            "elements": "dict",
+                            "options": {
+                                "name": {"type": "str", "required": True},
+                                "address": {"type": "str"},
+                                "advertise_interval": {"type": "int"},
+                                "authentication": {
+                                    "type": "dict",
+                                    "options": {
+                                        "password": {"type": "str", "no_log": True},
+                                        "type": {"type": "str", "choices": ["plaintext_password"]},
+                                    },
+                                },
+                                "description": {"type": "str"},
+                                "disable": {"type": "bool"},
+                                "excluded_address": {"type": "str"},
+                                "garp": {
+                                    "type": "dict",
+                                    "options": {
+                                        "interval": {"type": "int"},
+                                        "master_delay": {"type": "int"},
+                                        "master_refresh": {"type": "int"},
+                                        "master_refresh_repeat": {"type": "int"},
+                                        "master_repeat": {"type": "int"},
+                                    },
+                                },
+                                "health_check": {
+                                    "type": "dict",
+                                    "options": {
+                                        "failure_count": {"type": "int"},
+                                        "interval": {"type": "int"},
+                                        "ping": {"type": "str"},
+                                        "script": {"type": "str"},
+                                    },
+                                },
+                                "hello_source_address": {"type": "str"},
+                                "interface": {"type": "str"},
+                                "no_preempt": {"type": "bool"},
+                                "peer_address": {"type": "str"},
+                                "preempt_delay": {"type": "int"},
+                                "priority": {"type": "int"},
+                                "rfc3768_compatibility": {"type": "bool"},
+                                "track": {
+                                    "type": "dict",
+                                    "options": {
+                                        "exclude_vrrp_interface": {"type": "bool"},
+                                        "interface": {"type": "str"},
+                                    },
+                                },
+                                "transition_script": {
+                                    "type": "dict",
+                                    "options": {
+                                        "backup": {"type": "str"},
+                                        "fault": {"type": "str"},
+                                        "master": {"type": "str"},
+                                        "stop": {"type": "str"},
+                                    },
+                                },
+                                "vrid": {"type": "int", "required": True},
+                            },
+                        },
+                        "snmp": {"type": "bool"},
+                        "sync_groups": {
+                            "type": "list",
+                            "elements": "dict",
+                            "options": {
+                                "name": {"type": "str", "required": True},
+                                "health_check": {
+                                    "type": "dict",
+                                    "options": {
+                                        "failure_count": {"type": "int"},
+                                        "interval": {"type": "int"},
+                                        "ping": {"type": "str"},
+                                        "script": {"type": "str"},
+                                    },
+                                },
+                                "member": {"type": "list", "elements": "str"},
+                                "transition_script": {
+                                    "type": "dict",
+                                    "options": {
+                                        "backup": {"type": "str"},
+                                        "fault": {"type": "str"},
+                                        "master": {"type": "str"},
+                                        "stop": {"type": "str"},
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
             },
