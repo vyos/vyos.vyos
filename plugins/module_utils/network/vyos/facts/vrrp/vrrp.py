@@ -94,7 +94,7 @@ class VrrpFacts(object):
 
         if not data:
             data = self.get_device_data(connection)
-        vrrp_facts = {"virtual_servers": {}, "sync_groups": {}, "vrrp": {}}
+        vrrp_facts = {"virtual_servers": {}, "vrrp": {}}
         resources = self.get_config_set(data, connection)
         for resource in data.splitlines():
             vrrp_parser = VrrpTemplate(
@@ -104,21 +104,43 @@ class VrrpFacts(object):
             objs = vrrp_parser.parse()
             if "disable" in objs:
                 vrrp_facts["disable"] = objs["disable"]
-            # if "vrrp" in objs:
-            #     groups.append(objs)
             for section in ("virtual_servers", "vrrp"):
                 if section in objs:
                     for name, data in objs[section].items():
                         existing = vrrp_facts[section].get(name, {})
                         vrrp_facts[section][name] = self.deep_merge(existing, data)
-        self._module.fail_json(msg=str(vrrp_facts))
         ansible_facts["ansible_network_resources"].pop("vrrp", None)
+        # self._module.fail_json(msg=str(vrrp_facts))
+        vrrp_facts = self.normalize_config(vrrp_facts)
+        # self._module.fail_json(msg=str(vrrp_facts))
         params = utils.remove_empties(
-            vrrp_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
+            vrrp_parser.validate_config(self.argument_spec, {"config": vrrp_facts}, redact=True),
         )
 
         facts["vrrp"] = params.get("config", [])
         ansible_facts["ansible_network_resources"].update(facts)
-        self._module.fail_json(msg="STOP")
+        self._module.fail_json(msg=ansible_facts)
 
         return ansible_facts
+
+    def normalize_config(self, config):
+        if not config:
+            return config
+
+        # Normalize virtual_servers
+        if isinstance(config.get("virtual_servers"), dict):
+            config["virtual_servers"] = list(config["virtual_servers"].values())
+
+        # Normalize vrrp
+        vrrp = config.get("vrrp", {})
+        if isinstance(vrrp.get("groups"), dict):
+            vrrp["groups"] = list(vrrp["groups"].values())
+        if isinstance(vrrp.get("sync_groups"), dict):
+            vrrp["sync_groups"] = list(vrrp["sync_groups"].values())
+
+        # Normalize real_server inside each virtual_server
+        for vs in config.get("virtual_servers", []):
+            if isinstance(vs.get("real_servers"), dict):
+                vs["real_servers"] = list(vs["real_servers"].values())
+
+        return config

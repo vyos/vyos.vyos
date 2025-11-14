@@ -41,19 +41,16 @@ class VrrpArgs(object):  # pylint: disable=R0903
                     "type": "list",
                     "elements": "dict",
                     "options": {
-                        "name": {"type": "str", "required": True},
-                        "address": {"type": "str", "required": True},
-                        "algorithm": {
-                            "type": "str",
-                            "choices": ["round_robin", "weighted_round_robin", "least_connection"],
-                        },
+                        "alias": {"type": "str", "required": True},
+                        "address": {"type": "str"},
+                        "algorithm": {"type": "str"},
                         "delay_loop": {"type": "int"},
                         "forward_method": {"type": "str", "choices": ["direct", "nat"]},
                         "fwmark": {"type": "str"},
                         "persistence_timeout": {"type": "str"},
                         "port": {"type": "int"},
                         "protocol": {"type": "str", "choices": ["tcp", "udp"]},
-                        "real_server": {
+                        "real_servers": {
                             "type": "list",
                             "elements": "dict",
                             "options": {
@@ -95,7 +92,7 @@ class VrrpArgs(object):  # pylint: disable=R0903
                                     "type": "dict",
                                     "options": {
                                         "password": {"type": "str", "no_log": True},
-                                        "type": {"type": "str", "choices": ["plaintext_password"]},
+                                        "type": {"type": "str"},
                                     },
                                 },
                                 "description": {"type": "str"},

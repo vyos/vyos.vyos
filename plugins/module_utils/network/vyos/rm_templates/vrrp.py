@@ -272,7 +272,7 @@ class VrrpTemplate(NetworkTemplate):
                ^set\shigh-availability\svirtual-server
                \s+(?P<alias>\S+)
                \sreal-server
-               \s+(?P<name>\S+)
+               \s+(?P<address>\S+)
                (?:\s+port\s+(?P<port>\S+))?
                (?:\s+health-check\sscript\s+(?P<hcscript>\S+))?
                (?:\s+connection-timeout\s+(?P<cont>\S+))?
@@ -287,8 +287,8 @@ class VrrpTemplate(NetworkTemplate):
                     "{{ alias }}": {
                         "alias": "{{ alias }}",
                         "real_servers": {
-                            "{{ name }}": {
-                                "name": "{{ name }}",
+                            "{{ address }}": {
+                                "address": "{{ address }}",
                                 "port": "{{ port if port is defined else None }}",
                                 "health_check_script": "{{ hcscript if hcscript is defined else None }}",
                                 "connection_timeout": "{{ cont if cont is defined else None }}",
@@ -410,10 +410,10 @@ class VrrpTemplate(NetworkTemplate):
                     "global_parameters": {
                         "garp": {
                             "interval": "{{ interval if interval is defined else None }}",
-                            "master-delay": "{{ master_delay if master_delay is defined else None }}",
-                            "master-refresh": "{{ master_refresh if master_refresh is defined else None }}",
-                            "master-refresh-repeat": "{{ master_refresh_repeat if master_refresh_repeat is defined else None }}",
-                            "master-repeat": "{{ master_repeat if master_repeat is defined else None }}",
+                            "master_delay": "{{ master_delay if master_delay is defined else None }}",
+                            "master_refresh": "{{ master_refresh if master_refresh is defined else None }}",
+                            "master_refresh_repeat": "{{ master_refresh_repeat if master_refresh_repeat is defined else None }}",
+                            "master_repeat": "{{ master_repeat if master_repeat is defined else None }}",
                         },
                     },
                 },
@@ -434,7 +434,7 @@ class VrrpTemplate(NetworkTemplate):
             "result": {
                 "vrrp": {
                     "global_parameters": {
-                        "startup-delay": "{{ startup_delay if startup_delay is defined else None }}",
+                        "startup_delay": "{{ startup_delay if startup_delay is defined else None }}",
                         "version": "{{ version if version is defined else None }}",
                     },
                 },
@@ -449,6 +449,7 @@ class VrrpTemplate(NetworkTemplate):
                 \s+(?P<group_name>\S+)
                 (?:\s+address\s+(?P<address>\S+))?
                 (?:\s+description\s+(?P<description>'.+?'|\S+))?
+                (?:\s+advertise-interval\s+(?P<advertise_interval>\S+))?
                 (?:\s+hello-source-address\s+(?P<hello_source>\S+))?
                 (?:\s+interface\s+(?P<interface>\S+))?
                 (?:\s+(?P<no_preempt>no-preempt))?
@@ -468,13 +469,14 @@ class VrrpTemplate(NetworkTemplate):
                             "name": "{{ group_name }}",
                             "address": "{{ address if address is defined else None }}",
                             "description": "{{ description.strip(\"'\") if description is defined else None }}",
-                            "hello-source-address": "{{ hello_source if hello_source is defined else None }}",
+                            "advertise_interval": "{{ advertise_interval if advertise_interval is defined else None }}",
+                            "hello_source_address": "{{ hello_source if hello_source is defined else None }}",
                             "interface": "{{ interface if interface is defined else None }}",
-                            "no-preempt": "{{ True if no_preempt is defined else False }}",
-                            "peer-address": "{{ peer_address if peer_address is defined else None }}",
+                            "no_preempt": "{{ True if no_preempt is defined else False }}",
+                            "peer_address": "{{ peer_address if peer_address is defined else None }}",
                             "priority": "{{ priority if priority is defined else None }}",
                             "vrid": "{{ vrid if vrid is defined else None }}",
-                            "rfc3768-compatibility": "{{ rfc3768_compatibility if rfc3768_compatibility is defined else None }}",
+                            "rfc3768_compatibility": "{{ rfc3768_compatibility if rfc3768_compatibility is defined else None }}",
                         },
                     },
                 },
@@ -529,10 +531,10 @@ class VrrpTemplate(NetworkTemplate):
                     "groups": {
                         "garp": {
                             "interval": "{{ interval if interval is defined else None }}",
-                            "master-delay": "{{ master_delay if master_delay is defined else None }}",
-                            "master-refresh": "{{ master_refresh if master_refresh is defined else None }}",
-                            "master-refresh-repeat": "{{ master_refresh_repeat if master_refresh_repeat is defined else None }}",
-                            "master-repeat": "{{ master_repeat if master_repeat is defined else None }}",
+                            "master_delay": "{{ master_delay if master_delay is defined else None }}",
+                            "master_refresh": "{{ master_refresh if master_refresh is defined else None }}",
+                            "master_refresh_repeat": "{{ master_refresh_repeat if master_refresh_repeat is defined else None }}",
+                            "master_repeat": "{{ master_repeat if master_repeat is defined else None }}",
                         },
                     },
                 },
@@ -624,7 +626,7 @@ class VrrpTemplate(NetworkTemplate):
                         "{{ group_name }}": {
                             "name": "{{ group_name }}",
                             "track": {
-                                "exclude-vrrp-interface": "{{ exclude-vrrp-inter if exclude-vrrp-inter is defined else None }}",
+                                "exclude_vrrp_interface": "{{ exclude_vrrp_inter if exclude-vrrp-inter is defined else None }}",
                                 "interface": "{{ interface if interface is defined else None }}",
                             },
                         },
