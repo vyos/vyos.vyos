@@ -13,48 +13,96 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-DOCUMENTATION = """
+DOCUMENTATION = r"""
+---
 module: vyos_vrrp
-version_added: 1.0.0
-short_description: High Availability (VRRP) resource module
+version_added: "1.0.0"
+short_description: High Availability (VRRP) and load balancer resource module
 description:
-- This module manages VRRP configuration of interfaces on devices running VYOS.
-- The provided examples of commands are valid for VyOS 1.4+
+  - This module manages VRRP and virtual server (LVS) configuration on devices running VyOS 1.4+.
 author:
-- Evgeny Molotkov (@omnom62)
+  - Evgeny Molotkov (@omnom62)
+
 options:
   config:
-    description: A dict of VRRP configuration.
+    description:
+      - VRRP and load balancer configuration.
     type: dict
     suboptions:
       disable:
-        default: false
-        description: Disable instance
         type: bool
+        default: false
+        description: Disable this configuration.
+
+      virtual_servers:
+        type: list
+        elements: dict
+        description: List of virtual server definitions.
+        suboptions:
+          alias:
+            type: str
+            required: true
+            description: Unique alias for the virtual server.
+          address:
+            type: str
+            description: Virtual server IP address.
+          algorithm:
+            type: str
+            description: Load balancing algorithm.
+          delay_loop:
+            type: int
+            description: Delay loop interval in seconds.
+          forward_method:
+            type: str
+            choices: [direct, nat]
+            description: Packet forwarding method.
+          fwmark:
+            type: str
+            description: Firewall mark for LVS.
+          persistence_timeout:
+            type: str
+            description: Persistence timeout value.
+          port:
+            type: int
+            description: Virtual server port.
+          protocol:
+            type: str
+            choices: [tcp, udp]
+            description: Transport protocol.
+          real_servers:
+            type: list
+            elements: dict
+            description: List of real servers in the pool.
+            suboptions:
+              address:
+                type: str
+                required: true
+                description: Real server IP address.
+              port:
+                type: int
+                description: Real server port.
+              health_check_script:
+                type: str
+                description: Path to health-check script.
+
   state:
     description:
-        - The state the configuration should be left in.
-        - State I(purged) removes all the BGP configurations from the
-          target device. Use caution with this state.('delete protocols bgp <x>')
-        - State I(deleted) only removes BGP attributes that this modules
-          manages and does not negate the BGP process completely. Thereby, preserving
-          address-family related configurations under BGP context.
-        - Running states I(deleted) and I(replaced) will result in an error if there
-          are address-family configuration lines present under neighbor context that is
-          is to be removed. Please use the  M(vyos.vyos.vyos_bgp_address_family)
-          module for prior cleanup.
-        - Refer to examples for more details.
+      - The operational state that the configuration should be left in.
+      - State C(merged) applies configuration changes.
+      - State C(replaced) fully replaces existing configuration under this module's scope.
+      - State C(deleted) removes configuration managed by this module.
+      - State C(purged) removes all VRRP and load balancer configuration.
+      - State C(gathered) returns structured data from device running configuration.
+      - State C(rendered) returns the device-native commands without applying them.
+      - State C(parsed) converts given configuration into structured data.
     type: str
     choices: [deleted, merged, purged, replaced, gathered, rendered, parsed]
     default: merged
+
   running_config:
     description:
-      - This option is used only with state I(parsed).
-      - The value of this option should be the output received from the EOS device by
-        executing the command B(show running-config | section bgp).
-      - The state I(parsed) reads the configuration from C(running_config) option and
-        transforms it into Ansible structured data as per the resource module's argspec
-        and the value is then returned in the I(parsed) key within the result.
+      - Used only with state C(parsed).
+      - The value of this option should be the VRRP/LVS portion of the running configuration.
     type: str
 """
 
