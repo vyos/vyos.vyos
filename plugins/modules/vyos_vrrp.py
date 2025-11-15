@@ -16,93 +16,378 @@ __metaclass__ = type
 DOCUMENTATION = r"""
 ---
 module: vyos_vrrp
+author: Evgeny Molotkov (@omnom62)
+short_description: Manage VRRP and load balancer configuration on VyOS
 version_added: "1.0.0"
-short_description: High Availability (VRRP) and load balancer resource module
 description:
-  - This module manages VRRP and virtual server (LVS) configuration on devices running VyOS 1.4+.
-author:
-  - Evgeny Molotkov (@omnom62)
+  - This module configures VRRP groups, global VRRP parameters, VRRP sync groups,
+    and LVS-style virtual servers on VyOS 1.4+.
+  - Supports creation, modification, deletion, replacement, rendering, and parsing
+    of VRRP-related configuration.
 
 options:
   config:
     description:
-      - VRRP and load balancer configuration.
+      - Full VRRP and virtual server configuration.
     type: dict
     suboptions:
       disable:
+        description:
+          - Disable all VRRP and L4-LB configuration under this module.
         type: bool
-        default: false
-        description: Disable this configuration.
 
       virtual_servers:
+        description:
+          - List of load balancer virtual server (LVS) definitions.
         type: list
         elements: dict
-        description: List of virtual server definitions.
         suboptions:
           alias:
+            description:
+              - Unique identifier for the virtual server.
             type: str
             required: true
-            description: Unique alias for the virtual server.
           address:
+            description:
+              - Virtual IP address for the server.
             type: str
-            description: Virtual server IP address.
           algorithm:
+            description:
+              - Load balancing algorithm used for dispatching connections.
             type: str
-            description: Load balancing algorithm.
           delay_loop:
+            description:
+              - Delay loop interval in seconds.
             type: int
-            description: Delay loop interval in seconds.
           forward_method:
+            description:
+              - Forwarding method used by LVS.
             type: str
             choices: [direct, nat]
-            description: Packet forwarding method.
           fwmark:
+            description:
+              - Firewall mark for LVS traffic classification.
             type: str
-            description: Firewall mark for LVS.
           persistence_timeout:
+            description:
+              - Client persistence timeout in seconds.
             type: str
-            description: Persistence timeout value.
           port:
+            description:
+              - TCP/UDP port provided by the virtual service.
             type: int
-            description: Virtual server port.
           protocol:
+            description:
+              - Transport protocol for the virtual server.
             type: str
             choices: [tcp, udp]
-            description: Transport protocol.
+
           real_servers:
+            description:
+              - Backend real servers behind the virtual service.
             type: list
             elements: dict
-            description: List of real servers in the pool.
             suboptions:
               address:
+                description:
+                  - Real server IP address.
                 type: str
                 required: true
-                description: Real server IP address.
               port:
+                description:
+                  - Backend server port.
                 type: int
-                description: Real server port.
               health_check_script:
+                description:
+                  - Path to health check script used for backend validation.
                 type: str
-                description: Path to health-check script.
+
+      vrrp:
+        description:
+          - VRRP configuration including groups, global parameters, SNMP settings,
+            and sync-groups.
+        type: dict
+        suboptions:
+
+          global_parameters:
+            description:
+              - Global VRRP tuning parameters.
+            type: dict
+            suboptions:
+              garp:
+                description:
+                  - Gratuitous ARP related configuration.
+                type: dict
+                suboptions:
+                  interval:
+                    description:
+                      - GARP interval in seconds.
+                    type: int
+                  master_delay:
+                    description:
+                      - Delay before sending GARP as master.
+                    type: int
+                  master_refresh:
+                    description:
+                      - Refresh interval for master GARP announcements.
+                    type: int
+                  master_refresh_repeat:
+                    description:
+                      - Number of times to repeat refresh announcements.
+                    type: int
+                  master_repeat:
+                    description:
+                      - Number of GARP repeats when transitioning to master.
+                    type: int
+
+              startup_delay:
+                description:
+                  - Delay before VRRP starts after boot.
+                type: int
+
+              version:
+                description:
+                  - VRRP protocol version.
+                type: str
+
+          groups:
+            description:
+              - VRRP instance configuration groups.
+            type: list
+            elements: dict
+            suboptions:
+              name:
+                description:
+                  - VRRP group name.
+                type: str
+                required: true
+              address:
+                description:
+                  - Virtual router IP address.
+                type: str
+              advertise_interval:
+                description:
+                  - VRRP advertisement interval.
+                type: int
+
+              authentication:
+                description:
+                  - VRRP group authentication options.
+                type: dict
+                suboptions:
+                  password:
+                    description:
+                      - Authentication password.
+                    type: str
+                  type:
+                    description:
+                      - Authentication type.
+                    type: str
+
+              description:
+                description:
+                  - Text description for the VRRP group.
+                type: str
+
+              disable:
+                description:
+                  - Disable this VRRP group.
+                type: bool
+
+              excluded_address:
+                description:
+                  - IP address excluded from source checks.
+                type: str
+
+              garp:
+                description:
+                  - GARP-specific settings for this group.
+                type: dict
+                suboptions:
+                  interval:
+                    description: GARP interval.
+                    type: int
+                  master_delay:
+                    description: GARP master delay.
+                    type: int
+                  master_refresh:
+                    description: GARP master refresh interval.
+                    type: int
+                  master_refresh_repeat:
+                    description: Repeated refresh sends.
+                    type: int
+                  master_repeat:
+                    description: GARP repeat count.
+                    type: int
+
+              health_check:
+                description:
+                  - VRRP group health check options.
+                type: dict
+                suboptions:
+                  failure_count:
+                    description: Allowed number of failed checks.
+                    type: int
+                  interval:
+                    description: Health check interval.
+                    type: int
+                  ping:
+                    description: Host to ping for checks.
+                    type: str
+                  script:
+                    description: Script to execute for health checking.
+                    type: str
+
+              hello_source_address:
+                description:
+                  - Source address for VRRP hello packets.
+                type: str
+
+              interface:
+                description:
+                  - Interface used by the VRRP group.
+                type: str
+
+              no_preempt:
+                description:
+                  - Disable preemption.
+                type: bool
+
+              peer_address:
+                description:
+                  - Peer VRRP router address.
+                type: str
+
+              preempt_delay:
+                description:
+                  - Delay before taking master role.
+                type: int
+
+              priority:
+                description:
+                  - VRRP priority (higher = preferred master).
+                type: int
+
+              rfc3768_compatibility:
+                description:
+                  - Enable or disable RFC3768 compatibility mode.
+                type: bool
+
+              track:
+                description:
+                  - Track interface and VRRP behaviour.
+                type: dict
+                suboptions:
+                  exclude_vrrp_interface:
+                    description:
+                      - Exclude VRRP interface from tracking.
+                    type: bool
+                  interface:
+                    description:
+                      - Interface to track.
+                    type: str
+
+              transition_script:
+                description:
+                  - Scripts executed during VRRP state transitions.
+                type: dict
+                suboptions:
+                  backup:
+                    description: Path to backup script.
+                    type: str
+                  fault:
+                    description: Path to fault script.
+                    type: str
+                  master:
+                    description: Path to master script.
+                    type: str
+                  stop:
+                    description: Path to stop script.
+                    type: str
+
+              vrid:
+                description:
+                  - VRRP Virtual Router ID.
+                type: int
+                required: true
+
+          snmp:
+            description:
+              - Enable SNMP support for VRRP.
+            type: bool
+
+          sync_groups:
+            description:
+              - VRRP sync-groups for coordinated failover.
+            type: list
+            elements: dict
+            suboptions:
+              name:
+                description:
+                  - Sync-group name.
+                type: str
+                required: true
+
+              health_check:
+                description:
+                  - Health check options for sync group.
+                type: dict
+                suboptions:
+                  failure_count:
+                    description: Allowed number of failures.
+                    type: int
+                  interval:
+                    description: Health check interval.
+                    type: int
+                  ping:
+                    description: Host to ping.
+                    type: str
+                  script:
+                    description: Script to run for health checking.
+                    type: str
+
+              member:
+                description:
+                  - List of VRRP groups participating in this sync group.
+                type: list
+                elements: str
+
+              transition_script:
+                description:
+                  - Transition scripts for sync group events.
+                type: dict
+                suboptions:
+                  backup:
+                    description: Backup state script.
+                    type: str
+                  fault:
+                    description: Fault state script.
+                    type: str
+                  master:
+                    description: Master state script.
+                    type: str
+                  stop:
+                    description: Stop state script.
+                    type: str
 
   state:
     description:
-      - The operational state that the configuration should be left in.
-      - State C(merged) applies configuration changes.
-      - State C(replaced) fully replaces existing configuration under this module's scope.
-      - State C(deleted) removes configuration managed by this module.
-      - State C(purged) removes all VRRP and load balancer configuration.
-      - State C(gathered) returns structured data from device running configuration.
-      - State C(rendered) returns the device-native commands without applying them.
-      - State C(parsed) converts given configuration into structured data.
+      - Desired end state of the VRRP configuration.
     type: str
-    choices: [deleted, merged, purged, replaced, gathered, rendered, parsed]
+    choices:
+      - deleted
+      - merged
+      - purged
+      - replaced
+      - gathered
+      - rendered
+      - parsed
     default: merged
 
   running_config:
     description:
-      - Used only with state C(parsed).
-      - The value of this option should be the VRRP/LVS portion of the running configuration.
+      - Used only when C(state=parsed). Must contain the output of
+        C(show configuration commands | grep high-availability).
     type: str
 """
 

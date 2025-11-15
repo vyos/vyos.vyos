@@ -23,6 +23,198 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 )
 
 
+def _tmplt_vsrvs(config_data):
+    config_data = config_data["virtual-server"]
+    command = []
+    # cmd = "service snmp v3 group {group}".format(**config_data)
+    # if "mode" in config_data:
+    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+    #     command.append(mode_cmd)
+    # if "seclevel" in config_data:
+    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+    #     command.append(sec_cmd)
+    # if "view" in config_data:
+    #     view_cmd = cmd + " view {view}".format(**config_data)
+    #     command.append(view_cmd)
+    return command
+
+
+def _tmplt_vsrvs_rsrv(config_data):
+    config_data = config_data["virtual-server"]["real_servers"]
+    command = []
+    # cmd = "service snmp v3 group {group}".format(**config_data)
+    # if "mode" in config_data:
+    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+    #     command.append(mode_cmd)
+    # if "seclevel" in config_data:
+    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+    #     command.append(sec_cmd)
+    # if "view" in config_data:
+    #     view_cmd = cmd + " view {view}".format(**config_data)
+    #     command.append(view_cmd)
+    return command
+
+
+def _tmplt_sgroup_hc(config_data):
+    config_data = config_data["sync-group"]["health-check"]
+    command = []
+    # cmd = "service snmp v3 group {group}".format(**config_data)
+    # if "mode" in config_data:
+    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+    #     command.append(mode_cmd)
+    # if "seclevel" in config_data:
+    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+    #     command.append(sec_cmd)
+    # if "view" in config_data:
+    #     view_cmd = cmd + " view {view}".format(**config_data)
+    #     command.append(view_cmd)
+    return command
+
+
+def _tmplt_sgroup_ts(config_data):
+    config_data = config_data["sync-group"]["transition-script"]
+    command = []
+    # cmd = "service snmp v3 group {group}".format(**config_data)
+    # if "mode" in config_data:
+    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+    #     command.append(mode_cmd)
+    # if "seclevel" in config_data:
+    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+    #     command.append(sec_cmd)
+    # if "view" in config_data:
+    #     view_cmd = cmd + " view {view}".format(**config_data)
+    #     command.append(view_cmd)
+    return command
+
+
+def _tmplt_vrrp_gp(config_data):
+    config_data = config_data["vrrp"]["global-parameters"]
+    command = []
+    # cmd = "service snmp v3 group {group}".format(**config_data)
+    # if "mode" in config_data:
+    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+    #     command.append(mode_cmd)
+    # if "seclevel" in config_data:
+    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+    #     command.append(sec_cmd)
+    # if "view" in config_data:
+    #     view_cmd = cmd + " view {view}".format(**config_data)
+    #     command.append(view_cmd)
+    return command
+
+
+def _tmplt_vrrp_gp_garp(config_data):
+    config_data = config_data["vrrp"]["global-parameters"]["garp"]
+    command = []
+    # cmd = "service snmp v3 group {group}".format(**config_data)
+    # if "mode" in config_data:
+    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+    #     command.append(mode_cmd)
+    # if "seclevel" in config_data:
+    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+    #     command.append(sec_cmd)
+    # if "view" in config_data:
+    #     view_cmd = cmd + " view {view}".format(**config_data)
+    #     command.append(view_cmd)
+    return command
+
+
+def _tmplt_vrrp_group(config_data):
+    config_data = config_data["vrrp"]["group"]
+    command = []
+    # cmd = "service snmp v3 group {group}".format(**config_data)
+    # if "mode" in config_data:
+    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+    #     command.append(mode_cmd)
+    # if "seclevel" in config_data:
+    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+    #     command.append(sec_cmd)
+    # if "view" in config_data:
+    #     view_cmd = cmd + " view {view}".format(**config_data)
+    #     command.append(view_cmd)
+    return command
+
+
+def _tmplt_vrrp_group_track(config_data):
+    config_data = config_data["vrrp"]["group"]["track"]
+    command = []
+    # cmd = "service snmp v3 group {group}".format(**config_data)
+    # if "mode" in config_data:
+    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+    #     command.append(mode_cmd)
+    # if "seclevel" in config_data:
+    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+    #     command.append(sec_cmd)
+    # if "view" in config_data:
+    #     view_cmd = cmd + " view {view}".format(**config_data)
+    #     command.append(view_cmd)
+    return command
+
+
+def _tmplt_vrrp_group_hc(config_data):
+    config_data = config_data["vrrp"]["group"]["health-check"]
+    command = []
+    # cmd = "service snmp v3 group {group}".format(**config_data)
+    # if "mode" in config_data:
+    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+    #     command.append(mode_cmd)
+    # if "seclevel" in config_data:
+    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+    #     command.append(sec_cmd)
+    # if "view" in config_data:
+    #     view_cmd = cmd + " view {view}".format(**config_data)
+    #     command.append(view_cmd)
+    return command
+
+
+def _tmplt_vrrp_group_ts(config_data):
+    config_data = config_data["vrrp"]["group"]["transcription-script"]
+    command = []
+    # cmd = "service snmp v3 group {group}".format(**config_data)
+    # if "mode" in config_data:
+    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+    #     command.append(mode_cmd)
+    # if "seclevel" in config_data:
+    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+    #     command.append(sec_cmd)
+    # if "view" in config_data:
+    #     view_cmd = cmd + " view {view}".format(**config_data)
+    #     command.append(view_cmd)
+    return command
+
+
+def _tmplt_vrrp_group_garp(config_data):
+    config_data = config_data["vrrp"]["group"]["garp"]
+    command = []
+    # cmd = "service snmp v3 group {group}".format(**config_data)
+    # if "mode" in config_data:
+    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+    #     command.append(mode_cmd)
+    # if "seclevel" in config_data:
+    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+    #     command.append(sec_cmd)
+    # if "view" in config_data:
+    #     view_cmd = cmd + " view {view}".format(**config_data)
+    #     command.append(view_cmd)
+    return command
+
+
+def _tmplt_vrrp_group_auth(config_data):
+    config_data = config_data["vrrp"]["group"]["authentication"]
+    command = []
+    # cmd = "service snmp v3 group {group}".format(**config_data)
+    # if "mode" in config_data:
+    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+    #     command.append(mode_cmd)
+    # if "seclevel" in config_data:
+    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+    #     command.append(sec_cmd)
+    # if "view" in config_data:
+    #     view_cmd = cmd + " view {view}".format(**config_data)
+    #     command.append(view_cmd)
+    return command
+
+
 class VrrpTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
@@ -32,186 +224,6 @@ class VrrpTemplate(NetworkTemplate):
             prefix=prefix,
             module=module,
         )
-
-    def _tmplt_vsrvs(config_data):
-        config_data = config_data["virtual-server"]
-        command = []
-        # cmd = "service snmp v3 group {group}".format(**config_data)
-        # if "mode" in config_data:
-        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-        #     command.append(mode_cmd)
-        # if "seclevel" in config_data:
-        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-        #     command.append(sec_cmd)
-        # if "view" in config_data:
-        #     view_cmd = cmd + " view {view}".format(**config_data)
-        #     command.append(view_cmd)
-        return command
-
-    def _tmplt_vsrvs_rsrv(config_data):
-        config_data = config_data["virtual-server"]["real_servers"]
-        command = []
-        # cmd = "service snmp v3 group {group}".format(**config_data)
-        # if "mode" in config_data:
-        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-        #     command.append(mode_cmd)
-        # if "seclevel" in config_data:
-        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-        #     command.append(sec_cmd)
-        # if "view" in config_data:
-        #     view_cmd = cmd + " view {view}".format(**config_data)
-        #     command.append(view_cmd)
-        return command
-
-    def _tmplt_sgroup_hc(config_data):
-        config_data = config_data["sync-group"]["health-check"]
-        command = []
-        # cmd = "service snmp v3 group {group}".format(**config_data)
-        # if "mode" in config_data:
-        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-        #     command.append(mode_cmd)
-        # if "seclevel" in config_data:
-        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-        #     command.append(sec_cmd)
-        # if "view" in config_data:
-        #     view_cmd = cmd + " view {view}".format(**config_data)
-        #     command.append(view_cmd)
-        return command
-
-    def _tmplt_sgroup_ts(config_data):
-        config_data = config_data["sync-group"]["transition-script"]
-        command = []
-        # cmd = "service snmp v3 group {group}".format(**config_data)
-        # if "mode" in config_data:
-        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-        #     command.append(mode_cmd)
-        # if "seclevel" in config_data:
-        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-        #     command.append(sec_cmd)
-        # if "view" in config_data:
-        #     view_cmd = cmd + " view {view}".format(**config_data)
-        #     command.append(view_cmd)
-        return command
-
-    def _tmplt_vrrp_gp(config_data):
-        config_data = config_data["vrrp"]["global-parameters"]
-        command = []
-        # cmd = "service snmp v3 group {group}".format(**config_data)
-        # if "mode" in config_data:
-        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-        #     command.append(mode_cmd)
-        # if "seclevel" in config_data:
-        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-        #     command.append(sec_cmd)
-        # if "view" in config_data:
-        #     view_cmd = cmd + " view {view}".format(**config_data)
-        #     command.append(view_cmd)
-        return command
-
-    def _tmplt_vrrp_gp_garp(config_data):
-        config_data = config_data["vrrp"]["global-parameters"]["garp"]
-        command = []
-        # cmd = "service snmp v3 group {group}".format(**config_data)
-        # if "mode" in config_data:
-        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-        #     command.append(mode_cmd)
-        # if "seclevel" in config_data:
-        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-        #     command.append(sec_cmd)
-        # if "view" in config_data:
-        #     view_cmd = cmd + " view {view}".format(**config_data)
-        #     command.append(view_cmd)
-        return command
-
-    def _tmplt_vrrp_group(config_data):
-        config_data = config_data["vrrp"]["group"]
-        command = []
-        # cmd = "service snmp v3 group {group}".format(**config_data)
-        # if "mode" in config_data:
-        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-        #     command.append(mode_cmd)
-        # if "seclevel" in config_data:
-        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-        #     command.append(sec_cmd)
-        # if "view" in config_data:
-        #     view_cmd = cmd + " view {view}".format(**config_data)
-        #     command.append(view_cmd)
-        return command
-
-    def _tmplt_vrrp_group_track(config_data):
-        config_data = config_data["vrrp"]["group"]["track"]
-        command = []
-        # cmd = "service snmp v3 group {group}".format(**config_data)
-        # if "mode" in config_data:
-        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-        #     command.append(mode_cmd)
-        # if "seclevel" in config_data:
-        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-        #     command.append(sec_cmd)
-        # if "view" in config_data:
-        #     view_cmd = cmd + " view {view}".format(**config_data)
-        #     command.append(view_cmd)
-        return command
-
-    def _tmplt_vrrp_group_hc(config_data):
-        config_data = config_data["vrrp"]["group"]["health-check"]
-        command = []
-        # cmd = "service snmp v3 group {group}".format(**config_data)
-        # if "mode" in config_data:
-        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-        #     command.append(mode_cmd)
-        # if "seclevel" in config_data:
-        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-        #     command.append(sec_cmd)
-        # if "view" in config_data:
-        #     view_cmd = cmd + " view {view}".format(**config_data)
-        #     command.append(view_cmd)
-        return command
-
-    def _tmplt_vrrp_group_ts(config_data):
-        config_data = config_data["vrrp"]["group"]["transcription-script"]
-        command = []
-        # cmd = "service snmp v3 group {group}".format(**config_data)
-        # if "mode" in config_data:
-        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-        #     command.append(mode_cmd)
-        # if "seclevel" in config_data:
-        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-        #     command.append(sec_cmd)
-        # if "view" in config_data:
-        #     view_cmd = cmd + " view {view}".format(**config_data)
-        #     command.append(view_cmd)
-        return command
-
-    def _tmplt_vrrp_group_garp(config_data):
-        config_data = config_data["vrrp"]["group"]["garp"]
-        command = []
-        # cmd = "service snmp v3 group {group}".format(**config_data)
-        # if "mode" in config_data:
-        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-        #     command.append(mode_cmd)
-        # if "seclevel" in config_data:
-        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-        #     command.append(sec_cmd)
-        # if "view" in config_data:
-        #     view_cmd = cmd + " view {view}".format(**config_data)
-        #     command.append(view_cmd)
-        return command
-
-    def _tmplt_vrrp_group_auth(config_data):
-        config_data = config_data["vrrp"]["group"]["authentication"]
-        command = []
-        # cmd = "service snmp v3 group {group}".format(**config_data)
-        # if "mode" in config_data:
-        #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-        #     command.append(mode_cmd)
-        # if "seclevel" in config_data:
-        #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-        #     command.append(sec_cmd)
-        # if "view" in config_data:
-        #     view_cmd = cmd + " view {view}".format(**config_data)
-        #     command.append(view_cmd)
-        return command
 
     # fmt: off
     PARSERS = [
@@ -268,17 +280,17 @@ class VrrpTemplate(NetworkTemplate):
         {
             "name": "virtual_servers.real_servers",
             "getval": re.compile(
-               r"""
-               ^set\shigh-availability\svirtual-server
-               \s+(?P<alias>\S+)
-               \sreal-server
-               \s+(?P<address>\S+)
-               (?:\s+port\s+(?P<port>\S+))?
-               (?:\s+health-check\sscript\s+(?P<hcscript>\S+))?
-               (?:\s+connection-timeout\s+(?P<cont>\S+))?
-               $
-               """,
-               re.VERBOSE,
+                r"""
+                ^set\shigh-availability\svirtual-server
+                \s+(?P<alias>\S+)
+                \sreal-server
+                \s+(?P<address>\S+)
+                (?:\s+port\s+(?P<port>\S+))?
+                (?:\s+health-check\sscript\s+(?P<hcscript>\S+))?
+                (?:\s+connection-timeout\s+(?P<cont>\S+))?
+                $
+                """,
+                re.VERBOSE,
             ),
             "setval": _tmplt_vsrvs_rsrv,
             # "compval": "global_parameters.garp.master_refersh_repeat",
@@ -301,14 +313,14 @@ class VrrpTemplate(NetworkTemplate):
         {
             "name": "sync_group.member",
             "getval": re.compile(
-               r"""
-               ^set\shigh-availability\svrrp\ssync-group
-               \s+(?P<sgname>\S+)
-               \smember
-               \s+(?P<member>\S+)
-               $
-               """,
-               re.VERBOSE,
+                r"""
+                ^set\shigh-availability\svrrp\ssync-group
+                \s+(?P<sgname>\S+)
+                \smember
+                \s+(?P<member>\S+)
+                $
+                """,
+                re.VERBOSE,
             ),
             "setval": "set high-availability vrrp sync-group {{sgname}} member {{member}}",
             "compval": "sync_groups.member",
@@ -326,17 +338,17 @@ class VrrpTemplate(NetworkTemplate):
         {
             "name": "sync_group.health_check",
             "getval": re.compile(
-               r"""
-               ^set\shigh-availability\svrrp\ssync-group
-               \s+(?P<sgname>\S+)
-               \shealth-check
-               (?:\s+failure-count\s+(?P<failure_count>\S+))
-               ?(?:\s+interval\s+(?P<int>\S+))
-               ?(?:\s+ping\s+(?P<ping>\S+))
-               ?(?:\s+script\s+(?P<script>\S+))?
-               $
-               """,
-               re.VERBOSE,
+                r"""
+                ^set\shigh-availability\svrrp\ssync-group
+                \s+(?P<sgname>\S+)
+                \shealth-check
+                (?:\s+failure-count\s+(?P<failure_count>\S+))
+                ?(?:\s+interval\s+(?P<int>\S+))
+                ?(?:\s+ping\s+(?P<ping>\S+))
+                ?(?:\s+script\s+(?P<script>\S+))?
+                $
+                """,
+                re.VERBOSE,
             ),
             "setval": _tmplt_sgroup_hc,
             # "compval": "global_parameters.garp.master_refersh_repeat",
@@ -359,17 +371,17 @@ class VrrpTemplate(NetworkTemplate):
         {
             "name": "sync_group.transition_script",
             "getval": re.compile(
-               r"""
-               ^set\shigh-availability\svrrp\ssync-group
-               \s+(?P<sgname>\S+)
-               \stransition-script
-               (?:\s+backup\s+(?P<backup>\S+))?
-               (?:\s+fault\s+(?P<fault>\S+))?
-               (?:\s+master\s+(?P<master>\S+))?
-               (?:\s+stop\s+(?P<stop>\S+))?
-               $
-               """,
-               re.VERBOSE,
+                r"""
+                ^set\shigh-availability\svrrp\ssync-group
+                \s+(?P<sgname>\S+)
+                \stransition-script
+                (?:\s+backup\s+(?P<backup>\S+))?
+                (?:\s+fault\s+(?P<fault>\S+))?
+                (?:\s+master\s+(?P<master>\S+))?
+                (?:\s+stop\s+(?P<stop>\S+))?
+                $
+                """,
+                re.VERBOSE,
             ),
             "setval": _tmplt_sgroup_ts,
             # "compval": "global_parameters.garp.master_refersh_repeat",
@@ -543,17 +555,17 @@ class VrrpTemplate(NetworkTemplate):
         {
             "name": "vrrp.group.transition_script",
             "getval": re.compile(
-               r"""
-               ^set\shigh-availability\svrrp\sgroup
-               \s+(?P<gname>\S+)
-               \stransition-script
-               (?:\s+backup\s+(?P<backup>\S+))?
-               (?:\s+fault\s+(?P<fault>\S+))?
-               (?:\s+master\s+(?P<master>\S+))?
-               (?:\s+stop\s+(?P<stop>\S+))?
-               $
-               """,
-               re.VERBOSE,
+                r"""
+                ^set\shigh-availability\svrrp\sgroup
+                \s+(?P<gname>\S+)
+                \stransition-script
+                (?:\s+backup\s+(?P<backup>\S+))?
+                (?:\s+fault\s+(?P<fault>\S+))?
+                (?:\s+master\s+(?P<master>\S+))?
+                (?:\s+stop\s+(?P<stop>\S+))?
+                $
+                """,
+                re.VERBOSE,
             ),
             "setval": _tmplt_vrrp_group_ts,
             # "compval": "global_parameters.garp.master_refersh_repeat",
@@ -576,17 +588,17 @@ class VrrpTemplate(NetworkTemplate):
         {
             "name": "vrrp.group.health_check",
             "getval": re.compile(
-               r"""
-               ^set\shigh-availability\svrrp\sgroup
-               \s+(?P<group_name>\S+)
-               \shealth-check
-               (?:\s+failure-count\s+(?P<failure_count>\S+))
-               ?(?:\s+interval\s+(?P<int>\S+))
-               ?(?:\s+ping\s+(?P<ping>\S+))
-               ?(?:\s+script\s+(?P<script>\S+))?
-               $
-               """,
-               re.VERBOSE,
+                r"""
+                ^set\shigh-availability\svrrp\sgroup
+                \s+(?P<group_name>\S+)
+                \shealth-check
+                (?:\s+failure-count\s+(?P<failure_count>\S+))
+                ?(?:\s+interval\s+(?P<int>\S+))
+                ?(?:\s+ping\s+(?P<ping>\S+))
+                ?(?:\s+script\s+(?P<script>\S+))?
+                $
+                """,
+                re.VERBOSE,
             ),
             "setval": _tmplt_vrrp_group_hc,
             # "compval": "global_parameters.garp.master_refersh_repeat",
