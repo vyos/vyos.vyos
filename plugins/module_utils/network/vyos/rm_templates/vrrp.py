@@ -311,7 +311,7 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "sync_group.member",
+            "name": "vrrp.sync_group.member",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\ssync-group
@@ -336,7 +336,7 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "sync_group.health_check",
+            "name": "vrrp.sync_group.health_check",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\ssync-group
@@ -369,7 +369,7 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "sync_group.transition_script",
+            "name": "vrrp.sync_group.transition_script",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\ssync-group
