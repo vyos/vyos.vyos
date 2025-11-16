@@ -35,6 +35,7 @@ options:
         description:
           - Disable all VRRP and L4-LB configuration under this module.
         type: bool
+        default: fasle
 
       virtual_servers:
         description:
@@ -193,7 +194,7 @@ options:
                 description:
                   - Disable this VRRP group.
                 type: bool
-                default: False
+                default: false
 
               excluded_address:
                 description:

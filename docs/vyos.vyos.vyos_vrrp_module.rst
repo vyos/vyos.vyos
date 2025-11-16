@@ -64,6 +64,7 @@ Parameters
                                     <li>no</li>
                                     <li>yes</li>
                         </ul>
+                        <b>Default:</b><br/><div style="color: blue">"fasle"</div>
                 </td>
                 <td>
                         <div>Disable all VRRP and L4-LB configuration under this module.</div>
