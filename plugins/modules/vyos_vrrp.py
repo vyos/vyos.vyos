@@ -35,7 +35,7 @@ options:
         description:
           - Disable all VRRP and L4-LB configuration under this module.
         type: bool
-        default: fasle
+        default: false
 
       virtual_servers:
         description:
