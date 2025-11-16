@@ -193,6 +193,7 @@ options:
                 description:
                   - Disable this VRRP group.
                 type: bool
+                default: False
 
               excluded_address:
                 description:
