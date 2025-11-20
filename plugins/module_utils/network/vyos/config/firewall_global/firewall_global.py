@@ -33,7 +33,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
     LooseVersion,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    get_os_version,
+    load_config,
+)
 
 
 class Firewall_global(ConfigBase):
@@ -74,6 +77,13 @@ class Firewall_global(ConfigBase):
         warnings = list()
         commands = list()
 
+        try:
+            self._module.params["comment"]
+        except KeyError:
+            comment = []
+        else:
+            comment = self._module.params["comment"]
+
         if self.state in self.ACTION_STATES:
             existing_firewall_global_facts = self.get_firewall_global_facts()
         else:
@@ -81,6 +91,12 @@ class Firewall_global(ConfigBase):
 
         if self.state in self.ACTION_STATES or self.state == "rendered":
             commands.extend(self.set_config(existing_firewall_global_facts))
+
+        if commands and self._module._diff:
+            commit = not self._module.check_mode
+            diff = load_config(self._module, commands, commit=commit, comment=comment)
+            if diff:
+                result["diff"] = {"prepared": str(diff)}
 
         if commands and self.state in self.ACTION_STATES:
             if not self._module.check_mode:
