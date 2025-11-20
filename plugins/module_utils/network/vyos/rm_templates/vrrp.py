@@ -98,7 +98,7 @@ def _tmplt_sgroup_ts(config_data):
 def _tmplt_vrrp_gp(config_data):
     config_data = config_data["vrrp"]["global_parameters"]
     command = []
-    cmd = "high-availability vrrp global-parameters {global_parameters}".format(**config_data)
+    cmd = "high-availability vrrp global-parameters"
     if "version" in config_data:
         version_cmd = cmd + " version {version}".format(**config_data)
         command.append(version_cmd)
@@ -482,7 +482,7 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_vrrp_gp,
-            # "compval": "vrrp.global_parameters",
+            "compval": "vrrp.global_parameters",
             "result": {
                 "vrrp": {
                     "global_parameters": {

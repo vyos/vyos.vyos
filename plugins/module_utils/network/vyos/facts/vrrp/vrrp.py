@@ -95,6 +95,7 @@ class VrrpFacts(object):
         if not data:
             data = self.get_device_data(connection)
         resources = self.get_config_set(data, connection)
+        self._module.fail_json(msg=str(resources))
         vrrp_facts = {"disable": False, "virtual_servers": {}, "vrrp": {}}
         for resource in resources:
             vrrp_parser = VrrpTemplate(
@@ -106,6 +107,7 @@ class VrrpFacts(object):
                 vrrp_facts["disable"] = objs["disable"]
             for section in ("virtual_servers", "vrrp"):
                 if section in objs:
+                    self._module.fail_json(msg=str(objs[section]))
                     for name, data in objs[section].items():
                         existing = vrrp_facts[section].get(name, {})
                         vrrp_facts[section][name] = self.deep_merge(existing, data)
