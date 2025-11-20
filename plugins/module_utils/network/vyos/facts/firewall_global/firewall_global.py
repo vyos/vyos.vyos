@@ -179,7 +179,7 @@ class Firewall_globalFacts(object):
         if policies:
             rules_lst = []
             for sp in set(policies):
-                sp_regex = r" %s .+$" % sp
+                sp_regex = r"^set firewall (?:global-options )?state-policy %s .+$" % sp
                 cfg = "\n".join(findall(sp_regex, conf, M))
                 obj = self.parse_policies(cfg, sp)
                 obj["connection_type"] = sp
@@ -233,7 +233,7 @@ class Firewall_globalFacts(object):
         if groups:
             rules_lst = []
             for gr in set(groups):
-                gr_regex = r" %s .+$" % gr
+                gr_regex = r"^set firewall group " + type + " %s .+$" % gr
                 cfg = "\n".join(findall(gr_regex, conf, M))
                 if "ipv6" in type:
                     # fmt: off
