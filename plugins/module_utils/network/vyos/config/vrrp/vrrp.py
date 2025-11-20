@@ -100,7 +100,7 @@ class Vrrp(ResourceModule):
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged"]:
             wantd = combine(haved, wantd, recursive=True)
-            self._module.fail_json(msg="Want: " + str(wantd) + "**** H:  " + str(haved))
+            # self._module.fail_json(msg="Want: " + str(wantd) + "**** H:  " + str(haved))
 
         # if state is deleted, delete and empty out wantd
         # if self.state == "deleted":
@@ -209,6 +209,6 @@ class Vrrp(ResourceModule):
         ]
         # self._module.fail_json(msg="wvrrp: " + str(want) + "**** hvrrp:  " + str(have))
 
-        self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
+        # self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
 
         self.compare(parsers=vrrp_parsers, want={"vrrp": want}, have={"vrrp": have})

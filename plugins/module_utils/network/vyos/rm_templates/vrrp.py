@@ -111,7 +111,7 @@ def _tmplt_vrrp_gp(config_data):
 def _tmplt_vrrp_gp_garp(config_data):
     config_data = config_data["vrrp"]["global_parameters"]["garp"]
     command = []
-    cmd = "high-availability vrrp global-parameters garp {garp}".format(**config_data)
+    cmd = "high-availability vrrp global-parameters garp"
     if "interval" in config_data:
         interval_cmd = cmd + " interval {interval}".format(**config_data)
         command.append(interval_cmd)
@@ -455,7 +455,6 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_vrrp_gp_garp,
-            # "compval": "global_parameters.garp",
             "result": {
                 "vrrp": {
                     "global_parameters": {
@@ -482,7 +481,6 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_vrrp_gp,
-            "compval": "vrrp.global_parameters",
             "result": {
                 "vrrp": {
                     "global_parameters": {
