@@ -42,7 +42,6 @@ class VrrpFacts(object):
         config_dict = {}
         for config_line in data.splitlines():
             vrrp_grp = re.search(r"set high-availability vrrp group (\S+).*", config_line)
-            vrrp_snmp = re.search(r"set high-availability vrrp snmp", config_line)
             vrrp_gp = re.search(
                 r"set high-availability vrrp global-parameters (\S+).*",
                 config_line,
@@ -50,6 +49,7 @@ class VrrpFacts(object):
             vrrp_sg = re.search(r"set high-availability vrrp sync-group (\S+).*", config_line)
             vrrp_vsrv = re.search(r"set high-availability virtual-server (\S+).*", config_line)
             vrrp_disable = re.search(r"set high-availability disable", config_line)
+            vrrp_snmp = re.search(r"set high-availability vrrp snmp", config_line)
             if vrrp_disable:
                 config_dict["disable"] = config_dict.get("disable", "") + config_line + "\n"
             if vrrp_gp:
@@ -96,7 +96,7 @@ class VrrpFacts(object):
             data = self.get_device_data(connection)
         resources = self.get_config_set(data, connection)
         vrrp_facts = {"disable": False, "virtual_servers": {}, "vrrp": {}}
-        for resource in data.splitlines():
+        for resource in resources:
             vrrp_parser = VrrpTemplate(
                 lines=resource.split("\n"),
                 module=self._module,

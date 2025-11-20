@@ -35,6 +35,11 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.versi
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
+# from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+#     dict_merge,
+# )
+
+
 class Vrrp(ResourceModule):
     """
     The vyos_vrrp config class
@@ -93,9 +98,7 @@ class Vrrp(ResourceModule):
         # self._module.fail_json(msg="WanT: " + str(self.want) + "========== H:  " + str(self.have))
 
         # if state is merged, merge want onto have and then compare
-        if self.state in ["merged", "replaced"]:
-            # wantd = dict_merge(wantd, haved)
-            # wantd = haved | combine(wantd, recursive=True)
+        if self.state in ["merged"]:
             wantd = combine(haved, wantd, recursive=True)
             # self._module.fail_json(msg="Want: " + str(wantd) + "**** H:  " + str(haved))
 
@@ -141,7 +144,9 @@ class Vrrp(ResourceModule):
         #                         self.commands.append("commit")
         #
         for k, want in wantd.items():
-            # self._module.fail_json(msg=want)
+            if k == "vrrp":
+                self._compare_vrrp(want, haved.get(k, {}))
+            # self._module.fail_json(msg=k)
             # if isinstance(want, list):
             # self._module.fail_json(msg=str(want) + " +++ " + str(haved.pop(k, {})))
             self.compare(
@@ -184,62 +189,26 @@ class Vrrp(ResourceModule):
 
     # self._module.fail_json(msg="wafi: " + str(wafi) + "**** hafi:  " + str(hafi))
 
-    # def _compare_vrrp(self, want, have):
-    #     """Compare the instances of VRRP"""
-    #     vrrp_parsers = [
-    #         "vrrp.sync_group.member",
-    #         "vrrp.sync_group.health_check",
-    #         "vrrp.sync_group.transition_script",
-    #         "vrrp.global_parametrs_garp",
-    #         "vrrp.global_parameters",
-    #         "vrrp.group",
-    #         "vrrp.group.aunthentication",
-    #         "vrrp.group.garp",
-    #         "vrrp.group.transition_script",
-    #         "vrrp.group.health_check",
-    #         "vrrp.group.track",
-    #         "vrrp.group.transition_script",
-    #     ]
-    #     # self._module.fail_json(msg="wAfi: " + str(want) + "**** hAfi:  " + str(have))
-    #
-    #     wafi = self.afi_to_list(want)
-    #     hafi = self.afi_to_list(have)
-    #
-    #     lookup = {(d["name"], d["afi"]): d for d in hafi}
-    #     pairs = [(d1, lookup.get((d1["name"], d1["afi"]), {})) for d1 in wafi]
-    #
-    #     for wafd, hafd in pairs:
-    #         # self._module.fail_json(msg="wAfd: " + str(wafd) + "**** hAfd:  " + str(hafd))
-    #         if "route_maps" in wafd:
-    #             self._compare_route_maps(wafd, hafd)
-    #         self.compare(parsers=afi_parsers, want=wafd, have=hafd)
-    #     # self.compare(parsers=afi_parsers, want=wafi, have=hafi)
-    #
-    # def afi_to_list(self, data):
-    #     """Convert address family dict to list"""
-    #
-    #     return [
-    #         {"name": data["name"], **{**af, "afi": "ip" if af["afi"] == "ipv4" else af["afi"]}}
-    #         for af in data["address_family"]
-    #     ]
-    #
-    # def _compare_route_maps(self, wafd, hafd):
-    #     want_rms = wafd.get("route_maps", [])
-    #     have_rms = hafd.get("route_maps", [])
-    #
-    #     for want in want_rms:
-    #         match = next(
-    #             (
-    #                 h
-    #                 for h in have_rms
-    #                 if h["rm_name"] == want["rm_name"] and h["protocol"] == want["protocol"]
-    #             ),
-    #             {},
-    #         )
-    #         base = {"name": wafd["name"], "afi": wafd["afi"]}
-    #
-    #         self.compare(
-    #             parsers="route_maps",
-    #             want={**base, "route_maps": want},
-    #             have={**base, "route_maps": match},
-    #         )
+    def _compare_vrrp(self, want, have):
+        """Compare the instances of VRRP"""
+        vrrp_parsers = [
+            "vrrp.snmp",
+            "vrrp.sync_groups.member",
+            # "vrrp.sync_groups.health_check",
+            # "vrrp.sync_groups.transition_script",
+            "vrrp.global_parameters.garp",
+            "vrrp.global_parameters",
+            # "version",
+            # "vrrp.group",
+            # "vrrp.group.aunthentication",
+            # "vrrp.group.garp",
+            # "vrrp.group.transition_script",
+            # "vrrp.group.health_check",
+            # "vrrp.group.track",
+            # "vrrp.group.transition_script",
+        ]
+        # self._module.fail_json(msg="wvrrp: " + str(want) + "**** hvrrp:  " + str(have))
+
+        # self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
+
+        self.compare(parsers=vrrp_parsers, want={"vrrp": want}, have={"vrrp": have})

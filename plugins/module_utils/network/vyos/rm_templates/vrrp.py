@@ -58,64 +58,77 @@ def _tmplt_vsrvs_rsrv(config_data):
 def _tmplt_sgroup_hc(config_data):
     config_data = config_data["sync-group"]["health-check"]
     command = []
-    # cmd = "service snmp v3 group {group}".format(**config_data)
-    # if "mode" in config_data:
-    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-    #     command.append(mode_cmd)
-    # if "seclevel" in config_data:
-    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-    #     command.append(sec_cmd)
-    # if "view" in config_data:
-    #     view_cmd = cmd + " view {view}".format(**config_data)
-    #     command.append(view_cmd)
+    cmd = "high-availability vrrp sync-group health-check {health_check}".format(**config_data)
+    if "failure_count" in config_data:
+        failure_count_cmd = cmd + " failure-count {failure_count}".format(**config_data)
+        command.append(failure_count_cmd)
+    if "interval" in config_data:
+        interval_cmd = cmd + " interval {interval}".format(**config_data)
+        command.append(interval_cmd)
+    if "ping" in config_data:
+        ping_cmd = cmd + " ping {ping}".format(**config_data)
+        command.append(ping_cmd)
+    if "script" in config_data:
+        script_cmd = cmd + " script {script}".format(**config_data)
+        command.append(script_cmd)
     return command
 
 
 def _tmplt_sgroup_ts(config_data):
     config_data = config_data["sync-group"]["transition-script"]
     command = []
-    # cmd = "service snmp v3 group {group}".format(**config_data)
-    # if "mode" in config_data:
-    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-    #     command.append(mode_cmd)
-    # if "seclevel" in config_data:
-    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-    #     command.append(sec_cmd)
-    # if "view" in config_data:
-    #     view_cmd = cmd + " view {view}".format(**config_data)
-    #     command.append(view_cmd)
+    cmd = "high-availability vrrp sync-group transition-script {transition_script}".format(
+        **config_data,
+    )
+    if "backup" in config_data:
+        backup_cmd = cmd + " backup {backup}".format(**config_data)
+        command.append(backup_cmd)
+    if "fault" in config_data:
+        fault_cmd = cmd + " fault {fault}".format(**config_data)
+        command.append(fault_cmd)
+    if "master" in config_data:
+        master_cmd = cmd + " master {master}".format(**config_data)
+        command.append(master_cmd)
+    if "stop" in config_data:
+        stop_cmd = cmd + " stop {stop}".format(**config_data)
+        command.append(stop_cmd)
     return command
 
 
 def _tmplt_vrrp_gp(config_data):
-    config_data = config_data["vrrp"]["global-parameters"]
+    config_data = config_data["vrrp"]["global_parameters"]
     command = []
-    # cmd = "service snmp v3 group {group}".format(**config_data)
-    # if "mode" in config_data:
-    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-    #     command.append(mode_cmd)
-    # if "seclevel" in config_data:
-    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-    #     command.append(sec_cmd)
-    # if "view" in config_data:
-    #     view_cmd = cmd + " view {view}".format(**config_data)
-    #     command.append(view_cmd)
+    cmd = "high-availability vrrp global-parameters {global_parameters}".format(**config_data)
+    if "version" in config_data:
+        version_cmd = cmd + " version {version}".format(**config_data)
+        command.append(version_cmd)
+    if "startup_delay" in config_data:
+        startup_delay_cmd = cmd + " startup-delay {startup_delay}".format(**config_data)
+        command.append(startup_delay_cmd)
     return command
 
 
 def _tmplt_vrrp_gp_garp(config_data):
-    config_data = config_data["vrrp"]["global-parameters"]["garp"]
+    config_data = config_data["vrrp"]["global_parameters"]["garp"]
     command = []
-    # cmd = "service snmp v3 group {group}".format(**config_data)
-    # if "mode" in config_data:
-    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-    #     command.append(mode_cmd)
-    # if "seclevel" in config_data:
-    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-    #     command.append(sec_cmd)
-    # if "view" in config_data:
-    #     view_cmd = cmd + " view {view}".format(**config_data)
-    #     command.append(view_cmd)
+    cmd = "high-availability vrrp global-parameters garp {garp}".format(**config_data)
+    if "interval" in config_data:
+        interval_cmd = cmd + " interval {interval}".format(**config_data)
+        command.append(interval_cmd)
+    if "master_delay" in config_data:
+        master_delay_cmd = cmd + " master-delay {master_delay}".format(**config_data)
+        command.append(master_delay_cmd)
+    if "master_refresh" in config_data:
+        master_refresh_cmd = cmd + " master-refresh {master_refresh}".format(**config_data)
+        command.append(master_refresh_cmd)
+    if "master_refresh_repeat" in config_data:
+        master_refresh_repeat_cmd = cmd + " master-refresh-repeat {master_refresh_repeat}".format(
+            **config_data,
+        )
+        command.append(master_refresh_repeat_cmd)
+    if "master_repeat" in config_data:
+        master_repeat_cmd = cmd + " master-repeat {master_repeat}".format(**config_data)
+        command.append(master_repeat_cmd)
     return command
 
 
@@ -310,8 +323,34 @@ class VrrpTemplate(NetworkTemplate):
                 },
             },
         },
+        # {
+        #     "name": "vrrp.sync_groups.member",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set\shigh-availability\svrrp\ssync-group
+        #         \s+(?P<sgname>\S+)
+        #         \smember
+        #         \s+(?P<member>\S+)
+        #         $
+        #         """,
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": "set high-availability vrrp sync-group {{sgname}} member {{member}}",
+        #     "result": {
+        #         "vrrp": {
+        #             "sync_groups": {
+        #                 "{{ sgname }}": {
+        #                     "name": "{{ sgname }}",
+        #                     "member": [
+        #                         "{{ member }}"
+        #                     ],
+        #                 },
+        #             },
+        #         },
+        #     },
+        # },
         {
-            "name": "vrrp.sync_group.member",
+            "name": "vrrp.sync_groups.member",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\ssync-group
@@ -323,20 +362,19 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "set high-availability vrrp sync-group {{sgname}} member {{member}}",
-            "compval": "sync_groups.member",
             "result": {
                 "vrrp": {
-                    "sync_groups": {
-                        "{{ sgname }}": {
+                    "sync_groups": [
+                        {
                             "name": "{{ sgname }}",
-                            "member": "{{ member }}",
+                            "member": ["{{ member }}"],
                         },
-                    },
+                    ],
                 },
             },
         },
         {
-            "name": "vrrp.sync_group.health_check",
+            "name": "vrrp.sync_groups.health_check",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\ssync-group
@@ -351,7 +389,7 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_sgroup_hc,
-            # "compval": "global_parameters.garp.master_refersh_repeat",
+            # "compval": "vrrp.sync_groups",
             "result": {
                 "vrrp": {
                     "sync_groups": {
@@ -369,7 +407,7 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "vrrp.sync_group.transition_script",
+            "name": "vrrp.sync_groups.transition_script",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\ssync-group
@@ -417,6 +455,7 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_vrrp_gp_garp,
+            # "compval": "global_parameters.garp",
             "result": {
                 "vrrp": {
                     "global_parameters": {
@@ -443,6 +482,7 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_vrrp_gp,
+            # "compval": "vrrp.global_parameters",
             "result": {
                 "vrrp": {
                     "global_parameters": {
@@ -452,7 +492,6 @@ class VrrpTemplate(NetworkTemplate):
                 },
             },
         },
-
         {
             "name": "vrrp.group",
             "getval": re.compile(
@@ -672,6 +711,51 @@ class VrrpTemplate(NetworkTemplate):
                             },
                         },
                     },
+                },
+            },
+        },
+        # {
+        #     "name": "vrrp.snmp",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set\shigh-availability\svrrp\ssnmp
+        #         \s+(?P<snmp>snmp\S+)
+        #         $
+        #         """,
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": _tmplt_vrrp_group_auth,
+        #     "result": {
+        #         "vrrp": {
+        #             "snmp": {
+        #                 "{{ snmp }}": {
+        #                     "name": "{{ snmp }}",
+        #                     "excluded_address": {
+        #                         "{{ address }}": {
+        #                             "name": "{{ address }}",
+        #                             "interface": "{{ interface if interface is defined else None }}",
+        #                         },
+        #                     },
+        #                 },
+        #             },
+        #         },
+        #     },
+        # }
+        {
+            "name": "vrrp.snmp",
+            "getval": re.compile(
+                r"""
+                ^set
+                \shigh-availability
+                \svrrp
+                \s(?P<snmp>snmp)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "high-availability vrrp snmp",
+            "result": {
+                "vrrp": {
+                    "snmp": "{{ True if snmp is defined }}",
                 },
             },
         },
