@@ -193,13 +193,13 @@ class Vrrp(ResourceModule):
         """Compare the instances of VRRP"""
         vrrp_parsers = [
             "vrrp.snmp",
-            "vrrp.sync_groups.member",
+            # "vrrp.sync_groups.member",
             # "vrrp.sync_groups.health_check",
             # "vrrp.sync_groups.transition_script",
             "vrrp.global_parameters.garp",
             "vrrp.global_parameters",
             # "version",
-            # "vrrp.group",
+            "vrrp.groups",
             # "vrrp.group.aunthentication",
             # "vrrp.group.garp",
             # "vrrp.group.transition_script",
@@ -207,7 +207,6 @@ class Vrrp(ResourceModule):
             # "vrrp.group.track",
             # "vrrp.group.transition_script",
         ]
-        # self._module.fail_json(msg="wvrrp: " + str(want) + "**** hvrrp:  " + str(have))
 
         # self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
 

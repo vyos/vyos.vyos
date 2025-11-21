@@ -50,6 +50,7 @@ class VrrpFacts(object):
             vrrp_vsrv = re.search(r"set high-availability virtual-server (\S+).*", config_line)
             vrrp_disable = re.search(r"set high-availability disable", config_line)
             vrrp_snmp = re.search(r"set high-availability vrrp snmp", config_line)
+
             if vrrp_disable:
                 config_dict["disable"] = config_dict.get("disable", "") + config_line + "\n"
             if vrrp_gp:
@@ -66,9 +67,9 @@ class VrrpFacts(object):
                     config_dict.get(vrrp_sg.group(1), "") + config_line + "\n"
                 )
             if vrrp_grp:
-                config_dict[vrrp_grp.group(1)] = (
-                    config_dict.get(vrrp_grp.group(1), "") + config_line + "\n"
-                )
+                # config_dict[vrrp_grp.group(1)] = (
+                #     config_dict.get(vrrp_grp.group(1), "") + config_line + "\n")
+                config_dict.setdefault(vrrp_grp.group(1), []).append(config_line)
         return list(config_dict.values())
 
     def deep_merge(self, dest, src):
@@ -96,6 +97,7 @@ class VrrpFacts(object):
         if not data:
             data = self.get_device_data(connection)
         resources = self.get_config_set(data, connection)
+        # self._module.fail_json(msg="Resources: " + str(resources))
         vrrp_facts = {"disable": False, "virtual_servers": {}, "vrrp": {}}
         for resource in resources:
             vrrp_parser = VrrpTemplate(
@@ -125,6 +127,7 @@ class VrrpFacts(object):
 
         facts["vrrp"] = params.get("config", [])
         ansible_facts["ansible_network_resources"].update(facts)
+        # self._module.fail_json(msg='Test - ' + str(ansible_facts))
         return ansible_facts
 
     def normalize_config(self, config):
@@ -137,8 +140,11 @@ class VrrpFacts(object):
 
         # Normalize vrrp
         vrrp = config.get("vrrp", {})
+        # self._module.fail_json(msg=config.get("vrrp", {}))
+
         if isinstance(vrrp.get("groups"), dict):
             vrrp["groups"] = list(vrrp["groups"].values())
+
         if isinstance(vrrp.get("sync_groups"), dict):
             vrrp["sync_groups"] = list(vrrp["sync_groups"].values())
 

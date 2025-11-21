@@ -133,18 +133,37 @@ def _tmplt_vrrp_gp_garp(config_data):
 
 
 def _tmplt_vrrp_group(config_data):
-    config_data = config_data["vrrp"]["group"]
+    config_data = config_data["vrrp"]["groups"]
     command = []
-    # cmd = "service snmp v3 group {group}".format(**config_data)
-    # if "mode" in config_data:
-    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-    #     command.append(mode_cmd)
-    # if "seclevel" in config_data:
-    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-    #     command.append(sec_cmd)
-    # if "view" in config_data:
-    #     view_cmd = cmd + " view {view}".format(**config_data)
-    #     command.append(view_cmd)
+    for item in config_data:
+        cmd = "high-availability vrrp {name}".format(**item)
+        if "address" in item:
+            address_cmd = cmd + " address {address}".format(**item)
+            command.append(address_cmd)
+        if "advertise_interval" in item:
+            adv_cmd = cmd + " advertise-interval {advertise_interval}".format(**item)
+            command.append(adv_cmd)
+        if "description" in item:
+            desc_cmd = cmd + " description {description}".format(**item)
+            command.append(desc_cmd)
+        if "disable" in item:
+            dis_cmd = cmd + " disable {disable}".format(**item)
+            command.append(dis_cmd)
+        if "interface" in item:
+            int_cmd = cmd + " interface {interface}".format(**item)
+            command.append(int_cmd)
+        if "no_preempt" in item:
+            np_cmd = cmd + " no-preempt {no_preempt}".format(**item)
+            command.append(np_cmd)
+        if "priority" in item:
+            prio_cmd = cmd + " priority {priority}".format(**item)
+            command.append(prio_cmd)
+        if "peer_address" in item:
+            paddr_cmd = cmd + " peer-address {peer_address}".format(**item)
+            command.append(paddr_cmd)
+        if "vrid" in item:
+            vrid_cmd = cmd + " vrid {vrid}".format(**item)
+            command.append(vrid_cmd)
     return command
 
 
@@ -491,7 +510,7 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "vrrp.group",
+            "name": "vrrp.groups",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
