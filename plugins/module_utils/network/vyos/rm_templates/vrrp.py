@@ -133,37 +133,37 @@ def _tmplt_vrrp_gp_garp(config_data):
 
 
 def _tmplt_vrrp_group(config_data):
-    config_data = config_data["vrrp"]["groups"]
+    groups = config_data["vrrp"]["groups"]
     command = []
-    for item in config_data:
-        cmd = "high-availability vrrp {name}".format(**item)
-        if "address" in item:
-            address_cmd = cmd + " address {address}".format(**item)
-            command.append(address_cmd)
-        if "advertise_interval" in item:
-            adv_cmd = cmd + " advertise-interval {advertise_interval}".format(**item)
-            command.append(adv_cmd)
-        if "description" in item:
-            desc_cmd = cmd + " description {description}".format(**item)
-            command.append(desc_cmd)
-        if "disable" in item:
-            dis_cmd = cmd + " disable {disable}".format(**item)
-            command.append(dis_cmd)
-        if "interface" in item:
-            int_cmd = cmd + " interface {interface}".format(**item)
-            command.append(int_cmd)
-        if "no_preempt" in item:
-            np_cmd = cmd + " no-preempt {no_preempt}".format(**item)
-            command.append(np_cmd)
-        if "priority" in item:
-            prio_cmd = cmd + " priority {priority}".format(**item)
-            command.append(prio_cmd)
-        if "peer_address" in item:
-            paddr_cmd = cmd + " peer-address {peer_address}".format(**item)
-            command.append(paddr_cmd)
-        if "vrid" in item:
-            vrid_cmd = cmd + " vrid {vrid}".format(**item)
-            command.append(vrid_cmd)
+
+    for name, item in groups.items():
+
+        # base command
+        cmd = f"high-availability vrrp group {name}"
+
+        for key, value in item.items():
+
+            # skip the group name
+            if key == "name":
+                continue
+
+            # skip nested dicts → handled by separate templates (e.g. garp)
+            if isinstance(value, dict):
+                continue
+
+            # boolean flags
+            if isinstance(value, bool):
+                if value:
+                    command.append(f"{cmd} {key.replace('_', '-')}")
+                continue
+
+            # skip None
+            if value is None:
+                continue
+
+            # regular scalar field
+            command.append(f"{cmd} {key.replace('_', '-')} {value}")
+
     return command
 
 
@@ -216,7 +216,7 @@ def _tmplt_vrrp_group_ts(config_data):
 
 
 def _tmplt_vrrp_group_garp(config_data):
-    config_data = config_data["vrrp"]["group"]["garp"]
+    config_data = config_data["vrrp"]["groups"]["garp"]
     command = []
     # cmd = "service snmp v3 group {group}".format(**config_data)
     # if "mode" in config_data:
@@ -368,30 +368,30 @@ class VrrpTemplate(NetworkTemplate):
         #         },
         #     },
         # },
-        {
-            "name": "vrrp.sync_groups.member",
-            "getval": re.compile(
-                r"""
-                ^set\shigh-availability\svrrp\ssync-group
-                \s+(?P<sgname>\S+)
-                \smember
-                \s+(?P<member>\S+)
-                $
-                """,
-                re.VERBOSE,
-            ),
-            "setval": "set high-availability vrrp sync-group {{sgname}} member {{member}}",
-            "result": {
-                "vrrp": {
-                    "sync_groups": [
-                        {
-                            "name": "{{ sgname }}",
-                            "member": ["{{ member }}"],
-                        },
-                    ],
-                },
-            },
-        },
+        # {
+        #     "name": "vrrp.sync_groups.member",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set\shigh-availability\svrrp\ssync-group
+        #         \s+(?P<sgname>\S+)
+        #         \smember
+        #         \s+(?P<member>\S+)
+        #         $
+        #         """,
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": "set high-availability vrrp sync-group {{sgname}} member {{member}}",
+        #     "result": {
+        #         "vrrp": {
+        #             "sync_groups": [
+        #                 {
+        #                     "name": "{{ sgname }}",
+        #                     "member": ["{{ member }}"],
+        #                 },
+        #             ],
+        #         },
+        #     },
+        # },
         {
             "name": "vrrp.sync_groups.health_check",
             "getval": re.compile(
@@ -514,7 +514,7 @@ class VrrpTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
-                \s+(?P<group_name>\S+)
+                \s+(?P<gname>\S+)
                 (?:\s+address\s+(?P<address>\S+))?
                 (?:\s+description\s+(?P<description>'.+?'|\S+))?
                 (?:\s+advertise-interval\s+(?P<advertise_interval>\S+))?
@@ -533,8 +533,8 @@ class VrrpTemplate(NetworkTemplate):
             "result": {
                 "vrrp": {
                     "groups": {
-                        "{{ group_name }}": {
-                            "name": "{{ group_name }}",
+                        "{{ gname }}": {
+                            "name": "{{ gname }}",
                             "address": "{{ address if address is defined else None }}",
                             "description": "{{ description.strip(\"'\") if description is defined else None }}",
                             "advertise_interval": "{{ advertise_interval if advertise_interval is defined else None }}",
@@ -555,7 +555,7 @@ class VrrpTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
-                \s+(?P<group_name>\S+)
+                \s+(?P<gname>\S+)
                 \s+(?P<authentication>\S+)
                 (?:\s+password\s+(?P<password>\S+))?
                 (?:\s+type\s+(?P<type>\S+))?
@@ -567,8 +567,8 @@ class VrrpTemplate(NetworkTemplate):
             "result": {
                 "vrrp": {
                     "groups": {
-                        "{{ group_name }}": {
-                            "name": "{{ group_name }}",
+                        "{{ gname }}": {
+                            "name": "{{ gname }}",
                             "authentication": {
                                 "password": "{{ password if password is defined else None }}",
                                 "type": "{{ type if type is defined else None }}",
@@ -579,10 +579,11 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "vrrp.group.garp",
+            "name": "vrrp.groups.garp",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
+                \s+(?P<gname>\S+)
                 \s+garp
                 (?:\s+interval\s+(?P<interval>\S+))?
                 (?:\s+master-delay\s+(?P<master_delay>\S+))?
@@ -593,16 +594,20 @@ class VrrpTemplate(NetworkTemplate):
                 """,
                 re.VERBOSE,
             ),
-            "setval": _tmplt_vrrp_group_garp,
+            # "setval": _tmplt_vrrp_group_garp,
+            # "setval": "garp",
             "result": {
                 "vrrp": {
                     "groups": {
-                        "garp": {
-                            "interval": "{{ interval if interval is defined else None }}",
-                            "master_delay": "{{ master_delay if master_delay is defined else None }}",
-                            "master_refresh": "{{ master_refresh if master_refresh is defined else None }}",
-                            "master_refresh_repeat": "{{ master_refresh_repeat if master_refresh_repeat is defined else None }}",
-                            "master_repeat": "{{ master_repeat if master_repeat is defined else None }}",
+                        "{{ gname }}": {
+                            "name": "{{ gname }}",
+                            "garp": {
+                                "interval": "{{ interval if interval is defined else None }}",
+                                "master_delay": "{{ master_delay if master_delay is defined else None }}",
+                                "master_refresh": "{{ master_refresh if master_refresh is defined else None }}",
+                                "master_refresh_repeat": "{{ master_refresh_repeat if master_refresh_repeat is defined else None }}",
+                                "master_repeat": "{{ master_repeat if master_repeat is defined else None }}",
+                            },
                         },
                     },
                 },
@@ -642,11 +647,11 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "vrrp.group.health_check",
+            "name": "vrrp.groups.health_check",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
-                \s+(?P<group_name>\S+)
+                \s+(?P<gname>\S+)
                 \shealth-check
                 (?:\s+failure-count\s+(?P<failure_count>\S+))
                 ?(?:\s+interval\s+(?P<int>\S+))
@@ -661,8 +666,8 @@ class VrrpTemplate(NetworkTemplate):
             "result": {
                 "vrrp": {
                     "groups": {
-                        "{{ group_name }}": {
-                            "name": "{{ group_name }}",
+                        "{{ gname }}": {
+                            "name": "{{ gname }}",
                             "health_check": {
                                 "failure_count": "{{ failure_count if failure_count is defined else None }}",
                                 "interval": "{{ int if int is defined else None }}",
@@ -679,7 +684,7 @@ class VrrpTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
-                \s+(?P<group_name>\S+)
+                \s+(?P<gname>\S+)
                 \strack
                 (?:\s+exculde-vrrp-interface\s+(?P<exclude_vrrp_inter>\S+))?
                 (?:\s+interface\s+(?P<interface>\S+))?
@@ -691,8 +696,8 @@ class VrrpTemplate(NetworkTemplate):
             "result": {
                 "vrrp": {
                     "groups": {
-                        "{{ group_name }}": {
-                            "name": "{{ group_name }}",
+                        "{{ gname }}": {
+                            "name": "{{ gname }}",
                             "track": {
                                 "exclude_vrrp_interface": "{{ exclude_vrrp_inter if exclude-vrrp-inter is defined else None }}",
                                 "interface": "{{ interface if interface is defined else None }}",
@@ -707,7 +712,7 @@ class VrrpTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
-                \s+(?P<group_name>\S+)
+                \s+(?P<gname>\S+)
                 \sexcluded-address\s+(?P<address>\S+)
                 (?:\s+interface\s+(?P<interface>\S+))?
                 $
@@ -718,8 +723,8 @@ class VrrpTemplate(NetworkTemplate):
             "result": {
                 "vrrp": {
                     "groups": {
-                        "{{ group_name }}": {
-                            "name": "{{ group_name }}",
+                        "{{ gname }}": {
+                            "name": "{{ gname }}",
                             "excluded_address": {
                                 "{{ address }}": {
                                     "name": "{{ address }}",
@@ -731,33 +736,6 @@ class VrrpTemplate(NetworkTemplate):
                 },
             },
         },
-        # {
-        #     "name": "vrrp.snmp",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set\shigh-availability\svrrp\ssnmp
-        #         \s+(?P<snmp>snmp\S+)
-        #         $
-        #         """,
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": _tmplt_vrrp_group_auth,
-        #     "result": {
-        #         "vrrp": {
-        #             "snmp": {
-        #                 "{{ snmp }}": {
-        #                     "name": "{{ snmp }}",
-        #                     "excluded_address": {
-        #                         "{{ address }}": {
-        #                             "name": "{{ address }}",
-        #                             "interface": "{{ interface if interface is defined else None }}",
-        #                         },
-        #                     },
-        #                 },
-        #             },
-        #         },
-        #     },
-        # }
         {
             "name": "vrrp.snmp",
             "getval": re.compile(

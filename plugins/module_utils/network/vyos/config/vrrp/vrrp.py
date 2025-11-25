@@ -95,7 +95,12 @@ class Vrrp(ResourceModule):
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
 
-        # self._module.fail_json(msg="WanT: " + str(self.want) + "========== H:  " + str(self.have))
+        for entry in wantd, haved:
+            # self._module.fail_json(msg="Before normalize_vrrp_groups - entry: " + str(entry))
+            self._vrrp_groups_list_to_dict(entry)
+            self._virtual_servers_list_to_dict(entry)
+
+        # self._module.fail_json(msg="Init - want: " + str(wantd) + " (((()))) have:  " + str(haved))
 
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged"]:
@@ -146,7 +151,6 @@ class Vrrp(ResourceModule):
         for k, want in wantd.items():
             if k == "vrrp":
                 self._compare_vrrp(want, haved.get(k, {}))
-            # self._module.fail_json(msg=k)
             # if isinstance(want, list):
             # self._module.fail_json(msg=str(want) + " +++ " + str(haved.pop(k, {})))
             self.compare(
@@ -198,16 +202,74 @@ class Vrrp(ResourceModule):
             # "vrrp.sync_groups.transition_script",
             "vrrp.global_parameters.garp",
             "vrrp.global_parameters",
-            # "version",
             "vrrp.groups",
             # "vrrp.group.aunthentication",
-            # "vrrp.group.garp",
+            "vrrp.groups.garp",
             # "vrrp.group.transition_script",
-            # "vrrp.group.health_check",
+            # "vrrp.groups.health_check",
             # "vrrp.group.track",
             # "vrrp.group.transition_script",
         ]
 
-        # self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
+        # self._module.fail_json(msg="Conf: " + str(want) + " <*****************> " + str(have))
 
         self.compare(parsers=vrrp_parsers, want={"vrrp": want}, have={"vrrp": have})
+
+    def _vrrp_groups_list_to_dict(self, data):
+
+        vrrp = data.get("vrrp", {})
+        groups = vrrp.get("groups")
+
+        # Nothing to do
+        if not groups:
+            return data
+
+        # Already dict-based
+        if isinstance(groups, dict):
+            return data
+
+        # Must be list → convert it
+        if isinstance(groups, list):
+            new_groups = {}
+            for item in groups:
+                name = item.get("name")
+                if not name:
+                    continue
+                new_groups[name] = item
+
+            data["vrrp"]["groups"] = new_groups
+            return data
+
+        # Unexpected shape → leave as-is
+        return data
+
+    def _virtual_servers_list_to_dict(self, data):
+
+        vss = data.get("virtual_servers")
+        if not vss:
+            return data
+
+        # Already normalized dict → return untouched
+        if isinstance(vss, dict):
+            return data
+
+        # List → convert
+        if isinstance(vss, list):
+            new_vss = {}
+
+            for item in vss:
+                # Skip non-dict items
+                if not isinstance(item, dict):
+                    continue
+
+                alias = item.get("alias")
+                if not alias:
+                    continue
+
+                new_vss[alias] = item
+
+            data["virtual_servers"] = new_vss
+            return data
+
+        # Anything else → leave unchanged
+        return data
