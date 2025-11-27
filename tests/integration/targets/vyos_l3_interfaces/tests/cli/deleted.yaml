@@ -10,7 +10,6 @@
       vyos.vyos.vyos_l3_interfaces: &id001
         config:
           - name: eth1
-
           - name: eth2
         state: deleted
 
@@ -42,5 +41,42 @@
       assert:
         that:
           - "{{ deleted['after'] | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Prepare delete test for SLAAC auto-config
+      vyos.vyos.vyos_l3_interfaces:
+        config:
+          - name: eth1
+            ipv6:
+              - address: auto-config
+          - name: eth2
+            vifs:
+              - vlan_id: 101
+                ipv6:
+                  - address: auto-config
+        state: replaced
+
+    - name: Delete SLACC auto-config of given interfaces
+      register: result
+      vyos.vyos.vyos_l3_interfaces:
+        config:
+          - name: eth1
+          - name: eth2
+        state: deleted
+
+    - name: Assert that the before dicts were correctly generated (SLAAC)
+      assert:
+        that:
+          - "{{ deleted['before_slaac'] | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Assert that the correct set of commands were generated (SLAAC)
+      assert:
+        that:
+          - "{{ deleted['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that the after dicts were correctly generated (SLAAC)
+      assert:
+        that:
+          - "{{ deleted['after'] | symmetric_difference(result['after']) |length == 0 }}"
+
   always:
     - include_tasks: _remove_config.yaml
