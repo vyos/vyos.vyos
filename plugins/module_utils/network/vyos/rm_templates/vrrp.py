@@ -595,7 +595,8 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             # "setval": _tmplt_vrrp_group_garp,
-            # "setval": "garp",
+            "setval": "garp",
+            # "compval": "vrrp.groups.g1.garp",
             "result": {
                 "vrrp": {
                     "groups": {
