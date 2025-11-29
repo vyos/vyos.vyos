@@ -151,6 +151,9 @@ class Vrrp(ResourceModule):
         for k, want in wantd.items():
             if k == "vrrp":
                 self._compare_vrrp(want, haved.get(k, {}))
+            if k == "virtual_servers":
+                # self._module.fail_json(msg="VSERVERS: " + str(want) + " ---- " + str(haved.get(k, {})))
+                self._compare_vsrvs(want, haved.get(k, {}))
             # if isinstance(want, list):
             # self._module.fail_json(msg=str(want) + " +++ " + str(haved.pop(k, {})))
             self.compare(
@@ -160,38 +163,19 @@ class Vrrp(ResourceModule):
             )
         self._module.fail_json(msg=self.commands)
 
-    # def _compare_vsrvs(self, want, have):
-    #     """Compare virtual servers of VRRP.py"""
-    #     parsers = [
-    #         "virtual_servers",
-    #         "virtual_servers.real_servers",
-    #     ]
-    #     # self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
-    #
-    #     # for entry in want:
-    #     #     h = {}
-    #     #     wname = entry.get("name")
-    #     #     # h = next((vrrp for vrrp in have if vrrp["name"] == wname), {})
-    #     #     h = {
-    #     #         k: v
-    #     #         for vrrp in have
-    #     #         if vrrp.get("name") == wname
-    #     #         for k, v in vrrp.items()
-    #     #         if k != "address_family"
-    #     #     }
-    #         self.compare(parsers=parsers, want=entry, have=h)
-    #
-    # if "address_family" in entry:
-    #     wafi = {"name": wname, "address_family": entry.get("address_family", [])}
-    #     # hdict = next((item for item in have if item["name"] == wname), None)
-    #     hdict = next((d for d in have if d.get("name") == wname), None)
-    #
-    #     hafi = {
-    #         "name": (hdict or {"name": wname})["name"],
-    #         "address_family": hdict.get("address_family", []) if hdict else [],
-    #     }
+    def _compare_vsrvs(self, want, have):
+        """Compare virtual servers of VRRP.py"""
+        vs_parsers = [
+            "virtual_servers",
+            # "virtual_servers.real_servers",
+        ]
+        # self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
 
-    # self._module.fail_json(msg="wafi: " + str(wafi) + "**** hafi:  " + str(hafi))
+        self.compare(
+            parsers=vs_parsers,
+            want={"virtual_servers": want},
+            have={"virtual_servers": have},
+        )
 
     def _compare_vrrp(self, want, have):
         """Compare the instances of VRRP"""
@@ -202,8 +186,8 @@ class Vrrp(ResourceModule):
             # "vrrp.sync_groups.transition_script",
             "vrrp.global_parameters.garp",
             "vrrp.global_parameters",
-            "vrrp.groups",
             "vrrp.groups.garp",
+            # "vrrp.groups",
             # "vrrp.group.aunthentication",
             # "vrrp.group.transition_script",
             # "vrrp.groups.health_check",
@@ -213,7 +197,11 @@ class Vrrp(ResourceModule):
 
         # self._module.fail_json(msg="Conf: " + str(want) + " <*****************> " + str(have))
 
-        self.compare(parsers=vrrp_parsers, want={"vrrp": want}, have={"vrrp": have})
+        want = {"vrrp": {"groups": {"garp": {"interval": "1"}, "name": "g1"}}}
+        have = {"vrrp": {"groups": {}}}
+        self.compare(parsers=vrrp_parsers, want=want, have=have)
+
+        # self.compare(parsers=vrrp_parsers, want={"vrrp": want}, have={"vrrp": have})
 
     def _vrrp_groups_list_to_dict(self, data):
 

@@ -23,24 +23,43 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 )
 
 
+# def _tmplt_vsrvs(config_data):
+#     config_data = config_data["virtual_servers"]
+#     command = []
+#     cmd = "high-availability virtual-server".format(**config_data)
+#     command = [str(cmd)]
+#     # if "mode" in config_data:
+#     #     mode_cmd = cmd + " mode {mode}".format(**config_data)
+#     #     command.append(mode_cmd)
+#     # if "seclevel" in config_data:
+#     #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
+#     #     command.append(sec_cmd)
+#     # if "view" in config_data:
+#     #     view_cmd = cmd + " view {view}".format(**config_data)
+#     #     command.append(view_cmd)
+#     return command
+
+
 def _tmplt_vsrvs(config_data):
-    config_data = config_data["virtual-server"]
+    vs = config_data["virtual_servers"]
     command = []
-    # cmd = "service snmp v3 group {group}".format(**config_data)
-    # if "mode" in config_data:
-    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-    #     command.append(mode_cmd)
-    # if "seclevel" in config_data:
-    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-    #     command.append(sec_cmd)
-    # if "view" in config_data:
-    #     view_cmd = cmd + " view {view}".format(**config_data)
-    #     command.append(view_cmd)
+
+    for alias, item in vs.items():
+
+        cmd = f"set high-availability virtual-server {alias}"
+
+        for key, value in item.items():
+
+            if key == "alias" or isinstance(value, list) or value is None:
+                continue
+
+            command.append(f"{cmd} {key.replace('_', '-')} {value}")
+
     return command
 
 
 def _tmplt_vsrvs_rsrv(config_data):
-    config_data = config_data["virtual-server"]["real_servers"]
+    config_data = config_data["virtual_servers"]["real_servers"]
     command = []
     # cmd = "service snmp v3 group {group}".format(**config_data)
     # if "mode" in config_data:
@@ -216,9 +235,9 @@ def _tmplt_vrrp_group_ts(config_data):
 
 
 def _tmplt_vrrp_group_garp(config_data):
-    config_data = config_data["vrrp"]["groups"]["garp"]
-    command = []
-    # cmd = "service snmp v3 group {group}".format(**config_data)
+    config_data = config_data["vrrp"]["groups"]
+    command = [str(config_data)]
+    # cmd = "service snmp v3 group {name}".format(**config_data)
     # if "mode" in config_data:
     #     mode_cmd = cmd + " mode {mode}".format(**config_data)
     #     command.append(mode_cmd)
@@ -229,6 +248,7 @@ def _tmplt_vrrp_group_garp(config_data):
     #     view_cmd = cmd + " view {view}".format(**config_data)
     #     command.append(view_cmd)
     return command
+    # return [str(cmd)]
 
 
 def _tmplt_vrrp_group_auth(config_data):
@@ -293,6 +313,7 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_vsrvs,
+            # "setval": "virtual-server",
             "result": {
                 "virtual_servers": {
                     "{{ alias }}": {
@@ -594,8 +615,8 @@ class VrrpTemplate(NetworkTemplate):
                 """,
                 re.VERBOSE,
             ),
-            # "setval": _tmplt_vrrp_group_garp,
-            "setval": "garp",
+            "setval": _tmplt_vrrp_group_garp,
+            # "setval": "garp",
             # "compval": "vrrp.groups.g1.garp",
             "result": {
                 "vrrp": {
