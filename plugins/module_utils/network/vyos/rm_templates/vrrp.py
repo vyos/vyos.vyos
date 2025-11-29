@@ -162,25 +162,12 @@ def _tmplt_vrrp_group(config_data):
 
         for key, value in item.items():
 
-            # skip the group name
-            if key == "name":
+            if key == "name" or isinstance(value, dict) or value is None:
                 continue
 
-            # skip nested dicts → handled by separate templates (e.g. garp)
-            if isinstance(value, dict):
-                continue
+            if isinstance(value, bool) and value is not None:
+                command.append(f"{cmd} {key.replace('_', '-')}")
 
-            # boolean flags
-            if isinstance(value, bool):
-                if value:
-                    command.append(f"{cmd} {key.replace('_', '-')}")
-                continue
-
-            # skip None
-            if value is None:
-                continue
-
-            # regular scalar field
             command.append(f"{cmd} {key.replace('_', '-')} {value}")
 
     return command
