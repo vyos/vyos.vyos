@@ -83,6 +83,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                         "continue",
                                         "return",
                                         "jump",
+                                        "offload",
                                         "queue",
                                         "synproxy",
                                     ],
@@ -210,6 +211,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                     "required": True,
                                     "type": "int",
                                 },
+                                "offload_target": {"type": "str"},
                                 "outbound_interface": {
                                     "options": {
                                         "group": {"type": "str"},

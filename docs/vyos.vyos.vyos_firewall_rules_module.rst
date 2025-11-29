@@ -251,6 +251,7 @@ Parameters
                                     <li>continue</li>
                                     <li>return</li>
                                     <li>jump</li>
+                                    <li>offload</li>
                                     <li>queue</li>
                                     <li>synproxy</li>
                         </ul>
@@ -831,6 +832,24 @@ Parameters
                 </td>
                 <td>
                         <div>Rule number.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>offload_target</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Match flowtable object.</div>
                 </td>
             </tr>
             <tr>
