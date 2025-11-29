@@ -152,24 +152,30 @@ def _tmplt_vrrp_gp_garp(config_data):
 
 
 def _tmplt_vrrp_group(config_data):
-    groups = config_data["vrrp"]["groups"]
+    config_data = config_data["vrrp"]["groups"]
     command = []
+    cmd = "high-availability vrrp group {name}".format(**config_data)
 
-    for name, item in groups.items():
+    for key, value in config_data.items():
 
-        # base command
-        cmd = f"high-availability vrrp group {name}"
+        if key == "name" or isinstance(value, dict) or value is None:
+            continue
 
-        for key, value in item.items():
+        if isinstance(value, bool) and value is not None:
+            command.append(f"{cmd} {key.replace('_', '-')}")
 
-            if key == "name" or isinstance(value, dict) or value is None:
-                continue
+        command.append(f"{cmd} {key.replace('_', '-')} {value}")
+    return command
 
-            if isinstance(value, bool) and value is not None:
-                command.append(f"{cmd} {key.replace('_', '-')}")
 
-            command.append(f"{cmd} {key.replace('_', '-')} {value}")
-
+def _tmplt_vrrp_group_garp(config_data):
+    config_data = config_data["vrrp"]["groups"]
+    command = []
+    cmd = "high-availability vrrp group {name}".format(**config_data)
+    config_data = config_data["garp"]
+    for key, value in config_data.items():
+        if value is not None:
+            command.append(cmd + " garp " + f"{key.replace('_', '-')} {value}")
     return command
 
 
@@ -219,23 +225,6 @@ def _tmplt_vrrp_group_ts(config_data):
     #     view_cmd = cmd + " view {view}".format(**config_data)
     #     command.append(view_cmd)
     return command
-
-
-def _tmplt_vrrp_group_garp(config_data):
-    config_data = config_data["vrrp"]["groups"]
-    command = [str(config_data)]
-    # cmd = "service snmp v3 group {name}".format(**config_data)
-    # if "mode" in config_data:
-    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-    #     command.append(mode_cmd)
-    # if "seclevel" in config_data:
-    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-    #     command.append(sec_cmd)
-    # if "view" in config_data:
-    #     view_cmd = cmd + " view {view}".format(**config_data)
-    #     command.append(view_cmd)
-    return command
-    # return [str(cmd)]
 
 
 def _tmplt_vrrp_group_auth(config_data):
@@ -559,6 +548,40 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
+            "name": "vrrp.groups.garp",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\sgroup
+                \s+(?P<gname>\S+)
+                \s+garp
+                (?:\s+interval\s+(?P<interval>\S+))?
+                (?:\s+master-delay\s+(?P<master_delay>\S+))?
+                (?:\s+master-refresh\s+(?P<master_refresh>\S+))?
+                (?:\s+master-refresh-repeat\s+(?P<master_refresh_repeat>\S+))?
+                (?:\s+master-repeat\s+(?P<master_repeat>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group_garp,
+            "result": {
+                "vrrp": {
+                    "groups": {
+                        "{{ gname }}": {
+                            "name": "{{ gname }}",
+                            "garp": {
+                                "interval": "{{ interval if interval is defined else None }}",
+                                "master_delay": "{{ master_delay if master_delay is defined else None }}",
+                                "master_refresh": "{{ master_refresh if master_refresh is defined else None }}",
+                                "master_refresh_repeat": "{{ master_refresh_repeat if master_refresh_repeat is defined else None }}",
+                                "master_repeat": "{{ master_repeat if master_repeat is defined else None }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        {
             "name": "vrrp.group.authentication",
             "getval": re.compile(
                 r"""
@@ -580,42 +603,6 @@ class VrrpTemplate(NetworkTemplate):
                             "authentication": {
                                 "password": "{{ password if password is defined else None }}",
                                 "type": "{{ type if type is defined else None }}",
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        {
-            "name": "vrrp.groups.garp",
-            "getval": re.compile(
-                r"""
-                ^set\shigh-availability\svrrp\sgroup
-                \s+(?P<gname>\S+)
-                \s+garp
-                (?:\s+interval\s+(?P<interval>\S+))?
-                (?:\s+master-delay\s+(?P<master_delay>\S+))?
-                (?:\s+master-refresh\s+(?P<master_refresh>\S+))?
-                (?:\s+master-refresh-repeat\s+(?P<master_refresh_repeat>\S+))?
-                (?:\s+master-repeat\s+(?P<master_repeat>\S+))?
-                $
-                """,
-                re.VERBOSE,
-            ),
-            "setval": _tmplt_vrrp_group_garp,
-            # "setval": "garp",
-            # "compval": "vrrp.groups.g1.garp",
-            "result": {
-                "vrrp": {
-                    "groups": {
-                        "{{ gname }}": {
-                            "name": "{{ gname }}",
-                            "garp": {
-                                "interval": "{{ interval if interval is defined else None }}",
-                                "master_delay": "{{ master_delay if master_delay is defined else None }}",
-                                "master_refresh": "{{ master_refresh if master_refresh is defined else None }}",
-                                "master_refresh_repeat": "{{ master_refresh_repeat if master_refresh_repeat is defined else None }}",
-                                "master_repeat": "{{ master_repeat if master_repeat is defined else None }}",
                             },
                         },
                     },

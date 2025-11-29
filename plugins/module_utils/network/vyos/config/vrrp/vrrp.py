@@ -100,7 +100,7 @@ class Vrrp(ResourceModule):
             self._vrrp_groups_list_to_dict(entry)
             self._virtual_servers_list_to_dict(entry)
 
-        # self._module.fail_json(msg="Init - want: " + str(wantd) + " (((()))) have:  " + str(haved))
+        # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " (((()))) have:  " + str(haved))
 
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged"]:
@@ -187,7 +187,7 @@ class Vrrp(ResourceModule):
             "vrrp.global_parameters.garp",
             "vrrp.global_parameters",
             "vrrp.groups.garp",
-            # "vrrp.groups",
+            "vrrp.groups",
             # "vrrp.group.aunthentication",
             # "vrrp.group.transition_script",
             # "vrrp.groups.health_check",
@@ -197,7 +197,25 @@ class Vrrp(ResourceModule):
 
         # self._module.fail_json(msg="Conf: " + str(want) + " <*****************> " + str(have))
 
-        want = {"vrrp": {"groups": {"garp": {"interval": "1"}, "name": "g1"}}}
+        want = {
+            "vrrp": {
+                "groups": {
+                    "name": "g2",
+                    "interface": "eth1",
+                    "address": "2.2.2.2",
+                    "disable": False,
+                    "no_preempt": False,
+                    "vrid": 11,
+                    "garp": {
+                        "interval": 21,
+                        "master_delay": 6,
+                        "master_refresh": 51,
+                        "master_refresh_repeat": 101,
+                        "master_repeat": 4,
+                    },
+                },
+            },
+        }
         have = {"vrrp": {"groups": {}}}
         self.compare(parsers=vrrp_parsers, want=want, have=have)
 
