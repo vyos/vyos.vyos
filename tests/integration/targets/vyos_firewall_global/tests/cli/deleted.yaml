@@ -10,11 +10,16 @@
       vyos.vyos.vyos_firewall_global: &id001
         config:
         state: deleted
+      diff: true
 
     - name: Assert that the before dicts were correctly generated
       assert:
         that:
           - "{{ populate == result['before'] }}"
+          - item in result.diff.prepared
+      loop: "{{ deleted_diff }}"
+      loop_control:
+        loop_var: item
 
     - name: Assert that the correct set of commands were generated
       assert:
@@ -29,12 +34,14 @@
     - name: Delete attributes of given interfaces (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_firewall_global: *id001
+      diff: true
 
     - name: Assert that the previous task was idempotent
       assert:
         that:
           - result.changed == false
           - result.commands|length == 0
+          - result['diff'] is not defined
 
     - name: Assert that the before dicts were correctly generated
       assert:
