@@ -70,6 +70,7 @@ Name | Description
 [vyos.vyos.vyos_system](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_system_module.rst)|Run `set system` commands on VyOS devices
 [vyos.vyos.vyos_user](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_user_module.rst)|Manage the collection of local users on VyOS device
 [vyos.vyos.vyos_vlan](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vlan_module.rst)|Manage VLANs on VyOS network devices
+[vyos.vyos.vyos_vrrp](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vrrp_module.rst)|Manage VRRP and load balancer configuration on VyOS
 
 <!--end collection content-->
 
