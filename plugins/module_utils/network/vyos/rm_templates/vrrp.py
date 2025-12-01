@@ -45,16 +45,11 @@ def _tmplt_vsrvs(config_data):
     command = []
 
     for alias, item in vs.items():
-
         cmd = f"set high-availability virtual-server {alias}"
-
         for key, value in item.items():
-
             if key == "alias" or isinstance(value, list) or value is None:
                 continue
-
             command.append(f"{cmd} {key.replace('_', '-')} {value}")
-
     return command
 
 
@@ -157,7 +152,6 @@ def _tmplt_vrrp_group(config_data):
     cmd = "high-availability vrrp group {name}".format(**config_data)
 
     for key, value in config_data.items():
-
         if key == "name" or isinstance(value, dict) or value is None:
             continue
 
@@ -176,6 +170,17 @@ def _tmplt_vrrp_group_garp(config_data):
     for key, value in config_data.items():
         if value is not None:
             command.append(cmd + " garp " + f"{key.replace('_', '-')} {value}")
+    return command
+
+
+def _tmplt_vrrp_group_auth(config_data):
+    config_data = config_data["vrrp"]["group"]
+    command = []
+    cmd = "high-availability vrrp group {name}".format(**config_data)
+    config_data = config_data["authentication"]
+    for key, value in config_data.items():
+        if value is not None:
+            command.append(cmd + " authentication " + f"{key.replace('_', '-')} {value}")
     return command
 
 
@@ -213,22 +218,6 @@ def _tmplt_vrrp_group_hc(config_data):
 
 def _tmplt_vrrp_group_ts(config_data):
     config_data = config_data["vrrp"]["group"]["transcription-script"]
-    command = []
-    # cmd = "service snmp v3 group {group}".format(**config_data)
-    # if "mode" in config_data:
-    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-    #     command.append(mode_cmd)
-    # if "seclevel" in config_data:
-    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-    #     command.append(sec_cmd)
-    # if "view" in config_data:
-    #     view_cmd = cmd + " view {view}".format(**config_data)
-    #     command.append(view_cmd)
-    return command
-
-
-def _tmplt_vrrp_group_auth(config_data):
-    config_data = config_data["vrrp"]["group"]["authentication"]
     command = []
     # cmd = "service snmp v3 group {group}".format(**config_data)
     # if "mode" in config_data:

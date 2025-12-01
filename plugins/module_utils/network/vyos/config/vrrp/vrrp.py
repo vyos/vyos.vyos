@@ -35,8 +35,8 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.versi
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
-# from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-#     dict_merge,
+# from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (  # dict_merge,
+#     get_from_dict,
 # )
 
 
@@ -154,7 +154,6 @@ class Vrrp(ResourceModule):
             if k == "virtual_servers":
                 # self._module.fail_json(msg="VSERVERS: " + str(want) + " ---- " + str(haved.get(k, {})))
                 self._compare_vsrvs(want, haved.get(k, {}))
-            # if isinstance(want, list):
             # self._module.fail_json(msg=str(want) + " +++ " + str(haved.pop(k, {})))
             self.compare(
                 parsers=self.parsers,
@@ -197,26 +196,88 @@ class Vrrp(ResourceModule):
 
         # self._module.fail_json(msg="Conf: " + str(want) + " <*****************> " + str(have))
 
+        for wvrrp in self.extract_leaf_items(want):
+            self._module.fail_json(msg="WV: " + str(wvrrp))
+
+        #     "vrrp": {
+        #         "groups": {
+        #             "name": "g2",
+        #             "interface": "eth1",
+        #             "address": "2.2.2.2",
+        #             "disable": False,
+        #             "no_preempt": False,
+        #             "vrid": 11,
+        #             "garp": {
+        #                 "interval": 21,
+        #                 "master_delay": 6,
+        #                 "master_refresh": 51,
+        #                 "master_refresh_repeat": 101,
+        #                 "master_repeat": 4,
+        #             },
+        #         },
+        #     },
+        # }
+
+        # have = {
+        #     "vrrp": {
+        #         "groups": {
+        #             "name": "g2",
+        #             "interface": "eth1",
+        #             "address": "2.2.2.2",
+        #             "disable": False,
+        #             "no_preempt": False,
+        #             "vrid": 11,
+        #             "garp": {
+        #                 "interval": 22,
+        #                 "master_delay": 6,
+        #                 "master_refresh": 51,
+        #                 "master_refresh_repeat": 101,
+        #                 "master_repeat": 4,
+        #             },
+        #         },
+        #     },
+        # }
+        # want = {
+        #     "vrrp": {
+        #         "groups": {
+        #             "name": "g2",
+        #             "garp": {
+        #                 "interval": 21,
+        #             },
+        #         },
+        #     },
+        # }
+
+        # have = {
+        #     "vrrp": {
+        #         "groups": {
+        #             "name": "g2",
+        #             "garp": {
+        #                 "interval": 22,
+        #             },
+        #         },
+        #     },
+        # }
+
         want = {
             "vrrp": {
-                "groups": {
-                    "name": "g2",
-                    "interface": "eth1",
-                    "address": "2.2.2.2",
-                    "disable": False,
-                    "no_preempt": False,
-                    "vrid": 11,
+                "global_parameters": {
                     "garp": {
-                        "interval": 21,
-                        "master_delay": 6,
-                        "master_refresh": 51,
-                        "master_refresh_repeat": 101,
-                        "master_repeat": 4,
+                        "interval": 32,
                     },
                 },
             },
         }
-        have = {"vrrp": {"groups": {}}}
+        have = {
+            "vrrp": {
+                "global_parameters": {
+                    "garp": {
+                        "interval": 31,
+                    },
+                },
+            },
+        }
+
         self.compare(parsers=vrrp_parsers, want=want, have=have)
 
         # self.compare(parsers=vrrp_parsers, want={"vrrp": want}, have={"vrrp": have})
@@ -279,3 +340,38 @@ class Vrrp(ResourceModule):
 
         # Anything else → leave unchanged
         return data
+
+    def extract_leaf_items(self, data, path=None, parent_name=None):
+        """
+        Recursively extract leaf items from a nested dict.
+        - If a dict has a 'name', include it in each output.
+        - Only emit leaves that are not 'name' itself.
+        - Returns a list of one-leaf nested dicts.
+        """
+        path = path or []
+        results = []
+
+        if isinstance(data, dict):
+            current_name = data.get("name", parent_name)
+            for k, v in data.items():
+                if k == "name":
+                    continue
+                results.extend(self.extract_leaf_items(v, path + [k], current_name))
+        else:
+            # leaf node
+            leaf_key = path[-1]
+            top_key = path[0]
+
+            if parent_name is not None:
+                # parent has a name → include it
+                out = {top_key: {"name": parent_name, leaf_key: data}}
+            else:
+                # generic leaf
+                leaf = {leaf_key: data}
+                for p in reversed(path[:-1]):
+                    leaf = {p: leaf}
+                out = leaf
+
+            results.append(out)
+
+        return results
