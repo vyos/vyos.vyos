@@ -9,7 +9,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The Bgp_global parser templates file. This contains
+The Vrrp parser templates file. This contains
 a list of parser definitions and associated functions that
 facilitates both facts gathering and native command generation for
 the given network resource.
@@ -17,45 +17,27 @@ the given network resource.
 
 import re
 
-# from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
-
-
-# def _tmplt_vsrvs(config_data):
-#     config_data = config_data["virtual_servers"]
-#     command = []
-#     cmd = "high-availability virtual-server".format(**config_data)
-#     command = [str(cmd)]
-#     # if "mode" in config_data:
-#     #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-#     #     command.append(mode_cmd)
-#     # if "seclevel" in config_data:
-#     #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-#     #     command.append(sec_cmd)
-#     # if "view" in config_data:
-#     #     view_cmd = cmd + " view {view}".format(**config_data)
-#     #     command.append(view_cmd)
-#     return command
 
 
 def _tmplt_vsrvs(config_data):
     vs = config_data["virtual_servers"]
     command = []
 
-    for alias, item in vs.items():
-        cmd = f"set high-availability virtual-server {alias}"
+    for name, item in vs.items():
+        cmd = f"set high-availability virtual-server {name}"
         for key, value in item.items():
-            if key == "alias" or isinstance(value, list) or value is None:
+            if key == "name" or isinstance(value, list) or value is None:
                 continue
             command.append(f"{cmd} {key.replace('_', '-')} {value}")
     return command
 
 
 def _tmplt_vsrvs_rsrv(config_data):
-    config_data = config_data["virtual_servers"]["real_servers"]
-    command = []
+    config_data = config_data["virtual_servers"]
+    command = ["test"]
     # cmd = "service snmp v3 group {group}".format(**config_data)
     # if "mode" in config_data:
     #     mode_cmd = cmd + " mode {mode}".format(**config_data)
@@ -174,7 +156,7 @@ def _tmplt_vrrp_group_garp(config_data):
 
 
 def _tmplt_vrrp_group_auth(config_data):
-    config_data = config_data["vrrp"]["group"]
+    config_data = config_data["vrrp"]["groups"]
     command = []
     cmd = "high-availability vrrp group {name}".format(**config_data)
     config_data = config_data["authentication"]
@@ -184,51 +166,36 @@ def _tmplt_vrrp_group_auth(config_data):
     return command
 
 
-def _tmplt_vrrp_group_track(config_data):
-    config_data = config_data["vrrp"]["group"]["track"]
+def _tmplt_vrrp_group_ts(config_data):
+    config_data = config_data["vrrp"]["groups"]
     command = []
-    # cmd = "service snmp v3 group {group}".format(**config_data)
-    # if "mode" in config_data:
-    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-    #     command.append(mode_cmd)
-    # if "seclevel" in config_data:
-    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-    #     command.append(sec_cmd)
-    # if "view" in config_data:
-    #     view_cmd = cmd + " view {view}".format(**config_data)
-    #     command.append(view_cmd)
+    cmd = "high-availability vrrp group {name}".format(**config_data)
+    config_data = config_data["transition_script"]
+    for key, value in config_data.items():
+        if value is not None:
+            command.append(cmd + " transition-script " + f"{key.replace('_', '-')} {value}")
     return command
 
 
 def _tmplt_vrrp_group_hc(config_data):
-    config_data = config_data["vrrp"]["group"]["health-check"]
+    config_data = config_data["vrrp"]["groups"]
     command = []
-    # cmd = "service snmp v3 group {group}".format(**config_data)
-    # if "mode" in config_data:
-    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-    #     command.append(mode_cmd)
-    # if "seclevel" in config_data:
-    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-    #     command.append(sec_cmd)
-    # if "view" in config_data:
-    #     view_cmd = cmd + " view {view}".format(**config_data)
-    #     command.append(view_cmd)
+    cmd = "high-availability vrrp group {name}".format(**config_data)
+    config_data = config_data["health_check"]
+    for key, value in config_data.items():
+        if value is not None:
+            command.append(cmd + " health-check " + f"{key.replace('_', '-')} {value}")
     return command
 
 
-def _tmplt_vrrp_group_ts(config_data):
-    config_data = config_data["vrrp"]["group"]["transcription-script"]
+def _tmplt_vrrp_group_track(config_data):
+    config_data = config_data["vrrp"]["groups"]
     command = []
-    # cmd = "service snmp v3 group {group}".format(**config_data)
-    # if "mode" in config_data:
-    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-    #     command.append(mode_cmd)
-    # if "seclevel" in config_data:
-    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-    #     command.append(sec_cmd)
-    # if "view" in config_data:
-    #     view_cmd = cmd + " view {view}".format(**config_data)
-    #     command.append(view_cmd)
+    cmd = "high-availability vrrp group {name}".format(**config_data)
+    config_data = config_data["track"]
+    for key, value in config_data.items():
+        if value is not None:
+            command.append(cmd + " track " + f"{key.replace('_', '-')} {value}")
     return command
 
 
@@ -264,7 +231,7 @@ class VrrpTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svirtual-server
-                \s+(?P<alias>\S+)
+                \s+(?P<name>\S+)
                 (?:\s+address\s+(?P<address>\S+))?
                 (?:\s+algorithm\s+(?P<algorithm>\S+))?
                 (?:\s+delay-loop\s+(?P<delay_loop>\S+))?
@@ -278,11 +245,10 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_vsrvs,
-            # "setval": "virtual-server",
             "result": {
                 "virtual_servers": {
-                    "{{ alias }}": {
-                        "alias": "{{ alias }}",
+                    "{{ name }}": {
+                        "name": "{{ name }}",
                         "address": "{{ address if address is defined else None }}",
                         "algorithm": "{{ algorithm if algorithm is defined else None }}",
                         "delay_loop": "{{ delay_loop if delay_loop is defined else None }}",
@@ -300,7 +266,7 @@ class VrrpTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svirtual-server
-                \s+(?P<alias>\S+)
+                \s+(?P<name>\S+)
                 \sreal-server
                 \s+(?P<address>\S+)
                 (?:\s+port\s+(?P<port>\S+))?
@@ -314,8 +280,8 @@ class VrrpTemplate(NetworkTemplate):
             # "compval": "global_parameters.garp.master_refersh_repeat",
             "result": {
                 "virtual_servers": {
-                    "{{ alias }}": {
-                        "alias": "{{ alias }}",
+                    "{{ name }}": {
+                        "name": "{{ name }}",
                         "real_servers": {
                             "{{ address }}": {
                                 "address": "{{ address }}",
@@ -394,7 +360,6 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_sgroup_hc,
-            # "compval": "vrrp.sync_groups",
             "result": {
                 "vrrp": {
                     "sync_groups": {
@@ -571,12 +536,12 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "vrrp.group.authentication",
+            "name": "vrrp.groups.authentication",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
                 \s+(?P<gname>\S+)
-                \s+(?P<authentication>\S+)
+                \s+authentication
                 (?:\s+password\s+(?P<password>\S+))?
                 (?:\s+type\s+(?P<type>\S+))?
                 $
@@ -599,7 +564,7 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "vrrp.group.transition_script",
+            "name": "vrrp.groups.transition_script",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
@@ -614,7 +579,6 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_vrrp_group_ts,
-            # "compval": "global_parameters.garp.master_refersh_repeat",
             "result": {
                 "vrrp": {
                     "groups": {
@@ -647,7 +611,6 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_vrrp_group_hc,
-            # "compval": "global_parameters.garp.master_refersh_repeat",
             "result": {
                 "vrrp": {
                     "groups": {
@@ -665,7 +628,7 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "vrrp.group.track",
+            "name": "vrrp.groups.track",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
@@ -704,7 +667,7 @@ class VrrpTemplate(NetworkTemplate):
                 """,
                 re.VERBOSE,
             ),
-            "setval": _tmplt_vrrp_group_auth,
+            # "setval": _tmplt_vrrp_group_auth,
             "result": {
                 "vrrp": {
                     "groups": {

@@ -43,7 +43,7 @@ options:
         type: list
         elements: dict
         suboptions:
-          alias:
+          name:
             description:
               - Unique identifier for the virtual server.
             type: str

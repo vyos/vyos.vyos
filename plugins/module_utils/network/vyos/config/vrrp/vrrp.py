@@ -165,120 +165,66 @@ class Vrrp(ResourceModule):
     def _compare_vsrvs(self, want, have):
         """Compare virtual servers of VRRP.py"""
         vs_parsers = [
-            "virtual_servers",
-            # "virtual_servers.real_servers",
+            # "virtual_servers",
+            "virtual_servers.real_servers",
         ]
+        # test =         {
+        #     "virtual_servers": {
+        #         "name": "s2",
+        #         "real_servers": {
+        #             "10.10.10.2": {
+        #                 "name": "10.10.10.2",
+        #                 "port": 443
+        #             }
+        #         }
+        #     }
+        # }
+        # self._module.fail_json(msg=self.extract_named_leafs(test))
+        # self._module.fail_json(msg=self.extract_leaf_items({"virtual_servers": want}))
+        # self._module.fail_json(msg=self.extract_leaf_items(test))
+        # for vs in self.extract_named_leafs(want):
+        #     self._module.fail_json(msg="virtual_server: " + str(vs))
+        want = {
+            "name": "s1",
+            "real_servers": {"10.10.10.2": {"address": "10.10.10.2", "port": 443}},
+        }
+
         # self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
 
         self.compare(
             parsers=vs_parsers,
             want={"virtual_servers": want},
-            have={"virtual_servers": have},
+            have={"virtual_servers": {}},
         )
 
     def _compare_vrrp(self, want, have):
         """Compare the instances of VRRP"""
         vrrp_parsers = [
             "vrrp.snmp",
-            # "vrrp.sync_groups.member",
-            # "vrrp.sync_groups.health_check",
-            # "vrrp.sync_groups.transition_script",
             "vrrp.global_parameters.garp",
             "vrrp.global_parameters",
-            "vrrp.groups.garp",
             "vrrp.groups",
-            # "vrrp.group.aunthentication",
-            # "vrrp.group.transition_script",
-            # "vrrp.groups.health_check",
-            # "vrrp.group.track",
-            # "vrrp.group.transition_script",
+            "vrrp.groups.garp",
+            "vrrp.groups.authentication",
+            "vrrp.groups.transition_script",
+            "vrrp.groups.health_check",
+            "vrrp.groups.track",
+            # "vrrp.groups.excluded_addresses",
         ]
 
-        # self._module.fail_json(msg="Conf: " + str(want) + " <*****************> " + str(have))
-
-        for wvrrp in self.extract_leaf_items(want):
-            self._module.fail_json(msg="WV: " + str(wvrrp))
-
-        #     "vrrp": {
-        #         "groups": {
-        #             "name": "g2",
-        #             "interface": "eth1",
-        #             "address": "2.2.2.2",
-        #             "disable": False,
-        #             "no_preempt": False,
-        #             "vrid": 11,
-        #             "garp": {
-        #                 "interval": 21,
-        #                 "master_delay": 6,
-        #                 "master_refresh": 51,
-        #                 "master_refresh_repeat": 101,
-        #                 "master_repeat": 4,
-        #             },
+        # self._module.fail_json(msg="Want: " + str(want) + "**** have:  " + str(have))
+        # self._module.fail_json(msg=self.extract_leaf_items(want))
+        # want =         {
+        #     "groups": {
+        #         "transition_script": {
+        #             "stop": "/config/scripts/vrrp_stop.sh"
         #         },
-        #     },
+        #         "name": "g1"
+        #     }
         # }
-
-        # have = {
-        #     "vrrp": {
-        #         "groups": {
-        #             "name": "g2",
-        #             "interface": "eth1",
-        #             "address": "2.2.2.2",
-        #             "disable": False,
-        #             "no_preempt": False,
-        #             "vrid": 11,
-        #             "garp": {
-        #                 "interval": 22,
-        #                 "master_delay": 6,
-        #                 "master_refresh": 51,
-        #                 "master_refresh_repeat": 101,
-        #                 "master_repeat": 4,
-        #             },
-        #         },
-        #     },
-        # }
-        # want = {
-        #     "vrrp": {
-        #         "groups": {
-        #             "name": "g2",
-        #             "garp": {
-        #                 "interval": 21,
-        #             },
-        #         },
-        #     },
-        # }
-
-        # have = {
-        #     "vrrp": {
-        #         "groups": {
-        #             "name": "g2",
-        #             "garp": {
-        #                 "interval": 22,
-        #             },
-        #         },
-        #     },
-        # }
-
-        want = {
-            "vrrp": {
-                "global_parameters": {
-                    "garp": {
-                        "interval": 32,
-                    },
-                },
-            },
-        }
-        have = {
-            "vrrp": {
-                "global_parameters": {
-                    "garp": {
-                        "interval": 31,
-                    },
-                },
-            },
-        }
-
-        self.compare(parsers=vrrp_parsers, want=want, have=have)
+        # self.compare(parsers=vrrp_parsers, want={"vrrp": want}, have={"vrrp": {}})
+        for pair in self.extract_leaf_items(want):
+            self.compare(parsers=vrrp_parsers, want={"vrrp": pair}, have={"vrrp": {}})
 
         # self.compare(parsers=vrrp_parsers, want={"vrrp": want}, have={"vrrp": have})
 
@@ -329,7 +275,7 @@ class Vrrp(ResourceModule):
                 if not isinstance(item, dict):
                     continue
 
-                alias = item.get("alias")
+                alias = item.get("name")
                 if not alias:
                     continue
 
@@ -340,6 +286,49 @@ class Vrrp(ResourceModule):
 
         # Anything else → leave unchanged
         return data
+
+    # def extract_leaf_items(self, data, path=None, parent_name=None):
+    #     """
+    #     Recursively extract leaf items from a nested dict.
+    #     - If a dict has a 'name', include it in each output.
+    #     - Only emit leaves that are not 'name' itself.
+    #     - Returns a list of one-leaf nested dicts.
+    #     """
+    #     path = path or []
+    #     results = []
+
+    #     if isinstance(data, dict):
+    #         current_name = data.get("name", parent_name)
+
+    #         for k, v in data.items():
+    #             if k == "name":
+    #                 continue
+    #             results.extend(self.extract_leaf_items(v, path + [k], current_name))
+    #         return results
+
+    #     # ----- LEAF -----
+    #     leaf_key = path[-1]
+    #     top_key = path[0]
+
+    #     # Build only the required nesting (skip top_key and name-holder)
+    #     subkeys = path[2:]  # e.g. ['garp','interval'] or ['master_repeat']
+
+    #     # base leaf: do NOT wrap leaf again
+    #     nested = {leaf_key: data}
+
+    #     # wrap parents except leaf_key
+    #     for p in reversed(subkeys[:-1]):  # all except the leaf
+    #         nested = {p: nested}
+
+    #     # top-level wrap
+    #     if parent_name:
+    #         out = {top_key: {"name": parent_name}}
+    #         out[top_key].update(nested)
+    #     else:
+    #         out = {top_key: nested}
+
+    #     results.append(out)
+    #     return results
 
     def extract_leaf_items(self, data, path=None, parent_name=None):
         """
@@ -353,25 +342,54 @@ class Vrrp(ResourceModule):
 
         if isinstance(data, dict):
             current_name = data.get("name", parent_name)
+
             for k, v in data.items():
                 if k == "name":
                     continue
                 results.extend(self.extract_leaf_items(v, path + [k], current_name))
+            return results
+
+        # ---------------- LEAF CASE ----------------
+        leaf_key = path[-1]  # e.g. "type"
+        top_key = path[0]  # e.g. "groups"
+
+        # keys after the name-holder:
+        # groups → g1 → authentication → type   → subkeys = ['authentication','type']
+        subkeys = path[2:]
+
+        # base leaf (NO extra wrapper)
+        nested = {leaf_key: data}
+
+        # wrap all parents except the leaf key
+        for p in reversed(subkeys[:-1]):  # keep only intermediate keys
+            nested = {p: nested}
+
+        # add top-level
+        if parent_name:
+            out = {top_key: {"name": parent_name}}
+            out[top_key].update(nested)
         else:
-            # leaf node
-            leaf_key = path[-1]
-            top_key = path[0]
+            out = {top_key: nested}
 
-            if parent_name is not None:
-                # parent has a name → include it
-                out = {top_key: {"name": parent_name, leaf_key: data}}
-            else:
-                # generic leaf
-                leaf = {leaf_key: data}
-                for p in reversed(path[:-1]):
-                    leaf = {p: leaf}
-                out = leaf
-
-            results.append(out)
-
+        results.append(out)
         return results
+
+    def extract_named_leafs(self, data, parent_name=None, prefix_key=None):
+        results = []
+
+        if isinstance(data, dict):
+            current_name = data.get("name", parent_name)
+
+            for k, v in data.items():
+                if k == "name":
+                    continue
+
+                # recurse
+                leaves = self.extract_named_leafs(v, current_name, k)
+                results.extend(leaves)
+
+            return results
+
+        # leaf value reached
+        item = {"name": parent_name, prefix_key: data}
+        return [item]

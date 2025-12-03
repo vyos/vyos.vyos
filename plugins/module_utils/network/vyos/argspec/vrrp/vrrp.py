@@ -41,7 +41,7 @@ class VrrpArgs(object):  # pylint: disable=R0903
                     "type": "list",
                     "elements": "dict",
                     "options": {
-                        "alias": {"type": "str", "required": True},
+                        "name": {"type": "str", "required": True},
                         "address": {"type": "str"},
                         "algorithm": {"type": "str"},
                         "delay_loop": {"type": "int"},
