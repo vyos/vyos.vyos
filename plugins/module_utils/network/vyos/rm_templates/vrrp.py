@@ -136,11 +136,13 @@ def _tmplt_vrrp_group(config_data):
     for key, value in config_data.items():
         if key == "name" or isinstance(value, dict) or value is None:
             continue
-
-        if isinstance(value, bool) and value is not None:
+        elif isinstance(value, bool) and value is not None:
             command.append(f"{cmd} {key.replace('_', '-')}")
-
-        command.append(f"{cmd} {key.replace('_', '-')} {value}")
+        elif isinstance(value, list):
+            for item in value:
+                command.append(cmd + " " + f"{key.replace('_', '-')} {item}")
+        else:
+            command.append(f"{cmd} {key.replace('_', '-')} {value}")
     return command
 
 
@@ -194,7 +196,9 @@ def _tmplt_vrrp_group_track(config_data):
     cmd = "high-availability vrrp group {name}".format(**config_data)
     config_data = config_data["track"]
     for key, value in config_data.items():
-        if value is not None:
+        if isinstance(value, bool) and value is not None:
+            command.append(cmd + " track " + f"{key.replace('_', '-')}")
+        elif value is not None:
             command.append(cmd + " track " + f"{key.replace('_', '-')} {value}")
     return command
 
@@ -277,7 +281,6 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_vsrvs_rsrv,
-            # "compval": "global_parameters.garp.master_refersh_repeat",
             "result": {
                 "virtual_servers": {
                     "{{ name }}": {
@@ -473,6 +476,7 @@ class VrrpTemplate(NetworkTemplate):
                 (?:\s+interface\s+(?P<interface>\S+))?
                 (?:\s+(?P<no_preempt>no-preempt))?
                 (?:\s+peer-address\s+(?P<peer_address>\S+))?
+                (?:\s+excluded-address\s+(?P<excluded_address>\S+))?
                 (?:\s+priority\s+(?P<priority>\S+))?
                 (?:\s+vrid\s+(?P<vrid>\S+))?
                 (?:\s+rfc3768-compatibility\s+(?P<rfc3768_compatibility>\S+))?
@@ -496,6 +500,7 @@ class VrrpTemplate(NetworkTemplate):
                             "priority": "{{ priority if priority is defined else None }}",
                             "vrid": "{{ vrid if vrid is defined else None }}",
                             "rfc3768_compatibility": "{{ rfc3768_compatibility if rfc3768_compatibility is defined else None }}",
+                            "excluded_address": "{{ excluded_address if excluded_address is defined else [] }}",
                         },
                     },
                 },
@@ -649,35 +654,6 @@ class VrrpTemplate(NetworkTemplate):
                             "track": {
                                 "exclude_vrrp_interface": "{{ exclude_vrrp_inter if exclude-vrrp-inter is defined else None }}",
                                 "interface": "{{ interface if interface is defined else None }}",
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        {
-            "name": "vrrp.group.excluded_address",
-            "getval": re.compile(
-                r"""
-                ^set\shigh-availability\svrrp\sgroup
-                \s+(?P<gname>\S+)
-                \sexcluded-address\s+(?P<address>\S+)
-                (?:\s+interface\s+(?P<interface>\S+))?
-                $
-                """,
-                re.VERBOSE,
-            ),
-            # "setval": _tmplt_vrrp_group_auth,
-            "result": {
-                "vrrp": {
-                    "groups": {
-                        "{{ gname }}": {
-                            "name": "{{ gname }}",
-                            "excluded_address": {
-                                "{{ address }}": {
-                                    "name": "{{ address }}",
-                                    "interface": "{{ interface if interface is defined else None }}",
-                                },
                             },
                         },
                     },

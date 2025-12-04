@@ -201,26 +201,24 @@ class Vrrp(ResourceModule):
         """Compare the instances of VRRP"""
         vrrp_parsers = [
             "vrrp.snmp",
-            "vrrp.global_parameters.garp",
             "vrrp.global_parameters",
+            "vrrp.global_parameters.garp",
             "vrrp.groups",
             "vrrp.groups.garp",
             "vrrp.groups.authentication",
             "vrrp.groups.transition_script",
             "vrrp.groups.health_check",
             "vrrp.groups.track",
-            # "vrrp.groups.excluded_addresses",
         ]
 
         # self._module.fail_json(msg="Want: " + str(want) + "**** have:  " + str(have))
         # self._module.fail_json(msg=self.extract_leaf_items(want))
         # want =         {
-        #     "groups": {
-        #         "transition_script": {
-        #             "stop": "/config/scripts/vrrp_stop.sh"
+        #     "global_parameters": {
+        #         "garp": {
+        #             "interval": 30,
         #         },
-        #         "name": "g1"
-        #     }
+        #     },
         # }
         # self.compare(parsers=vrrp_parsers, want={"vrrp": want}, have={"vrrp": {}})
         for pair in self.extract_leaf_items(want):
@@ -306,21 +304,22 @@ class Vrrp(ResourceModule):
     #             results.extend(self.extract_leaf_items(v, path + [k], current_name))
     #         return results
 
-    #     # ----- LEAF -----
-    #     leaf_key = path[-1]
-    #     top_key = path[0]
+    #     # ---------------- LEAF CASE ----------------
+    #     leaf_key = path[-1]  # e.g. "type"
+    #     top_key = path[0]  # e.g. "groups"
 
-    #     # Build only the required nesting (skip top_key and name-holder)
-    #     subkeys = path[2:]  # e.g. ['garp','interval'] or ['master_repeat']
+    #     # keys after the name-holder:
+    #     # groups → g1 → authentication → type   → subkeys = ['authentication','type']
+    #     subkeys = path[1:]
 
-    #     # base leaf: do NOT wrap leaf again
+    #     # base leaf (NO extra wrapper)
     #     nested = {leaf_key: data}
 
-    #     # wrap parents except leaf_key
-    #     for p in reversed(subkeys[:-1]):  # all except the leaf
+    #     # wrap all parents except the leaf key
+    #     for p in reversed(subkeys[:-1]):  # keep only intermediate keys
     #         nested = {p: nested}
 
-    #     # top-level wrap
+    #     # add top-level
     #     if parent_name:
     #         out = {top_key: {"name": parent_name}}
     #         out[top_key].update(nested)
@@ -331,12 +330,6 @@ class Vrrp(ResourceModule):
     #     return results
 
     def extract_leaf_items(self, data, path=None, parent_name=None):
-        """
-        Recursively extract leaf items from a nested dict.
-        - If a dict has a 'name', include it in each output.
-        - Only emit leaves that are not 'name' itself.
-        - Returns a list of one-leaf nested dicts.
-        """
         path = path or []
         results = []
 
@@ -349,22 +342,23 @@ class Vrrp(ResourceModule):
                 results.extend(self.extract_leaf_items(v, path + [k], current_name))
             return results
 
-        # ---------------- LEAF CASE ----------------
-        leaf_key = path[-1]  # e.g. "type"
-        top_key = path[0]  # e.g. "groups"
+        # --- LEAF ---
+        leaf_key = path[-1]
+        top_key = path[0]
 
-        # keys after the name-holder:
-        # groups → g1 → authentication → type   → subkeys = ['authentication','type']
-        subkeys = path[2:]
+        # FIX: skip g1/g2/etc only under groups
+        if top_key == "groups":
+            subkeys = path[2:]  # drop ["groups", "g1"]
+        else:
+            subkeys = path[1:]  # drop only ["global_parameters"]
 
-        # base leaf (NO extra wrapper)
         nested = {leaf_key: data}
 
-        # wrap all parents except the leaf key
-        for p in reversed(subkeys[:-1]):  # keep only intermediate keys
+        # wrap intermediate keys
+        for p in reversed(subkeys[:-1]):
             nested = {p: nested}
 
-        # add top-level
+        # attach name where needed
         if parent_name:
             out = {top_key: {"name": parent_name}}
             out[top_key].update(nested)

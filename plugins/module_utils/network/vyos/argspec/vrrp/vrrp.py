@@ -97,7 +97,7 @@ class VrrpArgs(object):  # pylint: disable=R0903
                                 },
                                 "description": {"type": "str"},
                                 "disable": {"type": "bool", "default": False},
-                                "excluded_address": {"type": "str"},
+                                "excluded_address": {"type": "list", "elements": "str"},
                                 "garp": {
                                     "type": "dict",
                                     "options": {
