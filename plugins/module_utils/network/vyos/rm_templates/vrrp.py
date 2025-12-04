@@ -198,8 +198,11 @@ def _tmplt_vrrp_group_track(config_data):
     for key, value in config_data.items():
         if isinstance(value, bool) and value is not None:
             command.append(cmd + " track " + f"{key.replace('_', '-')}")
-        elif value is not None:
-            command.append(cmd + " track " + f"{key.replace('_', '-')} {value}")
+        elif isinstance(value, list):
+            for item in value:
+                command.append(cmd + " track " + f"{key.replace('_', '-')} {item}")
+        # elif value is not None:
+        #     command.append(cmd + " track " + f"{key.replace('_', '-')} {value}")
     return command
 
 
@@ -653,7 +656,7 @@ class VrrpTemplate(NetworkTemplate):
                             "name": "{{ gname }}",
                             "track": {
                                 "exclude_vrrp_interface": "{{ exclude_vrrp_inter if exclude-vrrp-inter is defined else None }}",
-                                "interface": "{{ interface if interface is defined else None }}",
+                                "interface": "{{ interface if interface is defined else [] }}",
                             },
                         },
                     },

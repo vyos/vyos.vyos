@@ -285,50 +285,6 @@ class Vrrp(ResourceModule):
         # Anything else → leave unchanged
         return data
 
-    # def extract_leaf_items(self, data, path=None, parent_name=None):
-    #     """
-    #     Recursively extract leaf items from a nested dict.
-    #     - If a dict has a 'name', include it in each output.
-    #     - Only emit leaves that are not 'name' itself.
-    #     - Returns a list of one-leaf nested dicts.
-    #     """
-    #     path = path or []
-    #     results = []
-
-    #     if isinstance(data, dict):
-    #         current_name = data.get("name", parent_name)
-
-    #         for k, v in data.items():
-    #             if k == "name":
-    #                 continue
-    #             results.extend(self.extract_leaf_items(v, path + [k], current_name))
-    #         return results
-
-    #     # ---------------- LEAF CASE ----------------
-    #     leaf_key = path[-1]  # e.g. "type"
-    #     top_key = path[0]  # e.g. "groups"
-
-    #     # keys after the name-holder:
-    #     # groups → g1 → authentication → type   → subkeys = ['authentication','type']
-    #     subkeys = path[1:]
-
-    #     # base leaf (NO extra wrapper)
-    #     nested = {leaf_key: data}
-
-    #     # wrap all parents except the leaf key
-    #     for p in reversed(subkeys[:-1]):  # keep only intermediate keys
-    #         nested = {p: nested}
-
-    #     # add top-level
-    #     if parent_name:
-    #         out = {top_key: {"name": parent_name}}
-    #         out[top_key].update(nested)
-    #     else:
-    #         out = {top_key: nested}
-
-    #     results.append(out)
-    #     return results
-
     def extract_leaf_items(self, data, path=None, parent_name=None):
         path = path or []
         results = []

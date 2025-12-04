@@ -128,7 +128,7 @@ class VrrpArgs(object):  # pylint: disable=R0903
                                     "type": "dict",
                                     "options": {
                                         "exclude_vrrp_interface": {"type": "bool"},
-                                        "interface": {"type": "str"},
+                                        "interface": {"type": "list", "elements": "str"},
                                     },
                                 },
                                 "transition_script": {
