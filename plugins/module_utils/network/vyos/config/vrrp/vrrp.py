@@ -300,7 +300,7 @@ class Vrrp(ResourceModule):
 
         # Normalize virtual_servers dict → also normalize nested real_servers
         if isinstance(vss, dict):
-            for _, vs in vss.items():
+            for vs in vss.items():
 
                 # Normalize real_servers if list
                 rs = vs.get("real_server")

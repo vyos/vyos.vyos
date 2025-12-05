@@ -199,7 +199,8 @@ options:
               excluded_address:
                 description:
                   - IP address excluded from source checks.
-                type: str
+                type: list
+                elements: str
 
               garp:
                 description:
@@ -287,7 +288,8 @@ options:
                   interface:
                     description:
                       - Interface to track.
-                    type: str
+                    type: list
+                    elements: str
 
               transition_script:
                 description:
