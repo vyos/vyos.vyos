@@ -1,0 +1,133 @@
+---
+- debug:
+    msg: START vyos_route_maps rendered integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Structure provided configuration into device specific commands
+      register: result
+      vyos.vyos.vyos_vrf:
+        config:
+          bind_to_all: true
+          instances:
+            - name: vrf-green
+              description: green-vrf
+              disabled: true
+              table_id: 105
+              vni: 1000
+              protocols:
+                bgp:
+                  as_number: 65000
+                  neighbor:
+                    - address: 192.0.2.1
+                      remote_as: 65002
+                    - address: "1.1.1.3"
+                      passive: true
+                      remote_as: 400
+                ospf:
+                  log_adjacency_changes: detail
+                  max_metric:
+                    router_lsa:
+                      administrative: true
+                      on_shutdown: 10
+                      on_startup: 10
+                  default_information:
+                    originate:
+                      always: true
+                      metric: 10
+                      metric_type: 2
+                  mpls_te:
+                    router_address: 192.0.11.12
+                  auto_cost:
+                    reference_bandwidth: 2
+                  neighbor:
+                    - neighbor_id: 192.0.11.12
+                      poll_interval: 10
+                      priority: 2
+                  redistribute:
+                    - route_type: bgp
+                      metric: 10
+                      metric_type: 2
+                  parameters:
+                    router_id: 192.0.1.1
+                    rfc1583_compatibility: true
+                    abr_type: cisco
+                  areas:
+                    - area_id: "2"
+                      area_type:
+                        normal: true
+                      authentication: plaintext-password
+                      shortcut: enable
+                    - area_id: "3"
+                      area_type:
+                        nssa:
+                          set: true
+                    - area_id: "4"
+                      area_type:
+                        stub:
+                          default_cost: 20
+                      network:
+                        - address: 192.0.2.0/24
+                      range:
+                        - address: 192.0.3.0/24
+                          cost: 10
+                        - address: 192.0.4.0/24
+                          cost: 12
+                ospfv3:
+                  areas:
+                    - area_id: "2"
+                      export_list: export1
+                      import_list: import1
+                      range:
+                        - address: 2001:db10::/32
+                        - address: 2001:db20::/32
+                        - address: 2001:db30::/32
+                    - area_id: "3"
+                      range:
+                        - address: 2001:db40::/32
+                  parameters:
+                    router_id: 192.0.2.10
+                  redistribute:
+                    - route_type: bgp
+                static:
+                  - address_families:
+                      - afi: ipv4
+                        routes:
+                          - dest: "192.0.2.0/24"
+                            blackhole_config:
+                              distance: 10
+                            next_hops:
+                              - forward_router_address: "203.0.113.1"
+                              - forward_router_address: "203.0.113.2"
+                      - afi: ipv6
+                        routes:
+                          - dest: "2001:db8::/32"
+                            blackhole_config:
+                              distance: 20
+                            next_hops:
+                              - forward_router_address: "2001:db8::1"
+            - name: vrf-amber
+              description: amber-vrf
+              disable: false
+              table_id: 111
+              vni: 1001
+              address_family:
+                - afi: ipv4
+                  disable_forwarding: true
+                  route_maps:
+                    - rm_name: rm1
+                      protocol: kernel
+                    - rm_name: rm1
+                      protocol: ospf
+                - afi: ipv6
+                  nht_no_resolve_via_default: false
+        state: rendered
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.rendered|symmetric_difference(rendered.commands) == []
+
+  always:
+    - include_tasks: _remove_config.yaml
