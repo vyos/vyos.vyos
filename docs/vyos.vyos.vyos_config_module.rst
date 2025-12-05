@@ -159,6 +159,7 @@ Parameters
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
                                     <li><div style="color: blue"><b>line</b>&nbsp;&larr;</div></li>
+                                    <li>smart</li>
                                     <li>none</li>
                         </ul>
                 </td>
@@ -234,6 +235,7 @@ Examples
 
     - name: render a Jinja2 template onto the VyOS router
       vyos.vyos.vyos_config:
+        match: smart
         src: vyos_template.j2
 
     - name: for idempotency, use full-form commands
