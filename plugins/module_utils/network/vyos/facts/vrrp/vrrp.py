@@ -126,7 +126,7 @@ class VrrpFacts(object):
                 redact=True,
             ),
         )
-
+        # self._module.fail_json(msg="Params: " + str(params))
         facts["vrrp"] = params.get("config", [])
         ansible_facts["ansible_network_resources"].update(facts)
         # self._module.fail_json(msg='Facts - ' + str(ansible_facts))
@@ -154,7 +154,7 @@ class VrrpFacts(object):
 
         # Normalize real_server inside each virtual_server
         for vs in config.get("virtual_servers", []):
-            if isinstance(vs.get("real_servers"), dict):
-                vs["real_servers"] = list(vs["real_servers"].values())
+            if isinstance(vs.get("real_server"), dict):
+                vs["real_server"] = list(vs["real_server"].values())
 
         return config

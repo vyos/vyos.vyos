@@ -23,31 +23,26 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 
 
 def _tmplt_vsrvs(config_data):
-    vs = config_data["virtual_servers"]
+    config_data = config_data["virtual_servers"]
     command = []
 
-    for name, item in vs.items():
-        cmd = f"set high-availability virtual-server {name}"
-        for key, value in item.items():
-            if key == "name" or isinstance(value, list) or value is None:
-                continue
+    cmd = "high-availability virtual-server {name}".format(**config_data)
+    for key, value in config_data.items():
+        if key == "name" or isinstance(value, dict) or value is None:
+            continue
+        else:
             command.append(f"{cmd} {key.replace('_', '-')} {value}")
     return command
 
 
 def _tmplt_vsrvs_rsrv(config_data):
     config_data = config_data["virtual_servers"]
-    command = ["test"]
-    # cmd = "service snmp v3 group {group}".format(**config_data)
-    # if "mode" in config_data:
-    #     mode_cmd = cmd + " mode {mode}".format(**config_data)
-    #     command.append(mode_cmd)
-    # if "seclevel" in config_data:
-    #     sec_cmd = cmd + " seclevel {seclevel}".format(**config_data)
-    #     command.append(sec_cmd)
-    # if "view" in config_data:
-    #     view_cmd = cmd + " view {view}".format(**config_data)
-    #     command.append(view_cmd)
+    command = []
+    cmd = "high-availability virtual-server {name}".format(**config_data)
+    config_data = config_data["real_server"]
+    for key, value in config_data.items():
+        if value is not None:
+            command.append(cmd + " real-server " + f"{key.replace('_', '-')} {value}")
     return command
 
 
@@ -269,7 +264,7 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "virtual_servers.real_servers",
+            "name": "virtual_servers.real_server",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svirtual-server
@@ -288,7 +283,7 @@ class VrrpTemplate(NetworkTemplate):
                 "virtual_servers": {
                     "{{ name }}": {
                         "name": "{{ name }}",
-                        "real_servers": {
+                        "real_server": {
                             "{{ address }}": {
                                 "address": "{{ address }}",
                                 "port": "{{ port if port is defined else None }}",

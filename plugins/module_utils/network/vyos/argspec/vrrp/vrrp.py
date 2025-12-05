@@ -50,7 +50,7 @@ class VrrpArgs(object):  # pylint: disable=R0903
                         "persistence_timeout": {"type": "str"},
                         "port": {"type": "int"},
                         "protocol": {"type": "str", "choices": ["tcp", "udp"]},
-                        "real_servers": {
+                        "real_server": {
                             "type": "list",
                             "elements": "dict",
                             "options": {

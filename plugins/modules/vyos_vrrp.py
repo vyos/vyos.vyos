@@ -83,7 +83,7 @@ options:
             type: str
             choices: [tcp, udp]
 
-          real_servers:
+          real_server:
             description:
               - Backend real servers behind the virtual service.
             type: list

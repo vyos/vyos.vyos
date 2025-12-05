@@ -165,8 +165,8 @@ class Vrrp(ResourceModule):
     def _compare_vsrvs(self, want, have):
         """Compare virtual servers of VRRP.py"""
         vs_parsers = [
-            # "virtual_servers",
-            "virtual_servers.real_servers",
+            "virtual_servers",
+            "virtual_servers.real_server",
         ]
         # test =         {
         #     "virtual_servers": {
@@ -179,23 +179,30 @@ class Vrrp(ResourceModule):
         #         }
         #     }
         # }
-        # self._module.fail_json(msg=self.extract_named_leafs(test))
+        # self._module.fail_json(msg=want)
+        # self._module.fail_json(msg=self.extract_named_leafs({"virtual_servers": want}))
         # self._module.fail_json(msg=self.extract_leaf_items({"virtual_servers": want}))
         # self._module.fail_json(msg=self.extract_leaf_items(test))
         # for vs in self.extract_named_leafs(want):
         #     self._module.fail_json(msg="virtual_server: " + str(vs))
-        want = {
-            "name": "s1",
-            "real_servers": {"10.10.10.2": {"address": "10.10.10.2", "port": 443}},
-        }
+        for pair in self.extract_named_leafs(want):
+            self.compare(
+                parsers=vs_parsers,
+                want={"virtual_servers": pair},
+                have={"virtual_servers": {}},
+            )
+        # want = {
+        #     "name": "s1",
+        #     "real_servers": {"10.10.10.2": {"address": "10.10.10.2", "port": 443}},
+        # }
 
-        # self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
+        # # self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
 
-        self.compare(
-            parsers=vs_parsers,
-            want={"virtual_servers": want},
-            have={"virtual_servers": {}},
-        )
+        # self.compare(
+        #     parsers=vs_parsers,
+        #     want={"virtual_servers": want},
+        #     have={"virtual_servers": {}},
+        # )
 
     def _compare_vrrp(self, want, have):
         """Compare the instances of VRRP"""
@@ -254,35 +261,85 @@ class Vrrp(ResourceModule):
         # Unexpected shape → leave as-is
         return data
 
+    # def _virtual_servers_list_to_dict(self, data):
+
+    #     vss = data.get("virtual_servers")
+    #     if not vss:
+    #         return data
+
+    #     # Already normalized dict → return untouched
+    #     if isinstance(vss, dict):
+    #         return data
+
+    #     # List → convert
+    #     if isinstance(vss, list):
+    #         new_vss = {}
+
+    #         for item in vss:
+    #             # Skip non-dict items
+    #             if not isinstance(item, dict):
+    #                 continue
+
+    #             alias = item.get("name")
+    #             if not alias:
+    #                 continue
+
+    #             new_vss[alias] = item
+
+    #         data["virtual_servers"] = new_vss
+    #         return data
+
+    #     # Anything else → leave unchanged
+    #     return data
+
     def _virtual_servers_list_to_dict(self, data):
 
         vss = data.get("virtual_servers")
         if not vss:
             return data
 
-        # Already normalized dict → return untouched
+        # Normalize virtual_servers dict → also normalize nested real_servers
         if isinstance(vss, dict):
+            for _, vs in vss.items():
+
+                # Normalize real_servers if list
+                rs = vs.get("real_server")
+                if isinstance(rs, list):
+                    vs["real_server"] = {
+                        item["address"]: item
+                        for item in rs
+                        if isinstance(item, dict) and item.get("address")
+                    }
+
             return data
 
-        # List → convert
+        # Normalize virtual_servers list → dict
         if isinstance(vss, list):
             new_vss = {}
 
-            for item in vss:
-                # Skip non-dict items
-                if not isinstance(item, dict):
+            for vs in vss:
+                if not isinstance(vs, dict):
                     continue
 
-                alias = item.get("name")
-                if not alias:
+                name = vs.get("name")
+                if not name:
                     continue
 
-                new_vss[alias] = item
+                # Normalize real_servers if list
+                rs = vs.get("real_server")
+                if isinstance(rs, list):
+                    vs["real_server"] = {
+                        item["address"]: item
+                        for item in rs
+                        if isinstance(item, dict) and item.get("address")
+                    }
+
+                new_vss[name] = vs
 
             data["virtual_servers"] = new_vss
             return data
 
-        # Anything else → leave unchanged
+        # Other types unchanged
         return data
 
     def extract_leaf_items(self, data, path=None, parent_name=None):
@@ -324,9 +381,42 @@ class Vrrp(ResourceModule):
         results.append(out)
         return results
 
+    # def extract_named_leafs(self, data, parent_name=None, prefix_key=None):
+    #     results = []
+
+    #     if isinstance(data, dict):
+    #         current_name = data.get("name", parent_name)
+
+    #         for k, v in data.items():
+    #             if k == "name":
+    #                 continue
+
+    #             # recurse
+    #             leaves = self.extract_named_leafs(v, current_name, k)
+    #             results.extend(leaves)
+
+    #         return results
+
+    #     # leaf value reached
+    #     item = {"name": parent_name, prefix_key: data}
+    #     return [item]
+
     def extract_named_leafs(self, data, parent_name=None, prefix_key=None):
         results = []
 
+        # Special handling for "real_server" dict
+        if prefix_key in ("real_server", "real_servers") and isinstance(data, dict):
+            for server_name, server_data in data.items():
+                if isinstance(server_data, dict):
+                    results.append(
+                        {
+                            "name": parent_name,
+                            "real_server": server_data,
+                        },
+                    )
+            return results
+
+        # Normal dict recursion
         if isinstance(data, dict):
             current_name = data.get("name", parent_name)
 
@@ -334,12 +424,15 @@ class Vrrp(ResourceModule):
                 if k == "name":
                     continue
 
-                # recurse
                 leaves = self.extract_named_leafs(v, current_name, k)
                 results.extend(leaves)
 
             return results
 
-        # leaf value reached
-        item = {"name": parent_name, prefix_key: data}
-        return [item]
+        # Leaf value
+        return [
+            {
+                "name": parent_name,
+                prefix_key: data,
+            },
+        ]
