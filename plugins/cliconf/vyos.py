@@ -208,7 +208,7 @@ class Cliconf(CliconfBase):
         diff_match="line",
         diff_ignore_lines=None,
         path=None,
-        diff_replace=None,
+        diff_replace=False,
     ):
         diff = {}
         device_operations = self.get_device_operations()
@@ -222,9 +222,6 @@ class Cliconf(CliconfBase):
                 "'match' value %s in invalid, valid values are %s"
                 % (diff_match, ", ".join(option_values["diff_match"])),
             )
-
-        if diff_replace:
-            raise ValueError("'replace' in diff is not supported")
 
         if diff_ignore_lines:
             raise ValueError("'diff_ignore_lines' in diff is not supported")
@@ -268,8 +265,13 @@ class Cliconf(CliconfBase):
             if not item.startswith("set") and not item.startswith("delete"):
                 raise ValueError("line must start with either `set` or `delete`")
 
-            elif item.startswith("set") and item not in running_commands:
-                updates.append(line)
+            elif item.startswith("set"):
+                match = False
+                for rline in running_commands:
+                    if match_cmd(item, rline):
+                        match = True
+                if not match:
+                    updates.append(line)
 
             elif item.startswith("delete"):
 
@@ -282,6 +284,19 @@ class Cliconf(CliconfBase):
                         if re.match(rf"^{re.escape(item)}\b", entry) and line not in visited:
                             updates.append(line)
                             visited.add(line)
+
+        if diff_replace:
+            for line in running.splitlines():
+                line = line.replace("'", "\"")
+
+                match = False
+                for cline in candidate_commands:
+                    if match_cmd(line, cline):
+                        match = True
+
+                if not match:
+                    line = re.sub(r"set", "delete", line)
+                    updates.append(line)
 
         diff["config_diff"] = list(updates)
         return diff
@@ -346,3 +361,11 @@ class Cliconf(CliconfBase):
         """
         if self._connection.connected:
             self._update_cli_prompt_context(config_context="#", exit_command="exit discard")
+
+def match_cmd(cmd1, cmd2):
+    cmd1 = re.sub("['\"]", "", cmd1)
+    cmd2 = re.sub("['\"]", "", cmd2)
+    if cmd1 == cmd2:
+        return True
+    else:
+        return False
