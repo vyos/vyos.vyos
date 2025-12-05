@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - vyos_firewall_rules - add 'offload' action
