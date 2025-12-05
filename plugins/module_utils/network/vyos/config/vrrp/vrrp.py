@@ -381,31 +381,11 @@ class Vrrp(ResourceModule):
         results.append(out)
         return results
 
-    # def extract_named_leafs(self, data, parent_name=None, prefix_key=None):
-    #     results = []
-
-    #     if isinstance(data, dict):
-    #         current_name = data.get("name", parent_name)
-
-    #         for k, v in data.items():
-    #             if k == "name":
-    #                 continue
-
-    #             # recurse
-    #             leaves = self.extract_named_leafs(v, current_name, k)
-    #             results.extend(leaves)
-
-    #         return results
-
-    #     # leaf value reached
-    #     item = {"name": parent_name, prefix_key: data}
-    #     return [item]
-
     def extract_named_leafs(self, data, parent_name=None, prefix_key=None):
         results = []
 
         # Special handling for "real_server" dict
-        if prefix_key in ("real_server", "real_servers") and isinstance(data, dict):
+        if prefix_key == "real_server" and isinstance(data, dict):
             for server_name, server_data in data.items():
                 if isinstance(server_data, dict):
                     results.append(

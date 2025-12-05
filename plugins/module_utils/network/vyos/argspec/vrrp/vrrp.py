@@ -56,7 +56,8 @@ class VrrpArgs(object):  # pylint: disable=R0903
                             "options": {
                                 "address": {"type": "str", "required": True},
                                 "port": {"type": "int"},
-                                "health_check_script": {"type": "str"},
+                                "connection_timeout": {"type": "int"},
+                                "health_check": {"type": "str"},
                             },
                         },
                     },

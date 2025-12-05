@@ -98,7 +98,11 @@ options:
                 description:
                   - Backend server port.
                 type: int
-              health_check_script:
+              connection_timeout:
+                description:
+                  - Backend server connection timeout.
+                type: int
+              health_check:
                 description:
                   - Path to health check script used for backend validation.
                 type: str
