@@ -99,7 +99,7 @@ class Vrrp(ResourceModule):
             # self._module.fail_json(msg="Before normalize_vrrp_groups - entry: " + str(entry))
             self._vrrp_groups_list_to_dict(entry)
             self._virtual_servers_list_to_dict(entry)
-
+            self._vrrp_sync_groups_list_to_dict(entry)
         # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " (((()))) have:  " + str(haved))
 
         # if state is merged, merge want onto have and then compare
@@ -216,6 +216,9 @@ class Vrrp(ResourceModule):
             "vrrp.groups.transition_script",
             "vrrp.groups.health_check",
             "vrrp.groups.track",
+            # "vrrp.sync_groups",
+            # "vrrp.sync_groups.transition_script",
+            "vrrp.sync_groups.health_check",
         ]
 
         # self._module.fail_json(msg="Want: " + str(want) + "**** have:  " + str(have))
@@ -256,6 +259,34 @@ class Vrrp(ResourceModule):
                 new_groups[name] = item
 
             data["vrrp"]["groups"] = new_groups
+            return data
+
+        # Unexpected shape → leave as-is
+        return data
+
+    def _vrrp_sync_groups_list_to_dict(self, data):
+
+        vrrp = data.get("vrrp", {})
+        groups = vrrp.get("sync_groups")
+
+        # Nothing to do
+        if not groups:
+            return data
+
+        # Already dict-based
+        if isinstance(groups, dict):
+            return data
+
+        # Must be list → convert it
+        if isinstance(groups, list):
+            new_groups = {}
+            for item in groups:
+                name = item.get("name")
+                if not name:
+                    continue
+                new_groups[name] = item
+
+            data["vrrp"]["sync_groups"] = new_groups
             return data
 
         # Unexpected shape → leave as-is
@@ -360,7 +391,7 @@ class Vrrp(ResourceModule):
         top_key = path[0]
 
         # FIX: skip g1/g2/etc only under groups
-        if top_key == "groups":
+        if top_key in ["groups", "sync_groups"]:
             subkeys = path[2:]  # drop ["groups", "g1"]
         else:
             subkeys = path[1:]  # drop only ["global_parameters"]

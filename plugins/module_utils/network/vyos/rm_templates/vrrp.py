@@ -49,56 +49,38 @@ def _tmplt_vsrvs_rsrv(config_data):
     return command
 
 
-def _tmplt_sgroup_hc(config_data):
-    config_data = config_data["sync-group"]["health-check"]
+def _tmplt_vrrp_sgroup_hc(config_data):
+    config_data = config_data["vrrp"]["sync_groups"]
     command = []
-    cmd = "high-availability vrrp sync-group health-check {health_check}".format(**config_data)
-    if "failure_count" in config_data:
-        failure_count_cmd = cmd + " failure-count {failure_count}".format(**config_data)
-        command.append(failure_count_cmd)
-    if "interval" in config_data:
-        interval_cmd = cmd + " interval {interval}".format(**config_data)
-        command.append(interval_cmd)
-    if "ping" in config_data:
-        ping_cmd = cmd + " ping {ping}".format(**config_data)
-        command.append(ping_cmd)
-    if "script" in config_data:
-        script_cmd = cmd + " script {script}".format(**config_data)
-        command.append(script_cmd)
+    cmd = "high-availability vrrp sync-group {name}".format(**config_data)
+    config_data = config_data["health_check"]
+    for key, value in config_data.items():
+        if value is not None:
+            command.append(cmd + " health-check " + f"{key.replace('_', '-')} {value}")
     return command
 
 
-def _tmplt_sgroup_ts(config_data):
-    config_data = config_data["sync-group"]["transition-script"]
+def _tmplt_vrrp_sgroup_ts(config_data):
+    config_data = config_data["vrrp"]["sync_groups"]
     command = []
-    cmd = "high-availability vrrp sync-group transition-script {transition_script}".format(
-        **config_data,
-    )
-    if "backup" in config_data:
-        backup_cmd = cmd + " backup {backup}".format(**config_data)
-        command.append(backup_cmd)
-    if "fault" in config_data:
-        fault_cmd = cmd + " fault {fault}".format(**config_data)
-        command.append(fault_cmd)
-    if "master" in config_data:
-        master_cmd = cmd + " master {master}".format(**config_data)
-        command.append(master_cmd)
-    if "stop" in config_data:
-        stop_cmd = cmd + " stop {stop}".format(**config_data)
-        command.append(stop_cmd)
+    cmd = "high-availability vrrp sync-group {name}".format(**config_data)
+    config_data = config_data["transition_script"]
+    for key, value in config_data.items():
+        if value is not None:
+            command.append(cmd + " transition-script " + f"{key.replace('_', '-')} {value}")
     return command
 
 
 def _tmplt_vrrp_gp(config_data):
     config_data = config_data["vrrp"]["global_parameters"]
     command = []
-    cmd = "high-availability vrrp global-parameters"
-    if "version" in config_data:
-        version_cmd = cmd + " version {version}".format(**config_data)
-        command.append(version_cmd)
-    if "startup_delay" in config_data:
-        startup_delay_cmd = cmd + " startup-delay {startup_delay}".format(**config_data)
-        command.append(startup_delay_cmd)
+
+    cmd = "high-availability vrrp global-parameters".format(**config_data)
+    for key, value in config_data.items():
+        if isinstance(value, dict) or value is None:
+            continue
+        else:
+            command.append(f"{cmd} {key.replace('_', '-')} {value}")
     return command
 
 
@@ -106,23 +88,12 @@ def _tmplt_vrrp_gp_garp(config_data):
     config_data = config_data["vrrp"]["global_parameters"]["garp"]
     command = []
     cmd = "high-availability vrrp global-parameters garp"
-    if "interval" in config_data:
-        interval_cmd = cmd + " interval {interval}".format(**config_data)
-        command.append(interval_cmd)
-    if "master_delay" in config_data:
-        master_delay_cmd = cmd + " master-delay {master_delay}".format(**config_data)
-        command.append(master_delay_cmd)
-    if "master_refresh" in config_data:
-        master_refresh_cmd = cmd + " master-refresh {master_refresh}".format(**config_data)
-        command.append(master_refresh_cmd)
-    if "master_refresh_repeat" in config_data:
-        master_refresh_repeat_cmd = cmd + " master-refresh-repeat {master_refresh_repeat}".format(
-            **config_data,
-        )
-        command.append(master_refresh_repeat_cmd)
-    if "master_repeat" in config_data:
-        master_repeat_cmd = cmd + " master-repeat {master_repeat}".format(**config_data)
-        command.append(master_repeat_cmd)
+
+    for key, value in config_data.items():
+        if value is None:
+            continue
+        command.append(f"{cmd} {key.replace('_', '-')} {value}")
+
     return command
 
 
@@ -346,71 +317,70 @@ class VrrpTemplate(NetworkTemplate):
         #         },
         #     },
         # },
-        # {
-        #     "name": "vrrp.sync_groups.health_check",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set\shigh-availability\svrrp\ssync-group
-        #         \s+(?P<sgname>\S+)
-        #         \shealth-check
-        #         (?:\s+failure-count\s+(?P<failure_count>\S+))
-        #         ?(?:\s+interval\s+(?P<int>\S+))
-        #         ?(?:\s+ping\s+(?P<ping>\S+))
-        #         ?(?:\s+script\s+(?P<script>\S+))?
-        #         $
-        #         """,
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": _tmplt_sgroup_hc,
-        #     "result": {
-        #         "vrrp": {
-        #             "sync_groups": {
-        #                 "{{ sgname }}": {
-        #                     "name": "{{ sgname }}",
-        #                     "health_check": {
-        #                         "failure_count": "{{ failure_count if failure_count is defined else None }}",
-        #                         "interval": "{{ int if int is defined else None }}",
-        #                         "ping": "{{ ping if ping is defined else None }}",
-        #                         "script": "{{ script if script is defined else None }}",
-        #                     },
-        #                 },
-        #             },
-        #         },
-        #     },
-        # },
-        # {
-        #     "name": "vrrp.sync_groups.transition_script",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set\shigh-availability\svrrp\ssync-group
-        #         \s+(?P<sgname>\S+)
-        #         \stransition-script
-        #         (?:\s+backup\s+(?P<backup>\S+))?
-        #         (?:\s+fault\s+(?P<fault>\S+))?
-        #         (?:\s+master\s+(?P<master>\S+))?
-        #         (?:\s+stop\s+(?P<stop>\S+))?
-        #         $
-        #         """,
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": _tmplt_sgroup_ts,
-        #     # "compval": "global_parameters.garp.master_refersh_repeat",
-        #     "result": {
-        #         "vrrp": {
-        #             "sync_groups": {
-        #                 "{{ sgname }}": {
-        #                     "name": "{{ sgname }}",
-        #                     "transition_script": {
-        #                         "backup": "{{ backup if backup is defined else None }}",
-        #                         "fault": "{{ fault if fault is defined else None }}",
-        #                         "master": "{{ master if master is defined else None }}",
-        #                         "stop": "{{ stop if stop is defined else None }}",
-        #                     },
-        #                 },
-        #             },
-        #         },
-        #     },
-        # },
+        {
+            "name": "vrrp.sync_groups.health_check",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\ssync-group
+                \s+(?P<sgname>\S+)
+                \shealth-check
+                (?:\s+failure-count\s+(?P<failure_count>\S+))
+                ?(?:\s+interval\s+(?P<int>\S+))
+                ?(?:\s+ping\s+(?P<ping>\S+))
+                ?(?:\s+script\s+(?P<script>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_sgroup_hc,
+            "result": {
+                "vrrp": {
+                    "sync_groups": {
+                        "{{ sgname }}": {
+                            "name": "{{ sgname }}",
+                            "health_check": {
+                                "failure_count": "{{ failure_count if failure_count is defined else None }}",
+                                "interval": "{{ int if int is defined else None }}",
+                                "ping": "{{ ping if ping is defined else None }}",
+                                "script": "{{ script if script is defined else None }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.sync_groups.transition_script",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\ssync-group
+                \s+(?P<sgname>\S+)
+                \stransition-script
+                (?:\s+backup\s+(?P<backup>\S+))?
+                (?:\s+fault\s+(?P<fault>\S+))?
+                (?:\s+master\s+(?P<master>\S+))?
+                (?:\s+stop\s+(?P<stop>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_sgroup_ts,
+            "result": {
+                "vrrp": {
+                    "sync_groups": {
+                        "{{ sgname }}": {
+                            "name": "{{ sgname }}",
+                            "transition_script": {
+                                "backup": "{{ backup if backup is defined else None }}",
+                                "fault": "{{ fault if fault is defined else None }}",
+                                "master": "{{ master if master is defined else None }}",
+                                "stop": "{{ stop if stop is defined else None }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
         {
             "name": "vrrp.global_parameters.garp",
             "getval": re.compile(
@@ -498,7 +468,7 @@ class VrrpTemplate(NetworkTemplate):
                             "peer_address": "{{ peer_address if peer_address is defined else None }}",
                             "priority": "{{ priority if priority is defined else None }}",
                             "vrid": "{{ vrid if vrid is defined else None }}",
-                            "rfc3768_compatibility": "{{ rfc3768_compatibility if rfc3768_compatibility is defined else None }}",
+                            "rfc3768_compatibility": "{{ True if rfc3768_compatibility is defined else False }}",
                             "excluded_address": "{{ excluded_address if excluded_address is defined else [] }}",
                         },
                     },
