@@ -51,7 +51,6 @@ class VrrpFacts(object):
             vrrp_disable = re.search(r"set high-availability disable", config_line)
             vrrp_snmp = re.search(r"set high-availability vrrp snmp", config_line)
 
-            # self._module.fail_json(msg=vrrp_snmp)
             if vrrp_disable:
                 config_dict["disable"] = config_dict.get("disable", "") + config_line + "\n"
             if vrrp_snmp:
@@ -151,7 +150,7 @@ class VrrpFacts(object):
 
         if isinstance(vrrp.get("sync_groups"), dict):
             vrrp["sync_groups"] = list(vrrp["sync_groups"].values())
-            self._module.fail_json(msg="SGroups: " + str(vrrp["sync_groups"]))
+            # self._module.fail_json(msg="SGroups: " + str(vrrp["sync_groups"]))
 
         # Normalize real_server inside each virtual_server
         for vs in config.get("virtual_servers", []):

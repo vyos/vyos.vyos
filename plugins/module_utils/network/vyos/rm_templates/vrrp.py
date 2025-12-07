@@ -103,13 +103,10 @@ def _tmplt_vrrp_group(config_data):
     cmd = "high-availability vrrp group {name}".format(**config_data)
 
     for key, value in config_data.items():
-        if key == "name" or isinstance(value, dict) or value is None:
+        if key == "name" or isinstance(value, dict) or isinstance(value, list) or value is None:
             continue
         elif isinstance(value, bool) and value is not None:
             command.append(f"{cmd} {key.replace('_', '-')}")
-        elif isinstance(value, list):
-            for item in value:
-                command.append(cmd + " " + f"{key.replace('_', '-')} {item}")
         else:
             command.append(f"{cmd} {key.replace('_', '-')} {value}")
     return command
@@ -145,6 +142,30 @@ def _tmplt_vrrp_group_ts(config_data):
     for key, value in config_data.items():
         if value is not None:
             command.append(cmd + " transition-script " + f"{key.replace('_', '-')} {value}")
+    return command
+
+
+def _tmplt_vrrp_sgroup_member(config_data):
+    sgroup = config_data["vrrp"]["sync_groups"]
+    command = []
+    cmd = "high-availability vrrp sync-group {name}".format(**sgroup)
+    members = sgroup.get("member", [])
+    for member in members:
+        if member is None:
+            continue
+        command.append(f"{cmd} member {member}")
+    return command
+
+
+def _tmplt_vrrp_group_exaddress(config_data):
+    group = config_data["vrrp"]["groups"]
+    command = []
+    cmd = "high-availability vrrp group {name}".format(**group)
+    exaddresses = group.get("excluded_address", [])
+    for exaddress in exaddresses:
+        if exaddress is None:
+            continue
+        command.append(f"{cmd} excluded-address {exaddress}")
     return command
 
 
@@ -267,56 +288,32 @@ class VrrpTemplate(NetworkTemplate):
                 },
             },
         },
-        # {
-        #     "name": "vrrp.sync_groups.member",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set\shigh-availability\svrrp\ssync-group
-        #         \s+(?P<sgname>\S+)
-        #         \smember
-        #         \s+(?P<member>\S+)
-        #         $
-        #         """,
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "set high-availability vrrp sync-group {{sgname}} member {{member}}",
-        #     "result": {
-        #         "vrrp": {
-        #             "sync_groups": {
-        #                 "{{ sgname }}": {
-        #                     "name": "{{ sgname }}",
-        #                     "member": [
-        #                         "{{ member }}"
-        #                     ],
-        #                 },
-        #             },
-        #         },
-        #     },
-        # },
-        # {
-        #     "name": "vrrp.sync_groups.member",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set\shigh-availability\svrrp\ssync-group
-        #         \s+(?P<sgname>\S+)
-        #         \smember
-        #         \s+(?P<member>\S+)
-        #         $
-        #         """,
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "set high-availability vrrp sync-group {{sgname}} member {{member}}",
-        #     "result": {
-        #         "vrrp": {
-        #             "sync_groups": [
-        #                 {
-        #                     "name": "{{ sgname }}",
-        #                     "member": ["{{ member }}"],
-        #                 },
-        #             ],
-        #         },
-        #     },
-        # },
+        {
+            "name": "vrrp.sync_groups.member",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\ssync-group
+                \s+(?P<sgname>\S+)
+                \smember
+                \s+(?P<member>\S+)
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_sgroup_member,
+            "result": {
+                "vrrp": {
+                    "sync_groups": {
+                        "{{ sgname }}": {
+                            "name": "{{ sgname }}",
+                            "member": [
+                                "{{ member }}",
+                            ],
+                        },
+                    },
+                },
+            },
+        },
         {
             "name": "vrrp.sync_groups.health_check",
             "getval": re.compile(
@@ -445,7 +442,8 @@ class VrrpTemplate(NetworkTemplate):
                 (?:\s+interface\s+(?P<interface>\S+))?
                 (?:\s+(?P<no_preempt>no-preempt))?
                 (?:\s+peer-address\s+(?P<peer_address>\S+))?
-                (?:\s+excluded-address\s+(?P<excluded_address>\S+))?
+                # (?:\s+excluded-address\s+(?P<excluded_address>\S+))?
+                # (?:\s+excluded-address\s+(?P<excluded_address_list>\S+))*
                 (?:\s+priority\s+(?P<priority>\S+))?
                 (?:\s+vrid\s+(?P<vrid>\S+))?
                 (?:\s+rfc3768-compatibility\s+(?P<rfc3768_compatibility>\S+))?
@@ -469,7 +467,33 @@ class VrrpTemplate(NetworkTemplate):
                             "priority": "{{ priority if priority is defined else None }}",
                             "vrid": "{{ vrid if vrid is defined else None }}",
                             "rfc3768_compatibility": "{{ True if rfc3768_compatibility is defined else False }}",
-                            "excluded_address": "{{ excluded_address if excluded_address is defined else [] }}",
+                            # "excluded_address": "{{ excluded_address_list if excluded_address_list is defined else [] }}",
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.groups.excluded_address",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\sgroup
+                \s+(?P<gname>\S+)
+                \sexcluded-address
+                \s+(?P<excluded_address>.*)
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group_exaddress,
+            "result": {
+                "vrrp": {
+                    "groups": {
+                        "{{ gname }}": {
+                            "name": "{{ gname }}",
+                            "excluded_address": [
+                                "{{ excluded_address }}",
+                            ],
                         },
                     },
                 },

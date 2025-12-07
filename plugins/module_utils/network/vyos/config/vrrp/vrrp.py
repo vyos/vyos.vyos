@@ -211,17 +211,18 @@ class Vrrp(ResourceModule):
             "vrrp.global_parameters",
             "vrrp.global_parameters.garp",
             "vrrp.groups",
+            "vrrp.groups.excluded_address",
             "vrrp.groups.garp",
             "vrrp.groups.authentication",
             "vrrp.groups.transition_script",
             "vrrp.groups.health_check",
             "vrrp.groups.track",
-            # "vrrp.sync_groups",
-            # "vrrp.sync_groups.transition_script",
+            "vrrp.sync_groups.member",
+            "vrrp.sync_groups.transition_script",
             "vrrp.sync_groups.health_check",
         ]
 
-        # self._module.fail_json(msg="Want: " + str(want) + "**** have:  " + str(have))
+        # self._module.fail_json(msg="Want: " + str(want) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(have))
         # self._module.fail_json(msg=self.extract_leaf_items(want))
         # want =         {
         #     "global_parameters": {
@@ -241,15 +242,10 @@ class Vrrp(ResourceModule):
         vrrp = data.get("vrrp", {})
         groups = vrrp.get("groups")
 
-        # Nothing to do
         if not groups:
             return data
-
-        # Already dict-based
         if isinstance(groups, dict):
             return data
-
-        # Must be list → convert it
         if isinstance(groups, list):
             new_groups = {}
             for item in groups:
@@ -260,8 +256,6 @@ class Vrrp(ResourceModule):
 
             data["vrrp"]["groups"] = new_groups
             return data
-
-        # Unexpected shape → leave as-is
         return data
 
     def _vrrp_sync_groups_list_to_dict(self, data):
@@ -269,15 +263,10 @@ class Vrrp(ResourceModule):
         vrrp = data.get("vrrp", {})
         groups = vrrp.get("sync_groups")
 
-        # Nothing to do
         if not groups:
             return data
-
-        # Already dict-based
         if isinstance(groups, dict):
             return data
-
-        # Must be list → convert it
         if isinstance(groups, list):
             new_groups = {}
             for item in groups:
@@ -288,40 +277,7 @@ class Vrrp(ResourceModule):
 
             data["vrrp"]["sync_groups"] = new_groups
             return data
-
-        # Unexpected shape → leave as-is
         return data
-
-    # def _virtual_servers_list_to_dict(self, data):
-
-    #     vss = data.get("virtual_servers")
-    #     if not vss:
-    #         return data
-
-    #     # Already normalized dict → return untouched
-    #     if isinstance(vss, dict):
-    #         return data
-
-    #     # List → convert
-    #     if isinstance(vss, list):
-    #         new_vss = {}
-
-    #         for item in vss:
-    #             # Skip non-dict items
-    #             if not isinstance(item, dict):
-    #                 continue
-
-    #             alias = item.get("name")
-    #             if not alias:
-    #                 continue
-
-    #             new_vss[alias] = item
-
-    #         data["virtual_servers"] = new_vss
-    #         return data
-
-    #     # Anything else → leave unchanged
-    #     return data
 
     def _virtual_servers_list_to_dict(self, data):
 
@@ -329,11 +285,8 @@ class Vrrp(ResourceModule):
         if not vss:
             return data
 
-        # Normalize virtual_servers dict → also normalize nested real_servers
         if isinstance(vss, dict):
             for vs in vss.items():
-
-                # Normalize real_servers if list
                 rs = vs.get("real_server")
                 if isinstance(rs, list):
                     vs["real_server"] = {
@@ -344,19 +297,14 @@ class Vrrp(ResourceModule):
 
             return data
 
-        # Normalize virtual_servers list → dict
         if isinstance(vss, list):
             new_vss = {}
-
             for vs in vss:
                 if not isinstance(vs, dict):
                     continue
-
                 name = vs.get("name")
                 if not name:
                     continue
-
-                # Normalize real_servers if list
                 rs = vs.get("real_server")
                 if isinstance(rs, list):
                     vs["real_server"] = {
@@ -370,7 +318,6 @@ class Vrrp(ResourceModule):
             data["virtual_servers"] = new_vss
             return data
 
-        # Other types unchanged
         return data
 
     def extract_leaf_items(self, data, path=None, parent_name=None):
@@ -386,23 +333,18 @@ class Vrrp(ResourceModule):
                 results.extend(self.extract_leaf_items(v, path + [k], current_name))
             return results
 
-        # --- LEAF ---
         leaf_key = path[-1]
         top_key = path[0]
 
-        # FIX: skip g1/g2/etc only under groups
         if top_key in ["groups", "sync_groups"]:
-            subkeys = path[2:]  # drop ["groups", "g1"]
+            subkeys = path[2:]
         else:
-            subkeys = path[1:]  # drop only ["global_parameters"]
+            subkeys = path[1:]
 
         nested = {leaf_key: data}
 
-        # wrap intermediate keys
         for p in reversed(subkeys[:-1]):
             nested = {p: nested}
-
-        # attach name where needed
         if parent_name:
             out = {top_key: {"name": parent_name}}
             out[top_key].update(nested)
@@ -415,7 +357,6 @@ class Vrrp(ResourceModule):
     def extract_named_leafs(self, data, parent_name=None, prefix_key=None):
         results = []
 
-        # Special handling for "real_server" dict
         if prefix_key == "real_server" and isinstance(data, dict):
             for server_name, server_data in data.items():
                 if isinstance(server_data, dict):
@@ -427,20 +368,15 @@ class Vrrp(ResourceModule):
                     )
             return results
 
-        # Normal dict recursion
         if isinstance(data, dict):
             current_name = data.get("name", parent_name)
 
             for k, v in data.items():
                 if k == "name":
                     continue
-
                 leaves = self.extract_named_leafs(v, current_name, k)
                 results.extend(leaves)
-
             return results
-
-        # Leaf value
         return [
             {
                 "name": parent_name,
