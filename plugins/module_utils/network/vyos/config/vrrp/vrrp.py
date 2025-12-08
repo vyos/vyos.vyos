@@ -168,41 +168,13 @@ class Vrrp(ResourceModule):
             "virtual_servers",
             "virtual_servers.real_server",
         ]
-        # test =         {
-        #     "virtual_servers": {
-        #         "name": "s2",
-        #         "real_servers": {
-        #             "10.10.10.2": {
-        #                 "name": "10.10.10.2",
-        #                 "port": 443
-        #             }
-        #         }
-        #     }
-        # }
-        # self._module.fail_json(msg=want)
-        # self._module.fail_json(msg=self.extract_named_leafs({"virtual_servers": want}))
-        # self._module.fail_json(msg=self.extract_leaf_items({"virtual_servers": want}))
-        # self._module.fail_json(msg=self.extract_leaf_items(test))
-        # for vs in self.extract_named_leafs(want):
-        #     self._module.fail_json(msg="virtual_server: " + str(vs))
-        for pair in self.extract_named_leafs(want):
+
+        for pair in self._extract_named_leafs(want):
             self.compare(
                 parsers=vs_parsers,
                 want={"virtual_servers": pair},
                 have={"virtual_servers": {}},
             )
-        # want = {
-        #     "name": "s1",
-        #     "real_servers": {"10.10.10.2": {"address": "10.10.10.2", "port": 443}},
-        # }
-
-        # # self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
-
-        # self.compare(
-        #     parsers=vs_parsers,
-        #     want={"virtual_servers": want},
-        #     have={"virtual_servers": {}},
-        # )
 
     def _compare_vrrp(self, want, have):
         """Compare the instances of VRRP"""
@@ -223,19 +195,13 @@ class Vrrp(ResourceModule):
         ]
 
         # self._module.fail_json(msg="Want: " + str(want) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(have))
-        # self._module.fail_json(msg=self.extract_leaf_items(want))
-        # want =         {
-        #     "global_parameters": {
-        #         "garp": {
-        #             "interval": 30,
-        #         },
-        #     },
-        # }
-        # self.compare(parsers=vrrp_parsers, want={"vrrp": want}, have={"vrrp": {}})
-        for pair in self.extract_leaf_items(want):
-            self.compare(parsers=vrrp_parsers, want={"vrrp": pair}, have={"vrrp": {}})
+        for wdict in self._extract_leaf_items(want):
+            self._module.fail_json(
+                msg=self.find_matching_element_by_path(wdict, self._extract_leaf_items(have)),
+            )
 
-        # self.compare(parsers=vrrp_parsers, want={"vrrp": want}, have={"vrrp": have})
+        for wdict in self._extract_leaf_items(want):
+            self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": {}})
 
     def _vrrp_groups_list_to_dict(self, data):
 
@@ -320,7 +286,7 @@ class Vrrp(ResourceModule):
 
         return data
 
-    def extract_leaf_items(self, data, path=None, parent_name=None):
+    def _extract_leaf_items(self, data, path=None, parent_name=None):
         path = path or []
         results = []
 
@@ -330,7 +296,7 @@ class Vrrp(ResourceModule):
             for k, v in data.items():
                 if k == "name":
                     continue
-                results.extend(self.extract_leaf_items(v, path + [k], current_name))
+                results.extend(self._extract_leaf_items(v, path + [k], current_name))
             return results
 
         leaf_key = path[-1]
@@ -354,7 +320,7 @@ class Vrrp(ResourceModule):
         results.append(out)
         return results
 
-    def extract_named_leafs(self, data, parent_name=None, prefix_key=None):
+    def _extract_named_leafs(self, data, parent_name=None, prefix_key=None):
         results = []
 
         if prefix_key == "real_server" and isinstance(data, dict):
@@ -374,7 +340,7 @@ class Vrrp(ResourceModule):
             for k, v in data.items():
                 if k == "name":
                     continue
-                leaves = self.extract_named_leafs(v, current_name, k)
+                leaves = self._extract_named_leafs(v, current_name, k)
                 results.extend(leaves)
             return results
         return [
@@ -383,3 +349,24 @@ class Vrrp(ResourceModule):
                 prefix_key: data,
             },
         ]
+
+    def extract_path_tuple(self, d):
+
+        path = []
+        cur = d
+        while isinstance(cur, dict) and cur:
+            k = next(iter(cur))
+            path.append(k)
+            cur = cur[k]
+        return tuple(path)
+
+    def find_matching_element_by_path(self, element, second_list):
+        """
+        Find the element in second_list that has the same path as `element`.
+        Returns {} if no match.
+        """
+        key = self.extract_path_tuple(element)
+        for obj in second_list:
+            if self.extract_path_tuple(obj) == key:
+                return obj
+        return {}
