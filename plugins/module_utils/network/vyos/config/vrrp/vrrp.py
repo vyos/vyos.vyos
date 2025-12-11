@@ -35,11 +35,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.versi
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
-# from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (  # dict_merge,
-#     get_from_dict,
-# )
-
-
 class Vrrp(ResourceModule):
     """
     The vyos_vrrp config class
@@ -194,14 +189,57 @@ class Vrrp(ResourceModule):
             "vrrp.sync_groups.health_check",
         ]
 
+        pairs = []
         # self._module.fail_json(msg="Want: " + str(want) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(have))
-        for wdict in self._extract_leaf_items(want):
-            self._module.fail_json(
-                msg=self.find_matching_element_by_path(wdict, self._extract_leaf_items(have)),
-            )
+        # for wdict in self._extract_leaf_items(want):
+        #     self._module.fail_json(
+        #         msg=self._lookup_element(wdict, self._extract_leaf_items(have)),
+        #     )
 
+        # for wdict in self._extract_leaf_items(want):
+        #     self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": {}})
+
+        hlist = self._extract_leaf_items(have)
+        # wdict =         {
+        #     "groups": {
+        #         "name": "g2",
+        #         "preempt": False
+        #     }
+        # }
+        # self._module.fail_json(msg=self._extract_path_tuple(wdict))
+        # self._module.fail_json(msg=self._lookup_element(wdict, hlist))
+        # self._module.fail_json(msg=self._find_matching_by_path(wdict, hlist))
+
+        # self._module.fail_json(msg=self._extract_leaf_items(want))
+
+        # wdict = {
+        #         "groups": {
+        #             "name": "g1",
+        #             "track": {
+        #                 "interface": [
+        #                     "eth0",
+        #                 ]
+        #             }
+        #         }
+        #     }
+        # hdict = {
+        #     "groups": {
+        #         "name": "g1",
+        #         "track": {
+        #             "interface": [
+        #                 "eth2",
+        #             ]
+        #         }
+        #     }
+        # }
+
+        # self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
         for wdict in self._extract_leaf_items(want):
-            self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": {}})
+            # hdict = {}
+            hdict = self._find_matching_by_path(wdict, hlist)
+            pairs.append((wdict, hdict))
+            self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
+        # self._module.fail_json(msg=pairs)
 
     def _vrrp_groups_list_to_dict(self, data):
 
@@ -350,23 +388,95 @@ class Vrrp(ResourceModule):
             },
         ]
 
-    def extract_path_tuple(self, d):
+    # def _extract_path_tuple(self, d):
 
-        path = []
-        cur = d
-        while isinstance(cur, dict) and cur:
-            k = next(iter(cur))
-            path.append(k)
-            cur = cur[k]
-        return tuple(path)
+    #     path = []
+    #     cur = d
+    #     while isinstance(cur, dict) and cur:
+    #         k = next(iter(cur))
+    #         path.append(k)
+    #         cur = cur[k]
+    #     return tuple(path)
 
-    def find_matching_element_by_path(self, element, second_list):
+    # def _lookup_element(self, element, target_list):
+
+    #     key = self._extract_path_tuple(element)
+    #     for obj in target_list:
+    #         if self._extract_path_tuple(obj) == key:
+    #             return obj
+    #     return {}
+
+    def _lookup_by_path(self, want_item, have_list):
         """
-        Find the element in second_list that has the same path as `element`.
+        Find matching object in have_list by structural path + name (if present).
+        Ignore values. Return {} if not found.
+        """
+
+        def extract_signature(d):
+            sig = []
+
+            while isinstance(d, dict) and d:
+                k = next(iter(d))
+                sig.append(k)
+                d = d[k]
+
+                # capture identity if present
+                if isinstance(d, dict) and "name" in d:
+                    sig.append(("name", d["name"]))
+            self._module.fail_json(msg="SIG: " + str(sig))
+            return tuple(sig)
+
+        want_sig = extract_signature(want_item)
+
+        for obj in have_list:
+            if extract_signature(obj) == want_sig:
+                return obj
+
+        return {}
+
+    def _find_matching_by_path(self, want_item, have_list):
+        """
+        Return the object from have_list that matches the structural path of want_item.
+        Matching ignores values; 'name' inside objects is treated as identity and included.
         Returns {} if no match.
         """
-        key = self.extract_path_tuple(element)
-        for obj in second_list:
-            if self.extract_path_tuple(obj) == key:
+
+        def build_sig_node(node):
+            """Return a tuple fragment describing node (no top-level key)."""
+            if not isinstance(node, dict):
+                return ()
+            # single-key dict: descend
+            if len(node) == 1:
+                k = next(iter(node))
+                return (k,) + build_sig_node(node[k])
+            # multi-key dict: capture name (if present), then remaining keys deterministically
+            parts = []
+            if "name" in node:
+                parts.append(("name", node["name"]))
+            # process other keys in sorted order for determinism
+            for k in sorted(k for k in node.keys() if k != "name"):
+                v = node[k]
+                if isinstance(v, dict):
+                    # include the key and recurse into it
+                    parts.append(k)
+                    parts += list(build_sig_node(v))
+                else:
+                    parts.append(k)
+            return tuple(parts)
+
+        # build signature for want_item
+        if not (isinstance(want_item, dict) and want_item):
+            return {}
+        top = next(iter(want_item))  # e.g. "groups" or "global_parameters"
+        sig_want = (top,) + build_sig_node(want_item[top])
+
+        # search
+        for obj in have_list:
+            if not (isinstance(obj, dict) and obj):
+                continue
+            top2 = next(iter(obj))
+            sig_have = (top2,) + build_sig_node(obj[top2])
+            if sig_have == sig_want:
                 return obj
+
         return {}

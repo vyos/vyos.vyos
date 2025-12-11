@@ -218,7 +218,7 @@ class VrrpTemplate(NetworkTemplate):
             ),
             "setval": "high-availability disable",
             "result": {
-                "disable": "{{ True if disable is defined }}",
+                "disable": "{{ True if disable is defined else False }}",
             },
         },
         {
@@ -436,17 +436,16 @@ class VrrpTemplate(NetworkTemplate):
                 ^set\shigh-availability\svrrp\sgroup
                 \s+(?P<gname>\S+)
                 (?:\s+address\s+(?P<address>\S+))?
+                (?:\s+(?P<disable>disable))?
                 (?:\s+description\s+(?P<description>'.+?'|\S+))?
                 (?:\s+advertise-interval\s+(?P<advertise_interval>\S+))?
                 (?:\s+hello-source-address\s+(?P<hello_source>\S+))?
                 (?:\s+interface\s+(?P<interface>\S+))?
                 (?:\s+(?P<no_preempt>no-preempt))?
                 (?:\s+peer-address\s+(?P<peer_address>\S+))?
-                # (?:\s+excluded-address\s+(?P<excluded_address>\S+))?
-                # (?:\s+excluded-address\s+(?P<excluded_address_list>\S+))*
                 (?:\s+priority\s+(?P<priority>\S+))?
                 (?:\s+vrid\s+(?P<vrid>\S+))?
-                (?:\s+rfc3768-compatibility\s+(?P<rfc3768_compatibility>\S+))?
+                (?:\s+(?P<rfc3768_compatibility>rfc3768-compatibility))?
                 $
                 """,
                 re.VERBOSE,
@@ -462,12 +461,12 @@ class VrrpTemplate(NetworkTemplate):
                             "advertise_interval": "{{ advertise_interval if advertise_interval is defined else None }}",
                             "hello_source_address": "{{ hello_source if hello_source is defined else None }}",
                             "interface": "{{ interface if interface is defined else None }}",
-                            "no_preempt": "{{ True if no_preempt is defined else False }}",
+                            "no_preempt": "{{ True if no_preempt is defined }}",
                             "peer_address": "{{ peer_address if peer_address is defined else None }}",
                             "priority": "{{ priority if priority is defined else None }}",
                             "vrid": "{{ vrid if vrid is defined else None }}",
-                            "rfc3768_compatibility": "{{ True if rfc3768_compatibility is defined else False }}",
-                            # "excluded_address": "{{ excluded_address_list if excluded_address_list is defined else [] }}",
+                            "rfc3768_compatibility": "{{ True if rfc3768_compatibility is defined }}",
+                            "disable": "{{ True if disable is defined }}",
                         },
                     },
                 },
@@ -492,7 +491,7 @@ class VrrpTemplate(NetworkTemplate):
                         "{{ gname }}": {
                             "name": "{{ gname }}",
                             "excluded_address": [
-                                "{{ excluded_address }}",
+                                "{{ excluded_address | replace(\"'\", \"\") }}",
                             ],
                         },
                     },
@@ -632,7 +631,7 @@ class VrrpTemplate(NetworkTemplate):
                 ^set\shigh-availability\svrrp\sgroup
                 \s+(?P<gname>\S+)
                 \strack
-                (?:\s+exculde-vrrp-interface\s+(?P<exclude_vrrp_inter>\S+))?
+                (?:\s+(?P<exclude_vrrp_inter>exclude-vrrp-interface))?
                 (?:\s+interface\s+(?P<interface>\S+))?
                 $
                 """,
@@ -645,8 +644,8 @@ class VrrpTemplate(NetworkTemplate):
                         "{{ gname }}": {
                             "name": "{{ gname }}",
                             "track": {
-                                "exclude_vrrp_interface": "{{ exclude_vrrp_inter if exclude-vrrp-inter is defined else None }}",
-                                "interface": "{{ interface if interface is defined else [] }}",
+                                "exclude_vrrp_interface": "{{ True if exclude_vrrp_inter is defined }}",
+                                "interface": "{{ [interface.strip(\"'\")] if interface is defined else [] }}",
                             },
                         },
                     },

@@ -52,7 +52,7 @@ class VrrpFacts(object):
             vrrp_snmp = re.search(r"set high-availability vrrp snmp", config_line)
 
             if vrrp_disable:
-                config_dict["disable"] = config_dict.get("disable", "") + config_line + "\n"
+                config_dict["disable"] = [config_dict.get("disable", "") + config_line]
             if vrrp_snmp:
                 config_dict.setdefault("vrrp", []).append(config_line)
             if vrrp_gp:
