@@ -164,12 +164,26 @@ class Vrrp(ResourceModule):
             "virtual_servers.real_server",
         ]
 
-        for pair in self._extract_named_leafs(want):
+        pairs = []
+        hlist = self._extract_named_leafs(have)
+        # self._module.fail_json(msg="Want: " + str(self._extract_named_leafs(want)) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(hlist))
+
+        for wdict in self._extract_named_leafs(want):
+            hdict = self._find_matching_by_path(wdict, hlist)
+            pairs.append((wdict, hdict))
             self.compare(
                 parsers=vs_parsers,
-                want={"virtual_servers": pair},
-                have={"virtual_servers": {}},
+                want={"virtual_servers": wdict},
+                have={"virtual_servers": hdict},
             )
+        # self._module.fail_json(msg=pairs)
+
+        # for pair in self._extract_named_leafs(want):
+        #     self.compare(
+        #         parsers=vs_parsers,
+        #         want={"virtual_servers": pair},
+        #         have={"virtual_servers": {}},
+        #     )
 
     def _compare_vrrp(self, want, have):
         """Compare the instances of VRRP"""
@@ -423,7 +437,7 @@ class Vrrp(ResourceModule):
                 # capture identity if present
                 if isinstance(d, dict) and "name" in d:
                     sig.append(("name", d["name"]))
-            self._module.fail_json(msg="SIG: " + str(sig))
+            # self._module.fail_json(msg="SIG: " + str(sig))
             return tuple(sig)
 
         want_sig = extract_signature(want_item)
@@ -434,49 +448,146 @@ class Vrrp(ResourceModule):
 
         return {}
 
+    # Worked for vrrp
+    # def _find_matching_by_path(self, want_item, have_list):
+    #     """
+    #     Return the object from have_list that matches the structural path of want_item.
+    #     Matching ignores values; 'name' inside objects is treated as identity and included.
+    #     Returns {} if no match.
+    #     """
+
+    #     def build_sig_node(node):
+    #         """Return a tuple fragment describing node (no top-level key)."""
+    #         if not isinstance(node, dict):
+    #             return ()
+    #         # single-key dict: descend
+    #         if len(node) == 1:
+    #             k = next(iter(node))
+    #             return (k,) + build_sig_node(node[k])
+    #         # multi-key dict: capture name (if present), then remaining keys deterministically
+    #         parts = []
+    #         if "name" in node:
+    #             parts.append(("name", node["name"]))
+    #         # process other keys in sorted order for determinism
+    #         for k in sorted(k for k in node.keys() if k != "name"):
+    #             v = node[k]
+    #             if isinstance(v, dict):
+    #                 # include the key and recurse into it
+    #                 parts.append(k)
+    #                 parts += list(build_sig_node(v))
+    #             else:
+    #                 parts.append(k)
+    #         return tuple(parts)
+
+    #     # build signature for want_item
+    #     if not (isinstance(want_item, dict) and want_item):
+    #         return {}
+    #     top = next(iter(want_item))  # e.g. "groups" or "global_parameters"
+    #     sig_want = (top,) + build_sig_node(want_item[top])
+
+    #     # search
+    #     for obj in have_list:
+    #         if not (isinstance(obj, dict) and obj):
+    #             continue
+    #         top2 = next(iter(obj))
+    #         sig_have = (top2,) + build_sig_node(obj[top2])
+    #         if sig_have == sig_want:
+    #             return obj
+
+    #     return {}
+
+    # works for virtual servers
+    # def _find_matching_by_path(self, want_item, have_list):
+    #     """
+    #     Match leaf dicts by (name + leaf key path).
+    #     Return {} if no match.
+    #     """
+
+    #     def build_sig(node):
+    #         """
+    #         ('name','s1','address')
+    #         ('name','s1','fwmark')
+    #         ('name','s1','real_server','address')
+    #         """
+    #         if not isinstance(node, dict):
+    #             return ()
+
+    #         sig = []
+
+    #         if "name" in node:
+    #             sig.append(("name", node["name"]))
+
+    #         keys = [k for k in node if k != "name"]
+    #         if not keys:
+    #             return tuple(sig)
+
+    #         k = keys[0]
+    #         sig.append(k)
+
+    #         v = node[k]
+    #         if isinstance(v, dict):
+    #             ck = next(iter(v))
+    #             sig.append(ck)
+
+    #         return tuple(sig)
+
+    #     sig_want = build_sig(want_item)
+
+    #     for obj in have_list:
+    #         sig_have = build_sig(obj)
+    #         if sig_have == sig_want:
+    #             return obj
+
+    #     return {}
+
+    # Latesst works for both vrrp and virtual servers
     def _find_matching_by_path(self, want_item, have_list):
         """
-        Return the object from have_list that matches the structural path of want_item.
-        Matching ignores values; 'name' inside objects is treated as identity and included.
-        Returns {} if no match.
+        Match extracted leaf dicts from _extract_named_leafs().
+        Supports both container-style and flat-style leaves.
         """
 
-        def build_sig_node(node):
-            """Return a tuple fragment describing node (no top-level key)."""
-            if not isinstance(node, dict):
+        def build_sig(item):
+            if not isinstance(item, dict) or not item:
                 return ()
-            # single-key dict: descend
-            if len(node) == 1:
-                k = next(iter(node))
-                return (k,) + build_sig_node(node[k])
-            # multi-key dict: capture name (if present), then remaining keys deterministically
-            parts = []
-            if "name" in node:
-                parts.append(("name", node["name"]))
-            # process other keys in sorted order for determinism
-            for k in sorted(k for k in node.keys() if k != "name"):
-                v = node[k]
-                if isinstance(v, dict):
-                    # include the key and recurse into it
-                    parts.append(k)
-                    parts += list(build_sig_node(v))
-                else:
-                    parts.append(k)
-            return tuple(parts)
 
-        # build signature for want_item
-        if not (isinstance(want_item, dict) and want_item):
-            return {}
-        top = next(iter(want_item))  # e.g. "groups" or "global_parameters"
-        sig_want = (top,) + build_sig_node(want_item[top])
+            # CASE 1: container leaf: {'groups': {...}}
+            if len(item) == 1:
+                top = next(iter(item))
+                node = item[top]
+                sig = [top]
 
-        # search
+                if isinstance(node, dict):
+                    if "name" in node:
+                        sig.append(("name", node["name"]))
+
+                    # find inner leaf path
+                    for k, v in node.items():
+                        if k == "name":
+                            continue
+                        sig.append(k)
+                        if isinstance(v, dict):
+                            sig.append(next(iter(v)))
+                        break
+
+                return tuple(sig)
+
+            # CASE 2: flat leaf: {'name':'s1','fwmark':10}
+            sig = []
+            if "name" in item:
+                sig.append(("name", item["name"]))
+
+            for k in item:
+                if k != "name":
+                    sig.append(k)
+                    break
+
+            return tuple(sig)
+
+        sig_want = build_sig(want_item)
+
         for obj in have_list:
-            if not (isinstance(obj, dict) and obj):
-                continue
-            top2 = next(iter(obj))
-            sig_have = (top2,) + build_sig_node(obj[top2])
-            if sig_have == sig_want:
+            if build_sig(obj) == sig_want:
                 return obj
 
         return {}

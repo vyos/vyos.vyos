@@ -102,7 +102,7 @@ options:
                 description:
                   - Backend server connection timeout.
                 type: int
-              health_check:
+              health_check_script:
                 description:
                   - Path to health check script used for backend validation.
                 type: str

@@ -44,7 +44,9 @@ def _tmplt_vsrvs_rsrv(config_data):
     for key, value in config_data.items():
         if key == "address" or value is None:
             continue
-        if value is not None:
+        if value is not None and key == "health_check_script":
+            command.append(cmd + " real-server " + address + " health-check script " + value)
+        else:
             command.append(cmd + " real-server " + f"{address} {key.replace('_', '-')} {value}")
     return command
 
@@ -280,7 +282,7 @@ class VrrpTemplate(NetworkTemplate):
                             "{{ address }}": {
                                 "address": "{{ address }}",
                                 "port": "{{ port if port is defined else None }}",
-                                "health_check": "{{ hcscript if hcscript is defined else None }}",
+                                "health_check_script": "{{ hcscript if hcscript is defined else None }}",
                                 "connection_timeout": "{{ cont if cont is defined else None }}",
                             },
                         },
