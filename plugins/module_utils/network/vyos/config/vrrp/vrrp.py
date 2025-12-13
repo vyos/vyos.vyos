@@ -205,47 +205,8 @@ class Vrrp(ResourceModule):
 
         pairs = []
         # self._module.fail_json(msg="Want: " + str(want) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(have))
-        # for wdict in self._extract_leaf_items(want):
-        #     self._module.fail_json(
-        #         msg=self._lookup_element(wdict, self._extract_leaf_items(have)),
-        #     )
-
-        # for wdict in self._extract_leaf_items(want):
-        #     self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": {}})
 
         hlist = self._extract_leaf_items(have)
-        # wdict =         {
-        #     "groups": {
-        #         "name": "g2",
-        #         "preempt": False
-        #     }
-        # }
-        # self._module.fail_json(msg=self._extract_path_tuple(wdict))
-        # self._module.fail_json(msg=self._lookup_element(wdict, hlist))
-        # self._module.fail_json(msg=self._find_matching_by_path(wdict, hlist))
-
-        # self._module.fail_json(msg=self._extract_leaf_items(want))
-
-        # wdict = {
-        #         "groups": {
-        #             "name": "g1",
-        #             "track": {
-        #                 "interface": [
-        #                     "eth0",
-        #                 ]
-        #             }
-        #         }
-        #     }
-        # hdict = {
-        #     "groups": {
-        #         "name": "g1",
-        #         "track": {
-        #             "interface": [
-        #                 "eth2",
-        #             ]
-        #         }
-        #     }
-        # }
 
         # self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
         for wdict in self._extract_leaf_items(want):
@@ -402,24 +363,6 @@ class Vrrp(ResourceModule):
             },
         ]
 
-    # def _extract_path_tuple(self, d):
-
-    #     path = []
-    #     cur = d
-    #     while isinstance(cur, dict) and cur:
-    #         k = next(iter(cur))
-    #         path.append(k)
-    #         cur = cur[k]
-    #     return tuple(path)
-
-    # def _lookup_element(self, element, target_list):
-
-    #     key = self._extract_path_tuple(element)
-    #     for obj in target_list:
-    #         if self._extract_path_tuple(obj) == key:
-    #             return obj
-    #     return {}
-
     def _lookup_by_path(self, want_item, have_list):
         """
         Find matching object in have_list by structural path + name (if present).
@@ -448,99 +391,6 @@ class Vrrp(ResourceModule):
 
         return {}
 
-    # Worked for vrrp
-    # def _find_matching_by_path(self, want_item, have_list):
-    #     """
-    #     Return the object from have_list that matches the structural path of want_item.
-    #     Matching ignores values; 'name' inside objects is treated as identity and included.
-    #     Returns {} if no match.
-    #     """
-
-    #     def build_sig_node(node):
-    #         """Return a tuple fragment describing node (no top-level key)."""
-    #         if not isinstance(node, dict):
-    #             return ()
-    #         # single-key dict: descend
-    #         if len(node) == 1:
-    #             k = next(iter(node))
-    #             return (k,) + build_sig_node(node[k])
-    #         # multi-key dict: capture name (if present), then remaining keys deterministically
-    #         parts = []
-    #         if "name" in node:
-    #             parts.append(("name", node["name"]))
-    #         # process other keys in sorted order for determinism
-    #         for k in sorted(k for k in node.keys() if k != "name"):
-    #             v = node[k]
-    #             if isinstance(v, dict):
-    #                 # include the key and recurse into it
-    #                 parts.append(k)
-    #                 parts += list(build_sig_node(v))
-    #             else:
-    #                 parts.append(k)
-    #         return tuple(parts)
-
-    #     # build signature for want_item
-    #     if not (isinstance(want_item, dict) and want_item):
-    #         return {}
-    #     top = next(iter(want_item))  # e.g. "groups" or "global_parameters"
-    #     sig_want = (top,) + build_sig_node(want_item[top])
-
-    #     # search
-    #     for obj in have_list:
-    #         if not (isinstance(obj, dict) and obj):
-    #             continue
-    #         top2 = next(iter(obj))
-    #         sig_have = (top2,) + build_sig_node(obj[top2])
-    #         if sig_have == sig_want:
-    #             return obj
-
-    #     return {}
-
-    # works for virtual servers
-    # def _find_matching_by_path(self, want_item, have_list):
-    #     """
-    #     Match leaf dicts by (name + leaf key path).
-    #     Return {} if no match.
-    #     """
-
-    #     def build_sig(node):
-    #         """
-    #         ('name','s1','address')
-    #         ('name','s1','fwmark')
-    #         ('name','s1','real_server','address')
-    #         """
-    #         if not isinstance(node, dict):
-    #             return ()
-
-    #         sig = []
-
-    #         if "name" in node:
-    #             sig.append(("name", node["name"]))
-
-    #         keys = [k for k in node if k != "name"]
-    #         if not keys:
-    #             return tuple(sig)
-
-    #         k = keys[0]
-    #         sig.append(k)
-
-    #         v = node[k]
-    #         if isinstance(v, dict):
-    #             ck = next(iter(v))
-    #             sig.append(ck)
-
-    #         return tuple(sig)
-
-    #     sig_want = build_sig(want_item)
-
-    #     for obj in have_list:
-    #         sig_have = build_sig(obj)
-    #         if sig_have == sig_want:
-    #             return obj
-
-    #     return {}
-
-    # Latesst works for both vrrp and virtual servers
     def _find_matching_by_path(self, want_item, have_list):
         """
         Match extracted leaf dicts from _extract_named_leafs().
@@ -551,7 +401,7 @@ class Vrrp(ResourceModule):
             if not isinstance(item, dict) or not item:
                 return ()
 
-            # CASE 1: container leaf: {'groups': {...}}
+            # CASE 1: container leaf
             if len(item) == 1:
                 top = next(iter(item))
                 node = item[top]
@@ -561,25 +411,30 @@ class Vrrp(ResourceModule):
                     if "name" in node:
                         sig.append(("name", node["name"]))
 
-                    # find inner leaf path
                     for k, v in node.items():
                         if k == "name":
                             continue
                         sig.append(k)
+
                         if isinstance(v, dict):
-                            sig.append(next(iter(v)))
+                            if k == "real_server" and "address" in v:
+                                sig.append(("address", v["address"]))
+                            else:
+                                sig.append(next(iter(v)))
                         break
 
                 return tuple(sig)
 
-            # CASE 2: flat leaf: {'name':'s1','fwmark':10}
+            # CASE 2: flat leaf
             sig = []
             if "name" in item:
                 sig.append(("name", item["name"]))
 
-            for k in item:
+            for k, v in item.items():
                 if k != "name":
                     sig.append(k)
+                    if isinstance(v, dict) and k == "real_server" and "address" in v:
+                        sig.append(("address", v["address"]))
                     break
 
             return tuple(sig)
