@@ -85,7 +85,6 @@ class VrrpFacts(object):
         """
         facts = {}
         objs = {}
-        config_lines = []
 
         if not data:
             data = self.get_device_data(connection)

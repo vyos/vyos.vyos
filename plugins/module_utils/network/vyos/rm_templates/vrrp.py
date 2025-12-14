@@ -668,7 +668,7 @@ class VrrpTemplate(NetworkTemplate):
             "setval": "high-availability vrrp snmp",
             "result": {
                 "vrrp": {
-                    "snmp": "{{ True if snmp is defined }}",
+                    "snmp": "{{ True if snmp is defined else False }}",
                 },
             },
         },

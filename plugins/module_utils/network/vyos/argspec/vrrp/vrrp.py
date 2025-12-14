@@ -144,7 +144,7 @@ class VrrpArgs(object):  # pylint: disable=R0903
                                 "vrid": {"type": "int", "required": True},
                             },
                         },
-                        "snmp": {"type": "bool"},
+                        "snmp": {"type": "bool", "default": False},
                         "sync_groups": {
                             "type": "list",
                             "elements": "dict",

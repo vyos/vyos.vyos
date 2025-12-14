@@ -95,6 +95,7 @@ class Vrrp(ResourceModule):
             self._vrrp_groups_list_to_dict(entry)
             self._virtual_servers_list_to_dict(entry)
             self._vrrp_sync_groups_list_to_dict(entry)
+            self._normalize_lists(entry)
         # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " (((()))) have:  " + str(haved))
 
         # if state is merged, merge want onto have and then compare
@@ -158,7 +159,7 @@ class Vrrp(ResourceModule):
         self._module.fail_json(msg=self.commands)
 
     def _compare_vsrvs(self, want, have):
-        """Compare virtual servers of VRRP.py"""
+        """Compare virtual servers of VRRP"""
         vs_parsers = [
             "virtual_servers",
             "virtual_servers.real_server",
@@ -170,20 +171,13 @@ class Vrrp(ResourceModule):
 
         for wdict in self._extract_named_leafs(want):
             hdict = self._find_matching_by_path(wdict, hlist)
-            pairs.append((wdict, hdict))
+            # pairs.append((wdict, hdict))
             self.compare(
                 parsers=vs_parsers,
                 want={"virtual_servers": wdict},
                 have={"virtual_servers": hdict},
             )
         # self._module.fail_json(msg=pairs)
-
-        # for pair in self._extract_named_leafs(want):
-        #     self.compare(
-        #         parsers=vs_parsers,
-        #         want={"virtual_servers": pair},
-        #         have={"virtual_servers": {}},
-        #     )
 
     def _compare_vrrp(self, want, have):
         """Compare the instances of VRRP"""
@@ -208,9 +202,7 @@ class Vrrp(ResourceModule):
 
         hlist = self._extract_leaf_items(have)
 
-        # self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
         for wdict in self._extract_leaf_items(want):
-            # hdict = {}
             hdict = self._find_matching_by_path(wdict, hlist)
             pairs.append((wdict, hdict))
             self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
@@ -238,7 +230,6 @@ class Vrrp(ResourceModule):
         return data
 
     def _vrrp_sync_groups_list_to_dict(self, data):
-
         vrrp = data.get("vrrp", {})
         groups = vrrp.get("sync_groups")
 
@@ -273,7 +264,6 @@ class Vrrp(ResourceModule):
                         for item in rs
                         if isinstance(item, dict) and item.get("address")
                     }
-
             return data
 
         if isinstance(vss, list):
@@ -377,10 +367,8 @@ class Vrrp(ResourceModule):
                 sig.append(k)
                 d = d[k]
 
-                # capture identity if present
                 if isinstance(d, dict) and "name" in d:
                     sig.append(("name", d["name"]))
-            # self._module.fail_json(msg="SIG: " + str(sig))
             return tuple(sig)
 
         want_sig = extract_signature(want_item)
@@ -401,7 +389,6 @@ class Vrrp(ResourceModule):
             if not isinstance(item, dict) or not item:
                 return ()
 
-            # CASE 1: container leaf
             if len(item) == 1:
                 top = next(iter(item))
                 node = item[top]
@@ -425,7 +412,6 @@ class Vrrp(ResourceModule):
 
                 return tuple(sig)
 
-            # CASE 2: flat leaf
             sig = []
             if "name" in item:
                 sig.append(("name", item["name"]))
@@ -446,3 +432,24 @@ class Vrrp(ResourceModule):
                 return obj
 
         return {}
+
+    def _normalize_lists(self, node):
+        """
+        Recursively normalize all lists inside a dict or list.
+        All lists are sorted to ensure consistent ordering for comparison.
+        """
+        if isinstance(node, dict):
+            for k, v in node.items():
+                if isinstance(v, list):
+                    # sort the list if it contains only scalars
+                    if all(not isinstance(i, (dict, list)) for i in v):
+                        node[k] = sorted(v)
+                    else:
+                        # recurse into each item if the list contains dicts
+                        for item in v:
+                            self._normalize_lists(item)
+                elif isinstance(v, dict):
+                    self._normalize_lists(v)
+        elif isinstance(node, list):
+            for item in node:
+                self._normalize_lists(item)
