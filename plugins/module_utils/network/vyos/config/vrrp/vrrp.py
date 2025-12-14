@@ -177,7 +177,7 @@ class Vrrp(ResourceModule):
                 want={"virtual_servers": wdict},
                 have={"virtual_servers": hdict},
             )
-        # self._module.fail_json(msg=pairs)
+        self._module.fail_json(msg=pairs)
 
     def _compare_vrrp(self, want, have):
         """Compare the instances of VRRP"""
@@ -206,7 +206,7 @@ class Vrrp(ResourceModule):
             hdict = self._find_matching_by_path(wdict, hlist)
             pairs.append((wdict, hdict))
             self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
-        # self._module.fail_json(msg=pairs)
+        self._module.fail_json(msg=pairs)
 
     def _vrrp_groups_list_to_dict(self, data):
 
