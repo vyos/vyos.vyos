@@ -99,9 +99,29 @@ class Vrrp(ResourceModule):
         # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " (((()))) have:  " + str(haved))
 
         # if state is merged, merge want onto have and then compare
-        if self.state in ["merged"]:
-            wantd = combine(haved, wantd, recursive=True)
-            # self._module.fail_json(msg="Want: " + str(wantd) + "**** H:  " + str(haved))
+        # if self.state in ["merged"]:
+        #     wantd = combine(haved, wantd, recursive=True)
+        #     # self._module.fail_json(msg="Want: " + str(wantd) + "**** H:  " + str(haved))
+
+        # if self.state in ["replaced"]:
+        #     pairs = []
+        #     wlist = self._extract_leaf_items(wantd)
+        #     hlist = self._extract_leaf_items(haved)
+        #     for hdict in hlist:
+        #         wdict = self._find_matching_by_path(hdict, wlist)
+        #         pairs.append((wdict, hdict))
+        #     self._module.fail_json(msg=pairs)
+        #     wantd = self.project_structure(haved, wantd)
+        #     # self._module.fail_json(msg=self.project_structure(haved, wantd))
+
+        # if self.state in ["deleted"]:
+        #     # self._module.fail_json(msg="Want: " + str(wantd) + "**** H:  " + str(haved))
+        #     for k, want in wantd.items():
+        #         if k == "vrrp":
+        #             self._compare_vrrp(want, haved.get(k, {}))
+        #         if k == "virtual_servers":
+        #             self._compare_vsrvs(want, haved.get(k, {}))
+        #     return
 
         # if state is deleted, delete and empty out wantd
         # if self.state == "deleted":
@@ -144,18 +164,32 @@ class Vrrp(ResourceModule):
         #                         self.commands.append("delete vrrp name {}".format(wname))
         #                         self.commands.append("commit")
         #
+        # for k, want in wantd.items():
+        #     if k == "vrrp":
+        #         self._compare_vrrp(want, haved.get(k, {}))
+        #     if k == "virtual_servers":
+        #         # self._module.fail_json(msg="VSERVERS: " + str(want) + " ---- " + str(haved.get(k, {})))
+        #         self._compare_vsrvs(want, haved.get(k, {}))
+        #     # self._module.fail_json(msg=str(want) + " +++ " + str(haved.pop(k, {})))
+        #     self.compare(
+        #         parsers=self.parsers,
+        #         want={k: want},
+        #         have={k: haved.pop(k, {})},
+        #     )
+
         for k, want in wantd.items():
             if k == "vrrp":
+                if self.state in ["merged"]:
+                    want = combine(haved.get(k, {}), want, recursive=True)
                 self._compare_vrrp(want, haved.get(k, {}))
             if k == "virtual_servers":
-                # self._module.fail_json(msg="VSERVERS: " + str(want) + " ---- " + str(haved.get(k, {})))
                 self._compare_vsrvs(want, haved.get(k, {}))
-            # self._module.fail_json(msg=str(want) + " +++ " + str(haved.pop(k, {})))
             self.compare(
                 parsers=self.parsers,
                 want={k: want},
                 have={k: haved.pop(k, {})},
             )
+
         self._module.fail_json(msg=self.commands)
 
     def _compare_vsrvs(self, want, have):
@@ -177,7 +211,7 @@ class Vrrp(ResourceModule):
                 want={"virtual_servers": wdict},
                 have={"virtual_servers": hdict},
             )
-        self._module.fail_json(msg=pairs)
+        # self._module.fail_json(msg=pairs)
 
     def _compare_vrrp(self, want, have):
         """Compare the instances of VRRP"""
@@ -201,12 +235,23 @@ class Vrrp(ResourceModule):
         # self._module.fail_json(msg="Want: " + str(want) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(have))
 
         hlist = self._extract_leaf_items(have)
+        wlist = self._extract_leaf_items(want)
 
-        for wdict in self._extract_leaf_items(want):
-            hdict = self._find_matching_by_path(wdict, hlist)
-            pairs.append((wdict, hdict))
-            self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
-        self._module.fail_json(msg=pairs)
+        wdict = {}
+
+        if self.state in ["replaced", "deleted", "overridden"]:
+            for hdict in hlist:
+                wdict = self._find_matching_by_path(hdict, wlist)
+                pairs.append((wdict, hdict))
+                self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
+                # self._module.fail_json(msg=self.commands)
+
+        else:
+            for wdict in wlist:
+                hdict = self._find_matching_by_path(wdict, hlist)
+                pairs.append((wdict, hdict))
+                self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
+        # self._module.fail_json(msg=self.commands)
 
     def _vrrp_groups_list_to_dict(self, data):
 
@@ -453,3 +498,31 @@ class Vrrp(ResourceModule):
         elif isinstance(node, list):
             for item in node:
                 self._normalize_lists(item)
+
+    def project_structure(self, have, want):
+        """
+        Project the structure of `have` onto `want`.
+
+        - Existing values in `want` are preserved
+        - Missing paths are created with empty values
+        """
+        if not isinstance(have, dict):
+            return want
+
+        if want is None or not isinstance(want, dict):
+            want = {}
+
+        for key, have_val in have.items():
+            if key not in want:
+                want[key] = self.empty_like(have_val)
+            else:
+                want[key] = self.project_structure(have_val, want[key])
+
+        return want
+
+    def empty_like(self, value):
+        if isinstance(value, dict):
+            return {}
+        if isinstance(value, list):
+            return []
+        return None
