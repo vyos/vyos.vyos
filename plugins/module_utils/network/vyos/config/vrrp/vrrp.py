@@ -183,6 +183,8 @@ class Vrrp(ResourceModule):
                     want = combine(haved.get(k, {}), want, recursive=True)
                 self._compare_vrrp(want, haved.get(k, {}))
             if k == "virtual_servers":
+                if self.state in ["merged"]:
+                    want = combine(haved.get(k, {}), want, recursive=True)
                 self._compare_vsrvs(want, haved.get(k, {}))
             self.compare(
                 parsers=self.parsers,
@@ -201,16 +203,30 @@ class Vrrp(ResourceModule):
 
         pairs = []
         hlist = self._extract_named_leafs(have)
-        # self._module.fail_json(msg="Want: " + str(self._extract_named_leafs(want)) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(hlist))
+        wlist = self._extract_named_leafs(want)
+        # self._module.fail_json(msg="Want: " + str(wlist) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(hlist))
 
-        for wdict in self._extract_named_leafs(want):
-            hdict = self._find_matching_by_path(wdict, hlist)
-            # pairs.append((wdict, hdict))
-            self.compare(
-                parsers=vs_parsers,
-                want={"virtual_servers": wdict},
-                have={"virtual_servers": hdict},
-            )
+        wdict = {}
+
+        if self.state in ["replaced", "deleted", "overridden"]:
+            for hdict in hlist:
+                wdict = self._find_matching_by_path(hdict, wlist)
+                pairs.append((wdict, hdict))
+                self.compare(
+                    parsers=vs_parsers,
+                    want={"virtual_servers": wdict},
+                    have={"virtual_servers": hdict},
+                )
+            self._module.fail_json(msg=pairs)
+        else:
+            for wdict in wlist:
+                hdict = self._find_matching_by_path(wdict, hlist)
+                # pairs.append((wdict, hdict))
+                self.compare(
+                    parsers=vs_parsers,
+                    want={"virtual_servers": wdict},
+                    have={"virtual_servers": hdict},
+                )
         # self._module.fail_json(msg=pairs)
 
     def _compare_vrrp(self, want, have):
