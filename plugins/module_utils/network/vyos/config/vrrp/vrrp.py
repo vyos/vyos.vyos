@@ -89,14 +89,18 @@ class Vrrp(ResourceModule):
         haved = {}
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
-
+        self._module.fail_json(
+            msg="Generate commands - want: " + str(self.want) + " (((()))) have:  " + str(haved),
+        )
         for entry in wantd, haved:
-            # self._module.fail_json(msg="Before normalize_vrrp_groups - entry: " + str(entry))
+            self._module.fail_json(msg="Before normalize_vrrp_groups - entry: " + str(entry))
             self._vrrp_groups_list_to_dict(entry)
             self._virtual_servers_list_to_dict(entry)
             self._vrrp_sync_groups_list_to_dict(entry)
             self._normalize_lists(entry)
-        # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " (((()))) have:  " + str(haved))
+        self._module.fail_json(
+            msg="Normalise - want: " + str(wantd) + " (((()))) have:  " + str(haved),
+        )
 
         # if state is merged, merge want onto have and then compare
         # if self.state in ["merged"]:
@@ -206,7 +210,25 @@ class Vrrp(ResourceModule):
         wlist = self._extract_named_leafs(want)
         # self._module.fail_json(msg="Want: " + str(wlist) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(hlist))
 
-        wdict = {}
+        # wdict = {
+        #         "fwmark": None,
+        #         "name": "s2"
+        #     }
+
+        # hdict = {
+        #         "fwmark": "12",
+        #         "name": "s2"
+        #     }
+        # hdict =     {
+        #         "name": "s2",
+        #         "real_server": {
+        #             "address": "10.10.10.2",
+        #             "connection_timeout": 5,
+        #             "port": 443
+        #         }
+        #     }
+        # wdict =     {}
+        # self.compare(parsers=vs_parsers,want={"virtual_servers": wdict},have={"virtual_servers": hdict})
 
         if self.state in ["replaced", "deleted", "overridden"]:
             for hdict in hlist:
@@ -217,7 +239,7 @@ class Vrrp(ResourceModule):
                     want={"virtual_servers": wdict},
                     have={"virtual_servers": hdict},
                 )
-            self._module.fail_json(msg=pairs)
+            # self._module.fail_json(msg=pairs)
         else:
             for wdict in wlist:
                 hdict = self._find_matching_by_path(wdict, hlist)
@@ -248,26 +270,26 @@ class Vrrp(ResourceModule):
         ]
 
         pairs = []
-        # self._module.fail_json(msg="Want: " + str(want) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(have))
+        self._module.fail_json(
+            msg="Want: " + str(want) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(have),
+        )
 
         hlist = self._extract_leaf_items(have)
         wlist = self._extract_leaf_items(want)
-
-        wdict = {}
 
         if self.state in ["replaced", "deleted", "overridden"]:
             for hdict in hlist:
                 wdict = self._find_matching_by_path(hdict, wlist)
                 pairs.append((wdict, hdict))
-                self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
-                # self._module.fail_json(msg=self.commands)
+                # self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
+                self._module.fail_json(msg="here")
 
         else:
             for wdict in wlist:
                 hdict = self._find_matching_by_path(wdict, hlist)
                 pairs.append((wdict, hdict))
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
-        # self._module.fail_json(msg=self.commands)
+        self._module.fail_json(msg=pairs)
 
     def _vrrp_groups_list_to_dict(self, data):
 

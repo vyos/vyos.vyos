@@ -242,6 +242,7 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_vsrvs,
+            # "setval": "vrsrvs",
             "result": {
                 "virtual_servers": {
                     "{{ name }}": {
@@ -666,6 +667,7 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "high-availability vrrp snmp",
+            "compval": "vrrp.snmp",
             "result": {
                 "vrrp": {
                     "snmp": "{{ True if snmp is defined else False }}",
