@@ -147,6 +147,7 @@ class Static_routesFacts(object):
                 for match in findall(r"^.*next-hop(.+)|(\s+interface.+)$", conf, M)
             ]
             if hop_list:
+                # self._module.fail_json("hoplist: " + str(hop_list))
                 for hop in hop_list:
                     distance = search(r"^.*distance (.\S+)", hop, M)
                     interface = search(r"^.*interface (.\S+)", hop, M)
@@ -163,24 +164,28 @@ class Static_routesFacts(object):
                         nh_info["admin_distance"] = int(value)
                     elif dis >= 1:
                         nh_info["enabled"] = False
+                    # self._module.fail_json("NH_INFO: " + str(nh_list))
                     for element in nh_list:
-                        self._module.fail_json(
-                            msg="ELEMENT: " + str(element) + " ---- NH_INFO: " + str(nh_info),
-                        )
-                        if (
-                            "forward_router_address" in element
-                            and element["forward_router_address"]
-                            == nh_info["forward_router_address"]
-                        ) or (
-                            "interface" in element and element["interface"] == nh_info["interface"]
-                        ):
-                            # if "interface" in nh_info.keys():
-                            #     element["interface"] = nh_info["interface"]
-                            if "admin_distance" in nh_info.keys():
-                                element["admin_distance"] = nh_info["admin_distance"]
-                            if "enabled" in nh_info.keys():
-                                element["enabled"] = nh_info["enabled"]
-                            nh_info = None
+                        # self._module.fail_json(msg="ELEMENT: " + str(element) + " ---- NH_INFO: " + str(nh_info))
+                        # if element["forward_router_address"] == nh_info["forward_router_address"]:
+
+                        # s
+                        # if (
+                        #     "forward_router_address" in element
+                        #     and element["forward_router_address"]
+                        #     == nh_info["forward_router_address"]
+                        # ) or (
+                        #     "interface" in element and element["interface"] == nh_info["interface"]
+                        # ):
+                        if "forward_router_address" in nh_info.keys():
+                            element["forward_router_address"] = nh_info["forward_router_address"]
+                        if "interface" in nh_info.keys():
+                            element["interface"] = nh_info["interface"]
+                        if "admin_distance" in nh_info.keys():
+                            element["admin_distance"] = nh_info["admin_distance"]
+                        if "enabled" in nh_info.keys():
+                            element["enabled"] = nh_info["enabled"]
+                        nh_info = None
                     if nh_info is not None:
                         nh_list.append(nh_info)
         return nh_list
