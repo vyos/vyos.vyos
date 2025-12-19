@@ -147,7 +147,6 @@ class Static_routesFacts(object):
                 for match in findall(r"^.*next-hop(.+)|(\s+interface.+)$", conf, M)
             ]
             if hop_list:
-                # self._module.fail_json("hoplist: " + str(hop_list))
                 for hop in hop_list:
                     distance = search(r"^.*distance (.\S+)", hop, M)
                     interface = search(r"^.*interface (.\S+)", hop, M)
@@ -165,14 +164,9 @@ class Static_routesFacts(object):
                     elif dis >= 1:
                         nh_info["enabled"] = False
                     for element in nh_list:
-                        # self._module.fail_json(msg="ELEMENT: " + str(element) + " ---- NH_INFO: " + str(nh_info))
-                        # if element["forward_router_address"] == nh_info["forward_router_address"]:
-                        # if (element.get("interface") == nh_info.get("interface") or
                         if element.get("forward_router_address") == nh_info.get(
                             "forward_router_address",
                         ):
-                            # if "interface" in nh_info.keys():
-                            #     element["interface"] = nh_info["interface"]
                             if "admin_distance" in nh_info.keys():
                                 element["admin_distance"] = nh_info["admin_distance"]
                             if "enabled" in nh_info.keys():
