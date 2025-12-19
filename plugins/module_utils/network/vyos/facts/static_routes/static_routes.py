@@ -164,28 +164,22 @@ class Static_routesFacts(object):
                         nh_info["admin_distance"] = int(value)
                     elif dis >= 1:
                         nh_info["enabled"] = False
-                    # self._module.fail_json("NH_INFO: " + str(nh_list))
                     for element in nh_list:
                         # self._module.fail_json(msg="ELEMENT: " + str(element) + " ---- NH_INFO: " + str(nh_info))
                         # if element["forward_router_address"] == nh_info["forward_router_address"]:
-
-                        # s
-                        # if (
-                        #     "forward_router_address" in element
-                        #     and element["forward_router_address"]
-                        #     == nh_info["forward_router_address"]
-                        # ) or (
-                        #     "interface" in element and element["interface"] == nh_info["interface"]
-                        # ):
-                        if "forward_router_address" in nh_info.keys():
-                            element["forward_router_address"] = nh_info["forward_router_address"]
-                        if "interface" in nh_info.keys():
-                            element["interface"] = nh_info["interface"]
-                        if "admin_distance" in nh_info.keys():
-                            element["admin_distance"] = nh_info["admin_distance"]
-                        if "enabled" in nh_info.keys():
-                            element["enabled"] = nh_info["enabled"]
-                        nh_info = None
+                        # if (element.get("interface") == nh_info.get("interface") or
+                        if element.get("forward_router_address") == nh_info.get(
+                            "forward_router_address",
+                        ):
+                            # if "interface" in nh_info.keys():
+                            #     element["interface"] = nh_info["interface"]
+                            if "admin_distance" in nh_info.keys():
+                                element["admin_distance"] = nh_info["admin_distance"]
+                            if "enabled" in nh_info.keys():
+                                element["enabled"] = nh_info["enabled"]
+                            nh_info = None
+                        if nh_info.get("interface"):
+                            element["interface"] = nh_info.get("interface")
                     if nh_info is not None:
                         nh_list.append(nh_info)
         return nh_list
