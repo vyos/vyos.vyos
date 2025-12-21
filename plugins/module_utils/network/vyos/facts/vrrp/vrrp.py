@@ -125,6 +125,7 @@ class VrrpFacts(object):
                 redact=True,
             ),
         )
+
         # self._module.fail_json(msg="Params: " + str(params))
         facts["vrrp"] = params.get("config", [])
         ansible_facts["ansible_network_resources"].update(facts)
