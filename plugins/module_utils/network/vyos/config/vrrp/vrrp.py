@@ -156,15 +156,14 @@ class Vrrp(ResourceModule):
                     have={"virtual_servers": hdict},
                 )
             self._module.fail_json(msg=pairs)
-        else:
-            for wdict in wlist:
-                hdict = self._find_matching_by_path(wdict, hlist)
-                pairs.append((wdict, hdict))
-                self.compare(
-                    parsers=vs_parsers,
-                    want={"virtual_servers": wdict},
-                    have={"virtual_servers": hdict},
-                )
+        for wdict in wlist:
+            hdict = self._find_matching_by_path(wdict, hlist)
+            pairs.append((wdict, hdict))
+            self.compare(
+                parsers=vs_parsers,
+                want={"virtual_servers": wdict},
+                have={"virtual_servers": hdict},
+            )
         # self._module.fail_json(msg=pairs)
 
     def _compare_vrrp(self, want, have):
@@ -182,7 +181,6 @@ class Vrrp(ResourceModule):
             "vrrp.groups.authentication",
             "vrrp.groups.transition_script",
             "vrrp.groups.health_check",
-            # "vrrp.groups.track",
             "vrrp.groups.track.interface",
             "vrrp.groups.track.exclude_vrrp_interface",
             "vrrp.sync_groups.member",
