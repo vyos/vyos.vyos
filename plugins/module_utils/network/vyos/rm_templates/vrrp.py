@@ -105,12 +105,27 @@ def _tmplt_vrrp_group(config_data):
     cmd = "high-availability vrrp group {name}".format(**config_data)
 
     for key, value in config_data.items():
-        if key == "name" or isinstance(value, dict) or isinstance(value, list) or value is None:
+        if (
+            key == "name"
+            or isinstance(value, dict)
+            or isinstance(value, list)
+            or isinstance(value, bool)
+            or value is None
+        ):
             continue
-        elif isinstance(value, bool) and value is not None:
-            command.append(f"{cmd} {key.replace('_', '-')}")
         else:
             command.append(f"{cmd} {key.replace('_', '-')} {value}")
+    return command
+
+
+def _tmplt_vrrp_group_bool(config_data):
+    config_data = config_data["vrrp"]["groups"]
+    command = []
+    cmd = "high-availability vrrp group {name}".format(**config_data)
+
+    for key, value in config_data.items():
+        if key != "name" and value is not None:
+            command.append(f"{cmd} {key.replace('_', '-')}")
     return command
 
 
@@ -182,17 +197,26 @@ def _tmplt_vrrp_group_hc(config_data):
     return command
 
 
-def _tmplt_vrrp_group_track(config_data):
+def _tmplt_vrrp_group_track_list(config_data):
     config_data = config_data["vrrp"]["groups"]
     command = []
     cmd = "high-availability vrrp group {name}".format(**config_data)
     config_data = config_data["track"]
     for key, value in config_data.items():
-        if isinstance(value, bool) and value is not None:
-            command.append(cmd + " track " + f"{key.replace('_', '-')}")
-        elif isinstance(value, list):
+        if isinstance(value, list) and value is not None and key != "name":
             for item in value:
                 command.append(cmd + " track " + f"{key.replace('_', '-')} {item}")
+    return command
+
+
+def _tmplt_vrrp_group_track_bool(config_data):
+    config_data = config_data["vrrp"]["groups"]
+    command = []
+    cmd = "high-availability vrrp group {name}".format(**config_data)
+    config_data = config_data["track"]
+    for key, value in config_data.items():
+        if key != "name" and value is not None:
+            command.append(cmd + " track " + f"{key.replace('_', '-')}")
     return command
 
 
@@ -242,7 +266,6 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_vsrvs,
-            # "setval": "vrsrvs",
             "result": {
                 "virtual_servers": {
                     "{{ name }}": {
@@ -439,16 +462,13 @@ class VrrpTemplate(NetworkTemplate):
                 ^set\shigh-availability\svrrp\sgroup
                 \s+(?P<gname>\S+)
                 (?:\s+address\s+(?P<address>\S+))?
-                (?:\s+(?P<disable>disable))?
                 (?:\s+description\s+(?P<description>'.+?'|\S+))?
                 (?:\s+advertise-interval\s+(?P<advertise_interval>\S+))?
                 (?:\s+hello-source-address\s+(?P<hello_source>\S+))?
                 (?:\s+interface\s+(?P<interface>\S+))?
-                (?:\s+(?P<no_preempt>no-preempt))?
                 (?:\s+peer-address\s+(?P<peer_address>\S+))?
                 (?:\s+priority\s+(?P<priority>\S+))?
                 (?:\s+vrid\s+(?P<vrid>\S+))?
-                (?:\s+(?P<rfc3768_compatibility>rfc3768-compatibility))?
                 $
                 """,
                 re.VERBOSE,
@@ -464,12 +484,9 @@ class VrrpTemplate(NetworkTemplate):
                             "advertise_interval": "{{ advertise_interval if advertise_interval is defined else None }}",
                             "hello_source_address": "{{ hello_source if hello_source is defined else None }}",
                             "interface": "{{ interface if interface is defined else None }}",
-                            "no_preempt": "{{ True if no_preempt is defined }}",
                             "peer_address": "{{ peer_address if peer_address is defined else None }}",
                             "priority": "{{ priority if priority is defined else None }}",
                             "vrid": "{{ vrid if vrid is defined else None }}",
-                            "rfc3768_compatibility": "{{ True if rfc3768_compatibility is defined }}",
-                            "disable": "{{ True if disable is defined }}",
                         },
                     },
                 },
@@ -628,26 +645,24 @@ class VrrpTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "vrrp.groups.track",
+            "name": "vrrp.groups.track.interface",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
                 \s+(?P<gname>\S+)
                 \strack
-                (?:\s+(?P<exclude_vrrp_inter>exclude-vrrp-interface))?
                 (?:\s+interface\s+(?P<interface>\S+))?
                 $
                 """,
                 re.VERBOSE,
             ),
-            "setval": _tmplt_vrrp_group_track,
+            "setval": _tmplt_vrrp_group_track_list,
             "result": {
                 "vrrp": {
                     "groups": {
                         "{{ gname }}": {
                             "name": "{{ gname }}",
                             "track": {
-                                "exclude_vrrp_interface": "{{ True if exclude_vrrp_inter is defined }}",
                                 "interface": "{{ [interface.strip(\"'\")] if interface is defined else [] }}",
                             },
                         },
@@ -667,10 +682,101 @@ class VrrpTemplate(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "high-availability vrrp snmp",
-            "compval": "vrrp.snmp",
             "result": {
                 "vrrp": {
                     "snmp": "{{ True if snmp is defined else False }}",
+                },
+            },
+        },
+        {
+            "name": "vrrp.groups.disable",
+            "getval": re.compile(
+                r"""
+                ^set
+                \shigh-availability\svrrp\sgroup
+                \s(?P<gname>\S+)
+                \s(?P<disable>disable)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group_bool,
+            "result": {
+                "vrrp": {
+                    "groups": {
+                        "{{ gname }}": {
+                            "disable": "{{ True if disable is defined else False }}",
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.groups.no_preempt",
+            "getval": re.compile(
+                r"""
+                ^set
+                \shigh-availability\svrrp\sgroup
+                \s(?P<gname>\S+)
+                \s(?P<no_preempt>no-preempt)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group_bool,
+            "result": {
+                "vrrp": {
+                    "groups": {
+                        "{{ gname }}": {
+                            "no_preempt": "{{ True if no_preempt is defined else False }}",
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.groups.rfc3768_compatibility",
+            "getval": re.compile(
+                r"""
+                ^set
+                \shigh-availability\svrrp\sgroup
+                \s(?P<gname>\S+)
+                \s(?P<rfc3768_compatibility>rfc3768-compatibility)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group_bool,
+            "result": {
+                "vrrp": {
+                    "groups": {
+                        "{{ gname }}": {
+                            "rfc3768_compatibility": "{{ True if rfc3768_compatibility is defined else False }}",
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.groups.track.exclude_vrrp_interface",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\sgroup
+                \s+(?P<gname>\S+)
+                \strack
+                \s(?P<exclude_vrrp_inter>exclude-vrrp-interface)
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group_track_bool,
+            "result": {
+                "vrrp": {
+                    "groups": {
+                        "{{ gname }}": {
+                            "name": "{{ gname }}",
+                            "track": {
+                                "exclude_vrrp_interface": "{{ True if exclude_vrrp_inter is defined else False }}",
+                            },
+                        },
+                    },
                 },
             },
         },

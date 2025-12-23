@@ -259,6 +259,7 @@ options:
                 description:
                   - Disable preemption.
                 type: bool
+                default: false
 
               peer_address:
                 description:
@@ -279,6 +280,7 @@ options:
                 description:
                   - Enable or disable RFC3768 compatibility mode.
                 type: bool
+                default: false
 
               track:
                 description:

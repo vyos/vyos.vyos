@@ -120,11 +120,11 @@ class VrrpArgs(object):  # pylint: disable=R0903
                                 },
                                 "hello_source_address": {"type": "str"},
                                 "interface": {"type": "str"},
-                                "no_preempt": {"type": "bool"},
+                                "no_preempt": {"type": "bool", "default": False},
                                 "peer_address": {"type": "str"},
                                 "preempt_delay": {"type": "int"},
                                 "priority": {"type": "int"},
-                                "rfc3768_compatibility": {"type": "bool"},
+                                "rfc3768_compatibility": {"type": "bool", "default": False},
                                 "track": {
                                     "type": "dict",
                                     "options": {

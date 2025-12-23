@@ -174,12 +174,17 @@ class Vrrp(ResourceModule):
             "vrrp.global_parameters",
             "vrrp.global_parameters.garp",
             "vrrp.groups",
+            "vrrp.groups.disable",
+            "vrrp.groups.no_preempt",
+            "vrrp.groups.rfc3768_compatibility",
             "vrrp.groups.excluded_address",
             "vrrp.groups.garp",
             "vrrp.groups.authentication",
             "vrrp.groups.transition_script",
             "vrrp.groups.health_check",
-            "vrrp.groups.track",
+            # "vrrp.groups.track",
+            "vrrp.groups.track.interface",
+            "vrrp.groups.track.exclude_vrrp_interface",
             "vrrp.sync_groups.member",
             "vrrp.sync_groups.transition_script",
             "vrrp.sync_groups.health_check",
@@ -208,7 +213,7 @@ class Vrrp(ResourceModule):
             pairs.append((wdict, hdict))
             self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
 
-    # self._module.fail_json(msg=pairs)
+        # self._module.fail_json(msg=pairs)
 
     def _vrrp_groups_list_to_dict(self, data):
 
