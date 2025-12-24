@@ -32,6 +32,7 @@ def _tmplt_vsrvs(config_data):
             continue
         else:
             command.append(f"{cmd} {key.replace('_', '-')} {value}")
+
     return command
 
 
@@ -247,20 +248,48 @@ class VrrpTemplate(NetworkTemplate):
                 "disable": "{{ True if disable is defined else False }}",
             },
         },
+        # {
+        #     "name": "virtual_servers",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set\shigh-availability\svirtual-server
+        #         \s+(?P<name>\S+)
+        #         # (?:\s+address\s+(?P<address>\S+))?
+        #         (?:\s+algorithm\s+(?P<algorithm>\S+))?
+        #         (?:\s+delay-loop\s+(?P<delay_loop>\S+))?
+        #         (?:\s+forward-method\s+(?P<forward_method>\S+))?
+        #         (?:\s+fwmark\s+(?P<fwmark>\S+))?
+        #         (?:\s+persistence-timeout\s+(?P<persistence_timeout>\S+))?
+        #         (?:\s+port\s+(?P<port>\S+))?
+        #         (?:\s+protocol\s+(?P<protocol>\S+))?
+        #         $
+        #         """,
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": _tmplt_vsrvs,
+        #     "result": {
+        #         "virtual_servers": {
+        #             "{{ name }}": {
+        #                 "name": "{{ name }}",
+        #                 # "address": "{{ address if address is defined else None }}",
+        #                 "algorithm": "{{ algorithm if algorithm is defined else None }}",
+        #                 "delay_loop": "{{ delay_loop if delay_loop is defined else None }}",
+        #                 "forward_method": "{{ forward_method if forward_method is defined else None }}",
+        #                 "fwmark": "{{ fwmark if fwmark is defined else None }}",
+        #                 "persistence_timeout": "{{ persistence_timeout if persistence_timeout is defined else None }}",
+        #                 "port": "{{ port if port is defined else None }}",
+        #                 "protocol": "{{ protocol if protocol is defined else None }}",
+        #             },
+        #         },
+        #     },
+        # },
         {
-            "name": "virtual_servers",
+            "name": "virtual_servers.address",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svirtual-server
                 \s+(?P<name>\S+)
                 (?:\s+address\s+(?P<address>\S+))?
-                (?:\s+algorithm\s+(?P<algorithm>\S+))?
-                (?:\s+delay-loop\s+(?P<delay_loop>\S+))?
-                (?:\s+forward-method\s+(?P<forward_method>\S+))?
-                (?:\s+fwmark\s+(?P<fwmark>\S+))?
-                (?:\s+persistence-timeout\s+(?P<persistence_timeout>\S+))?
-                (?:\s+port\s+(?P<port>\S+))?
-                (?:\s+protocol\s+(?P<protocol>\S+))?
                 $
                 """,
                 re.VERBOSE,
@@ -271,19 +300,191 @@ class VrrpTemplate(NetworkTemplate):
                     "{{ name }}": {
                         "name": "{{ name }}",
                         "address": "{{ address if address is defined else None }}",
-                        "algorithm": "{{ algorithm if algorithm is defined else None }}",
-                        "delay_loop": "{{ delay_loop if delay_loop is defined else None }}",
-                        "forward_method": "{{ forward_method if forward_method is defined else None }}",
-                        "fwmark": "{{ fwmark if fwmark is defined else None }}",
-                        "persistence_timeout": "{{ persistence_timeout if persistence_timeout is defined else None }}",
-                        "port": "{{ port if port is defined else None }}",
-                        "protocol": "{{ protocol if protocol is defined else None }}",
                     },
                 },
             },
         },
         {
-            "name": "virtual_servers.real_server",
+            "name": "virtual_servers.algorithm",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svirtual-server
+                \s+(?P<name>\S+)
+                (?:\s+algorithm\s+(?P<algorithm>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vsrvs,
+            "result": {
+                "virtual_servers": {
+                    "{{ name }}": {
+                        "name": "{{ name }}",
+                        "algorithm": "{{ algorithm if algorithm is defined else None }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "virtual_servers.delay_loop",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svirtual-server
+                \s+(?P<name>\S+)
+                (?:\s+delay-loop\s+(?P<delay_loop>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vsrvs,
+            "result": {
+                "virtual_servers": {
+                    "{{ name }}": {
+                        "name": "{{ name }}",
+                        "delay_loop": "{{ delay_loop if delay_loop is defined else None }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "virtual_servers.forward_method",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svirtual-server
+                \s+(?P<name>\S+)
+                (?:\s+forward-method\s+(?P<forward_method>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vsrvs,
+            "result": {
+                "virtual_servers": {
+                    "{{ name }}": {
+                        "name": "{{ name }}",
+                        "forward_method": "{{ forward_method if forward_method is defined else None }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "virtual_servers.fwmark",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svirtual-server
+                \s+(?P<name>\S+)
+                (?:\s+fwmark\s+(?P<fwmark>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vsrvs,
+            "result": {
+                "virtual_servers": {
+                    "{{ name }}": {
+                        "name": "{{ name }}",
+                        "fwmark": "{{ fwmark if fwmark is defined else None }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "virtual_servers.persistence_timeout",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svirtual-server
+                \s+(?P<name>\S+)
+                (?:\s+persistence-timeout\s+(?P<persistence_timeout>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vsrvs,
+            "result": {
+                "virtual_servers": {
+                    "{{ name }}": {
+                        "name": "{{ name }}",
+                        "persistence_timeout": "{{ persistence_timeout if persistence_timeout is defined else None }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "virtual_servers.port",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svirtual-server
+                \s+(?P<name>\S+)
+                (?:\s+port\s+(?P<port>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vsrvs,
+            "result": {
+                "virtual_servers": {
+                    "{{ name }}": {
+                        "name": "{{ name }}",
+                        "port": "{{ port if port is defined else None }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "virtual_servers.protocol",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svirtual-server
+                \s+(?P<name>\S+)
+                (?:\s+protocol\s+(?P<protocol>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vsrvs,
+            "result": {
+                "virtual_servers": {
+                    "{{ name }}": {
+                        "name": "{{ name }}",
+                        "protocol": "{{ protocol if protocol is defined else None }}",
+                    },
+                },
+            },
+        },
+        # {
+        #     "name": "virtual_servers.real_server",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set\shigh-availability\svirtual-server
+        #         \s+(?P<name>\S+)
+        #         \sreal-server
+        #         \s+(?P<address>\S+)
+        #         (?:\s+port\s+(?P<port>\S+))?
+        #         (?:\s+health-check\sscript\s+(?P<hcscript>\S+))?
+        #         (?:\s+connection-timeout\s+(?P<cont>\S+))?
+        #         $
+        #         """,
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": _tmplt_vsrvs_rsrv,
+        #     "result": {
+        #         "virtual_servers": {
+        #             "{{ name }}": {
+        #                 "name": "{{ name }}",
+        #                 "real_server": {
+        #                     "{{ address }}": {
+        #                         "address": "{{ address }}",
+        #                         "port": "{{ port if port is defined else None }}",
+        #                         "health_check_script": "{{ hcscript if hcscript is defined else None }}",
+        #                         "connection_timeout": "{{ cont if cont is defined else None }}",
+        #                     },
+        #                 },
+        #             },
+        #         },
+        #     },
+        # },
+        {
+            "name": "virtual_servers.real_server.port",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svirtual-server
@@ -291,8 +492,6 @@ class VrrpTemplate(NetworkTemplate):
                 \sreal-server
                 \s+(?P<address>\S+)
                 (?:\s+port\s+(?P<port>\S+))?
-                (?:\s+health-check\sscript\s+(?P<hcscript>\S+))?
-                (?:\s+connection-timeout\s+(?P<cont>\S+))?
                 $
                 """,
                 re.VERBOSE,
@@ -306,7 +505,61 @@ class VrrpTemplate(NetworkTemplate):
                             "{{ address }}": {
                                 "address": "{{ address }}",
                                 "port": "{{ port if port is defined else None }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "virtual_servers.real_server.health_check_script",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svirtual-server
+                \s+(?P<name>\S+)
+                \sreal-server
+                \s+(?P<address>\S+)
+                (?:\s+health-check\sscript\s+(?P<hcscript>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vsrvs_rsrv,
+            "result": {
+                "virtual_servers": {
+                    "{{ name }}": {
+                        "name": "{{ name }}",
+                        "real_server": {
+                            "{{ address }}": {
+                                "address": "{{ address }}",
                                 "health_check_script": "{{ hcscript if hcscript is defined else None }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "virtual_servers.real_server.connection_timeout",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svirtual-server
+                \s+(?P<name>\S+)
+                \sreal-server
+                \s+(?P<address>\S+)
+                (?:\s+connection-timeout\s+(?P<cont>\S+))?
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vsrvs_rsrv,
+            "result": {
+                "virtual_servers": {
+                    "{{ name }}": {
+                        "name": "{{ name }}",
+                        "real_server": {
+                            "{{ address }}": {
+                                "address": "{{ address }}",
                                 "connection_timeout": "{{ cont if cont is defined else None }}",
                             },
                         },

@@ -137,10 +137,20 @@ class Vrrp(ResourceModule):
     def _compare_vsrvs(self, want, have):
         """Compare virtual servers of VRRP"""
         vs_parsers = [
-            "virtual_servers",
-            "virtual_servers.real_server",
+            # "virtual_servers",
+            "virtual_servers.address",
+            "virtual_servers.algorithm",
+            "virtual_servers.delay_loop",
+            "virtual_servers.forward_method",
+            "virtual_servers.persistence_timeout",
+            "virtual_servers.fwmark",
+            "virtual_servers.port",
+            "virtual_servers.protocol",
+            "virtual_servers.real_server.port",
+            "virtual_servers.real_server.health_check_script",
+            "virtual_servers.real_server.connection_timeout",
         ]
-
+        # self._module.fail_json(msg=have)
         pairs = []
         hlist = self._extract_named_leafs(have)
         wlist = self._extract_named_leafs(want)
@@ -155,7 +165,7 @@ class Vrrp(ResourceModule):
                     want={"virtual_servers": wdict},
                     have={"virtual_servers": hdict},
                 )
-            self._module.fail_json(msg=pairs)
+            # self._module.fail_json(msg=pairs)
         for wdict in wlist:
             hdict = self._find_matching_by_path(wdict, hlist)
             pairs.append((wdict, hdict))
@@ -328,35 +338,35 @@ class Vrrp(ResourceModule):
         results.append(out)
         return results
 
-    def _extract_named_leafs(self, data, parent_name=None, prefix_key=None):
-        results = []
+    # def _extract_named_leafs(self, data, parent_name=None, prefix_key=None):
+    #     results = []
 
-        if prefix_key == "real_server" and isinstance(data, dict):
-            for server_name, server_data in data.items():
-                if isinstance(server_data, dict):
-                    results.append(
-                        {
-                            "name": parent_name,
-                            "real_server": server_data,
-                        },
-                    )
-            return results
+    #     if prefix_key == "real_server" and isinstance(data, dict):
+    #         for server_name, server_data in data.items():
+    #             if isinstance(server_data, dict):
+    #                 results.append(
+    #                     {
+    #                         "name": parent_name,
+    #                         "real_server": server_data,
+    #                     },
+    #                 )
+    #         return results
 
-        if isinstance(data, dict):
-            current_name = data.get("name", parent_name)
+    #     if isinstance(data, dict):
+    #         current_name = data.get("name", parent_name)
 
-            for k, v in data.items():
-                if k == "name":
-                    continue
-                leaves = self._extract_named_leafs(v, current_name, k)
-                results.extend(leaves)
-            return results
-        return [
-            {
-                "name": parent_name,
-                prefix_key: data,
-            },
-        ]
+    #         for k, v in data.items():
+    #             if k == "name":
+    #                 continue
+    #             leaves = self._extract_named_leafs(v, current_name, k)
+    #             results.extend(leaves)
+    #         return results
+    #     return [
+    #         {
+    #             "name": parent_name,
+    #             prefix_key: data,
+    #         },
+    #     ]
 
     def _lookup_by_path(self, want_item, have_list):
         """
@@ -390,43 +400,69 @@ class Vrrp(ResourceModule):
         Supports both container-style and flat-style leaves.
         """
 
+        # def build_sig(item):
+        #     if not isinstance(item, dict) or not item:
+        #         return ()
+
+        #     if len(item) == 1:
+        #         top = next(iter(item))
+        #         node = item[top]
+        #         sig = [top]
+
+        #         if isinstance(node, dict):
+        #             if "name" in node:
+        #                 sig.append(("name", node["name"]))
+
+        #             for k, v in node.items():
+        #                 if k == "name":
+        #                     continue
+        #                 sig.append(k)
+
+        #                 if isinstance(v, dict):
+        #                     if k == "real_server" and "address" in v:
+        #                         sig.append(("address", v["address"]))
+        #                     else:
+        #                         sig.append(next(iter(v)))
+        #                 break
+
+        #         return tuple(sig)
+
+        #     sig = []
+        #     if "name" in item:
+        #         sig.append(("name", item["name"]))
+
+        #     for k, v in item.items():
+        #         if k != "name":
+        #             sig.append(k)
+        #             if isinstance(v, dict) and k == "real_server" and "address" in v:
+        #                 sig.append(("address", v["address"]))
+        #             break
+
+        #     return tuple(sig)
         def build_sig(item):
             if not isinstance(item, dict) or not item:
                 return ()
 
-            if len(item) == 1:
-                top = next(iter(item))
-                node = item[top]
-                sig = [top]
-
-                if isinstance(node, dict):
-                    if "name" in node:
-                        sig.append(("name", node["name"]))
-
-                    for k, v in node.items():
-                        if k == "name":
-                            continue
-                        sig.append(k)
-
-                        if isinstance(v, dict):
-                            if k == "real_server" and "address" in v:
-                                sig.append(("address", v["address"]))
-                            else:
-                                sig.append(next(iter(v)))
-                        break
-
-                return tuple(sig)
-
             sig = []
+
             if "name" in item:
                 sig.append(("name", item["name"]))
 
             for k, v in item.items():
-                if k != "name":
-                    sig.append(k)
-                    if isinstance(v, dict) and k == "real_server" and "address" in v:
-                        sig.append(("address", v["address"]))
-                    break
+                if k == "name":
+                    continue
+
+                sig.append(k)
+
+                if isinstance(v, dict) and k == "real_server" and "address" in v:
+                    sig.append(("address", v["address"]))
+
+                    # ✅ include leaf identity
+                    for leaf_key in v:
+                        if leaf_key != "address":
+                            sig.append(("leaf", leaf_key))
+                            break
+                break
 
             return tuple(sig)
 
@@ -486,3 +522,53 @@ class Vrrp(ResourceModule):
         if isinstance(value, list):
             return []
         return None
+
+    def _extract_named_leafs(self, data, parent_name=None, prefix_key=None):
+        results = []
+
+        # 🔑 SPECIAL CASE: real_server MUST be expanded pairwise
+        if prefix_key == "real_server" and isinstance(data, dict):
+            for _, server_data in data.items():
+                if not isinstance(server_data, dict):
+                    continue
+
+                address = server_data.get("address")
+                if not address:
+                    continue
+
+                for k, v in server_data.items():
+                    if k == "address":
+                        continue
+
+                    results.append(
+                        {
+                            "name": parent_name,
+                            "real_server": {
+                                "address": address,
+                                k: v,
+                            },
+                        },
+                    )
+            return results  # ⛔ STOP recursion here
+
+        # Generic dict handling
+        if isinstance(data, dict):
+            current_name = data.get("name", parent_name)
+
+            for k, v in data.items():
+                if k == "name":
+                    continue
+
+                results.extend(
+                    self._extract_named_leafs(v, current_name, k),
+                )
+
+            return results
+
+        # Primitive leaf
+        return [
+            {
+                "name": parent_name,
+                prefix_key: data,
+            },
+        ]
