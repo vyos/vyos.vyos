@@ -324,8 +324,9 @@ options:
           snmp:
             description:
               - Enable SNMP support for VRRP.
-            type: bool
-            default: false
+            type: str
+            choices: ['enabled', 'disabled']
+            default: disabled
 
           sync_groups:
             description:

@@ -150,7 +150,6 @@ class Vrrp(ResourceModule):
             "virtual_servers.real_server.health_check_script",
             "virtual_servers.real_server.connection_timeout",
         ]
-        # self._module.fail_json(msg=have)
         pairs = []
         hlist = self._extract_named_leafs(have)
         wlist = self._extract_named_leafs(want)
@@ -202,6 +201,9 @@ class Vrrp(ResourceModule):
 
         # self._module.fail_json(msg="Compare VRRP - want: " + str(want) + " (((()))) have:  " + str(have))
 
+        if have.get("snmp") == "enabled" and want.get("snmp") != "enabled":
+            self.commands.append("delete high-availability vrrp snmp")
+
         hlist = self._extract_leaf_items(have)
         wlist = self._extract_leaf_items(want)
 
@@ -209,7 +211,6 @@ class Vrrp(ResourceModule):
 
         if self.state in ["replaced", "deleted", "overridden"]:
             for hdict in hlist:
-                # self._module.fail_json(msg="here")
                 wdict = self._find_matching_by_path(hdict, wlist)
                 pairs.append((wdict, hdict))
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
@@ -312,7 +313,7 @@ class Vrrp(ResourceModule):
             current_name = data.get("name", parent_name)
 
             for k, v in data.items():
-                if k == "name":
+                if k == "name" or (k == "snmp" and v == "disabled"):
                     continue
                 results.extend(self._extract_leaf_items(v, path + [k], current_name))
             return results
