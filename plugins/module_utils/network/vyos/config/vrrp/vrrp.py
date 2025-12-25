@@ -527,9 +527,8 @@ class Vrrp(ResourceModule):
     def _extract_named_leafs(self, data, parent_name=None, prefix_key=None):
         results = []
 
-        # 🔑 SPECIAL CASE: real_server MUST be expanded pairwise
         if prefix_key == "real_server" and isinstance(data, dict):
-            for _, server_data in data.items():
+            for d, server_data in data.items():
                 if not isinstance(server_data, dict):
                     continue
 
@@ -550,7 +549,7 @@ class Vrrp(ResourceModule):
                             },
                         },
                     )
-            return results  # ⛔ STOP recursion here
+            return results
 
         # Generic dict handling
         if isinstance(data, dict):
