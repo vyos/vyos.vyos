@@ -75,8 +75,13 @@ class Vrrp(ResourceModule):
         :rtype: A dictionary
         :returns: The result from module execution
         """
-        if self.state not in ["parsed", "gathered"]:
+
+        if self.state not in ["parsed", "gathered", "purged"]:
             self.generate_commands()
+            self.run_commands()
+
+        if self.state == "purged":
+            self.commands = ["delete high-availability"]
             self.run_commands()
 
         return self.result
