@@ -1,0 +1,6 @@
+---
+- name: Create dummy scripts for VRRP tests
+  vyos.vyos.vyos_command:
+    commands: touch /var/tmp/script.sh && chmod +x /var/tmp/script.sh
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

@@ -1,0 +1,25 @@
+---
+- debug:
+    msg: START vyos_vrrp gathered integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Gather config from the device in structured format.
+      register: result
+      vyos.vyos.vyos_vrrp:
+        state: gathered
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: vrrp
+
+    - name: Assert that facts are correctly generated
+      assert:
+        that:
+          - result.changed == false
+          - result.gathered|symmetric_difference(ansible_facts['network_resources']['vrrp']) == []
+
+  always:
+    - include_tasks: _remove_config.yaml

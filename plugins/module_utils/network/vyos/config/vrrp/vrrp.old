@@ -1,0 +1,630 @@
+#
+# -*- coding: utf-8 -*-
+# Copyright 2021 Red Hat
+# GNU General Public License v3.0+
+# (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+#
+
+from __future__ import absolute_import, division, print_function
+
+
+__metaclass__ = type
+
+"""
+The vyos_vrrp config file.
+It is in this file where the current configuration (as dict)
+is compared to the provided configuration (as dict) and the command set
+necessary to bring the current configuration to its desired end-state is
+created.
+"""
+
+from copy import deepcopy
+
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
+    ResourceModule,
+)
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.vrrp import (
+    VrrpTemplate,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import combine
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+
+
+class Vrrp(ResourceModule):
+    """
+    The vyos_vrrp config class
+    """
+
+    def __init__(self, module):
+        super(Vrrp, self).__init__(
+            empty_fact_val={},
+            facts_module=Facts(module),
+            module=module,
+            resource="vrrp",
+            tmplt=VrrpTemplate(),
+        )
+        self.parsers = [
+            "disable",
+        ]
+
+    def _validate_template(self):
+        version = get_os_version(self._module)
+        if LooseVersion(version) >= LooseVersion("1.4"):
+            self._tmplt = VrrpTemplate()
+        else:
+            self._module.fail_json(msg="VRRP is not supported in this version of VyOS")
+
+    def parse(self):
+        """override parse to check template"""
+        self._validate_template()
+        return super().parse()
+
+    def get_parser(self, name):
+        """get_parsers"""
+        self._validate_template()
+        return super().get_parser(name)
+
+    def execute_module(self):
+        """Execute the module
+
+        :rtype: A dictionary
+        :returns: The result from module execution
+        """
+
+        if self.state not in ["parsed", "gathered", "purged"]:
+            self.generate_commands()
+            self.run_commands()
+
+        if self.state == "purged":
+            self.commands = ["delete high-availability"]
+            self.run_commands()
+
+        return self.result
+
+    def generate_commands(self):
+        """Generate configuration commands to send based on
+        want, have and desired state.
+        """
+        wantd = {}
+        haved = {}
+        wantd = deepcopy(self.want)
+        haved = deepcopy(self.have)
+        # self._module.fail_json(msg="Generate commands - want: " + str(self.want) + " (((()))) have:  " + str(haved))
+        for entry in wantd, haved:
+            # self._module.fail_json(msg="Before normalize_vrrp_groups - entry: " + str(entry))
+            self._vrrp_groups_list_to_dict(entry)
+            self._virtual_servers_list_to_dict(entry)
+            self._vrrp_sync_groups_list_to_dict(entry)
+            self._normalize_lists(entry)
+        # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " (((()))) have:  " + str(haved))
+
+        keys = set(wantd) | set(haved)
+
+        for k in keys:
+            want = wantd.get(k, {})
+            have = haved.get(k, {})
+
+            if k == "vrrp":
+                if self.state in ["merged"]:
+                    want = combine(have, want, recursive=True)
+                self._compare_vrrp(want, have)
+            if k == "virtual_servers":
+                if self.state in ["merged"]:
+                    want = combine(have, want, recursive=True)
+                self._compare_vsrvs(want, have)
+            if self.state == "deleted" and k == "disable":
+                    want = False
+            self.compare(
+                parsers=self.parsers,
+                want={k: want},
+                have={k: have},
+            )
+
+        # for k, want in wantd.items():
+        #     if k == "vrrp":
+        #         if self.state in ["merged"]:
+        #             want = combine(haved.get(k, {}), want, recursive=True)
+        #         self._compare_vrrp(want, haved.get(k, {}))
+        #     if k == "virtual_servers":
+        #         if self.state in ["merged"]:
+        #             want = combine(haved.get(k, {}), want, recursive=True)
+        #         self._compare_vsrvs(want, haved.get(k, {}))
+        #     self.compare(
+        #         parsers=self.parsers,
+        #         want={k: want},
+        #         have={k: haved.pop(k, {})},
+        # )
+        self.commands = list(dict.fromkeys(self.commands))
+        # self._module.fail_json(msg=self.commands)
+
+    def _compare_vsrvs(self, want, have):
+        """Compare virtual servers of VRRP"""
+        vs_parsers = [
+            # "virtual_servers",
+            "virtual_servers.address",
+            "virtual_servers.algorithm",
+            "virtual_servers.delay_loop",
+            "virtual_servers.forward_method",
+            "virtual_servers.persistence_timeout",
+            "virtual_servers.fwmark",
+            "virtual_servers.port",
+            "virtual_servers.protocol",
+            "virtual_servers.real_server.port",
+            "virtual_servers.real_server.health_check_script",
+            "virtual_servers.real_server.connection_timeout",
+        ]
+        pairs = []
+        hlist = self._extract_named_leafs(have)
+        wlist = self._extract_named_leafs(want)
+        # self._module.fail_json(msg="Want: " + str(wlist) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(hlist))
+
+        if self.state in ["replaced", "deleted", "overridden"]:
+            for hdict in hlist:
+                wdict = self._find_matching_by_path(hdict, wlist)
+                if self.state == "deleted" and wdict:
+                    wdict = {}
+                else:
+                    continue
+                pairs.append((wdict, hdict))
+                self.compare(
+                    parsers=vs_parsers,
+                    want={"virtual_servers": wdict},
+                    have={"virtual_servers": hdict},
+                )
+            # self._module.fail_json(msg=pairs)
+        if self.state in ["merged", "replaced"]:
+            for wdict in wlist:
+                hdict = self._find_matching_by_path(wdict, hlist)
+                pairs.append((wdict, hdict))
+                self.compare(
+                    parsers=vs_parsers,
+                    want={"virtual_servers": wdict},
+                    have={"virtual_servers": hdict},
+            )
+        # self._module.fail_json(msg=pairs)
+
+    def _compare_vrrp(self, want, have):
+        """Compare the instances of VRRP"""
+        vrrp_parsers = [
+            "vrrp.snmp",
+            "vrrp.global_parameters",
+            "vrrp.global_parameters.garp",
+            "vrrp.groups",
+            "vrrp.groups.disable",
+            "vrrp.groups.no_preempt",
+            "vrrp.groups.rfc3768_compatibility",
+            "vrrp.groups.excluded_address",
+            "vrrp.groups.garp",
+            "vrrp.groups.authentication",
+            "vrrp.groups.transition_script",
+            "vrrp.groups.health_check",
+            "vrrp.groups.track.interface",
+            "vrrp.groups.track.exclude_vrrp_interface",
+            "vrrp.sync_groups.member",
+            "vrrp.sync_groups.transition_script",
+            "vrrp.sync_groups.health_check",
+        ]
+
+        pairs = []
+
+        # self._module.fail_json(msg="Compare VRRP - want: " + str(want) + " (((()))) have:  " + str(have))
+
+        if have.get("snmp") == "enabled" and want.get("snmp") != "enabled":
+            self.commands.append("delete high-availability vrrp snmp")
+
+        hlist = self._extract_leaf_items(have)
+        wlist = self._extract_leaf_items(want)
+
+        # self._module.fail_json(msg="leaf VRRP - want: " + str(wlist) + " (((()))) have:  " + str(hlist))
+
+        if self.state in ["replaced", "deleted", "overridden"]:
+            for hdict in hlist:
+                wdict = self._find_matching_by_path(hdict, wlist)
+                if self.state == "deleted" and wdict:
+                    wdict = {}
+                else:
+                    continue
+                pairs.append((wdict, hdict))
+                self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
+            # self._module.fail_json(msg=pairs)
+
+        if self.state in ["merged", "replaced"]:
+            for wdict in wlist:
+                hdict = self._find_matching_by_path(wdict, hlist)
+                pairs.append((wdict, hdict))
+                self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
+
+
+        # self._module.fail_json(msg=pairs)
+
+    def _vrrp_groups_list_to_dict(self, data):
+
+        vrrp = data.get("vrrp", {})
+        groups = vrrp.get("groups")
+
+        if not groups:
+            return data
+        if isinstance(groups, dict):
+            return data
+        if isinstance(groups, list):
+            new_groups = {}
+            for item in groups:
+                name = item.get("name")
+                if not name:
+                    continue
+                new_groups[name] = item
+
+            data["vrrp"]["groups"] = new_groups
+            return data
+        return data
+
+    def _vrrp_sync_groups_list_to_dict(self, data):
+        vrrp = data.get("vrrp", {})
+        groups = vrrp.get("sync_groups")
+
+        if not groups:
+            return data
+        if isinstance(groups, dict):
+            return data
+        if isinstance(groups, list):
+            new_groups = {}
+            for item in groups:
+                name = item.get("name")
+                if not name:
+                    continue
+                new_groups[name] = item
+
+            data["vrrp"]["sync_groups"] = new_groups
+            return data
+        return data
+
+    def _virtual_servers_list_to_dict(self, data):
+
+        vss = data.get("virtual_servers")
+        if not vss:
+            return data
+
+        if isinstance(vss, dict):
+            for vs in vss.items():
+                rs = vs.get("real_server")
+                if isinstance(rs, list):
+                    vs["real_server"] = {
+                        item["address"]: item
+                        for item in rs
+                        if isinstance(item, dict) and item.get("address")
+                    }
+            return data
+
+        if isinstance(vss, list):
+            new_vss = {}
+            for vs in vss:
+                if not isinstance(vs, dict):
+                    continue
+                name = vs.get("name")
+                if not name:
+                    continue
+                rs = vs.get("real_server")
+                if isinstance(rs, list):
+                    vs["real_server"] = {
+                        item["address"]: item
+                        for item in rs
+                        if isinstance(item, dict) and item.get("address")
+                    }
+
+                new_vss[name] = vs
+
+            data["virtual_servers"] = new_vss
+            return data
+
+        return data
+
+    def _extract_leaf_items(self, data, path=None, parent_name=None):
+        path = path or []
+        results = []
+
+        if isinstance(data, dict):
+            current_name = data.get("name", parent_name)
+
+            for k, v in data.items():
+                if k == "name" or (k == "snmp" and v == "disabled"):
+                    continue
+                results.extend(self._extract_leaf_items(v, path + [k], current_name))
+            return results
+
+        leaf_key = path[-1]
+        top_key = path[0]
+
+        if top_key in ["groups", "sync_groups"]:
+            subkeys = path[2:]
+        else:
+            subkeys = path[1:]
+
+        nested = {leaf_key: data}
+
+        for p in reversed(subkeys[:-1]):
+            nested = {p: nested}
+        if parent_name:
+            out = {top_key: {"name": parent_name}}
+            out[top_key].update(nested)
+        else:
+            out = {top_key: nested}
+
+        results.append(out)
+        return results
+
+    # def _extract_named_leafs(self, data, parent_name=None, prefix_key=None):
+    #     results = []
+
+    #     if prefix_key == "real_server" and isinstance(data, dict):
+    #         for server_name, server_data in data.items():
+    #             if isinstance(server_data, dict):
+    #                 results.append(
+    #                     {
+    #                         "name": parent_name,
+    #                         "real_server": server_data,
+    #                     },
+    #                 )
+    #         return results
+
+    #     if isinstance(data, dict):
+    #         current_name = data.get("name", parent_name)
+
+    #         for k, v in data.items():
+    #             if k == "name":
+    #                 continue
+    #             leaves = self._extract_named_leafs(v, current_name, k)
+    #             results.extend(leaves)
+    #         return results
+    #     return [
+    #         {
+    #             "name": parent_name,
+    #             prefix_key: data,
+    #         },
+    #     ]
+
+    def _lookup_by_path(self, want_item, have_list):
+        """
+        Find matching object in have_list by structural path + name (if present).
+        Ignore values. Return {} if not found.
+        """
+
+        def extract_signature(d):
+            sig = []
+
+            while isinstance(d, dict) and d:
+                k = next(iter(d))
+                sig.append(k)
+                d = d[k]
+
+                if isinstance(d, dict) and "name" in d:
+                    sig.append(("name", d["name"]))
+            return tuple(sig)
+
+        want_sig = extract_signature(want_item)
+
+        for obj in have_list:
+            if extract_signature(obj) == want_sig:
+                return obj
+
+        return {}
+
+    def _find_matching_by_path(self, want_item, have_list):
+        """
+        Match extracted leaf dicts from _extract_named_leafs().
+        Supports both container-style and flat-style leaves.
+        """
+
+        # def build_sig(item):
+        #     if not isinstance(item, dict) or not item:
+        #         return ()
+
+        #     if len(item) == 1:
+        #         top = next(iter(item))
+        #         node = item[top]
+        #         sig = [top]
+
+        #         if isinstance(node, dict):
+        #             if "name" in node:
+        #                 sig.append(("name", node["name"]))
+
+        #             for k, v in node.items():
+        #                 if k == "name":
+        #                     continue
+        #                 sig.append(k)
+
+        #                 if isinstance(v, dict):
+        #                     if k == "real_server" and "address" in v:
+        #                         sig.append(("address", v["address"]))
+        #                     else:
+        #                         sig.append(next(iter(v)))
+        #                 break
+
+        #         return tuple(sig)
+
+        #     sig = []
+        #     if "name" in item:
+        #         sig.append(("name", item["name"]))
+
+        #     for k, v in item.items():
+        #         if k != "name":
+        #             sig.append(k)
+        #             if isinstance(v, dict) and k == "real_server" and "address" in v:
+        #                 sig.append(("address", v["address"]))
+        #             break
+
+        #     return tuple(sig)
+
+        def build_sig(item):
+            if not isinstance(item, dict) or not item:
+                return ()
+
+            sig = []
+
+            if "name" in item:
+                sig.append(("name", item["name"]))
+
+            for k, v in item.items():
+                if k == "name":
+                    continue
+
+                sig.append(k)
+
+                # existing real_server logic (UNCHANGED)
+                if isinstance(v, dict) and k == "real_server" and "address" in v:
+                    sig.append(("address", v["address"]))
+                    for leaf_key in v:
+                        if leaf_key != "address":
+                            sig.append(("leaf", leaf_key))
+                            break
+
+                # 🔧 FIX: walk down generic nested dicts until leaf
+                elif isinstance(v, dict):
+                    cur = v
+                    while isinstance(cur, dict) and cur:
+                        leaf_key = next(iter(cur))
+                        sig.append(leaf_key)
+                        cur = cur[leaf_key]
+
+                break
+
+            return tuple(sig)
+
+
+
+        # def build_sig(item):
+        #     if not isinstance(item, dict) or not item:
+        #         return ()
+
+        #     sig = []
+
+        #     if "name" in item:
+        #         sig.append(("name", item["name"]))
+
+        #     for k, v in item.items():
+        #         if k == "name":
+        #             continue
+
+        #         sig.append(k)
+
+        #         if isinstance(v, dict) and k == "real_server" and "address" in v:
+        #             sig.append(("address", v["address"]))
+
+        #             # ✅ include leaf identity
+        #             for leaf_key in v:
+        #                 if leaf_key != "address":
+        #                     sig.append(("leaf", leaf_key))
+        #                     break
+        #         break
+
+        #     return tuple(sig)
+
+        sig_want = build_sig(want_item)
+
+        for obj in have_list:
+            if build_sig(obj) == sig_want:
+                return obj
+
+        return {}
+
+    def _normalize_lists(self, node):
+        """
+        Recursively normalize all lists inside a dict or list.
+        All lists are sorted to ensure consistent ordering for comparison.
+        """
+        if isinstance(node, dict):
+            for k, v in node.items():
+                if isinstance(v, list):
+                    # sort the list if it contains only scalars
+                    if all(not isinstance(i, (dict, list)) for i in v):
+                        node[k] = sorted(v)
+                    else:
+                        # recurse into each item if the list contains dicts
+                        for item in v:
+                            self._normalize_lists(item)
+                elif isinstance(v, dict):
+                    self._normalize_lists(v)
+        elif isinstance(node, list):
+            for item in node:
+                self._normalize_lists(item)
+
+    def project_structure(self, have, want):
+        """
+        Project the structure of `have` onto `want`.
+
+        - Existing values in `want` are preserved
+        - Missing paths are created with empty values
+        """
+        if not isinstance(have, dict):
+            return want
+
+        if want is None or not isinstance(want, dict):
+            want = {}
+
+        for key, have_val in have.items():
+            if key not in want:
+                want[key] = self.empty_like(have_val)
+            else:
+                want[key] = self.project_structure(have_val, want[key])
+
+        return want
+
+    def empty_like(self, value):
+        if isinstance(value, dict):
+            return {}
+        if isinstance(value, list):
+            return []
+        return None
+
+    def _extract_named_leafs(self, data, parent_name=None, prefix_key=None):
+        results = []
+
+        if prefix_key == "real_server" and isinstance(data, dict):
+            for d, server_data in data.items():
+                if not isinstance(server_data, dict):
+                    continue
+
+                address = server_data.get("address")
+                if not address:
+                    continue
+
+                for k, v in server_data.items():
+                    if k == "address":
+                        continue
+
+                    results.append(
+                        {
+                            "name": parent_name,
+                            "real_server": {
+                                "address": address,
+                                k: v,
+                            },
+                        },
+                    )
+            return results
+
+        # Generic dict handling
+        if isinstance(data, dict):
+            current_name = data.get("name", parent_name)
+
+            for k, v in data.items():
+                if k == "name":
+                    continue
+
+                results.extend(
+                    self._extract_named_leafs(v, current_name, k),
+                )
+
+            return results
+
+        # Primitive leaf
+        return [
+            {
+                "name": parent_name,
+                prefix_key: data,
+            },
+        ]
