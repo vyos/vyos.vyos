@@ -108,6 +108,7 @@ class Vrrp(ResourceModule):
         for k in keys:
             want = wantd.get(k, {})
             have = haved.get(k, {})
+
             if k == "vrrp":
                 if self.state in ["merged"]:
                     want = combine(have, want, recursive=True)
@@ -116,6 +117,8 @@ class Vrrp(ResourceModule):
                 if self.state in ["merged"]:
                     want = combine(have, want, recursive=True)
                 self._compare_vsrvs(want, have)
+            if self.state == "deleted" and k == "disable":
+                want = False
             self.compare(
                 parsers=self.parsers,
                 want={k: want},
@@ -156,6 +159,8 @@ class Vrrp(ResourceModule):
             "virtual_servers.real_server.connection_timeout",
         ]
         pairs = []
+        # self._module.fail_json(msg="Want: " + str(want) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(have))
+
         hlist = self._extract_named_leafs(have)
         wlist = self._extract_named_leafs(want)
         # self._module.fail_json(msg="Want: " + str(wlist) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(hlist))
@@ -163,6 +168,10 @@ class Vrrp(ResourceModule):
         if self.state in ["replaced", "deleted", "overridden"]:
             for hdict in hlist:
                 wdict = self._find_matching_by_path(hdict, wlist)
+                if self.state == "deleted" and wdict:
+                    wdict = {}
+                else:
+                    continue
                 pairs.append((wdict, hdict))
                 self.compare(
                     parsers=vs_parsers,
@@ -170,14 +179,15 @@ class Vrrp(ResourceModule):
                     have={"virtual_servers": hdict},
                 )
             # self._module.fail_json(msg=pairs)
-        for wdict in wlist:
-            hdict = self._find_matching_by_path(wdict, hlist)
-            pairs.append((wdict, hdict))
-            self.compare(
-                parsers=vs_parsers,
-                want={"virtual_servers": wdict},
-                have={"virtual_servers": hdict},
-            )
+        if self.state in ["merged", "replaced"]:
+            for wdict in wlist:
+                hdict = self._find_matching_by_path(wdict, hlist)
+                pairs.append((wdict, hdict))
+                self.compare(
+                    parsers=vs_parsers,
+                    want={"virtual_servers": wdict},
+                    have={"virtual_servers": hdict},
+                )
         # self._module.fail_json(msg=pairs)
 
     def _compare_vrrp(self, want, have):
@@ -217,15 +227,19 @@ class Vrrp(ResourceModule):
         if self.state in ["replaced", "deleted", "overridden"]:
             for hdict in hlist:
                 wdict = self._find_matching_by_path(hdict, wlist)
+                if self.state == "deleted" and wdict:
+                    wdict = {}
+                else:
+                    continue
                 pairs.append((wdict, hdict))
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
             # self._module.fail_json(msg=pairs)
 
-        # else:
-        for wdict in wlist:
-            hdict = self._find_matching_by_path(wdict, hlist)
-            pairs.append((wdict, hdict))
-            self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
+        if self.state in ["merged", "replaced"]:
+            for wdict in wlist:
+                hdict = self._find_matching_by_path(wdict, hlist)
+                pairs.append((wdict, hdict))
+                self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
 
         # self._module.fail_json(msg=pairs)
 
@@ -445,6 +459,7 @@ class Vrrp(ResourceModule):
         #             break
 
         #     return tuple(sig)
+
         def build_sig(item):
             if not isinstance(item, dict) or not item:
                 return ()
@@ -460,17 +475,52 @@ class Vrrp(ResourceModule):
 
                 sig.append(k)
 
+                # existing real_server logic (UNCHANGED)
                 if isinstance(v, dict) and k == "real_server" and "address" in v:
                     sig.append(("address", v["address"]))
-
-                    # ✅ include leaf identity
                     for leaf_key in v:
                         if leaf_key != "address":
                             sig.append(("leaf", leaf_key))
                             break
+
+                # 🔧 FIX: walk down generic nested dicts until leaf
+                elif isinstance(v, dict):
+                    cur = v
+                    while isinstance(cur, dict) and cur:
+                        leaf_key = next(iter(cur))
+                        sig.append(leaf_key)
+                        cur = cur[leaf_key]
+
                 break
 
             return tuple(sig)
+
+        # def build_sig(item):
+        #     if not isinstance(item, dict) or not item:
+        #         return ()
+
+        #     sig = []
+
+        #     if "name" in item:
+        #         sig.append(("name", item["name"]))
+
+        #     for k, v in item.items():
+        #         if k == "name":
+        #             continue
+
+        #         sig.append(k)
+
+        #         if isinstance(v, dict) and k == "real_server" and "address" in v:
+        #             sig.append(("address", v["address"]))
+
+        #             # ✅ include leaf identity
+        #             for leaf_key in v:
+        #                 if leaf_key != "address":
+        #                     sig.append(("leaf", leaf_key))
+        #                     break
+        #         break
+
+        #     return tuple(sig)
 
         sig_want = build_sig(want_item)
 

@@ -68,11 +68,11 @@ options:
           fwmark:
             description:
               - Firewall mark for LVS traffic classification.
-            type: str
+            type: int
           persistence_timeout:
             description:
               - Client persistence timeout in seconds.
-            type: str
+            type: int
           port:
             description:
               - TCP/UDP port provided by the virtual service.
@@ -394,6 +394,7 @@ options:
       - gathered
       - rendered
       - parsed
+      - overridden
     default: merged
 
   running_config:

@@ -34,7 +34,7 @@ class VrrpFacts(object):
         self._module = module
         self.argument_spec = VrrpArgs.argument_spec
 
-    def get_device_data(self, connection):
+    def get_config(self, connection):
         return connection.get('show configuration commands |  match "set high-availability"')
 
     def get_config_set(self, data, connection):
@@ -87,7 +87,7 @@ class VrrpFacts(object):
         objs = {}
 
         if not data:
-            data = self.get_device_data(connection)
+            data = self.get_config(connection)
         # self._module.fail_json(msg="Data: " + str(data))
         resources = self.get_config_set(data, connection)
         # self._module.fail_json(msg="Resources: " + str(resources))

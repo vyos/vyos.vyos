@@ -46,8 +46,8 @@ class VrrpArgs(object):  # pylint: disable=R0903
                         "algorithm": {"type": "str"},
                         "delay_loop": {"type": "int"},
                         "forward_method": {"type": "str", "choices": ["direct", "nat"]},
-                        "fwmark": {"type": "str"},
-                        "persistence_timeout": {"type": "str"},
+                        "fwmark": {"type": "int"},
+                        "persistence_timeout": {"type": "int"},
                         "port": {"type": "int"},
                         "protocol": {"type": "str", "choices": ["tcp", "udp"]},
                         "real_server": {
@@ -189,6 +189,7 @@ class VrrpArgs(object):  # pylint: disable=R0903
                 "gathered",
                 "rendered",
                 "parsed",
+                "overridden",
             ],
             "default": "merged",
         },

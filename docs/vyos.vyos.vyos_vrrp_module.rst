@@ -166,7 +166,7 @@ Parameters
                     <b>fwmark</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">string</span>
+                        <span style="color: purple">integer</span>
                     </div>
                 </td>
                 <td>
@@ -201,7 +201,7 @@ Parameters
                     <b>persistence_timeout</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">string</span>
+                        <span style="color: purple">integer</span>
                     </div>
                 </td>
                 <td>
@@ -1537,6 +1537,7 @@ Parameters
                                     <li>gathered</li>
                                     <li>rendered</li>
                                     <li>parsed</li>
+                                    <li>overridden</li>
                         </ul>
                 </td>
                 <td>
