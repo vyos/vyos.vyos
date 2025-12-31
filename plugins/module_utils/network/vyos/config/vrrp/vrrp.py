@@ -139,13 +139,12 @@ class Vrrp(ResourceModule):
         #         want={k: want},
         #         have={k: haved.pop(k, {})},
         # )
-        self.commands = list(dict.fromkeys(self.commands))
-        self._module.fail_json(msg=self.commands)
+        self.commands = sorted(list(dict.fromkeys(self.commands)))
+        # self._module.fail_json(msg=self.commands)
 
     def _compare_vsrvs(self, want, have):
         """Compare virtual servers of VRRP"""
         vs_parsers = [
-            # "virtual_servers",
             "virtual_servers.address",
             "virtual_servers.algorithm",
             "virtual_servers.delay_loop",
@@ -167,7 +166,7 @@ class Vrrp(ResourceModule):
 
         if self.state in ["replaced", "deleted", "overridden"]:
             for hdict in hlist:
-                wdict = self._find_matching_by_path(hdict, wlist)
+                wdict = self._find_matching_vsrv(hdict, wlist)
                 if self.state == "deleted" and wdict:
                     wdict = {}
                 else:
@@ -181,7 +180,7 @@ class Vrrp(ResourceModule):
             # self._module.fail_json(msg=pairs)
         if self.state in ["merged", "replaced"]:
             for wdict in wlist:
-                hdict = self._find_matching_by_path(wdict, hlist)
+                hdict = self._find_matching_vsrv(wdict, hlist)
                 pairs.append((wdict, hdict))
                 self.compare(
                     parsers=vs_parsers,
@@ -226,7 +225,7 @@ class Vrrp(ResourceModule):
 
         if self.state in ["replaced", "deleted", "overridden"]:
             for hdict in hlist:
-                wdict = self._find_matching_by_path(hdict, wlist)
+                wdict = self._find_matching_vrrp(hdict, wlist)
                 if self.state == "deleted" and wdict:
                     wdict = {}
                 else:
@@ -237,7 +236,7 @@ class Vrrp(ResourceModule):
 
         if self.state in ["merged", "replaced"]:
             for wdict in wlist:
-                hdict = self._find_matching_by_path(wdict, hlist)
+                hdict = self._find_matching_vrrp(wdict, hlist)
                 pairs.append((wdict, hdict))
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
 
@@ -358,169 +357,81 @@ class Vrrp(ResourceModule):
         results.append(out)
         return results
 
-    # def _extract_named_leafs(self, data, parent_name=None, prefix_key=None):
-    #     results = []
+    def _find_matching_vsrv(self, want_item, have_list):
 
-    #     if prefix_key == "real_server" and isinstance(data, dict):
-    #         for server_name, server_data in data.items():
-    #             if isinstance(server_data, dict):
-    #                 results.append(
-    #                     {
-    #                         "name": parent_name,
-    #                         "real_server": server_data,
-    #                     },
-    #                 )
-    #         return results
+        def build_sig(item):
+            if not isinstance(item, dict):
+                return None
 
-    #     if isinstance(data, dict):
-    #         current_name = data.get("name", parent_name)
+            name = item.get("name")
+            if not name:
+                return None
 
-    #         for k, v in data.items():
-    #             if k == "name":
-    #                 continue
-    #             leaves = self._extract_named_leafs(v, current_name, k)
-    #             results.extend(leaves)
-    #         return results
-    #     return [
-    #         {
-    #             "name": parent_name,
-    #             prefix_key: data,
-    #         },
-    #     ]
+            # --- real_server case ---
+            if "real_server" in item:
+                rs = item["real_server"]
+                if not isinstance(rs, dict) or "address" not in rs:
+                    return None
 
-    def _lookup_by_path(self, want_item, have_list):
-        """
-        Find matching object in have_list by structural path + name (if present).
-        Ignore values. Return {} if not found.
-        """
+                addr = rs["address"]
 
-        def extract_signature(d):
-            sig = []
+                # attribute path under real_server
+                for k in rs:
+                    if k != "address":
+                        return ("real_server", name, addr, k)
 
-            while isinstance(d, dict) and d:
-                k = next(iter(d))
-                sig.append(k)
-                d = d[k]
+                # address-only (rare but valid)
+                return ("real_server", name, addr, None)
 
-                if isinstance(d, dict) and "name" in d:
-                    sig.append(("name", d["name"]))
-            return tuple(sig)
+            # --- flat attribute ---
+            for k in item:
+                if k != "name":
+                    return ("attr", name, k)
 
-        want_sig = extract_signature(want_item)
+            return None
+
+        sig_want = build_sig(want_item)
 
         for obj in have_list:
-            if extract_signature(obj) == want_sig:
+            if build_sig(obj) == sig_want:
                 return obj
 
         return {}
 
-    def _find_matching_by_path(self, want_item, have_list):
-        """
-        Match extracted leaf dicts from _extract_named_leafs().
-        Supports both container-style and flat-style leaves.
-        """
-
-        # def build_sig(item):
-        #     if not isinstance(item, dict) or not item:
-        #         return ()
-
-        #     if len(item) == 1:
-        #         top = next(iter(item))
-        #         node = item[top]
-        #         sig = [top]
-
-        #         if isinstance(node, dict):
-        #             if "name" in node:
-        #                 sig.append(("name", node["name"]))
-
-        #             for k, v in node.items():
-        #                 if k == "name":
-        #                     continue
-        #                 sig.append(k)
-
-        #                 if isinstance(v, dict):
-        #                     if k == "real_server" and "address" in v:
-        #                         sig.append(("address", v["address"]))
-        #                     else:
-        #                         sig.append(next(iter(v)))
-        #                 break
-
-        #         return tuple(sig)
-
-        #     sig = []
-        #     if "name" in item:
-        #         sig.append(("name", item["name"]))
-
-        #     for k, v in item.items():
-        #         if k != "name":
-        #             sig.append(k)
-        #             if isinstance(v, dict) and k == "real_server" and "address" in v:
-        #                 sig.append(("address", v["address"]))
-        #             break
-
-        #     return tuple(sig)
+    def _find_matching_vrrp(self, want_item, have_list):
 
         def build_sig(item):
             if not isinstance(item, dict) or not item:
                 return ()
 
-            sig = []
+            container = next(iter(item))
+            inner = item[container]
 
-            if "name" in item:
-                sig.append(("name", item["name"]))
+            sig = [container]
 
-            for k, v in item.items():
-                if k == "name":
-                    continue
+            # identity (group / sync_group name)
+            if isinstance(inner, dict) and "name" in inner:
+                sig.append(("name", inner["name"]))
 
-                sig.append(k)
+            # find the real leaf
+            if isinstance(inner, dict):
+                for k, v in inner.items():
+                    if k == "name":
+                        continue
 
-                # existing real_server logic (UNCHANGED)
-                if isinstance(v, dict) and k == "real_server" and "address" in v:
-                    sig.append(("address", v["address"]))
-                    for leaf_key in v:
-                        if leaf_key != "address":
-                            sig.append(("leaf", leaf_key))
-                            break
+                    # flat leaf (e.g. vrid, address)
+                    if not isinstance(v, dict):
+                        sig.append(k)
+                        break
 
-                # 🔧 FIX: walk down generic nested dicts until leaf
-                elif isinstance(v, dict):
-                    cur = v
-                    while isinstance(cur, dict) and cur:
-                        leaf_key = next(iter(cur))
-                        sig.append(leaf_key)
-                        cur = cur[leaf_key]
-
-                break
+                    # nested leaf (e.g. health_check.interval)
+                    sig.append(k)
+                    for leaf in v:
+                        sig.append(leaf)
+                        break
+                    break
 
             return tuple(sig)
-
-        # def build_sig(item):
-        #     if not isinstance(item, dict) or not item:
-        #         return ()
-
-        #     sig = []
-
-        #     if "name" in item:
-        #         sig.append(("name", item["name"]))
-
-        #     for k, v in item.items():
-        #         if k == "name":
-        #             continue
-
-        #         sig.append(k)
-
-        #         if isinstance(v, dict) and k == "real_server" and "address" in v:
-        #             sig.append(("address", v["address"]))
-
-        #             # ✅ include leaf identity
-        #             for leaf_key in v:
-        #                 if leaf_key != "address":
-        #                     sig.append(("leaf", leaf_key))
-        #                     break
-        #         break
-
-        #     return tuple(sig)
 
         sig_want = build_sig(want_item)
 
