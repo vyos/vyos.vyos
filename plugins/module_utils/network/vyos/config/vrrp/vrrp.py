@@ -117,8 +117,10 @@ class Vrrp(ResourceModule):
                 if self.state in ["merged"]:
                     want = combine(have, want, recursive=True)
                 self._compare_vsrvs(want, have)
-            if self.state == "deleted" and k == "disable":
+            if self.state in ["deleted"] and k == "disable":
                 want = False
+            if self.state in ["rendered"]:
+                have = None
             self.compare(
                 parsers=self.parsers,
                 want={k: want},
@@ -162,6 +164,9 @@ class Vrrp(ResourceModule):
 
         hlist = self._extract_named_leafs(have)
         wlist = self._extract_named_leafs(want)
+
+        if self.state == "rendered":
+            hlist = []
         # self._module.fail_json(msg="Want: " + str(wlist) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(hlist))
 
         if self.state in ["replaced", "deleted", "overridden"]:
@@ -169,8 +174,6 @@ class Vrrp(ResourceModule):
                 wdict = self._find_matching_vsrv(hdict, wlist)
                 if self.state == "deleted" and wdict:
                     wdict = {}
-                else:
-                    continue
                 pairs.append((wdict, hdict))
                 self.compare(
                     parsers=vs_parsers,
@@ -178,7 +181,7 @@ class Vrrp(ResourceModule):
                     have={"virtual_servers": hdict},
                 )
             # self._module.fail_json(msg=pairs)
-        if self.state in ["merged", "replaced"]:
+        if self.state in ["merged", "replaced", "rendered"]:
             for wdict in wlist:
                 hdict = self._find_matching_vsrv(wdict, hlist)
                 pairs.append((wdict, hdict))
@@ -221,20 +224,24 @@ class Vrrp(ResourceModule):
         hlist = self._extract_leaf_items(have)
         wlist = self._extract_leaf_items(want)
 
+        if self.state == "rendered":
+            hlist = []
         # self._module.fail_json(msg="leaf VRRP - want: " + str(wlist) + " (((()))) have:  " + str(hlist))
+
+        # self.compare(parsers=vrrp_parsers, want={}, have={"vrrp": have})
 
         if self.state in ["replaced", "deleted", "overridden"]:
             for hdict in hlist:
                 wdict = self._find_matching_vrrp(hdict, wlist)
+                # self._module.fail_json(msg=wdict)
+
                 if self.state == "deleted" and wdict:
                     wdict = {}
-                else:
-                    continue
                 pairs.append((wdict, hdict))
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
             # self._module.fail_json(msg=pairs)
 
-        if self.state in ["merged", "replaced"]:
+        if self.state in ["merged", "replaced", "rendered"]:
             for wdict in wlist:
                 hdict = self._find_matching_vrrp(wdict, hlist)
                 pairs.append((wdict, hdict))

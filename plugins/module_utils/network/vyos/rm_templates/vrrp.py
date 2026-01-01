@@ -733,7 +733,6 @@ class VrrpTemplate(NetworkTemplate):
                         "{{ gname }}": {
                             "name": "{{ gname }}",
                             "address": "{{ address if address is defined else None }}",
-                            # "description": "{{ description.strip(\"'\") if description is defined else None }}",
                             "description": "{{ description if description is defined else None }}",
                             "advertise_interval": "{{ advertise_interval if advertise_interval is defined else None }}",
                             "hello_source_address": "{{ hello_source if hello_source is defined else None }}",

@@ -1,17 +1,15 @@
 ---
 - debug:
-    msg: START vyos_ntp_global rendered integration tests on connection={{ ansible_connection }}
-
-- include_tasks: _remove_config.yaml
+    msg: START vyos_vrrp rendered integration tests on connection={{ ansible_connection }}
 
 - block:
     - name: Structure provided configuration into device specific commands
       register: result
-      vyos.vyos.vyos_ntp_global:
-        config: "{{ merged.config }}"
+      vyos.vyos.vyos_vrrp:
+        config: "{{ rendered.config }}"
         state: rendered
 
     - assert:
         that:
           - result.changed == false
-          - result.rendered|symmetric_difference(merged.commands) == []
+          - result.rendered|symmetric_difference(rendered.commands) == []

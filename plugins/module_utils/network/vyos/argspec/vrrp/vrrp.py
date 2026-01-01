@@ -141,7 +141,7 @@ class VrrpArgs(object):  # pylint: disable=R0903
                                         "stop": {"type": "str"},
                                     },
                                 },
-                                "vrid": {"type": "int", "required": True},
+                                "vrid": {"type": "int", "required": False},
                             },
                         },
                         "snmp": {
