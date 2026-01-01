@@ -114,71 +114,71 @@ class TestVyosVrrpModule(TestVyosModule):
                             ],
                         ),
                     ],
-                    # vrrp=dict(
-                    #     global_parameters=dict(
-                    #         garp=dict(
-                    #             master_refresh=100,
-                    #         ),
-                    #         version="3",
-                    #     ),
-                    #     groups=[
-                    #         dict(
-                    #             authentication=dict(
-                    #                 password="test123",
-                    #                 type="plaintext-password",
-                    #             ),
-                    #             description="Group 1",
-                    #             disable=False,
-                    #             excluded_address=[
-                    #                 "192.168.1.8",
-                    #                 "192.168.1.7 interface eth3 ",
-                    #             ],
-                    #             garp=dict(
-                    #                 interval=20,
-                    #                 master_delay=5,
-                    #                 master_refresh_repeat=100,
-                    #                 master_repeat=3,
-                    #             ),
-                    #             health_check=dict(
-                    #                 failure_count=3,
-                    #                 interval=10,
-                    #             ),
-                    #             hello_source_address="192.168.1.2",
-                    #             interface="eth2",
-                    #             name="g1",
-                    #             no_preempt=True,
-                    #             peer_address="192.168.1.3",
-                    #             priority=100,
-                    #             rfc3768_compatibility=False,
-                    #             track=dict(
-                    #                 exclude_vrrp_interface=True,
-                    #                 interface=["eth1"],
-                    #             ),
-                    #             transition_script=dict(
-                    #                 backup="/var/tmp/script.sh",
-                    #                 master="/var/tmp/script.sh",
-                    #                 stop="/var/tmp/script.sh",
-                    #             ),
-                    #             vrid=20,
-                    #         )
-                    #     ],
-                    #     snmp="disabled",
-                    #     sync_groups=[
-                    #         dict(
-                    #             health_check=dict(
-                    #                 failure_count=3,
-                    #                 interval=10,
-                    #             ),
-                    #             member=["192.168.1.100"],
-                    #             name="sg1",
-                    #             transition_script=dict(
-                    #                 backup="script.sh",
-                    #                 master="script.sh",
-                    #                 stop="script.sh",
-                    #             ),
-                    #         )
-                    #     ],
-                    # ),
+                    vrrp=dict(
+                        global_parameters=dict(
+                            garp=dict(
+                                master_refresh=100,
+                            ),
+                            version="3",
+                        ),
+                        groups=[
+                            dict(
+                                authentication=dict(
+                                    password="test123",
+                                    type="plaintext-password",
+                                ),
+                                description="Group 1",
+                                disable=False,
+                                excluded_address=[
+                                    "192.168.1.8",
+                                    "192.168.1.7 interface eth3 ",
+                                ],
+                                garp=dict(
+                                    interval=20,
+                                    master_delay=5,
+                                    master_refresh_repeat=100,
+                                    master_repeat=3,
+                                ),
+                                health_check=dict(
+                                    failure_count=3,
+                                    interval=10,
+                                ),
+                                hello_source_address="192.168.1.2",
+                                interface="eth2",
+                                name="g1",
+                                no_preempt=True,
+                                peer_address="192.168.1.3",
+                                priority=100,
+                                rfc3768_compatibility=False,
+                                track=dict(
+                                    exclude_vrrp_interface=True,
+                                    interface=["eth1"],
+                                ),
+                                transition_script=dict(
+                                    backup="/var/tmp/script.sh",
+                                    master="/var/tmp/script.sh",
+                                    stop="/var/tmp/script.sh",
+                                ),
+                                vrid=20,
+                            ),
+                        ],
+                        snmp="disabled",
+                        sync_groups=[
+                            dict(
+                                health_check=dict(
+                                    failure_count=3,
+                                    interval=10,
+                                ),
+                                member=["192.168.1.100"],
+                                name="sg1",
+                                transition_script=dict(
+                                    backup="script.sh",
+                                    master="script.sh",
+                                    stop="script.sh",
+                                ),
+                            ),
+                        ],
+                    ),
                 ),
                 state="merged",
             ),

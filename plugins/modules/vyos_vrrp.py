@@ -319,7 +319,6 @@ options:
                 description:
                   - VRRP Virtual Router ID.
                 type: int
-                required: true
 
           snmp:
             description:
