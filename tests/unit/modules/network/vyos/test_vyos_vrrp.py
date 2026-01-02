@@ -124,14 +124,16 @@ class TestVyosVrrpModule(TestVyosModule):
                         groups=[
                             dict(
                                 authentication=dict(
-                                    password="test123",
+                                    password="testpass",
                                     type="plaintext-password",
                                 ),
-                                description="Group 1",
-                                disable=False,
+                                address="1.1.1.1",
+                                advertise_interval=10,
+                                description="Group_1",
+                                disable=True,
                                 excluded_address=[
                                     "192.168.1.8",
-                                    "192.168.1.7 interface eth3 ",
+                                    "192.168.1.7 interface eth3",
                                 ],
                                 garp=dict(
                                     interval=20,
@@ -142,6 +144,8 @@ class TestVyosVrrpModule(TestVyosModule):
                                 health_check=dict(
                                     failure_count=3,
                                     interval=10,
+                                    ping="192.168.1.5",
+                                    script="script.sh",
                                 ),
                                 hello_source_address="192.168.1.2",
                                 interface="eth2",
@@ -149,7 +153,7 @@ class TestVyosVrrpModule(TestVyosModule):
                                 no_preempt=True,
                                 peer_address="192.168.1.3",
                                 priority=100,
-                                rfc3768_compatibility=False,
+                                rfc3768_compatibility=True,
                                 track=dict(
                                     exclude_vrrp_interface=True,
                                     interface=["eth1"],
@@ -162,19 +166,19 @@ class TestVyosVrrpModule(TestVyosModule):
                                 vrid=20,
                             ),
                         ],
-                        snmp="disabled",
+                        snmp="enabled",
                         sync_groups=[
                             dict(
                                 health_check=dict(
                                     failure_count=3,
                                     interval=10,
                                 ),
-                                member=["192.168.1.100"],
+                                member=["g1"],
                                 name="sg1",
                                 transition_script=dict(
-                                    backup="script.sh",
-                                    master="script.sh",
-                                    stop="script.sh",
+                                    backup="/var/tmp/script.sh",
+                                    master="/var/tmp/script.sh",
+                                    stop="/var/tmp/script.sh",
                                 ),
                             ),
                         ],
@@ -183,60 +187,87 @@ class TestVyosVrrpModule(TestVyosModule):
                 state="merged",
             ),
         )
-
-        #         config=dict(
-        #             allow_clients=["10.1.1.0/24", "10.1.2.0/24"],
-        #             listen_addresses=["10.2.3.1", "10.4.3.1"],
-        #             servers=[
-        #                 dict(server="server1"),
-        #                 dict(server="server3", options=["noselect", "dynamic"]),
-        #                 dict(server="time1.vyos.net"),
-        #                 dict(server="time2.vyos.net"),
-        #                 dict(server="time3.vyos.net"),
-        #             ],
-        #         ),
-        #         state="merged",
-        #     ),
-        # )
         self.execute_module(changed=False, commands=[])
 
-    # def test_vrrp_merged(self):
-    #     set_module_args(
-    #         dict(
-    #             config=dict(
-    #                 allow_clients=["10.2.2.0/24", "10.3.3.0/24"],
-    #                 listen_addresses=["10.3.4.1", "10.4.5.1"],
-    #                 servers=[
-    #                     dict(server="server4", options=["dynamic", "preempt"]),
-    #                     dict(
-    #                         server="server5",
-    #                         options=[
-    #                             "noselect",
-    #                             "dynamic",
-    #                             "preempt",
-    #                             "prefer",
-    #                         ],
-    #                     ),
-    #                 ],
-    #             ),
-    #             state="merged",
-    #         ),
-    #     )
+    def test_vrrp_merged(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    disable=True,
+                    virtual_servers=[
+                        dict(
+                            name="s1",
+                            address="10.10.10.5",
+                            algorithm="round-robin",
+                            real_server=[
+                                dict(
+                                    address="10.10.50.2",
+                                    port=8443,
+                                ),
+                            ],
+                        ),
+                        dict(
+                            name="s2",
+                            address="10.10.10.2",
+                            persistence_timeout=30,
+                            port=81,
+                            protocol="tcp",
+                        ),
+                        dict(
+                            name="s3",
+                            address="10.10.10.3",
+                            port=88,
+                            protocol="udp",
+                        ),
+                    ],
+                    vrrp=dict(
+                        snmp="disabled",
+                        global_parameters=dict(
+                            startup_delay=35,
+                            garp=dict(
+                                master_repeat=6,
+                            ),
+                        ),
+                        groups=[
+                            dict(
+                                name="g1",
+                                peer_address="192.168.1.3",
+                                priority=100,
+                                disable=False,
+                                no_preempt=False,
+                            ),
+                        ],
+                        sync_groups=[
+                            dict(
+                                name="sg1",
+                                health_check=dict(
+                                    failure_count=5,
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+                state="merged",
+            ),
+        )
+        commands = [
+            "delete high-availability vrrp group g1 no-preempt",
+            "delete high-availability vrrp group g1 disable",
+            "delete high-availability vrrp group g1 rfc3768-compatibility",
+            "delete high-availability vrrp snmp",
+            "set high-availability virtual-server s1 address 10.10.10.5",
+            "set high-availability virtual-server s1 real-server 10.10.50.2 port 8443",
+            "set high-availability virtual-server s2 persistence-timeout 30",
+            "set high-availability virtual-server s2 protocol tcp",
+            "set high-availability virtual-server s3 address 10.10.10.3",
+            "set high-availability virtual-server s3 port 88",
+            "set high-availability virtual-server s3 protocol udp",
+            "set high-availability vrrp global-parameters garp master-repeat 6",
+            "set high-availability vrrp global-parameters startup-delay 35",
+            "set high-availability vrrp sync-group sg1 health-check failure-count 5",
+        ]
 
-    #     commands = [
-    #         "set system ntp allow-clients address 10.2.2.0/24",
-    #         "set system ntp allow-clients address 10.3.3.0/24",
-    #         "set system ntp listen-address 10.3.4.1",
-    #         "set system ntp listen-address 10.4.5.1",
-    #         "set system ntp server server4 dynamic",
-    #         "set system ntp server server4 preempt",
-    #         "set system ntp server server5 dynamic",
-    #         "set system ntp server server5 noselect",
-    #         "set system ntp server server5 preempt",
-    #         "set system ntp server server5 prefer",
-    #     ]
-
-    #     self.execute_module(changed=True, commands=commands)
+        self.execute_module(changed=True, commands=commands)
 
     # def test_ntp_replaced(self):
     #     set_module_args(
@@ -464,21 +495,14 @@ class TestVyosVrrpModule(TestVyosModule):
     #     ]
     #     self.execute_module(changed=True, commands=commands)
 
-    # def test_ntp__all_deleted(self):
-    #     set_module_args(
-    #         dict(
-    #             config=dict(),
-    #             state="deleted",
-    #         ),
-    #     )
-    #     commands = [
-    #         "delete system ntp allow-clients",
-    #         "delete system ntp listen-address",
-    #         "delete system ntp server server1",
-    #         "delete system ntp server server3",
-    #         "delete system ntp server time1.vyos.net",
-    #         "delete system ntp server time2.vyos.net",
-    #         "delete system ntp server time3.vyos.net",
-    #         "delete system ntp",
-    #     ]
-    #     self.execute_module(changed=True, commands=commands)
+    def test_vrrp_purged(self):
+        set_module_args(
+            dict(
+                config=dict(),
+                state="purged",
+            ),
+        )
+        commands = [
+            "delete high-availability",
+        ]
+        self.execute_module(changed=True, commands=commands)
