@@ -115,6 +115,8 @@ def _tmplt_vrrp_group(config_data):
         ):
             continue
         else:
+            if key == "description":
+                value = f"'{value}'"
             command.append(f"{cmd} {key.replace('_', '-')} {value}")
     return command
 

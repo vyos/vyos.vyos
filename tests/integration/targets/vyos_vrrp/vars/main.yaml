@@ -339,7 +339,7 @@ rendered:
     - set high-availability vrrp group g1 advertise-interval 10
     - set high-availability vrrp group g1 authentication password ********
     - set high-availability vrrp group g1 authentication type plaintext-password
-    - set high-availability vrrp group g1 description Group_1
+    - set high-availability vrrp group g1 description 'Group_1'
     - set high-availability vrrp group g1 disable
     - set high-availability vrrp group g1 excluded-address 192.168.1.7 interface eth3
     - set high-availability vrrp group g1 garp interval 20
@@ -360,7 +360,7 @@ rendered:
     - set high-availability vrrp group g1 transition-script stop /var/tmp/script.sh
     - set high-availability vrrp group g1 vrid 20
     - set high-availability vrrp group g2 address 2.2.2.2
-    - set high-availability vrrp group g2 description Group_2
+    - set high-availability vrrp group g2 description 'Group_2'
     - set high-availability vrrp group g2 health-check failure-count 5
     - set high-availability vrrp group g2 health-check interval 15
     - set high-availability vrrp group g2 health-check ping 192.168.1.100

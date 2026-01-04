@@ -103,6 +103,34 @@ class Vrrp(ResourceModule):
             self._normalize_lists(entry)
         # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " (((()))) have:  " + str(haved))
 
+        if self.state in ["overridden", "deleted"]:
+
+            wantg = [((), wantd)]
+
+            while wantg:
+                path, node = wantg.pop()
+
+                if (
+                    path
+                    and isinstance(node, dict)
+                    and any(isinstance(v, (dict, list)) for v in node.values())
+                ):
+                    self._module.fail_json(msg="Path: " + str(path) + " Node: " + str(node))
+
+                if isinstance(node, dict):
+                    for k, v in node.items():
+                        wantg.append((path + (k,), v))
+
+            # wantg = [ ((), wantd) ]
+            # while wantg:
+            #     path, node = wantg.pop()
+
+            # if path and isinstance(node, dict) and any(isinstance(v, dict) for v in node.values()):
+            #     self._module.fail_json(msg="Path: " + str(path) + " Node: " + str(node))
+
+            #     for k, v in reversed(node.items()):
+            #         wantg.append((path + (k,), v))
+
         keys = set(wantd) | set(haved)
 
         for k in keys:

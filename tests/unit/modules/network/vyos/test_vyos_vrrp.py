@@ -384,86 +384,695 @@ class TestVyosVrrpModule(TestVyosModule):
     #     )
     #     self.execute_module(changed=False, commands=[])
 
-    # def test_vrrp_rendered(self):
-    #     set_module_args(
-    #         dict(
-    #             config=dict(
-    #                 allow_clients=["10.7.7.0/24", "10.8.8.0/24"],
-    #                 listen_addresses=["10.7.9.1"],
-    #                 servers=[
-    #                     dict(server="server79"),
-    #                     dict(server="server46", options=["noselect", "dynamic"]),
-    #                     dict(server="time1.vyos.net"),
-    #                     dict(server="time2.vyos.net"),
-    #                     dict(server="time3.vyos.net"),
-    #                 ],
-    #             ),
-    #             state="rendered",
-    #         ),
-    #     )
-    #     rendered_commands = [
-    #         "set system ntp allow-clients address 10.7.7.0/24",
-    #         "set system ntp allow-clients address 10.8.8.0/24",
-    #         "set system ntp listen-address 10.7.9.1",
-    #         "set system ntp server server79",
-    #         "set system ntp server server46 noselect",
-    #         "set system ntp server server46 dynamic",
-    #         "set system ntp server time1.vyos.net",
-    #         "set system ntp server time2.vyos.net",
-    #         "set system ntp server time3.vyos.net",
-    #     ]
-    #     result = self.execute_module(changed=False)
-    #     self.assertEqual(
-    #         sorted(result["rendered"]),
-    #         sorted(rendered_commands),
-    #         result["rendered"],
-    #     )
+    def test_vrrp_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    virtual_servers=[
+                        dict(
+                            name="s1",
+                            address="10.10.10.1",
+                            algorithm="round-robin",
+                            delay_loop=60,
+                            forward_method="direct",
+                            fwmark=10,
+                            persistence_timeout=30,
+                            protocol="tcp",
+                            real_server=[
+                                dict(
+                                    address="10.10.50.1",
+                                    health_check_script="/var/tmp/script.sh",
+                                    port=443,
+                                ),
+                            ],
+                        ),
+                        dict(
+                            name="s2",
+                            address="10.10.10.2",
+                            port=81,
+                            real_server=[
+                                dict(
+                                    address="real1",
+                                    connection_timeout=5,
+                                    port=8081,
+                                ),
+                                dict(
+                                    address="real2",
+                                    port=8080,
+                                ),
+                            ],
+                        ),
+                    ],
+                    vrrp=dict(
+                        snmp="enabled",
+                        global_parameters=dict(
+                            startup_delay=31,
+                            version="3",
+                            garp=dict(
+                                interval=30,
+                                master_delay=10,
+                                master_refresh=100,
+                                master_refresh_repeat=200,
+                                master_repeat=5,
+                            ),
+                        ),
+                        groups=[
+                            dict(
+                                name="g1",
+                                description="Group_1",
+                                interface="eth2",
+                                address="1.1.1.1",
+                                advertise_interval=10,
+                                peer_address="192.168.1.3",
+                                priority=100,
+                                disable=True,
+                                no_preempt=True,
+                                rfc3768_compatibility=True,
+                                vrid=20,
+                                excluded_address=[
+                                    "192.168.1.7 interface eth3",
+                                ],
+                                garp=dict(
+                                    interval=20,
+                                    master_delay=5,
+                                    master_refresh=50,
+                                    master_refresh_repeat=100,
+                                    master_repeat=3,
+                                ),
+                                authentication=dict(
+                                    type="plaintext-password",
+                                    password="testpass",
+                                ),
+                                transition_script=dict(
+                                    master="/var/tmp/script.sh",
+                                    backup="/var/tmp/script.sh",
+                                    fault="/var/tmp/script.sh",
+                                    stop="/var/tmp/script.sh",
+                                ),
+                                track=dict(
+                                    exclude_vrrp_interface=True,
+                                    interface=[
+                                        "eth0",
+                                    ],
+                                ),
+                            ),
+                            dict(
+                                name="g2",
+                                description="Group_2",
+                                interface="eth1",
+                                address="2.2.2.2",
+                                disable=False,
+                                no_preempt=False,
+                                rfc3768_compatibility=False,
+                                vrid=11,
+                                health_check=dict(
+                                    failure_count=5,
+                                    interval=15,
+                                    ping="192.168.1.100",
+                                    script="/var/tmp/script.sh",
+                                ),
+                                hello_source_address="2.2.2.2",
+                            ),
+                        ],
+                        sync_groups=[
+                            dict(
+                                name="sg1",
+                                member=[
+                                    "g1",
+                                ],
+                                transition_script=dict(
+                                    master="/var/tmp/script.sh",
+                                    backup="/var/tmp/script.sh",
+                                    fault="/var/tmp/script.sh",
+                                    stop="/var/tmp/script.sh",
+                                ),
+                                health_check=dict(
+                                    failure_count=3,
+                                    interval=10,
+                                    ping="192.168.2.100",
+                                    script="/var/tmp/script.sh",
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+                state="rendered",
+            ),
+        )
+        rendered_commands = [
+            "set high-availability virtual-server s1 address 10.10.10.1",
+            "set high-availability virtual-server s1 algorithm round-robin",
+            "set high-availability virtual-server s1 delay-loop 60",
+            "set high-availability virtual-server s1 forward-method direct",
+            "set high-availability virtual-server s1 fwmark 10",
+            "set high-availability virtual-server s1 persistence-timeout 30",
+            "set high-availability virtual-server s1 protocol tcp",
+            "set high-availability virtual-server s1 real-server 10.10.50.1 health-check script /var/tmp/script.sh",
+            "set high-availability virtual-server s1 real-server 10.10.50.1 port 443",
+            "set high-availability virtual-server s2 address 10.10.10.2",
+            "set high-availability virtual-server s2 port 81",
+            "set high-availability virtual-server s2 real-server real1 connection-timeout 5",
+            "set high-availability virtual-server s2 real-server real1 port 8081",
+            "set high-availability virtual-server s2 real-server real2 port 8080",
+            "set high-availability vrrp global-parameters garp interval 30",
+            "set high-availability vrrp global-parameters garp master-delay 10",
+            "set high-availability vrrp global-parameters garp master-refresh 100",
+            "set high-availability vrrp global-parameters garp master-refresh-repeat 200",
+            "set high-availability vrrp global-parameters garp master-repeat 5",
+            "set high-availability vrrp global-parameters startup-delay 31",
+            "set high-availability vrrp global-parameters version 3",
+            "set high-availability vrrp group g1 address 1.1.1.1",
+            "set high-availability vrrp group g1 advertise-interval 10",
+            "set high-availability vrrp group g1 authentication password testpass",
+            "set high-availability vrrp group g1 authentication type plaintext-password",
+            "set high-availability vrrp group g1 description Group_1",
+            "set high-availability vrrp group g1 disable",
+            "set high-availability vrrp group g1 excluded-address 192.168.1.7 interface eth3",
+            "set high-availability vrrp group g1 garp interval 20",
+            "set high-availability vrrp group g1 garp master-delay 5",
+            "set high-availability vrrp group g1 garp master-refresh 50",
+            "set high-availability vrrp group g1 garp master-refresh-repeat 100",
+            "set high-availability vrrp group g1 garp master-repeat 3",
+            "set high-availability vrrp group g1 interface eth2",
+            "set high-availability vrrp group g1 no-preempt",
+            "set high-availability vrrp group g1 peer-address 192.168.1.3",
+            "set high-availability vrrp group g1 priority 100",
+            "set high-availability vrrp group g1 rfc3768-compatibility",
+            "set high-availability vrrp group g1 track exclude-vrrp-interface",
+            "set high-availability vrrp group g1 track interface eth0",
+            "set high-availability vrrp group g1 transition-script backup /var/tmp/script.sh",
+            "set high-availability vrrp group g1 transition-script fault /var/tmp/script.sh",
+            "set high-availability vrrp group g1 transition-script master /var/tmp/script.sh",
+            "set high-availability vrrp group g1 transition-script stop /var/tmp/script.sh",
+            "set high-availability vrrp group g1 vrid 20",
+            "set high-availability vrrp group g2 address 2.2.2.2",
+            "set high-availability vrrp group g2 description Group_2",
+            "set high-availability vrrp group g2 health-check failure-count 5",
+            "set high-availability vrrp group g2 health-check interval 15",
+            "set high-availability vrrp group g2 health-check ping 192.168.1.100",
+            "set high-availability vrrp group g2 health-check script /var/tmp/script.sh",
+            "set high-availability vrrp group g2 hello-source-address 2.2.2.2",
+            "set high-availability vrrp group g2 interface eth1",
+            "set high-availability vrrp group g2 vrid 11",
+            "set high-availability vrrp snmp",
+            "set high-availability vrrp sync-group sg1 health-check failure-count 3",
+            "set high-availability vrrp sync-group sg1 health-check interval 10",
+            "set high-availability vrrp sync-group sg1 health-check ping 192.168.2.100",
+            "set high-availability vrrp sync-group sg1 health-check script /var/tmp/script.sh",
+            "set high-availability vrrp sync-group sg1 member g1",
+            "set high-availability vrrp sync-group sg1 transition-script backup /var/tmp/script.sh",
+            "set high-availability vrrp sync-group sg1 transition-script fault /var/tmp/script.sh",
+            "set high-availability vrrp sync-group sg1 transition-script master /var/tmp/script.sh",
+            "set high-availability vrrp sync-group sg1 transition-script stop /var/tmp/script.sh",
+        ]
+        result = self.execute_module(changed=False)
+        self.assertEqual(
+            sorted(result["rendered"]),
+            sorted(rendered_commands),
+            result["rendered"],
+        )
 
-    # def test_ntp_parsed(self):
+    # def test_vrrp_parsed(self):
     #     commands = (
-    #         "set system ntp allow-clients address 10.7.7.0/24",
-    #         "set system ntp allow-clients address 10.6.7.0/24",
-    #         "set system ntp listen-address 10.7.9.1",
-    #         "set system ntp listen-address 10.7.7.1",
-    #         "set system ntp server check",
-    #         "set system ntp server server46 noselect",
-    #         "set system ntp server server46 prefer",
-    #         "set system ntp server time1.vyos.net",
-    #         "set system ntp server time2.vyos.net",
-    #         "set system ntp server time3.vyos.net",
+    #         "set high-availability virtual-server s1 address 10.10.10.1",
+    #         "set high-availability virtual-server s1 algorithm round-robin",
+    #         "set high-availability virtual-server s1 delay-loop 60",
+    #         "set high-availability virtual-server s1 forward-method direct",
+    #         "set high-availability virtual-server s1 fwmark 10",
+    #         "set high-availability virtual-server s1 persistence-timeout 30",
+    #         "set high-availability virtual-server s1 protocol tcp",
+    #         "set high-availability virtual-server s1 real-server 10.10.50.1 health-check script /var/tmp/script.sh",
+    #         "set high-availability virtual-server s1 real-server 10.10.50.1 port 443",
+    #         "set high-availability virtual-server s2 address 10.10.10.2",
+    #         "set high-availability virtual-server s2 port 81",
+    #         "set high-availability virtual-server s2 real-server real1 connection-timeout 5",
+    #         "set high-availability virtual-server s2 real-server real1 port 8081",
+    #         "set high-availability virtual-server s2 real-server real2 port 8080",
+    #         "set high-availability vrrp global-parameters startup-delay 31",
+    #         "set high-availability vrrp global-parameters version 3",
+    #         "set high-availability vrrp global-parameters garp interval 30",
+    #         "set high-availability vrrp global-parameters garp master-delay 10",
+    #         "set high-availability vrrp global-parameters garp master-refresh 100",
+    #         "set high-availability vrrp global-parameters garp master-refresh-repeat 200",
+    #         "set high-availability vrrp global-parameters garp master-repeat 5",
+    #         "set high-availability vrrp group g1 description 'Group_1'",
+    #         "set high-availability vrrp group g1 disable",
+    #         "set high-availability vrrp group g1 no-preempt",
+    #         "set high-availability vrrp group g1 rfc3768-compatibility",
+    #         "set high-availability vrrp group g1 address 1.1.1.1",
+    #         "set high-availability vrrp group g1 advertise-interval 10",
+    #         "set high-availability vrrp group g1 interface eth2",
+    #         "set high-availability vrrp group g1 peer-address 192.168.1.3",
+    #         "set high-availability vrrp group g1 priority 100",
+    #         "set high-availability vrrp group g1 vrid 20",
+    #         "set high-availability vrrp group g1 garp interval 20",
+    #         "set high-availability vrrp group g1 garp master-delay 5",
+    #         "set high-availability vrrp group g1 garp master-refresh 50",
+    #         "set high-availability vrrp group g1 garp master-refresh-repeat 100",
+    #         "set high-availability vrrp group g1 garp master-repeat 3",
+    #         "set high-availability vrrp group g1 authentication password testpass",
+    #         "set high-availability vrrp group g1 authentication type plaintext-password",
+    #         "set high-availability vrrp group g1 transition-script backup /var/tmp/script.sh",
+    #         "set high-availability vrrp group g1 transition-script fault /var/tmp/script.sh",
+    #         "set high-availability vrrp group g1 transition-script master /var/tmp/script.sh",
+    #         "set high-availability vrrp group g1 transition-script stop /var/tmp/script.sh",
+    #         "set high-availability vrrp group g1 track exclude-vrrp-interface",
+    #         "set high-availability vrrp group g1 track interface eth0",
+    #         "set high-availability vrrp group g1 track interface eth3",
+    #         "set high-availability vrrp group g1 excluded-address 192.168.1.7 interface eth3",
+    #         "set high-availability vrrp sync-group sg1 health-check failure-count 3",
+    #         "set high-availability vrrp sync-group sg1 health-check interval 10",
+    #         "set high-availability vrrp sync-group sg1 health-check ping 192.168.2.100",
+    #         "set high-availability vrrp sync-group sg1 health-check script /var/tmp/script.sh",
+    #         "set high-availability vrrp sync-group sg1 member g1",
+    #         "set high-availability vrrp sync-group sg1 transition-script backup /var/tmp/script.sh",
+    #         "set high-availability vrrp sync-group sg1 transition-script fault /var/tmp/script.sh",
+    #         "set high-availability vrrp sync-group sg1 transition-script master /var/tmp/script.sh",
+    #         "set high-availability vrrp sync-group sg1 transition-script stop /var/tmp/script.sh",
     #     )
     #     parsed_str = "\n".join(commands)
     #     set_module_args(dict(running_config=parsed_str, state="parsed"))
     #     result = self.execute_module(changed=False)
     #     parsed_list = {
-    #         "allow_clients": ["10.6.7.0/24", "10.7.7.0/24"],
-    #         "listen_addresses": ["10.7.7.1", "10.7.9.1"],
-    #         "servers": [
-    #             {"server": "check"},
-    #             {"server": "server46", "options": ["noselect", "prefer"]},
-    #             {"server": "time1.vyos.net"},
-    #             {"server": "time2.vyos.net"},
-    #             {"server": "time3.vyos.net"},
+    #         "disable": False,
+    #         "virtual_servers": [
+    #             {
+    #                 "name": "s1",
+    #                 "address": "10.10.10.1",
+    #                 "algorithm": "round-robin",
+    #                 "delay_loop": 60,
+    #                 "forward_method": "direct",
+    #                 "fwmark": 10,
+    #                 "persistence_timeout": 30,
+    #                 "protocol": "tcp",
+    #                 "real_server": [
+    #                     {
+    #                         "address": "10.10.50.1",
+    #                         "health_check_script": "/var/tmp/script.sh",
+    #                         "port": 443,
+    #                     }
+    #                 ],
+    #             },
+    #             {
+    #                 "name": "s2",
+    #                 "address": "10.10.10.2",
+    #                 "port": 81,
+    #                 "real_server": [
+    #                     {
+    #                         "address": "real1",
+    #                         "connection_timeout": 5,
+    #                         "port": 8081,
+    #                     },
+    #                     {
+    #                         "address": "real2",
+    #                         "port": 8080,
+    #                     },
+    #                 ],
+    #             },
     #         ],
+    #         "vrrp": {
+    #             "snmp": "disabled",
+    #             "global_parameters": {
+    #                 "startup_delay": 31,
+    #                 "version": "3",
+    #                 "garp": {
+    #                     "interval": 30,
+    #                     "master_delay": 10,
+    #                     "master_refresh": 100,
+    #                     "master_refresh_repeat": 200,
+    #                     "master_repeat": 5,
+    #                 },
+    #             },
+    #             "groups": [
+    #                 {
+    #                     "name": "g1",
+    #                     "description": "Group_1",
+    #                     "disable": True,
+    #                     "no_preempt": True,
+    #                     "rfc3768_compatibility": True,
+    #                     "interface": "eth2",
+    #                     "address": "1.1.1.1",
+    #                     "advertise_interval": 10,
+    #                     "peer_address": "192.168.1.3",
+    #                     "priority": 100,
+    #                     "vrid": 20,
+    #                     "garp": {
+    #                         "interval": 20,
+    #                         "master_delay": 5,
+    #                         "master_refresh": 50,
+    #                         "master_refresh_repeat": 100,
+    #                         "master_repeat": 3,
+    #                     },
+    #                     "authentication": {
+    #                         "type": "plaintext-password",
+    #                         "password": "testpass",
+    #                     },
+    #                     "transition_script": {
+    #                         "master": "/var/tmp/script.sh",
+    #                         "backup": "/var/tmp/script.sh",
+    #                         "fault": "/var/tmp/script.sh",
+    #                         "stop": "/var/tmp/script.sh",
+    #                     },
+    #                     "track": {
+    #                         "exclude_vrrp_interface": True,
+    #                         "interface": ["eth0", "eth3"],
+    #                     },
+    #                     "excluded_address": [
+    #                         "192.168.1.7 interface eth3"
+    #                     ],
+    #                 },
+    #             ],
+    #             "sync_groups": [
+    #                 {
+    #                     "name": "sg1",
+    #                     "member": ["g1"],
+    #                     "transition_script": {
+    #                         "master": "/var/tmp/script.sh",
+    #                         "backup": "/var/tmp/script.sh",
+    #                         "fault": "/var/tmp/script.sh",
+    #                         "stop": "/var/tmp/script.sh",
+    #                     },
+    #                     "health_check": {
+    #                         "failure_count": 3,
+    #                         "interval": 10,
+    #                         "ping": "192.168.2.100",
+    #                         "script": "/var/tmp/script.sh",
+    #                     },
+    #                 }
+    #             ],
+    #         },
     #     }
     #     self.assertEqual(parsed_list, result["parsed"])
 
-    # def test_ntp_gathered(self):
-    #     set_module_args(dict(state="gathered"))
-    #     result = self.execute_module(changed=False)
-    #     gathered_list = {
-    #         "allow_clients": ["10.1.1.0/24", "10.1.2.0/24"],
-    #         "listen_addresses": ["10.2.3.1", "10.4.3.1"],
-    #         "servers": [
-    #             {"server": "server1"},
-    #             {"server": "server3", "options": ["dynamic", "noselect"]},
-    #             {"server": "time1.vyos.net"},
-    #             {"server": "time2.vyos.net"},
-    #             {"server": "time3.vyos.net"},
-    #         ],
-    #     }
+    def test_vrrp_parsed(self):
+        commands = (
+            "set high-availability disable",
+            "set high-availability virtual-server s1 address 10.10.10.1",
+            "set high-availability virtual-server s1 algorithm round-robin",
+            "set high-availability virtual-server s1 delay-loop 60",
+            "set high-availability virtual-server s1 forward-method direct",
+            "set high-availability virtual-server s1 fwmark 10",
+            "set high-availability virtual-server s1 persistence-timeout 30",
+            "set high-availability virtual-server s1 protocol tcp",
+            "set high-availability virtual-server s1 real-server 10.10.50.1 health-check script '/var/tmp/script.sh'",
+            "set high-availability virtual-server s1 real-server 10.10.50.1 port 443",
+            "set high-availability virtual-server s2 address 10.10.10.2",
+            "set high-availability virtual-server s2 port 81",
+            "set high-availability virtual-server s2 real-server real1 connection-timeout 5",
+            "set high-availability virtual-server s2 real-server real1 port 8081",
+            "set high-availability virtual-server s2 real-server real2 port 8080",
+            "set high-availability vrrp global-parameters garp interval 30",
+            "set high-availability vrrp global-parameters garp master-delay 10",
+            "set high-availability vrrp global-parameters garp master-refresh 100",
+            "set high-availability vrrp global-parameters garp master-refresh-repeat 200",
+            "set high-availability vrrp global-parameters garp master-repeat 5",
+            "set high-availability vrrp global-parameters startup-delay 30",
+            "set high-availability vrrp global-parameters version 3",
+            "set high-availability vrrp group g1 address '1.1.1.1'",
+            "set high-availability vrrp group g1 advertise-interval 10",
+            "set high-availability vrrp group g1 authentication password 'testpass'",
+            "set high-availability vrrp group g1 authentication type 'plaintext-password'",
+            "set high-availability vrrp group g1 description 'Group_1'",
+            "set high-availability vrrp group g1 disable",
+            "set high-availability vrrp group g1 excluded-address '192.168.1.7' interface 'eth3'",
+            "set high-availability vrrp group g1 excluded-address '192.168.1.8'",
+            "set high-availability vrrp group g1 garp interval 20",
+            "set high-availability vrrp group g1 garp master-delay 5",
+            "set high-availability vrrp group g1 garp master-refresh 50",
+            "set high-availability vrrp group g1 garp master-refresh-repeat 100",
+            "set high-availability vrrp group g1 garp master-repeat 3",
+            "set high-availability vrrp group g1 health-check failure-count 3",
+            "set high-availability vrrp group g1 health-check interval 10",
+            "set high-availability vrrp group g1 health-check ping '192.168.1.5'",
+            "set high-availability vrrp group g1 health-check script 'script.sh'",
+            "set high-availability vrrp group g1 hello-source-address '192.168.1.2'",
+            "set high-availability vrrp group g1 interface 'eth2'",
+            "set high-availability vrrp group g1 no-preempt",
+            "set high-availability vrrp group g1 peer-address '192.168.1.3'",
+            "set high-availability vrrp group g1 priority 100",
+            "set high-availability vrrp group g1 rfc3768-compatibility",
+            "set high-availability vrrp group g1 track exclude-vrrp-interface",
+            "set high-availability vrrp group g1 track interface 'eth1'",
+            "set high-availability vrrp group g1 transition-script backup '/var/tmp/script.sh'",
+            "set high-availability vrrp group g1 transition-script fault '/var/tmp/script.sh'",
+            "set high-availability vrrp group g1 transition-script master '/var/tmp/script.sh'",
+            "set high-availability vrrp group g1 transition-script stop '/var/tmp/script.sh'",
+            "set high-availability vrrp group g1 vrid 20",
+            "set high-availability vrrp snmp",
+            "set high-availability vrrp sync-group sg1 health-check failure-count 3",
+            "set high-availability vrrp sync-group sg1 health-check interval 10",
+            "set high-availability vrrp sync-group sg1 health-check ping '192.168.1.1'",
+            "set high-availability vrrp sync-group sg1 health-check script '/var/tmp/script.sh'",
+            "set high-availability vrrp sync-group sg1 member 'g1'",
+            "set high-availability vrrp sync-group sg1 transition-script backup '/var/tmp/script.sh'",
+            "set high-availability vrrp sync-group sg1 transition-script fault '/var/tmp/script.sh'",
+            "set high-availability vrrp sync-group sg1 transition-script master '/var/tmp/script.sh'",
+            "set high-availability vrrp sync-group sg1 transition-script stop '/var/tmp/script.sh'",
+        )
+        parsed_str = "\n".join(commands)
+        set_module_args(dict(running_config=parsed_str, state="parsed"))
+        result = self.execute_module(changed=False)
+        parsed_list = {
+            "disable": True,
+            "virtual_servers": [
+                {
+                    "name": "s1",
+                    "address": "10.10.10.1",
+                    "algorithm": "round-robin",
+                    "delay_loop": 60,
+                    "forward_method": "direct",
+                    "fwmark": 10,
+                    "persistence_timeout": 30,
+                    "protocol": "tcp",
+                    "real_server": [
+                        {
+                            "address": "10.10.50.1",
+                            "health_check_script": "/var/tmp/script.sh",
+                            "port": 443,
+                        },
+                    ],
+                },
+                {
+                    "name": "s2",
+                    "address": "10.10.10.2",
+                    "port": 81,
+                    "real_server": [
+                        {
+                            "address": "real1",
+                            "connection_timeout": 5,
+                            "port": 8081,
+                        },
+                        {
+                            "address": "real2",
+                            "port": 8080,
+                        },
+                    ],
+                },
+            ],
+            "vrrp": {
+                "snmp": "enabled",
+                "global_parameters": {
+                    "startup_delay": 30,
+                    "version": "3",
+                    "garp": {
+                        "interval": 30,
+                        "master_delay": 10,
+                        "master_refresh": 100,
+                        "master_refresh_repeat": 200,
+                        "master_repeat": 5,
+                    },
+                },
+                "groups": [
+                    {
+                        "name": "g1",
+                        "description": "Group_1",
+                        "disable": True,
+                        "no_preempt": True,
+                        "rfc3768_compatibility": True,
+                        "interface": "eth2",
+                        "address": "1.1.1.1",
+                        "advertise_interval": 10,
+                        "peer_address": "192.168.1.3",
+                        "priority": 100,
+                        "vrid": 20,
+                        "garp": {
+                            "interval": 20,
+                            "master_delay": 5,
+                            "master_refresh": 50,
+                            "master_refresh_repeat": 100,
+                            "master_repeat": 3,
+                        },
+                        "authentication": {
+                            "type": "plaintext-password",
+                            "password": "testpass",
+                        },
+                        "transition_script": {
+                            "master": "/var/tmp/script.sh",
+                            "backup": "/var/tmp/script.sh",
+                            "fault": "/var/tmp/script.sh",
+                            "stop": "/var/tmp/script.sh",
+                        },
+                        "health_check": {
+                            "failure_count": 3,
+                            "interval": 10,
+                            "ping": "192.168.1.5",
+                            "script": "script.sh",
+                        },
+                        "track": {
+                            "exclude_vrrp_interface": True,
+                            "interface": ["eth1"],
+                        },
+                        "excluded_address": [
+                            "192.168.1.7 interface eth3",
+                            "192.168.1.8",
+                        ],
+                        "hello_source_address": "192.168.1.2",
+                    },
+                ],
+                "sync_groups": [
+                    {
+                        "name": "sg1",
+                        "member": ["g1"],
+                        "transition_script": {
+                            "master": "/var/tmp/script.sh",
+                            "backup": "/var/tmp/script.sh",
+                            "fault": "/var/tmp/script.sh",
+                            "stop": "/var/tmp/script.sh",
+                        },
+                        "health_check": {
+                            "failure_count": 3,
+                            "interval": 10,
+                            "ping": "192.168.1.1",
+                            "script": "/var/tmp/script.sh",
+                        },
+                    },
+                ],
+            },
+        }
+        self.assertEqual(parsed_list, result["parsed"])
 
-    #     self.assertEqual(gathered_list, result["gathered"])
+    def test_vrrp_gathered(self):
+        set_module_args(dict(state="gathered"))
+        result = self.execute_module(changed=False)
+        gathered_list = {
+            "disable": True,
+            "virtual_servers": [
+                {
+                    "name": "s1",
+                    "address": "10.10.10.1",
+                    "algorithm": "round-robin",
+                    "delay_loop": 60,
+                    "forward_method": "direct",
+                    "fwmark": 10,
+                    "persistence_timeout": 30,
+                    "protocol": "tcp",
+                    "real_server": [
+                        {
+                            "address": "10.10.50.1",
+                            "health_check_script": "/var/tmp/script.sh",
+                            "port": 443,
+                        },
+                    ],
+                },
+                {
+                    "name": "s2",
+                    "address": "10.10.10.2",
+                    "port": 81,
+                    "real_server": [
+                        {
+                            "address": "real1",
+                            "connection_timeout": 5,
+                            "port": 8081,
+                        },
+                        {
+                            "address": "real2",
+                            "port": 8080,
+                        },
+                    ],
+                },
+            ],
+            "vrrp": {
+                "snmp": "enabled",
+                "global_parameters": {
+                    "startup_delay": 30,
+                    "version": "3",
+                    "garp": {
+                        "interval": 30,
+                        "master_delay": 10,
+                        "master_refresh": 100,
+                        "master_refresh_repeat": 200,
+                        "master_repeat": 5,
+                    },
+                },
+                "groups": [
+                    {
+                        "name": "g1",
+                        "description": "Group_1",
+                        "disable": True,
+                        "no_preempt": True,
+                        "rfc3768_compatibility": True,
+                        "interface": "eth2",
+                        "address": "1.1.1.1",
+                        "advertise_interval": 10,
+                        "peer_address": "192.168.1.3",
+                        "priority": 100,
+                        "vrid": 20,
+                        "garp": {
+                            "interval": 20,
+                            "master_delay": 5,
+                            "master_refresh": 50,
+                            "master_refresh_repeat": 100,
+                            "master_repeat": 3,
+                        },
+                        "authentication": {
+                            "type": "plaintext-password",
+                            "password": "testpass",
+                        },
+                        "transition_script": {
+                            "master": "/var/tmp/script.sh",
+                            "backup": "/var/tmp/script.sh",
+                            "fault": "/var/tmp/script.sh",
+                            "stop": "/var/tmp/script.sh",
+                        },
+                        "health_check": {
+                            "failure_count": 3,
+                            "interval": 10,
+                            "ping": "192.168.1.5",
+                            "script": "script.sh",
+                        },
+                        "track": {
+                            "exclude_vrrp_interface": True,
+                            "interface": ["eth1"],
+                        },
+                        "excluded_address": [
+                            "192.168.1.7 interface eth3",
+                            "192.168.1.8",
+                        ],
+                        "hello_source_address": "192.168.1.2",
+                    },
+                ],
+                "sync_groups": [
+                    {
+                        "name": "sg1",
+                        "member": ["g1"],
+                        "transition_script": {
+                            "master": "/var/tmp/script.sh",
+                            "backup": "/var/tmp/script.sh",
+                            "fault": "/var/tmp/script.sh",
+                            "stop": "/var/tmp/script.sh",
+                        },
+                        "health_check": {
+                            "failure_count": 3,
+                            "interval": 10,
+                            "ping": "192.168.1.1",
+                            "script": "/var/tmp/script.sh",
+                        },
+                    },
+                ],
+            },
+        }
+
+        self.assertEqual(gathered_list, result["gathered"])
 
     # def test_ntp_deleted(self):
     #     # Delete the subsections that we include (listen_addresses and servers)
