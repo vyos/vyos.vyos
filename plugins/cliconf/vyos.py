@@ -196,15 +196,16 @@ class Cliconf(CliconfBase):
     def commit(self, comment=None, confirm=None):
         if confirm:
             if comment:
-                command = 'commit-confirm {0} comment {1}'.format(confirm, comment)
+                command = 'commit-confirm {0} comment "{1}"'.format(confirm, comment)
             else:
                 command = 'commit-confirm {0}'.format(confirm)
+            self.send_command(command, "Proceed?", "\n")
         else:
             if comment:
-                command = 'commit {0}'.format(comment)
+                command = 'commit comment "{0}"'.format(comment)
             else:
                 command = "commit"
-        self.send_command(command, "Proceed?", "\n")
+            self.send_command(command)
 
     def discard_changes(self):
         self.send_command("exit discard")
