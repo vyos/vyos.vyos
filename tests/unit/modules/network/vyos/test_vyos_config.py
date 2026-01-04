@@ -140,3 +140,41 @@ class TestVyosConfigModule(TestVyosModule):
             return_value=self.cliconf_obj.get_diff(candidate, None, diff_match="none"),
         )
         self.execute_module(changed=True, commands=lines, sort=False)
+
+    def test_vyos_config_confirm_automatic(self):
+        src = load_fixture("vyos_config_src.cfg")
+        confirm_timeout = 7
+        set_module_args(dict(src=src, confirm="automatic", confirm_timeout=confirm_timeout))
+        candidate = "\n".join(self.module.format_commands(src.splitlines()))
+        commands = [
+            "set system host-name foo",
+            "delete interfaces ethernet eth0 address",
+        ]
+        self.conn.get_diff = MagicMock(
+            return_value=self.cliconf_obj.get_diff(candidate, self.running_config),
+        )
+
+        self.execute_module(changed=True, commands=commands)
+
+        self.assertEqual(self.load_config.call_args[1]["confirm"], confirm_timeout)
+        self.run_commands.assert_called_once()
+        self.assertEqual(
+            ["configure", "confirm", "exit"],
+            self.run_commands.call_args[0][1],
+        )
+
+    def test_vyos_config_confirm_manual(self):
+        lines = [
+            "set system host-name foo",
+        ]
+        confirm_timeout = 12
+        set_module_args(dict(lines=lines, confirm="manual", confirm_timeout=confirm_timeout))
+        candidate = "\n".join(lines)
+        self.conn.get_diff = MagicMock(
+            return_value=self.cliconf_obj.get_diff(candidate, self.running_config),
+        )
+
+        self.execute_module(changed=True, commands=lines)
+
+        self.assertEqual(self.load_config.call_args[1]["confirm"], confirm_timeout)
+        self.run_commands.assert_not_called()
