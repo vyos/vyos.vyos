@@ -164,7 +164,7 @@ EXAMPLES = """
 - name: revert after ten minutes, if connection is lost
   vyos.vyos.vyos_config:
     src: vyos_template.j2
-    confirm: yes
+    confirm: automatic
 
 - name: for idempotency, use full-form commands
   vyos.vyos.vyos_config:
