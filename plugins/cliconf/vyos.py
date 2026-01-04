@@ -273,7 +273,6 @@ class Cliconf(CliconfBase):
             str(c).replace("'", "") for c in running.splitlines()
         ]
 
-
         updates = list()
         visited = set()
 

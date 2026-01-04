@@ -26,7 +26,7 @@ KEEP_EXISTING_VALUES = "..."
 class VyosConf:
     def __init__(self, commands=None):
         self.config = {}
-        if type(commands) is list:
+        if isinstance(commands, list):
             self.run_commands(commands)
 
     def set_entry(self, path, leaf):
@@ -39,7 +39,7 @@ class VyosConf:
         target = self.config
         path = path + [leaf]
         for key in path:
-            if key not in target or type(target[key]) is not dict:
+            if key not in target or not isinstance(target[key], dict):
                 target[key] = {}
             target = target[key]
         return self.config
@@ -83,7 +83,7 @@ class VyosConf:
         path = path + [leaf]
         existing = []
         for key in path:
-            if key not in target or type(target[key]) is not dict:
+            if key not in target or not isinstance(target[key], dict):
                 return False
             existing.append(key)
             target = target[key]
@@ -171,7 +171,7 @@ class VyosConf:
         This function builds a list of commands to recreate the current configuration.
         :return: [str]
         """
-        if type(structure) is not dict:
+        if not isinstance(structure, dict):
             structure = self.config
         if len(structure) == 0:
             return [""] if nested else []
@@ -185,11 +185,11 @@ class VyosConf:
         return ["set " + c for c in commands]
 
     def diff_to(self, other, structure):
-        if type(other) is not dict:
+        if not isinstance(other, dict):
             other = {}
             if len(structure) == 0:
                 return ([], [""])
-        if type(structure) is not dict:
+        if not isinstance(structure, dict):
             structure = {}
             if len(other) == 0:
                 return ([""], [])
