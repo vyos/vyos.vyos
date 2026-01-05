@@ -358,6 +358,7 @@ class Firewall_rules(ConfigBase):
             "disable",
             "description",
             "jump_target",
+            "offload_target",
         )
         if w_rules:
             for w in w_rules:

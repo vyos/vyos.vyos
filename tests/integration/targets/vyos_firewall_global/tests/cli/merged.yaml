@@ -2,6 +2,8 @@
 - debug:
     msg: START vyos_firewall_global merged integration tests on connection={{ ansible_connection }}
 
+- include_tasks: _get_version.yaml
+
 - include_tasks: _remove_config.yaml
 
 - block:
@@ -28,15 +30,33 @@
     - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_firewall_global: *id001
+      diff: true
 
     - name: Assert that the previous task was idempotent
       assert:
         that:
           - result['changed'] == false
+          - result['diff'] is not defined
 
     - name: Assert that before dicts were correctly generated
       assert:
         that:
           - "{{ merged['after'] == result['before'] }}"
+
+    - name: Prepare device configurationsfor diff mode test
+      register: result
+      vyos.vyos.vyos_firewall_global:
+        config: "{{ merged['diff_config'] }}"
+        state: merged
+      diff: true
+
+    - name: Assert that correct diff of commands were generated
+      assert:
+        that:
+          - item in result.diff.prepared
+      loop: "{{ merged_diff }}"
+      loop_control:
+        loop_var: item
+
   always:
     - include_tasks: _remove_config.yaml

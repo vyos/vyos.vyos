@@ -33,7 +33,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
     LooseVersion,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    get_os_version,
+    load_config,
+)
 
 
 class Firewall_global(ConfigBase):
@@ -74,6 +77,13 @@ class Firewall_global(ConfigBase):
         warnings = list()
         commands = list()
 
+        try:
+            self._module.params["comment"]
+        except KeyError:
+            comment = []
+        else:
+            comment = self._module.params["comment"]
+
         if self.state in self.ACTION_STATES:
             existing_firewall_global_facts = self.get_firewall_global_facts()
         else:
@@ -81,6 +91,12 @@ class Firewall_global(ConfigBase):
 
         if self.state in self.ACTION_STATES or self.state == "rendered":
             commands.extend(self.set_config(existing_firewall_global_facts))
+
+        if commands and self._module._diff:
+            commit = not self._module.check_mode
+            diff = load_config(self._module, commands, commit=commit, comment=comment)
+            if diff:
+                result["diff"] = {"prepared": str(diff)}
 
         if commands and self.state in self.ACTION_STATES:
             if not self._module.check_mode:
@@ -368,7 +384,7 @@ class Firewall_global(ConfigBase):
                                 )
                         elif not opr and key in l_set:
                             if key == "name" and self._is_grp_del(h, want, key):
-                                if commands[-1] == cmd + " " + want["name"] + " " + self._grp_type(
+                                if len(commands) > 0 and commands[-1] == cmd + " " + want["name"] + " " + self._grp_type(
                                     attr,
                                 ):
                                     commands.pop()
@@ -551,7 +567,7 @@ class Firewall_global(ConfigBase):
                         afi = None
                     afi = None
                 for key, val in w.items():
-                    if val and key != "afi":
+                    if val is not None and key != "afi":
                         if opr and key in l_set and not (h and self._is_w_same(w, h, key)):
                             commands.append(
                                 self._form_attr_cmd(

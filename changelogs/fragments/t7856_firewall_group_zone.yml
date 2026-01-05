@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - facts/firewall_global.py - Fix confusion between firewall zone names and group names.
