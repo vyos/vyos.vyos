@@ -2,6 +2,8 @@
 - debug:
     msg: START vyos_static_routes merged integration tests on connection={{ ansible_connection }}
 
+- include_tasks: _populate.yaml
+
 - include_tasks: _remove_config.yaml
 
 - block:
@@ -19,6 +21,8 @@
                       - forward_router_address: 192.0.2.10
 
                       - forward_router_address: 192.0.2.9
+
+                      - interface: eth2
 
           - address_families:
               - afi: ipv6
@@ -39,7 +43,7 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ merged['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+          - "{{ merged.commands | symmetric_difference(result.commands) | length == 0 }}"
 
     - name: Assert that after dicts was correctly generated
       assert:

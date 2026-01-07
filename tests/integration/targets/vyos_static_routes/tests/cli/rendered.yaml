@@ -30,6 +30,8 @@
                       - forward_router_address: 2001:db8:2000:2::1
 
                       - forward_router_address: 2001:db8:2000:2::2
+
+                      - interface: eth2
         state: rendered
 
     - name: Assert that correct set of commands were generated
