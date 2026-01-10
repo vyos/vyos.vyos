@@ -9,7 +9,7 @@
     lines:
       - set protocols static route 192.0.2.32/28 next-hop '192.0.2.10'
       - set protocols static route 192.0.2.32/28 next-hop '192.0.2.9'
-      - set protocols static route 192.0.2.32/28 next-hop-interface eth1
+      - set protocols static interface-route 192.0.2.32/28 next-hop-interface eth1
       - set protocols static route 192.0.2.32/28 blackhole
       - set protocols static route 192.0.2.32/28
       - set protocols static route6 2001:db8:1000::/36 next-hop '2001:db8:2000:2::1'

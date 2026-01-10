@@ -172,8 +172,7 @@ class Static_routesFacts(object):
                             if "enabled" in nh_info.keys():
                                 element["enabled"] = nh_info["enabled"]
                             nh_info = None
-                        if nh_info.get("interface"):
-                            element["interface"] = nh_info.get("interface")
                     if nh_info is not None:
                         nh_list.append(nh_info)
+                        nh_info = {}
         return nh_list
