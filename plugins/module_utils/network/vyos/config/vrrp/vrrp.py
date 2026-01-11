@@ -81,7 +81,11 @@ class Vrrp(ResourceModule):
             self.run_commands()
 
         if self.state == "purged":
-            self.commands = ["delete high-availability"]
+            wantd = {"disable": False, "vrrp": {"snmp": "disabled"}}
+            haved = deepcopy(self.have)
+
+            if wantd != haved:
+                self.commands = ["delete high-availability"]
             self.run_commands()
 
         return self.result

@@ -56,6 +56,7 @@ class TestVyosVrrpModule(TestVyosModule):
         )
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = "1.5"
+        self.maxDiff = None
 
     def tearDown(self):
         super(TestVyosVrrpModule, self).tearDown()
@@ -545,7 +546,7 @@ class TestVyosVrrpModule(TestVyosModule):
             "set high-availability vrrp group g1 advertise-interval 10",
             "set high-availability vrrp group g1 authentication password testpass",
             "set high-availability vrrp group g1 authentication type plaintext-password",
-            "set high-availability vrrp group g1 description Group_1",
+            "set high-availability vrrp group g1 description 'Group_1'",
             "set high-availability vrrp group g1 disable",
             "set high-availability vrrp group g1 excluded-address 192.168.1.7 interface eth3",
             "set high-availability vrrp group g1 garp interval 20",
@@ -566,7 +567,7 @@ class TestVyosVrrpModule(TestVyosModule):
             "set high-availability vrrp group g1 transition-script stop /var/tmp/script.sh",
             "set high-availability vrrp group g1 vrid 20",
             "set high-availability vrrp group g2 address 2.2.2.2",
-            "set high-availability vrrp group g2 description Group_2",
+            "set high-availability vrrp group g2 description 'Group_2'",
             "set high-availability vrrp group g2 health-check failure-count 5",
             "set high-availability vrrp group g2 health-check interval 15",
             "set high-availability vrrp group g2 health-check ping 192.168.1.100",
