@@ -567,36 +567,83 @@ class Vrrp(ResourceModule):
             },
         ]
 
+        # def _prune_stubs(self, w, h, path=None):
+        #     wc = {}
+        #     hc = self._remove_defaults(h)
+        #     # if w:
+        #     #     wc = self._remove_defaults(w)
+
+        #     if not w and remove_empties(hc):
+        #         self.commands = ["delete high-availability"]
+        #         wc = {}
+        #         hc = {}
+        #     elif w:
+        #         for k in w.keys():
+        #             if path:
+        #                 path = path + " " + k
+        #             else:
+        #                 path = k
+        #             wg = w.get(k, {})
+        #             hg = hc.get(k, {})
+        #             wr = self._remove_defaults(wg)
+
+        #             if (k in w and hg and (wg is not None and not isinstance(wg, (list, dict)))) or (
+        #                 k in w and hg and isinstance(wg, (list, dict)) and not self._remove_defaults(wg)
+        #             ):
+        #                 # self._module.fail_json(msg="W " + str(self.want) + " H " + str(hg) + " K " + k)
+        #                 self.commands.append("delete high-availability " + path)
+        #                 wc.pop(k, {})
+        #                 hc.pop(k, {})
+        #             elif k in w and hg and isinstance(wg, dict) and self._remove_defaults(wg):
+        #                 (wi, hi, path) = self._prune_stubs(wg, hg, path=k)
+        #                 # self._module.fail_json(msg="W " + str(wi) + " H " + str(hi) + " K " + path)
+
+        # return wc, hc, path
+
     def _prune_stubs(self, w, h, path=None):
         wc = {}
-        hc = self._remove_defaults(h)
-        # if w:
-        #     wc = self._remove_defaults(w)
+        hc = self._remove_defaults(h)  # This removes default values from 'h'
 
-        if not w and remove_empties(hc):
+        if not w and remove_empties(hc):  # If 'w' is empty and hc has empty values
             self.commands = ["delete high-availability"]
             wc = {}
             hc = {}
-        elif w:
+        elif w:  # If there are keys to process in 'w'
             for k in w.keys():
                 if path:
-                    path = path + " " + k
+                    path = path + " " + k  # Create a path for nested keys
                 else:
                     path = k
-                wg = w.get(k, {})
-                hg = hc.get(k, {})
-                wr = self._remove_defaults(wg)
 
+                wg = w.get(k, {})  # The wanted configuration for the key 'k'
+                hg = hc.get(k, {})  # The current configuration for the key 'k'
+                wr = self._remove_defaults(wg)  # Remove defaults from 'wg'
+
+                # The pruning logic:
                 if (k in w and hg and (wg is not None and not isinstance(wg, (list, dict)))) or (
                     k in w and hg and isinstance(wg, (list, dict)) and not self._remove_defaults(wg)
                 ):
-                    # self._module.fail_json(msg="W " + str(self.want) + " H " + str(hg) + " K " + k)
+                    # If the condition is met, delete the high-availability setting
                     self.commands.append("delete high-availability " + path)
                     wc.pop(k, {})
                     hc.pop(k, {})
                 elif k in w and hg and isinstance(wg, dict) and self._remove_defaults(wg):
+                    # If 'wg' is a dict and not default, recurse into it
                     (wi, hi, path) = self._prune_stubs(wg, hg, path=k)
-                    # self._module.fail_json(msg="W " + str(wi) + " H " + str(hi) + " K " + path)
+                    wc.update(wi)  # Add the result to the wc dictionary
+                    hc.update(hi)  # Add the result to the hc dictionary
+                elif k in w and hg and isinstance(wg, list) and self._remove_defaults(wg):
+                    # Handle lists similarly, if applicable
+                    if not wg:  # If the list is empty, remove the entry
+                        self.commands.append("delete high-availability " + path)
+                        wc.pop(k, {})
+                        hc.pop(k, {})
+                    else:
+                        for idx, item in enumerate(wg):
+                            item_path = f"{path} {idx}"
+                            wi, hi, _ = self._prune_stubs(item, hg.get(k, []), path=item_path)
+                            wc.update(wi)
+                            hc.update(hi)
 
         return wc, hc, path
 
