@@ -23,6 +23,9 @@ from copy import deepcopy
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    remove_empties,
+)
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.vrrp import (
@@ -108,23 +111,9 @@ class Vrrp(ResourceModule):
         # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " (((()))) have:  " + str(haved))
 
         if self.state in ["overridden", "deleted"]:
-
-            wantg = [((), wantd)]
-
-            while wantg:
-                path, node = wantg.pop()
-
-                if (
-                    path
-                    and isinstance(node, dict)
-                    and any(isinstance(v, (dict, list)) for v in node.values())
-                ):
-                    self._module.fail_json(msg="Path: " + str(path) + " Node: " + str(node))
-
-                if isinstance(node, dict):
-                    for k, v in node.items():
-                        wantg.append((path + (k,), v))
-
+            # self._module.fail_json(msg=self._module.params.get('config', {}))
+            (wantd, haved, path) = self._prune_stubs(self._module.params.get("config", {}), haved)
+            # self._module.fail_json(msg=wantd)
             # wantg = [ ((), wantd) ]
             # while wantg:
             #     path, node = wantg.pop()
@@ -150,7 +139,7 @@ class Vrrp(ResourceModule):
                     want = combine(have, want, recursive=True)
                 self._compare_vsrvs(want, have)
             if self.state in ["deleted"] and k == "disable":
-                want = False
+                want = have
             if self.state in ["rendered"]:
                 have = None
             self.compare(
@@ -174,7 +163,7 @@ class Vrrp(ResourceModule):
         #         have={k: haved.pop(k, {})},
         # )
         self.commands = sorted(list(dict.fromkeys(self.commands)))
-        # self._module.fail_json(msg=self.commands)
+        self._module.fail_json(msg=self.commands)
 
     def _compare_vsrvs(self, want, have):
         """Compare virtual servers of VRRP"""
@@ -577,3 +566,71 @@ class Vrrp(ResourceModule):
                 prefix_key: data,
             },
         ]
+
+    def _prune_stubs(self, w, h, path=None):
+        wc = {}
+        hc = self._remove_defaults(h)
+        # if w:
+        #     wc = self._remove_defaults(w)
+
+        if not w and remove_empties(hc):
+            self.commands = ["delete high-availability"]
+            wc = {}
+            hc = {}
+        elif w:
+            for k in w.keys():
+                if path:
+                    path = path + " " + k
+                else:
+                    path = k
+                wg = w.get(k, {})
+                hg = hc.get(k, {})
+                wr = self._remove_defaults(wg)
+
+                if (k in w and hg and (wg is not None and not isinstance(wg, (list, dict)))) or (
+                    k in w and hg and isinstance(wg, (list, dict)) and not self._remove_defaults(wg)
+                ):
+                    # self._module.fail_json(msg="W " + str(self.want) + " H " + str(hg) + " K " + k)
+                    self.commands.append("delete high-availability " + path)
+                    wc.pop(k, {})
+                    hc.pop(k, {})
+                elif k in w and hg and isinstance(wg, dict) and self._remove_defaults(wg):
+                    (wi, hi, path) = self._prune_stubs(wg, hg, path=k)
+                    # self._module.fail_json(msg="W " + str(wi) + " H " + str(hi) + " K " + path)
+
+        return wc, hc, path
+
+    def _remove_nulls(self, data):
+        """Remove null values but keep empty containers."""
+        if isinstance(data, dict):
+            # Remove None values, keep empty dicts
+            cleaned = {}
+            for k, v in data.items():
+                if v in [None, False, "disabled"]:
+                    continue  # Skip null values
+                cleaned[k] = self._remove_nulls(v)
+            return cleaned
+        return data
+
+    def _remove_defaults(self, data):
+        if isinstance(data, dict):
+            cleaned = {}
+            for k, v in data.items():
+                if v in [None, False, "disabled"]:
+                    continue
+                v = self._remove_defaults(v)
+                cleaned[k] = v
+            return cleaned
+        return data
+
+    def _remove_nulls_keep_empty_parents(self, data):
+        """Remove null/disabled/false/true but keep parent containers even if empty."""
+        if isinstance(data, dict):
+            cleaned = {}
+            for k, v in data.items():
+                if v in [None, False, "disabled"]:
+                    continue
+                v = self._remove_nulls_keep_empty_parents(v)
+                cleaned[k] = v
+            return cleaned
+        return data

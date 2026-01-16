@@ -1,37 +1,47 @@
 ---
 - debug:
-    msg: START vyos_ntp_global deleted integration tests on connection={{ansible_connection }}
-
-- include_tasks: _remove_config.yaml
+    msg: Start vyos_vrrp deleted integration tests ansible_connection={{ ansible_connection }}
 
 - include_tasks: _populate_config.yaml
 
 - block:
-    - name: Delete the provided configuration
+    - name: Delete a vrrp group based on its name name.
       register: result
-      vyos.vyos.vyos_ntp_global: &id001
+      vyos.vyos.vyos_vrrp: &id001
         config:
+          vrrp:
+            groups:
+              - name: "g1"
         state: deleted
 
-    - name: Assert that before dicts were correctly generated
+    - name: Assert that the before dicts were correctly generated
       assert:
         that:
-          - result.changed == true
-          - result.commands == deleted.commands
+          - "{{ merged.before | symmetric_difference(result['before']) |length == 0 }}"
 
-    - name: Assert that the after dicts were correctly generated
-      assert:
-        that:
-          - result.after == {}
+    # - name: Assert that the correct set of commands were generated
+    #   assert:
+    #     that:
+    #       - "{{ deleted_vrrp_group['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
 
-    - name: Delete the existing configuration with the provided running configuration (IDEMPOTENT)
+    # - name: Assert that the after dicts were correctly generated
+    #   assert:
+    #     that:
+    #       - "{{ deleted_afi_all['after'] | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Delete attributes of group (IDEMPOTENT)
       register: result
-      vyos.vyos.vyos_ntp_global: *id001
+      vyos.vyos.vyos_vrrp: *id001
 
     - name: Assert that the previous task was idempotent
       assert:
         that:
-          - result['changed'] == false
+          - result.changed == false
+          - result.commands|length == 0
 
+    # - name: Assert that the before dicts were correctly generated
+    #   assert:
+    #     that:
+    #       - "{{ deleted_afi_all['after'] | symmetric_difference(result['before']) |length == 0 }}"
   always:
     - include_tasks: _remove_config.yaml

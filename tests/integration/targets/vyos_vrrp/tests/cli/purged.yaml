@@ -1,6 +1,6 @@
 ---
 - debug:
-    msg: Start vyos_vrrp deleted integration tests ansible_connection={{ ansible_connection }}
+    msg: Start vyos_vrrp purged / deleted_all integration tests ansible_connection={{ ansible_connection }}
 
 - include_tasks: _populate_config.yaml
 
