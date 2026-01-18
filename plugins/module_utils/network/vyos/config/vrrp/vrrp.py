@@ -112,8 +112,8 @@ class Vrrp(ResourceModule):
 
         if self.state in ["overridden", "deleted"]:
             # self._module.fail_json(msg=self._module.params.get('config', {}))
-            (wantd, haved, path) = self._prune_stubs(self._module.params.get("config", {}), haved)
-            # self._module.fail_json(msg=wantd)
+            (wantd, haved, p) = self._prune_stubs(self._module.params.get("config", {}), haved)
+            # self._module.fail_json(msg=haved)
             # wantg = [ ((), wantd) ]
             # while wantg:
             #     path, node = wantg.pop()
@@ -567,85 +567,127 @@ class Vrrp(ResourceModule):
             },
         ]
 
-        # def _prune_stubs(self, w, h, path=None):
-        #     wc = {}
-        #     hc = self._remove_defaults(h)
-        #     # if w:
-        #     #     wc = self._remove_defaults(w)
+    # def _prune_stubs(self, w, h, path=""): ## Working partially
+    #     wc = {}
+    #     hc = self._remove_defaults(h)
+    #     # if w:
+    #     #     wc = self._remove_defaults(w)
 
-        #     if not w and remove_empties(hc):
-        #         self.commands = ["delete high-availability"]
-        #         wc = {}
-        #         hc = {}
-        #     elif w:
-        #         for k in w.keys():
-        #             if path:
-        #                 path = path + " " + k
-        #             else:
-        #                 path = k
-        #             wg = w.get(k, {})
-        #             hg = hc.get(k, {})
-        #             wr = self._remove_defaults(wg)
+    #     if not w and remove_empties(hc):
+    #         self.commands = ["delete high-availability"]
+    #         return {}, {}, path
+    #     elif w:
+    #         for k in w.keys():
+    #             # if path is not "":
+    #             #     new_path = path + " " + k
+    #             # else:
+    #             #     new_path = k
+    #             new_path = f"{path} * {k}".strip()
+    #             wg = w.get(k, {})
+    #             hg = hc.get(k, {})
+    #             wr = self._remove_defaults(wg)
 
-        #             if (k in w and hg and (wg is not None and not isinstance(wg, (list, dict)))) or (
-        #                 k in w and hg and isinstance(wg, (list, dict)) and not self._remove_defaults(wg)
-        #             ):
-        #                 # self._module.fail_json(msg="W " + str(self.want) + " H " + str(hg) + " K " + k)
-        #                 self.commands.append("delete high-availability " + path)
-        #                 wc.pop(k, {})
-        #                 hc.pop(k, {})
-        #             elif k in w and hg and isinstance(wg, dict) and self._remove_defaults(wg):
-        #                 (wi, hi, path) = self._prune_stubs(wg, hg, path=k)
-        #                 # self._module.fail_json(msg="W " + str(wi) + " H " + str(hi) + " K " + path)
+    #             if (k in w and hg and (wg is not None and not isinstance(wg, (list, dict)))) or (
+    #                 k in w and hg and isinstance(wg, (list, dict)) and not self._remove_defaults(wg)
+    #             ):
+    #                 # self._module.fail_json(msg="W " + str(wg) + " H " + str(hg) + " K " + k)
+    #                 self.commands.append(f"delete high-availability {new_path}")
+    #                 wc[k] = {}
+    #                 hc[k] = {}
+    #                 path = ""
+    #             elif k in w and hg and isinstance(wg, dict) and self._remove_defaults(wg):
+    #                 (wi, hi, path) = self._prune_stubs(wg, hg, new_path)
+    #                 # self._module.fail_json(msg="W " + str(wi) + " H " + str(hi) + " K " + path)
+    #     # self._module.fail_json(msg=path)
+    #     return wc, hc, path
 
-        # return wc, hc, path
+    # def _prune_stubs(self, w, h, path=""):
+    #     wc = {}
+    #     hc = self._remove_defaults(h)
 
-    def _prune_stubs(self, w, h, path=None):
+    #     # 1️⃣ TOTAL REMOVE
+    #     if not w and remove_empties(hc):
+    #         self.commands = ["delete high-availability"]
+    #         return {}, {}, path
+
+    #     for k, wg in (self._remove_nulls_keep_empty_parents(w) or {}).items():
+    #         hg = hc.get(k)
+    #         next_path = f"{path} {k}".strip()
+
+    #         # Key not present on device → nothing to delete
+    #         if hg is None:
+    #             continue
+
+    #         # 2️⃣ SCALAR DELETE (top-level or nested)
+    #         if not isinstance(wg, (dict, list)):
+    #             # self._module.fail_json(msg=w)
+    #             self.commands.append(f"delete high-availability * {next_path}")
+    #             continue  # 🔴 terminal
+
+    #         # 3️⃣ EMPTY DICT / LIST → delete EXACT node
+    #         if not wg:
+    #             # self._module.fail_json(msg=self._remove_nulls_keep_empty_parents(w))
+    #             self.commands.append(f"delete high-availability # {next_path}")
+    #             continue  # 🔴 terminal
+
+    #         # 4️⃣ NON-EMPTY DICT → recurse
+    #         if isinstance(wg, dict) and isinstance(hg, dict):
+    #             wi, hi, _ = self._prune_stubs(wg, hg, next_path)
+    #             if wi:
+    #                 wc[k] = wi
+    #             if hi:
+    #                 hc[k] = hi
+    #             continue
+
+    #         # 5️⃣ Anything else → ignore (defensive)
+    #         wc[k] = wg
+    #         hc[k] = hg
+
+    #     return wc, hc, path
+
+    # Rework
+    def _prune_stubs(self, w, h, path=""):
         wc = {}
-        hc = self._remove_defaults(h)  # This removes default values from 'h'
+        hc = self._remove_defaults(h)
 
-        if not w and remove_empties(hc):  # If 'w' is empty and hc has empty values
+        if not w and remove_empties(hc):
             self.commands = ["delete high-availability"]
-            wc = {}
-            hc = {}
-        elif w:  # If there are keys to process in 'w'
-            for k in w.keys():
-                if path:
-                    path = path + " " + k  # Create a path for nested keys
-                else:
-                    path = k
+            return {}, {}, path
 
-                wg = w.get(k, {})  # The wanted configuration for the key 'k'
-                hg = hc.get(k, {})  # The current configuration for the key 'k'
-                wr = self._remove_defaults(wg)  # Remove defaults from 'wg'
+        for k, wg in (self._remove_nulls(w) or {}).items():
+            next_path = f"{path} {k}".strip()
+            hg = remove_empties(hc).get(k)
 
-                # The pruning logic:
-                if (k in w and hg and (wg is not None and not isinstance(wg, (list, dict)))) or (
-                    k in w and hg and isinstance(wg, (list, dict)) and not self._remove_defaults(wg)
-                ):
-                    # If the condition is met, delete the high-availability setting
-                    self.commands.append("delete high-availability " + path)
-                    wc.pop(k, {})
-                    hc.pop(k, {})
-                elif k in w and hg and isinstance(wg, dict) and self._remove_defaults(wg):
-                    # If 'wg' is a dict and not default, recurse into it
-                    (wi, hi, path) = self._prune_stubs(wg, hg, path=k)
-                    wc.update(wi)  # Add the result to the wc dictionary
-                    hc.update(hi)  # Add the result to the hc dictionary
-                elif k in w and hg and isinstance(wg, list) and self._remove_defaults(wg):
-                    # Handle lists similarly, if applicable
-                    if not wg:  # If the list is empty, remove the entry
-                        self.commands.append("delete high-availability " + path)
-                        wc.pop(k, {})
-                        hc.pop(k, {})
-                    else:
-                        for idx, item in enumerate(wg):
-                            item_path = f"{path} {idx}"
-                            wi, hi, _ = self._prune_stubs(item, hg.get(k, []), path=item_path)
-                            wc.update(wi)
-                            hc.update(hi)
+            if hg is None:
+                continue
+
+            if not isinstance(wg, (dict, list)):
+                self.commands.append(f"delete high-availability * {next_path}")
+                hc.pop(k, None)
+                wc.pop(k, None)
+                continue
+
+            if not wg:
+                self.commands.append(f"delete high-availability # {next_path}")
+                hc.pop(k, None)
+                wc.pop(k, None)
+                continue
+
+            if isinstance(wg, dict) and isinstance(hg, dict):
+                wi, hi, p = self._prune_stubs(wg, hg, next_path)
+
+                if wi:
+                    wc[k] = wi
+
+                # if hi:
+                #     self._module.fail_json(msg=hi)
+                #     hc[k] = hi
+                # else:
+                hc.pop(k, None)
 
         return wc, hc, path
+
+    # rework end
 
     def _remove_nulls(self, data):
         """Remove null values but keep empty containers."""
@@ -653,7 +695,7 @@ class Vrrp(ResourceModule):
             # Remove None values, keep empty dicts
             cleaned = {}
             for k, v in data.items():
-                if v in [None, False, "disabled"]:
+                if v in [None, "disabled"]:
                     continue  # Skip null values
                 cleaned[k] = self._remove_nulls(v)
             return cleaned
