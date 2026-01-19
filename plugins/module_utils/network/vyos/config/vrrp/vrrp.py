@@ -112,17 +112,7 @@ class Vrrp(ResourceModule):
 
         if self.state in ["overridden", "deleted"]:
             # self._module.fail_json(msg=self._module.params.get('config', {}))
-            (wantd, haved, p) = self._prune_stubs(self._module.params.get("config", {}), haved)
-            # self._module.fail_json(msg=haved)
-            # wantg = [ ((), wantd) ]
-            # while wantg:
-            #     path, node = wantg.pop()
-
-            # if path and isinstance(node, dict) and any(isinstance(v, dict) for v in node.values()):
-            #     self._module.fail_json(msg="Path: " + str(path) + " Node: " + str(node))
-
-            #     for k, v in reversed(node.items()):
-            #         wantg.append((path + (k,), v))
+            wantd, haved, p = self._prune_stubs(self._module.params.get("config", {}), haved)
 
         keys = set(wantd) | set(haved)
 
@@ -148,22 +138,8 @@ class Vrrp(ResourceModule):
                 have={k: have},
             )
 
-        # for k, want in wantd.items():
-        #     if k == "vrrp":
-        #         if self.state in ["merged"]:
-        #             want = combine(haved.get(k, {}), want, recursive=True)
-        #         self._compare_vrrp(want, haved.get(k, {}))
-        #     if k == "virtual_servers":
-        #         if self.state in ["merged"]:
-        #             want = combine(haved.get(k, {}), want, recursive=True)
-        #         self._compare_vsrvs(want, haved.get(k, {}))
-        #     self.compare(
-        #         parsers=self.parsers,
-        #         want={k: want},
-        #         have={k: haved.pop(k, {})},
-        # )
         self.commands = sorted(list(dict.fromkeys(self.commands)))
-        self._module.fail_json(msg=self.commands)
+        # self._module.fail_json(msg=self.commands)
 
     def _compare_vsrvs(self, want, have):
         """Compare virtual servers of VRRP"""
@@ -195,6 +171,8 @@ class Vrrp(ResourceModule):
                 wdict = self._find_matching_vsrv(hdict, wlist)
                 if self.state == "deleted" and wdict:
                     wdict = {}
+                elif not wdict:
+                    hdict = {}
                 pairs.append((wdict, hdict))
                 self.compare(
                     parsers=vs_parsers,
@@ -257,7 +235,11 @@ class Vrrp(ResourceModule):
                 # self._module.fail_json(msg=wdict)
 
                 if self.state == "deleted" and wdict:
+                    self._module.fail_json(msg="Want: " + str(wdict))
                     wdict = {}
+                elif not wdict:
+                    hdict = {}
+                    # self._module.fail_json(msg="Want: " + str(wdict))
                 pairs.append((wdict, hdict))
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
             # self._module.fail_json(msg=pairs)
@@ -669,6 +651,21 @@ class Vrrp(ResourceModule):
 
             if not wg:
                 self.commands.append(f"delete high-availability # {next_path}")
+                hc.pop(k, None)
+                wc.pop(k, None)
+                continue
+
+            if isinstance(wg, list) and isinstance(hg, dict):
+                for item in wg:
+                    name = item.get("name")
+                    if not name:
+                        continue
+
+                    if name in hg:
+                        self.commands.append(
+                            f"delete high-availability {next_path} {name}",
+                        )
+
                 hc.pop(k, None)
                 wc.pop(k, None)
                 continue
