@@ -1,0 +1,45 @@
+---
+- debug:
+    msg: Start vyos_vrrp deleted integration tests ansible_connection={{ ansible_connection }}
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Delete a vrrp group and sync_group based on its name name.
+      register: result
+      vyos.vyos.vyos_vrrp: &id001
+        config:
+          vrrp:
+            groups:
+              - name: "g1"
+            sync_groups:
+              - name: "sg1"
+        state: deleted
+
+    - name: Assert that the before dicts were correctly generated
+      assert:
+        that:
+          - "{{ merged.before | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Assert that the correct set of commands were generated
+      assert:
+        that:
+          - "{{ deleted_vrrp_groups['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that the after dicts were correctly generated
+      assert:
+        that:
+          - "{{ deleted_vrrp_groups['after'] | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Delete attributes of group (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vrrp: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result.changed == false
+          - result.commands|length == 0
+
+  always:
+    - include_tasks: _remove_config.yaml

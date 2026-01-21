@@ -1,0 +1,49 @@
+---
+- debug:
+    msg: Start vyos_vrrp deleted integration tests ansible_connection={{ ansible_connection }}
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Delete stub objects.
+      register: result
+      vyos.vyos.vyos_vrrp: &id001
+        config:
+          disable: false
+          vrrp:
+            global_parameters:
+              startup_delay: 32
+              garp: {}
+            groups:
+              - name: g1
+            sync_groups: []
+          virtual_servers: []
+        state: deleted
+
+    - name: Assert that the before dicts were correctly generated
+      assert:
+        that:
+          - "{{ merged.before | symmetric_difference(result['before']) |length == 0 }}"
+
+    - name: Assert that the correct set of commands were generated
+      assert:
+        that:
+          - "{{ deleted_bulk['commands'] | symmetric_difference(result['commands']) |length == 0 }}"
+
+    - name: Assert that the after dicts were correctly generated
+      assert:
+        that:
+          - "{{ deleted_bulk['after'] | symmetric_difference(result['after']) |length == 0 }}"
+
+    - name: Delete stub objects (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vrrp: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result.changed == false
+          - result.commands|length == 0
+
+  always:
+    - include_tasks: _remove_config.yaml
