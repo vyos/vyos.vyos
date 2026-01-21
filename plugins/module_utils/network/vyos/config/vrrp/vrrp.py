@@ -84,9 +84,8 @@ class Vrrp(ResourceModule):
             self.run_commands()
 
         if self.state == "purged":
-            wantd = {"disable": False, "vrrp": {"snmp": "disabled"}}
+            wantd = {"disable": False}
             haved = deepcopy(self.have)
-
             if wantd != haved:
                 self.commands = ["delete high-availability"]
             self.run_commands()
@@ -111,8 +110,8 @@ class Vrrp(ResourceModule):
         # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " (((()))) have:  " + str(haved))
 
         if self.state in ["overridden", "deleted"]:
-            # self._module.fail_json(msg=self._module.params.get('config', {}))
             wantd, haved, p = self._prune_stubs(self._module.params.get("config", {}), haved)
+            # self._module.fail_json(msg=wantd)
 
         keys = set(wantd) | set(haved)
 
@@ -222,7 +221,7 @@ class Vrrp(ResourceModule):
             and want.get("snmp") != "enabled"
             and self.state not in ["deleted", "overridden"]
         ):
-            self.commands.append("delete high-availability vrrp 1 snmp")
+            self.commands.append("delete high-availability vrrp snmp")
 
         hlist = self._extract_leaf_items(have)
         wlist = self._extract_leaf_items(want)
@@ -236,14 +235,12 @@ class Vrrp(ResourceModule):
         if self.state in ["replaced", "deleted", "overridden"]:
             for hdict in hlist:
                 wdict = self._find_matching_vrrp(hdict, wlist)
-                # self._module.fail_json(msg=wdict)
 
                 if self.state == "deleted" and wdict:
-                    self._module.fail_json(msg="Want: " + str(wdict))
                     wdict = {}
                 elif not wdict:
                     hdict = {}
-                    # self._module.fail_json(msg="Want: " + str(wdict))
+
                 pairs.append((wdict, hdict))
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
             # self._module.fail_json(msg=pairs)
@@ -557,7 +554,7 @@ class Vrrp(ResourceModule):
         wc = {}
         hc = self._remove_defaults(h)
 
-        if not w and remove_empties(hc):
+        if not self._remove_nulls(w) and remove_empties(hc):
             self.commands = ["delete high-availability"]
             return {}, {}, path
 
@@ -592,8 +589,21 @@ class Vrrp(ResourceModule):
                             f"delete high-availability {stub} {name}",
                         )
 
-                hc.pop(k, None)
-                wc.pop(k, None)
+                        hg.pop(name, None)
+
+                if hg:
+                    hc[k] = hg
+                else:
+                    hc.pop(k, None)
+
+                if self._remove_nulls(wg):
+                    wc[k] = wg
+                    # self._module.fail_json(msg=str(wc))
+                else:
+                    wc.pop(k, None)
+
+                # hc.pop(k, None)
+                # wc.pop(k, None)
                 continue
 
             if isinstance(wg, dict) and isinstance(hg, dict):
@@ -602,7 +612,11 @@ class Vrrp(ResourceModule):
                 if wi:
                     wc[k] = wi
 
-                hc.pop(k, None)
+                if hi:
+                    hc[k] = hi
+                else:
+                    hc.pop(k, None)
+                # hc.pop(k, None)
 
         return wc, hc, path
 

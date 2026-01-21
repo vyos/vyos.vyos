@@ -26,7 +26,7 @@
         that:
           - "{{ purged.after | symmetric_difference(result['after']) |length == 0 }}"
 
-    - name: Delete attributes of given interfaces (IDEMPOTENT)
+    - name: Purge all the VRRP configuration (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_vrrp: *id001
 
