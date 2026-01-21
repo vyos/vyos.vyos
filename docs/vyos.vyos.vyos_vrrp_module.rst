@@ -1247,7 +1247,7 @@ Parameters
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
                                     <li>enabled</li>
-                                    <li><div style="color: blue"><b>disabled</b>&nbsp;&larr;</div></li>
+                                    <li>disabled</li>
                         </ul>
                 </td>
                 <td>
