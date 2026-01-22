@@ -123,7 +123,7 @@ class Cliconf(CliconfBase):
         return out
 
     def edit_config(
-        self, candidate=None, commit=True, replace=None, comment=None, confirm=None
+        self, candidate=None, commit=True, replace=None, diff=False, comment=None, confirm=None
     ):
         resp = {}
         operations = self.get_device_operations()
