@@ -109,10 +109,38 @@ class Vrrp(ResourceModule):
             self._normalize_lists(entry)
         # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " (((()))) have:  " + str(haved))
 
-        if self.state in ["overridden", "deleted"]:
+        if self.state in ["deleted"]:
             wantd, haved, p = self._prune_stubs(self._module.params.get("config", {}), haved)
-            # self._module.fail_json(msg=wantd)
 
+        if self.state in ["overridden"]:
+            wo = deepcopy(wantd)
+            self._diff_w_h(wo, haved)
+            # self._module.fail_json(msg=wo)
+            extracted = []
+
+            for k1, v1 in wo.items():
+                if not isinstance(v1, dict):
+                    continue
+
+                # level 1: container -> object
+                for name, obj in v1.items():
+                    if isinstance(obj, dict) and not obj:
+                        extracted.append({k1: {name: {}}})
+                        wi, hi, pi = self._prune_stubs({k1: {name: {}}}, haved)
+                        haved = hi
+
+                # level 2: container -> subcontainer -> object
+                for k2, v2 in v1.items():
+                    if not isinstance(v2, dict):
+                        continue
+
+                    for name, obj in v2.items():
+                        if isinstance(obj, dict) and not obj:
+                            extracted.append({k1: {k2: {name: {}}}})
+                            wi, hi, pi = self._prune_stubs({k1: {k2: {name: {}}}}, haved)
+                            haved = hi
+
+        # self._module.fail_json(msg=haved)
         keys = set(wantd) | set(haved)
 
         for k in keys:
@@ -156,7 +184,7 @@ class Vrrp(ResourceModule):
             "virtual_servers.real_server.connection_timeout",
         ]
         pairs = []
-        # self._module.fail_json(msg="Want: " + str(want) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(have))
+        # self._module.fail_json(msg="Want: " + str(want) + "++++++++++++++++ + have:  " + str(have))
 
         hlist = self._extract_named_leafs(have)
         wlist = self._extract_named_leafs(want)
@@ -165,7 +193,7 @@ class Vrrp(ResourceModule):
             hlist = []
         # self._module.fail_json(msg="Want: " + str(wlist) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(hlist))
 
-        if self.state in ["replaced", "deleted", "overridden"]:
+        if self.state in ["replaced", "deleted"]:
             for hdict in hlist:
                 wdict = self._find_matching_vsrv(hdict, wlist)
                 if self.state == "deleted" and wdict:
@@ -179,7 +207,7 @@ class Vrrp(ResourceModule):
                     have={"virtual_servers": hdict},
                 )
             # self._module.fail_json(msg=pairs)
-        if self.state in ["merged", "replaced", "rendered"]:
+        if self.state in ["merged", "replaced", "rendered", "overridden"]:
             for wdict in wlist:
                 hdict = self._find_matching_vsrv(wdict, hlist)
                 pairs.append((wdict, hdict))
@@ -232,7 +260,7 @@ class Vrrp(ResourceModule):
 
         # self.compare(parsers=vrrp_parsers, want={}, have={"vrrp": have})
 
-        if self.state in ["replaced", "deleted", "overridden"]:
+        if self.state in ["replaced", "deleted"]:
             for hdict in hlist:
                 wdict = self._find_matching_vrrp(hdict, wlist)
 
@@ -245,7 +273,7 @@ class Vrrp(ResourceModule):
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
             # self._module.fail_json(msg=pairs)
 
-        if self.state in ["merged", "replaced", "rendered"]:
+        if self.state in ["merged", "replaced", "rendered", "overridden"]:
             for wdict in wlist:
                 hdict = self._find_matching_vrrp(wdict, hlist)
                 pairs.append((wdict, hdict))
@@ -656,3 +684,66 @@ class Vrrp(ResourceModule):
             parts.append(p.replace("_", "-"))
 
         return " ".join(parts)
+
+    # def _diff_w_h(self, w, h):
+
+    #     NAMED_OBJECT_KEYS = {
+    #     "groups",
+    #     "sync_groups",
+    #     "virtual_servers",
+    #     "global_parameters",
+    #     }
+
+    #     if not isinstance(w, dict) or not isinstance(h, dict):
+    #         return w
+
+    #     for key in w.keys() & h.keys():
+    #         wv = w[key]
+    #         hv = h[key]
+
+    #         # --- Named-object containers ---
+    #         if key in NAMED_OBJECT_KEYS and isinstance(wv, dict) and isinstance(hv, dict):
+    #             for name in wv.keys() & hv.keys():
+    #                 if wv[name] != hv[name] and isinstance(wv[name], (dict,list)):
+    #                     wv[name] = {}   # <-- THIS is the key behavior
+    #                 elif wv[name] != hv[name]:
+    #                     wv[name] = None
+    #                 else:
+    #                     # self._module.fail_json(msg=w)
+    #                     wv.pop(name, None)
+    #             continue
+
+    #         # --- Recurse ---
+    #         self._diff_w_h(wv, hv)
+
+    #     return w
+
+    def _diff_w_h(self, w, h):
+
+        NAMED_OBJECT_KEYS = {
+            "groups",
+            "sync_groups",
+            "virtual_servers",
+            "global_parameters",
+        }
+
+        if not isinstance(w, dict) or not isinstance(h, dict):
+            return w
+
+        for key in w.keys() & h.keys():
+            wv = w[key]
+            hv = h[key]
+
+            # --- Named-object containers ---
+            if key in NAMED_OBJECT_KEYS and isinstance(wv, dict) and isinstance(hv, dict):
+                for name in wv.keys() & hv.keys():
+                    if wv[name] != hv[name] and isinstance(wv[name], (dict, list)):
+                        wv[name] = {}  # empty only if different
+                    elif wv[name] != hv[name]:
+                        wv[name] = None  # scalar difference
+                continue
+
+            # --- Recurse ---
+            self._diff_w_h(wv, hv)
+
+        return w
