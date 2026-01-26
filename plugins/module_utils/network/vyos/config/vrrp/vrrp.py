@@ -115,8 +115,6 @@ class Vrrp(ResourceModule):
         if self.state in ["overridden"]:
             wo = deepcopy(wantd)
             self._diff_w_h(wo, haved)
-            # self._module.fail_json(msg=wo)
-            extracted = []
 
             for k1, v1 in wo.items():
                 if not isinstance(v1, dict):
@@ -125,7 +123,6 @@ class Vrrp(ResourceModule):
                 # level 1: container -> object
                 for name, obj in v1.items():
                     if isinstance(obj, dict) and not obj:
-                        extracted.append({k1: {name: {}}})
                         wi, hi, pi = self._prune_stubs({k1: {name: {}}}, haved)
                         haved = hi
 
@@ -136,11 +133,9 @@ class Vrrp(ResourceModule):
 
                     for name, obj in v2.items():
                         if isinstance(obj, dict) and not obj:
-                            extracted.append({k1: {k2: {name: {}}}})
                             wi, hi, pi = self._prune_stubs({k1: {k2: {name: {}}}}, haved)
                             haved = hi
 
-        # self._module.fail_json(msg=haved)
         keys = set(wantd) | set(haved)
 
         for k in keys:
@@ -157,6 +152,8 @@ class Vrrp(ResourceModule):
                 self._compare_vsrvs(want, have)
             if self.state in ["deleted"] and k == "disable":
                 want = have
+            if self.state in ["overridden"] and k == "disable":
+                self._module.fail_json(msg=have)
             if self.state in ["rendered"]:
                 have = None
             self.compare(
@@ -166,7 +163,7 @@ class Vrrp(ResourceModule):
             )
 
         self.commands = sorted(list(dict.fromkeys(self.commands)))
-        # self._module.fail_json(msg=self.commands)
+        self._module.fail_json(msg=self.commands)
 
     def _compare_vsrvs(self, want, have):
         """Compare virtual servers of VRRP"""
