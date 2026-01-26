@@ -334,56 +334,281 @@ class TestVyosVrrpModule(TestVyosModule):
     #     )
     #     self.execute_module(changed=False, commands=[])
 
-    # def test_ntp_overridden(self):
-    #     set_module_args(
-    #         dict(
-    #             config=dict(
-    #                 allow_clients=["10.9.9.0/24"],
-    #                 listen_addresses=["10.9.9.1"],
-    #                 servers=[
-    #                     dict(server="server9"),
-    #                     dict(server="server6", options=["noselect", "dynamic"]),
-    #                     dict(server="time1.vyos.net"),
-    #                     dict(server="time2.vyos.net"),
-    #                     dict(server="time3.vyos.net"),
-    #                 ],
-    #             ),
-    #             state="overridden",
-    #         ),
-    #     )
-    #     commands = [
-    #         "delete system ntp allow-clients address 10.1.1.0/24",
-    #         "delete system ntp allow-clients address 10.1.2.0/24",
-    #         "delete system ntp listen-address 10.2.3.1",
-    #         "delete system ntp listen-address 10.4.3.1",
-    #         "delete system ntp server server1",
-    #         "delete system ntp server server3",
-    #         "set system ntp allow-clients address 10.9.9.0/24",
-    #         "set system ntp listen-address 10.9.9.1",
-    #         "set system ntp server server9",
-    #         "set system ntp server server6 noselect",
-    #         "set system ntp server server6 dynamic",
-    #     ]
-    #     self.execute_module(changed=True, commands=commands)
+    def test_vrrp_overridden(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    disable=False,
+                    vrrp=dict(
+                        snmp="disabled",
+                        global_parameters=dict(
+                            startup_delay=32,
+                            version=3,
+                            garp=dict(
+                                interval=30,
+                                master_delay=11,
+                                master_refresh=100,
+                                master_refresh_repeat=200,
+                                master_repeat=6,
+                            ),
+                        ),
+                        groups=[
+                            dict(
+                                name="g1",
+                                description="Group_1",
+                                interface="eth2",
+                                address="1.1.1.1",
+                                disable=True,
+                                no_preempt=True,
+                                rfc3768_compatibility=True,
+                                vrid=20,
+                                peer_address="192.168.1.3",
+                                advertise_interval=10,
+                                priority=100,
+                                garp=dict(
+                                    interval=20,
+                                    master_delay=5,
+                                    master_refresh=50,
+                                    master_refresh_repeat=100,
+                                    master_repeat=3,
+                                ),
+                                authentication=dict(
+                                    type="plaintext-password",
+                                    password="testpass",
+                                ),
+                                transition_script=dict(
+                                    master="/var/tmp/script.sh",
+                                    backup="/var/tmp/script.sh",
+                                    fault="/var/tmp/script.sh",
+                                    stop="/var/tmp/script.sh",
+                                ),
+                                track=dict(
+                                    exclude_vrrp_interface=True,
+                                ),
+                            ),
+                        ],
+                        sync_groups=[
+                            dict(
+                                name="sg1",
+                                member=["g1", "g2"],
+                                transition_script=dict(
+                                    master="/var/tmp/script.sh",
+                                    backup="/var/tmp/script.sh",
+                                    fault="/var/tmp/script.sh",
+                                    stop="/var/tmp/script.sh",
+                                ),
+                                health_check=dict(
+                                    failure_count=4,
+                                    interval=10,
+                                    ping="192.168.1.100",
+                                    script="/var/tmp/script.sh",
+                                ),
+                            ),
+                        ],
+                    ),
+                    virtual_servers=[
+                        dict(
+                            name="s1",
+                            address="10.10.10.15",
+                            algorithm="round-robin",
+                            delay_loop=60,
+                            fwmark=12,
+                            forward_method="direct",
+                            persistence_timeout=30,
+                            protocol="tcp",
+                            real_server=[
+                                dict(
+                                    address="10.10.10.1",
+                                    connection_timeout=61,
+                                    port=443,
+                                ),
+                            ],
+                        ),
+                    ],
+                ),
+                state="overridden",
+            ),
+        )
+        commands = [
+            "delete high-availability disable",
+            "delete high-availability virtual-server s1",
+            "delete high-availability vrrp global-parameters garp",
+            "delete high-availability vrrp group g1",
+            "delete high-availability vrrp sync-group sg1",
+            "set high-availability virtual-server s1 address 10.10.10.15",
+            "set high-availability virtual-server s1 algorithm round-robin",
+            "set high-availability virtual-server s1 delay-loop 60",
+            "set high-availability virtual-server s1 forward-method direct",
+            "set high-availability virtual-server s1 fwmark 12",
+            "set high-availability virtual-server s1 persistence-timeout 30",
+            "set high-availability virtual-server s1 protocol tcp",
+            "set high-availability virtual-server s1 real-server 10.10.10.1 connection-timeout 61",
+            "set high-availability virtual-server s1 real-server 10.10.10.1 port 443",
+            "set high-availability vrrp global-parameters garp interval 30",
+            "set high-availability vrrp global-parameters garp master-delay 11",
+            "set high-availability vrrp global-parameters garp master-refresh 100",
+            "set high-availability vrrp global-parameters garp master-refresh-repeat 200",
+            "set high-availability vrrp global-parameters garp master-repeat 6",
+            "set high-availability vrrp global-parameters startup-delay 32",
+            "set high-availability vrrp group g1 address 1.1.1.1",
+            "set high-availability vrrp group g1 advertise-interval 10",
+            "set high-availability vrrp group g1 authentication password testpass",
+            "set high-availability vrrp group g1 authentication type plaintext-password",
+            "set high-availability vrrp group g1 description 'Group_1'",
+            "set high-availability vrrp group g1 disable",
+            "set high-availability vrrp group g1 garp interval 20",
+            "set high-availability vrrp group g1 garp master-delay 5",
+            "set high-availability vrrp group g1 garp master-refresh 50",
+            "set high-availability vrrp group g1 garp master-refresh-repeat 100",
+            "set high-availability vrrp group g1 garp master-repeat 3",
+            "set high-availability vrrp group g1 interface eth2",
+            "set high-availability vrrp group g1 no-preempt",
+            "set high-availability vrrp group g1 peer-address 192.168.1.3",
+            "set high-availability vrrp group g1 priority 100",
+            "set high-availability vrrp group g1 rfc3768-compatibility",
+            "set high-availability vrrp group g1 track exclude-vrrp-interface",
+            "set high-availability vrrp group g1 transition-script backup /var/tmp/script.sh",
+            "set high-availability vrrp group g1 transition-script fault /var/tmp/script.sh",
+            "set high-availability vrrp group g1 transition-script master /var/tmp/script.sh",
+            "set high-availability vrrp group g1 transition-script stop /var/tmp/script.sh",
+            "set high-availability vrrp group g1 vrid 20",
+            "set high-availability vrrp sync-group sg1 health-check failure-count 4",
+            "set high-availability vrrp sync-group sg1 health-check interval 10",
+            "set high-availability vrrp sync-group sg1 health-check ping 192.168.1.100",
+            "set high-availability vrrp sync-group sg1 health-check script /var/tmp/script.sh",
+            "set high-availability vrrp sync-group sg1 member g1",
+            "set high-availability vrrp sync-group sg1 member g2",
+            "set high-availability vrrp sync-group sg1 transition-script backup /var/tmp/script.sh",
+            "set high-availability vrrp sync-group sg1 transition-script fault /var/tmp/script.sh",
+            "set high-availability vrrp sync-group sg1 transition-script master /var/tmp/script.sh",
+            "set high-availability vrrp sync-group sg1 transition-script stop /var/tmp/script.sh",
+        ]
+        self.execute_module(changed=True, commands=commands)
 
-    # def test_ntp_overridden_idempotent(self):
-    #     set_module_args(
-    #         dict(
-    #             config=dict(
-    #                 allow_clients=["10.1.1.0/24", "10.1.2.0/24"],
-    #                 listen_addresses=["10.2.3.1", "10.4.3.1"],
-    #                 servers=[
-    #                     dict(server="server1"),
-    #                     dict(server="server3", options=["noselect", "dynamic"]),
-    #                     dict(server="time1.vyos.net"),
-    #                     dict(server="time2.vyos.net"),
-    #                     dict(server="time3.vyos.net"),
-    #                 ],
-    #             ),
-    #             state="overridden",
-    #         ),
-    #     )
-    #     self.execute_module(changed=False, commands=[])
+    def test_vrrp_overridden_idempotent(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    disable=True,
+                    virtual_servers=[
+                        dict(
+                            address="10.10.10.1",
+                            algorithm="round-robin",
+                            delay_loop=60,
+                            forward_method="direct",
+                            fwmark=10,
+                            name="s1",
+                            persistence_timeout="30",
+                            protocol="tcp",
+                            real_server=[
+                                dict(
+                                    address="10.10.50.1",
+                                    port=443,
+                                    health_check_script="/var/tmp/script.sh",
+                                ),
+                            ],
+                        ),
+                        dict(
+                            address="10.10.10.2",
+                            name="s2",
+                            port=81,
+                            real_server=[
+                                dict(
+                                    address="real1",
+                                    port=8081,
+                                    connection_timeout=5,
+                                ),
+                                dict(
+                                    address="real2",
+                                    port=8080,
+                                ),
+                            ],
+                        ),
+                    ],
+                    vrrp=dict(
+                        global_parameters=dict(
+                            garp=dict(
+                                interval=30,
+                                master_delay=10,
+                                master_refresh=100,
+                                master_refresh_repeat=200,
+                                master_repeat=5,
+                            ),
+                            version="3",
+                            startup_delay=30,
+                        ),
+                        groups=[
+                            dict(
+                                authentication=dict(
+                                    password="testpass",
+                                    type="plaintext-password",
+                                ),
+                                address="1.1.1.1",
+                                advertise_interval=10,
+                                description="Group_1",
+                                disable=True,
+                                excluded_address=[
+                                    "192.168.1.8",
+                                    "192.168.1.7 interface eth3",
+                                ],
+                                garp=dict(
+                                    interval=20,
+                                    master_delay=5,
+                                    master_refresh=50,
+                                    master_refresh_repeat=100,
+                                    master_repeat=3,
+                                ),
+                                health_check=dict(
+                                    failure_count=3,
+                                    interval=10,
+                                    ping="192.168.1.5",
+                                    script="script.sh",
+                                ),
+                                hello_source_address="192.168.1.2",
+                                interface="eth2",
+                                name="g1",
+                                no_preempt=True,
+                                peer_address="192.168.1.3",
+                                priority=100,
+                                rfc3768_compatibility=True,
+                                track=dict(
+                                    exclude_vrrp_interface=True,
+                                    interface=["eth1"],
+                                ),
+                                transition_script=dict(
+                                    backup="/var/tmp/script.sh",
+                                    fault="/var/tmp/script.sh",
+                                    master="/var/tmp/script.sh",
+                                    stop="/var/tmp/script.sh",
+                                ),
+                                vrid=20,
+                            ),
+                        ],
+                        snmp="enabled",
+                        sync_groups=[
+                            dict(
+                                health_check=dict(
+                                    failure_count=3,
+                                    interval=10,
+                                    ping="192.168.1.1",
+                                    script="/var/tmp/script.sh",
+                                ),
+                                member=["g1"],
+                                name="sg1",
+                                transition_script=dict(
+                                    backup="/var/tmp/script.sh",
+                                    fault="/var/tmp/script.sh",
+                                    master="/var/tmp/script.sh",
+                                    stop="/var/tmp/script.sh",
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+                state="overridden",
+            ),
+        )
+        self.execute_module(changed=False, commands=[])
 
     def test_vrrp_rendered(self):
         set_module_args(
