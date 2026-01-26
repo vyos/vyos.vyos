@@ -1128,35 +1128,56 @@ class TestVyosVrrpModule(TestVyosModule):
 
         self.assertEqual(gathered_list, result["gathered"])
 
-    # def test_ntp_deleted(self):
-    #     # Delete the subsections that we include (listen_addresses and servers)
-    #     set_module_args(
-    #         dict(
-    #             config=dict(
-    #                 allow_clients=["10.1.1.0/24"],
-    #                 listen_addresses=["10.2.3.1"],
-    #                 servers=[
-    #                     dict(server="server1"),
-    #                     dict(server="server3", options=["noselect"]),
-    #                     dict(server="time1.vyos.net"),
-    #                     dict(server="time2.vyos.net"),
-    #                     dict(server="time3.vyos.net"),
-    #                 ],
-    #             ),
-    #             state="deleted",
-    #         ),
-    #     )
-    #     commands = [
-    #         "delete system ntp allow-clients",  # 10.1.1.0/24",
-    #         "delete system ntp listen-address",  # 10.2.3.1",
-    #         "delete system ntp server server1",
-    #         "delete system ntp server server3",
-    #         "delete system ntp server time1.vyos.net",
-    #         "delete system ntp server time2.vyos.net",
-    #         "delete system ntp server time3.vyos.net",
-    #         "delete system ntp",
-    #     ]
-    #     self.execute_module(changed=True, commands=commands)
+    def test_vrrp_groups_deleted(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    vrrp=dict(
+                        groups=[
+                            dict(name="g1"),
+                        ],
+                        sync_groups=[
+                            dict(name="sg1"),
+                        ],
+                    ),
+                ),
+                state="deleted",
+            ),
+        )
+        commands = [
+            "delete high-availability vrrp group g1",
+            "delete high-availability vrrp sync-group sg1",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vrrp_objs_deleted(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    disable=False,
+                    vrrp=dict(
+                        global_parameters=dict(
+                            startup_delay=32,
+                            garp=dict(),
+                        ),
+                        groups=[
+                            dict(name="g1"),
+                        ],
+                        sync_groups=[],
+                    ),
+                    virtual_servers=[],
+                ),
+                state="deleted",
+            ),
+        )
+        commands = [
+            "delete high-availability virtual-server",
+            "delete high-availability vrrp global-parameters garp",
+            "delete high-availability vrrp global-parameters startup-delay",
+            "delete high-availability vrrp group g1",
+            "delete high-availability vrrp sync-group",
+        ]
+        self.execute_module(changed=True, commands=commands)
 
     def test_vrrp_deleted_all(self):
         set_module_args(

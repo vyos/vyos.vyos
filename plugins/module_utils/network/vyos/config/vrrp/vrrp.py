@@ -617,7 +617,7 @@ class Vrrp(ResourceModule):
                 else:
                     hc.pop(k, None)
 
-                if self._remove_nulls(wg):
+                if self._remove_defaults(wg):
                     wc[k] = wg
                 else:
                     wc.pop(k, None)
