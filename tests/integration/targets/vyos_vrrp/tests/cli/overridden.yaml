@@ -16,21 +16,21 @@
     - vyos.vyos.vyos_facts:
         gather_network_resources: vrrp
 
-    # - name: Verify that the configuration was correctly overridden
-    #   assert:
-    #     that:
-    #       - result.changed == true
-    #       - result.after == ansible_facts['network_resources']['vrrp']
-    #       - result.after == overridden.after
+    - name: Verify that the configuration was correctly overridden
+      assert:
+        that:
+          - result.changed == true
+          - result.after == ansible_facts['network_resources']['vrrp']
+          - result.after == overridden.after
 
-    # - name: Override the existing configuration with the provided running configuration (IDEMPOTENT)
-    #   register: result
-    #   vyos.vyos.vyos_vrrp: *id001
+    - name: Override the existing configuration with the provided running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vrrp: *id001
 
-    # - name: Assert that the previous task was idempotent
-    #   assert:
-    #     that:
-    #       - result['changed'] == false
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
 
   always:
     - include_tasks: _remove_config.yaml

@@ -494,9 +494,6 @@ overridden:
           peer_address: "192.168.1.3"
           advertise_interval: 10
           priority: 100
-          excluded_address:
-            - "192.168.1.7 interface eth3"
-            - "192.168.1.8"
           garp:
             interval: 20
             master_delay: 5
@@ -513,9 +510,6 @@ overridden:
             stop: "/var/tmp/script.sh"
           track:
             exclude_vrrp_interface: true
-            interface:
-              - eth0
-              - eth1
       sync_groups:
         - name: "sg1"
           member:
@@ -544,3 +538,96 @@ overridden:
           - address: "10.10.10.1"
             connection_timeout: 61
             port: 443
+  after:
+    disable: false
+    virtual_servers:
+      - address: "10.10.10.15"
+        algorithm: round-robin
+        delay_loop: 60
+        forward_method: direct
+        fwmark: 12
+        name: s1
+        persistence_timeout: 30
+        protocol: tcp
+        real_server:
+          - address: "10.10.10.1"
+            connection_timeout: 61
+            port: 443
+      - address: "10.10.10.2"
+        name: s2
+        port: 81
+        real_server:
+          - address: real1
+            connection_timeout: 5
+            port: 8081
+          - address: real2
+            port: 8080
+    vrrp:
+      global_parameters:
+        garp:
+          interval: 30
+          master_delay: 11
+          master_refresh: 100
+          master_refresh_repeat: 200
+          master_repeat: 6
+        startup_delay: 32
+        version: "3"
+      groups:
+        - address: "1.1.1.1"
+          advertise_interval: 10
+          authentication:
+            password: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+            type: plaintext-password
+          description: Group_1
+          disable: true
+          garp:
+            interval: 20
+            master_delay: 5
+            master_refresh: 50
+            master_refresh_repeat: 100
+            master_repeat: 3
+          interface: eth2
+          name: g1
+          no_preempt: true
+          peer_address: "192.168.1.3"
+          priority: 100
+          rfc3768_compatibility: true
+          track:
+            exclude_vrrp_interface: true
+          transition_script:
+            backup: /var/tmp/script.sh
+            fault: /var/tmp/script.sh
+            master: /var/tmp/script.sh
+            stop: /var/tmp/script.sh
+          vrid: 20
+
+        - address: "2.2.2.2"
+          description: Group_2
+          disable: false
+          health_check:
+            failure_count: 5
+            interval: 15
+            ping: "192.168.1.100"
+            script: /var/tmp/script.sh
+          hello_source_address: "2.2.2.2"
+          interface: eth1
+          name: g2
+          no_preempt: false
+          rfc3768_compatibility: false
+          vrid: 11
+
+      sync_groups:
+        - health_check:
+            failure_count: 4
+            interval: 10
+            ping: "192.168.1.100"
+            script: /var/tmp/script.sh
+          member:
+            - g1
+            - g2
+          name: sg1
+          transition_script:
+            backup: /var/tmp/script.sh
+            fault: /var/tmp/script.sh
+            master: /var/tmp/script.sh
+            stop: /var/tmp/script.sh

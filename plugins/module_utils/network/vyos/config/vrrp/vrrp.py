@@ -107,7 +107,7 @@ class Vrrp(ResourceModule):
             self._virtual_servers_list_to_dict(entry)
             self._vrrp_sync_groups_list_to_dict(entry)
             self._normalize_lists(entry)
-        # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " (((()))) have:  " + str(haved))
+        # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " ++++++++++++ have:  " + str(haved))
 
         if self.state in ["deleted"]:
             wantd, haved, p = self._prune_stubs(self._module.params.get("config", {}), haved)
@@ -116,17 +116,18 @@ class Vrrp(ResourceModule):
             wo = deepcopy(wantd)
             self._diff_w_h(wo, haved)
 
+            haved_disable = haved.get("disable")
+
             for k1, v1 in wo.items():
+
                 if not isinstance(v1, dict):
                     continue
 
-                # level 1: container -> object
                 for name, obj in v1.items():
                     if isinstance(obj, dict) and not obj:
                         wi, hi, pi = self._prune_stubs({k1: {name: {}}}, haved)
                         haved = hi
 
-                # level 2: container -> subcontainer -> object
                 for k2, v2 in v1.items():
                     if not isinstance(v2, dict):
                         continue
@@ -136,9 +137,13 @@ class Vrrp(ResourceModule):
                             wi, hi, pi = self._prune_stubs({k1: {k2: {name: {}}}}, haved)
                             haved = hi
 
+            if haved_disable is not None:
+                haved["disable"] = haved_disable
+
         keys = set(wantd) | set(haved)
 
         for k in keys:
+
             want = wantd.get(k, {})
             have = haved.get(k, {})
 
@@ -146,16 +151,19 @@ class Vrrp(ResourceModule):
                 if self.state in ["merged"]:
                     want = combine(have, want, recursive=True)
                 self._compare_vrrp(want, have)
+
             if k == "virtual_servers":
                 if self.state in ["merged"]:
                     want = combine(have, want, recursive=True)
                 self._compare_vsrvs(want, have)
+
             if self.state in ["deleted"] and k == "disable":
                 want = have
-            if self.state in ["overridden"] and k == "disable":
-                self._module.fail_json(msg=have)
+            if self.state in ["overridden"] and k == "disable" and not want:
+                want = False
             if self.state in ["rendered"]:
                 have = None
+
             self.compare(
                 parsers=self.parsers,
                 want={k: want},
@@ -163,7 +171,7 @@ class Vrrp(ResourceModule):
             )
 
         self.commands = sorted(list(dict.fromkeys(self.commands)))
-        self._module.fail_json(msg=self.commands)
+        # self._module.fail_json(msg=self.commands)
 
     def _compare_vsrvs(self, want, have):
         """Compare virtual servers of VRRP"""
@@ -197,7 +205,7 @@ class Vrrp(ResourceModule):
                     wdict = {}
                 elif not wdict:
                     hdict = {}
-                pairs.append((wdict, hdict))
+                # pairs.append((wdict, hdict))
                 self.compare(
                     parsers=vs_parsers,
                     want={"virtual_servers": wdict},
@@ -207,7 +215,7 @@ class Vrrp(ResourceModule):
         if self.state in ["merged", "replaced", "rendered", "overridden"]:
             for wdict in wlist:
                 hdict = self._find_matching_vsrv(wdict, hlist)
-                pairs.append((wdict, hdict))
+                # pairs.append((wdict, hdict))
                 self.compare(
                     parsers=vs_parsers,
                     want={"virtual_servers": wdict},
@@ -266,14 +274,14 @@ class Vrrp(ResourceModule):
                 elif not wdict:
                     hdict = {}
 
-                pairs.append((wdict, hdict))
+                # pairs.append((wdict, hdict))
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
             # self._module.fail_json(msg=pairs)
 
         if self.state in ["merged", "replaced", "rendered", "overridden"]:
             for wdict in wlist:
                 hdict = self._find_matching_vrrp(wdict, hlist)
-                pairs.append((wdict, hdict))
+                # pairs.append((wdict, hdict))
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
 
         # self._module.fail_json(msg=pairs)
@@ -403,7 +411,6 @@ class Vrrp(ResourceModule):
             if not name:
                 return None
 
-            # --- real_server case ---
             if "real_server" in item:
                 rs = item["real_server"]
                 if not isinstance(rs, dict) or "address" not in rs:
@@ -411,15 +418,12 @@ class Vrrp(ResourceModule):
 
                 addr = rs["address"]
 
-                # attribute path under real_server
                 for k in rs:
                     if k != "address":
                         return ("real_server", name, addr, k)
 
-                # address-only (rare but valid)
                 return ("real_server", name, addr, None)
 
-            # --- flat attribute ---
             for k in item:
                 if k != "name":
                     return ("attr", name, k)
@@ -445,22 +449,18 @@ class Vrrp(ResourceModule):
 
             sig = [container]
 
-            # identity (group / sync_group name)
             if isinstance(inner, dict) and "name" in inner:
                 sig.append(("name", inner["name"]))
 
-            # find the real leaf
             if isinstance(inner, dict):
                 for k, v in inner.items():
                     if k == "name":
                         continue
 
-                    # flat leaf (e.g. vrid, address)
                     if not isinstance(v, dict):
                         sig.append(k)
                         break
 
-                    # nested leaf (e.g. health_check.interval)
                     sig.append(k)
                     for leaf in v:
                         sig.append(leaf)
@@ -485,11 +485,9 @@ class Vrrp(ResourceModule):
         if isinstance(node, dict):
             for k, v in node.items():
                 if isinstance(v, list):
-                    # sort the list if it contains only scalars
                     if all(not isinstance(i, (dict, list)) for i in v):
                         node[k] = sorted(v)
                     else:
-                        # recurse into each item if the list contains dicts
                         for item in v:
                             self._normalize_lists(item)
                 elif isinstance(v, dict):
@@ -498,33 +496,33 @@ class Vrrp(ResourceModule):
             for item in node:
                 self._normalize_lists(item)
 
-    def project_structure(self, have, want):
-        """
-        Project the structure of `have` onto `want`.
+    # def project_structure(self, have, want):
+    #     """
+    #     Project the structure of `have` onto `want`.
 
-        - Existing values in `want` are preserved
-        - Missing paths are created with empty values
-        """
-        if not isinstance(have, dict):
-            return want
+    #     - Existing values in `want` are preserved
+    #     - Missing paths are created with empty values
+    #     """
+    #     if not isinstance(have, dict):
+    #         return want
 
-        if want is None or not isinstance(want, dict):
-            want = {}
+    #     if want is None or not isinstance(want, dict):
+    #         want = {}
 
-        for key, have_val in have.items():
-            if key not in want:
-                want[key] = self.empty_like(have_val)
-            else:
-                want[key] = self.project_structure(have_val, want[key])
+    #     for key, have_val in have.items():
+    #         if key not in want:
+    #             want[key] = self.empty_like(have_val)
+    #         else:
+    #             want[key] = self.project_structure(have_val, want[key])
 
-        return want
+    #     return want
 
-    def empty_like(self, value):
-        if isinstance(value, dict):
-            return {}
-        if isinstance(value, list):
-            return []
-        return None
+    # def empty_like(self, value):
+    #     if isinstance(value, dict):
+    #         return {}
+    #     if isinstance(value, list):
+    #         return []
+    #     return None
 
     def _extract_named_leafs(self, data, parent_name=None, prefix_key=None):
         results = []
@@ -553,7 +551,6 @@ class Vrrp(ResourceModule):
                     )
             return results
 
-        # Generic dict handling
         if isinstance(data, dict):
             current_name = data.get("name", parent_name)
 
@@ -567,7 +564,6 @@ class Vrrp(ResourceModule):
 
             return results
 
-        # Primitive leaf
         return [
             {
                 "name": parent_name,
@@ -579,11 +575,11 @@ class Vrrp(ResourceModule):
         wc = {}
         hc = self._remove_defaults(h)
 
-        if not self._remove_nulls(w) and remove_empties(hc):
+        if not self._remove_defaults(w) and remove_empties(hc):
             self.commands = ["delete high-availability"]
             return {}, {}, path
 
-        for k, wg in (self._remove_nulls(w) or {}).items():
+        for k, wg in (self._remove_defaults(w) or {}).items():
             next_path = f"{path} {k}".strip()
             stub = self._cli_path(next_path)
             hg = remove_empties(hc).get(k)
@@ -623,7 +619,6 @@ class Vrrp(ResourceModule):
 
                 if self._remove_nulls(wg):
                     wc[k] = wg
-                    # self._module.fail_json(msg=str(wc))
                 else:
                     wc.pop(k, None)
 
@@ -645,17 +640,17 @@ class Vrrp(ResourceModule):
 
         return wc, hc, path
 
-    def _remove_nulls(self, data):
-        """Remove null values but keep empty containers."""
-        if isinstance(data, dict):
-            # Remove None values, keep empty dicts
-            cleaned = {}
-            for k, v in data.items():
-                if v in [None, "disabled", False]:
-                    continue  # Skip null values
-                cleaned[k] = self._remove_nulls(v)
-            return cleaned
-        return data
+    # def _remove_nulls(self, data):
+    #     """Remove null values but keep empty containers."""
+    #     if isinstance(data, dict):
+    #         # Remove None values, keep empty dicts
+    #         cleaned = {}
+    #         for k, v in data.items():
+    #             if v in [None, "disabled", False]:
+    #                 continue  # Skip null values
+    #             cleaned[k] = self._remove_nulls(v)
+    #         return cleaned
+    #     return data
 
     def _remove_defaults(self, data):
         if isinstance(data, dict):
@@ -682,39 +677,6 @@ class Vrrp(ResourceModule):
 
         return " ".join(parts)
 
-    # def _diff_w_h(self, w, h):
-
-    #     NAMED_OBJECT_KEYS = {
-    #     "groups",
-    #     "sync_groups",
-    #     "virtual_servers",
-    #     "global_parameters",
-    #     }
-
-    #     if not isinstance(w, dict) or not isinstance(h, dict):
-    #         return w
-
-    #     for key in w.keys() & h.keys():
-    #         wv = w[key]
-    #         hv = h[key]
-
-    #         # --- Named-object containers ---
-    #         if key in NAMED_OBJECT_KEYS and isinstance(wv, dict) and isinstance(hv, dict):
-    #             for name in wv.keys() & hv.keys():
-    #                 if wv[name] != hv[name] and isinstance(wv[name], (dict,list)):
-    #                     wv[name] = {}   # <-- THIS is the key behavior
-    #                 elif wv[name] != hv[name]:
-    #                     wv[name] = None
-    #                 else:
-    #                     # self._module.fail_json(msg=w)
-    #                     wv.pop(name, None)
-    #             continue
-
-    #         # --- Recurse ---
-    #         self._diff_w_h(wv, hv)
-
-    #     return w
-
     def _diff_w_h(self, w, h):
 
         NAMED_OBJECT_KEYS = {
@@ -731,16 +693,12 @@ class Vrrp(ResourceModule):
             wv = w[key]
             hv = h[key]
 
-            # --- Named-object containers ---
             if key in NAMED_OBJECT_KEYS and isinstance(wv, dict) and isinstance(hv, dict):
                 for name in wv.keys() & hv.keys():
                     if wv[name] != hv[name] and isinstance(wv[name], (dict, list)):
-                        wv[name] = {}  # empty only if different
+                        wv[name] = {}
                     elif wv[name] != hv[name]:
-                        wv[name] = None  # scalar difference
+                        wv[name] = None
                 continue
-
-            # --- Recurse ---
             self._diff_w_h(wv, hv)
-
         return w
