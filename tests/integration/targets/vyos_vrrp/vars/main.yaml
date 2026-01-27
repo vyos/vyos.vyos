@@ -600,7 +600,6 @@ overridden:
             master: /var/tmp/script.sh
             stop: /var/tmp/script.sh
           vrid: 20
-
         - address: "2.2.2.2"
           description: Group_2
           disable: false
@@ -615,7 +614,6 @@ overridden:
           no_preempt: false
           rfc3768_compatibility: false
           vrid: 11
-
       sync_groups:
         - health_check:
             failure_count: 4
@@ -631,3 +629,21 @@ overridden:
             fault: /var/tmp/script.sh
             master: /var/tmp/script.sh
             stop: /var/tmp/script.sh
+
+replaced:
+  commands:
+    - delete high-availability vrrp group g1 disable
+    - delete high-availability vrrp group g1 no-preempt
+    - delete high-availability vrrp group g1 rfc3768-compatibility
+    - set high-availability disable
+    - set high-availability virtual-server s1 address 10.10.10.5
+    - set high-availability virtual-server s1 real-server 10.10.50.2 port 8443
+    - set high-availability virtual-server s2 persistence-timeout 30
+    - set high-availability virtual-server s2 protocol tcp
+    - set high-availability virtual-server s3 address 10.10.10.3
+    - set high-availability virtual-server s3 port 88
+    - set high-availability virtual-server s3 protocol udp
+    - set high-availability vrrp global-parameters garp master-repeat 6
+    - set high-availability vrrp global-parameters startup-delay 30
+    - set high-availability vrrp snmp
+    - set high-availability vrrp sync-group sg1 health-check failure-count 5

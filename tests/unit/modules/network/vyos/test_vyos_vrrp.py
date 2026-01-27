@@ -270,50 +270,86 @@ class TestVyosVrrpModule(TestVyosModule):
 
         self.execute_module(changed=True, commands=commands)
 
-    # def test_ntp_replaced(self):
-    #     set_module_args(
-    #         dict(
-    #             config=dict(
-    #                 allow_clients=["10.3.4.0/24", "10.4.5.0/24"],
-    #                 listen_addresses=["10.3.3.1", "10.4.4.1"],
-    #                 servers=[
-    #                     dict(server="server4", options=["noselect", "prefer"]),
-    #                     dict(
-    #                         server="server6",
-    #                         options=[
-    #                             "noselect",
-    #                             "dynamic",
-    #                             "prefer",
-    #                             "preempt",
-    #                         ],
-    #                     ),
-    #                     dict(server="time1.vyos.net"),
-    #                     dict(server="time2.vyos.net"),
-    #                     dict(server="time3.vyos.net"),
-    #                 ],
-    #             ),
-    #             state="replaced",
-    #         ),
-    #     )
-    #     commands = [
-    #         "delete system ntp allow-clients address 10.1.1.0/24",
-    #         "delete system ntp allow-clients address 10.1.2.0/24",
-    #         "delete system ntp listen-address 10.2.3.1",
-    #         "delete system ntp listen-address 10.4.3.1",
-    #         "delete system ntp server server1",
-    #         "delete system ntp server server3",
-    #         "set system ntp allow-clients address 10.3.4.0/24",
-    #         "set system ntp allow-clients address 10.4.5.0/24",
-    #         "set system ntp listen-address 10.3.3.1",
-    #         "set system ntp listen-address 10.4.4.1",
-    #         "set system ntp server server4 noselect",
-    #         "set system ntp server server4 prefer",
-    #         "set system ntp server server6 noselect",
-    #         "set system ntp server server6 dynamic",
-    #         "set system ntp server server6 prefer",
-    #         "set system ntp server server6 preempt",
-    #     ]
-    #     self.execute_module(changed=True, commands=commands)
+    def test_vrrp_replaced(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    disable=False,
+                    virtual_servers=[
+                        dict(
+                            name="s1",
+                            address="10.10.10.5",
+                            algorithm="round-robin",
+                            real_server=[
+                                dict(
+                                    address="10.10.50.2",
+                                    port=8443,
+                                ),
+                            ],
+                        ),
+                        dict(
+                            name="s2",
+                            address="10.10.10.2",
+                            persistence_timeout=30,
+                            port=81,
+                            protocol="tcp",
+                        ),
+                        dict(
+                            name="s3",
+                            address="10.10.10.3",
+                            port=88,
+                            protocol="udp",
+                        ),
+                    ],
+                    vrrp=dict(
+                        snmp="disabled",
+                        global_parameters=dict(
+                            startup_delay=32,
+                            garp=dict(
+                                master_repeat=6,
+                            ),
+                        ),
+                        groups=[
+                            dict(
+                                name="g1",
+                                peer_address="192.168.1.3",
+                                priority=100,
+                                disable=False,
+                                no_preempt=False,
+                                vrid=20,
+                            ),
+                        ],
+                        sync_groups=[
+                            dict(
+                                name="sg1",
+                                health_check=dict(
+                                    failure_count=5,
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+                state="replaced",
+            ),
+        )
+        commands = [
+            "delete high-availability vrrp group g1 disable",
+            "delete high-availability vrrp group g1 no-preempt",
+            "delete high-availability vrrp group g1 rfc3768-compatibility",
+            "delete high-availability disable",
+            "delete high-availability vrrp snmp",
+            "set high-availability virtual-server s1 address 10.10.10.5",
+            "set high-availability virtual-server s1 real-server 10.10.50.2 port 8443",
+            "set high-availability virtual-server s2 persistence-timeout 30",
+            "set high-availability virtual-server s2 protocol tcp",
+            "set high-availability virtual-server s3 address 10.10.10.3",
+            "set high-availability virtual-server s3 port 88",
+            "set high-availability virtual-server s3 protocol udp",
+            "set high-availability vrrp global-parameters garp master-repeat 6",
+            "set high-availability vrrp global-parameters startup-delay 32",
+            "set high-availability vrrp sync-group sg1 health-check failure-count 5",
+        ]
+        self.execute_module(changed=True, commands=commands)
 
     # def test_ntp_replaced_idempotent(self):
     #     set_module_args(

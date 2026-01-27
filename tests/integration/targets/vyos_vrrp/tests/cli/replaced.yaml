@@ -7,7 +7,7 @@
 - include_tasks: _populate_config.yaml
 
 - block:
-    - name: Replace  the provided configuration with the existing running configuration
+    - name: Replace the provided configuration with the existing running configuration
       register: result
       vyos.vyos.vyos_vrrp: &id001
         config: "{{ merged.config }}"
@@ -19,17 +19,19 @@
     - assert:
         that:
           - result.changed == true
-          - result.after == ansible_facts['network_resources']['vrrp']
-    #       - result.after == replaced.after
+          - result.commands|symmetric_difference(replaced.commands) == []
+          - result.after|symmetric_difference(ansible_facts['network_resources']['vrrp']) == []
 
-    # - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
-    #   register: result
-    #   vyos.vyos.vyos_vrrp: *id001
+    - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vrrp: *id001
 
-    # - name: Assert that the previous task was idempotent
-    #   assert:
-    #     that:
-    #       - result['changed'] == false
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+          - result['commands'] == []
+          - result['before']|symmetric_difference(ansible_facts['network_resources']['vrrp']) == []
 
   always:
     - include_tasks: _remove_config.yaml
