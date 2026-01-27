@@ -17,7 +17,6 @@
                       type: blackhole
                     next_hops:
                       - forward_router_address: 192.0.2.10
-
                       - forward_router_address: 192.0.2.9
 
           - address_families:
@@ -28,9 +27,7 @@
                       distance: 2
                     next_hops:
                       - forward_router_address: 2001:db8:2000:2::1
-
                       - forward_router_address: 2001:db8:2000:2::2
-
                       - interface: eth2
         state: rendered
 

@@ -18,8 +18,6 @@
       vyos.vyos.vyos_static_routes: &id001
         running_config: "{{ lookup('file', '_parsed_config.cfg') }}"
         state: parsed
-    - debug:
-        msg: "{{ ansible_facts['network_resources']['static_routes'] }}"
 
     - name: Assert that correct parsing done
       assert:
