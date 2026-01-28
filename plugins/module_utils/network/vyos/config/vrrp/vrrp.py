@@ -100,14 +100,11 @@ class Vrrp(ResourceModule):
         haved = {}
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
-        # self._module.fail_json(msg="Generate commands - want: " + str(self.want) + " (((()))) have:  " + str(haved))
         for entry in wantd, haved:
-            # self._module.fail_json(msg="Before normalize_vrrp_groups - entry: " + str(entry))
             self._vrrp_groups_list_to_dict(entry)
             self._virtual_servers_list_to_dict(entry)
             self._vrrp_sync_groups_list_to_dict(entry)
             self._normalize_lists(entry)
-        # self._module.fail_json(msg="Normalise - want: " + str(wantd) + " ++++++++++++ have:  " + str(haved))
 
         if self.state in ["deleted"]:
             wantd, haved, p = self._prune_stubs(self._module.params.get("config", {}), haved)
@@ -171,7 +168,6 @@ class Vrrp(ResourceModule):
             )
 
         self.commands = sorted(list(dict.fromkeys(self.commands)))
-        # self._module.fail_json(msg=self.commands)
 
     def _compare_vsrvs(self, want, have):
         """Compare virtual servers of VRRP"""
@@ -188,15 +184,12 @@ class Vrrp(ResourceModule):
             "virtual_servers.real_server.health_check_script",
             "virtual_servers.real_server.connection_timeout",
         ]
-        pairs = []
-        # self._module.fail_json(msg="Want: " + str(want) + "++++++++++++++++ + have:  " + str(have))
 
         hlist = self._extract_named_leafs(have)
         wlist = self._extract_named_leafs(want)
 
         if self.state == "rendered":
             hlist = []
-        # self._module.fail_json(msg="Want: " + str(wlist) + "&&&&&&&&&&&&&&&&&&&& have:  " + str(hlist))
 
         if self.state in ["replaced", "deleted"]:
             for hdict in hlist:
@@ -205,23 +198,19 @@ class Vrrp(ResourceModule):
                     wdict = {}
                 elif not wdict:
                     hdict = {}
-                # pairs.append((wdict, hdict))
                 self.compare(
                     parsers=vs_parsers,
                     want={"virtual_servers": wdict},
                     have={"virtual_servers": hdict},
                 )
-            # self._module.fail_json(msg=pairs)
         if self.state in ["merged", "replaced", "rendered", "overridden"]:
             for wdict in wlist:
                 hdict = self._find_matching_vsrv(wdict, hlist)
-                # pairs.append((wdict, hdict))
                 self.compare(
                     parsers=vs_parsers,
                     want={"virtual_servers": wdict},
                     have={"virtual_servers": hdict},
                 )
-        # self._module.fail_json(msg=pairs)
 
     def _compare_vrrp(self, want, have):
         """Compare the instances of VRRP"""
@@ -245,10 +234,6 @@ class Vrrp(ResourceModule):
             "vrrp.sync_groups.health_check",
         ]
 
-        pairs = []
-
-        # self._module.fail_json(msg="Compare VRRP - want: " + str(want) + " (((()))) have:  " + str(have))
-
         if (
             have.get("snmp") == "enabled"
             and want.get("snmp") != "enabled"
@@ -261,9 +246,6 @@ class Vrrp(ResourceModule):
 
         if self.state == "rendered":
             hlist = []
-        # self._module.fail_json(msg="leaf VRRP - want: " + str(wlist) + " (((()))) have:  " + str(hlist))
-
-        # self.compare(parsers=vrrp_parsers, want={}, have={"vrrp": have})
 
         if self.state in ["replaced", "deleted"]:
             for hdict in hlist:
@@ -274,17 +256,12 @@ class Vrrp(ResourceModule):
                 elif not wdict:
                     hdict = {}
 
-                # pairs.append((wdict, hdict))
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
-            # self._module.fail_json(msg=pairs)
 
         if self.state in ["merged", "replaced", "rendered", "overridden"]:
             for wdict in wlist:
                 hdict = self._find_matching_vrrp(wdict, hlist)
-                # pairs.append((wdict, hdict))
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
-
-        # self._module.fail_json(msg=pairs)
 
     def _vrrp_groups_list_to_dict(self, data):
 
@@ -496,34 +473,6 @@ class Vrrp(ResourceModule):
             for item in node:
                 self._normalize_lists(item)
 
-    # def project_structure(self, have, want):
-    #     """
-    #     Project the structure of `have` onto `want`.
-
-    #     - Existing values in `want` are preserved
-    #     - Missing paths are created with empty values
-    #     """
-    #     if not isinstance(have, dict):
-    #         return want
-
-    #     if want is None or not isinstance(want, dict):
-    #         want = {}
-
-    #     for key, have_val in have.items():
-    #         if key not in want:
-    #             want[key] = self.empty_like(have_val)
-    #         else:
-    #             want[key] = self.project_structure(have_val, want[key])
-
-    #     return want
-
-    # def empty_like(self, value):
-    #     if isinstance(value, dict):
-    #         return {}
-    #     if isinstance(value, list):
-    #         return []
-    #     return None
-
     def _extract_named_leafs(self, data, parent_name=None, prefix_key=None):
         results = []
 
@@ -622,8 +571,6 @@ class Vrrp(ResourceModule):
                 else:
                     wc.pop(k, None)
 
-                # hc.pop(k, None)
-                # wc.pop(k, None)
                 continue
 
             if isinstance(wg, dict) and isinstance(hg, dict):
@@ -636,21 +583,8 @@ class Vrrp(ResourceModule):
                     hc[k] = hi
                 else:
                     hc.pop(k, None)
-                # hc.pop(k, None)
 
         return wc, hc, path
-
-    # def _remove_nulls(self, data):
-    #     """Remove null values but keep empty containers."""
-    #     if isinstance(data, dict):
-    #         # Remove None values, keep empty dicts
-    #         cleaned = {}
-    #         for k, v in data.items():
-    #             if v in [None, "disabled", False]:
-    #                 continue  # Skip null values
-    #             cleaned[k] = self._remove_nulls(v)
-    #         return cleaned
-    #     return data
 
     def _remove_defaults(self, data):
         if isinstance(data, dict):

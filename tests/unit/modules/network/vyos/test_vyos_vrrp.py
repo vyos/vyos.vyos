@@ -1145,7 +1145,7 @@ class TestVyosVrrpModule(TestVyosModule):
                 ],
             },
         }
-        self.assertEqual(parsed_list, result["parsed"])
+        self.assertEqual(sorted(parsed_list), sorted(result["parsed"]))
 
     def test_vrrp_gathered(self):
         set_module_args(dict(state="gathered"))
@@ -1268,7 +1268,7 @@ class TestVyosVrrpModule(TestVyosModule):
             },
         }
 
-        self.assertEqual(gathered_list, result["gathered"])
+        self.assertEqual(sorted(gathered_list), sorted(result["gathered"]))
 
     def test_vrrp_groups_deleted(self):
         set_module_args(

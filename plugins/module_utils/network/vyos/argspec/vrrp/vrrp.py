@@ -146,7 +146,6 @@ class VrrpArgs(object):  # pylint: disable=R0903
                         },
                         "snmp": {
                             "type": "str",
-                            # "default": "disabled",
                             "choices": ["disabled", "enabled"],
                         },
                         "sync_groups": {

@@ -88,9 +88,7 @@ class VrrpFacts(object):
 
         if not data:
             data = self.get_config(connection)
-        # self._module.fail_json(msg="Data: " + str(data))
         resources = self.get_config_set(data, connection)
-        # self._module.fail_json(msg="Resources: " + str(resources))
         vrrp_facts = {"disable": False, "virtual_servers": {}, "vrrp": {}}
         for resource in resources:
             vrrp_parser = VrrpTemplate(
@@ -98,13 +96,11 @@ class VrrpFacts(object):
                 module=self._module,
             )
             objs = vrrp_parser.parse()
-            # self._module.fail_json(msg="VRRP Objs: " + str(objs))
             if "disable" in objs:
                 vrrp_facts["disable"] = objs["disable"]
 
             for section in ("virtual_servers", "vrrp"):
                 if section in objs:
-                    # self._module.fail_json(msg="Section: " + str(section) + " Objs[section]: " + str(objs[section]))
                     for name, data in objs[section].items():
                         if not isinstance(data, dict):
                             vrrp_facts[section][name] = data
@@ -113,10 +109,7 @@ class VrrpFacts(object):
                         vrrp_facts[section][name] = self.deep_merge(existing, data)
 
         ansible_facts["ansible_network_resources"].pop("vrrp", None)
-        #
         vrrp_facts = self.normalize_config(vrrp_facts)
-        #
-        # self._module.fail_json(msg="VRRP_Facts: " + str(vrrp_facts))
         validate_parser = VrrpTemplate(lines=[], module=self._module)
         params = utils.remove_empties(
             validate_parser.validate_config(
@@ -126,10 +119,8 @@ class VrrpFacts(object):
             ),
         )
 
-        # self._module.fail_json(msg="Params: " + str(params))
         facts["vrrp"] = params.get("config", [])
         ansible_facts["ansible_network_resources"].update(facts)
-        # self._module.fail_json(msg='Facts - ' + str(ansible_facts))
         return ansible_facts
 
     def normalize_config(self, config):
@@ -142,15 +133,12 @@ class VrrpFacts(object):
 
         # Normalize vrrp
         vrrp = config.get("vrrp", {})
-        # self._module.fail_json(msg=config.get("vrrp", {}))
 
         if isinstance(vrrp.get("groups"), dict):
             vrrp["groups"] = list(vrrp["groups"].values())
-            # self._module.fail_json(msg="Groups: " + str(vrrp["groups"]))
 
         if isinstance(vrrp.get("sync_groups"), dict):
             vrrp["sync_groups"] = list(vrrp["sync_groups"].values())
-            # self._module.fail_json(msg="SGroups: " + str(vrrp["sync_groups"]))
 
         # Normalize real_server inside each virtual_server
         for vs in config.get("virtual_servers", []):
