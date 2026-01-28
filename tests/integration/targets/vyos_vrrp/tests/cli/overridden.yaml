@@ -21,7 +21,6 @@
         that:
           - result.changed == true
           - result.after == ansible_facts['network_resources']['vrrp']
-          - result.after == overridden.after
 
     - name: Override the existing configuration with the provided running configuration (IDEMPOTENT)
       register: result

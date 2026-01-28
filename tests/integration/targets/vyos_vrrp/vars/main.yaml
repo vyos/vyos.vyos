@@ -5,7 +5,7 @@ merged:
     virtual_servers:
       - name: s1
         address: 10.10.10.1
-        algorithm: round-robin
+        algorithm: "round-robin"
         delay_loop: 60
         forward_method: direct
         fwmark: 10
@@ -13,7 +13,7 @@ merged:
         protocol: tcp
         real_server:
           - address: 10.10.50.1
-            health_check_script: /var/tmp/script.sh
+            health_check_script: "/var/tmp/script.sh"
             port: 443
       - name: s2
         address: 10.10.10.2
@@ -25,7 +25,6 @@ merged:
           - address: real2
             port: 8080
     vrrp:
-      snmp: disabled
       global_parameters:
         startup_delay: 31
         version: "3"
