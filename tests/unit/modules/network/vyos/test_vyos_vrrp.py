@@ -351,24 +351,130 @@ class TestVyosVrrpModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
-    # def test_ntp_replaced_idempotent(self):
-    #     set_module_args(
-    #         dict(
-    #             config=dict(
-    #                 allow_clients=["10.1.1.0/24", "10.1.2.0/24"],
-    #                 listen_addresses=["10.2.3.1", "10.4.3.1"],
-    #                 servers=[
-    #                     dict(server="server1"),
-    #                     dict(server="server3", options=["noselect", "dynamic"]),
-    #                     dict(server="time1.vyos.net"),
-    #                     dict(server="time2.vyos.net"),
-    #                     dict(server="time3.vyos.net"),
-    #                 ],
-    #             ),
-    #             state="replaced",
-    #         ),
-    #     )
-    #     self.execute_module(changed=False, commands=[])
+    def test_ntp_replaced_idempotent(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    disable=True,
+                    virtual_servers=[
+                        dict(
+                            address="10.10.10.1",
+                            algorithm="round-robin",
+                            delay_loop=60,
+                            forward_method="direct",
+                            fwmark=10,
+                            name="s1",
+                            persistence_timeout="30",
+                            protocol="tcp",
+                            real_server=[
+                                dict(
+                                    address="10.10.50.1",
+                                    port=443,
+                                    health_check_script="/var/tmp/script.sh",
+                                ),
+                            ],
+                        ),
+                        dict(
+                            address="10.10.10.2",
+                            name="s2",
+                            port=81,
+                            real_server=[
+                                dict(
+                                    address="real1",
+                                    port=8081,
+                                    connection_timeout=5,
+                                ),
+                                dict(
+                                    address="real2",
+                                    port=8080,
+                                ),
+                            ],
+                        ),
+                    ],
+                    vrrp=dict(
+                        global_parameters=dict(
+                            garp=dict(
+                                interval=30,
+                                master_delay=10,
+                                master_refresh=100,
+                                master_refresh_repeat=200,
+                                master_repeat=5,
+                            ),
+                            version="3",
+                            startup_delay=30,
+                        ),
+                        groups=[
+                            dict(
+                                authentication=dict(
+                                    password="testpass",
+                                    type="plaintext-password",
+                                ),
+                                address="1.1.1.1",
+                                advertise_interval=10,
+                                description="Group_1",
+                                disable=True,
+                                excluded_address=[
+                                    "192.168.1.8",
+                                    "192.168.1.7 interface eth3",
+                                ],
+                                garp=dict(
+                                    interval=20,
+                                    master_delay=5,
+                                    master_refresh=50,
+                                    master_refresh_repeat=100,
+                                    master_repeat=3,
+                                ),
+                                health_check=dict(
+                                    failure_count=3,
+                                    interval=10,
+                                    ping="192.168.1.5",
+                                    script="script.sh",
+                                ),
+                                hello_source_address="192.168.1.2",
+                                interface="eth2",
+                                name="g1",
+                                no_preempt=True,
+                                peer_address="192.168.1.3",
+                                priority=100,
+                                rfc3768_compatibility=True,
+                                track=dict(
+                                    exclude_vrrp_interface=True,
+                                    interface=["eth1"],
+                                ),
+                                transition_script=dict(
+                                    backup="/var/tmp/script.sh",
+                                    fault="/var/tmp/script.sh",
+                                    master="/var/tmp/script.sh",
+                                    stop="/var/tmp/script.sh",
+                                ),
+                                vrid=20,
+                            ),
+                        ],
+                        snmp="enabled",
+                        sync_groups=[
+                            dict(
+                                health_check=dict(
+                                    failure_count=3,
+                                    interval=10,
+                                    ping="192.168.1.1",
+                                    script="/var/tmp/script.sh",
+                                ),
+                                member=["g1"],
+                                name="sg1",
+                                transition_script=dict(
+                                    backup="/var/tmp/script.sh",
+                                    fault="/var/tmp/script.sh",
+                                    master="/var/tmp/script.sh",
+                                    stop="/var/tmp/script.sh",
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+                state="replaced",
+            ),
+        )
+        self.execute_module(changed=False, commands=[])
 
     def test_vrrp_overridden(self):
         set_module_args(

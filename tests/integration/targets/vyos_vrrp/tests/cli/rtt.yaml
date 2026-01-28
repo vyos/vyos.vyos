@@ -8,7 +8,7 @@
     - name: RTT Merge the provided configuration with the existing running configuration
       register: baseconfig
       vyos.vyos.vyos_vrrp:
-        config: "{{ rtt.config }}"
+        config: "{{ merged.config }}"
         state: merged
 
     - vyos.vyos.vyos_facts:
@@ -23,16 +23,7 @@
     - name: RTT Merge the existing configuration with the provided running configuration
       register: result
       vyos.vyos.vyos_vrrp:
-        config:
-          servers:
-            - server: server1
-              options:
-                - pool
-                - prefer
-
-            - server: server2
-              options:
-                - noselect
+        config: "{{ rtt.config }}"
 
     - name: RTT Revert back to base config using facts round trip
       register: revert
