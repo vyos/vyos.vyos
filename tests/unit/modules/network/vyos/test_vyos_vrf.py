@@ -16,12 +16,103 @@
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
 # Make coding more python3-ish
+# from __future__ import absolute_import, division, print_function
+
+
+# __metaclass__ = type
+
+# from unittest.mock import patch, MagicMock
+
+# from ansible_collections.vyos.vyos.plugins.modules import vyos_vrf
+# from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
+
+# from .vyos_module import TestVyosModule, load_fixture
+
+
+# class TestVyosVrfModule(TestVyosModule):
+#     module = vyos_vrf
+
+#     def setUp(self):
+#         super(TestVyosVrfModule, self).setUp()
+
+#         # ---- Fake connection ----
+#         self.fake_connection = MagicMock()
+#         self.fake_connection.get.return_value = ""
+
+
+#         def _get_resource_connection_side_effect(module, *args, **kwargs):
+#             module._connection = self.fake_connection
+#             return self.fake_connection
+
+#         # Inject connection into the module (CRITICAL)
+#         self.module._connection = self.fake_connection
+#         self.module._socket_path = "/fake/socket/path"
+
+#         self.mock_get_resource_connection_config = patch(
+#             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
+#         )
+#         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
+#         self.get_resource_connection_config.side_effect = _get_resource_connection_side_effect
+
+
+#         self.mock_get_resource_connection_facts = patch(
+#             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
+#         )
+#         self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
+#         self.get_resource_connection_facts.side_effect = _get_resource_connection_side_effect
+
+
+#         self.mock_execute_show_command = patch(
+#             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vrf.vrf.VrfFacts.get_config",
+#         )
+
+#         self.execute_show_command = self.mock_execute_show_command.start()
+
+#         self.mock_get_os_version = patch(
+#             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.vrf.vrf.get_os_version",
+#         )
+#         self.get_os_version = self.mock_get_os_version.start()
+#         self.get_os_version.return_value = "1.5"
+
+#         self.mock_vyos_get_os_version = patch(
+#             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos.get_os_version"
+#         )
+#         self.vyos_get_os_version = self.mock_vyos_get_os_version.start()
+#         self.vyos_get_os_version.return_value = "1.5"
+
+#         self.mock_bgp_get_os_version = patch(
+#             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global.get_os_version"
+#         )
+#         self.bgp_get_os_version = self.mock_bgp_get_os_version.start()
+#         self.bgp_get_os_version.return_value = "1.5"
+
+#         self.maxDiff = None
+
+#     def tearDown(self):
+#         super(TestVyosVrfModule, self).tearDown()
+#         self.mock_get_resource_connection_config.stop()
+#         self.mock_get_resource_connection_facts.stop()
+#         self.mock_execute_show_command.stop()
+#         self.mock_get_os_version.stop()
+#         self.mock_vyos_get_os_version.stop()
+#         self.mock_bgp_get_os_version.stop()
+
+#     def load_fixtures(self, commands=None, filename=None):
+#         if filename is None:
+#             filename = "vyos_vrf_config.cfg"
+
+#         def load_from_file(*args, **kwargs):
+#             output = load_fixture(filename)
+#             return output
+
+#         self.execute_show_command.side_effect = load_from_file
+
 from __future__ import absolute_import, division, print_function
 
 
 __metaclass__ = type
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from ansible_collections.vyos.vyos.plugins.modules import vyos_vrf
 from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
@@ -35,45 +126,68 @@ class TestVyosVrfModule(TestVyosModule):
     def setUp(self):
         super(TestVyosVrfModule, self).setUp()
 
-        self.mock_get_resource_connection_config = patch(
+        # ---- Fake device connection ----
+        self.fake_connection = MagicMock()
+        self.fake_connection.get.return_value = "{}"
+
+        self.fake_connection.get_device_info.return_value = {
+            "version": "1.5",
+        }
+
+        self.fake_connection.get_device_info.return_value = {
+            "network_os_major_version": "1.5",
+        }
+        # ---- Patch get_connection (THIS is the real fix) ----
+        patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos.get_connection",
+            return_value=self.fake_connection,
+        ).start()
+
+        # ---- Patch get_resource_connection (config + facts paths) ----
+        def _get_resource_connection_side_effect(module, *args, **kwargs):
+            module._connection = self.fake_connection
+            return self.fake_connection
+
+        patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
-        )
-        self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
+            side_effect=_get_resource_connection_side_effect,
+        ).start()
 
-        self.mock_get_resource_connection_facts = patch(
+        patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
-        )
-        self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
+            side_effect=_get_resource_connection_side_effect,
+        ).start()
 
+        # ---- Patch VRF facts ----
         self.mock_execute_show_command = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vrf.vrf.VrfFacts.get_config",
-        )
+        ).start()
 
-        self.execute_show_command = self.mock_execute_show_command.start()
-
-        self.mock_get_os_version = patch(
+        # ---- Patch OS version checks (VRF + BGP) ----
+        patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.vrf.vrf.get_os_version",
-        )
-        self.get_os_version = self.mock_get_os_version.start()
-        self.get_os_version.return_value = "1.5"
+            return_value="1.5",
+        ).start()
+
+        patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global.get_os_version",
+            return_value="1.5",
+        ).start()
+
         self.maxDiff = None
 
     def tearDown(self):
         super(TestVyosVrfModule, self).tearDown()
-        self.mock_get_resource_connection_config.stop()
-        self.mock_get_resource_connection_facts.stop()
-        self.mock_execute_show_command.stop()
-        self.mock_get_os_version.stop()
+        patch.stopall()
 
     def load_fixtures(self, commands=None, filename=None):
         if filename is None:
             filename = "vyos_vrf_config.cfg"
 
         def load_from_file(*args, **kwargs):
-            output = load_fixture(filename)
-            return output
+            return load_fixture(filename)
 
-        self.execute_show_command.side_effect = load_from_file
+        self.mock_execute_show_command.side_effect = load_from_file
 
     def test_vrf_merged_idempotent(self):
         set_module_args(
@@ -108,28 +222,29 @@ class TestVyosVrfModule(TestVyosModule):
                                     nht_no_resolve_via_default=True,
                                 ),
                             ],
-                            # protocols = dict(
-                            #     bgp=dict(
-                            #         as_number=65000,
-                            #         neighbor=[
-                            #             dict(
-                            #                 address="192.0.2.1",
-                            #                 remote_as=65002,
-                            #             ),
-                            #             dict(
-                            #                 address="1.1.1.3",
-                            #                 remote_as=400,
-                            #                 passive=True,
-                            #             ),
-                            #         ],
-                            #     ),
-                            # ),
+                            protocols=dict(
+                                bgp=dict(
+                                    as_number=65000,
+                                    neighbor=[
+                                        dict(
+                                            address="192.0.2.1",
+                                            remote_as=65002,
+                                        ),
+                                        dict(
+                                            address="1.1.1.3",
+                                            remote_as=400,
+                                            passive=True,
+                                        ),
+                                    ],
+                                ),
+                            ),
                         ),
                     ],
                 ),
                 state="merged",
             ),
         )
+
         self.execute_module(changed=False, commands=[])
 
     def test_vrf_merged(self):
@@ -297,6 +412,7 @@ class TestVyosVrfModule(TestVyosModule):
                                 dict(
                                     afi="ipv4",
                                     disable_forwarding=True,
+                                    nht_no_resolve_via_default=False,
                                     route_maps=[
                                         dict(rm_name="rm1", protocol="kernel"),
                                         dict(rm_name="rm1", protocol="rip"),
@@ -304,9 +420,26 @@ class TestVyosVrfModule(TestVyosModule):
                                 ),
                                 dict(
                                     afi="ipv6",
+                                    disable_forwarding=False,
                                     nht_no_resolve_via_default=True,
                                 ),
                             ],
+                            protocols=dict(
+                                bgp=dict(
+                                    as_number=65000,
+                                    neighbor=[
+                                        dict(
+                                            address="192.0.2.1",
+                                            remote_as=65002,
+                                        ),
+                                        dict(
+                                            address="1.1.1.3",
+                                            remote_as=400,
+                                            passive=True,
+                                        ),
+                                    ],
+                                ),
+                            ),
                         ),
                     ],
                 ),
@@ -464,14 +597,8 @@ class TestVyosVrfModule(TestVyosModule):
                             "disable_forwarding": True,
                             "nht_no_resolve_via_default": False,
                             "route_maps": [
-                                {
-                                    "protocol": "kernel",
-                                    "rm_name": "rm1",
-                                },
-                                {
-                                    "protocol": "rip",
-                                    "rm_name": "rm1",
-                                },
+                                {"protocol": "kernel", "rm_name": "rm1"},
+                                {"protocol": "rip", "rm_name": "rm1"},
                             ],
                         },
                         {
@@ -483,6 +610,15 @@ class TestVyosVrfModule(TestVyosModule):
                     "description": "red-vrf",
                     "disable": True,
                     "name": "vrf-red",
+                    "protocols": {
+                        "bgp": {
+                            "as_number": 65000,
+                            "neighbor": [
+                                {"address": "1.1.1.3", "passive": True, "remote_as": 400},
+                                {"address": "192.0.2.1", "remote_as": 65002},
+                            ],
+                        },
+                    },
                     "table_id": 101,
                     "vni": 1001,
                 },
