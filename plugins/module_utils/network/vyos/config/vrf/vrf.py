@@ -47,9 +47,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.versi
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
-# from ansible.plugins.filter.core import combine
-
-
 class Vrf(ResourceModule):
     """
     The vyos_vrf config class
@@ -105,14 +102,10 @@ class Vrf(ResourceModule):
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
 
-        # self._module.fail_json(msg="WanT: " + str(self.want) + "**** H:  " + str(self.have))
-
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged", "replaced"]:
-            # wantd = dict_merge(wantd, haved)
-            # wantd = haved | combine(wantd, recursive=True)
+
             wantd = combine(haved, wantd, recursive=True)
-            # self._module.fail_json(msg="Want: " + str(wantd) + "**** H:  " + str(haved))
 
         # if state is deleted, delete and empty out wantd
         if self.state == "deleted":
@@ -147,8 +140,10 @@ class Vrf(ResourceModule):
                                 (inst for inst in haved["instances"] if inst["name"] == wname),
                                 None,
                             )
-                            if entry != hdict:
-                                # self._module.fail_json(msg="Want: " + str(entry) + "**** H:  " + str(hdict))
+                            wantc = self._canonicalise(entry)
+                            havec = self._canonicalise(hdict or {})
+
+                            if wantc != havec:
                                 haved["instances"] = [
                                     i for i in haved.get("instances", []) if i.get("name") != wname
                                 ]
@@ -163,7 +158,6 @@ class Vrf(ResourceModule):
                 want={k: want},
                 have={k: haved.pop(k, {})},
             )
-        # self._module.fail_json(msg=self.commands)
 
     def _compare_instances(self, want, have):
         """Compare the instances of the VRF"""
@@ -173,12 +167,10 @@ class Vrf(ResourceModule):
             "description",
             "disable_vrf",
         ]
-        # self._module.fail_json(msg="want: " + str(want) + "**** have:  " + str(have))
 
         for entry in want:
             h = {}
             wname = entry.get("name")
-            # h = next((vrf for vrf in have if vrf["name"] == wname), {})
             h = {
                 k: v
                 for vrf in have
@@ -190,15 +182,12 @@ class Vrf(ResourceModule):
 
             if "address_family" in entry:
                 wafi = {"name": wname, "address_family": entry.get("address_family", [])}
-                # hdict = next((item for item in have if item["name"] == wname), None)
                 hdict = next((d for d in have if d.get("name") == wname), None)
 
                 hafi = {
                     "name": (hdict or {"name": wname})["name"],
                     "address_family": hdict.get("address_family", []) if hdict else [],
                 }
-
-                # self._module.fail_json(msg="wafi: " + str(wafi) + "**** hafi:  " + str(hafi))
 
                 self._compare_addr_family(wafi, hafi)
 
@@ -236,8 +225,6 @@ class Vrf(ResourceModule):
                         static_routes_module = Static_routes(self._module)
                         static_routes_module._module.params["config"] = w_p_dict
                         static_routes_module.state = self.state
-                        # self._module.fail_json(msg=str(h_p_dict))
-                        # self._module.fail_json(msg="wafi: " + str(w_p_dict) + "**** hafi:  " + str(h_p_dict))
                         protocol_commands = static_routes_module.set_config(h_p_dict)
                     else:
                         self._module.fail_json(
@@ -253,11 +240,9 @@ class Vrf(ResourceModule):
     def _compare_addr_family(self, want, have):
         """Compare the address families of the VRF"""
         afi_parsers = [
-            # "address_family",
             "disable_forwarding",
             "disable_nht",
         ]
-        # self._module.fail_json(msg="wAfi: " + str(want) + "**** hAfi:  " + str(have))
 
         wafi = self.afi_to_list(want)
         hafi = self.afi_to_list(have)
@@ -266,11 +251,9 @@ class Vrf(ResourceModule):
         pairs = [(d1, lookup.get((d1["name"], d1["afi"]), {})) for d1 in wafi]
 
         for wafd, hafd in pairs:
-            # self._module.fail_json(msg="wAfd: " + str(wafd) + "**** hAfd:  " + str(hafd))
             if "route_maps" in wafd:
                 self._compare_route_maps(wafd, hafd)
             self.compare(parsers=afi_parsers, want=wafd, have=hafd)
-        # self.compare(parsers=afi_parsers, want=wafi, have=hafi)
 
     def afi_to_list(self, data):
         """Convert address family dict to list"""
@@ -301,31 +284,25 @@ class Vrf(ResourceModule):
                 have={**base, "route_maps": match},
             )
 
-    # def _load_protocol_module(self, protocol_name):
-    #     if protocol_name == "bgp":
-    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_global.bgp_global import (
-    #             Bgp_global,
-    #         )
+    def _canonicalise(self, obj):
+        if isinstance(obj, dict):
+            return {k: self._canonicalise(v) for k, v in obj.items()}
 
-    #         return Bgp_global(self._module)
-    #     elif protocol_name == "ospf":
-    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv2.ospfv2 import (
-    #             Ospfv2,
-    #         )
+        if isinstance(obj, list):
+            if not obj:
+                return obj
 
-    #         return Ospfv2(self._module)
-    #     elif protocol_name == "ospfv3":
-    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ospfv3.ospfv3 import (
-    #             Ospfv3,
-    #         )
+            if not isinstance(obj[0], dict):
+                return sorted(obj)
 
-    #         return Ospfv3(self._module)
-    #     elif protocol_name == "static":
-    #         self._module.fail_json(msg="here!")
-    #         from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.static_routes.static_routes import (
-    #             Static_routes,
-    #         )
+            canon = [self._canonicalise(i) for i in obj]
 
-    #         return Static_routes(self._module)
-    #     else:
-    #         self._module.fail_json(msg="The protocol is not supported")
+            def sort_key(d):
+                for k in ("name", "address", "afi", "area_id", "neighbor_id", "dest"):
+                    if k in d:
+                        return d[k]
+                return tuple(sorted(d.items()))
+
+            return sorted(canon, key=sort_key)
+
+        return obj

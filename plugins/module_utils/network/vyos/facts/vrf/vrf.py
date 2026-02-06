@@ -102,10 +102,6 @@ class VrfFacts(object):
                 if "bind_to_all" in objs:
                     vrf_facts.update(objs)
                 if "name" in objs:
-                    # for key, afiv in [("address_family", "afi")]:
-                    #     if key in objs and objs[key]:
-                    #         # self._module.fail_json(msg=str(objs[key]))
-                    #         objs[key] = list(objs[key].values())
                     instances.append(self._normalise_instance(objs))
 
         if instances:
@@ -128,7 +124,6 @@ class VrfFacts(object):
         if params.get("config"):
             facts["vrf"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
-        # self._module.fail_json(msg=ansible_facts)
         return ansible_facts
 
     def _normalise_instance(self, instance):
@@ -181,16 +176,7 @@ class VrfFacts(object):
         protocol_strings = {proto: "\n".join(lines) for proto, lines in protocol_chunks.items()}
 
         for protocol_name, protocol_string in protocol_strings.items():
-            # protocol_module = self._load_protocol_module(protocol_name)
             protocol_dict = {}
-            # protocol_dict = protocol_module.populate_facts(
-            #     connection=self._module._connection,
-            #     ansible_facts={"ansible_network_resources": {}},
-            #     data=protocol_string,
-            # )
-            # parsed_protocols[protocol_name] = list(
-            #     protocol_dict.get("ansible_network_resources").values(),
-            # )[0]
 
             if protocol_name == "bgp":
                 bgp_module = Bgp_globalFacts(self._module)
@@ -227,7 +213,6 @@ class VrfFacts(object):
 
             elif protocol_name == "static":
                 static_routes_module = Static_routesFacts(self._module)
-                # self._module.fail_json(msg=protocol_string)
                 protocol_dict = static_routes_module.populate_facts(
                     connection=self._module._connection,
                     ansible_facts={"ansible_network_resources": {}},
@@ -236,9 +221,7 @@ class VrfFacts(object):
                 parsed_protocols[protocol_name] = list(
                     protocol_dict.get("ansible_network_resources").values(),
                 )[0]
-                # parsed_protocols[protocol_name] = []
             else:
                 self._module.fail_json(msg="The protocol is not supported" + protocol_name)
 
-        # self._module.fail_json(msg=parsed_protocols)
         return parsed_protocols

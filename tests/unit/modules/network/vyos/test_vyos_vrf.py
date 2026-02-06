@@ -15,97 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
-# Make coding more python3-ish
-# from __future__ import absolute_import, division, print_function
-
-
-# __metaclass__ = type
-
-# from unittest.mock import patch, MagicMock
-
-# from ansible_collections.vyos.vyos.plugins.modules import vyos_vrf
-# from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
-
-# from .vyos_module import TestVyosModule, load_fixture
-
-
-# class TestVyosVrfModule(TestVyosModule):
-#     module = vyos_vrf
-
-#     def setUp(self):
-#         super(TestVyosVrfModule, self).setUp()
-
-#         # ---- Fake connection ----
-#         self.fake_connection = MagicMock()
-#         self.fake_connection.get.return_value = ""
-
-
-#         def _get_resource_connection_side_effect(module, *args, **kwargs):
-#             module._connection = self.fake_connection
-#             return self.fake_connection
-
-#         # Inject connection into the module (CRITICAL)
-#         self.module._connection = self.fake_connection
-#         self.module._socket_path = "/fake/socket/path"
-
-#         self.mock_get_resource_connection_config = patch(
-#             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
-#         )
-#         self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
-#         self.get_resource_connection_config.side_effect = _get_resource_connection_side_effect
-
-
-#         self.mock_get_resource_connection_facts = patch(
-#             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection",
-#         )
-#         self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
-#         self.get_resource_connection_facts.side_effect = _get_resource_connection_side_effect
-
-
-#         self.mock_execute_show_command = patch(
-#             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vrf.vrf.VrfFacts.get_config",
-#         )
-
-#         self.execute_show_command = self.mock_execute_show_command.start()
-
-#         self.mock_get_os_version = patch(
-#             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.vrf.vrf.get_os_version",
-#         )
-#         self.get_os_version = self.mock_get_os_version.start()
-#         self.get_os_version.return_value = "1.5"
-
-#         self.mock_vyos_get_os_version = patch(
-#             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos.get_os_version"
-#         )
-#         self.vyos_get_os_version = self.mock_vyos_get_os_version.start()
-#         self.vyos_get_os_version.return_value = "1.5"
-
-#         self.mock_bgp_get_os_version = patch(
-#             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_global.bgp_global.get_os_version"
-#         )
-#         self.bgp_get_os_version = self.mock_bgp_get_os_version.start()
-#         self.bgp_get_os_version.return_value = "1.5"
-
-#         self.maxDiff = None
-
-#     def tearDown(self):
-#         super(TestVyosVrfModule, self).tearDown()
-#         self.mock_get_resource_connection_config.stop()
-#         self.mock_get_resource_connection_facts.stop()
-#         self.mock_execute_show_command.stop()
-#         self.mock_get_os_version.stop()
-#         self.mock_vyos_get_os_version.stop()
-#         self.mock_bgp_get_os_version.stop()
-
-#     def load_fixtures(self, commands=None, filename=None):
-#         if filename is None:
-#             filename = "vyos_vrf_config.cfg"
-
-#         def load_from_file(*args, **kwargs):
-#             output = load_fixture(filename)
-#             return output
-
-#         self.execute_show_command.side_effect = load_from_file
 
 from __future__ import absolute_import, division, print_function
 
@@ -126,7 +35,6 @@ class TestVyosVrfModule(TestVyosModule):
     def setUp(self):
         super(TestVyosVrfModule, self).setUp()
 
-        # ---- Fake device connection ----
         self.fake_connection = MagicMock()
         self.fake_connection.get.return_value = "{}"
 
@@ -137,13 +45,11 @@ class TestVyosVrfModule(TestVyosModule):
         self.fake_connection.get_device_info.return_value = {
             "network_os_major_version": "1.5",
         }
-        # ---- Patch get_connection (THIS is the real fix) ----
         patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos.get_connection",
             return_value=self.fake_connection,
         ).start()
 
-        # ---- Patch get_resource_connection (config + facts paths) ----
         def _get_resource_connection_side_effect(module, *args, **kwargs):
             module._connection = self.fake_connection
             return self.fake_connection
@@ -158,12 +64,10 @@ class TestVyosVrfModule(TestVyosModule):
             side_effect=_get_resource_connection_side_effect,
         ).start()
 
-        # ---- Patch VRF facts ----
         self.mock_execute_show_command = patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vrf.vrf.VrfFacts.get_config",
         ).start()
 
-        # ---- Patch OS version checks (VRF + BGP) ----
         patch(
             "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.vrf.vrf.get_os_version",
             return_value="1.5",
@@ -627,7 +531,6 @@ class TestVyosVrfModule(TestVyosModule):
         self.assertEqual(gathered_list, result["gathered"])
 
     def test_vrf_deleted(self):
-        # Delete the instances and global setting bind_to_all
         set_module_args(
             dict(
                 config=dict(
