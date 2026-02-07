@@ -1082,25 +1082,25 @@ EXAMPLES = """
 
 # Before state:
 # vyos@vyos:~$
-show configuration commands |  match "set high-availability"
-set high-availability disable
-set high-availability virtual-server s1 address '10.10.10.5'
-set high-availability virtual-server s1 algorithm 'round-robin'
-set high-availability virtual-server s1 real-server 10.10.50.2 port '8443'
-set high-availability virtual-server s2 address '10.10.10.2'
-set high-availability virtual-server s2 persistence-timeout '30'
-set high-availability virtual-server s2 port '81'
-set high-availability virtual-server s2 protocol 'tcp'
-set high-availability virtual-server s3 address '10.10.10.3'
-set high-availability virtual-server s3 port '88'
-set high-availability virtual-server s3 protocol 'udp'
-set high-availability vrrp global-parameters garp master-repeat '6'
-set high-availability vrrp global-parameters startup-delay '30'
-set high-availability vrrp group g1 peer-address '192.168.1.3'
-set high-availability vrrp group g1 priority '100'
-set high-availability vrrp group g1 vrid '20'
-set high-availability vrrp snmp
-set high-availability vrrp sync-group sg1 health-check failure-count '5'
+# show configuration commands |  match "set high-availability"
+# set high-availability disable
+# set high-availability virtual-server s1 address '10.10.10.5'
+# set high-availability virtual-server s1 algorithm 'round-robin'
+# set high-availability virtual-server s1 real-server 10.10.50.2 port '8443'
+# set high-availability virtual-server s2 address '10.10.10.2'
+# set high-availability virtual-server s2 persistence-timeout '30'
+# set high-availability virtual-server s2 port '81'
+# set high-availability virtual-server s2 protocol 'tcp'
+# set high-availability virtual-server s3 address '10.10.10.3'
+# set high-availability virtual-server s3 port '88'
+# set high-availability virtual-server s3 protocol 'udp'
+# set high-availability vrrp global-parameters garp master-repeat '6'
+# set high-availability vrrp global-parameters startup-delay '30'
+# set high-availability vrrp group g1 peer-address '192.168.1.3'
+# set high-availability vrrp group g1 priority '100'
+# set high-availability vrrp group g1 vrid '20'
+# set high-availability vrrp snmp
+# set high-availability vrrp sync-group sg1 health-check failure-count '5'
 # vyos@vyos:~$
 
 - name: gather configs
