@@ -100,7 +100,6 @@ class Firewall_globalFacts(object):
             "zone": self.parse_zone(conf),
         }
         firewall.update(f_sub)
-        self._module.fail_json(msg=firewall)
         return firewall
 
     def route_redirects(self, conf):
