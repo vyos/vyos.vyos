@@ -128,7 +128,6 @@ class Firewall_global(ConfigBase):
             result["gathered"] = changed_firewall_global_facts
 
         result["warnings"] = warnings
-        self._module.fail_json(msg=result)
         return result
 
     def set_config(self, existing_firewall_global_facts):

@@ -408,7 +408,16 @@ class Firewall_globalFacts(object):
         :param conf: configuration.
         :return: generated config dictionary.
         """
+
         cfg_dict = {}
+
+        KEY_MAP = {
+            "interface": "interfaces",
+        }
+
+        LIST_ATTRS = {
+            "interfaces",
+        }
 
         for line in conf.splitlines():
 
@@ -420,7 +429,7 @@ class Firewall_globalFacts(object):
                 continue
 
             zone_name = m.group("zone")
-            attr = m.group("attr").replace("-", "_")
+            raw_attr = m.group("attr").replace("-", "_")
             value = m.group("value")
 
             if value is None:
@@ -428,7 +437,13 @@ class Firewall_globalFacts(object):
             else:
                 value = value.strip("'")
 
-            cfg_dict.setdefault(zone_name, {"name": zone_name})
-            cfg_dict[zone_name][attr] = value
+            zone = cfg_dict.setdefault(zone_name, {"name": zone_name})
+
+            attr = KEY_MAP.get(raw_attr, raw_attr)
+
+            if attr in LIST_ATTRS:
+                zone.setdefault(attr, []).append(value)
+            else:
+                zone[attr] = value
 
         return list(cfg_dict.values())
