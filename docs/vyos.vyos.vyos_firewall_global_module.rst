@@ -830,7 +830,7 @@ Parameters
                 </td>
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>drop</li>
+                                    <li><div style="color: blue"><b>drop</b>&nbsp;&larr;</div></li>
                                     <li>reject</li>
                         </ul>
                 </td>

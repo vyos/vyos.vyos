@@ -308,6 +308,7 @@ options:
             description:
             - Specifies the default action for the zone.
             type: str
+            default: drop
             choices:
             - drop
             - reject

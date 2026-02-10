@@ -424,7 +424,6 @@ class Firewall_globalFacts(object):
             attr = m.group("attr").replace("-", "_")
             value = m.group("value")
 
-            # Boolean flag if no value
             if value is None:
                 value = True
             else:
