@@ -97,8 +97,10 @@ class Firewall_globalFacts(object):
             "group": self.parse_group(conf),
             "route_redirects": self.route_redirects(conf),
             "state_policy": self.parse_state_policy(conf),
+            "zone": self.parse_zone(conf),
         }
         firewall.update(f_sub)
+        self._module.fail_json(msg=firewall)
         return firewall
 
     def route_redirects(self, conf):
@@ -400,3 +402,35 @@ class Firewall_globalFacts(object):
             "twa_hazards_protection",
         )
         return True if attrib in bool_set else False
+
+    def parse_zone(self, conf):
+        """
+        This function triggers the parsing of 'zone' attributes.
+        :param conf: configuration.
+        :return: generated config dictionary.
+        """
+        cfg_dict = {}
+
+        for line in conf.splitlines():
+
+            m = search(
+                r"^set firewall zone (?P<zone>\S+)\s+(?P<attr>[a-z-]+)\s*(?P<value>'[^']+'|\S+)?$",
+                line,
+            )
+            if not m:
+                continue
+
+            zone_name = m.group("zone")
+            attr = m.group("attr").replace("-", "_")
+            value = m.group("value")
+
+            # Boolean flag if no value
+            if value is None:
+                value = True
+            else:
+                value = value.strip("'")
+
+            cfg_dict.setdefault(zone_name, {"name": zone_name})
+            cfg_dict[zone_name][attr] = value
+
+        return list(cfg_dict.values())

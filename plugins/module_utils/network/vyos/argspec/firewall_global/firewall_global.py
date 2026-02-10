@@ -187,6 +187,31 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                     ],
                     "type": "str",
                 },
+                "zone": {
+                    "elements": "dict",
+                    "type": "list",
+                    "options": {
+                        "description": {"type": "str"},
+                        "default_action": {
+                            "choices": [
+                                "drop",
+                                "reject",
+                            ],
+                            "default": "drop",
+                            "type": "str",
+                        },
+                        "default_log": {"type": "bool"},
+                        "interfaces": {
+                            "elements": "str",
+                            "type": "list",
+                        },
+                        "local_zone": {"type": "bool"},
+                        "name": {
+                            "required": True,
+                            "type": "str",
+                        },
+                    },
+                },
             },
             "type": "dict",
         },

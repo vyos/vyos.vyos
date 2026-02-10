@@ -281,6 +281,41 @@ options:
             - notice
             - info
             - debug
+      zone:
+        description:
+        - Defines a firewall zone.
+        type: list
+        elements: dict
+        suboptions:
+          name:
+            description:
+            - Name of the firewall zone.
+            type: str
+            required: true
+          description:
+            description:
+            - Allows you to specify a brief description for the firewall zone.
+            type: str
+          default_log:
+            description:
+            - Specifies whether or not to log packets for the firewall zone.
+            type: bool
+          local_zone:
+            description:
+            - Specifies whether or not the zone is local.
+            type: bool
+          default_action:
+            description:
+            - Specifies the default action for the zone.
+            type: str
+            choices:
+            - drop
+            - reject
+          interfaces:
+            description:
+            - Specifies the interfaces associated with the zone.
+            type: list
+            elements: str
   running_config:
     description:
     - >
