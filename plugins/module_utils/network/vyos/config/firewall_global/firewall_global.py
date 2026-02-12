@@ -241,6 +241,8 @@ class Firewall_global(ConfigBase):
             commands.extend(self._render_state_policy(key, w, h, opr=opr))
         elif key == "route_redirects":
             commands.extend(self._render_route_redirects(key, w, h, opr=opr))
+        elif key == "zone":
+            commands.extend(self._render_zone(key, w, h, opr=opr))
         return commands
 
     def _add_global_attr(self, w, h, opr=True):
@@ -692,7 +694,7 @@ class Firewall_global(ConfigBase):
             cmd = "set firewall "
         if (
             attr
-            and key != "group"
+            and key not in ["group", "zone"]
             and LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4")
         ):
             cmd += "global-options "
@@ -810,3 +812,117 @@ class Firewall_global(ConfigBase):
         elif attrib == "validation":
             regex = "source-validation"
         return regex
+
+    def _render_zone(self, attr, w, h, opr):
+        """
+        This function forms the commands for group list/members attributes based on the 'opr'.
+        :param attr: attribute name.
+        :param w: the desired config.
+        :param h: the target config.
+        :param opr: True/False.
+        :return: generated list of commands.
+        """
+        commands = []
+        h_grp = []
+        w_grp = []
+        l_set = ("name", "description", "default_action", "default_log", "local_zone")
+        if w:
+            w_grp = w.get(attr) or []
+        if h:
+            h_grp = h.get(attr) or []
+
+        if w_grp:
+            for want in w_grp:
+                h = self.search_attrib_in_have(h_grp, want, "name")
+
+                cmd = self._compute_command(key="zone", attr="", opr=opr)
+                for key, val in want.items():
+                    if val:
+                        if opr and key in l_set and not (h and self._is_w_same(want, h, key)):
+                            if key == "name":
+                                commands.append(cmd + " " + str(val))
+                            elif isinstance(val, bool):
+                                commands.append(
+                                    cmd + " " + want["name"] + " " + key,
+                                )
+                            else:
+                                commands.append(
+                                    cmd
+                                    + " "
+                                    + want["name"]
+                                    + " "
+                                    + key
+                                    + " '"
+                                    + str(want[key])
+                                    + "'",
+                                )
+                        elif not opr and key in l_set:
+                            if key == "name" and self._is_grp_del(h, want, key):
+                                if len(commands) > 0 and commands[-1] == cmd + " " + want[
+                                    "name"
+                                ] + " " + self._grp_type(
+                                    attr,
+                                ):
+                                    commands.pop()
+                                commands.append(cmd + " " + want["name"])
+                                continue
+                            if not (h and in_target_not_none(h, key)) and not self._is_grp_del(
+                                h,
+                                want,
+                                "name",
+                            ):
+                                commands.append(cmd + " " + want["name"] + " " + key)
+                        elif key == "interfaces":
+                            commands.extend(
+                                self._render_interfaces(
+                                    key,
+                                    want,
+                                    h,
+                                    opr,
+                                    cmd,
+                                    want["name"],
+                                    attr,
+                                ),
+                            )
+        self._module.fail_json(msg=commands)
+
+        return commands
+
+    def _render_interfaces(self, attr, w, h, opr, cmd, name, type):
+        """
+        This function forms the commands for interface members
+        based on the 'opr'.
+        :param attr: attribute name.
+        :param w: the desired config.
+        :param h: the target config.
+        :param cmd: commands to be prepend.
+        :param name: name of group.
+        :param type: group type.
+        :return: generated list of commands.
+        """
+        commands = []
+        have = []
+        if w:
+            want = w.get(attr) or []
+        if h:
+            have = h.get(attr) or []
+
+        if want:
+            if opr:
+                interfaces = list_diff_want_only(want, have)
+
+                for interface in interfaces:
+                    commands.append(
+                        cmd + " " + name + " interface " + interface,
+                    )
+            elif not opr and have:
+                interfaces = list_diff_want_only(want, have)
+                for interface in interfaces:
+                    commands.append(
+                        cmd + " " + name + " interface " + interface,
+                    )
+            elif not opr and not have:
+                commands.append(
+                    cmd + " " + name + " " + interface,
+                )
+        return commands
