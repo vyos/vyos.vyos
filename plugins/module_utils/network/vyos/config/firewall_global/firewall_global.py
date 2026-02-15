@@ -961,22 +961,23 @@ class Firewall_global(ConfigBase):
         if want:
             if opr:
                 izfs = self._dict_diff(want, have)
+
+                for izf in izfs:
+                    commands.append(
+                        cmd + " " + name + " " + izf[0].replace(".", " ") + " " + izf[1],
+                    )
+            elif not opr and have:
+                izfs = self._dict_diff(want, have)
                 self._module.fail_json(msg={"izfs": izfs})
 
-            #     for interface in interfaces:
-            #         commands.append(
-            #             cmd + " " + name + " interface " + interface,
-            #         )
-            # elif not opr and have:
-            #     interfaces = list_diff_want_only(want, have)
-            #     for interface in interfaces:
-            #         commands.append(
-            #             cmd + " " + name + " interface " + interface,
-            #         )
-            # elif not opr and not have:
-            #     commands.append(
-            #         cmd + " " + name + " " + interface,
-            #     )
+                for izf in izfs:
+                    commands.append(
+                        cmd + " " + name + " " + izf[0].replace(".", " ") + " " + izf[1],
+                    )
+            elif not opr and not have:
+                commands.append(
+                    cmd + " " + name + " " + attr,
+                )
         return commands
 
     def _dict_diff(self, want, have, path=""):
@@ -996,11 +997,10 @@ class Firewall_global(ConfigBase):
                 if isinstance(want_val, dict) and isinstance(have_val, dict):
                     diffs.extend(self._dict_diff(want_val, have_val, current_path))
                 elif isinstance(want_val, list) and isinstance(have_val, list):
-                    # Compare lists element by element
+
                     for i, item in enumerate(want_val):
                         if i >= len(have_val) or item != have_val[i]:
                             diffs.append((f"{current_path}[{i}]", item))
                 elif want_val != have_val:
                     diffs.append((current_path, want_val))
-
         return diffs
