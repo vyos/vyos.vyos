@@ -77,13 +77,21 @@ class Firewall_globalFacts(object):
         :rtype: dictionary
         :returns: The generated config
         """
+        # conf = "\n".join(
+        #     filter(
+        #         lambda x: ("firewall ipv6-name" and "firewall name" not in x),
+        #         conf,
+        #     ),
+        # )
+
         conf = "\n".join(
             filter(
-                lambda x: ("firewall ipv6-name" and "firewall name" not in x),
+                lambda x: not (
+                    x.startswith("set firewall ipv6 name") or x.startswith("set firewall ipv6 name")
+                ),
                 conf,
             ),
         )
-
         a_lst = [
             "config_trap",
             "validation",
@@ -408,21 +416,22 @@ class Firewall_globalFacts(object):
         :param conf: configuration.
         :return: generated config dictionary.
         """
-
         cfg_dict = {}
 
         KEY_MAP = {
             "interface": "interfaces",
+            "intra-zone-filtering": "intra-zone-filtering",
         }
 
         LIST_ATTRS = {
             "interfaces",
+            "intra_zone_filtering",
         }
 
         for line in conf.splitlines():
 
             m = search(
-                r"^set firewall zone (?P<zone>\S+)\s+(?P<attr>[a-z-]+)\s*(?P<value>'[^']+'|\S+)?$",
+                r"^set firewall zone (?P<zone>\S+)\s+(?P<attr>[a-z-]+)(?:\s+(?P<value>'[^']+'|[^\n]+))?$",
                 line,
             )
             if not m:
@@ -442,8 +451,36 @@ class Firewall_globalFacts(object):
             attr = KEY_MAP.get(raw_attr, raw_attr)
 
             if attr in LIST_ATTRS:
-                zone.setdefault(attr, []).append(value)
+                if attr == "intra_zone_filtering":
+                    izf = zone.setdefault(attr, {})
+                    izf_attr = self._parse_izf(value)
+                    for k, v in izf_attr.items():
+                        if isinstance(v, dict):
+                            izf.setdefault(k, {}).update(v)
+                        else:
+                            izf[k] = v
+                else:
+                    zone.setdefault(attr, []).append(value)
             else:
                 zone[attr] = value
 
+        # self._module.fail_json(msg={"cfg_dict": cfg_dict})
+
         return list(cfg_dict.values())
+
+    def _parse_izf(self, value):
+
+        tokens = value.replace("'", "").split()
+
+        result = {}
+
+        key = tokens[0].replace("-", "_")
+
+        if len(tokens) == 2:
+            result[key] = tokens[1]
+
+        elif len(tokens) >= 3:
+            subkey = tokens[1].replace("-", "_")
+            result[key] = {subkey: tokens[2]}
+
+        return result

@@ -317,6 +317,31 @@ options:
             - Specifies the interfaces associated with the zone.
             type: list
             elements: str
+          intra_zone_filtering:
+            description:
+            - Specifies a policy for intra-zone filtering.
+            type: dict
+            suboptions:
+              action:
+                description:
+                - Action for intra-zone traffic.
+                type: str
+                choices:
+                - accept
+                - drop
+              firewall:
+                description:
+                - Firewall ruleset to apply to intra-zone traffic.
+                type: dict
+                suboptions:
+                  name:
+                    description:
+                    - Name of the firewall ruleset to apply to intra-zone traffic.
+                    type: str
+                  ipv6_name:
+                    description:
+                    - Name of the IPv6 firewall ruleset to apply to intra-zone traffic.
+                    type: str
   running_config:
     description:
     - >

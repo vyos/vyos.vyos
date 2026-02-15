@@ -210,6 +210,22 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                             "required": True,
                             "type": "str",
                         },
+                        "intra_zone_filtering": {
+                            "type": "dict",
+                            "options": {
+                                "action": {
+                                    "choices": ["accept", "drop"],
+                                    "type": "str",
+                                },
+                                "firewall": {
+                                    "type": "dict",
+                                    "options": {
+                                        "name": {"type": "str"},
+                                        "ipv6_name": {"type": "str"},
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
             },

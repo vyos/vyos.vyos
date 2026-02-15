@@ -884,13 +884,25 @@ class Firewall_global(ConfigBase):
                                     attr,
                                 ),
                             )
+                        elif key == "intra_zone_filtering":
+                            commands.extend(
+                                self._render_izf(
+                                    key,
+                                    want,
+                                    h,
+                                    opr,
+                                    cmd,
+                                    want["name"],
+                                    attr,
+                                ),
+                            )
         self._module.fail_json(msg=commands)
 
         return commands
 
     def _render_interfaces(self, attr, w, h, opr, cmd, name, type):
         """
-        This function forms the commands for interface members
+        This function forms the commands for interfaces
         based on the 'opr'.
         :param attr: attribute name.
         :param w: the desired config.
@@ -926,3 +938,69 @@ class Firewall_global(ConfigBase):
                     cmd + " " + name + " " + interface,
                 )
         return commands
+
+    def _render_izf(self, attr, w, h, opr, cmd, name, type):
+        """
+        This function forms the commands for intra zone filtering
+        based on the 'opr'.
+        :param attr: attribute name.
+        :param w: the desired config.
+        :param h: the target config.
+        :param cmd: commands to be prepend.
+        :param name: name of group.
+        :param type: group type.
+        :return: generated list of commands.
+        """
+        commands = []
+        have = []
+        if w:
+            want = w.get(attr) or []
+        if h:
+            have = h.get(attr) or []
+
+        if want:
+            if opr:
+                izfs = self._dict_diff(want, have)
+                self._module.fail_json(msg={"izfs": izfs})
+
+            #     for interface in interfaces:
+            #         commands.append(
+            #             cmd + " " + name + " interface " + interface,
+            #         )
+            # elif not opr and have:
+            #     interfaces = list_diff_want_only(want, have)
+            #     for interface in interfaces:
+            #         commands.append(
+            #             cmd + " " + name + " interface " + interface,
+            #         )
+            # elif not opr and not have:
+            #     commands.append(
+            #         cmd + " " + name + " " + interface,
+            #     )
+        return commands
+
+    def _dict_diff(self, want, have, path=""):
+        """
+        Recursively find keys/values in `want` that differ or are missing in `have`.
+        Returns a list of tuples: (full_path, value_in_want)
+        """
+        diffs = []
+
+        for key, want_val in want.items():
+            current_path = f"{path}.{key}" if path else key
+
+            if key not in have:
+                diffs.append((current_path, want_val))
+            else:
+                have_val = have[key]
+                if isinstance(want_val, dict) and isinstance(have_val, dict):
+                    diffs.extend(self._dict_diff(want_val, have_val, current_path))
+                elif isinstance(want_val, list) and isinstance(have_val, list):
+                    # Compare lists element by element
+                    for i, item in enumerate(want_val):
+                        if i >= len(have_val) or item != have_val[i]:
+                            diffs.append((f"{current_path}[{i}]", item))
+                elif want_val != have_val:
+                    diffs.append((current_path, want_val))
+
+        return diffs
