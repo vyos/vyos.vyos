@@ -935,7 +935,7 @@ class Firewall_global(ConfigBase):
                     )
             elif not opr and not have:
                 commands.append(
-                    cmd + " " + name + " " + interface,
+                    cmd + " " + name + " interface " + interface,
                 )
         return commands
 
