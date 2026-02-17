@@ -421,11 +421,13 @@ class Firewall_globalFacts(object):
         KEY_MAP = {
             "interface": "interfaces",
             "intra-zone-filtering": "intra-zone-filtering",
+            "from": "sources",
         }
 
         LIST_ATTRS = {
             "interfaces",
             "intra_zone_filtering",
+            "sources",
         }
 
         for line in conf.splitlines():
@@ -459,6 +461,8 @@ class Firewall_globalFacts(object):
                             izf.setdefault(k, {}).update(v)
                         else:
                             izf[k] = v
+                elif attr == "sources":
+                    self._parse_sources(zone, value)
                 else:
                     zone.setdefault(attr, []).append(value)
             else:
@@ -484,3 +488,34 @@ class Firewall_globalFacts(object):
             result[key] = {subkey: tokens[2]}
 
         return result
+
+    def _parse_sources(self, zone, value):
+
+        tokens = value.split()
+
+        if len(tokens) < 1:
+            return
+
+        src_zone = tokens[0]
+
+        sources = zone.setdefault("sources", [])
+
+        entry = None
+        for s in sources:
+            if s.get("zone") == src_zone:
+                entry = s
+                break
+
+        if entry is None:
+            entry = {"zone": src_zone}
+            sources.append(entry)
+
+        if len(tokens) == 1:
+            return
+
+        if tokens[1] == "firewall" and len(tokens) >= 4:
+            key = tokens[2].replace("-", "_")
+            val = tokens[3].strip("'")
+
+            firewall = entry.setdefault("firewall", {})
+            firewall[key] = val

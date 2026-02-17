@@ -896,6 +896,18 @@ class Firewall_global(ConfigBase):
                                     attr,
                                 ),
                             )
+                        elif key == "sources":
+                            commands.extend(
+                                self._render_sources(
+                                    key,
+                                    want,
+                                    h,
+                                    opr,
+                                    cmd,
+                                    want["name"],
+                                    attr,
+                                ),
+                            )
         self._module.fail_json(msg=commands)
 
         return commands
@@ -918,7 +930,7 @@ class Firewall_global(ConfigBase):
             want = w.get(attr) or []
         if h:
             have = h.get(attr) or []
-
+        # self._module.fail_json(msg={"have": have, "want": want})
         if want:
             if opr:
                 interfaces = list_diff_want_only(want, have)
@@ -935,7 +947,7 @@ class Firewall_global(ConfigBase):
                     )
             elif not opr and not have:
                 commands.append(
-                    cmd + " " + name + " interface " + interface,
+                    cmd + " " + name + " interface ",
                 )
         return commands
 
@@ -968,7 +980,6 @@ class Firewall_global(ConfigBase):
                     )
             elif not opr and have:
                 izfs = self._dict_diff(want, have)
-                self._module.fail_json(msg={"izfs": izfs})
 
                 for izf in izfs:
                     commands.append(
@@ -1004,3 +1015,84 @@ class Firewall_global(ConfigBase):
                 elif want_val != have_val:
                     diffs.append((current_path, want_val))
         return diffs
+
+    def _render_sources(self, attr, w, h, opr, cmd, name, type):
+        """
+        This function forms the commands for sources (from)
+        based on the 'opr'.
+        :param attr: attribute name.
+        :param w: the desired config.
+        :param h: the target config.
+        :param cmd: commands to be prepend.
+        :param name: name of group.
+        :param type: group type.
+        :return: generated list of commands.
+        """
+        commands = []
+        have = []
+        if w:
+            want = w.get(attr) or []
+        if h:
+            have = h.get(attr) or []
+
+        have_index = {item["zone"]: item for item in have}
+
+        for item1 in want:
+            zone = item1["zone"]
+
+            if zone in have_index:
+                item2 = have_index[zone]
+
+                wfw = item1.get("firewall", {})
+                hfw = item2.get("firewall", {})
+                if wfw:
+                    if opr:
+                        sources = self._dict_diff(wfw, hfw)
+                        for source in sources:
+                            commands.append(
+                                cmd
+                                + " "
+                                + name
+                                + " from "
+                                + zone
+                                + " firewall "
+                                + source[0].replace("-", "_")
+                                + " "
+                                + source[1],
+                            )
+                    elif not opr and hfw:
+                        sources = self._dict_diff(wfw, hfw)
+                        for source in sources:
+                            commands.append(
+                                cmd
+                                + " "
+                                + name
+                                + " from "
+                                + zone
+                                + " firewall "
+                                + source[0].replace("-", "_")
+                                + " "
+                                + source[1],
+                            )
+                    elif not opr and not have:
+                        sources = self._dict_diff(wfw, hfw)
+                        for source in sources:
+                            commands.append(
+                                cmd + " " + name + " from " + zone,
+                            )
+            elif opr:
+                wfw = item1.get("firewall", {})
+                for key, val in wfw.items():
+                    if val:
+                        commands.append(
+                            cmd
+                            + " "
+                            + name
+                            + " from "
+                            + zone
+                            + " firewall "
+                            + key.replace("-", "_")
+                            + " "
+                            + self._bool_to_str(val),
+                        )
+        return commands

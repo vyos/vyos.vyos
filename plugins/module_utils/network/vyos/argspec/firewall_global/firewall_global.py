@@ -226,6 +226,20 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                                 },
                             },
                         },
+                        "sources": {
+                            "elements": "dict",
+                            "type": "list",
+                            "options": {
+                                "zone": {"type": "str"},
+                                "firewall": {
+                                    "type": "dict",
+                                    "options": {
+                                        "name": {"type": "str"},
+                                        "ipv6_name": {"type": "str"},
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
             },

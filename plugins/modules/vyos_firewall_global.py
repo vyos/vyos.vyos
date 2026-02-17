@@ -342,6 +342,29 @@ options:
                     description:
                     - Name of the IPv6 firewall ruleset to apply to intra-zone traffic.
                     type: str
+          sources:
+            description:
+            - Specifies the source zones for the firewall rules.
+            type: list
+            elements: dict
+            suboptions:
+              zone:
+                description:
+                - Name of the source zone.
+                type: str
+              firewall:
+                description:
+                - Firewall ruleset to apply to the source zone.
+                type: dict
+                suboptions:
+                  name:
+                    description:
+                    - Name of the firewall ruleset to apply to the source zone.
+                    type: str
+                  ipv6_name:
+                    description:
+                    - Name of the IPv6 firewall ruleset to apply to the source zone.
+                    type: str
   running_config:
     description:
     - >
