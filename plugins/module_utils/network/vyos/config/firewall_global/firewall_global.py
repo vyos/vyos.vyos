@@ -1093,6 +1093,6 @@ class Firewall_global(ConfigBase):
                             + " firewall "
                             + key.replace("-", "_")
                             + " "
-                            + self._bool_to_str(val),
+                            + val,
                         )
         return commands
