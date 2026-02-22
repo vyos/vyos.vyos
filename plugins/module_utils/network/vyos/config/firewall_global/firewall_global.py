@@ -836,14 +836,20 @@ class Firewall_global(ConfigBase):
                 h = self.search_attrib_in_have(h_grp, want, "name")
 
                 cmd = self._compute_command(key="zone", attr="", opr=opr)
+
+                if not opr and self._is_grp_del(h, want, "name"):
+                    commands.append(cmd + " " + want["name"])
+                    continue
+
                 for key, val in want.items():
                     if val:
                         if opr and key in l_set and not (h and self._is_w_same(want, h, key)):
                             if key == "name":
-                                commands.append(cmd + " " + str(val))
+                                pass
+                                # commands.append(cmd + " A-" + str(val))
                             elif isinstance(val, bool):
                                 commands.append(
-                                    cmd + " " + want["name"] + " " + key,
+                                    cmd + " " + want["name"] + " " + key.replace("_", "-"),
                                 )
                             else:
                                 commands.append(
@@ -851,27 +857,18 @@ class Firewall_global(ConfigBase):
                                     + " "
                                     + want["name"]
                                     + " "
-                                    + key
+                                    + key.replace("_", "-")
                                     + " '"
                                     + str(want[key])
                                     + "'",
                                 )
                         elif not opr and key in l_set:
-                            if key == "name" and self._is_grp_del(h, want, key):
-                                if len(commands) > 0 and commands[-1] == cmd + " " + want[
-                                    "name"
-                                ] + " " + self._grp_type(
-                                    attr,
-                                ):
-                                    commands.pop()
-                                commands.append(cmd + " " + want["name"])
-                                continue
                             if not (h and in_target_not_none(h, key)) and not self._is_grp_del(
                                 h,
                                 want,
                                 "name",
                             ):
-                                commands.append(cmd + " " + want["name"] + " " + key)
+                                commands.append(cmd + " D-" + want["name"] + " " + key)
                         elif key == "interfaces":
                             commands.extend(
                                 self._render_interfaces(
@@ -908,7 +905,7 @@ class Firewall_global(ConfigBase):
                                     attr,
                                 ),
                             )
-        self._module.fail_json(msg=commands)
+        # self._module.fail_json(msg=commands)
 
         return commands
 
@@ -930,7 +927,6 @@ class Firewall_global(ConfigBase):
             want = w.get(attr) or []
         if h:
             have = h.get(attr) or []
-        # self._module.fail_json(msg={"have": have, "want": want})
         if want:
             if opr:
                 interfaces = list_diff_want_only(want, have)
@@ -946,9 +942,13 @@ class Firewall_global(ConfigBase):
                         cmd + " " + name + " interface " + interface,
                     )
             elif not opr and not have:
-                commands.append(
-                    cmd + " " + name + " interface ",
-                )
+                for interface in want:
+                    commands.append(
+                        cmd + " " + name + " interface " + interface,
+                    )
+        else:
+            self._module.fail_json(msg={"want": want, "have": have, "opr": opr})
+
         return commands
 
     def _render_izf(self, attr, w, h, opr, cmd, name, type):
@@ -973,47 +973,79 @@ class Firewall_global(ConfigBase):
         if want:
             if opr:
                 izfs = self._dict_diff(want, have)
-
                 for izf in izfs:
                     commands.append(
-                        cmd + " " + name + " " + izf[0].replace(".", " ") + " " + izf[1],
+                        cmd
+                        + " "
+                        + name
+                        + " intra-zone-filtering "
+                        + izf[0].replace(".", " ")
+                        + " "
+                        + izf[1],
                     )
             elif not opr and have:
                 izfs = self._dict_diff(want, have)
 
                 for izf in izfs:
                     commands.append(
-                        cmd + " " + name + " " + izf[0].replace(".", " ") + " " + izf[1],
+                        cmd
+                        + " "
+                        + name
+                        + " intra-zone-filtering "
+                        + izf[0].replace(".", " ")
+                        + " "
+                        + izf[1],
                     )
             elif not opr and not have:
                 commands.append(
-                    cmd + " " + name + " " + attr,
+                    cmd + " " + name + " intra-zone-filtering " + attr,
                 )
         return commands
 
     def _dict_diff(self, want, have, path=""):
         """
         Recursively find keys/values in `want` that differ or are missing in `have`.
-        Returns a list of tuples: (full_path, value_in_want)
+        Returns list of tuples: (full_path, value_in_want)
         """
         diffs = []
 
+        have = have or {}
+
         for key, want_val in want.items():
-            current_path = f"{path}.{key}" if path else key
+            current_path = f"{path}.{key.replace('_', '-')}" if path else key.replace("_", "-")
 
             if key not in have:
-                diffs.append((current_path, want_val))
+                if isinstance(want_val, dict):
+                    diffs.extend(self._dict_diff(want_val, {}, current_path))
+                elif isinstance(want_val, list):
+                    for i, item in enumerate(want_val):
+                        if isinstance(item, dict):
+                            diffs.extend(self._dict_diff(item, {}, f"{current_path}[{i}]"))
+                        else:
+                            diffs.append((f"{current_path}[{i}]", item))
+                else:
+                    diffs.append((current_path, want_val))
+
             else:
                 have_val = have[key]
+
                 if isinstance(want_val, dict) and isinstance(have_val, dict):
                     diffs.extend(self._dict_diff(want_val, have_val, current_path))
-                elif isinstance(want_val, list) and isinstance(have_val, list):
 
+                elif isinstance(want_val, list) and isinstance(have_val, list):
                     for i, item in enumerate(want_val):
-                        if i >= len(have_val) or item != have_val[i]:
+                        if i >= len(have_val):
                             diffs.append((f"{current_path}[{i}]", item))
+                        elif isinstance(item, dict) and isinstance(have_val[i], dict):
+                            diffs.extend(
+                                self._dict_diff(item, have_val[i], f"{current_path}[{i}]"),
+                            )
+                        elif item != have_val[i]:
+                            diffs.append((f"{current_path}[{i}]", item))
+
                 elif want_val != have_val:
                     diffs.append((current_path, want_val))
+
         return diffs
 
     def _render_sources(self, attr, w, h, opr, cmd, name, type):
@@ -1056,7 +1088,7 @@ class Firewall_global(ConfigBase):
                                 + " from "
                                 + zone
                                 + " firewall "
-                                + source[0].replace("-", "_")
+                                + source[0].replace("_", "-")
                                 + " "
                                 + source[1],
                             )
@@ -1070,7 +1102,7 @@ class Firewall_global(ConfigBase):
                                 + " from "
                                 + zone
                                 + " firewall "
-                                + source[0].replace("-", "_")
+                                + source[0].replace("_", "-")
                                 + " "
                                 + source[1],
                             )
@@ -1091,7 +1123,7 @@ class Firewall_global(ConfigBase):
                             + " from "
                             + zone
                             + " firewall "
-                            + key.replace("-", "_")
+                            + key.replace("_", "-")
                             + " "
                             + val,
                         )

@@ -339,6 +339,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "set firewall group address-group RND-HOSTS address 192.0.2.7",
             "set firewall group address-group RND-HOSTS address 192.0.2.9",
             "set firewall group address-group ZONE-TEST description 'This is a new description for a address group name that is also in a zone'",
+            "delete firewall zone ZONE-TEST",
             "delete firewall group network-group RND description",
             "delete firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::1",
             "set firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::2",
@@ -380,15 +381,15 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                                 name="DELETE-HOSTS",
                                 description="The (single) last address from this group will be deleted in the tests",
                                 members=[
-                                    dict(address='1.2.3.4'),
-                                ]
+                                    dict(address="1.2.3.4"),
+                                ],
                             ),
                             dict(
                                 afi="ipv4",
                                 name="ZONE-TEST",
                                 members=[
                                     dict(address="1.2.3.4"),
-                                ]
+                                ],
                             ),
                             dict(
                                 afi="ipv6",
@@ -422,6 +423,15 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                             ),
                         ],
                     ),
+                    zone=[
+                        dict(
+                            name="ZONE-TEST",
+                            description="zone-test test description",
+                            interfaces=[
+                                "eth0.1234",
+                            ],
+                        ),
+                    ],
                 ),
                 state="replaced",
             ),
@@ -507,6 +517,7 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "set firewall group address-group RND-HOSTS address 192.0.2.7",
             "set firewall group address-group RND-HOSTS address 192.0.2.9",
             "set firewall group address-group ZONE-TEST address 4.3.2.1",
+            "delete firewall zone ZONE-TEST",
             "set firewall group address-group ZONE-TEST description 'This is a new description for a address group name that is also in a zone'",
             "delete firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::1",
             "set firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::2",
