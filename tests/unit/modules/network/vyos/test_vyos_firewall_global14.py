@@ -159,6 +159,31 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                             ),
                         ],
                     ),
+                    zone=[
+                        dict(
+                            name="FZP-2",
+                            default_action="reject",
+                            default_log=True,
+                            description="This is the Firewall zone fzp2",
+                            interfaces=[
+                                "eth2",
+                                "lo0",
+                            ],
+                            local_zone=True,
+                            sources=[
+                                dict(
+                                    zone="fzp5",
+                                    firewall=dict(
+                                        name="fzp1",
+                                        ipv6_name="fzp1-v6",
+                                    ),
+                                ),
+                            ],
+                            intra_zone_filtering=dict(
+                                action="accept",
+                            ),
+                        ),
+                    ],
                 ),
                 state="merged",
             ),
@@ -196,6 +221,15 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "set firewall global-options twa-hazards-protection 'enable'",
             "set firewall global-options syn-cookies 'enable'",
             "set firewall global-options source-validation 'strict'",
+            "set firewall zone FZP-2 default-action 'reject'",
+            "set firewall zone FZP-2 default-log",
+            "set firewall zone FZP-2 description 'This is the Firewall zone fzp2'",
+            "set firewall zone FZP-2 from fzp5 firewall ipv6-name fzp1-v6",
+            "set firewall zone FZP-2 from fzp5 firewall name fzp1",
+            "set firewall zone FZP-2 interface eth2",
+            "set firewall zone FZP-2 interface lo0",
+            "set firewall zone FZP-2 intra-zone-filtering action accept",
+            "set firewall zone FZP-2 local-zone",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -322,6 +356,31 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                             ),
                         ],
                     ),
+                    zone=[
+                        dict(
+                            name="FZP-2",
+                            default_action="drop",
+                            default_log=True,
+                            description="This is the Firewall zone fzp2",
+                            interfaces=[
+                                "eth2",
+                                "lo0",
+                            ],
+                            local_zone=True,
+                            sources=[
+                                dict(
+                                    zone="fzp5",
+                                    firewall=dict(
+                                        name="fzp1",
+                                        ipv6_name="fzp1-v6",
+                                    ),
+                                ),
+                            ],
+                            intra_zone_filtering=dict(
+                                action="accept",
+                            ),
+                        ),
+                    ],
                 ),
                 state="replaced",
             ),
@@ -345,6 +404,15 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "set firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::2",
             "delete firewall group port-group SSH port 22",
             "set firewall group port-group SSH port 2222",
+            "set firewall zone FZP-2 default-action 'drop'",
+            "set firewall zone FZP-2 default-log",
+            "set firewall zone FZP-2 description 'This is the Firewall zone fzp2'",
+            "set firewall zone FZP-2 from fzp5 firewall ipv6-name fzp1-v6",
+            "set firewall zone FZP-2 from fzp5 firewall name fzp1",
+            "set firewall zone FZP-2 interface eth2",
+            "set firewall zone FZP-2 interface lo0",
+            "set firewall zone FZP-2 intra-zone-filtering action accept",
+            "set firewall zone FZP-2 local-zone",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -498,6 +566,15 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                             ),
                         ],
                     ),
+                    zone=[
+                        dict(
+                            name="ZONE-TEST",
+                            description="zone-test test description",
+                            interfaces=[
+                                "lo",
+                            ],
+                        ),
+                    ],
                 ),
                 state="replaced",
             ),
@@ -517,7 +594,8 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "set firewall group address-group RND-HOSTS address 192.0.2.7",
             "set firewall group address-group RND-HOSTS address 192.0.2.9",
             "set firewall group address-group ZONE-TEST address 4.3.2.1",
-            "delete firewall zone ZONE-TEST",
+            "delete firewall zone ZONE-TEST interface eth0.1234",
+            "set firewall zone ZONE-TEST interface lo",
             "set firewall group address-group ZONE-TEST description 'This is a new description for a address group name that is also in a zone'",
             "delete firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::1",
             "set firewall group ipv6-address-group LOCAL-v6 address fdec:2503:89d6:59b3::2",
