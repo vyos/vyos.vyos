@@ -13,7 +13,7 @@ merged_commands:
   - set firewall global-options send-redirects 'enable'
   - set firewall global-options state-policy established action 'accept'
   - set firewall global-options state-policy established log
-  - set firewall global-options state-policy invalid action 'reject'
+  # - set firewall global-options state-policy invalid action 'reject'
   - set firewall global-options broadcast-ping 'enable'
   - set firewall global-options all-ping 'enable'
   - set firewall global-options log-martians 'enable'
@@ -37,7 +37,7 @@ populate_commands:
   - set firewall global-options source-validation 'strict'
   - set firewall global-options state-policy established action 'accept'
   - set firewall global-options state-policy established log
-  - set firewall global-options state-policy invalid action 'reject'
+  # - set firewall global-options state-policy invalid action 'reject'
   - set firewall global-options syn-cookies 'enable'
   - set firewall global-options twa-hazards-protection 'enable'
 
