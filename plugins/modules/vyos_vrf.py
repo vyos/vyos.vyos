@@ -89,14 +89,11 @@ options:
                     - any
                     - babel
                     - bgp
-                    - connected
                     - eigrp
                     - isis
-                    - kernel
                     - ospf
                     - rip
                     - static
-                    - table
           protocols:
             # type: list # sanity
             # elements: dict
@@ -872,7 +869,6 @@ EXAMPLES = """
       # set vrf name vrf-red description 'red-vrf'
       # set vrf name vrf-red disable
       # set vrf name vrf-red ip disable-forwarding
-      # set vrf name vrf-red ip protocol kernel route-map 'rm1'
       # set vrf name vrf-red ip protocol rip route-map 'rm1'
       # set vrf name vrf-red table '101'
       # set vrf name vrf-red vni '1001'
@@ -901,8 +897,6 @@ EXAMPLES = """
   #               disable_forwarding: false
   #               route_maps:
   #                 - rm_name: "rm1"
-  #                   protocol: "kernel"
-  #                 - rm_name: "rm1"
   #                   protocol: "ospf"
   #             - afi: "ipv6"
   #               nht_no_resolve_via_default: true
@@ -927,10 +921,6 @@ EXAMPLES = """
   #                     "disable_forwarding": false,
   #                     "nht_no_resolve_via_default": false,
   #                     "route_maps": [
-  #                         {
-  #                             "protocol": "kernel",
-  #                             "rm_name": "rm1"
-  #                         },
   #                         {
   #                             "protocol": "ospf",
   #                             "rm_name": "rm1"
@@ -973,10 +963,6 @@ EXAMPLES = """
   #                     "nht_no_resolve_via_default": false,
   #                     "route_maps": [
   #                         {
-  #                             "protocol": "kernel",
-  #                             "rm_name": "rm1"
-  #                         },
-  #                         {
   #                             "protocol": "rip",
   #                             "rm_name": "rm1"
   #                         }
@@ -1008,7 +994,6 @@ EXAMPLES = """
       # set vrf name vrf-blue table '100'
       # set vrf name vrf-blue vni '1002'
       # set vrf name vrf-red description 'red-vrf'
-      # set vrf name vrf-red ip protocol kernel route-map 'rm1'
       # set vrf name vrf-red ip protocol ospf route-map 'rm1'
       # set vrf name vrf-red ip protocol rip route-map 'rm1'
       # set vrf name vrf-red ipv6 nht no-resolve-via-default
@@ -1031,7 +1016,6 @@ EXAMPLES = """
     # set vrf name vrf-red description 'red-vrf'
     # set vrf name vrf-red disable
     # set vrf name vrf-red ip disable-forwarding
-    # set vrf name vrf-red ip protocol kernel route-map 'rm1'
     # set vrf name vrf-red ip protocol rip route-map 'rm1'
     # set vrf name vrf-red table '101'
     # set vrf name vrf-red vni '1001'
@@ -1059,8 +1043,6 @@ EXAMPLES = """
   #               disable_forwarding: false
   #               route_maps:
   #                 - rm_name: "rm1"
-  #                   protocol: "kernel"
-  #                 - rm_name: "rm1"
   #                   protocol: "rip"
   #             - afi: "ipv6"
   #               nht_no_resolve_via_default: false
@@ -1085,10 +1067,6 @@ EXAMPLES = """
     #                     "disable_forwarding": false,
     #                     "nht_no_resolve_via_default": false,
     #                     "route_maps": [
-    #                         {
-    #                             "protocol": "kernel",
-    #                             "rm_name": "rm1"
-    #                         },
     #                         {
     #                             "protocol": "rip",
     #                             "rm_name": "rm1"
@@ -1122,10 +1100,6 @@ EXAMPLES = """
     #                     "nht_no_resolve_via_default": false,
     #                     "route_maps": [
     #                         {
-    #                             "protocol": "kernel",
-    #                             "rm_name": "rm1"
-    #                         },
-    #                         {
     #                             "protocol": "rip",
     #                             "rm_name": "rm1"
     #                         }
@@ -1154,7 +1128,6 @@ EXAMPLES = """
     #     "set vrf name vrf-red vni 1001",
     #     "set vrf name vrf-red description red-vrf",
     #     "set vrf name vrf-red disable",
-    #     "set vrf name vrf-red ip protocol kernel route-map rm1",
     #     "set vrf name vrf-red ip protocol rip route-map rm1"
     # ]
 
@@ -1168,7 +1141,6 @@ EXAMPLES = """
     #   set vrf name vrf-blue vni '1000'
     #   set vrf name vrf-red description 'red-vrf'
     #   set vrf name vrf-red disable
-    #   set vrf name vrf-red ip protocol kernel route-map 'rm1'
     #   set vrf name vrf-red ip protocol rip route-map 'rm1'
     #   set vrf name vrf-red table '101'
     #   set vrf name vrf-red vni '1001'
@@ -1187,7 +1159,6 @@ EXAMPLES = """
     #   set vrf name vrf-red description 'red-vrf'
     #   set vrf name vrf-red disable
     #   set vrf name vrf-red ip disable-forwarding
-    #   set vrf name vrf-red ip protocol kernel route-map 'rm1'
     #   set vrf name vrf-red ip protocol rip route-map 'rm1'
     #   set vrf name vrf-red table '101'
     #   set vrf name vrf-red vni '1001'
@@ -1220,10 +1191,6 @@ EXAMPLES = """
     #                     "nht_no_resolve_via_default": false,
     #                     "route_maps": [
     #                         {
-    #                             "protocol": "kernel",
-    #                             "rm_name": "rm1"
-    #                         },
-    #                         {
     #                             "protocol": "rip",
     #                             "rm_name": "rm1"
     #                         }
@@ -1249,7 +1216,6 @@ EXAMPLES = """
     #   set vrf name vrf-red description 'red-vrf'
     #   set vrf name vrf-red disable
     #   set vrf name vrf-red ip disable-forwarding
-    #   set vrf name vrf-red ip protocol kernel route-map 'rm1'
     #   set vrf name vrf-red ip protocol rip route-map 'rm1'
     #   set vrf name vrf-red table '101'
     #   set vrf name vrf-red vni '1001'
@@ -1270,7 +1236,6 @@ EXAMPLES = """
     #   set vrf name vrf-red description 'red-vrf'
     #   set vrf name vrf-red disable
     #   set vrf name vrf-red ip disable-forwarding
-    #   set vrf name vrf-red ip protocol kernel route-map 'rm1'
     #   set vrf name vrf-red ip protocol rip route-map 'rm1'
     #   set vrf name vrf-red table '101'
     #   set vrf name vrf-red vni '1001'
@@ -1299,10 +1264,6 @@ EXAMPLES = """
     #                     "disable_forwarding": true,
     #                     "nht_no_resolve_via_default": false,
     #                     "route_maps": [
-    #                         {
-    #                             "protocol": "kernel",
-    #                             "rm_name": "rm1"
-    #                         },
     #                         {
     #                             "protocol": "rip",
     #                             "rm_name": "rm1"
@@ -1336,10 +1297,6 @@ EXAMPLES = """
     #                     "nht_no_resolve_via_default": false,
     #                     "route_maps": [
     #                         {
-    #                             "protocol": "kernel",
-    #                             "rm_name": "rm1"
-    #                         },
-    #                         {
     #                             "protocol": "rip",
     #                             "rm_name": "rm1"
     #                         }
@@ -1366,7 +1323,6 @@ EXAMPLES = """
     #   set vrf name vrf-red description 'red-vrf'
     #   set vrf name vrf-red disable
     #   set vrf name vrf-red ip disable-forwarding
-    #   set vrf name vrf-red ip protocol kernel route-map 'rm1'
     #   set vrf name vrf-red ip protocol rip route-map 'rm1'
     #   set vrf name vrf-red table '101'
     #   set vrf name vrf-red vni '1001'
@@ -1382,7 +1338,6 @@ EXAMPLES = """
     #   set vrf name vrf-red description 'red-vrf'
     #   set vrf name vrf-red disable
     #   set vrf name vrf-red ip disable-forwarding
-    #   set vrf name vrf-red ip protocol kernel route-map 'rm1'
     #   set vrf name vrf-red ip protocol rip route-map 'rm1'
     #   set vrf name vrf-red table '101'
     #   set vrf name vrf-red vni '1001'
@@ -1410,8 +1365,6 @@ EXAMPLES = """
     #               disable_forwarding: true
     #               route_maps:
     #                 - rm_name: "rm1"
-    #                   protocol: "kernel"
-    #                 - rm_name: "rm1"
     #                   protocol: "ospf"
     #             - afi: "ipv6"
     #               nht_no_resolve_via_default: false
@@ -1428,7 +1381,6 @@ EXAMPLES = """
   #     "set vrf name vrf-amber table 111",
   #     "set vrf name vrf-amber vni 1001",
   #     "set vrf name vrf-amber description amber-vrf",
-  #     "set vrf name vrf-amber ip protocol kernel route-map rm1",
   #     "set vrf name vrf-amber ip protocol ospf route-map rm1",
   #     "set vrf name vrf-amber ip disable-forwarding"
   # ]
@@ -1450,7 +1402,6 @@ EXAMPLES = """
 # set vrf name vrf2 vni 102
 # set vrf name vrf1 ip disable-forwarding
 # set vrf name vrf1 ip nht no-resolve-via-default
-# set vrf name vrf-red ip protocol kernel route-map 'rm1'
 # set vrf name vrf-red ip protocol ospf route-map 'rm1'
 # set vrf name vrf-red ipv6 nht no-resolve-via-default
 
@@ -1491,10 +1442,6 @@ EXAMPLES = """
 #                         "disable_forwarding": false,
 #                         "nht_no_resolve_via_default": false,
 #                         "route_maps": [
-#                             {
-#                                 "protocol": "kernel",
-#                                 "rm_name": "rm1"
-#                             },
 #                             {
 #                                 "protocol": "ospf",
 #                                 "rm_name": "rm1"

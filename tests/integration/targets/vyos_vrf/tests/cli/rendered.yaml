@@ -116,8 +116,8 @@
                 - afi: ipv4
                   disable_forwarding: true
                   route_maps:
-                    - rm_name: rm1
-                      protocol: kernel
+                    # - rm_name: rm1
+                    #   protocol: kernel
                     - rm_name: rm1
                       protocol: ospf
                 - afi: ipv6

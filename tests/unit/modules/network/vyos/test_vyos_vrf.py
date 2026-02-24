@@ -117,7 +117,6 @@ class TestVyosVrfModule(TestVyosModule):
                                     afi="ipv4",
                                     disable_forwarding=True,
                                     route_maps=[
-                                        dict(rm_name="rm1", protocol="kernel"),
                                         dict(rm_name="rm1", protocol="rip"),
                                     ],
                                 ),
@@ -243,49 +242,6 @@ class TestVyosVrfModule(TestVyosModule):
                                         ),
                                     ],
                                 ),
-                                # static=[
-                                #     dict(
-                                #         address_families=[
-                                #             dict(
-                                #                 afi="ipv4",
-                                #                 routes=[
-                                #                     dict(
-                                #                         dest="192.0.2.0/24",
-                                #                         blackhole_config=dict(
-                                #                             distance=10,
-                                #                         ),
-                                #                         next_hops=[
-                                #                             dict(
-                                #                                 interface="eth2",
-                                #                             ),
-                                #                         ],
-                                #                     ),
-                                #                     dict(
-                                #                         dest="10.10.10.0/24",
-                                #                         blackhole_config=dict(),
-                                #                         next_hops=[],
-                                #                     ),
-                                #                 ],
-                                #             ),
-                                #             dict(
-                                #                 afi="ipv6",
-                                #                 routes=[
-                                #                     dict(
-                                #                         dest="2001:db8::/32",
-                                #                         blackhole_config=dict(
-                                #                             distance=20,
-                                #                         ),
-                                #                         next_hops=[
-                                #                             dict(
-                                #                                 interface="eth2",
-                                #                             ),
-                                #                         ],
-                                #                     ),
-                                #                 ],
-                                #             ),
-                                #         ],
-                                #     ),
-                                # ],
                             ),
                         ),
                     ],
@@ -357,7 +313,6 @@ class TestVyosVrfModule(TestVyosModule):
                                     afi="ipv4",
                                     disable_forwarding=False,
                                     route_maps=[
-                                        dict(rm_name="rm1", protocol="kernel"),
                                         dict(rm_name="rm1", protocol="rip"),
                                     ],
                                 ),
@@ -404,7 +359,6 @@ class TestVyosVrfModule(TestVyosModule):
                                     afi="ipv4",
                                     disable_forwarding=True,
                                     route_maps=[
-                                        dict(rm_name="rm1", protocol="kernel"),
                                         dict(rm_name="rm1", protocol="rip"),
                                     ],
                                 ),
@@ -500,7 +454,6 @@ class TestVyosVrfModule(TestVyosModule):
                                     disable_forwarding=True,
                                     nht_no_resolve_via_default=False,
                                     route_maps=[
-                                        dict(rm_name="rm1", protocol="kernel"),
                                         dict(rm_name="rm1", protocol="rip"),
                                     ],
                                 ),
@@ -558,7 +511,6 @@ class TestVyosVrfModule(TestVyosModule):
                                     afi="ipv4",
                                     disable_forwarding=True,
                                     route_maps=[
-                                        dict(rm_name="rm1", protocol="kernel"),
                                         dict(rm_name="rm1", protocol="ospf"),
                                     ],
                                 ),
@@ -582,7 +534,6 @@ class TestVyosVrfModule(TestVyosModule):
             "set vrf name vrf-amber table 111",
             "set vrf name vrf-amber vni 1001",
             "set vrf name vrf-amber description amber-vrf",
-            "set vrf name vrf-amber ip protocol kernel route-map rm1",
             "set vrf name vrf-amber ip protocol ospf route-map rm1",
             "set vrf name vrf-amber ip disable-forwarding",
         ]
@@ -606,7 +557,6 @@ class TestVyosVrfModule(TestVyosModule):
             "set vrf name vrf2 vni 102",
             "set vrf name vrf1 ip disable-forwarding",
             "set vrf name vrf1 ip nht no-resolve-via-default",
-            "set vrf name vrf-red ip protocol kernel route-map 'rm1'",
             "set vrf name vrf-red ip protocol ospf route-map 'rm1'",
             "set vrf name vrf-red ipv6 nht no-resolve-via-default",
         )
@@ -640,10 +590,6 @@ class TestVyosVrfModule(TestVyosModule):
                             "disable_forwarding": False,
                             "nht_no_resolve_via_default": False,
                             "route_maps": [
-                                {
-                                    "protocol": "kernel",
-                                    "rm_name": "rm1",
-                                },
                                 {
                                     "protocol": "ospf",
                                     "rm_name": "rm1",
@@ -683,7 +629,6 @@ class TestVyosVrfModule(TestVyosModule):
                             "disable_forwarding": True,
                             "nht_no_resolve_via_default": False,
                             "route_maps": [
-                                {"protocol": "kernel", "rm_name": "rm1"},
                                 {"protocol": "rip", "rm_name": "rm1"},
                             ],
                         },
