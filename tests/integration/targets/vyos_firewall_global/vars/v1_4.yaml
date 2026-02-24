@@ -13,13 +13,16 @@ merged_commands:
   - set firewall global-options send-redirects 'enable'
   - set firewall global-options state-policy established action 'accept'
   - set firewall global-options state-policy established log
-  # - set firewall global-options state-policy invalid action 'reject'
+  - set firewall global-options state-policy invalid action 'reject'
   - set firewall global-options broadcast-ping 'enable'
   - set firewall global-options all-ping 'enable'
   - set firewall global-options log-martians 'enable'
   - set firewall global-options twa-hazards-protection 'enable'
   - set firewall global-options syn-cookies 'enable'
   - set firewall global-options source-validation 'strict'
+  - set firewall zone ZONE-TEST description 'zone-test test description'
+  - set firewall zone ZONE-TEST interface eth0.1234
+  - set firewall zone ZONE-TEST default-action 'drop'
 
 populate_commands:
   - set firewall global-options all-ping 'enable'
@@ -37,12 +40,15 @@ populate_commands:
   - set firewall global-options source-validation 'strict'
   - set firewall global-options state-policy established action 'accept'
   - set firewall global-options state-policy established log
-  # - set firewall global-options state-policy invalid action 'reject'
+  - set firewall global-options state-policy invalid action 'reject'
   - set firewall global-options syn-cookies 'enable'
   - set firewall global-options twa-hazards-protection 'enable'
+  - set firewall zone ZONE-TEST interface 'eth0.1234'
+  - set firewall zone ZONE-TEST description 'zone-test test description'
 
 replaced_commands:
   - delete firewall group address-group MGMT-HOSTS
+  - delete firewall zone ZONE-TEST
   - set firewall group address-group SALES-HOSTS address 192.0.2.1
   - set firewall group address-group SALES-HOSTS address 192.0.2.2
   - set firewall group address-group SALES-HOSTS address 192.0.2.3
@@ -52,6 +58,12 @@ replaced_commands:
   - set firewall group address-group ENG-HOSTS address 192.0.3.2
   - set firewall group address-group ENG-HOSTS description 'Sales office hosts address list'
   - set firewall group address-group ENG-HOSTS
+  - set firewall zone FZP-2 default-action 'reject'
+  - set firewall zone FZP-2 default-log
+  - set firewall zone FZP-2 description 'This is the Firewall zone fzp2'
+  - set firewall zone FZP-2 interface eth2
+  - set firewall zone FZP-2 interface lo0
+  - set firewall zone FZP-2 intra-zone-filtering action accept
 
 rendered_commands:
   - set firewall group address-group SALES-HOSTS address 192.0.2.1
@@ -78,6 +90,9 @@ rendered_commands:
   - set firewall global-options twa-hazards-protection 'enable'
   - set firewall global-options syn-cookies 'enable'
   - set firewall global-options source-validation 'strict'
+  - set firewall zone ZONE-TEST interface eth0.1234
+  - set firewall zone ZONE-TEST description 'zone-test test description'
+  - set firewall zone ZONE-TEST default-action 'drop'
 
 deleted_commands:
   - "delete firewall"
