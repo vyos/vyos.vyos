@@ -122,7 +122,9 @@ class Cliconf(CliconfBase):
         out = self.send_command(command)
         return out
 
-    def edit_config(self, candidate=None, commit=True, replace=None, comment=None):
+    def edit_config(
+        self, candidate=None, commit=True, replace=None, diff=False, comment=None, confirm=None
+    ):
         resp = {}
         operations = self.get_device_operations()
         self.check_edit_config_capability(operations, candidate, commit, replace, comment)
@@ -143,7 +145,7 @@ class Cliconf(CliconfBase):
         if diff_config:
             if commit:
                 try:
-                    self.commit(comment)
+                    self.commit(comment, confirm)
                 except AnsibleConnectionFailure as e:
                     msg = "commit failed: %s" % e.message
                     self.discard_changes()
@@ -191,12 +193,19 @@ class Cliconf(CliconfBase):
             check_all=check_all,
         )
 
-    def commit(self, comment=None):
-        if comment:
-            command = 'commit comment "{0}"'.format(comment)
+    def commit(self, comment=None, confirm=None):
+        if confirm:
+            if comment:
+                command = 'commit-confirm {0} comment "{1}"'.format(confirm, comment)
+            else:
+                command = 'commit-confirm {0}'.format(confirm)
+            self.send_command(command, "Proceed?", "\n")
         else:
-            command = "commit"
-        self.send_command(command)
+            if comment:
+                command = 'commit comment "{0}"'.format(comment)
+            else:
+                command = "commit"
+            self.send_command(command)
 
     def discard_changes(self):
         self.send_command("exit discard")
@@ -234,7 +243,9 @@ class Cliconf(CliconfBase):
 
         set_format = candidate.startswith("set") or candidate.startswith("delete")
         candidate_obj = NetworkConfig(indent=4, contents=candidate)
+
         if not set_format:
+
             config = [c.line for c in candidate_obj.items]
             commands = list()
             # this filters out less specific lines
@@ -248,6 +259,7 @@ class Cliconf(CliconfBase):
             candidate_commands = ["set %s" % cmd.replace(" {", "") for cmd in commands]
 
         else:
+
             candidate_commands = str(candidate).strip().split("\n")
 
         if diff_match == "none":
@@ -270,14 +282,19 @@ class Cliconf(CliconfBase):
 
                 updates.append(line)
 
+<<<<<<< t7621_config_fw_frp
             if item.startswith("delete"):
+=======
+            elif item.startswith("delete"):
+>>>>>>> main
 
                 if not running_commands:
                     updates.append(line)
                 else:
                     item = re.sub(r"delete", "set", item)
+
                     for entry in running_commands:
-                        if entry.startswith(item) and line not in visited:
+                        if re.match(rf"^{re.escape(item)}\b", entry) and line not in visited:
                             updates.append(line)
                             visited.add(line)
                         if entry.startswith(item) and entry in [

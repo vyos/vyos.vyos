@@ -12,7 +12,7 @@ from __future__ import absolute_import, division, print_function
 
 
 __metaclass__ = type
-from ansible.module_utils.six import iteritems
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
@@ -245,7 +245,7 @@ class Lag_interfaces(ConfigBase):
         commands.extend(self._add_bond_members(want, have))
 
         if updates:
-            for key, value in iteritems(updates):
+            for key, value in updates.items():
                 if value:
                     if key == "arp_monitor":
                         commands.extend(self._add_arp_monitor(updates, key, want, have))

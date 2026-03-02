@@ -1,0 +1,5 @@
+---
+trivial:
+  - procenv.py - ansible-bad-import-from Import PY3 fixed
+  - yaml_helper.py - ansible-bad-import-from Import PY3 fixed
+  - conftest.py - ansible-bad-import-from Import string_types fixed

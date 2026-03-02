@@ -83,3 +83,13 @@ deleted_commands:
   - "delete firewall"
 
 parsed_config_file: "_parsed_config_1_3.cfg"
+
+replaced_diff:
+  - "+network 1.1.1.1/32"
+  - "-network 192.0.1.0/24"
+
+merged_diff:
+  - "+network 1.1.1.1/32"
+
+deleted_diff:
+  - "-            network 192.0.1.0/24"

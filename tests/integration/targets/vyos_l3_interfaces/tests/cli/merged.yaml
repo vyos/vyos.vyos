@@ -14,6 +14,10 @@
               - address: 192.0.2.10/24
             ipv6:
               - address: 2001:db8::10/32
+            vifs:
+              - vlan_id: 102
+                ipv6:
+                  - address: auto-config
 
           - name: eth2
             ipv4:

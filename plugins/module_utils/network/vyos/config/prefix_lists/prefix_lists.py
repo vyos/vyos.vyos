@@ -19,7 +19,6 @@ created.
 """
 
 
-from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
@@ -86,23 +85,23 @@ class Prefix_lists(ResourceModule):
 
         # if state is deleted, empty out wantd and set haved to wantd
         if self.state == "deleted":
-            haved = {k: v for k, v in iteritems(haved) if k in wantd or not wantd}
-            for key, hvalue in iteritems(haved):
+            haved = {k: v for k, v in haved.items() if k in wantd or not wantd}
+            for key, hvalue in haved.items():
                 wvalue = wantd.pop(key, {})
                 if wvalue:
                     wplists = wvalue.get("prefix_lists", {})
                     hplists = hvalue.get("prefix_lists", {})
                     hvalue["prefix_lists"] = {
-                        k: v for k, v in iteritems(hplists) if k in wplists or not wplists
+                        k: v for k, v in hplists.items() if k in wplists or not wplists
                     }
 
         # remove superfluous config for overridden and deleted
         if self.state in ["overridden", "deleted"]:
-            for k, have in iteritems(haved):
+            for k, have in haved.items():
                 if k not in wantd:
                     self._compare(want={}, have=have)
 
-        for k, want in iteritems(wantd):
+        for k, want in wantd.items():
             self._compare(want=want, have=haved.pop(k, {}))
 
     def _compare(self, want, have):
@@ -127,7 +126,7 @@ class Prefix_lists(ResourceModule):
                 )
 
     def _compare_plists(self, want, have):
-        for wk, wentry in iteritems(want):
+        for wk, wentry in want.items():
             hentry = have.pop(wk, {})
 
             # parser list for name and descriptions
@@ -143,7 +142,7 @@ class Prefix_lists(ResourceModule):
             self._compare_rules(want=wplrules, have=hplrules)
 
     def _compare_rules(self, want, have):
-        for wr, wrule in iteritems(want):
+        for wr, wrule in want.items():
             hrule = have.pop(wr, {})
 
             # parser list for entries
@@ -164,7 +163,7 @@ class Prefix_lists(ResourceModule):
             )
 
     def _prefix_list_list_to_dict(self, entry):
-        for afi, value in iteritems(entry):
+        for afi, value in entry.items():
             if "prefix_lists" in value:
                 for pl in value["prefix_lists"]:
                     pl.update({"afi": afi})

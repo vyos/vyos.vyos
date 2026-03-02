@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - vyos_l3_interfaces - ipv6 auto-config option incorrectly set

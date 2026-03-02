@@ -17,7 +17,6 @@ __metaclass__ = type
 
 from copy import deepcopy
 
-from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
     ConfigBase,
 )
@@ -204,7 +203,7 @@ class Ospfv3(ConfigBase):
         commands = []
         w = deepcopy(remove_empties(want))
         if w:
-            for key, val in iteritems(w):
+            for key, val in w.items():
                 commands.extend(self._render_child_param(w, have, key, opr))
         return commands
 
@@ -245,7 +244,7 @@ class Ospfv3(ConfigBase):
         elif want[attr]:
             leaf_dict = {"parameters": "router_id"}
             leaf = leaf_dict[attr]
-            for item, value in iteritems(want[attr]):
+            for item, value in want[attr].items():
                 if opr and item in leaf and not _is_w_same(want[attr], h, item):
                     commands.append(self._form_attr_cmd(key=attr, attr=item, val=value, opr=opr))
                 elif not opr and item in leaf and not _in_target(h, item):
@@ -283,7 +282,7 @@ class Ospfv3(ConfigBase):
             commands.append(self._compute_command(attr=attr, opr=opr))
         elif w:
             for w_item in w:
-                for key, val in iteritems(w_item):
+                for key, val in w_item.items():
                     if not cmd:
                         cmd = self._compute_command(opr=opr)
                     h_item = search_obj_in_list(w_item[name[attr]], h, name[attr])
@@ -376,7 +375,7 @@ class Ospfv3(ConfigBase):
                         self._form_attr_cmd(key="area", attr=w_area["area_id"], opr=opr),
                     )
                 else:
-                    for key, val in iteritems(w_area):
+                    for key, val in w_area.items():
                         if opr and key in l_set and not _is_w_same(w_area, h_area, key):
                             if key == "area_id":
                                 commands.append(

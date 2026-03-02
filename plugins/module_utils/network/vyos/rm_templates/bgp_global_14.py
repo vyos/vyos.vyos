@@ -17,7 +17,6 @@ the given network resource.
 
 import re
 
-from ansible.module_utils.six import iteritems
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
@@ -26,12 +25,9 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 def _tmplt_bgp_params_confederation(config_data):
     command = []
     for list_el in config_data["bgp_params"]["confederation"]:
-        for k, v in iteritems(list_el):
+        for k, v in list_el.items():
             command.append(
-                "protocols bgp parameters confederation ".format(**config_data)
-                + k
-                + " "
-                + str(v),
+                "protocols bgp parameters confederation ".format(**config_data) + k + " " + str(v),
             )
 
     return command
@@ -65,7 +61,7 @@ def _tmplt_bgp_params_default(config_data):
 
 def _tmplt_bgp_neighbor_timers(config_data):
     command = []
-    for k, v in iteritems(config_data["neighbor"]["timers"]):
+    for k, v in config_data["neighbor"]["timers"].items():
         command.append(
             "protocols bgp neighbor ".format(**config_data)
             + config_data["neighbor"]["address"]
@@ -80,7 +76,7 @@ def _tmplt_bgp_neighbor_timers(config_data):
 
 def _tmplt_bgp_timers(config_data):
     command = []
-    for k, v in iteritems(config_data["timers"]):
+    for k, v in config_data["timers"].items():
         command.append(
             "protocols bgp ".format(**config_data) + "timers " + k + " " + str(v),
         )
