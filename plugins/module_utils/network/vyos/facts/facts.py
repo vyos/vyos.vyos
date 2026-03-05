@@ -83,6 +83,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.stati
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vrrp.vrrp import (
     VrrpFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vrf.vrf import VrfFacts
 
 
 FACT_LEGACY_SUBSETS = dict(default=Default, neighbors=Neighbors, config=Config)
@@ -108,6 +109,7 @@ FACT_RESOURCE_SUBSETS = dict(
     snmp_server=Snmp_serverFacts,
     hostname=HostnameFacts,
     vrrp=VrrpFacts,
+    vrf=VrfFacts,
 )
 
 

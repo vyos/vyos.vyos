@@ -71,6 +71,7 @@ Name | Description
 [vyos.vyos.vyos_user](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_user_module.rst)|Manage the collection of local users on VyOS device
 [vyos.vyos.vyos_vlan](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vlan_module.rst)|Manage VLANs on VyOS network devices
 [vyos.vyos.vyos_vrrp](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vrrp_module.rst)|Manage VRRP and load balancer configuration on VyOS
+[vyos.vyos.vyos_vrf](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vrf_module.rst)|VRF resource module
 
 <!--end collection content-->
 
