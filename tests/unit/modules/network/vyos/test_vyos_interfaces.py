@@ -450,3 +450,68 @@ class TestVyosInterfacesModule(TestVyosModule):
         )
 
         self.execute_module(failed=True)
+
+    def test_vyos_interfaces_merged_idem_vrf(self):
+
+        self.fixture_path = "vyos_interfaces_config_vrf.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(name="eth2", vrf="green"),
+                ],
+                state="merged",
+            ),
+        )
+
+        commands = []
+        self.execute_module(changed=False, commands=commands)
+
+    def test_vyos_interfaces_replaced_idem_vrf(self):
+
+        self.fixture_path = "vyos_interfaces_config_vrf.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(name="eth2", vrf="green"),
+                ],
+                state="replaced",
+            ),
+        )
+
+        commands = []
+        self.execute_module(changed=False, commands=commands)
+
+    def test_vyos_interfaces_overridden_idem_vrf(self):
+
+        self.fixture_path = "vyos_interfaces_config_vrf.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(name="eth2", vrf="green"),
+                ],
+                state="overridden",
+            ),
+        )
+
+        commands = []
+        self.execute_module(changed=False, commands=commands)
+
+    def test_vyos_interfaces_merged_additional_vrf(self):
+
+        self.fixture_path = "vyos_interfaces_config_vrf.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth1",
+                        vrf="pink",
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+
+        commands = [
+            "set interfaces ethernet eth1 vrf 'pink'",
+        ]
+        self.execute_module(changed=True, commands=commands)
