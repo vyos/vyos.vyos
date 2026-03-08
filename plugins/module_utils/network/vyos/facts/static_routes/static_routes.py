@@ -164,9 +164,9 @@ class Static_routesFacts(object):
                     elif dis >= 1:
                         nh_info["enabled"] = False
                     for element in nh_list:
-                        if element["forward_router_address"] == nh_info["forward_router_address"]:
-                            if "interface" in nh_info.keys():
-                                element["interface"] = nh_info["interface"]
+                        if element.get("forward_router_address") == nh_info.get(
+                            "forward_router_address",
+                        ):
                             if "admin_distance" in nh_info.keys():
                                 element["admin_distance"] = nh_info["admin_distance"]
                             if "enabled" in nh_info.keys():
@@ -174,4 +174,5 @@ class Static_routesFacts(object):
                             nh_info = None
                     if nh_info is not None:
                         nh_list.append(nh_info)
+                        nh_info = {}
         return nh_list
