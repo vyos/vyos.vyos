@@ -19,8 +19,8 @@
     - assert:
         that:
           - result.changed == true
-          - result.commands|symmetric_difference(replaced.commands) == []
-          - result.after|symmetric_difference(ansible_facts['network_resources']['vrrp']) == []
+          - result.commands | symmetric_difference(replaced.commands) == []
+          - result.after | symmetric_difference(ansible_facts['network_resources']['vrrp']) == []
 
     - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
@@ -31,7 +31,7 @@
         that:
           - result['changed'] == false
           - result['commands'] == []
-          - result['before']|symmetric_difference(ansible_facts['network_resources']['vrrp']) == []
+          - result['before'] | symmetric_difference(ansible_facts['network_resources']['vrrp']) == []
 
   always:
     - include_tasks: _remove_config.yaml
