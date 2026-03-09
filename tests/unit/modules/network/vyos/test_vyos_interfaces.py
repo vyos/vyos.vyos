@@ -236,6 +236,34 @@ class TestVyosInterfacesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+    def test_vyos_interfaces_replaced_remove_vrf(self):
+        # we have a vrf in eth2 at this point, so that should be removed
+        self.fixture_path = "vyos_interfaces_config_vrf.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth4",
+                        description="Ethernet 4",
+                        enabled=True,
+                        speed="auto",
+                        duplex="auto",
+                    ),
+                    dict(name="eth2", description="Configured by Ansible"),
+                ],
+                state="replaced",
+            ),
+        )
+
+        commands = [
+            "delete interfaces ethernet eth2 vrf",
+            "set interfaces ethernet eth2 description 'Configured by Ansible'",
+            "set interfaces ethernet eth4 description 'Ethernet 4'",
+            "set interfaces ethernet eth4 duplex 'auto'",
+            "set interfaces ethernet eth4 speed 'auto'",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
     def test_vyos_interfaces_merged_enable_vif(self):
         # merge in enabling vif
         self.fixture_path = "vyos_interfaces_config_vif.cfg"
@@ -363,6 +391,34 @@ class TestVyosInterfacesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+    def test_vyos_overridden_remove_vrf(self):
+        # we have a vrf in eth2 at this point, so that should be removed
+        self.fixture_path = "vyos_interfaces_config_vrf.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth4",
+                        description="Ethernet 4",
+                        enabled=True,
+                        speed="auto",
+                        duplex="auto",
+                    ),
+                    dict(name="eth2", description="Configured by Ansible"),
+                ],
+                state="overridden",
+            ),
+        )
+
+        commands = [
+            "set interfaces ethernet eth2 description 'Configured by Ansible'",
+            "set interfaces ethernet eth4 description 'Ethernet 4'",
+            "set interfaces ethernet eth4 duplex 'auto'",
+            "set interfaces ethernet eth4 speed 'auto'",
+            "delete interfaces ethernet eth2 vrf",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
     def test_vyos_interfaces_idempotent_disable(self):
         set_module_args(
             dict(
@@ -413,6 +469,23 @@ class TestVyosInterfacesModule(TestVyosModule):
             "delete interfaces ethernet eth1 vif 200",
             "delete interfaces ethernet eth1 vif 201",
             "delete interfaces ethernet eth1 description",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_deleted_remove_vrf(self):
+        # we have a vrf in eth2 at this point, so that should be removed
+        self.fixture_path = "vyos_interfaces_config_vrf.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(name="eth2"),
+                ],
+                state="deleted",
+            ),
+        )
+
+        commands = [
+            "delete interfaces ethernet eth2 vrf",
         ]
         self.execute_module(changed=True, commands=commands)
 
