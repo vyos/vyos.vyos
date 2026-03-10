@@ -134,6 +134,42 @@ Parameters
             <tr>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>confirm</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>automatic</li>
+                                    <li>manual</li>
+                                    <li><div style="color: blue"><b>none</b>&nbsp;&larr;</div></li>
+                        </ul>
+                </td>
+                <td>
+                        <div>The <code>confirm</code> argument will tell vyos to revert to the previous configuration if not explicitly confirmed after applying the new config. When set to <code>automatic</code> this module will automatically confirm the configuration, if the current session remains working with the new config. When set to <code>manual</code>, this module does not issue the confirmation itself.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>confirm_timeout</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">integer</span>
+                    </div>
+                </td>
+                <td>
+                        <b>Default:</b><br/><div style="color: blue">10</div>
+                </td>
+                <td>
+                        <div>Minutes to wait for confirmation before reverting the configuration. Does not apply when <code>confirm</code> is set to <code>none</code> .</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>lines</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -237,6 +273,11 @@ Examples
       vyos.vyos.vyos_config:
         match: smart
         src: vyos_template.j2
+
+    - name: revert after ten minutes, if connection is lost
+      vyos.vyos.vyos_config:
+        src: vyos_template.j2
+        confirm: automatic
 
     - name: for idempotency, use full-form commands
       vyos.vyos.vyos_config:

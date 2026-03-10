@@ -21,6 +21,8 @@
                       - forward_router_address: 192.0.2.8
 
                       - forward_router_address: 192.0.2.9
+
+                      - interface: eth2
         state: replaced
 
     - name: Assert that correct set of commands were generated
