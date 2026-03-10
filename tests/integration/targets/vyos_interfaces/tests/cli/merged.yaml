@@ -4,6 +4,8 @@
 
 - include_tasks: _remove_config.yaml
 
+- include_tasks: _setup_vrfs.yaml
+
 - block:
     - name: Merge the provided configuration with the existing running configuration
       register: result
@@ -21,6 +23,7 @@
 
               - vlan_id: 101
                 description: Eth1 - VIF 101
+            vrf: red
 
           - name: eth2
             description: Configured by Ansible - Interface 2 (ADMIN DOWN)

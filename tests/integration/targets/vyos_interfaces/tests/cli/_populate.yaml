@@ -4,7 +4,9 @@
 
 - ansible.builtin.include_tasks: _remove_config.yaml
 
-- name: Setup
+- ansible.builtin.include_tasks: _setup_vrfs.yaml
+
+- name: Setup interfaces
   ansible.netcommon.cli_config:
     config: |-
       {% for intf in ('eth1','eth2') %}
@@ -15,3 +17,8 @@
       set interfaces ethernet "{{ intf }}" vif 200
       set interfaces ethernet "{{ intf }}" vif 200 description 'VIF - 200'
       {% endfor %}
+
+- name: Setup - Add VRF to eth2
+  ansible.netcommon.cli_config:
+    config: |-
+      set interfaces ethernet eth2 vrf 'green'
