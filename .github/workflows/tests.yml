@@ -22,6 +22,10 @@ jobs:
     uses: ansible/ansible-content-actions/.github/workflows/ansible_lint.yaml@main
   sanity:
     uses: ansible/ansible-content-actions/.github/workflows/sanity.yaml@main
+    with:
+      pre_test_command: |
+        sudo apt-get update
+        sudo apt-get install -y libssh-dev build-essential python3-dev
   unit-galaxy:
     uses: ansible/ansible-content-actions/.github/workflows/unit.yaml@main
   unit-source:
