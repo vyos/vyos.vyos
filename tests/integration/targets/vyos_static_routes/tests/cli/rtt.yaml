@@ -2,6 +2,8 @@
 - debug:
     msg: START vyos_static_routes round trip integration tests on connection={{ ansible_connection }}
 
+- include_tasks: _get_version.yaml
+
 - include_tasks: _remove_config.yaml
 
 - block:
@@ -51,6 +53,8 @@
                       distance: 2
                     next_hops:
                       - forward_router_address: 192.0.2.7
+
+                      - interface: "eth2"
 
                       - forward_router_address: 192.0.2.8
 
