@@ -1,0 +1,3 @@
+---
+trivial:
+  - tox-ansible.ini - Attempt to fallback to the previous test environment setup (without failing ADE)
