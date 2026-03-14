@@ -1,0 +1,44 @@
+---
+- debug: msg="START cli/confirm.yaml on connection={{ ansible_connection }}"
+
+- name: setup
+  vyos.vyos.vyos_config:
+    lines: set system host-name {{ inventory_hostname_short }}
+    match: none
+
+- name: configure with confirm (manual)
+  register: result
+  vyos.vyos.vyos_config:
+    lines: set system host-name foo
+    comment: confirm manual test
+    confirm: manual
+    confirm_timeout: 1
+
+- assert:
+    that:
+      - result.changed == true
+      - "'set system host-name foo' in result.commands"
+
+- name: verify hostname changed to foo
+  register: hostname_after
+  vyos.vyos.vyos_command:
+    commands: show host name
+
+- assert:
+    that:
+      - "'foo' in hostname_after.stdout[0]"
+
+- name: wait until config auto-reverts (no confirmation)
+  register: hostname_reverted
+  vyos.vyos.vyos_command:
+    commands: show host name
+  retries: 18
+  delay: 5
+  until: inventory_hostname_short in hostname_reverted.stdout[0]
+
+- name: teardown
+  vyos.vyos.vyos_config:
+    lines: set system host-name {{ inventory_hostname_short }}
+    match: none
+
+- debug: msg="END cli/confirm.yaml on connection={{ ansible_connection }}"
