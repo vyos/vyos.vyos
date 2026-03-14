@@ -56,6 +56,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.lldp_
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.logging_global.logging_global import (
     Logging_globalFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.nat.nat import (
+    NatFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ntp_global.ntp_global import (
     Ntp_globalFacts,
 )
@@ -102,6 +105,7 @@ FACT_RESOURCE_SUBSETS = dict(
     prefix_lists=Prefix_listsFacts,
     logging_global=Logging_globalFacts,
     ntp_global=Ntp_globalFacts,
+    nat=NatFacts,
     snmp_server=Snmp_serverFacts,
     hostname=HostnameFacts,
 )

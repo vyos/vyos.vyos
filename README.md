@@ -58,6 +58,7 @@ Name | Description
 [vyos.vyos.vyos_lldp_global](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_global_module.rst)|LLDP global resource module
 [vyos.vyos.vyos_lldp_interfaces](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_lldp_interfaces_module.rst)|LLDP interfaces resource module
 [vyos.vyos.vyos_logging_global](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_logging_global_module.rst)|Logging resource module
+[vyos.vyos.vyos_nat](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_nat_module.rst)|NAT resource module
 [vyos.vyos.vyos_ntp_global](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ntp_global_module.rst)|NTP global resource module
 [vyos.vyos.vyos_ospf_interfaces](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospf_interfaces_module.rst)|OSPF Interfaces Resource Module.
 [vyos.vyos.vyos_ospfv2](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ospfv2_module.rst)|OSPFv2 resource module

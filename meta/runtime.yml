@@ -44,6 +44,8 @@ plugin_routing:
       redirect: vyos.vyos.vyos_logging_global
     ntp_global:
       redirect: vyos.vyos.vyos_ntp_global
+    nat:
+      redirect: vyos.vyos.vyos_nat
     ospfv2:
       redirect: vyos.vyos.vyos_ospfv2
     ospfv3:
@@ -64,5 +66,3 @@ plugin_routing:
       redirect: vyos.vyos.vyos_user
     vlan:
       redirect: vyos.vyos.vyos_vlan
-    nat:
-      redirect: vyos.vyos.vyos_nat
