@@ -13,15 +13,6 @@ on: # yamllint disable-line rule:truthy
     - cron: 0 0 * * *
 
 jobs:
-  sanity-setup:
-    runs-on: ubuntu-latest
-    outputs:
-      setup-done: true
-    steps:
-      - name: Install system dependencies for Python 3.13
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libssh-dev
   changelog:
     uses: ansible/ansible-content-actions/.github/workflows/changelog.yaml@main
     if: github.event_name == 'pull_request'
@@ -31,7 +22,6 @@ jobs:
     uses: ansible/ansible-content-actions/.github/workflows/ansible_lint.yaml@main
   sanity:
     uses: ansible/ansible-content-actions/.github/workflows/sanity.yaml@main
-    needs: sanity-setup
   unit-galaxy:
     uses: ansible/ansible-content-actions/.github/workflows/unit.yaml@main
   unit-source:
