@@ -1,7 +1,7 @@
 ---
 - ansible.builtin.include_tasks: _add_dummy_scripts.yaml
 
-- name: Setup initial VRRP configuration
+- name: Setup initial HA configuration
   vyos.vyos.vyos_config:
     lines: "{{ populate_commands}}"
   vars:

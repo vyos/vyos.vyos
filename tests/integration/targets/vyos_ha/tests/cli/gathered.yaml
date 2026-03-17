@@ -1,6 +1,6 @@
 ---
 - debug:
-    msg: START vyos_vrrp gathered integration tests on connection={{ ansible_connection }}
+    msg: START vyos_ha gathered integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -9,17 +9,17 @@
 - block:
     - name: Gather config from the device in structured format.
       register: result
-      vyos.vyos.vyos_vrrp:
+      vyos.vyos.vyos_ha:
         state: gathered
 
     - vyos.vyos.vyos_facts:
-        gather_network_resources: vrrp
+        gather_network_resources: ha
 
     - name: Assert that facts are correctly generated
       assert:
         that:
           - result.changed == false
-          - result.gathered | symmetric_difference(ansible_facts['network_resources']['vrrp']) == []
+          - result.gathered | symmetric_difference(ansible_facts['network_resources']['ha']) == []
 
   always:
     - include_tasks: _remove_config.yaml

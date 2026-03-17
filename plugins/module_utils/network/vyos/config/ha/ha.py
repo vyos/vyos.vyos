@@ -11,7 +11,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The vyos_vrrp config file.
+The vyos_ha config file.
 It is in this file where the current configuration (as dict)
 is compared to the provided configuration (as dict) and the command set
 necessary to bring the current configuration to its desired end-state is
@@ -28,8 +28,8 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.u
 )
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.vrrp import (
-    VrrpTemplate,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ha import (
+    HaTemplate,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import combine
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
@@ -38,18 +38,18 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.versi
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
-class Vrrp(ResourceModule):
+class Ha(ResourceModule):
     """
-    The vyos_vrrp config class
+    The vyos_ha config class
     """
 
     def __init__(self, module):
-        super(Vrrp, self).__init__(
+        super(Ha, self).__init__(
             empty_fact_val={},
             facts_module=Facts(module),
             module=module,
-            resource="vrrp",
-            tmplt=VrrpTemplate(),
+            resource="ha",
+            tmplt=HaTemplate(),
         )
         self.parsers = [
             "disable",
@@ -58,9 +58,9 @@ class Vrrp(ResourceModule):
     def _validate_template(self):
         version = get_os_version(self._module)
         if LooseVersion(version) >= LooseVersion("1.4"):
-            self._tmplt = VrrpTemplate()
+            self._tmplt = HaTemplate()
         else:
-            self._module.fail_json(msg="VRRP is not supported in this version of VyOS")
+            self._module.fail_json(msg="High Availability is not supported in this version of VyOS")
 
     def parse(self):
         """override parse to check template"""

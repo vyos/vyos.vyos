@@ -1,6 +1,6 @@
 ---
 - debug:
-    msg: START vyos_vrrp replaced integration tests on connection={{ ansible_connection }}
+    msg: START vyos_ha replaced integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -9,29 +9,29 @@
 - block:
     - name: Replace the provided configuration with the existing running configuration
       register: result
-      vyos.vyos.vyos_vrrp: &id001
+      vyos.vyos.vyos_ha: &id001
         config: "{{ merged.config }}"
         state: replaced
 
     - vyos.vyos.vyos_facts:
-        gather_network_resources: vrrp
+        gather_network_resources: ha
 
     - assert:
         that:
           - result.changed == true
           - result.commands | symmetric_difference(replaced.commands) == []
-          - result.after | symmetric_difference(ansible_facts['network_resources']['vrrp']) == []
+          - result.after | symmetric_difference(ansible_facts['network_resources']['ha']) == []
 
     - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
-      vyos.vyos.vyos_vrrp: *id001
+      vyos.vyos.vyos_ha: *id001
 
     - name: Assert that the previous task was idempotent
       assert:
         that:
           - result['changed'] == false
           - result['commands'] == []
-          - result['before'] | symmetric_difference(ansible_facts['network_resources']['vrrp']) == []
+          - result['before'] | symmetric_difference(ansible_facts['network_resources']['ha']) == []
 
   always:
     - include_tasks: _remove_config.yaml

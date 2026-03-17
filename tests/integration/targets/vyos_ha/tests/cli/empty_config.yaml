@@ -1,11 +1,11 @@
 ---
 - debug:
-    msg: START vyos_vrrp empty_config integration tests on connection={{ ansible_connection }}
+    msg: START vyos_ha empty_config integration tests on connection={{ ansible_connection }}
 
 - name: Merged with empty config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_vrrp:
+  vyos.vyos.vyos_ha:
     config:
     state: merged
 
@@ -16,7 +16,7 @@
 - name: Replaced with empty config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_vrrp:
+  vyos.vyos.vyos_ha:
     config:
     state: replaced
 
@@ -27,7 +27,7 @@
 - name: Overridden with empty config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_vrrp:
+  vyos.vyos.vyos_ha:
     config:
     state: overridden
 
@@ -38,7 +38,7 @@
 - name: Parsed with empty running_config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_vrrp:
+  vyos.vyos.vyos_ha:
     running_config:
     state: parsed
 
@@ -49,7 +49,7 @@
 - name: Rendered with empty config should give appropriate error message
   register: result
   ignore_errors: true
-  vyos.vyos.vyos_vrrp:
+  vyos.vyos.vyos_ha:
     config:
     state: rendered
 

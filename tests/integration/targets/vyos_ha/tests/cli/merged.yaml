@@ -1,6 +1,6 @@
 ---
 - debug:
-    msg: START vyos_vrrp merged integration tests on connection={{ ansible_connection }}
+    msg: START vyos_ha merged integration tests on connection={{ ansible_connection }}
 
 - include_tasks: _remove_config.yaml
 
@@ -9,18 +9,18 @@
 - block:
     - name: Merge the provided configuration with the existing running configuration
       register: result
-      vyos.vyos.vyos_vrrp: &id001
+      vyos.vyos.vyos_ha: &id001
         config: "{{ merged.config }}"
         state: merged
 
     - vyos.vyos.vyos_facts:
-        gather_network_resources: vrrp
+        gather_network_resources: ha
 
     - assert:
         that:
           - result.changed == true
           - result.commands | symmetric_difference(merged.commands) == []
-          - result.after | symmetric_difference(ansible_facts['network_resources']['vrrp']) == []
+          - result.after | symmetric_difference(ansible_facts['network_resources']['ha']) == []
 
     - name: Assert that before dicts were correctly generated
       assert:
@@ -29,14 +29,14 @@
 
     - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
-      vyos.vyos.vyos_vrrp: *id001
+      vyos.vyos.vyos_ha: *id001
 
     - name: Assert that the previous task was idempotent
       assert:
         that:
           - result['changed'] == false
           - result['commands'] == []
-          - result['before'] | symmetric_difference(ansible_facts['network_resources']['vrrp']) == []
+          - result['before'] | symmetric_difference(ansible_facts['network_resources']['ha']) == []
 
   always:
     - include_tasks: _remove_config.yaml

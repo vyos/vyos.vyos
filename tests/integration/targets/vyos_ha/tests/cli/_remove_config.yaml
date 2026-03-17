@@ -1,13 +1,13 @@
 ---
-- name: Remove pre-existing vrrp config
-  vyos.vyos.vyos_vrrp:
+- name: Remove pre-existing HA config
+  vyos.vyos.vyos_ha:
     config:
     state: purged
   ignore_errors: true
   vars:
     ansible_connection: ansible.netcommon.network_cli
 
-- name: Remove dummy scripts for VRRP tests
+- name: Remove dummy scripts for HA tests
   vyos.vyos.vyos_command:
     commands:
       - rm -f /var/tmp/script.sh

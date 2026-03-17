@@ -24,12 +24,12 @@ __metaclass__ = type
 #############################################
 
 """
-The arg spec for the vyos_vrrp module
+The arg spec for the vyos_ha module
 """
 
 
-class VrrpArgs(object):  # pylint: disable=R0903
-    """The arg spec for the vyos_vrrp module"""
+class HaArgs(object):  # pylint: disable=R0903
+    """The arg spec for the vyos_ha module"""
 
     argument_spec = {
         "config": {

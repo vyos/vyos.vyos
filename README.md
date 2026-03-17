@@ -51,6 +51,7 @@ Name | Description
 [vyos.vyos.vyos_firewall_global](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_global_module.rst)|Firewall global resource module
 [vyos.vyos.vyos_firewall_interfaces](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_interfaces_module.rst)|Firewall interfaces resource module
 [vyos.vyos.vyos_firewall_rules](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_rules_module.rst)|Firewall rules resource module
+[vyos.vyos.vyos_ha](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_ha_module.rst)|Manage VRRP and load balancer configuration on VyOS
 [vyos.vyos.vyos_hostname](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_hostname_module.rst)|Manages hostname resource module
 [vyos.vyos.vyos_interfaces](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_interfaces_module.rst)|Manages interface attributes of VyOS network devices.
 [vyos.vyos.vyos_l3_interfaces](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_l3_interfaces_module.rst)|Layer 3 interfaces resource module.
@@ -70,7 +71,6 @@ Name | Description
 [vyos.vyos.vyos_system](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_system_module.rst)|Run `set system` commands on VyOS devices
 [vyos.vyos.vyos_user](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_user_module.rst)|Manage the collection of local users on VyOS device
 [vyos.vyos.vyos_vlan](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vlan_module.rst)|Manage VLANs on VyOS network devices
-[vyos.vyos.vyos_vrrp](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vrrp_module.rst)|Manage VRRP and load balancer configuration on VyOS
 [vyos.vyos.vyos_vrf](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vrf_module.rst)|VRF resource module
 
 <!--end collection content-->

@@ -23,17 +23,17 @@ __metaclass__ = type
 
 from unittest.mock import patch
 
-from ansible_collections.vyos.vyos.plugins.modules import vyos_vrrp
+from ansible_collections.vyos.vyos.plugins.modules import vyos_ha
 from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
 
 from .vyos_module import TestVyosModule, load_fixture
 
 
-class TestVyosVrrpModule(TestVyosModule):
-    module = vyos_vrrp
+class TestVyosHaModule(TestVyosModule):
+    module = vyos_ha
 
     def setUp(self):
-        super(TestVyosVrrpModule, self).setUp()
+        super(TestVyosHaModule, self).setUp()
 
         self.mock_get_resource_connection_config = patch(
             "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
@@ -46,20 +46,20 @@ class TestVyosVrrpModule(TestVyosModule):
         self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
 
         self.mock_execute_show_command = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vrrp.vrrp.VrrpFacts.get_config",
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.ha.ha.HaFacts.get_config",
         )
 
         self.execute_show_command = self.mock_execute_show_command.start()
 
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.vrrp.vrrp.get_os_version",
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ha.ha.get_os_version",
         )
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = "1.5"
         self.maxDiff = None
 
     def tearDown(self):
-        super(TestVyosVrrpModule, self).tearDown()
+        super(TestVyosHaModule, self).tearDown()
         self.mock_get_resource_connection_config.stop()
         self.mock_get_resource_connection_facts.stop()
         self.mock_execute_show_command.stop()
@@ -67,7 +67,7 @@ class TestVyosVrrpModule(TestVyosModule):
 
     def load_fixtures(self, commands=None, filename=None):
         if filename is None:
-            filename = "vyos_vrrp_config.cfg"
+            filename = "vyos_ha_config.cfg"
 
         def load_from_file(*args, **kwargs):
             output = load_fixture(filename)

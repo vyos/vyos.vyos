@@ -5,7 +5,7 @@
 # (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
 
 """
-The module file for vyos_vrrp
+The module file for vyos_ha module, which manages VRRP and load balancer configuration on VyOS
 """
 
 from __future__ import absolute_import, division, print_function
@@ -15,7 +15,7 @@ __metaclass__ = type
 
 DOCUMENTATION = r"""
 ---
-module: vyos_vrrp
+module: vyos_ha
 author: Evgeny Molotkov (@omnom62)
 short_description: Manage VRRP and load balancer configuration on VyOS
 version_added: "1.0.0"
@@ -410,7 +410,7 @@ EXAMPLES = """
 # vyos@vyos:~$
 
 - name: Merge provided configuration with device configuration
-  vyos.vyos.vyos_vrrp:
+  vyos.vyos.vyos_ha:
     config:
       disable: true
       virtual_servers:
@@ -580,7 +580,7 @@ EXAMPLES = """
 # vyos@vyos:~$
 
 - name: Replace
-  vyos.vyos.vyos_vrrp:
+  vyos.vyos.vyos_ha:
     config:
       disable: false
       virtual_servers:
@@ -836,7 +836,7 @@ EXAMPLES = """
 # vyos@vyos:~$
 
 - name: Delete configuration
-  vyos.vyos.vyos_vrrp:
+  vyos.vyos.vyos_ha:
     config:
       disable: false
       vrrp:
@@ -1013,7 +1013,7 @@ EXAMPLES = """
 
 
 - name: Purge configuration
-  vyos.vyos.vyos_vrrp:
+  vyos.vyos.vyos_ha:
     config:
     state: purged
 
@@ -1212,7 +1212,7 @@ EXAMPLES = """
 # --------------
 
 - name: Render
-  vyos.vyos.vyos_vrrp:
+  vyos.vyos.vyos_ha:
     config:
       disable: true
       vrrp:
@@ -1291,11 +1291,11 @@ parsed:
 
 from ansible.module_utils.basic import AnsibleModule
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.vrrp.vrrp import (
-    VrrpArgs,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ha.ha import (
+    HaArgs,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.vrrp.vrrp import (
-    Vrrp,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.ha.ha import (
+    Ha,
 )
 
 
@@ -1306,7 +1306,7 @@ def main():
     :returns: the result form module invocation
     """
     module = AnsibleModule(
-        argument_spec=VrrpArgs.argument_spec,
+        argument_spec=HaArgs.argument_spec,
         mutually_exclusive=[["config", "running_config"]],
         required_if=[
             ["state", "merged", ["config"]],
@@ -1318,7 +1318,7 @@ def main():
         supports_check_mode=True,
     )
 
-    result = Vrrp(module).execute_module()
+    result = Ha(module).execute_module()
     module.exit_json(**result)
 
 

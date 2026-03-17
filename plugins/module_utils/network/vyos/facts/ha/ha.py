@@ -9,7 +9,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The vyos vrrp fact class
+The vyos_ha fact class
 It is in this file the configuration is collected from the device
 for a given resource, parsed, and the facts tree is populated
 based on the configuration.
@@ -19,26 +19,26 @@ import re
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
 
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.vrrp.vrrp import (
-    VrrpArgs,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.ha.ha import (
+    HaArgs,
 )
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.vrrp import (
-    VrrpTemplate,
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.ha import (
+    HaTemplate,
 )
 
 
-class VrrpFacts(object):
-    """The vyos vrrp facts class"""
+class HaFacts(object):
+    """The vyos_ha facts class"""
 
     def __init__(self, module, subspec="config", options="options"):
         self._module = module
-        self.argument_spec = VrrpArgs.argument_spec
+        self.argument_spec = HaArgs.argument_spec
 
     def get_config(self, connection):
         return connection.get('show configuration commands |  match "set high-availability"')
 
     def get_config_set(self, data, connection):
-        """To classify the configurations beased on vrrp"""
+        """To classify the configurations beased on high availability sections"""
         config_dict = {}
         for config_line in data.splitlines():
             vrrp_grp = re.search(r"set high-availability vrrp group (\S+).*", config_line)
@@ -91,7 +91,7 @@ class VrrpFacts(object):
         resources = self.get_config_set(data, connection)
         vrrp_facts = {"disable": False, "virtual_servers": {}, "vrrp": {}}
         for resource in resources:
-            vrrp_parser = VrrpTemplate(
+            vrrp_parser = HaTemplate(
                 lines=resource,
                 module=self._module,
             )
@@ -110,7 +110,7 @@ class VrrpFacts(object):
 
         ansible_facts["ansible_network_resources"].pop("vrrp", None)
         vrrp_facts = self.normalize_config(vrrp_facts)
-        validate_parser = VrrpTemplate(lines=[], module=self._module)
+        validate_parser = HaTemplate(lines=[], module=self._module)
         params = utils.remove_empties(
             validate_parser.validate_config(
                 self.argument_spec,
@@ -119,7 +119,7 @@ class VrrpFacts(object):
             ),
         )
 
-        facts["vrrp"] = params.get("config", [])
+        facts["ha"] = params.get("config", [])
         ansible_facts["ansible_network_resources"].update(facts)
         return ansible_facts
 

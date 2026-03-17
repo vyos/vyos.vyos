@@ -1,13 +1,13 @@
 ---
 - debug:
-    msg: Start vyos_vrrp deleted integration tests ansible_connection={{ ansible_connection }}
+    msg: Start vyos_ha deleted integration tests ansible_connection={{ ansible_connection }}
 
 - include_tasks: _populate_config.yaml
 
 - block:
     - name: Delete stub objects.
       register: result
-      vyos.vyos.vyos_vrrp: &id001
+      vyos.vyos.vyos_ha: &id001
         config:
           disable: false
           vrrp:
@@ -37,7 +37,7 @@
 
     - name: Delete stub objects (IDEMPOTENT)
       register: result
-      vyos.vyos.vyos_vrrp: *id001
+      vyos.vyos.vyos_ha: *id001
 
     - name: Assert that the previous task was idempotent
       assert:

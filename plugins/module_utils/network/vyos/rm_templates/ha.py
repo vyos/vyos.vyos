@@ -9,7 +9,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The Vrrp parser templates file. This contains
+The Ha parser templates file. This contains
 a list of parser definitions and associated functions that
 facilitates both facts gathering and native command generation for
 the given network resource.
@@ -223,10 +223,10 @@ def _tmplt_vrrp_group_track_bool(config_data):
     return command
 
 
-class VrrpTemplate(NetworkTemplate):
+class HaTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
-        super(VrrpTemplate, self).__init__(
+        super(HaTemplate, self).__init__(
             lines=lines,
             tmplt=self,
             prefix=prefix,
