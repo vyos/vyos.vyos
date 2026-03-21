@@ -1105,7 +1105,7 @@ EXAMPLES = """
 # vyos@vyos:~$
 
 - name: gather configs
-  vyos.vyos.vyos_vrrp:
+  vyos.vyos.vyos_ha:
     state: gathered
 
 # Module Execution:
@@ -1183,7 +1183,7 @@ EXAMPLES = """
 # set high-availability vrrp group g1 vrid 20
 
 - name: parse configs
-  vyos.vyos.vyos_vrrp:
+  vyos.vyos.vyos_ha:
     running_config: "{{ lookup('file', './parsed.cfg') }}"
     state: parsed
 
