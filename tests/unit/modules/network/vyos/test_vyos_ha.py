@@ -128,7 +128,11 @@ class TestVyosHaModule(TestVyosModule):
                                     password="testpass",
                                     type="plaintext-password",
                                 ),
-                                address="1.1.1.1",
+                                address=[
+                                    "1.1.1.1",
+                                    "3.3.3.3",
+                                    "5.5.5.5 interface eth2",
+                                ],
                                 advertise_interval=10,
                                 description="Group_1",
                                 disable=True,
@@ -237,6 +241,13 @@ class TestVyosHaModule(TestVyosModule):
                                 disable=False,
                                 no_preempt=False,
                             ),
+                            dict(
+                                name="g2",
+                                address=[
+                                    "192.168.3.3",
+                                    "192.168.4.4 interface eth3",
+                                ],
+                            ),
                         ],
                         sync_groups=[
                             dict(
@@ -255,6 +266,8 @@ class TestVyosHaModule(TestVyosModule):
             "delete high-availability vrrp group g1 no-preempt",
             "delete high-availability vrrp group g1 disable",
             "delete high-availability vrrp group g1 rfc3768-compatibility",
+            "set high-availability vrrp group g2 address 192.168.3.3",
+            "set high-availability vrrp group g2 address 192.168.4.4 interface eth3",
             "delete high-availability vrrp snmp",
             "set high-availability virtual-server s1 address 10.10.10.5",
             "set high-availability virtual-server s1 real-server 10.10.50.2 port 8443",
@@ -318,6 +331,13 @@ class TestVyosHaModule(TestVyosModule):
                                 no_preempt=False,
                                 vrid=20,
                             ),
+                            dict(
+                                name="g2",
+                                address=[
+                                    "192.168.3.3",
+                                    "192.168.4.4 interface eth3",
+                                ],
+                            ),
                         ],
                         sync_groups=[
                             dict(
@@ -336,6 +356,8 @@ class TestVyosHaModule(TestVyosModule):
             "delete high-availability vrrp group g1 disable",
             "delete high-availability vrrp group g1 no-preempt",
             "delete high-availability vrrp group g1 rfc3768-compatibility",
+            "set high-availability vrrp group g2 address 192.168.3.3",
+            "set high-availability vrrp group g2 address 192.168.4.4 interface eth3",
             "delete high-availability disable",
             "delete high-availability vrrp snmp",
             "set high-availability virtual-server s1 address 10.10.10.5",
@@ -409,7 +431,11 @@ class TestVyosHaModule(TestVyosModule):
                                     password="testpass",
                                     type="plaintext-password",
                                 ),
-                                address="1.1.1.1",
+                                address=[
+                                    "1.1.1.1",
+                                    "3.3.3.3",
+                                    "5.5.5.5 interface eth2",
+                                ],
                                 advertise_interval=10,
                                 description="Group_1",
                                 disable=True,
@@ -528,6 +554,13 @@ class TestVyosHaModule(TestVyosModule):
                                     exclude_vrrp_interface=True,
                                 ),
                             ),
+                            dict(
+                                name="g2",
+                                address=[
+                                    "192.168.3.3",
+                                    "192.168.4.4 interface eth3",
+                                ],
+                            ),
                         ],
                         sync_groups=[
                             dict(
@@ -614,6 +647,8 @@ class TestVyosHaModule(TestVyosModule):
             "set high-availability vrrp group g1 transition-script master /var/tmp/script.sh",
             "set high-availability vrrp group g1 transition-script stop /var/tmp/script.sh",
             "set high-availability vrrp group g1 vrid 20",
+            "set high-availability vrrp group g2 address 192.168.3.3",
+            "set high-availability vrrp group g2 address 192.168.4.4 interface eth3",
             "set high-availability vrrp sync-group sg1 health-check failure-count 4",
             "set high-availability vrrp sync-group sg1 health-check interval 10",
             "set high-availability vrrp sync-group sg1 health-check ping 192.168.1.100",
@@ -685,7 +720,11 @@ class TestVyosHaModule(TestVyosModule):
                                     password="testpass",
                                     type="plaintext-password",
                                 ),
-                                address="1.1.1.1",
+                                address=[
+                                    "1.1.1.1",
+                                    "3.3.3.3",
+                                    "5.5.5.5 interface eth2",
+                                ],
                                 advertise_interval=10,
                                 description="Group_1",
                                 disable=True,
@@ -848,7 +887,10 @@ class TestVyosHaModule(TestVyosModule):
                                 name="g2",
                                 description="Group_2",
                                 interface="eth1",
-                                address="2.2.2.2",
+                                address=[
+                                    "2.2.2.2",
+                                    "2.2.2.3 interface eth3",
+                                ],
                                 disable=False,
                                 no_preempt=False,
                                 rfc3768_compatibility=False,
@@ -934,6 +976,7 @@ class TestVyosHaModule(TestVyosModule):
             "set high-availability vrrp group g1 transition-script stop /var/tmp/script.sh",
             "set high-availability vrrp group g1 vrid 20",
             "set high-availability vrrp group g2 address 2.2.2.2",
+            "set high-availability vrrp group g2 address 2.2.2.3 interface eth3",
             "set high-availability vrrp group g2 description 'Group_2'",
             "set high-availability vrrp group g2 health-check failure-count 5",
             "set high-availability vrrp group g2 health-check interval 15",
@@ -1014,6 +1057,8 @@ class TestVyosHaModule(TestVyosModule):
             "set high-availability vrrp group g1 transition-script master '/var/tmp/script.sh'",
             "set high-availability vrrp group g1 transition-script stop '/var/tmp/script.sh'",
             "set high-availability vrrp group g1 vrid 20",
+            "set high-availability vrrp group g2 address '192.168.3.3'",
+            "set high-availability vrrp group g2 address '192.168.4.4' interface 'eth3'",
             "set high-availability vrrp snmp",
             "set high-availability vrrp sync-group sg1 health-check failure-count 3",
             "set high-availability vrrp sync-group sg1 health-check interval 10",

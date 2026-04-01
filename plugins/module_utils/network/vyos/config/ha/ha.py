@@ -89,7 +89,12 @@ class Ha(ResourceModule):
             if wantd != haved:
                 self.commands = ["delete high-availability"]
             self.run_commands()
-
+        if "before" in self.result:
+            self._normalize_lists(self.result["before"])
+        if "after" in self.result:
+            self._normalize_lists(self.result["after"])
+        if "parsed" in self.result:
+            self._normalize_lists(self.result["parsed"])
         return self.result
 
     def generate_commands(self):
@@ -146,7 +151,7 @@ class Ha(ResourceModule):
 
             if k == "vrrp":
                 if self.state in ["merged"]:
-                    want = combine(have, want, recursive=True)
+                    want = combine(have, want, recursive=True, list_merge="append_rp")
                 self._compare_vrrp(want, have)
 
             if k == "virtual_servers":
@@ -222,6 +227,7 @@ class Ha(ResourceModule):
             "vrrp.groups.disable",
             "vrrp.groups.no_preempt",
             "vrrp.groups.rfc3768_compatibility",
+            "vrrp.groups.address",
             "vrrp.groups.excluded_address",
             "vrrp.groups.garp",
             "vrrp.groups.authentication",
@@ -259,6 +265,7 @@ class Ha(ResourceModule):
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
 
         if self.state in ["merged", "replaced", "rendered", "overridden"]:
+
             for wdict in wlist:
                 hdict = self._find_matching_vrrp(wdict, hlist)
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})

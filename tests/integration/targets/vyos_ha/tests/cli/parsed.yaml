@@ -12,4 +12,4 @@
   assert:
     that:
       - result.changed == false
-      - result.parsed | symmetric_difference(merged.before) == []
+      - "result.parsed == merged.before"

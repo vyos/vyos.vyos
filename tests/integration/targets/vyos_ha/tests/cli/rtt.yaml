@@ -18,7 +18,7 @@
         that:
           - baseconfig.changed == true
           - baseconfig.commands|symmetric_difference(rtt.commands) == []
-          - baseconfig.after|symmetric_difference(ansible_facts['network_resources']['ha']) == []
+          - "baseconfig.after == ansible_facts['network_resources']['ha']"
 
     - name: RTT Merge the existing configuration with the provided running configuration
       register: result

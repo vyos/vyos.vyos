@@ -168,8 +168,10 @@ options:
                 required: true
               address:
                 description:
-                  - Virtual router IP address.
-                type: str
+                  - Virtual router IP addresses.
+                type: list
+                elements: str
+
               advertise_interval:
                 description:
                   - VRRP advertisement interval.

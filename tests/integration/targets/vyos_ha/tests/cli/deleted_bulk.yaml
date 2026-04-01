@@ -23,7 +23,8 @@
     - name: Assert that the before dicts were correctly generated
       assert:
         that:
-          - "{{ merged.before | symmetric_difference(result['before']) | length == 0 }}"
+          # - "{{ merged.before | symmetric_difference(result['before']) | length == 0 }}"
+          - "merged.before == result['before']"
 
     - name: Assert that the correct set of commands were generated
       assert:

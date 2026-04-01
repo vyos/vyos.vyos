@@ -119,7 +119,7 @@ class HaFacts(object):
             ),
         )
 
-        facts["ha"] = params.get("config", [])
+        facts["ha"] = self.normalize_config(params.get("config", []))
         ansible_facts["ansible_network_resources"].update(facts)
         return ansible_facts
 
@@ -144,5 +144,21 @@ class HaFacts(object):
         for vs in config.get("virtual_servers", []):
             if isinstance(vs.get("real_server"), dict):
                 vs["real_server"] = list(vs["real_server"].values())
+
+        vrrp = config.get("vrrp", {})
+
+        for group in vrrp.get("groups", []):
+            if isinstance(group.get("address"), list):
+                group["address"] = sorted(group["address"])
+
+            if isinstance(group.get("excluded_address"), list):
+                group["excluded_address"] = sorted(group["excluded_address"])
+
+            if isinstance(group.get("track", {}).get("interface"), list):
+                group["track"]["interface"] = sorted(group["track"]["interface"])
+
+        for sg in vrrp.get("sync_groups", []):
+            if isinstance(sg.get("member"), list):
+                sg["member"] = sorted(sg["member"])
 
         return config

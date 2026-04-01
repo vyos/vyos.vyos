@@ -87,7 +87,7 @@ class HaArgs(object):  # pylint: disable=R0903
                             "elements": "dict",
                             "options": {
                                 "name": {"type": "str", "required": True},
-                                "address": {"type": "str"},
+                                "address": {"type": "list", "elements": "str"},
                                 "advertise_interval": {"type": "int"},
                                 "authentication": {
                                     "type": "dict",

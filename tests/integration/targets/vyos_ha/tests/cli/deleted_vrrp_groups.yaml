@@ -19,7 +19,7 @@
     - name: Assert that the before dicts were correctly generated
       assert:
         that:
-          - "{{ merged.before | symmetric_difference(result['before']) |length == 0 }}"
+          - "merged.before == result['before']"
 
     - name: Assert that the correct set of commands were generated
       assert:
@@ -29,7 +29,7 @@
     - name: Assert that the after dicts were correctly generated
       assert:
         that:
-          - "{{ deleted_vrrp_groups['after'] | symmetric_difference(result['after']) |length == 0 }}"
+          - "deleted_vrrp_groups['after'] == result['after']"
 
     - name: Delete attributes of group (IDEMPOTENT)
       register: result

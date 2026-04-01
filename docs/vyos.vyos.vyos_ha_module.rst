@@ -552,13 +552,14 @@ Parameters
                     <b>address</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">string</span>
+                        <span style="color: purple">list</span>
+                         / <span style="color: purple">elements=string</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
-                        <div>Virtual router IP address.</div>
+                        <div>Virtual router IP addresses.</div>
                 </td>
             </tr>
             <tr>

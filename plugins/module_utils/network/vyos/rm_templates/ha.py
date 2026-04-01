@@ -189,6 +189,18 @@ def _tmplt_vrrp_group_exaddress(config_data):
     return command
 
 
+def _tmplt_vrrp_group_address(config_data):
+    group = config_data["vrrp"]["groups"]
+    command = []
+    cmd = "high-availability vrrp group {name}".format(**group)
+    addresses = group.get("address", [])
+    for address in addresses:
+        if address is None:
+            continue
+        command.append(f"{cmd} address {address}")
+    return command
+
+
 def _tmplt_vrrp_group_hc(config_data):
     config_data = config_data["vrrp"]["groups"]
     command = []
@@ -649,7 +661,7 @@ class HaTemplate(NetworkTemplate):
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
                 \s+(?P<gname>\S+)
-                (?:\s+address\s+(?P<address>\S+))?
+                # (?:\s+address\s+(?P<address>\S+))?
                 (?:\s+description\s+(?P<description>'.+?'|\S+))?
                 (?:\s+advertise-interval\s+(?P<advertise_interval>\S+))?
                 (?:\s+hello-source-address\s+(?P<hello_source>\S+))?
@@ -667,7 +679,7 @@ class HaTemplate(NetworkTemplate):
                     "groups": {
                         "{{ gname }}": {
                             "name": "{{ gname }}",
-                            "address": "{{ address if address is defined else None }}",
+                            # "address": "{{ address if address is defined else None }}",
                             "description": "{{ description if description is defined else None }}",
                             "advertise_interval": "{{ advertise_interval if advertise_interval is defined else None }}",
                             "hello_source_address": "{{ hello_source if hello_source is defined else None }}",
@@ -700,6 +712,32 @@ class HaTemplate(NetworkTemplate):
                             "name": "{{ gname }}",
                             "excluded_address": [
                                 "{{ excluded_address | replace(\"'\", \"\") }}",
+                            ],
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "vrrp.groups.address",
+            "getval": re.compile(
+                r"""
+                ^set\shigh-availability\svrrp\sgroup
+                \s+(?P<gname>\S+)
+                \saddress
+                \s+(?P<address>.*)
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_vrrp_group_address,
+            "result": {
+                "vrrp": {
+                    "groups": {
+                        "{{ gname }}": {
+                            "name": "{{ gname }}",
+                            "address": [
+                                "{{ address | replace(\"'\", \"\") }}",
                             ],
                         },
                     },
