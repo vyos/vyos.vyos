@@ -301,5 +301,157 @@ class NatTemplate(NetworkTemplate):
             },
         },
 
+        # set nat destination rule <id> description <description>
+        {
+            "name": "nat_destination_description",
+            "getval": re.compile(
+                r"""
+                ^set\s
+                nat\s
+                destination\s
+                rule\s
+                (?P<rule>\d+)\s
+                description\s
+                (?P<description>.+)
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": "nat destination rule {{ rule }} description {{ description }}",
+            "result": {
+                "destination": {
+                    "rule": {
+                        "{{ rule }}": {
+                            "description": "{{ description }}",
+                        },
+                    },
+                },
+            },
+        },
+
+        # set nat destination rule <id> destination address <dest_address>
+        {
+            "name": "nat_destination_dest_address",
+            "getval": re.compile(
+                r"""
+                ^set\s
+                nat\s
+                destination\s
+                rule\s
+                (?P<rule>\d+)\s
+                destination\s
+                address\s
+                (?P<dest_address>\S+)
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": "nat destination rule {{ rule }} destination address {{ dest_address }}",
+            "result": {
+                "destination": {
+                    "rule": {
+                        "{{ rule }}": {
+                            "destination": {
+                                "address": "{{ dest_address }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+
+        # set nat destination rule <id> destination port <dest_port>
+        {
+            "name": "nat_destination_dest_port",
+            "getval": re.compile(
+                r"""
+                ^set\s
+                nat\s
+                destination\s
+                rule\s
+                (?P<rule>\d+)\s
+                destination\s
+                port\s
+                (?P<dest_port>\d+)
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": "nat destination rule {{ rule }} destination port {{ dest_port }}",
+            "result": {
+                "destination": {
+                    "rule": {
+                        "{{ rule }}": {
+                            "destination": {
+                                "port": "{{ dest_port }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+
+        # set nat destination rule <id> translation address
+        {
+            "name": "nat_destination_translation_address",
+            "getval": re.compile(
+                r"""
+                ^set\s
+                nat\s
+                destination\s
+                rule\s
+                (?P<rule>\d+)\s
+                translation\s
+                address\s
+                (?P<trans_address>\S+)
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": "nat destination rule {{ rule }} translation address {{ trans_address }}",
+            "result": {
+                "destination": {
+                    "rule": {
+                        "{{ rule }}": {
+                            "translation": {
+                                "address": "{{ trans_address }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+
+        # set nat destination rule <id> translation port
+        {
+            "name": "nat_destination_translation_port",
+            "getval": re.compile(
+                r"""
+                ^set\s
+                nat\s
+                destination\s
+                rule\s
+                (?P<rule>\d+)\s
+                translation\s
+                port\s
+                (?P<trans_port>\d+)
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": "nat destination rule {{ rule }} translation port {{ trans_port }}",
+            "result": {
+                "destination": {
+                    "rule": {
+                        "{{ rule }}": {
+                            "translation": {
+                                "port": "{{ trans_port }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+
     ]
     # fmt: on

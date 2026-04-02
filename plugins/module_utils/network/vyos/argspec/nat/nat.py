@@ -108,6 +108,58 @@ class NatArgs(object):  # pylint: disable=R0903
                         },
                     },
                 },
+                "destination": {
+                    "type": "dict",
+                    "options": {
+                        "rule": {
+                            "type": "list",
+                            "elements": "dict",
+                            "options": {
+                                "id": {
+                                    "type": "int",
+                                    "required": True,
+                                },
+                                "description": {
+                                    "type": "str",
+                                },
+                                "destination": {
+                                    "type": "dict",
+                                    "options": {
+                                        "address": {
+                                            "type": "str",
+                                        },
+                                        "fqdn": {
+                                            "type": "str",
+                                        },
+                                        "group": {
+                                            "type": "dict",
+                                            "options": {
+                                                "address-group": {
+                                                    "type": "str",
+                                                },
+                                                "domain-group": {
+                                                    "type": "str",
+                                                },
+                                                "mac-group": {
+                                                    "type": "str",
+                                                },
+                                                "network-group": {
+                                                    "type": "str",
+                                                },
+                                                "port-group": {
+                                                    "type": "str",
+                                                },
+                                            },
+                                        },
+                                        "port": {
+                                            "type": "str",
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             },
         },
         "running_config": {"type": "str"},
