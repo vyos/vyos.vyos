@@ -353,9 +353,12 @@ class TestVyosHaModule(TestVyosModule):
             ),
         )
         commands = [
+            "delete high-availability vrrp global-parameters garp master-repeat 5",
+            "delete high-availability vrrp global-parameters startup-delay 30",
             "delete high-availability vrrp group g1 disable",
             "delete high-availability vrrp group g1 no-preempt",
             "delete high-availability vrrp group g1 rfc3768-compatibility",
+            "delete high-availability vrrp sync-group sg1 health-check failure-count 3",
             "set high-availability vrrp group g2 address 192.168.3.3",
             "set high-availability vrrp group g2 address 192.168.4.4 interface eth3",
             "delete high-availability disable",

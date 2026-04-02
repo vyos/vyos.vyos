@@ -652,9 +652,13 @@ overridden:
 
 replaced:
   commands:
+    - delete high-availability vrrp global-parameters garp master-repeat 5
+    - delete high-availability vrrp global-parameters startup-delay 31
     - delete high-availability vrrp group g1 disable
     - delete high-availability vrrp group g1 no-preempt
     - delete high-availability vrrp group g1 rfc3768-compatibility
+    - delete high-availability vrrp group g2 address 2.2.2.2
+    - delete high-availability vrrp sync-group sg1 health-check failure-count 3
     - set high-availability disable
     - set high-availability virtual-server s1 address 10.10.10.5
     - set high-availability virtual-server s1 real-server 10.10.50.2 port 8443

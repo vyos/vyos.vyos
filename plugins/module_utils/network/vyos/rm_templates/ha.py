@@ -661,7 +661,6 @@ class HaTemplate(NetworkTemplate):
                 r"""
                 ^set\shigh-availability\svrrp\sgroup
                 \s+(?P<gname>\S+)
-                # (?:\s+address\s+(?P<address>\S+))?
                 (?:\s+description\s+(?P<description>'.+?'|\S+))?
                 (?:\s+advertise-interval\s+(?P<advertise_interval>\S+))?
                 (?:\s+hello-source-address\s+(?P<hello_source>\S+))?
@@ -679,7 +678,6 @@ class HaTemplate(NetworkTemplate):
                     "groups": {
                         "{{ gname }}": {
                             "name": "{{ gname }}",
-                            # "address": "{{ address if address is defined else None }}",
                             "description": "{{ description if description is defined else None }}",
                             "advertise_interval": "{{ advertise_interval if advertise_interval is defined else None }}",
                             "hello_source_address": "{{ hello_source if hello_source is defined else None }}",

@@ -259,6 +259,8 @@ class Ha(ResourceModule):
 
                 if self.state == "deleted" and wdict:
                     wdict = {}
+                if self.state == "replaced" and wdict and wdict != hdict:
+                    wdict = {}
                 elif not wdict:
                     hdict = {}
 
