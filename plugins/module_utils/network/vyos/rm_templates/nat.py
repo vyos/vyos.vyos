@@ -49,10 +49,6 @@ class NatTemplate(NetworkTemplate):
 
     # fmt: off
     PARSERS = [
-
-
-
-        # set nat cgnat log-allocation
         {
             "name": "log_allocation",
             "getval": re.compile(
@@ -72,8 +68,6 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # set nat cgnat pool external <name> external-port-range <range>
         {
             "name": "external_port_range",
             "getval": re.compile(
@@ -104,8 +98,6 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # set nat cgnat pool external <name> per-user-limit port <limit>
         {
             "name": "per_user_limit_port",
             "getval": re.compile(
@@ -137,8 +129,6 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # set nat cgnat pool external <name> range <range>
         {
             "name": "external_range",
             "getval": re.compile(
@@ -169,8 +159,6 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # set nat cgnat pool external <name> range <range> seq <seq>
         {
             "name": "external_range_seq",
             "getval": re.compile(
@@ -204,8 +192,6 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # set nat cgnat pool internal <name> range <range>
         {
             "name": "internal_range",
             "getval": re.compile(
@@ -236,8 +222,6 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # set nat cgnat rule <id> source pool <pool>
         {
             "name": "rule_source_pool",
             "getval": re.compile(
@@ -268,8 +252,6 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # set nat cgnat rule <id> translation pool <pool>
         {
             "name": "rule_translation_pool",
             "getval": re.compile(
@@ -300,15 +282,13 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # set nat destination rule <id> description <description>
         {
-            "name": "nat_destination_description",
+            "name": "nat_type_description",
             "getval": re.compile(
                 r"""
                 ^set\s
                 nat\s
-                destination\s
+                (?P<type>destination|source|static)\s
                 rule\s
                 (?P<rule>\d+)\s
                 description\s
@@ -317,9 +297,9 @@ class NatTemplate(NetworkTemplate):
                 """,
                 re.VERBOSE,
             ),
-            "setval": "nat destination rule {{ rule }} description {{ description }}",
+            "setval": "nat {{ type }} rule {{ rule }} description {{ description }}",
             "result": {
-                "destination": {
+                "{{ type }}": {
                     "rule": {
                         "{{ rule }}": {
                             "description": "{{ description }}",
@@ -328,30 +308,54 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # set nat destination rule <id> destination address <dest_address>
         {
-            "name": "nat_destination_dest_address",
+            "name": "nat_type_protocol",
             "getval": re.compile(
                 r"""
                 ^set\s
                 nat\s
-                destination\s
+                (?P<type>destination|source|static)\s
                 rule\s
                 (?P<rule>\d+)\s
-                destination\s
+                protocol\s
+                (?P<protocol>\S+)
+                $
+                """,
+                re.VERBOSE,
+            ),
+            "setval": "nat {{ type }} rule {{ rule }} protocol {{ protocol }}",
+            "result": {
+                "{{ type }}": {
+                    "rule": {
+                        "{{ rule }}": {
+                            "protocol": "{{ protocol }}",
+                        },
+                    },
+                },
+            },
+        },
+        {
+            "name": "nat_type_dest_address",
+            "getval": re.compile(
+                r"""
+                ^set\s
+                nat\s
+                (?P<type>destination|source|static)\s
+                rule\s
+                (?P<rule>\d+)\s
+                (?P<atype>destination|source|static)\s
                 address\s
                 (?P<dest_address>\S+)
                 $
                 """,
                 re.VERBOSE,
             ),
-            "setval": "nat destination rule {{ rule }} destination address {{ dest_address }}",
+            "setval": "nat {{ type }} rule {{ rule }} {{ atype }} address {{ dest_address }}",
             "result": {
-                "destination": {
+                "{{ type }}": {
                     "rule": {
                         "{{ rule }}": {
-                            "destination": {
+                            "{{ atype }}": {
                                 "address": "{{ dest_address }}",
                             },
                         },
@@ -359,30 +363,28 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # set nat destination rule <id> destination port <dest_port>
         {
-            "name": "nat_destination_dest_port",
+            "name": "nat_type_dest_port",
             "getval": re.compile(
                 r"""
                 ^set\s
                 nat\s
-                destination\s
+                (?P<type>destination|source|static)\s
                 rule\s
                 (?P<rule>\d+)\s
-                destination\s
+                (?P<atype>destination|source|static)\s
                 port\s
                 (?P<dest_port>\d+)
                 $
                 """,
                 re.VERBOSE,
             ),
-            "setval": "nat destination rule {{ rule }} destination port {{ dest_port }}",
+            "setval": "nat {{ type }} rule {{ rule }} {{ atype }} port {{ dest_port }}",
             "result": {
-                "destination": {
+                "{{ type }}": {
                     "rule": {
                         "{{ rule }}": {
-                            "destination": {
+                            "{{ atype }}": {
                                 "port": "{{ dest_port }}",
                             },
                         },
@@ -390,15 +392,13 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # set nat destination rule <id> translation address
         {
-            "name": "nat_destination_translation_address",
+            "name": "nat_type_translation_address",
             "getval": re.compile(
                 r"""
                 ^set\s
                 nat\s
-                destination\s
+                (?P<type>destination|source|static)\s
                 rule\s
                 (?P<rule>\d+)\s
                 translation\s
@@ -408,9 +408,9 @@ class NatTemplate(NetworkTemplate):
                 """,
                 re.VERBOSE,
             ),
-            "setval": "nat destination rule {{ rule }} translation address {{ trans_address }}",
+            "setval": "nat {{ type }} rule {{ rule }} translation address {{ trans_address }}",
             "result": {
-                "destination": {
+                "{{ type }}": {
                     "rule": {
                         "{{ rule }}": {
                             "translation": {
@@ -421,15 +421,13 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # set nat destination rule <id> translation port
         {
-            "name": "nat_destination_translation_port",
+            "name": "nat_type_translation_port",
             "getval": re.compile(
                 r"""
                 ^set\s
                 nat\s
-                destination\s
+                (?P<type>destination|source|static)\s
                 rule\s
                 (?P<rule>\d+)\s
                 translation\s
@@ -439,9 +437,9 @@ class NatTemplate(NetworkTemplate):
                 """,
                 re.VERBOSE,
             ),
-            "setval": "nat destination rule {{ rule }} translation port {{ trans_port }}",
+            "setval": "nat {{ type }} rule {{ rule }} translation port {{ trans_port }}",
             "result": {
-                "destination": {
+                "{{ type }}": {
                     "rule": {
                         "{{ rule }}": {
                             "translation": {
@@ -452,6 +450,5 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
     ]
     # fmt: on

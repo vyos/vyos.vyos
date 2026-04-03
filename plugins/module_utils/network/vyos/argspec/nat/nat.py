@@ -154,6 +154,9 @@ class NatArgs(object):  # pylint: disable=R0903
                                         "port": {
                                             "type": "str",
                                         },
+                                        "protocol": {
+                                            "type": "str",
+                                        },
                                     },
                                 },
                             },
