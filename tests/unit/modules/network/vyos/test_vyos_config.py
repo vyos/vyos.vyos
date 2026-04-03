@@ -152,6 +152,7 @@ class TestVyosConfigModule(TestVyosModule):
             return_value=self.cliconf_obj.get_diff(candidate, None, diff_match="none"),
         )
         self.execute_module(changed=True, commands=lines, sort=False)
+
     def test_vyos_config_confirm_automatic(self):
         src = load_fixture("vyos_config_src.cfg")
         confirm_timeout = 7
