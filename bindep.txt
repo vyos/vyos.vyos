@@ -3,6 +3,8 @@
 
 gcc-c++ [doc test platform:rpm]
 libssh-devel [test platform:rpm]
+libssh-dev [platform:dpkg]
+libssh-devel [platform:rpm]
 libffi-devel [test platform:rpm]
 openssl-devel [test platform:rpm]
 libssh-dev [compile test]
