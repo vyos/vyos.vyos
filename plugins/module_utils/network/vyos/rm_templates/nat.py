@@ -1,19 +1,8 @@
 # -*- coding: utf-8 -*-
-# Copyright 2021 Red Hat
-# GNU General Public License v3.0+
-# (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
-
 from __future__ import absolute_import, division, print_function
 
 
 __metaclass__ = type
-
-"""
-The Nat parser templates file. This contains
-a list of parser definitions and associated functions that
-facilitates both facts gathering and native command generation for
-the given network resource.
-"""
 
 import re
 
@@ -25,73 +14,36 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 class NatTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
-        self._overrides = {  # 1.4+ by default
-            "_path": "service",  # 1.4 or greater, "system" for 1.3 or less
-            "_ac": "allow-client",  # 1.4 or greater, "allow-clients" for 1.3 or less
-        }
         super(NatTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix, module=module)
-
-    # def set_nat_path(self, path: str):
-    #     """set_nat_path"""
-    #     self._overrides["_path"] = path
-
-    # def set_ntp_ac(self, ac: str):
-    #     """set_ntp_ac"""
-    #     self._overrides["_ac"] = ac
-
-    # def render(self, data, parser_name, negate=False):
-    #     """render"""
-    #     # add path to the data before rendering
-    #     data = data.copy()
-    #     data.update(self._overrides)
-    #     # call the original method
-    #     return super(NtpTemplate, self).render(data, parser_name, negate)
 
     # fmt: off
     PARSERS = [
+
+        #
+        # -------------------------
+        # CGNAT (keep explicit)
+        # -------------------------
+        #
         {
-            "name": "log_allocation",
-            "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                cgnat\s
-                log-allocation
-                $
-                """,
-                re.VERBOSE,
-            ),
+            "name": "cgnat_log_allocation",
+            "getval": re.compile(r"^set\s+nat\s+cgnat\s+log-allocation$"),
             "setval": "nat cgnat log-allocation",
-            "result": {
-                "cgnat": {
-                    "log_allocation": True,
-                },
-            },
+            "result": {"cgnat": {"log_allocation": True}},
         },
         {
-            "name": "external_port_range",
+            "name": "cgnat_pool_external_range",
             "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                cgnat\s
-                pool\s
-                external\s
-                (?P<name>\S+)\s
-                external-port-range\s
-                ['"]?(?P<range>\S+)['"]?
-                $
-                """,
-                re.VERBOSE,
+                r"^set\s+nat\s+cgnat\s+pool\s+external\s+(?P<name>\S+)\s+range\s+(?P<range>\S+)(?:\s+seq\s+(?P<seq>\d+))?$",
             ),
-            "setval": "nat cgnat pool external {{name}} external-port-range '{{external_port_range}}'",
+            "setval": "nat cgnat pool external {{ name }} range {{ range }}{% if seq is defined %} seq {{ seq }}{% endif %}",
             "result": {
                 "cgnat": {
                     "pool": {
                         "external": [
                             {
-                                "name": "{{name}}",
-                                "external_port_range": "{{range}}",
+                                "name": "{{ name }}",
+                                "ranges": ["{{ range }}"],
+                                "seq": "{{ seq }}",
                             },
                         ],
                     },
@@ -99,30 +51,18 @@ class NatTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "per_user_limit_port",
+            "name": "cgnat_pool_external_port_range",
             "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                cgnat\s
-                pool\s
-                external\s
-                (?P<name>\S+)\s
-                per-user-limit\s
-                port\s
-                ['"]?(?P<limit>\d+)['"]?
-                $
-                """,
-                re.VERBOSE,
+                r"^set\s+nat\s+cgnat\s+pool\s+external\s+(?P<name>\S+)\s+external-port-range\s+(?P<range>\S+)$",
             ),
-            "setval": "nat cgnat pool external {{name}} per-user-limit port '{{per_user_limit_port}}'",
+            "setval": "nat cgnat pool external {{ name }} external-port-range {{ range }}",
             "result": {
                 "cgnat": {
                     "pool": {
                         "external": [
                             {
-                                "name": "{{name}}",
-                                "per_user_limit_port": "{{limit}}",
+                                "name": "{{ name }}",
+                                "external_port_range": "{{ range }}",
                             },
                         ],
                     },
@@ -130,29 +70,18 @@ class NatTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "external_range",
+            "name": "cgnat_pool_external_per_user",
             "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                cgnat\s
-                pool\s
-                external\s
-                (?P<name>\S+)\s
-                range\s
-                ['"]?(?P<range>\S+)['"]?
-                $
-                """,
-                re.VERBOSE,
+                r"^set\s+nat\s+cgnat\s+pool\s+external\s+(?P<name>\S+)\s+per-user-limit\s+port\s+(?P<limit>\d+)$",
             ),
-            "setval": "nat cgnat pool external {{name}} range '{{range}}'",
+            "setval": "nat cgnat pool external {{ name }} per-user-limit port {{ limit }}",
             "result": {
                 "cgnat": {
                     "pool": {
                         "external": [
                             {
-                                "name": "{{name}}",
-                                "ranges": ["{{range}}"],
+                                "name": "{{ name }}",
+                                "per_user_limit_port": "{{ limit }}",
                             },
                         ],
                     },
@@ -160,62 +89,18 @@ class NatTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "external_range_seq",
+            "name": "cgnat_pool_internal_range",
             "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                cgnat\s
-                pool\s
-                external\s
-                (?P<name>\S+)\s
-                range\s
-                ['"]?(?P<range>\S+)['"]?\s
-                seq\s
-                ['"]?(?P<seq>\d+)['"]?
-                $
-                """,
-                re.VERBOSE,
+                r"^set\s+nat\s+cgnat\s+pool\s+internal\s+(?P<name>\S+)\s+range\s+(?P<range>\S+)$",
             ),
-            "setval": "nat cgnat pool external {{name}} range '{{range}}' seq '{{seq}}'",
-            "result": {
-                "cgnat": {
-                    "pool": {
-                        "external": [
-                            {
-                                "name": "{{name}}",
-                                "ranges": ["{{range}}"],
-                                "seq": "{{seq}}",
-                            },
-                        ],
-                    },
-                },
-            },
-        },
-        {
-            "name": "internal_range",
-            "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                cgnat\s
-                pool\s
-                internal\s
-                (?P<name>\S+)\s
-                range\s
-                ['"]?(?P<range>\S+)['"]?
-                $
-                """,
-                re.VERBOSE,
-            ),
-            "setval": "nat cgnat pool internal {{name}} range '{{range}}'",
+            "setval": "nat cgnat pool internal {{ name }} range {{ range }}",
             "result": {
                 "cgnat": {
                     "pool": {
                         "internal": [
                             {
-                                "name": "{{name}}",
-                                "ranges": ["{{range}}"],
+                                "name": "{{ name }}",
+                                "ranges": ["{{ range }}"],
                             },
                         ],
                     },
@@ -223,232 +108,312 @@ class NatTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "rule_source_pool",
+            "name": "cgnat_rule_source_pool",
             "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                cgnat\s
-                rule\s
-                (?P<id>\d+)\s
-                source\s
-                pool\s
-                ['"]?(?P<pool>\S+)['"]?
-                $
-                """,
-                re.VERBOSE,
+                r"^set\s+nat\s+cgnat\s+rule\s+(?P<id>\d+)\s+source\s+pool\s+(?P<pool>\S+)$",
             ),
-            "setval": "nat cgnat rule {{id}} source pool '{{source_pool}}'",
+            "setval": "nat cgnat rule {{ id }} source pool {{ pool }}",
             "result": {
                 "cgnat": {
                     "rule": [
                         {
-                            "id": "{{id}}",
-                            "source": {
-                                "pool": "{{pool}}",
-                            },
+                            "id": "{{ id }}",
+                            "source": {"pool": "{{ pool }}"},
                         },
                     ],
                 },
             },
         },
         {
-            "name": "rule_translation_pool",
+            "name": "cgnat_rule_translation_pool",
             "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                cgnat\s
-                rule\s
-                (?P<id>\d+)\s
-                translation\s
-                pool\s
-                ['"]?(?P<pool>\S+)['"]?
-                $
-                """,
-                re.VERBOSE,
+                r"^set\s+nat\s+cgnat\s+rule\s+(?P<id>\d+)\s+translation\s+pool\s+(?P<pool>\S+)$",
             ),
-            "setval": "nat cgnat rule {{id}} translation pool '{{translation_pool}}'",
+            "setval": "nat cgnat rule {{ id }} translation pool {{ pool }}",
             "result": {
                 "cgnat": {
                     "rule": [
                         {
-                            "id": "{{id}}",
-                            "translation": {
-                                "pool": "{{pool}}",
-                            },
+                            "id": "{{ id }}",
+                            "translation": {"pool": "{{ pool }}"},
                         },
                     ],
                 },
             },
         },
+
+        #
+        # -------------------------
+        # GENERIC NAT (destination/source/static)
+        # -------------------------
+        #
+
+        # description
         {
             "name": "nat_type_description",
             "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                (?P<type>destination|source|static)\s
-                rule\s
-                (?P<rule>\d+)\s
-                description\s
-                (?P<description>.+)
-                $
-                """,
-                re.VERBOSE,
+                r"^set\s+nat\s+(?P<type>destination|source|static)\s+rule\s+(?P<rule>\S+)\s+description\s+(?P<description>.+)$",
             ),
             "setval": "nat {{ type }} rule {{ rule }} description {{ description }}",
             "result": {
                 "{{ type }}": {
                     "rule": {
-                        "{{ rule }}": {
-                            "description": "{{ description }}",
-                        },
+                        "{{ rule }}": {"description": "{{ description }}"},
                     },
                 },
             },
         },
+
+        # protocol
         {
             "name": "nat_type_protocol",
             "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                (?P<type>destination|source|static)\s
-                rule\s
-                (?P<rule>\d+)\s
-                protocol\s
-                (?P<protocol>\S+)
-                $
-                """,
-                re.VERBOSE,
+                r"^set\s+nat\s+(?P<type>destination|source|static)\s+rule\s+(?P<rule>\S+)\s+protocol\s+(?P<protocol>\S+)$",
             ),
             "setval": "nat {{ type }} rule {{ rule }} protocol {{ protocol }}",
             "result": {
                 "{{ type }}": {
                     "rule": {
-                        "{{ rule }}": {
-                            "protocol": "{{ protocol }}",
-                        },
+                        "{{ rule }}": {"protocol": "{{ protocol }}"},
                     },
                 },
             },
         },
+
+        # flags
         {
-            "name": "nat_type_dest_address",
+            "name": "nat_type_disable",
             "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                (?P<type>destination|source|static)\s
-                rule\s
-                (?P<rule>\d+)\s
-                (?P<atype>destination|source|static)\s
-                address\s
-                (?P<dest_address>\S+)
-                $
-                """,
-                re.VERBOSE,
+                r"^set\s+nat\s+(?P<type>destination|source|static)\s+rule\s+(?P<rule>\S+)\s+disable$",
             ),
-            "setval": "nat {{ type }} rule {{ rule }} {{ atype }} address {{ dest_address }}",
+            "setval": "nat {{ type }} rule {{ rule }} disable",
+            "result": {"{{ type }}": {"rule": {"{{ rule }}": {"disable": True}}}},
+        },
+        {
+            "name": "nat_type_exclude",
+            "getval": re.compile(
+                r"^set\s+nat\s+(?P<type>destination|source|static)\s+rule\s+(?P<rule>\S+)\s+exclude$",
+            ),
+            "setval": "nat {{ type }} rule {{ rule }} exclude",
+            "result": {"{{ type }}": {"rule": {"{{ rule }}": {"exclude": True}}}},
+        },
+        {
+            "name": "nat_type_log",
+            "getval": re.compile(
+                r"^set\s+nat\s+(?P<type>destination|source|static)\s+rule\s+(?P<rule>\S+)\s+log$",
+            ),
+            "setval": "nat {{ type }} rule {{ rule }} log",
+            "result": {"{{ type }}": {"rule": {"{{ rule }}": {"log": True}}}},
+        },
+
+        # address (destination/source)
+        {
+            "name": "nat_type_address",
+            "getval": re.compile(
+                r"^set\s+nat\s+(?P<type>destination|source|static)\s+rule\s+(?P<rule>\S+)\s+(?P<atype>destination|source)\s+address\s+(?P<value>\S+)$",
+            ),
+            "setval": "nat {{ type }} rule {{ rule }} {{ atype }} address {{ value }}",
             "result": {
                 "{{ type }}": {
                     "rule": {
                         "{{ rule }}": {
-                            "{{ atype }}": {
-                                "address": "{{ dest_address }}",
-                            },
+                            "{{ atype }}": {"address": "{{ value }}"},
                         },
                     },
                 },
             },
         },
+
+        # fqdn
         {
-            "name": "nat_type_dest_port",
+            "name": "nat_type_fqdn",
             "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                (?P<type>destination|source|static)\s
-                rule\s
-                (?P<rule>\d+)\s
-                (?P<atype>destination|source|static)\s
-                port\s
-                (?P<dest_port>\d+)
-                $
-                """,
-                re.VERBOSE,
+                r"^set\s+nat\s+(?P<type>destination|source)\s+rule\s+(?P<rule>\S+)\s+(?P<atype>destination|source)\s+fqdn\s+(?P<value>\S+)$",
             ),
-            "setval": "nat {{ type }} rule {{ rule }} {{ atype }} port {{ dest_port }}",
+            "setval": "nat {{ type }} rule {{ rule }} {{ atype }} fqdn {{ value }}",
             "result": {
                 "{{ type }}": {
                     "rule": {
                         "{{ rule }}": {
-                            "{{ atype }}": {
-                                "port": "{{ dest_port }}",
-                            },
+                            "{{ atype }}": {"fqdn": "{{ value }}"},
                         },
                     },
                 },
             },
         },
+
+        # port
+        {
+            "name": "nat_type_port",
+            "getval": re.compile(
+                r"^set\s+nat\s+(?P<type>destination|source)\s+rule\s+(?P<rule>\S+)\s+(?P<atype>destination|source)\s+port\s+(?P<value>\S+)$",
+            ),
+            "setval": "nat {{ type }} rule {{ rule }} {{ atype }} port {{ value }}",
+            "result": {
+                "{{ type }}": {
+                    "rule": {
+                        "{{ rule }}": {
+                            "{{ atype }}": {"port": "{{ value }}"},
+                        },
+                    },
+                },
+            },
+        },
+
+        # translation address
         {
             "name": "nat_type_translation_address",
             "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                (?P<type>destination|source|static)\s
-                rule\s
-                (?P<rule>\d+)\s
-                translation\s
-                address\s
-                (?P<trans_address>\S+)
-                $
-                """,
-                re.VERBOSE,
+                r"^set\s+nat\s+(?P<type>destination|source|static)\s+rule\s+(?P<rule>\S+)\s+translation\s+address\s+(?P<value>\S+)$",
             ),
-            "setval": "nat {{ type }} rule {{ rule }} translation address {{ trans_address }}",
+            "setval": "nat {{ type }} rule {{ rule }} translation address {{ value }}",
             "result": {
                 "{{ type }}": {
                     "rule": {
                         "{{ rule }}": {
-                            "translation": {
-                                "address": "{{ trans_address }}",
-                            },
+                            "translation": {"address": "{{ value }}"},
                         },
                     },
                 },
             },
         },
+
+        # translation port
         {
             "name": "nat_type_translation_port",
             "getval": re.compile(
-                r"""
-                ^set\s
-                nat\s
-                (?P<type>destination|source|static)\s
-                rule\s
-                (?P<rule>\d+)\s
-                translation\s
-                port\s
-                (?P<trans_port>\d+)
-                $
-                """,
-                re.VERBOSE,
+                r"^set\s+nat\s+(?P<type>destination|source)\s+rule\s+(?P<rule>\S+)\s+translation\s+port\s+(?P<value>\S+)$",
             ),
-            "setval": "nat {{ type }} rule {{ rule }} translation port {{ trans_port }}",
+            "setval": "nat {{ type }} rule {{ rule }} translation port {{ value }}",
             "result": {
                 "{{ type }}": {
                     "rule": {
                         "{{ rule }}": {
-                            "translation": {
-                                "port": "{{ trans_port }}",
+                            "translation": {"port": "{{ value }}"},
+                        },
+                    },
+                },
+            },
+        },
+
+        # inbound interface
+        {
+            "name": "nat_type_inbound_interface",
+            "getval": re.compile(
+                r"^set\s+nat\s+(?P<type>destination|source|static)\s+rule\s+(?P<rule>\S+)\s+inbound-interface\s+(?P<mode>group|name)\s+(?P<value>\S+)$",
+            ),
+            "setval": "nat {{ type }} rule {{ rule }} inbound-interface {{ mode }} {{ value }}",
+            "result": {
+                "{{ type }}": {
+                    "rule": {
+                        "{{ rule }}": {
+                            "inbound_interface": {
+                                "{{ mode }}": "{{ value }}",
                             },
                         },
                     },
                 },
             },
         },
+
+        # packet type
+        {
+            "name": "nat_type_packet_type",
+            "getval": re.compile(
+                r"^set\s+nat\s+(?P<type>destination|source)\s+rule\s+(?P<rule>\S+)\s+packet-type\s+(?P<value>\S+)$",
+            ),
+            "setval": "nat {{ type }} rule {{ rule }} packet-type {{ value }}",
+            "result": {
+                "{{ type }}": {
+                    "rule": {
+                        "{{ rule }}": {"packet_type": "{{ value }}"},
+                    },
+                },
+            },
+        },
+
+        # load balance backend
+        {
+            "name": "nat_type_lb_backend",
+            "getval": re.compile(
+                r"^set\s+nat\s+(?P<type>destination|source)\s+rule\s+(?P<rule>\S+)\s+load-balance\s+backend\s+(?P<ip>\S+)\s+weight\s+(?P<weight>\d+)$",
+            ),
+            "setval": "nat {{ type }} rule {{ rule }} load-balance backend {{ ip }} weight {{ weight }}",
+            "result": {
+                "{{ type }}": {
+                    "rule": {
+                        "{{ rule }}": {
+                            "load_balance": {
+                                "backend": {
+                                    "ip": "{{ ip }}",
+                                    "weight": "{{ weight }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+
+        # load balance hash
+        {
+            "name": "nat_type_lb_hash",
+            "getval": re.compile(
+                r"^set\s+nat\s+(?P<type>destination|source)\s+rule\s+(?P<rule>\S+)\s+load-balance\s+hash\s+(?P<value>\S+)$",
+            ),
+            "setval": "nat {{ type }} rule {{ rule }} load-balance hash {{ value }}",
+            "result": {
+                "{{ type }}": {
+                    "rule": {
+                        "{{ rule }}": {
+                            "load_balance": {"hash": "{{ value }}"},
+                        },
+                    },
+                },
+            },
+        },
+
+        # translation options
+        {
+            "name": "nat_type_translation_options",
+            "getval": re.compile(
+                r"^set\s+nat\s+(?P<type>destination|source)\s+rule\s+(?P<rule>\S+)\s+translation\s+options\s+(?P<opt>address-mapping|port-mapping)\s+(?P<value>\S+)$",
+            ),
+            "setval": "nat {{ type }} rule {{ rule }} translation options {{ opt }} {{ value }}",
+            "result": {
+                "{{ type }}": {
+                    "rule": {
+                        "{{ rule }}": {
+                            "translation": {
+                                "options": {
+                                    "{{ opt }}": "{{ value }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+
+        # redirect port
+        {
+            "name": "nat_type_translation_redirect",
+            "getval": re.compile(
+                r"^set\s+nat\s+(?P<type>destination|source)\s+rule\s+(?P<rule>\S+)\s+translation\s+redirect\s+port\s+(?P<value>\S+)$",
+            ),
+            "setval": "nat {{ type }} rule {{ rule }} translation redirect port {{ value }}",
+            "result": {
+                "{{ type }}": {
+                    "rule": {
+                        "{{ rule }}": {
+                            "translation": {
+                                "redirect_port": "{{ value }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+
     ]
     # fmt: on

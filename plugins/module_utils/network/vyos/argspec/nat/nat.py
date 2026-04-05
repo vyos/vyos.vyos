@@ -157,6 +157,15 @@ class NatArgs(object):  # pylint: disable=R0903
                                         "protocol": {
                                             "type": "str",
                                         },
+                                        "exclude": {
+                                            "type": "bool",
+                                        },
+                                        "log": {
+                                            "type": "bool",
+                                        },
+                                        "disable": {
+                                            "type": "bool",
+                                        },
                                     },
                                 },
                             },
