@@ -29,7 +29,122 @@ options:
     description:
     - The desired configuration for the NAT resource represented as a dictionary.
     type: dict
-
+    suboptions:
+      cgnat:
+        type: dict
+        suboptions:
+          log_allocation:
+            type: bool
+          pool:
+            type: dict
+            suboptions:
+              external:
+                type: list
+                elements: dict
+                suboptions:
+                  name:
+                    type: str
+                    required: true
+                  external_port_range:
+                    type: str
+                  per_user_limit_port:
+                    type: int
+                  ranges:
+                    type: list
+                    elements: str
+              internal:
+                type: list
+                elements: dict
+                suboptions:
+                  name:
+                    type: str
+                    required: true
+                  ranges:
+                    type: list
+                    elements: str
+          rule:
+            type: list
+            elements: dict
+            suboptions:
+              id:
+                type: int
+                required: true
+              source:
+                type: dict
+                suboptions:
+                  pool:
+                    type: str
+              translation:
+                type: dict
+                suboptions:
+                  pool:
+                    type: str
+      destination:
+        type: dict
+        suboptions:
+          rule:
+            type: list
+            elements: dict
+            suboptions:
+              id:
+                type: int
+                required: true
+              description:
+                type: str
+              destination:
+                type: dict
+                suboptions:
+                  address:
+                    type: str
+                  fqdn:
+                    type: str
+                  port:
+                    type: str
+                  protocol:
+                    type: str
+                  exclude:
+                    type: bool
+                  log:
+                    type: bool
+                  disable:
+                    type: bool
+      source:
+        type: dict
+        suboptions:
+          rule:
+            type: list
+            elements: dict
+            suboptions:
+              id:
+                type: int
+                required: true
+              description:
+                type: str
+              destination:
+                type: dict
+                suboptions:
+                  address:
+                    type: str
+      static:
+        type: dict
+        suboptions:
+          rule:
+            type: list
+            elements: dict
+            suboptions:
+              id:
+                type: int
+                required: true
+              description:
+                type: str
+              inbound_interface:
+                type: list
+                elements: str
+              translation:
+                type: dict
+                suboptions:
+                  address:
+                    type: str
   running_config:
     description:
     - This option is used only with state I(parsed).
