@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - plugins/modules/vyos_user.py - Fix aggregate option when extra user properties are defined
