@@ -237,3 +237,43 @@ class TestVyosUserModule(TestVyosModule):
             ),
         )
         result = self.execute_module(changed=False)
+
+    def test_vyos_user_aggregate_with_public_keys(self):
+        set_module_args(
+            dict(
+                aggregate=[
+                    dict(
+                        name="user1",
+                        public_keys=[
+                            dict(
+                                name="user1@host1",
+                                key="AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2u",
+                                type="ssh-ed25519",
+                            ),
+                        ],
+                    ),
+                    dict(
+                        name="user2",
+                        public_keys=[
+                            dict(
+                                name="user2@host2",
+                                key="AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2u",
+                                type="ssh-ed25519",
+                            ),
+                        ],
+                    ),
+                ],
+            ),
+        )
+        result = self.execute_module(changed=True)
+        self.assertEqual(
+            sorted(result["commands"]),
+            sorted(
+                [
+                    "set system login user user1 authentication public-keys user1@host1 key 'AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2u'",
+                    "set system login user user1 authentication public-keys user1@host1 type 'ssh-ed25519'",
+                    "set system login user user2 authentication public-keys user2@host2 key 'AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD+eixvbOinhY1eBU2u'",
+                    "set system login user user2 authentication public-keys user2@host2 type 'ssh-ed25519'",
+                ],
+            ),
+        )
