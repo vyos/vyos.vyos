@@ -363,6 +363,8 @@ def get_param_value(key, item, module):
     # if key doesn't exist in the item, get it from module.params
     if not item.get(key):
         value = module.params[key]
+    else:
+        value = item.get(key)
 
     # validate the param value (if validator func exists)
     validator = globals().get("validate_%s" % key)
