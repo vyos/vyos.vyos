@@ -38,10 +38,12 @@ options:
             description: Whether to log CGNAT address allocations.
           pool:
             type: dict
+            description: Configuration for CGNAT pools.
             suboptions:
               external:
                 type: list
                 elements: dict
+                description: List of external NAT pools for CGNAT.
                 suboptions:
                   name:
                     type: str
@@ -60,6 +62,7 @@ options:
               internal:
                 type: list
                 elements: dict
+                description: List of internal NAT pools for CGNAT.
                 suboptions:
                   name:
                     type: str
@@ -72,6 +75,7 @@ options:
           rule:
             type: list
             elements: dict
+            description: List of CGNAT rules.
             suboptions:
               id:
                 type: int
@@ -79,22 +83,26 @@ options:
                 description: Rule number for CGNAT.
               source:
                 type: dict
+                description: Source configuration for CGNAT translation.
                 suboptions:
                   pool:
                     type: str
                     description: Source pool to use for CGNAT translation.
               translation:
                 type: dict
+                description: Translation configuration for CGNAT.
                 suboptions:
                   pool:
                     type: str
                     description: Translation pool to use for CGNAT translation.
       destination:
         type: dict
+        description: Configuration for destination NAT rules.
         suboptions:
           rule:
             type: list
             elements: dict
+            description: List of destination NAT rules.
             suboptions:
               id:
                 type: int
@@ -105,6 +113,7 @@ options:
                 description: User-friendly description of the destination NAT rule.
               destination:
                 type: dict
+                description: Match criteria for destination NAT.
                 suboptions:
                   address:
                     type: str
@@ -129,10 +138,12 @@ options:
                     description: Disable this destination NAT rule.
       source:
         type: dict
+        description: Configuration for source NAT rules.
         suboptions:
           rule:
             type: list
             elements: dict
+            description: List of source NAT rules.
             suboptions:
               id:
                 type: int
@@ -143,16 +154,19 @@ options:
                 description: User-friendly description of the source NAT rule.
               destination:
                 type: dict
+                description: Match criteria for source NAT.
                 suboptions:
                   address:
                     type: str
                     description: IP address, subnet, or range to match for source NAT.
       static:
         type: dict
+        description: Configuration for static NAT rules.
         suboptions:
           rule:
             type: list
             elements: dict
+            description: List of static NAT rules.
             suboptions:
               id:
                 type: int
@@ -167,6 +181,7 @@ options:
                 description: List of inbound interfaces that this static NAT rule applies to.
               translation:
                 type: dict
+                description: Translation configuration for static NAT.
                 suboptions:
                   address:
                     type: str

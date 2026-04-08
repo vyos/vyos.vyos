@@ -98,6 +98,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Configuration for CGNAT pools.</div>
                 </td>
             </tr>
                                 <tr>
@@ -116,6 +117,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>List of external NAT pools for CGNAT.</div>
                 </td>
             </tr>
                                 <tr>
@@ -213,6 +215,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>List of internal NAT pools for CGNAT.</div>
                 </td>
             </tr>
                                 <tr>
@@ -272,6 +275,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>List of CGNAT rules.</div>
                 </td>
             </tr>
                                 <tr>
@@ -308,6 +312,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Source configuration for CGNAT translation.</div>
                 </td>
             </tr>
                                 <tr>
@@ -345,6 +350,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Translation configuration for CGNAT.</div>
                 </td>
             </tr>
                                 <tr>
@@ -382,6 +388,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Configuration for destination NAT rules.</div>
                 </td>
             </tr>
                                 <tr>
@@ -399,6 +406,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>List of destination NAT rules.</div>
                 </td>
             </tr>
                                 <tr>
@@ -434,6 +442,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Match criteria for destination NAT.</div>
                 </td>
             </tr>
                                 <tr>
@@ -616,6 +625,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Configuration for source NAT rules.</div>
                 </td>
             </tr>
                                 <tr>
@@ -633,6 +643,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>List of source NAT rules.</div>
                 </td>
             </tr>
                                 <tr>
@@ -668,6 +679,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Match criteria for source NAT.</div>
                 </td>
             </tr>
                                 <tr>
@@ -724,6 +736,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Configuration for static NAT rules.</div>
                 </td>
             </tr>
                                 <tr>
@@ -741,6 +754,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>List of static NAT rules.</div>
                 </td>
             </tr>
                                 <tr>
@@ -814,6 +828,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Translation configuration for static NAT.</div>
                 </td>
             </tr>
                                 <tr>
