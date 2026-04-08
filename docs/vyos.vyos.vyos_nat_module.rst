@@ -61,6 +61,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Configuration for Carrier Grade NAT (CGNAT).</div>
                 </td>
             </tr>
                                 <tr>

@@ -32,6 +32,7 @@ options:
     suboptions:
       cgnat:
         type: dict
+        description: Configuration for Carrier Grade NAT (CGNAT).
         suboptions:
           log_allocation:
             type: bool
