@@ -81,6 +81,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
+                        <div>Whether to log CGNAT address allocations.</div>
                 </td>
             </tr>
             <tr>
@@ -133,6 +134,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Port range to use for NAT translations in this external pool.</div>
                 </td>
             </tr>
             <tr>
@@ -152,6 +154,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Name of the external NAT pool.</div>
                 </td>
             </tr>
             <tr>
@@ -170,6 +173,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Maximum number of ports allocated per user.</div>
                 </td>
             </tr>
             <tr>
@@ -189,6 +193,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>List of external IP addresses or prefixes in the pool.</div>
                 </td>
             </tr>
 
@@ -227,6 +232,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Name of the internal NAT pool.</div>
                 </td>
             </tr>
             <tr>
@@ -246,6 +252,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>List of internal IP addresses or prefixes in the pool.</div>
                 </td>
             </tr>
 
@@ -283,6 +290,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Rule number for CGNAT.</div>
                 </td>
             </tr>
             <tr>
@@ -318,6 +326,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Source pool to use for CGNAT translation.</div>
                 </td>
             </tr>
 
@@ -354,6 +363,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Translation pool to use for CGNAT translation.</div>
                 </td>
             </tr>
 
@@ -406,6 +416,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>User-friendly description of the destination NAT rule.</div>
                 </td>
             </tr>
             <tr>
@@ -441,6 +452,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>IP address, subnet, or range to match for destination NAT.</div>
                 </td>
             </tr>
             <tr>
@@ -463,6 +475,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
+                        <div>Disable this destination NAT rule.</div>
                 </td>
             </tr>
             <tr>
@@ -485,6 +498,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
+                        <div>Exclude packets matching this rule from NAT.</div>
                 </td>
             </tr>
             <tr>
@@ -503,6 +517,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Fully qualified domain name to match for destination NAT.</div>
                 </td>
             </tr>
             <tr>
@@ -525,6 +540,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
+                        <div>Log packets hitting this destination NAT rule.</div>
                 </td>
             </tr>
             <tr>
@@ -543,6 +559,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Port number or range for destination NAT, can include named ports or comma-separated lists.</div>
                 </td>
             </tr>
             <tr>
@@ -561,6 +578,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Protocol to match (TCP, UDP, ICMP, etc.).</div>
                 </td>
             </tr>
 
@@ -580,6 +598,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Rule number for destination NAT.</div>
                 </td>
             </tr>
 
@@ -631,6 +650,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>User-friendly description of the source NAT rule.</div>
                 </td>
             </tr>
             <tr>
@@ -666,6 +686,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>IP address, subnet, or range to match for source NAT.</div>
                 </td>
             </tr>
 
@@ -685,6 +706,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Rule number for source NAT.</div>
                 </td>
             </tr>
 
@@ -736,6 +758,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>User-friendly description of the static NAT rule.</div>
                 </td>
             </tr>
             <tr>
@@ -754,6 +777,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Rule number for static NAT (one-to-one).</div>
                 </td>
             </tr>
             <tr>
@@ -772,6 +796,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>List of inbound interfaces that this static NAT rule applies to.</div>
                 </td>
             </tr>
             <tr>
@@ -807,6 +832,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>IP address or prefix to translate to (destination of the static NAT).</div>
                 </td>
             </tr>
 

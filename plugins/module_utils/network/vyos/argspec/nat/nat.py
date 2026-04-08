@@ -55,10 +55,15 @@ class NatArgs(object):  # pylint: disable=R0903
                                         "external_port_range": {
                                             "type": "str",
                                         },
-                                        "per_user_limit_port": {
-                                            "type": "int",
+                                        "per_user_limit": {
+                                            "type": "dict",
+                                            "options": {
+                                                "port": {
+                                                    "type": "int",
+                                                },
+                                            },
                                         },
-                                        "ranges": {
+                                        "range": {
                                             "type": "list",
                                             "elements": "str",
                                         },
@@ -72,7 +77,7 @@ class NatArgs(object):  # pylint: disable=R0903
                                             "type": "str",
                                             "required": True,
                                         },
-                                        "ranges": {
+                                        "range": {
                                             "type": "list",
                                             "elements": "str",
                                         },
