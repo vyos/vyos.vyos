@@ -29,12 +29,12 @@ Parameters
 
     <table  border=0 cellpadding=0 class="documentation-table">
         <tr>
-            <th colspan="5">Parameter</th>
+            <th colspan="6">Parameter</th>
             <th>Choices/<font color="blue">Defaults</font></th>
             <th width="100%">Comments</th>
         </tr>
             <tr>
-                <td colspan="5">
+                <td colspan="6">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>config</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -50,7 +50,7 @@ Parameters
             </tr>
                                 <tr>
                     <td class="elbow-placeholder"></td>
-                <td colspan="4">
+                <td colspan="5">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>cgnat</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -67,7 +67,7 @@ Parameters
                                 <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="3">
+                <td colspan="4">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>log_allocation</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -88,7 +88,7 @@ Parameters
             <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="3">
+                <td colspan="4">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>pool</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -106,7 +106,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>external</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -126,7 +126,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>external_port_range</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -145,7 +145,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>name</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -165,9 +165,29 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>per_user_limit</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Per-user limit configuration for the external pool.</div>
+                </td>
+            </tr>
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
                 <td colspan="1">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>per_user_limit_port</b>
+                    <b>port</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">integer</span>
@@ -179,14 +199,15 @@ Parameters
                         <div>Maximum number of ports allocated per user.</div>
                 </td>
             </tr>
+
             <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>ranges</b>
+                    <b>range</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">list</span>
@@ -204,7 +225,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>internal</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -224,7 +245,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>name</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -244,9 +265,9 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>ranges</b>
+                    <b>range</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">list</span>
@@ -264,7 +285,7 @@ Parameters
             <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="3">
+                <td colspan="4">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>rule</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -283,7 +304,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>id</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -302,7 +323,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>source</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -321,7 +342,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>pool</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -340,7 +361,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>translation</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -359,7 +380,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>pool</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -378,7 +399,7 @@ Parameters
 
             <tr>
                     <td class="elbow-placeholder"></td>
-                <td colspan="4">
+                <td colspan="5">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>destination</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -395,7 +416,7 @@ Parameters
                                 <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="3">
+                <td colspan="4">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>rule</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -414,7 +435,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>description</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -432,7 +453,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>destination</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -451,7 +472,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>address</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -470,7 +491,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>disable</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -493,7 +514,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>exclude</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -516,7 +537,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>fqdn</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -535,7 +556,127 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Address/network/port group to match for destination NAT.</div>
+                </td>
+            </tr>
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
                 <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>address_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Address group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>domain_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Domain group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>mac_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>MAC address group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>network_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Network group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>port_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Port group name to match.</div>
+                </td>
+            </tr>
+
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>log</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -558,7 +699,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>port</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -569,7 +710,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Port number or range for destination NAT, can include named ports or comma-separated lists.</div>
+                        <div>Port number or range for destination NAT.</div>
                 </td>
             </tr>
             <tr>
@@ -577,7 +718,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>protocol</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -596,7 +737,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>id</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -615,7 +756,7 @@ Parameters
 
             <tr>
                     <td class="elbow-placeholder"></td>
-                <td colspan="4">
+                <td colspan="5">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>source</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -632,7 +773,7 @@ Parameters
                                 <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="3">
+                <td colspan="4">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>rule</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -651,7 +792,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>description</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -669,7 +810,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>destination</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -688,7 +829,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>address</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -702,12 +843,258 @@ Parameters
                         <div>IP address, subnet, or range to match for source NAT.</div>
                 </td>
             </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>disable</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>no</li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Disable this source NAT rule.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>exclude</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>no</li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Exclude packets matching this rule from NAT.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>fqdn</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Fully qualified domain name to match for source NAT.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Address/network/port group to match for source NAT.</div>
+                </td>
+            </tr>
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>address_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Address group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>domain_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Domain group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>mac_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>MAC address group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>network_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Network group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>port_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Port group name to match.</div>
+                </td>
+            </tr>
 
             <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
                 <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>log</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>no</li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Log packets hitting this source NAT rule.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>port</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Port number or range for source NAT.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>protocol</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Protocol to match (TCP, UDP, ICMP, etc.).</div>
+                </td>
+            </tr>
+
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>id</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -726,7 +1113,7 @@ Parameters
 
             <tr>
                     <td class="elbow-placeholder"></td>
-                <td colspan="4">
+                <td colspan="5">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>static</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -743,7 +1130,7 @@ Parameters
                                 <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="3">
+                <td colspan="4">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>rule</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -762,7 +1149,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>description</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -780,7 +1167,67 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>destination</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Match criteria for static NAT.</div>
+                </td>
+            </tr>
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
                 <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>address</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>IP address, subnet, or range to match for static NAT.</div>
+                </td>
+            </tr>
+
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>disable</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>no</li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Disable this static NAT rule.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>id</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -799,7 +1246,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>inbound_interface</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -818,7 +1265,29 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>log</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>no</li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Log packets hitting this static NAT rule.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>translation</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -837,7 +1306,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>address</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -848,7 +1317,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>IP address or prefix to translate to (destination of the static NAT).</div>
+                        <div>IP address or prefix to translate to.</div>
                 </td>
             </tr>
 
@@ -856,7 +1325,7 @@ Parameters
 
 
             <tr>
-                <td colspan="5">
+                <td colspan="6">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>running_config</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -868,13 +1337,13 @@ Parameters
                 </td>
                 <td>
                         <div>This option is used only with state <em>parsed</em>.</div>
-                        <div>The value of this option should be the output received from the VYOS device by executing the command <b>show configuration commands | grep ntp</b>.</div>
+                        <div>The value of this option should be the output received from the VYOS device by executing the command <b>show configuration commands | grep nat</b>.</div>
                         <div>The states <em>replaced</em> and <em>overridden</em> have identical behaviour for this module.</div>
-                        <div>The state <em>parsed</em> reads the configuration from <code>show configuration commands | grep ntp</code> option and transforms it into Ansible structured data as per the resource module&#x27;s argspec and the value is then returned in the <em>parsed</em> key within the result.</div>
+                        <div>The state <em>parsed</em> reads the configuration from <code>show configuration commands | grep nat</code> option and transforms it into Ansible structured data as per the resource module&#x27;s argspec and the value is then returned in the <em>parsed</em> key within the result.</div>
                 </td>
             </tr>
             <tr>
-                <td colspan="5">
+                <td colspan="6">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>state</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -915,637 +1384,51 @@ Examples
 
 .. code-block:: yaml
 
-    # # -------------------
-    # # 1. Using merged
-    # # -------------------
-
-    # # Before state:
-    # # -------------
-    #   vyos@vyos:~$ show configuration commands | grep ntp
-    #     set service ntp server time1.vyos.net
-    #     set service ntp server time2.vyos.net
-    #     set service ntp server time3.vyos.net
-    #   vyos@vyos:~$
-
-    # # Task
-    # # -------------
-    - name: Replace the existing ntp config with the new config
-      vyos.vyos.vyos_ntp_global:
+    # Using merged
+    - name: Merge NAT source rule
+      vyos.vyos.vyos_nat:
         config:
-          allow_clients:
-            - 10.6.6.0/24
-          listen_addresses:
-            - 10.1.3.1
-          servers:
-            - server: 203.0.113.0
-              options:
-                - prefer
+          source:
+            rule:
+              - id: 100
+                description: "Outbound masquerade"
+        state: merged
 
-
-    # Task output:
-    # -------------
-    #        "after": {
-    #         "allow_clients": [
-    #            "10.6.6.0/24"
-    #        ],
-    #        "listen_addresses": [
-    #            "10.1.3.1"
-    #        ],
-    #        "servers": [
-    #            {
-    #                "server": "ser",
-    #                "options": [
-    #                    "prefer"
-    #                ]
-    #            },
-    #            {
-    #                "server": "time1.vyos.net"
-    #            },
-    #            {
-    #                "server": "time2.vyos.net"
-    #            },
-    #            {
-    #                "server": "time3.vyos.net"
-    #            }
-    #        ]
-    #    },
-    #    "before": {
-    #    },
-    #    "changed": true,
-    #    "commands": [
-    #        "set service ntp allow-clients address 10.6.6.0/24",
-    #        "set service ntp listen-address 10.1.3.1",
-    #        "set service ntp server 203.0.113.0 prefer"
-    #    ]
-
-    # After state:
-    # # -------------
-    #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set service ntp allow-clients address '10.6.6.0/24'
-    #        set service ntp listen-address '10.1.3.1'
-    #        set service ntp server 203.0.113.0 prefer,
-    #        set service ntp server time1.vyos.net
-    #        set service ntp server time2.vyos.net
-    #        set service ntp server time3.vyos.net
-    #        vyos@vyos:~$
-
-
-    # # -------------------
-    # # 2. Using replaced
-    # # -------------------
-
-    # # Before state:
-    # # -------------
-    #    vyos@vyos:~$ show configuration commands | grep ntp
-    #    set service ntp allow-clients address '10.4.9.0/24'
-    #    set service ntp allow-clients address '10.4.7.0/24'
-    #    set service ntp allow-clients address '10.1.2.0/24'
-    #    set service ntp allow-clients address '10.2.3.0/24'
-    #    set service ntp listen-address '10.1.9.16'
-    #    set service ntp listen-address '10.5.3.2'
-    #    set service ntp listen-address '10.7.9.21'
-    #    set service ntp listen-address '10.8.9.4'
-    #    set service ntp listen-address '10.4.5.1'
-    #    set service ntp server 10.3.6.5 noselect
-    #    set service ntp server 10.3.6.5 dynamic
-    #    set service ntp server 10.3.6.5 preempt
-    #    set service ntp server 10.3.6.5 prefer
-    #    set service ntp server server4 noselect
-    #    set service ntp server server4 dynamic
-    #    set service ntp server server5
-    #    set service ntp server time1.vyos.net
-    #    set service ntp server time2.vyos.net
-    #    set service ntp server time3.vyos.net
-    #    vyos@vyos:~$
-
-    # # Task
-    # # -------------
-    - name: Replace the existing ntp config with the new config
-      vyos.vyos.vyos_ntp_global:
-        config:
-          allow_clients:
-            - 10.6.6.0/24
-          listen_addresses:
-            - 10.1.3.1
-          servers:
-            - server: 203.0.113.0
-              options:
-                - prefer
-        state: replaced
-
-
-    # # Task output:
-    # # -------------
-    #        "after": {
-    #         "allow_clients": [
-    #            "10.6.6.0/24"
-    #        ],
-    #        "listen_addresses": [
-    #            "10.1.3.1"
-    #        ],
-    #        "servers": [
-    #            {
-    #                "server": "ser",
-    #                "options": [
-    #                    "prefer"
-    #                ]
-    #            },
-    #            {
-    #                "server": "time1.vyos.net"
-    #            },
-    #            {
-    #                "server": "time2.vyos.net"
-    #            },
-    #            {
-    #                "server": "time3.vyos.net"
-    #            }
-    #        ]
-    #    },
-    #    "before": {
-    #        "allow_clients": [
-    #            "10.4.7.0/24",
-    #            "10.2.3.0/24",
-    #            "10.1.2.0/24",
-    #            "10.4.9.0/24"
-    #        ],
-    #        "listen_addresses": [
-    #            "10.7.9.21",
-    #            "10.4.5.1",
-    #            "10.5.3.2",
-    #            "10.8.9.4",
-    #            "10.1.9.16"
-    #        ],
-    #        "servers": [
-    #            {
-    #                "server": "10.3.6.5",
-    #                "options": [
-    #                    "noselect",
-    #                    "dynamic",
-    #                    "preempt",
-    #                    "prefer"
-    #                ]
-    #            },
-    #            {
-    #                "server": "server4",
-    #                "options": [
-    #                    "noselect",
-    #                    "dynamic"
-    #                ]
-    #            },
-    #            {
-    #                "server": "server5"
-    #            },
-    #            {
-    #                "server": "time1.vyos.net"
-    #            },
-    #            {
-    #                "server": "time2.vyos.net"
-    #            },
-    #            {
-    #                "server": "time3.vyos.net"
-    #            }
-    #        ]
-    #    },
-    #    "changed": true,
-    #    "commands": [
-    #        "delete service ntp allow-clients address 10.4.7.0/24",
-    #        "delete service ntp allow-clients address 10.2.3.0/24",
-    #        "delete service ntp allow-clients address 10.1.2.0/24",
-    #        "delete service ntp allow-clients address 10.4.9.0/24",
-    #        "delete service ntp listen-address 10.7.9.21",
-    #        "delete service ntp listen-address 10.4.5.1",
-    #        "delete service ntp listen-address 10.5.3.2",
-    #        "delete service ntp listen-address 10.8.9.4",
-    #        "delete service ntp listen-address 10.1.9.16",
-    #        "delete service ntp server 10.3.6.5",
-    #        "delete service ntp server server4",
-    #        "delete service ntp server server5",
-    #        "set service ntp allow-clients address 10.6.6.0/24",
-    #        "set service ntp listen-address 10.1.3.1",
-    #        "set service ntp server 203.0.113.0 prefer"
-    #    ]
-
-    # After state:
-    # # -------------
-    #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set service ntp allow-clients address '10.6.6.0/24'
-    #        set service ntp listen-address '10.1.3.1'
-    #        set service ntp server 203.0.113.0 prefer,
-    #        set service ntp server time1.vyos.net
-    #        set service ntp server time2.vyos.net
-    #        set service ntp server time3.vyos.net
-    #        vyos@vyos:~$
-
-    # # -------------------
-    # # 3. Using overridden
-    # # -------------------
-
-    # # Before state:
-    # # -------------
-    #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set service ntp allow-clients address '10.6.6.0/24'
-    #        set service ntp listen-address '10.1.3.1'
-    #        set service ntp server 203.0.113.0 prefer,
-    #        set service ntp server time1.vyos.net
-    #        set service ntp server time2.vyos.net
-    #        set service ntp server time3.vyos.net
-    #        vyos@vyos:~$
-
-    # Task
-    # -------------
-    - name: Override ntp config
-      vyos.vyos.vyos_ntp_global:
-        config:
-          allow_clients:
-            - 10.3.3.0/24
-          listen_addresses:
-            - 10.7.8.1
-          servers:
-            - server: server1
-              options:
-                - dynamic
-                - prefer
-
-            - server: server2
-              options:
-                - noselect
-                - preempt
-
-            - server: serv
-        state: overridden
-
-    # # Task output:
-    # # -------------
-    #            "after": {
-    #                "allow_clients": [
-    #                    "10.3.3.0/24"
-    #                ],
-    #                "listen_addresses": [
-    #                    "10.7.8.1"
-    #                ],
-    #                "servers": [
-    #                    {
-    #                "server": "serv"
-    #            },
-    #            {
-    #                "server": "server1",
-    #                "options": [
-    #                    "dynamic",
-    #                    "prefer"
-    #                ]
-    #            },
-    #            {
-    #                "server": "server2",
-    #                "options": [
-    #                    "noselect",
-    #                    "preempt"
-    #                ]
-    #            },
-    #            {
-    #                "server": "time1.vyos.net"
-    #            },
-    #            {
-    #                "server": "time2.vyos.net"
-    #            },
-    #            {
-    #                "server": "time3.vyos.net"
-    #            }
-    #                ]
-    #            },
-    #            "before": {
-    #                "allow_clients": [
-    #                    "10.6.6.0/24"
-    #                ],
-    #                "listen_addresses": [
-    #                    "10.1.3.1"
-    #                ],
-    #                "servers": [
-    #                    {
-    #                        "server": "ser",
-    #                        "options": [
-    #                            "prefer"
-    #                        ]
-    #                    },
-    #                    {
-    #                        "server": "time1.vyos.net"
-    #                    },
-    #                    {
-    #                        "server": "time2.vyos.net"
-    #                    },
-    #                    {
-    #                        "server": "time3.vyos.net"
-    #                    }
-    #                ]
-    #            },
-    #            "changed": true,
-    #            "commands": [
-    #                "delete service ntp allow-clients address 10.6.6.0/24",
-    #                "delete service ntp listen-address 10.1.3.1",
-    #                "delete service ntp server ser",
-    #                "set service ntp allow-clients address 10.3.3.0/24",
-    #                "set service ntp listen-address 10.7.8.1",
-    #                "set service ntp server server1 dynamic",
-    #                "set service ntp server server1 prefer",
-    #                "set service ntp server server2 noselect",
-    #                "set service ntp server server2 preempt",
-    #                "set service ntp server serv"
-    #            ]
-
-    # After state:
-    # # -------------
-    #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set service ntp allow-clients address '10.3.3.0/24'
-    #        set service ntp listen-address '10.7.8.1'
-    #        set service ntp server serv
-    #        set service ntp server server1 dynamic
-    #        set service ntp server server1 prefer
-    #        set service ntp server server2 noselect
-    #        set service ntp server server2 preempt
-    #        set service ntp server time1.vyos.net
-    #        set service ntp server time2.vyos.net
-    #        set service ntp server time3.vyos.net
-    #        vyos@vyos:~$
-
-    # 4. Using gathered
-    # -------------------
-
-    # # Before state:
-    # # -------------
-    #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set service ntp allow-clients address '10.3.3.0/24'
-    #        set service ntp listen-address '10.7.8.1'
-    #        set service ntp server serv
-    #        set service ntp server server1 dynamic
-    #        set service ntp server server1 prefer
-    #        set service ntp server server2 noselect
-    #        set service ntp server server2 preempt
-    #        set service ntp server time1.vyos.net
-    #        set service ntp server time2.vyos.net
-    #        set service ntp server time3.vyos.net
-    #        vyos@vyos:~$
-
-    # Task
-    # -------------
-    - name: Gather ntp config
-      vyos.vyos.vyos_ntp_global:
+    # Using gathered
+    - name: Gather NAT config
+      vyos.vyos.vyos_nat:
         state: gathered
 
-    # # Task output:
-    # # -------------
-    #        "gathered": {
-    #                "allow_clients": [
-    #                    "10.3.3.0/24"
-    #                ],
-    #                "listen_addresses": [
-    #                    "10.7.8.1"
-    #                ],
-    #                "servers": [
-    #                    {
-    #                        "server": "serv"
-    #                    },
-    #                    {
-    #                        "server": "server1",
-    #                        "options": [
-    #                            "dynamic",
-    #                            "prefer"
-    #                        ]
-    #                    },
-    #                    {
-    #                         "server": "server2",
-    #                         "options": [
-    #                             "noselect",
-    #                             "preempt"
-    #                         ]
-    #                     },
-    #                     {
-    #                          "server": "time1.vyos.net"
-    #                     },
-    #                     {
-    #                         "server": "time2.vyos.net"
-    #                     },
-    #                     {
-    #                         "server": "time3.vyos.net"
-    #                     }
-    #                ]
-    #            }
-
-    # After state:
-    # # -------------
-    #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set service ntp allow-clients address '10.3.3.0/24'
-    #        set service ntp listen-address '10.7.8.1'
-    #        set service ntp server serv
-    #        set service ntp server server1 dynamic
-    #        set service ntp server server1 prefer
-    #        set service ntp server server2 noselect
-    #        set service ntp server server2 preempt
-    #        set service ntp server time1.vyos.net
-    #        set service ntp server time2.vyos.net
-    #        set service ntp server time3.vyos.net
-    #        vyos@vyos:~$
-
-
-    # # -------------------
-    # # 5. Using deleted
-    # # -------------------
-
-    # # Before state:
-    # # -------------
-    #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set service ntp allow-clients address '10.3.3.0/24'
-    #        set service ntp listen-address '10.7.8.1'
-    #        set service ntp server serv
-    #        set service ntp server server1 dynamic
-    #        set service ntp server server1 prefer
-    #        set service ntp server server2 noselect
-    #        set service ntp server server2 preempt
-    #        set service ntp server time1.vyos.net
-    #        set service ntp server time2.vyos.net
-    #        set service ntp server time3.vyos.net
-    #        vyos@vyos:~$
-
-    # # Task
-    # # -------------
-    - name: Delete ntp config
-      vyos.vyos.vyos_ntp_global:
+    # Using deleted
+    - name: Delete NAT config
+      vyos.vyos.vyos_nat:
         state: deleted
 
-
-    # # Task output:
-    # # -------------
-    #            "after": {
-    #                "servers": [
-    #                    {
-    #                        "server": "time1.vyos.net"
-    #                    },
-    #                    {
-    #                       "server": "time2.vyos.net"
-    #                    },
-    #                    {
-    #                        "server": "time3.vyos.net"
-    #                    }
-    #                ]
-    #            },
-    #            "before": {
-    #                "allow_clients": [
-    #                    "10.3.3.0/24"
-    #                ],
-    #                "listen_addresses": [
-    #                    "10.7.8.1"
-    #                ],
-    #                "servers": [
-    #                    {
-    #                        "server": "serv"
-    #                    },
-    #                    {
-    #                        "server": "server1",
-    #                        "options": [
-    #                            "dynamic",
-    #                            "prefer"
-    #                        ]
-    #                    },
-    #                    {
-    #                          "server": "server2",
-    #                          "options": [
-    #                              "noselect",
-    #                              "preempt"
-    #                          ]
-    #                      },
-    #                      {
-    #                          "server": "time1.vyos.net"
-    #                      },
-    #                      {
-    #                          "server": "time2.vyos.net"
-    #                      },
-    #                      {
-    #                          "server": "time3.vyos.net"
-    #                      }
-    #                ]
-    #            },
-    #            "changed": true,
-    #            "commands": [
-    #                "delete service ntp allow-clients",
-    #                "delete service ntp listen-address",
-    #                "delete service ntp server serv",
-    #                "delete service ntp server server1",
-    #                "delete service ntp server server2"
-    #
-    #            ]
-
-    # After state:
-    # # -------------
-    #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set service ntp server time1.vyos.net
-    #        set service ntp server time2.vyos.net
-    #        set service ntp server time3.vyos.net
-    #        vyos@vyos:~$
-
-
-    # # -------------------
-    # # 6. Using rendered
-    # # -------------------
-
-    # # Before state:
-    # # -------------
-    #        vyos@vyos:~$ show configuration commands | grep ntp
-    #        set service ntp server time1.vyos.net
-    #        set service ntp server time2.vyos.net
-    #        set service ntp server time3.vyos.net
-    #        vyos@vyos:~$
-
-    # Task
-    # -------------
-    - name: Render ntp config
-      vyos.vyos.vyos_ntp_global:
+    # Using replaced
+    - name: Replace NAT config
+      vyos.vyos.vyos_nat:
         config:
-          allow_clients:
-            - 10.7.7.0/24
-            - 10.8.8.0/24
-          listen_addresses:
-            - 10.7.9.1
-          servers:
-            - server: server7
-            - server: server45
-              options:
-                - noselect
-                - prefer
-                - pool
-            - server: time1.vyos.net
-            - server: time2.vyos.net
-            - server: time3.vyos.net
-          state: rendered
+          source:
+            rule:
+              - id: 100
+                description: "Replaced rule"
+        state: replaced
 
-    # # Task output:
-    # # -------------
-    #           "rendered": [
-    #                "set service ntp allow-clients address 10.7.7.0/24",
-    #                "set service ntp allow-clients address 10.8.8.0/24",
-    #                "set service ntp listen-address 10.7.9.1",
-    #                "set service ntp server server7",
-    #                "set service ntp server server45 noselect",
-    #                "set service ntp server server45 prefer",
-    #                "set service ntp server server45 pool",
-    #                "set service ntp server time1.vyos.net",
-    #                "set service ntp server time2.vyos.net",
-    #                "set service ntp server time3.vyos.net"
-    #            ]
-
-
-    # # -------------------
-    # # 7. Using parsed
-    # # -------------------
-
-    # # sample_config.cfg:
-    # # -------------
-    #           "set service ntp allow-clients address 10.7.7.0/24",
-    #           "set service ntp listen-address 10.7.9.1",
-    #           "set service ntp server server45 noselect",
-    #           "set service ntp allow-clients addres 10.8.6.0/24",
-    #           "set service ntp listen-address 10.5.4.1",
-    #           "set service ntp server server45 dynamic",
-    #           "set service ntp server time1.vyos.net",
-    #           "set service ntp server time2.vyos.net",
-    #           "set service ntp server time3.vyos.net"
-
-    # Task:
-    # -------------
-    - name: Parse externally provided ntp configuration
-      vyos.vyos.vyos_ntp_global:
-        running_config: "{{ lookup('file', './sample_config.cfg') }}"
+    # Using parsed
+    - name: Parse NAT config
+      vyos.vyos.vyos_nat:
+        running_config: "{{ lookup('file', './nat_config.cfg') }}"
         state: parsed
 
-    # # Task output:
-    # # -------------
-    #           parsed = {
-    #                "allow_clients": [
-    #                    "10.7.7.0/24",
-    #                    "10.8.6.0/24
-    #                ],
-    #                "listen_addresses": [
-    #                    "10.5.4.1",
-    #                    "10.7.9.1"
-    #                ],
-    #                "servers": [
-    #                    {
-    #                        "server": "server45",
-    #                        "options": [
-    #                            "noselect",
-    #                            "dynamic"
-    #
-    #                        ]
-    #                    },
-    #                    {
-    #                        "server": "time1.vyos.net"
-    #                    },
-    #                    {
-    #                        "server": "time2.vyos.net"
-    #                    },
-    #                    {
-    #                        "server": "time3.vyos.net"
-    #                    }
-    #
-    #                ]
-    #            }
+    # Using rendered
+    - name: Render NAT config offline
+      vyos.vyos.vyos_nat:
+        config:
+          source:
+            rule:
+              - id: 100
+                description: "Rendered rule"
+        state: rendered
 
 
 
@@ -1609,7 +1492,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The set of commands pushed to the remote device.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set system ntp server server1 dynamic&#x27;, &#x27;set system ntp server server1 prefer&#x27;, &#x27;set system ntp server server2 noselect&#x27;, &#x27;set system ntp server server2 preempt&#x27;, &#x27;set system ntp server server_add preempt&#x27;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set nat source rule 100 description &#x27;Outbound masquerade&#x27;&quot;]</div>
                 </td>
             </tr>
             <tr>
@@ -1618,7 +1501,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>gathered</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
-                      <span style="color: purple">list</span>
+                      <span style="color: purple">dictionary</span>
                     </div>
                 </td>
                 <td>when <em>state</em> is <code>gathered</code></td>
@@ -1635,7 +1518,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                     <b>parsed</b>
                     <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
                     <div style="font-size: small">
-                      <span style="color: purple">list</span>
+                      <span style="color: purple">dictionary</span>
                     </div>
                 </td>
                 <td>when <em>state</em> is <code>parsed</code></td>
@@ -1660,7 +1543,7 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                             <div>The provided configuration in the task rendered in device-native format (offline).</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;set system ntp server server1 dynamic&#x27;, &#x27;set system ntp server server1 prefer&#x27;, &#x27;set system ntp server server2 noselect&#x27;, &#x27;set system ntp server server2 preempt&#x27;, &#x27;set system ntp server server_add preempt&#x27;]</div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set nat source rule 100 description &#x27;Rendered rule&#x27;&quot;]</div>
                 </td>
             </tr>
     </table>

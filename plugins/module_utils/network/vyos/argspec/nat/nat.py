@@ -139,19 +139,19 @@ class NatArgs(object):  # pylint: disable=R0903
                                         "group": {
                                             "type": "dict",
                                             "options": {
-                                                "address-group": {
+                                                "address_group": {
                                                     "type": "str",
                                                 },
-                                                "domain-group": {
+                                                "domain_group": {
                                                     "type": "str",
                                                 },
-                                                "mac-group": {
+                                                "mac_group": {
                                                     "type": "str",
                                                 },
-                                                "network-group": {
+                                                "network_group": {
                                                     "type": "str",
                                                 },
-                                                "port-group": {
+                                                "port_group": {
                                                     "type": "str",
                                                 },
                                             },
@@ -203,19 +203,19 @@ class NatArgs(object):  # pylint: disable=R0903
                                         "group": {
                                             "type": "dict",
                                             "options": {
-                                                "address-group": {
+                                                "address_group": {
                                                     "type": "str",
                                                 },
-                                                "domain-group": {
+                                                "domain_group": {
                                                     "type": "str",
                                                 },
-                                                "mac-group": {
+                                                "mac_group": {
                                                     "type": "str",
                                                 },
-                                                "network-group": {
+                                                "network_group": {
                                                     "type": "str",
                                                 },
-                                                "port-group": {
+                                                "port_group": {
                                                     "type": "str",
                                                 },
                                             },
