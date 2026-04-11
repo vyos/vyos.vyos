@@ -34,250 +34,253 @@ class NatArgs(object):  # pylint: disable=R0903
     argument_spec = {
         "config": {
             "type": "dict",
-            "options": {
-                "cgnat": {
-                    "type": "dict",
-                    "options": {
-                        "log_allocation": {
-                            "type": "bool",
-                        },
-                        "pool": {
-                            "type": "dict",
-                            "options": {
-                                "external": {
-                                    "type": "list",
-                                    "elements": "dict",
-                                    "options": {
-                                        "name": {
-                                            "type": "str",
-                                            "required": True,
-                                        },
-                                        "external_port_range": {
-                                            "type": "str",
-                                        },
-                                        "per_user_limit": {
-                                            "type": "dict",
-                                            "options": {
-                                                "port": {
-                                                    "type": "int",
+            "nat": {
+                "type": "dict",
+                "options": {
+                    "cgnat": {
+                        "type": "dict",
+                        "options": {
+                            "log_allocation": {
+                                "type": "bool",
+                            },
+                            "pool": {
+                                "type": "dict",
+                                "options": {
+                                    "external": {
+                                        "type": "list",
+                                        "elements": "dict",
+                                        "options": {
+                                            "name": {
+                                                "type": "str",
+                                                "required": True,
+                                            },
+                                            "external_port_range": {
+                                                "type": "str",
+                                            },
+                                            "per_user_limit": {
+                                                "type": "dict",
+                                                "options": {
+                                                    "port": {
+                                                        "type": "int",
+                                                    },
                                                 },
                                             },
-                                        },
-                                        "range": {
-                                            "type": "list",
-                                            "elements": "str",
+                                            "range": {
+                                                "type": "list",
+                                                "elements": "str",
+                                            },
                                         },
                                     },
-                                },
-                                "internal": {
-                                    "type": "list",
-                                    "elements": "dict",
-                                    "options": {
-                                        "name": {
-                                            "type": "str",
-                                            "required": True,
-                                        },
-                                        "range": {
-                                            "type": "list",
-                                            "elements": "str",
+                                    "internal": {
+                                        "type": "list",
+                                        "elements": "dict",
+                                        "options": {
+                                            "name": {
+                                                "type": "str",
+                                                "required": True,
+                                            },
+                                            "range": {
+                                                "type": "list",
+                                                "elements": "str",
+                                            },
                                         },
                                     },
                                 },
                             },
-                        },
-                        "rule": {
-                            "type": "list",
-                            "elements": "dict",
-                            "options": {
-                                "id": {
-                                    "type": "int",
-                                    "required": True,
-                                },
-                                "source": {
-                                    "type": "dict",
-                                    "options": {
-                                        "pool": {
-                                            "type": "str",
+                            "rule": {
+                                "type": "list",
+                                "elements": "dict",
+                                "options": {
+                                    "id": {
+                                        "type": "int",
+                                        "required": True,
+                                    },
+                                    "source": {
+                                        "type": "dict",
+                                        "options": {
+                                            "pool": {
+                                                "type": "str",
+                                            },
                                         },
                                     },
-                                },
-                                "translation": {
-                                    "type": "dict",
-                                    "options": {
-                                        "pool": {
-                                            "type": "str",
+                                    "translation": {
+                                        "type": "dict",
+                                        "options": {
+                                            "pool": {
+                                                "type": "str",
+                                            },
                                         },
                                     },
                                 },
                             },
                         },
                     },
-                },
-                "destination": {
-                    "type": "dict",
-                    "options": {
-                        "rule": {
-                            "type": "list",
-                            "elements": "dict",
-                            "options": {
-                                "id": {
-                                    "type": "int",
-                                    "required": True,
-                                },
-                                "description": {
-                                    "type": "str",
-                                },
-                                "destination": {
-                                    "type": "dict",
-                                    "options": {
-                                        "address": {
-                                            "type": "str",
-                                        },
-                                        "fqdn": {
-                                            "type": "str",
-                                        },
-                                        "group": {
-                                            "type": "dict",
-                                            "options": {
-                                                "address_group": {
-                                                    "type": "str",
-                                                },
-                                                "domain_group": {
-                                                    "type": "str",
-                                                },
-                                                "mac_group": {
-                                                    "type": "str",
-                                                },
-                                                "network_group": {
-                                                    "type": "str",
-                                                },
-                                                "port_group": {
-                                                    "type": "str",
+                    "destination": {
+                        "type": "dict",
+                        "options": {
+                            "rule": {
+                                "type": "list",
+                                "elements": "dict",
+                                "options": {
+                                    "id": {
+                                        "type": "int",
+                                        "required": True,
+                                    },
+                                    "description": {
+                                        "type": "str",
+                                    },
+                                    "destination": {
+                                        "type": "dict",
+                                        "options": {
+                                            "address": {
+                                                "type": "str",
+                                            },
+                                            "fqdn": {
+                                                "type": "str",
+                                            },
+                                            "group": {
+                                                "type": "dict",
+                                                "options": {
+                                                    "address_group": {
+                                                        "type": "str",
+                                                    },
+                                                    "domain_group": {
+                                                        "type": "str",
+                                                    },
+                                                    "mac_group": {
+                                                        "type": "str",
+                                                    },
+                                                    "network_group": {
+                                                        "type": "str",
+                                                    },
+                                                    "port_group": {
+                                                        "type": "str",
+                                                    },
                                                 },
                                             },
-                                        },
-                                        "port": {
-                                            "type": "str",
-                                        },
-                                        "protocol": {
-                                            "type": "str",
-                                        },
-                                        "exclude": {
-                                            "type": "bool",
-                                        },
-                                        "log": {
-                                            "type": "bool",
-                                        },
-                                        "disable": {
-                                            "type": "bool",
+                                            "port": {
+                                                "type": "str",
+                                            },
+                                            "protocol": {
+                                                "type": "str",
+                                            },
+                                            "exclude": {
+                                                "type": "bool",
+                                            },
+                                            "log": {
+                                                "type": "bool",
+                                            },
+                                            "disable": {
+                                                "type": "bool",
+                                            },
                                         },
                                     },
                                 },
                             },
                         },
                     },
-                },
-                "source": {
-                    "type": "dict",
-                    "options": {
-                        "rule": {
-                            "type": "list",
-                            "elements": "dict",
-                            "options": {
-                                "id": {
-                                    "type": "int",
-                                    "required": True,
-                                },
-                                "description": {
-                                    "type": "str",
-                                },
-                                "destination": {
-                                    "type": "dict",
-                                    "options": {
-                                        "address": {
-                                            "type": "str",
-                                        },
-                                        "fqdn": {
-                                            "type": "str",
-                                        },
-                                        "group": {
-                                            "type": "dict",
-                                            "options": {
-                                                "address_group": {
-                                                    "type": "str",
-                                                },
-                                                "domain_group": {
-                                                    "type": "str",
-                                                },
-                                                "mac_group": {
-                                                    "type": "str",
-                                                },
-                                                "network_group": {
-                                                    "type": "str",
-                                                },
-                                                "port_group": {
-                                                    "type": "str",
+                    "source": {
+                        "type": "dict",
+                        "options": {
+                            "rule": {
+                                "type": "list",
+                                "elements": "dict",
+                                "options": {
+                                    "id": {
+                                        "type": "int",
+                                        "required": True,
+                                    },
+                                    "description": {
+                                        "type": "str",
+                                    },
+                                    "destination": {
+                                        "type": "dict",
+                                        "options": {
+                                            "address": {
+                                                "type": "str",
+                                            },
+                                            "fqdn": {
+                                                "type": "str",
+                                            },
+                                            "group": {
+                                                "type": "dict",
+                                                "options": {
+                                                    "address_group": {
+                                                        "type": "str",
+                                                    },
+                                                    "domain_group": {
+                                                        "type": "str",
+                                                    },
+                                                    "mac_group": {
+                                                        "type": "str",
+                                                    },
+                                                    "network_group": {
+                                                        "type": "str",
+                                                    },
+                                                    "port_group": {
+                                                        "type": "str",
+                                                    },
                                                 },
                                             },
-                                        },
-                                        "port": {
-                                            "type": "str",
-                                        },
-                                        "protocol": {
-                                            "type": "str",
-                                        },
-                                        "exclude": {
-                                            "type": "bool",
-                                        },
-                                        "log": {
-                                            "type": "bool",
-                                        },
-                                        "disable": {
-                                            "type": "bool",
+                                            "port": {
+                                                "type": "str",
+                                            },
+                                            "protocol": {
+                                                "type": "str",
+                                            },
+                                            "exclude": {
+                                                "type": "bool",
+                                            },
+                                            "log": {
+                                                "type": "bool",
+                                            },
+                                            "disable": {
+                                                "type": "bool",
+                                            },
                                         },
                                     },
                                 },
                             },
                         },
                     },
-                },
-                "static": {
-                    "type": "dict",
-                    "options": {
-                        "rule": {
-                            "type": "list",
-                            "elements": "dict",
-                            "options": {
-                                "id": {
-                                    "type": "int",
-                                    "required": True,
-                                },
-                                "description": {
-                                    "type": "str",
-                                },
-                                "destination": {
-                                    "type": "dict",
-                                    "options": {
-                                        "address": {
-                                            "type": "str",
+                    "static": {
+                        "type": "dict",
+                        "options": {
+                            "rule": {
+                                "type": "list",
+                                "elements": "dict",
+                                "options": {
+                                    "id": {
+                                        "type": "int",
+                                        "required": True,
+                                    },
+                                    "description": {
+                                        "type": "str",
+                                    },
+                                    "destination": {
+                                        "type": "dict",
+                                        "options": {
+                                            "address": {
+                                                "type": "str",
+                                            },
                                         },
                                     },
-                                },
-                                "inbound_interface": {
-                                    "type": "list",
-                                    "elements": "str",
-                                },
-                                "log": {
-                                    "type": "bool",
-                                },
-                                "disable": {
-                                    "type": "bool",
-                                },
-                                "translation": {
-                                    "type": "dict",
-                                    "options": {
-                                        "address": {
-                                            "type": "str",
+                                    "inbound_interface": {
+                                        "type": "list",
+                                        "elements": "str",
+                                    },
+                                    "log": {
+                                        "type": "bool",
+                                    },
+                                    "disable": {
+                                        "type": "bool",
+                                    },
+                                    "translation": {
+                                        "type": "dict",
+                                        "options": {
+                                            "address": {
+                                                "type": "str",
+                                            },
                                         },
                                     },
                                 },

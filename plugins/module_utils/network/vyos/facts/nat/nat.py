@@ -17,15 +17,14 @@ based on the configuration.
 
 import re
 
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.nat.nat import (
     NatArgs,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.nat import (
     NatTemplate,
 )
-
-
-# from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
 
 
 class NatFacts(object):
@@ -63,33 +62,16 @@ class NatFacts(object):
 
         objs = nat_parser.parse()
 
-        self._module.fail_json(msg=objs)
-        # if objs:
-        #     if "allow_clients" in objs:
-        #         objs["allow_clients"] = sorted(list(objs["allow_clients"]))
+        ansible_facts["ansible_network_resources"].pop("nat", None)
 
-        #     if "listen_addresses" in objs:
-        #         objs["listen_addresses"] = sorted(list(objs["listen_addresses"]))
+        # self._module.fail_json(msg=objs)
+        params = utils.remove_empties(
+            nat_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
+        )
 
-        #     """ if "options" in objs["servers"].values():
-        #         val = objs["servers"].values()
-        #         val["options"] = sorted(val["options"]) """
+        if params.get("config"):
+            facts["nat"] = params["config"]
+        ansible_facts["ansible_network_resources"].update(facts)
 
-        #     if "servers" in objs:
-        #         objs["servers"] = list(objs["servers"].values())
-        #         objs["servers"] = sorted(objs["servers"], key=lambda k: k["server"])
-        #         for i in objs["servers"]:
-        #             if "options" in i:
-        #                 i["options"] = sorted(list(i["options"]))
-
-        # ansible_facts["ansible_network_resources"].pop("ntp_global", None)
-
-        # params = utils.remove_empties(
-        #     ntp_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
-        # )
-
-        # if params.get("config"):
-        #     facts["ntp_global"] = params["config"]
-        # ansible_facts["ansible_network_resources"].update(facts)
-
+        self._module.fail_json(msg=ansible_facts)
         return ansible_facts

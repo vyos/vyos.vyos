@@ -29,21 +29,27 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+cgnat
                 \s+log-allocation
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat cgnat log-allocation",
-            "result": {"cgnat": {"log_allocation": True}},
+            "setval": "{{ nat }} cgnat log-allocation",
+            "result": {
+                "{{ nat }}": {
+                    "cgnat": {
+                        "log_allocation": True,
+                    },
+                },
+            },
         },
         {
             "name": "cgnat_pool_external_range",
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+cgnat
                 \s+pool
                 \s+external
@@ -53,17 +59,19 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat cgnat pool external {{ name }} range {{ range }}{% if seq is defined %} seq {{ seq }}{% endif %}",
+            "setval": "{{ nat }} cgnat pool external {{ name }} range {{ range }}{% if seq is defined %} seq {{ seq }}{% endif %}",
             "result": {
-                "cgnat": {
-                    "pool": {
-                        "external": [
-                            {
-                                "name": "{{ name }}",
-                                "ranges": ["{{ range }}"],
-                                "seq": "{{ seq }}",
-                            },
-                        ],
+                "{{ nat }}": {
+                    "cgnat": {
+                        "pool": {
+                            "external": [
+                                {
+                                    "name": "{{ name }}",
+                                    "ranges": ["{{ range }}"],
+                                    "seq": "{{ seq }}",
+                                },
+                            ],
+                        },
                     },
                 },
             },
@@ -73,7 +81,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+cgnat
                 \s+pool
                 \s+external
@@ -83,16 +91,18 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat cgnat pool external {{ name }} external-port-range {{ range }}",
+            "setval": "{{ nat }} cgnat pool external {{ name }} external-port-range {{ range }}",
             "result": {
-                "cgnat": {
-                    "pool": {
-                        "external": [
-                            {
-                                "name": "{{ name }}",
-                                "external_port_range": "{{ range }}",
-                            },
-                        ],
+                "{{ nat }}": {
+                    "cgnat": {
+                        "pool": {
+                            "external": [
+                                {
+                                    "name": "{{ name }}",
+                                    "external_port_range": "{{ range }}",
+                                },
+                            ],
+                        },
                     },
                 },
             },
@@ -102,7 +112,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+cgnat
                 \s+pool
                 \s+external
@@ -113,16 +123,18 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat cgnat pool external {{ name }} per-user-limit port {{ limit }}",
+            "setval": "{{ nat }} cgnat pool external {{ name }} per-user-limit port {{ limit }}",
             "result": {
-                "cgnat": {
-                    "pool": {
-                        "external": [
-                            {
-                                "name": "{{ name }}",
-                                "per_user_limit_port": "{{ limit }}",
-                            },
-                        ],
+                "{{ nat }}": {
+                    "cgnat": {
+                        "pool": {
+                            "external": [
+                                {
+                                    "name": "{{ name }}",
+                                    "per_user_limit_port": "{{ limit }}",
+                                },
+                            ],
+                        },
                     },
                 },
             },
@@ -132,7 +144,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+cgnat
                 \s+pool
                 \s+internal
@@ -142,16 +154,18 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat cgnat pool internal {{ name }} range {{ range }}",
+            "setval": "{{ nat }} cgnat pool internal {{ name }} range {{ range }}",
             "result": {
-                "cgnat": {
-                    "pool": {
-                        "internal": [
-                            {
-                                "name": "{{ name }}",
-                                "ranges": ["{{ range }}"],
-                            },
-                        ],
+                "{{ nat }}": {
+                    "cgnat": {
+                        "pool": {
+                            "internal": [
+                                {
+                                    "name": "{{ name }}",
+                                    "ranges": ["{{ range }}"],
+                                },
+                            ],
+                        },
                     },
                 },
             },
@@ -161,7 +175,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+cgnat
                 \s+rule
                 \s+(?P<id>\d+)
@@ -171,15 +185,17 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat cgnat rule {{ id }} source pool {{ pool }}",
+            "setval": "{{ nat }} cgnat rule {{ id }} source pool {{ pool }}",
             "result": {
-                "cgnat": {
-                    "rule": [
-                        {
-                            "id": "{{ id }}",
-                            "source": {"pool": "{{ pool }}"},
-                        },
-                    ],
+                "{{ nat }}": {
+                    "cgnat": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "source": {"pool": "{{ pool }}"},
+                            },
+                        ],
+                    },
                 },
             },
         },
@@ -188,7 +204,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+cgnat
                 \s+rule
                 \s+(?P<id>\d+)
@@ -198,15 +214,17 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat cgnat rule {{ id }} translation pool {{ pool }}",
+            "setval": "{{ nat }} cgnat rule {{ id }} translation pool {{ pool }}",
             "result": {
-                "cgnat": {
-                    "rule": [
-                        {
-                            "id": "{{ id }}",
-                            "translation": {"pool": "{{ pool }}"},
-                        },
-                    ],
+                "{{ nat }}": {
+                    "cgnat": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "translation": {"pool": "{{ pool }}"},
+                            },
+                        ],
+                    },
                 },
             },
         },
@@ -223,7 +241,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source|static)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -232,11 +250,13 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} description {{ description }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} description {{ description }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {"description": "{{ description }}"},
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {"description": "{{ description }}"},
+                        },
                     },
                 },
             },
@@ -248,7 +268,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source|static)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -257,11 +277,13 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} protocol {{ protocol }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} protocol {{ protocol }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {"protocol": "{{ protocol }}"},
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {"protocol": "{{ protocol }}"},
+                        },
                     },
                 },
             },
@@ -273,7 +295,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source|static)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -281,15 +303,15 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} disable",
-            "result": {"{{ type }}": {"rule": {"{{ rule }}": {"disable": True}}}},
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} disable",
+            "result": {"{{ nat }}": {"{{ type }}": {"rule": {"{{ rule }}": {"disable": True}}}}},
         },
         {
             "name": "nat_type_exclude",
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source|static)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -297,15 +319,15 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} exclude",
-            "result": {"{{ type }}": {"rule": {"{{ rule }}": {"exclude": True}}}},
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} exclude",
+            "result": {"{{ nat }}": {"{{ type }}": {"rule": {"{{ rule }}": {"exclude": True}}}}},
         },
         {
             "name": "nat_type_log",
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source|static)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -313,8 +335,8 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} log",
-            "result": {"{{ type }}": {"rule": {"{{ rule }}": {"log": True}}}},
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} log",
+            "result": {"{{ nat }}": {"{{ type }}": {"rule": {"{{ rule }}": {"log": True}}}}},
         },
 
         # address (destination/source)
@@ -323,7 +345,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source|static)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -333,12 +355,14 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} {{ atype }} address {{ value }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} {{ atype }} address {{ value }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {
-                            "{{ atype }}": {"address": "{{ value }}"},
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {
+                                "{{ atype }}": {"address": "{{ value }}"},
+                            },
                         },
                     },
                 },
@@ -351,7 +375,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -361,12 +385,14 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} {{ atype }} fqdn {{ value }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} {{ atype }} fqdn {{ value }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {
-                            "{{ atype }}": {"fqdn": "{{ value }}"},
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {
+                                "{{ atype }}": {"fqdn": "{{ value }}"},
+                            },
                         },
                     },
                 },
@@ -379,7 +405,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -389,12 +415,14 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} {{ atype }} port {{ value }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} {{ atype }} port {{ value }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {
-                            "{{ atype }}": {"port": "{{ value }}"},
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {
+                                "{{ atype }}": {"port": "{{ value }}"},
+                            },
                         },
                     },
                 },
@@ -407,7 +435,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source|static)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -417,12 +445,14 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} translation address {{ value }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} translation address {{ value }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {
-                            "translation": {"address": "{{ value }}"},
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {
+                                "translation": {"address": "{{ value }}"},
+                            },
                         },
                     },
                 },
@@ -435,7 +465,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -445,12 +475,14 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} translation port {{ value }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} translation port {{ value }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {
-                            "translation": {"port": "{{ value }}"},
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {
+                                "translation": {"port": "{{ value }}"},
+                            },
                         },
                     },
                 },
@@ -463,7 +495,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source|static)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -473,13 +505,15 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} inbound-interface {{ mode }} {{ value }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} inbound-interface {{ mode }} {{ value }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {
-                            "inbound_interface": {
-                                "{{ mode }}": "{{ value }}",
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {
+                                "inbound_interface": {
+                                    "{{ mode }}": "{{ value }}",
+                                },
                             },
                         },
                     },
@@ -493,7 +527,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -502,11 +536,13 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} packet-type {{ value }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} packet-type {{ value }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {"packet_type": "{{ value }}"},
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {"packet_type": "{{ value }}"},
+                        },
                     },
                 },
             },
@@ -518,7 +554,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -530,15 +566,17 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} load-balance backend {{ ip }} weight {{ weight }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} load-balance backend {{ ip }} weight {{ weight }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {
-                            "load_balance": {
-                                "backend": {
-                                    "ip": "{{ ip }}",
-                                    "weight": "{{ weight }}",
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {
+                                "load_balance": {
+                                    "backend": {
+                                        "ip": "{{ ip }}",
+                                        "weight": "{{ weight }}",
+                                    },
                                 },
                             },
                         },
@@ -553,7 +591,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -563,12 +601,14 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} load-balance hash {{ value }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} load-balance hash {{ value }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {
-                            "load_balance": {"hash": "{{ value }}"},
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {
+                                "load_balance": {"hash": "{{ value }}"},
+                            },
                         },
                     },
                 },
@@ -581,7 +621,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -592,14 +632,16 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} translation options {{ opt }} {{ value }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} translation options {{ opt }} {{ value }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {
-                            "translation": {
-                                "options": {
-                                    "{{ opt }}": "{{ value }}",
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {
+                                "translation": {
+                                    "options": {
+                                        "{{ opt }}": "{{ value }}",
+                                    },
                                 },
                             },
                         },
@@ -614,7 +656,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+nat
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source)
                 \s+rule
                 \s+(?P<rule>\S+)
@@ -625,13 +667,15 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "nat {{ type }} rule {{ rule }} translation redirect port {{ value }}",
+            "setval": "{{ nat }} {{ type }} rule {{ rule }} translation redirect port {{ value }}",
             "result": {
-                "{{ type }}": {
-                    "rule": {
-                        "{{ rule }}": {
-                            "translation": {
-                                "redirect_port": "{{ value }}",
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": {
+                            "{{ rule }}": {
+                                "translation": {
+                                    "redirect_port": "{{ value }}",
+                                },
                             },
                         },
                     },
