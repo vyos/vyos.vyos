@@ -18,6 +18,8 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
+from copy import deepcopy
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
 )
@@ -63,6 +65,12 @@ class Nat(ResourceModule):
         """Generate configuration commands to send based on
         want, have and desired state.
         """
+        wantd = {}
+        haved = {}
+        wantd = deepcopy(self.want)
+        haved = deepcopy(self.have)
+
+        self._module.fail_json(msg={"want": wantd, "have": haved})
 
     #     wantd = self._ntp_list_to_dict(self.want)
     #     haved = self._ntp_list_to_dict(self.have)

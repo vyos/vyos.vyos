@@ -64,7 +64,6 @@ class NatFacts(object):
 
         ansible_facts["ansible_network_resources"].pop("nat", None)
 
-        # self._module.fail_json(msg=objs)
         params = utils.remove_empties(
             nat_parser.validate_config(self.argument_spec, {"config": objs}, redact=True),
         )
@@ -73,5 +72,4 @@ class NatFacts(object):
             facts["nat"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
 
-        self._module.fail_json(msg=ansible_facts)
         return ansible_facts
