@@ -1,0 +1,3 @@
+---
+trivial:
+  - ignore-2.22.yml - Update to sanity test ignore files for the new Python release
