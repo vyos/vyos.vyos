@@ -40,9 +40,10 @@ Resource modules support all states: `merged`, `replaced`, `overridden`, `delete
 
 ## VyOS CLI conventions
 
-- Set commands with string/address values: `set interfaces ethernet eth0 address '192.0.2.1/24'`
+- Set commands: `set interfaces ethernet eth0 address '192.0.2.1/24'`
 - Delete commands: `delete interfaces ethernet eth0 address '192.0.2.1/24'`
-- String and address values are single-quoted; boolean flags and bare keywords are not.
+- Quoting varies by context. In general, string values (descriptions, names, ELIN numbers) are single-quoted; boolean flags and bare keywords are not. However, address/prefix values may be quoted or unquoted depending on where they appear:
   - Quoted: `address '192.0.2.1/24'`, `description 'my-iface'`, `elin '0000000911'`
-  - Unquoted: `disable`, `mtu-ignore`, `set interfaces loopback lo`, `vif 200`
+  - Unquoted: `address 192.0.2.1` (in firewall groups), `disable`, `mtu-ignore`, `vif 200`
+- When reviewing tests and fixtures, align with the quoting style used by surrounding fixtures rather than flagging a missing quote as an error.
 - Interface types: `ethernet`, `loopback`, `bonding`, `bridge`, `tunnel`, `wireguard`.

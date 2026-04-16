@@ -34,4 +34,4 @@ Verify any changed redirect target exists as a real module file under `plugins/m
 ## cliconf / terminal plugins
 
 `plugins/cliconf/vyos.py` — do not modify without understanding edit-mode and commit semantics.
-`plugins/terminal/vyos.py` — handles prompt detection; regex changes require testing against all supported VyOS versions (1.3.8, 1.4.1, 1.4.2, 1.5 rolling).
+`plugins/terminal/vyos.py` — handles prompt detection; regex changes require testing against all supported VyOS versions listed in README.md.

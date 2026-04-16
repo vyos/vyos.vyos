@@ -20,15 +20,23 @@ class TestVyosFooModule(TestVyosModule):
 
 ## Mocking: resource modules
 
-Resource module tests require two framework-level patches in `setUp`:
+Resource module tests require two framework-level patches in `setUp` with corresponding cleanup in `tearDown`:
 
 ```python
+# in setUp:
 self.mock_get_resource_connection_config = patch(
     "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base.get_resource_connection"
 )
+self.get_resource_connection_config = self.mock_get_resource_connection_config.start()
+
 self.mock_get_resource_connection_facts = patch(
     "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts.get_resource_connection"
 )
+self.get_resource_connection_facts = self.mock_get_resource_connection_facts.start()
+
+# in tearDown:
+self.mock_get_resource_connection_config.stop()
+self.mock_get_resource_connection_facts.stop()
 ```
 
 Most resource module tests also patch the facts class's `get_device_data` method directly and use it in `load_fixtures`:
