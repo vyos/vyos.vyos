@@ -6,8 +6,8 @@ The facts class for vyos
 this file validates each subset of facts and selectively
 calls the appropriate facts gathering function
 """
-from __future__ import absolute_import, division, print_function
 
+from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
@@ -81,7 +81,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.stati
     Static_routesFacts,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vrf.vrf import VrfFacts
-
 
 FACT_LEGACY_SUBSETS = dict(default=Default, neighbors=Neighbors, config=Config)
 FACT_RESOURCE_SUBSETS = dict(

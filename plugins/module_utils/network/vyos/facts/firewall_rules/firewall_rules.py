@@ -9,8 +9,8 @@ It is in this file the configuration is collected from the device
 for a given resource, parsed, and the facts tree is populated
 based on the configuration.
 """
-from __future__ import absolute_import, division, print_function
 
+from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
@@ -412,7 +412,7 @@ class Firewall_rulesFacts(object):
                     # <1.3 could be # (type), #/# (type/code) or 'type' (type_name)
                     # recent this is only for strings
                     if "/" in val:  # type/code
-                        (type_no, code) = val.split(".")
+                        type_no, code = val.split(".")
                         config["type"] = type_no
                         config["code"] = code
                     elif val.isnumeric():
@@ -538,7 +538,7 @@ class Firewall_rulesFacts(object):
         if out:
             val = out.group(1).strip("'")
             if "/" in val:  # number/unit
-                (number, unit) = val.split("/")
+                number, unit = val.split("/")
                 config["number"] = number
                 config["unit"] = unit
         return config

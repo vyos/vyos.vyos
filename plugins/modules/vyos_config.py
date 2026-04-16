@@ -17,7 +17,6 @@
 #
 from __future__ import absolute_import, division, print_function
 
-
 __metaclass__ = type
 
 
@@ -230,7 +229,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
     run_commands,
 )
 
-
 DEFAULT_COMMENT = "configured by vyos_config"
 
 CONFIG_FILTERS = [
@@ -362,7 +360,7 @@ def main():
         lines=dict(type="list", elements="str"),
         match=dict(default="line", choices=["line", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
-        confirm=dict(choices=["automatic", "manual", "none"], default='none'),
+        confirm=dict(choices=["automatic", "manual", "none"], default="none"),
         confirm_timeout=dict(type="int", default=10),
         config=dict(),
         backup=dict(type="bool", default=False),
