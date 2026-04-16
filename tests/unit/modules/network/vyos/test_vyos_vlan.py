@@ -1,3 +1,5 @@
+# (c) 2024 VyOS Networks <maintainers@vyos.net>
+#
 # This file is part of Ansible
 #
 # Ansible is free software: you can redistribute it and/or modify
@@ -13,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Ansible.  If not, see <http://www.gnu.org/licenses/>.
 
+# Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
 
@@ -77,8 +80,10 @@ class TestVyosVlanModule(TestVyosModule):
 
     def load_fixtures(self, commands=None, filename=None):
         self.load_config.return_value = dict(diff=None, session="session")
-        # Default: return the output with existing VLANs.
-        self.run_commands.return_value = [SHOW_INTERFACES_OUTPUT]
+        if filename == "empty":
+            self.run_commands.return_value = [SHOW_INTERFACES_EMPTY]
+        else:
+            self.run_commands.return_value = [SHOW_INTERFACES_OUTPUT]
 
     def test_vyos_vlan_present(self):
         """Create a new VLAN with a description on eth2 (not in have)."""
@@ -147,9 +152,8 @@ class TestVyosVlanModule(TestVyosModule):
     def test_vyos_vlan_purge(self):
         """Purge VLANs not in want. Want only VLAN 100; VLAN 200 should be removed.
 
-        The parser stores all eth* lines including non-VLAN interfaces (vlan_id=None).
-        Purge deletes every have entry whose vlan_id is not in want, which includes
-        eth0/None, eth1/None, eth2/None, and eth1.200.
+        The fixed parser only maps ethX.Y sub-interfaces, so bare ethX interfaces
+        (vlan_id=None) are not in have. Only real VLANs (eth1.200) are purged.
         """
         set_module_args(
             dict(
@@ -160,19 +164,14 @@ class TestVyosVlanModule(TestVyosModule):
             )
         )
         # VLAN 100 already exists — no create command.
-        # All have entries with vlan_id not matching '100' are purged.
+        # Only eth1.200 (vlan_id=200) is purged; bare interfaces are excluded.
         commands = [
-            "delete interfaces ethernet eth0 vif None",
-            "delete interfaces ethernet eth1 vif None",
             "delete interfaces ethernet eth1 vif 200",
-            "delete interfaces ethernet eth2 vif None",
         ]
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_vlan_with_address(self):
         """Create a VLAN with an IP address and no description."""
-        # Switch to empty fixture so the new VLAN is not already present.
-        self.run_commands.return_value = [SHOW_INTERFACES_EMPTY]
         set_module_args(
             dict(
                 vlan_id=400,
@@ -182,4 +181,4 @@ class TestVyosVlanModule(TestVyosModule):
             )
         )
         commands = ["set interfaces ethernet eth1 vif 400 address 10.10.40.1/24"]
-        self.execute_module(changed=True, commands=commands)
+        self.execute_module(changed=True, commands=commands, filename="empty")
