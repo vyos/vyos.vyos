@@ -1,4 +1,4 @@
-# (c) 2016 Red Hat Inc.
+# (c) 2024 VyOS Networks <maintainers@vyos.net>
 #
 # This file is part of Ansible
 #
