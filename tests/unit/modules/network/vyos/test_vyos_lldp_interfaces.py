@@ -227,3 +227,30 @@ class TestVyosLldpInterfacesModule(TestVyosModule):
         coord = eth2["location"]["coordinate_based"]
         self.assertEqual(coord["altitude"], 2200)
         self.assertEqual(coord["datum"], "WGS84")
+
+    # -------------------------------------------------------------------------
+    # rendered
+    # -------------------------------------------------------------------------
+
+    def test_vyos_lldp_interfaces_rendered(self):
+        """Render set commands without connecting to the device."""
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth1",
+                        location=dict(elin="0000000911"),
+                    ),
+                ],
+                state="rendered",
+            ),
+        )
+        rendered_cmds = [
+            "set service lldp interface eth1",
+            "set service lldp interface eth1 location elin '0000000911'",
+        ]
+        result = self.execute_module(changed=False)
+        self.assertEqual(
+            sorted(result["rendered"]),
+            sorted(rendered_cmds),
+        )
