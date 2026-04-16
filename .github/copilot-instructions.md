@@ -3,12 +3,6 @@
 This is the `vyos.vyos` Ansible network collection for managing VyOS devices.
 Namespace `vyos`, name `vyos`, version `6.0.0`. All modules are prefixed `vyos_`.
 
-## Copyright headers
-
-- **New files** (not present on `origin/main`) must use `# (c) 2024 VyOS Networks <maintainers@vyos.net>`.
-- **Existing files** must preserve the original copyright (Red Hat, etc.) unchanged.
-- Flag any new file that uses a third-party copyright or any existing file where the copyright was modified.
-
 ## Commit and PR standards
 
 - Every commit title must start with a Phorge task ID: `T<number>: description`.

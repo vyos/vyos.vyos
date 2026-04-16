@@ -76,10 +76,3 @@ A complete resource module test file should cover all applicable states:
 
 Flag test files that are missing `rendered`, `gathered`, or `parsed` tests without explanation.
 
-## Copyright
-
-New test files created for this project must use:
-```python
-# (c) 2024 VyOS Networks <maintainers@vyos.net>
-```
-Do not copy Red Hat or other third-party copyright headers onto new files.
