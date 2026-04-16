@@ -74,37 +74,6 @@ options:
             description:
             - Minimum interval for sending routing updates.
             type: int
-      #    bfd: # <-- added in 1.3
-      #      description: Enable Bidirectional Forwarding Detection (BFD) support
-      #      type: dict
-      #      suboptions:
-      #        check-control-plane-failure:
-      #          description:
-      #          - Allow to write CBIT independence in BFD outgoing packets
-      #            and read both C-BIT value of BFD and lookup BGP peer status
-      #          type: bool
-      #    allowas_in:   --> Moved to address-family before 1.3
-      #      description:
-      #      - Number of occurrences of AS number.
-      #      type: int
-      #    as_override:  --> Moved to address-family before 1.3
-      #      description:
-      #      - AS for routes sent to this neighbor to be the local AS.
-      #      type: bool
-      #    attribute_unchanged: --> Moved to address-family before 1.3
-      #      description:
-      #      - BGP attributes are sent unchanged.
-      #      type: dict
-      #      suboptions:
-      #        as_path:
-      #          description: as_path
-      #          type: bool
-      #        med:
-      #          description: med
-      #          type: bool
-      #        next_hop:
-      #          description: next_hop
-      #          type: bool
           capability:
             description:
             - Advertise capabilities to this neighbor.
@@ -118,13 +87,6 @@ options:
                 description:
                 - Advertise extended nexthop capability to this neighbor.
                 type: bool
-      #       orf:   --> Removed before 1.3
-      #         description:
-      #          - Advertise ORF capability to this neighbor.
-      #         type: str
-      #         choices:
-      #         - send
-      #         - receive
           default_originate:
             description:
             - Send default route to this neighbor
@@ -146,70 +108,14 @@ options:
             - Disable sending community attributes to this neighbor.
             type: str
             choices: ['extended', 'standard']
-      #   distribute_list:  --> Moved to address-family before 1.3
-      #     description: Access-list to filter route updates to/from this neighbor.
-      #     type: list
-      #     elements: dict
-      #     suboptions:
-      #       action:
-      #         description: Access-list to filter outgoing/incoming route updates to this neighbor
-      #         type: str
-      #         choices: ['export', 'import']
-      #       acl:
-      #         description: Access-list number.
-      #         type: int
           ebgp_multihop:
             description:
               - Allow this EBGP neighbor to not be on a directly connected network. Specify
                 the number hops.
             type: int
-      #    interface: # <-- added in 1.3
-      #      description: interface parameters
-      #      type: dict
-      #      suboptions:
-      #        peer_group:
-      #          description: Peer group for this neighbor
-      #          type: str
-      #        remote_as:
-      #          description:
-      #          - Remote AS number
-      #          - Or 'external' for any number except this AS number
-      #          - or 'internal' for this AS number
-      #          type: str
-      #        v6only:
-      #          description: Enable BGP with v6 link-local only
-      #          type: dict
-      #          suboptions:
-      #            peer_group:
-      #              description: Peer group for this neighbor
-      #              type: str
-      #            remote_as:
-      #              description:
-      #              - Remote AS number
-      #              - Or 'external' for any number except this AS number
-      #              - or 'internal' for this AS number
-      #    filter_list:  --> Moved to address-family before 1.3
-      #      description: As-path-list to filter route updates to/from this neighbor.
-      #      type: list
-      #      elements: dict
-      #      suboptions:
-      #        action:
-      #          description: filter outgoing/incoming route updates
-      #          type: str
-      #          choices: ['export', 'import']
-      #        path_list:
-      #          description: As-path-list to filter
-      #          type: str
           local_as:
             description: local as number not to be prepended to updates from EBGP peers
             type: int
-      #   maximum_prefix:  --> Moved to address-family before 1.3
-      #     description: Maximum number of prefixes to accept from this neighbor
-      #        nexthop-self Nexthop for routes sent to this neighbor to be the local router.
-      #     type: int
-      #   nexthop_self: --> Moved to address-family before 1.3
-      #     description: Nexthop for routes sent to this neighbor to be the local router.
-      #     type: bool
           override_capability:
             description: Ignore capability negotiation with specified neighbor.
             type: bool
@@ -228,61 +134,18 @@ options:
           port:
             description: Neighbor's BGP port
             type: int
-      #    prefix_list:  --> Moved to address-family before 1.3
-      #      description: Prefix-list to filter route updates to/from this neighbor.
-      #      type: list
-      #      elements: dict
-      #      suboptions:
-      #        action:
-      #          description: filter outgoing/incoming route updates
-      #          type: str
-      #          choices: ['export', 'import']
-      #        prefix_list:
-      #          description: Prefix-list to filter
-      #          type: str
           remote_as:
             description: Neighbor BGP AS number
             type: int
-      #    remove_private_as: --> Moved to address-family before 1.3
-      #      description: Remove private AS numbers from AS path in outbound route updates
-      #      type: bool
-      #   route_map:    --> Moved to address-family before 1.3
-      #     description: Route-map to filter route updates to/from this neighbor.
-      #     type: list
-      #     elements: dict
-      #     suboptions:
-      #       action:
-      #         description: filter outgoing/incoming route updates
-      #         type: str
-      #         choices: ['export', 'import']
-      #       route_map:
-      #         description: route-map to filter
-      #         type: str
-      #    route_reflector_client:   --> Moved to address-family before 1.3
-      #      description: Neighbor as a route reflector client
-      #      type: bool
-      #    route_server_client:   --> Removed prior to 1.3
-      #      description: Neighbor is route server client
-      #      type: bool
           shutdown:
             description: Administratively shut down neighbor
             type: bool
-      #    soft_reconfiguration:  --> Moved to address-family before 1.3
-      #      description: Soft reconfiguration for neighbor
-      #      type: bool
           solo: # <-- added in 1.3
             description: Do not send back prefixes learned from the neighbor
             type: bool
           strict_capability_match:
             description: Enable strict capability negotiation
             type: bool
-      #    unsuppress_map:   --> Moved to address-family before 1.3
-      #      description: Route-map to selectively unsuppress suppressed routes
-      #      type: str
-
-      #    weight:    --> Moved to address-family before 1.3
-      #      description: Default weight for routes from this neighbor
-      #      type: int
           timers:
             description: Neighbor timers
             type: dict
