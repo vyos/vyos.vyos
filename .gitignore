@@ -120,9 +120,3 @@ changelogs/.plugin-cache.yaml
 inventory.network
 
 *.bak
-
-# Git worktrees
-.worktrees/
-
-# Claude Code
-.claude/
