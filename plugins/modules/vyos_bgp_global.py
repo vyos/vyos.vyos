@@ -111,7 +111,7 @@ options:
           ebgp_multihop:
             description:
               - Allow this EBGP neighbor to not be on a directly connected network. Specify
-                the number hops.
+                the number of hops.
             type: int
           local_as:
             description: local as number not to be prepended to updates from EBGP peers
