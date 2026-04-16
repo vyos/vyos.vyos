@@ -2,7 +2,7 @@
 
 ## Overview
 
-Five sequential phases of improvements to the vyos.vyos collection, ordered by risk (lowest first). Each phase is an independent PR with its own changelog fragment.
+Four sequential phases of improvements to the vyos.vyos collection, ordered by risk (lowest first). Each phase is an independent PR with its own changelog fragment. **Each phase must be merged to `main` before the next phase branches** — later phases depend on earlier ones for clean diffs and test coverage.
 
 Collection version: 6.0.0. Minimum supported VyOS: 1.3.8. Roadmap: v7.0.0 drops VyOS 1.3.x support.
 
@@ -15,15 +15,17 @@ Collection version: 6.0.0. Minimum supported VyOS: 1.3.8. Roadmap: v7.0.0 drops 
 **Scope:**
 - Run `black .` — 193 files currently fail formatting (line-length=100)
 - Run `isort .` — 4 files have import ordering violations:
-  - `plugins/module_utils/network/vyos/utils/version.py`
   - `plugins/module_utils/network/vyos/rm_templates/ospf_interfaces_14.py`
   - `plugins/module_utils/network/vyos/facts/bgp_global/bgp_global.py`
   - `plugins/module_utils/network/vyos/facts/bgp_address_family/bgp_address_family.py`
-- Remove unused import in `plugins/module_utils/network/vyos/utils/version.py:13` — `LooseVersion` imported but never used in that file
+- Add `.git-blame-ignore-revs` file with the formatting commit hash to prevent polluting `git blame`
+- Fix any flake8 issues that surface after black/isort changes
+
+**Note:** `plugins/module_utils/network/vyos/utils/version.py:13` imports `LooseVersion` with `# pylint: disable=unused-import`. This is a deliberate re-export — 19 files import `LooseVersion` through this module. Do NOT remove it.
 
 **Verification:** `black --check . && isort --check-only . && flake8 .` all pass with zero issues.
 
-**Changelog fragment:** `minor_changes` — "Collection-wide formatting compliance with black, isort, and flake8."
+**Changelog fragment:** `minor_changes` — "Collection-wide formatting compliance with black and isort."
 
 ---
 
@@ -100,7 +102,7 @@ For each: verify the deprecation notice text is accurate and consistent. No code
 - Create fixture `tests/unit/modules/network/vyos/fixtures/vyos_vlan_config.cfg`
 - Legacy module uses `present`/`absent` states (not merged/replaced/etc.)
 - Uses `load_config()` directly, not ConfigBase
-- Test cases: present, present_idempotent, absent, aggregate, with_address, with_interfaces
+- Test cases: present, present_idempotent, absent, aggregate (exercises `map_params_to_obj` aggregate path), purge (exercises purge code path), with_address, with_interfaces
 
 **Verification:** `pytest tests/unit -vvv -n 2` passes with new tests included. No regressions in existing tests.
 
@@ -108,50 +110,30 @@ For each: verify the deprecation notice text is accurate and consistent. No code
 
 ---
 
-## Phase 5 — Template Deduplication
+## Phase 5 — Template Deduplication (DEFERRED to v7.0.0)
 
-**Goal:** Reduce duplication between version-specific template pairs by extracting shared logic into a base, with version-specific overrides.
+**Status:** Deferred. Architect review concluded this phase is not feasible as an easy win.
 
-### Current State
+### Why deduplication was rejected
 
 Four template pairs exist in `plugins/module_utils/network/vyos/rm_templates/`:
 
-| Base | VyOS 1.4+ variant | Lines (base/14) | Key difference |
-|------|--------------------|------------------|----------------|
+| Base | VyOS 1.4+ variant | Lines (base/14) | Actual difference |
+|------|--------------------|------------------|-------------------|
 | `bgp_global.py` | `bgp_global_14.py` | 1859/1795 | `{as_number}` in command paths |
 | `bgp_address_family.py` | `bgp_address_family_14.py` | 1450/1433 | `{as_number}` in command paths |
-| `route_maps.py` | `route_maps_14.py` | 1405/1405 | Class naming only |
+| `route_maps.py` | `route_maps_14.py` | 1405/1405 | ~12 semantic differences in CLI syntax (`as-path exclude` vs `as-path-exclude`, `extcommunity rt` vs `extcommunity-rt`, different `community`/`large-community` handling) |
 | `ospf_interfaces.py` | `ospf_interfaces_14.py` | 776/650 | Interface-centric vs protocol-centric paths |
 
-### Dispatch mechanism
+**route_maps are NOT identical** — the initial analysis was wrong. They differ in VyOS CLI syntax for compound commands and community handling. A thin subclass alias would break VyOS 1.4 functionality.
 
-Config modules (e.g., `config/bgp_global/bgp_global.py`) import both template classes and switch via `_validate_template()` using `LooseVersion(get_os_version(module)) >= LooseVersion("1.4")`. Facts modules do the same in `populate_facts()`.
+**BGP templates use module-level functions** — template functions (e.g., `_tmplt_bgp_params_confederation`) are standalone module-level functions, not class methods. Python resolves a module-level `_BGP_PREFIX` constant at the module where the function is *defined*, not where it is *called*. You cannot import functions from the base file and have them use the importing file's constant. Real dedup would require converting all ~14-28 functions to class methods or using a factory pattern — high risk, marginal gain.
 
-### Deduplication strategy
+**ospf_interfaces have fundamentally different command paradigms** — interface-centric vs protocol-centric is not a parameterizable difference.
 
-**For BGP templates (bgp_global, bgp_address_family):** The only difference is `{as_number}` in command path strings. Extract a base class with a `_cmd_prefix()` method that returns the protocol path prefix. Pre-1.4 subclass includes `{as_number}`, 1.4+ subclass omits it. All template functions and PARSERS list stay in the base.
+### Recommendation
 
-**For route_maps:** These are identical except the class name. Merge into a single file. The `_14` variant becomes a subclass alias or is eliminated entirely.
-
-**For ospf_interfaces:** The structural difference is larger (interface-centric vs protocol-centric command paths). These may not be good deduplication candidates. Assess shared template entries vs divergent ones. If >70% shared, extract a base; otherwise leave as-is.
-
-### Files to modify
-
-For each deduplicated template pair:
-- Create or modify the base template file with shared logic
-- Modify the `_14` file to inherit from the base, overriding only what differs
-- Update imports in corresponding `config/` and `facts/` modules if class names change
-- Update corresponding unit test imports if any
-
-### Constraints
-
-- The dispatch mechanism in config and facts modules must continue to work identically
-- All existing unit tests must pass without modification (except import path changes)
-- Template class interfaces (PARSERS list, method signatures) must remain identical
-
-**Verification:** Full test suite passes. Manual review of generated commands for both VyOS versions matches current behavior.
-
-**Changelog fragment:** `minor_changes` — "Refactor version-specific rm_templates to reduce duplication between pre-1.4 and 1.4+ variants."
+Defer to v7.0.0 when VyOS 1.3.x support is dropped. Deleting the pre-1.4 templates entirely eliminates the duplication at its source with zero refactoring risk.
 
 ---
 
@@ -160,5 +142,4 @@ For each deduplicated template pair:
 1. **Formatting first** — creates a clean diff baseline for all subsequent work
 2. **Runtime fix** — trivial, fixes a real bug
 3. **Deprecation cleanup** — removes dead code before we add tests or refactor around it
-4. **Tests** — adds coverage before the highest-risk refactor
-5. **Deduplication** — highest risk, most lines changed, benefits from all prior cleanup
+4. **Tests** — adds coverage for previously untested modules

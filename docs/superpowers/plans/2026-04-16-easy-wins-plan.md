@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Five sequential quality improvements to the vyos.vyos Ansible collection — formatting, bugfix, dead code removal, test coverage, template deduplication.
+**Goal:** Four sequential quality improvements to the vyos.vyos Ansible collection — formatting, bugfix, dead code removal, test coverage. (Template deduplication was evaluated and deferred to v7.0.0 — see spec for rationale.)
 
-**Architecture:** Each phase is an independent branch and PR. Phases are ordered by risk: mechanical formatting first, then a one-line bugfix, then dead code cleanup, then new tests, then the riskiest refactor (template deduplication) last with full test coverage in place.
+**Architecture:** Each phase is an independent branch and PR. Phases are ordered by risk: mechanical formatting first, then a one-line bugfix, then dead code cleanup, then new tests. **Each phase must be merged to `main` before the next phase branches** — later phases depend on earlier ones for clean diffs and test coverage.
 
 **Tech Stack:** Python 3, Ansible (netcommon), pytest, black, isort, flake8
 
@@ -55,7 +55,7 @@ git commit -m "style: apply black formatting across entire codebase"
 - Modify: `plugins/module_utils/network/vyos/facts/bgp_global/bgp_global.py`
 - Modify: `plugins/module_utils/network/vyos/facts/bgp_address_family/bgp_address_family.py`
 
-Note: `plugins/module_utils/network/vyos/utils/version.py` was flagged by isort but the `LooseVersion` import is a deliberate re-export used by 19 other files. The `# pylint: disable=unused-import` comment is correct. Do NOT remove this import.
+Note: `plugins/module_utils/network/vyos/utils/version.py` imports `LooseVersion` with `# pylint: disable=unused-import`. This is a deliberate re-export — 19 files import `LooseVersion` through this module. Do NOT remove this import or change isort's handling of it.
 
 - [ ] **Step 1: Run isort**
 
@@ -78,20 +78,30 @@ git add -A
 git commit -m "style: fix isort import ordering violations"
 ```
 
-### Task 3: Run full verification and add changelog
+### Task 3: Fix flake8 issues, add .git-blame-ignore-revs, verify, and add changelog
 
 **Files:**
+- Possibly modify: files with new flake8 issues after black/isort
+- Create: `.git-blame-ignore-revs`
 - Create: `changelogs/fragments/formatting-compliance.yml`
 
-- [ ] **Step 1: Run full lint suite**
+- [ ] **Step 1: Run flake8 and fix any issues**
+
+```bash
+flake8 .
+```
+
+Black/isort may have introduced new flake8 violations (e.g., line-length edge cases in comments, unused variables exposed by reformatting). Fix any that appear before proceeding.
+
+- [ ] **Step 2: Run full lint suite**
 
 ```bash
 black --check . && isort --check-only . && flake8 .
 ```
 
-Expected: All three pass with zero issues. If flake8 reports any issues, fix them before proceeding.
+Expected: All three pass with zero issues.
 
-- [ ] **Step 2: Run unit tests to confirm no regressions**
+- [ ] **Step 3: Run unit tests to confirm no regressions**
 
 ```bash
 pytest tests/unit -vvv -n 2
@@ -99,7 +109,31 @@ pytest tests/unit -vvv -n 2
 
 Expected: All tests pass.
 
-- [ ] **Step 3: Create changelog fragment**
+- [ ] **Step 4: Get the formatting commit hash and create .git-blame-ignore-revs**
+
+A 193-file formatting commit pollutes `git blame`. Add the commit hash to `.git-blame-ignore-revs` so tools like `git blame --ignore-revs-file` skip it:
+
+```bash
+FORMATTING_HASH=$(git log --oneline --all | grep "style: apply black formatting" | awk '{print $1}')
+```
+
+Create `.git-blame-ignore-revs`:
+
+```
+# black formatting pass
+<FORMATTING_HASH>
+```
+
+Replace `<FORMATTING_HASH>` with the actual commit hash from the command above.
+
+- [ ] **Step 5: Commit .git-blame-ignore-revs**
+
+```bash
+git add .git-blame-ignore-revs
+git commit -m "chore: add .git-blame-ignore-revs for formatting commit"
+```
+
+- [ ] **Step 6: Create changelog fragment**
 
 Create `changelogs/fragments/formatting-compliance.yml`:
 
@@ -109,7 +143,7 @@ minor_changes:
   - Collection-wide formatting compliance with black and isort.
 ```
 
-- [ ] **Step 4: Commit changelog**
+- [ ] **Step 7: Commit changelog**
 
 ```bash
 git add changelogs/fragments/formatting-compliance.yml
@@ -530,6 +564,42 @@ class TestVyosL3InterfacesModule(TestVyosModule):
         result = self.execute_module(changed=False, commands=[])
         self.assertIn("parsed", result)
 
+    def test_vyos_l3_interfaces_overridden(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth1",
+                        ipv4=[dict(address="192.0.2.14/24")],
+                    ),
+                ],
+                state="overridden",
+            ),
+        )
+        # Overridden removes config from all interfaces not in the desired state
+        result = self.execute_module(changed=True)
+        # Verify commands contain delete operations for interfaces not specified
+        self.assertTrue(
+            any("delete" in cmd for cmd in result.get("commands", [])),
+        )
+
+    def test_vyos_l3_interfaces_rendered(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth4",
+                        ipv4=[dict(address="10.0.0.1/24")],
+                    ),
+                ],
+                state="rendered",
+            ),
+        )
+        commands = [
+            "set interfaces ethernet eth4 address '10.0.0.1/24'",
+        ]
+        self.execute_module(changed=False, commands=commands)
+
     def test_vyos_l3_interfaces_vif_merged(self):
         set_module_args(
             dict(
@@ -549,6 +619,25 @@ class TestVyosL3InterfacesModule(TestVyosModule):
         )
         commands = [
             "set interfaces ethernet eth3 vif 101 address '198.51.100.131/25'",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_l3_interfaces_vif_deleted(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth3",
+                        vifs=[
+                            dict(vlan_id=101),
+                        ],
+                    ),
+                ],
+                state="deleted",
+            ),
+        )
+        commands = [
+            "delete interfaces ethernet eth3 vif 101 address '198.51.100.130/25'",
         ]
         self.execute_module(changed=True, commands=commands)
 ```
@@ -743,6 +832,24 @@ class TestVyosLldpInterfacesModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+    def test_vyos_lldp_interfaces_overridden(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth1",
+                        location=dict(elin="0000000911"),
+                    ),
+                ],
+                state="overridden",
+            ),
+        )
+        # Overridden removes config from all interfaces not specified (eth2 should be deleted)
+        result = self.execute_module(changed=True)
+        self.assertTrue(
+            any("delete" in cmd and "eth2" in cmd for cmd in result.get("commands", [])),
+        )
+
     def test_vyos_lldp_interfaces_deleted(self):
         set_module_args(
             dict(
@@ -911,6 +1018,50 @@ class TestVyosVlanModule(TestVyosModule):
             ),
         )
         self.execute_module(changed=False, commands=[])
+
+    def test_vyos_vlan_aggregate(self):
+        set_module_args(
+            dict(
+                aggregate=[
+                    dict(vlan_id=300, interfaces=["eth2"]),
+                    dict(vlan_id=400, interfaces=["eth2"], name="vlan-400"),
+                ],
+            ),
+        )
+        commands = [
+            "set interfaces ethernet eth2 vif 300",
+            "set interfaces ethernet eth2 vif 400 description vlan-400",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_vlan_purge(self):
+        set_module_args(
+            dict(
+                vlan_id=100,
+                interfaces=["eth0"],
+                state="present",
+                purge=True,
+            ),
+        )
+        # Purge should delete VLANs not in the desired state (eth1.200 should be deleted)
+        result = self.execute_module(changed=True)
+        self.assertTrue(
+            any("delete" in cmd and "200" in cmd for cmd in result.get("commands", [])),
+        )
+
+    def test_vyos_vlan_with_address(self):
+        set_module_args(
+            dict(
+                vlan_id=300,
+                interfaces=["eth2"],
+                address="10.0.30.1/24",
+                state="present",
+            ),
+        )
+        commands = [
+            "set interfaces ethernet eth2 vif 300 address 10.0.30.1/24",
+        ]
+        self.execute_module(changed=True, commands=commands)
 ```
 
 - [ ] **Step 2: Run the tests**
@@ -960,270 +1111,18 @@ git commit -m "chore: add changelog fragment for new unit tests"
 
 ---
 
-## Phase 5: Template Deduplication
+## Phase 5: Template Deduplication — DEFERRED
 
-### Task 11: Merge identical route_maps templates
+**Status:** Deferred to v7.0.0. See spec for full rationale.
 
-**Files:**
-- Modify: `plugins/module_utils/network/vyos/rm_templates/route_maps_14.py`
-- Modify: `plugins/module_utils/network/vyos/config/route_maps/route_maps.py`
-- Modify: `plugins/module_utils/network/vyos/facts/route_maps/route_maps.py`
+**Summary of findings from architect review:**
 
-The `route_maps.py` and `route_maps_14.py` templates are completely identical (1405 lines each) except for the class name (`Route_mapsTemplate` vs `Route_mapsTemplate14`). The `_14` file can be replaced with a thin subclass.
+1. **route_maps are NOT identical** — ~12 semantic differences in VyOS CLI syntax (`as-path exclude` vs `as-path-exclude`, `extcommunity rt` vs `extcommunity-rt`, different `community`/`large-community` handling). A thin subclass alias would break VyOS 1.4 functionality.
 
-- [ ] **Step 1: Create branch**
+2. **BGP templates blocked by Python scoping** — template functions are module-level (not class methods). Python resolves module-level constants at the module where the function is *defined*, not where it is *called*. Importing functions from a base file and having them use the importing file's `_BGP_PREFIX` constant does not work. Real dedup would require converting ~14-28 functions to class methods or a factory pattern — high risk, marginal gain.
 
-```bash
-git checkout -b refactor/template-deduplication main
-```
+3. **ospf_interfaces have fundamentally different command paradigms** — interface-centric (pre-1.4) vs protocol-centric (1.4+). Not parameterizable.
 
-- [ ] **Step 2: Read current route_maps_14.py to confirm it's identical**
+4. **v7.0.0 eliminates the problem at its source** — dropping VyOS 1.3.x support means deleting the pre-1.4 templates entirely, with zero refactoring risk.
 
-```bash
-diff <(sed 's/Route_mapsTemplate14/Route_mapsTemplate/g; s/route_maps_14/route_maps/g' plugins/module_utils/network/vyos/rm_templates/route_maps_14.py) plugins/module_utils/network/vyos/rm_templates/route_maps.py
-```
-
-Expected: No differences (or only whitespace/comment differences). If there ARE functional differences, do not proceed with this step — investigate the differences first.
-
-- [ ] **Step 3: Replace route_maps_14.py with thin subclass**
-
-Replace the entire content of `plugins/module_utils/network/vyos/rm_templates/route_maps_14.py` with:
-
-```python
-# -*- coding: utf-8 -*-
-# Copyright 2023 Red Hat
-# GNU General Public License v3.0+
-# (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
-
-from __future__ import absolute_import, division, print_function
-
-
-__metaclass__ = type
-
-"""
-Route_maps 1.4+ template — identical to base, kept as alias for version dispatch.
-"""
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.route_maps import (
-    Route_mapsTemplate,
-)
-
-
-class Route_mapsTemplate14(Route_mapsTemplate):
-    pass
-```
-
-- [ ] **Step 4: Run route_maps tests**
-
-```bash
-pytest tests/unit/modules/network/vyos/test_vyos_route_maps.py tests/unit/modules/network/vyos/test_vyos_route_maps14.py -vvv
-```
-
-Expected: All tests pass.
-
-- [ ] **Step 5: Commit**
-
-```bash
-git add plugins/module_utils/network/vyos/rm_templates/route_maps_14.py
-git commit -m "refactor: replace route_maps_14 template with thin subclass of route_maps"
-```
-
-### Task 12: Deduplicate bgp_global templates
-
-**Files:**
-- Modify: `plugins/module_utils/network/vyos/rm_templates/bgp_global.py`
-- Modify: `plugins/module_utils/network/vyos/rm_templates/bgp_global_14.py`
-
-The difference between these files is that pre-1.4 includes `{as_number}` in command path strings (e.g., `"protocols bgp {as_number} parameters confederation"`) while 1.4+ omits it (`"protocols bgp parameters confederation"`).
-
-Strategy: Add a `_bgp_prefix()` method to the base template class. Pre-1.4 returns `"protocols bgp {as_number}"`, 1.4+ returns `"protocols bgp"`. Template functions call this method instead of hardcoding the prefix. The `_14` file becomes a subclass overriding only `_bgp_prefix()`.
-
-**This task requires careful analysis.** Before implementing:
-
-- [ ] **Step 1: Identify all differing lines between the two files**
-
-```bash
-diff plugins/module_utils/network/vyos/rm_templates/bgp_global.py plugins/module_utils/network/vyos/rm_templates/bgp_global_14.py | head -100
-```
-
-Examine the output. Every difference should be the `{as_number}` pattern in format strings. If there are other differences, document them and decide whether they can also be parameterized.
-
-- [ ] **Step 2: Count the differing template functions**
-
-```bash
-diff plugins/module_utils/network/vyos/rm_templates/bgp_global.py plugins/module_utils/network/vyos/rm_templates/bgp_global_14.py | grep "^[<>]" | grep -c "protocols bgp"
-```
-
-This tells you how many command strings need to use the prefix method.
-
-- [ ] **Step 3: Add `_bgp_prefix` method to base class**
-
-In `plugins/module_utils/network/vyos/rm_templates/bgp_global.py`, find the class definition and add:
-
-```python
-class Bgp_globalTemplate(NetworkTemplate):
-    def __init__(self, lines=None, module=None):
-        prefix = {"set": "set", "remove": "delete"}
-        super(Bgp_globalTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix, module=module)
-
-    @staticmethod
-    def _bgp_prefix():
-        return "protocols bgp {as_number}"
-```
-
-- [ ] **Step 4: Convert template functions to use `_bgp_prefix()`**
-
-For each template function that contains a hardcoded `"protocols bgp {as_number}"` string, replace it with a call to `Bgp_globalTemplate._bgp_prefix()`. For example, change:
-
-```python
-def _tmplt_bgp_params_confederation(config_data):
-    command.append(
-        "protocols bgp {as_number} parameters confederation ".format(**config_data)
-        + k + " " + str(v),
-    )
-```
-
-to:
-
-```python
-def _tmplt_bgp_params_confederation(config_data):
-    command.append(
-        Bgp_globalTemplate._bgp_prefix() + " parameters confederation ".format(**config_data)
-        + k + " " + str(v),
-    )
-```
-
-**Important:** The `.format(**config_data)` call must still be applied to the entire string. Ensure the concatenation produces the same final string.
-
-**Alternative approach if template functions are module-level (not class methods):** Since template functions are standalone functions (not methods), they can't easily call instance methods. A simpler approach is to define a module-level constant:
-
-```python
-_BGP_PREFIX = "protocols bgp {as_number}"
-```
-
-Then in `bgp_global_14.py`:
-
-```python
-_BGP_PREFIX = "protocols bgp"
-```
-
-And update all template functions to use `_BGP_PREFIX` instead of the hardcoded string.
-
-- [ ] **Step 5: Replace bgp_global_14.py with thin override**
-
-Replace `plugins/module_utils/network/vyos/rm_templates/bgp_global_14.py` with a file that:
-1. Imports the base template
-2. Overrides `_BGP_PREFIX = "protocols bgp"`
-3. Copies the PARSERS list (PARSERS reference template functions, so if the functions use module-level `_BGP_PREFIX`, each module needs its own copy of the functions that reference the correct prefix)
-
-**Caution:** If the template functions are module-level and reference a module-level `_BGP_PREFIX`, you cannot simply inherit — each file needs its own function definitions that reference its own `_BGP_PREFIX`. In this case, deduplication may not reduce total lines significantly. Evaluate whether the reduction is worth the added indirection.
-
-If deduplication doesn't produce significant reduction (less than 30% line reduction), **skip this subtask** and document why in the commit message.
-
-- [ ] **Step 6: Run bgp_global tests**
-
-```bash
-pytest tests/unit/modules/network/vyos/test_vyos_bgp_global.py tests/unit/modules/network/vyos/test_vyos_bgp_global14.py -vvv
-```
-
-Expected: All tests pass.
-
-- [ ] **Step 7: Commit**
-
-```bash
-git add plugins/module_utils/network/vyos/rm_templates/bgp_global.py plugins/module_utils/network/vyos/rm_templates/bgp_global_14.py
-git commit -m "refactor: deduplicate bgp_global templates using shared prefix constant"
-```
-
-### Task 13: Deduplicate bgp_address_family templates
-
-**Files:**
-- Modify: `plugins/module_utils/network/vyos/rm_templates/bgp_address_family.py`
-- Modify: `plugins/module_utils/network/vyos/rm_templates/bgp_address_family_14.py`
-
-Same pattern as Task 12. The difference is `{as_number}` in command path strings.
-
-- [ ] **Step 1: Identify all differences**
-
-```bash
-diff plugins/module_utils/network/vyos/rm_templates/bgp_address_family.py plugins/module_utils/network/vyos/rm_templates/bgp_address_family_14.py | head -100
-```
-
-- [ ] **Step 2: Apply the same deduplication strategy as Task 12**
-
-If Task 12 succeeded with the `_BGP_PREFIX` approach, apply the identical pattern here. If Task 12 concluded deduplication wasn't worth it, skip this task for the same reason.
-
-- [ ] **Step 3: Run tests**
-
-```bash
-pytest tests/unit/modules/network/vyos/test_vyos_bgp_address_family.py tests/unit/modules/network/vyos/test_vyos_bgp_address_family14.py -vvv
-```
-
-Expected: All tests pass.
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add plugins/module_utils/network/vyos/rm_templates/bgp_address_family.py plugins/module_utils/network/vyos/rm_templates/bgp_address_family_14.py
-git commit -m "refactor: deduplicate bgp_address_family templates using shared prefix constant"
-```
-
-### Task 14: Assess ospf_interfaces deduplication
-
-**Files:**
-- Read: `plugins/module_utils/network/vyos/rm_templates/ospf_interfaces.py`
-- Read: `plugins/module_utils/network/vyos/rm_templates/ospf_interfaces_14.py`
-
-The OSPF templates have a structural difference: pre-1.4 uses interface-centric paths (`interfaces ethernet eth0 ip ospf`) while 1.4+ uses protocol-centric paths (`protocols ospf interface eth0`). This is fundamentally different from the BGP prefix pattern.
-
-- [ ] **Step 1: Measure shared vs divergent code**
-
-```bash
-diff plugins/module_utils/network/vyos/rm_templates/ospf_interfaces.py plugins/module_utils/network/vyos/rm_templates/ospf_interfaces_14.py | grep "^[<>]" | wc -l
-```
-
-Compare against total lines:
-
-```bash
-wc -l plugins/module_utils/network/vyos/rm_templates/ospf_interfaces.py plugins/module_utils/network/vyos/rm_templates/ospf_interfaces_14.py
-```
-
-If >30% of lines differ, **do not deduplicate** — the two templates represent genuinely different configuration paradigms. Document the decision.
-
-- [ ] **Step 2: If shared >70%, extract base (unlikely)**
-
-Only proceed if analysis shows >70% shared code. Otherwise, commit a decision note:
-
-```bash
-git commit --allow-empty -m "docs: ospf_interfaces templates not deduplicated — structural differences too large (interface-centric vs protocol-centric paths)"
-```
-
-### Task 15: Final verification and changelog
-
-**Files:**
-- Create: `changelogs/fragments/template-deduplication.yml`
-
-- [ ] **Step 1: Run full test suite**
-
-```bash
-pytest tests/unit -vvv -n 2
-```
-
-Expected: All tests pass. Zero regressions.
-
-- [ ] **Step 2: Create changelog fragment**
-
-Create `changelogs/fragments/template-deduplication.yml`:
-
-```yaml
----
-minor_changes:
-  - Refactor version-specific rm_templates to reduce duplication between pre-1.4 and 1.4+ variants.
-```
-
-- [ ] **Step 3: Commit**
-
-```bash
-git add changelogs/fragments/template-deduplication.yml
-git commit -m "chore: add changelog fragment for template deduplication"
-```
+No tasks in this phase. Template deduplication should be revisited as part of the v7.0.0 release work.
