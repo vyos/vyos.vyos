@@ -20,7 +20,7 @@ class TestVyosFooModule(TestVyosModule):
 
 ## Mocking: resource modules
 
-Resource modules (argspec/config/facts/rm_templates pattern) patch at the `get_resource_connection` level:
+Resource module tests require two framework-level patches in `setUp`:
 
 ```python
 self.mock_get_resource_connection_config = patch(
@@ -31,7 +31,23 @@ self.mock_get_resource_connection_facts = patch(
 )
 ```
 
-`load_fixtures` sets: `self.get_resource_connection_facts.return_value.get_config.return_value = fixture_data`
+Most resource module tests also patch the facts class's `get_device_data` method directly and use it in `load_fixtures`:
+
+```python
+# in setUp:
+self.mock_execute_show_command = patch(
+    "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos."
+    "facts.{resource}.{resource}.{Resource}Facts.get_device_data"
+)
+self.execute_show_command = self.mock_execute_show_command.start()
+
+# in load_fixtures:
+def load_from_file(*args, **kwargs):
+    return load_fixture("vyos_{resource}_config.cfg")
+self.execute_show_command.side_effect = load_from_file
+```
+
+An alternative pattern sets `self.get_resource_connection_facts.return_value.get_config.return_value = fixture_data` in `load_fixtures` instead — both approaches work, but the `get_device_data` pattern is used by most existing tests.
 
 ## Mocking: legacy modules
 

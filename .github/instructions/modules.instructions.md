@@ -1,5 +1,5 @@
 ---
-applyTo: "plugins/**"
+applyTo: "plugins/**,meta/runtime.yml"
 ---
 
 # Plugin conventions

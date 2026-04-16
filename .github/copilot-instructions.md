@@ -40,7 +40,9 @@ Resource modules support all states: `merged`, `replaced`, `overridden`, `delete
 
 ## VyOS CLI conventions
 
-- Set commands: `set interfaces ethernet eth0 address '192.0.2.1/24'`
+- Set commands with string/address values: `set interfaces ethernet eth0 address '192.0.2.1/24'`
 - Delete commands: `delete interfaces ethernet eth0 address '192.0.2.1/24'`
-- Values are always single-quoted in CLI output.
+- String and address values are single-quoted; boolean flags and bare keywords are not.
+  - Quoted: `address '192.0.2.1/24'`, `description 'my-iface'`, `elin '0000000911'`
+  - Unquoted: `disable`, `mtu-ignore`, `set interfaces loopback lo`, `vif 200`
 - Interface types: `ethernet`, `loopback`, `bonding`, `bridge`, `tunnel`, `wireguard`.
