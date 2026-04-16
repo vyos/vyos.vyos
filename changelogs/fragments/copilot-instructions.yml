@@ -1,0 +1,5 @@
+---
+trivial:
+  - Add Copilot custom review instructions to guide automated code review with
+    project-specific conventions for tests, changelog fragments, copyright headers,
+    and module patterns.
