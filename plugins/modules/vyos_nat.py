@@ -254,8 +254,7 @@ options:
                     type: bool
                     description: Disable this static NAT rule.
                   inbound_interface:
-                    type: list
-                    elements: str
+                    type: str
                     description: List of inbound interfaces that this static NAT rule applies to.
                   translation:
                     type: dict

@@ -56,11 +56,11 @@ class NatFacts(object):
 
         for resource in data.splitlines():
             config_lines.append(re.sub("'", "", resource))
-        # parse native config using the Nat template
 
         nat_parser = NatTemplate(lines=config_lines, module=self._module)
 
         objs = nat_parser.parse()
+        objs = self._normalise(objs)
 
         ansible_facts["ansible_network_resources"].pop("nat", None)
 
@@ -72,5 +72,40 @@ class NatFacts(object):
             facts["nat"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
 
-        self._module.fail_json(msg=ansible_facts)
+        # self._module.fail_json(msg=ansible_facts)
         return ansible_facts
+
+    def _merge_rule_list(self, rules):
+        merged = {}
+
+        for item in rules:
+            rid = item["id"]
+
+            if rid not in merged:
+                merged[rid] = {"id": rid}
+
+            for k, v in item.items():
+                if k == "id":
+                    continue
+
+                if isinstance(v, dict):
+                    merged[rid].setdefault(k, {})
+                    merged[rid][k].update(v)
+                else:
+                    merged[rid][k] = v
+
+        return list(merged.values())
+
+    def _normalise(self, objs):
+        for nat_type in ["nat", "nat64", "nat66"]:
+            nat = objs.get(nat_type)
+
+            if not nat:
+                continue
+
+            for section in ["destination", "source", "static", "cgnat"]:
+                if section in nat and "rule" in nat[section]:
+                    nat[section]["rule"] = self._merge_rule_list(
+                        nat[section]["rule"],
+                    )
+        return objs

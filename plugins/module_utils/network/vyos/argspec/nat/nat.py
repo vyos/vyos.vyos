@@ -251,8 +251,7 @@ class NatArgs(object):  # pylint: disable=R0903
                                         },
                                     },
                                     "inbound_interface": {
-                                        "type": "list",
-                                        "elements": "str",
+                                        "type": "str",
                                     },
                                     "log": {
                                         "type": "bool",
