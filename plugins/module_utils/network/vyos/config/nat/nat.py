@@ -70,7 +70,7 @@ class Nat(ResourceModule):
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
 
-        self._module.fail_json(msg={"want": wantd, "have": haved})
+        self._module.fail_json(msg={"want": wantd, " ******** have": haved})
 
     #     wantd = self._ntp_list_to_dict(self.want)
     #     haved = self._ntp_list_to_dict(self.have)

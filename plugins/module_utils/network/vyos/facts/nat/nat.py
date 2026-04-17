@@ -72,4 +72,5 @@ class NatFacts(object):
             facts["nat"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
 
+        self._module.fail_json(msg=ansible_facts)
         return ansible_facts
