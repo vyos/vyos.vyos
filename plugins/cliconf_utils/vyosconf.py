@@ -50,7 +50,7 @@ class VyosConf:
         """
         This function deletes a value from the configuration given a path
         and also removes all the parents that are now empty.
-        :param path: list of strings to traveser in the config
+        :param path: list of strings to traverse in the config
         :param leaf: value to delete at the destination
         :return: dict
         """
@@ -77,7 +77,7 @@ class VyosConf:
     def check_entry(self, path, leaf):
         """
         This function checks if a value exists in the config.
-        :param path: list of strings to traveser in the config
+        :param path: list of strings to traverse in the config
         :param leaf: value to check for existence
         :return: bool
         """
@@ -144,7 +144,7 @@ class VyosConf:
 
     def check_commands(self, commands):
         """
-        This function checkes a list of commands for existance in the config.
+        This function checks a list of commands for existence in the config.
         :param commands: list of commands to check
         :return: [bool]
         """
