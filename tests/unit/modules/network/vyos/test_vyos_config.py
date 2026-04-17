@@ -149,9 +149,19 @@ class TestVyosConfigModule(TestVyosModule):
         set_module_args(dict(lines=lines, match="smart"))
         candidate = "\n".join(lines)
         self.conn.get_diff = MagicMock(
-            return_value=self.cliconf_obj.get_diff(candidate, None, diff_match="none"),
+            return_value=self.cliconf_obj.get_diff(
+                candidate,
+                self.running_config,
+                diff_match="smart",
+            ),
         )
-        self.execute_module(changed=True, commands=lines, sort=False)
+        self.execute_module(changed=True, sort=False)
+
+        self.conn.get_diff.assert_called_once_with(
+            candidate=candidate,
+            running=self.running_config,
+            diff_match="smart",
+        )
 
     def test_vyos_config_confirm_automatic(self):
         src = load_fixture("vyos_config_src.cfg")
