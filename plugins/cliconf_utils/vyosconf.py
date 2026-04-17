@@ -34,7 +34,7 @@ class VyosConf:
     def set_entry(self, path, leaf):
         """
         This function sets a value in the configuration given a path.
-        :param path: list of strings to traveser in the config
+        :param path: list of strings to traverse in the config
         :param leaf: value to set at the destination
         :return: dict
         """
@@ -55,23 +55,23 @@ class VyosConf:
         :return: dict
         """
         target = self.config
-        firstNoSiblingKey = None
+        first_no_sibling_key = None
         for key in path:
             if key not in target:
                 return self.config
             if len(target[key]) <= 1:
-                if firstNoSiblingKey is None:
-                    firstNoSiblingKey = [target, key]
+                if first_no_sibling_key is None:
+                    first_no_sibling_key = [target, key]
             else:
-                firstNoSiblingKey = None
+                first_no_sibling_key = None
             target = target[key]
 
-        if firstNoSiblingKey is None:
-            firstNoSiblingKey = [target, leaf]
+        if first_no_sibling_key is None:
+            first_no_sibling_key = [target, leaf]
 
-        target = firstNoSiblingKey[0]
-        targetKey = firstNoSiblingKey[1]
-        del target[targetKey]
+        target = first_no_sibling_key[0]
+        target_key = first_no_sibling_key[1]
+        del target[target_key]
         return self.config
 
     def check_entry(self, path, leaf):
@@ -131,7 +131,7 @@ class VyosConf:
 
     def check_command(self, command):
         """
-        This function checkes a command for existance in the config.
+        This function checks a command for existence in the config.
         :param command: command to check
         :return: bool
         """
