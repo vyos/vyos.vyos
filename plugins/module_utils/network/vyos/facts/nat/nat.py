@@ -96,6 +96,34 @@ class NatFacts(object):
 
         return list(merged.values())
 
+    def _merge_pool_list(self, pools):
+        merged = {}
+
+        for item in pools:
+            name = item["name"]
+
+            if name not in merged:
+                merged[name] = {"name": name}
+
+            for k, v in item.items():
+                if k == "name":
+                    continue
+
+                if isinstance(v, dict):
+                    merged[name].setdefault(k, {})
+                    merged[name][k].update(v)
+
+                elif isinstance(v, list):
+                    merged[name].setdefault(k, [])
+                    for val in v:
+                        if val not in merged[name][k]:
+                            merged[name][k].append(val)
+
+                else:
+                    merged[name][k] = v
+
+        return list(merged.values())
+
     def _normalise(self, objs):
         for nat_type in ["nat", "nat64", "nat66"]:
             nat = objs.get(nat_type)
@@ -108,4 +136,10 @@ class NatFacts(object):
                     nat[section]["rule"] = self._merge_rule_list(
                         nat[section]["rule"],
                     )
+            if "cgnat" in nat and "pool" in nat["cgnat"]:
+                pool = nat["cgnat"]["pool"]
+
+                for ptype in ["external", "internal"]:
+                    if ptype in pool:
+                        pool[ptype] = self._merge_pool_list(pool[ptype])
         return objs

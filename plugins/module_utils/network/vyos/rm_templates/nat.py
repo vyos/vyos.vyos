@@ -67,45 +67,45 @@ class NatTemplate(NetworkTemplate):
 
     #     return data
 
-    def _normalize(self, data):
-        if not data:
-            return data
+    # def _normalize(self, data):
+    #     if not data:
+    #         return data
 
-        def normalize_rules(rules):
-            """Convert rules dict → sorted list with int IDs, or cast IDs in existing list."""
-            if isinstance(rules, dict):
-                result = []
-                for rule_id, rule_data in rules.items():
-                    rule = rule_data.copy()
-                    try:
-                        rule["id"] = int(rule_id)
-                    except (ValueError, TypeError):
-                        rule["id"] = rule_id
-                    result.append(rule)
-                return sorted(result, key=lambda x: x.get("id", 0))
+    #     def normalize_rules(rules):
+    #         """Convert rules dict → sorted list with int IDs, or cast IDs in existing list."""
+    #         if isinstance(rules, dict):
+    #             result = []
+    #             for rule_id, rule_data in rules.items():
+    #                 rule = rule_data.copy()
+    #                 try:
+    #                     rule["id"] = int(rule_id)
+    #                 except (ValueError, TypeError):
+    #                     rule["id"] = rule_id
+    #                 result.append(rule)
+    #             return sorted(result, key=lambda x: x.get("id", 0))
 
-            if isinstance(rules, list):
-                for rule in rules:
-                    if "id" in rule:
-                        try:
-                            rule["id"] = int(rule["id"])
-                        except (ValueError, TypeError):
-                            pass
-                return rules
+    #         if isinstance(rules, list):
+    #             for rule in rules:
+    #                 if "id" in rule:
+    #                     try:
+    #                         rule["id"] = int(rule["id"])
+    #                     except (ValueError, TypeError):
+    #                         pass
+    #             return rules
 
-            return rules
+    #         return rules
 
-        for nat_type in ["nat", "nat64", "nat66"]:
-            nat = data.get(nat_type)
-            if not nat:
-                continue
+    #     for nat_type in ["nat", "nat64", "nat66"]:
+    #         nat = data.get(nat_type)
+    #         if not nat:
+    #             continue
 
-            for block in ["destination", "source", "static", "cgnat"]:
-                section = nat.get(block)
-                if section and "rule" in section:
-                    section["rule"] = normalize_rules(section["rule"])
+    #         for block in ["destination", "source", "static", "cgnat"]:
+    #             section = nat.get(block)
+    #             if section and "rule" in section:
+    #                 section["rule"] = normalize_rules(section["rule"])
 
-        return data
+    #     return data
 
     # fmt: off
     PARSERS = [
@@ -120,15 +120,15 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+(?P<nat>nat|nat64|nat66)
+                \s+nat
                 \s+cgnat
                 \s+log-allocation
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{ nat }} cgnat log-allocation",
+            "setval": "nat cgnat log-allocation",
             "result": {
-                "{{ nat }}": {
+                "nat": {
                     "cgnat": {
                         "log_allocation": True,
                     },
@@ -140,7 +140,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+(?P<nat>nat|nat64|nat66)
+                \s+nat
                 \s+cgnat
                 \s+pool
                 \s+external
@@ -150,9 +150,9 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{ nat }} cgnat pool external {{ name }} range {{ range }}{% if seq is defined %} seq {{ seq }}{% endif %}",
+            "setval": "nat cgnat pool external {{ name }} range {{ range }}{% if seq is defined %} seq {{ seq }}{% endif %}",
             "result": {
-                "{{ nat }}": {
+                "nat": {
                     "cgnat": {
                         "pool": {
                             "external": [
@@ -172,7 +172,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+(?P<nat>nat|nat64|nat66)
+                \s+nat
                 \s+cgnat
                 \s+pool
                 \s+external
@@ -182,9 +182,9 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{ nat }} cgnat pool external {{ name }} external-port-range {{ range }}",
+            "setval": "nat cgnat pool external {{ name }} external-port-range {{ range }}",
             "result": {
-                "{{ nat }}": {
+                "nat": {
                     "cgnat": {
                         "pool": {
                             "external": [
@@ -203,7 +203,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+(?P<nat>nat|nat64|nat66)
+                \s+nat
                 \s+cgnat
                 \s+pool
                 \s+external
@@ -214,9 +214,9 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{ nat }} cgnat pool external {{ name }} per-user-limit port {{ limit }}",
+            "setval": "nat cgnat pool external {{ name }} per-user-limit port {{ limit }}",
             "result": {
-                "{{ nat }}": {
+                "nat": {
                     "cgnat": {
                         "pool": {
                             "external": [
@@ -235,7 +235,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+(?P<nat>nat|nat64|nat66)
+                \s+nat
                 \s+cgnat
                 \s+pool
                 \s+internal
@@ -245,9 +245,9 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{ nat }} cgnat pool internal {{ name }} range {{ range }}",
+            "setval": "nat cgnat pool internal {{ name }} range {{ range }}",
             "result": {
-                "{{ nat }}": {
+                "nat": {
                     "cgnat": {
                         "pool": {
                             "internal": [
@@ -266,7 +266,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+(?P<nat>nat|nat64|nat66)
+                \s+nat
                 \s+cgnat
                 \s+rule
                 \s+(?P<id>\d+)
@@ -276,9 +276,9 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{ nat }} cgnat rule {{ id }} source pool {{ pool }}",
+            "setval": "nat cgnat rule {{ id }} source pool {{ pool }}",
             "result": {
-                "{{ nat }}": {
+                "nat": {
                     "cgnat": {
                         "rule": [
                             {
@@ -295,7 +295,7 @@ class NatTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set
-                \s+(?P<nat>nat|nat64|nat66)
+                \s+nat
                 \s+cgnat
                 \s+rule
                 \s+(?P<id>\d+)
@@ -305,9 +305,9 @@ class NatTemplate(NetworkTemplate):
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{ nat }} cgnat rule {{ id }} translation pool {{ pool }}",
+            "setval": "nat cgnat rule {{ id }} translation pool {{ pool }}",
             "result": {
-                "{{ nat }}": {
+                "nat": {
                     "cgnat": {
                         "rule": [
                             {
@@ -500,6 +500,37 @@ class NatTemplate(NetworkTemplate):
             },
         },
 
+        # prefix (destination/source)
+        {
+            "name": "nat_type_prefix",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+(?P<nat>nat|nat64|nat66)
+                \s+(?P<type>destination|source|static)
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+(?P<atype>destination|source)
+                \s+prefix
+                \s+(?P<value>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "{{ nat }} {{ type }} rule {{ id }} {{ atype }} prefix {{ value }}",
+            "result": {
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "{{ atype }}": {"prefix": "{{ value }}"},
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+
         # fqdn
         {
             "name": "nat_type_fqdn",
@@ -623,23 +654,82 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
-        # inbound interface
         {
-            "name": "nat_type_inbound_interface",
+            "name": "nat_inbound_interface_name",
             "getval": re.compile(
                 r"""
                 ^set
-                \s+(?P<nat>nat|nat64|nat66)
+                \s+nat
                 \s+(?P<type>destination|source|static)
                 \s+rule
                 \s+(?P<id>\S+)
                 \s+inbound-interface
+                \s+name
                 \s+(?P<value>\S+)
                 $""",
                 re.VERBOSE,
             ),
-            "setval": "{{ nat }} {{ type }} rule {{ id }} inbound-interface {{ value }}",
+            "setval": "nat {{ type }} rule {{ id }} inbound-interface name {{ value }}",
+            "result": {
+                "nat": {
+                    "{{ type }}": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "inbound_interface": {"name": "{{ value }}"},
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        {
+            "name": "nat_inbound_interface_group",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+nat
+                \s+(?P<type>destination|source|static)
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+inbound-interface
+                \s+group
+                \s+(?P<value>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "nat {{ type }} rule {{ id }} inbound-interface group {{ value }}",
+            "result": {
+                "nat": {
+                    "{{ type }}": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "inbound_interface": {"group": "{{ value }}"},
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+
+        # NAT6X inbound interface
+        {
+            "name": "nat6x_inbound_interface",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+(?P<nat>nat64|nat66)
+                \s+(?P<type>destination|source|static)
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+inbound-interface
+                \s+name
+                \s+(?P<value>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "{{ nat }} {{ type }} rule {{ id }} inbound-interface name {{ value }}",
             "result": {
                 "{{ nat }}": {
                     "{{ type }}": {
@@ -647,6 +737,37 @@ class NatTemplate(NetworkTemplate):
                             {
                                 "id": "{{ id }}",
                                 "inbound_interface": "{{ value }}",
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+
+        # outbound interface
+        {
+            "name": "nat_type_outbound_interface",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+(?P<nat>nat64|nat66)
+                \s+(?P<type>destination|source|static)
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+outbound-interface
+                \s+name
+                \s+(?P<value>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "{{ nat }} {{ type }} rule {{ id }} outbound-interface name {{ value }}",
+            "result": {
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "outbound_interface": "{{ value }}",
                             },
                         ],
                     },
@@ -778,9 +899,7 @@ class NatTemplate(NetworkTemplate):
                             {
                                 "id": "{{ id }}",
                                 "translation": {
-                                    "options": {
-                                        "{{ opt }}": "{{ value }}",
-                                    },
+                                    "{{ opt | replace(\"-\", \"_\") }}": "{{ value }}",
                                 },
                             },
                         ],
@@ -822,6 +941,199 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-
+        {
+            "name": "nat64_match_mark",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+nat64
+                \s+source
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+match
+                \s+mark
+                \s+(?P<mark>\d+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "nat64 source rule {{ id }} match mark {{ mark }}",
+            "result": {
+                "nat64": {
+                    "source": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "match": {"mark": "{{ mark }}"},
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        {
+            "name": "nat64_translation_pool_address",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+nat64
+                \s+source
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+translation
+                \s+pool
+                \s+(?P<pool_id>\d+)
+                \s+address
+                \s+(?P<value>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "nat64 source rule {{ id }} translation pool {{ pool_id }} address {{ value }}",
+            "result": {
+                "nat64": {
+                    "source": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "translation": {
+                                    "pool": [{"id": "{{ pool_id }}", "address": "{{ value }}"}],
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        {
+            "name": "nat64_translation_pool_description",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+nat64
+                \s+source
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+translation
+                \s+pool
+                \s+(?P<pool_id>\d+)
+                \s+description
+                \s+(?P<value>.+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "nat64 source rule {{ id }} translation pool {{ pool_id }} description {{ value }}",
+            "result": {
+                "nat64": {
+                    "source": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "translation": {
+                                    "pool": [{"id": "{{ pool_id }}", "description": "{{ value }}"}],
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        {
+            "name": "nat64_translation_pool_disable",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+nat64
+                \s+source
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+translation
+                \s+pool
+                \s+(?P<pool_id>\d+)
+                \s+disable
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "nat64 source rule {{ id }} translation pool {{ pool_id }} disable",
+            "result": {
+                "nat64": {
+                    "source": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "translation": {
+                                    "pool": [{"id": "{{ pool_id }}", "disable": True}],
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        {
+            "name": "nat64_translation_pool_port",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+nat64
+                \s+source
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+translation
+                \s+pool
+                \s+(?P<pool_id>\d+)
+                \s+port
+                \s+(?P<value>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "nat64 source rule {{ id }} translation pool {{ pool_id }} port {{ value }}",
+            "result": {
+                "nat64": {
+                    "source": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "translation": {
+                                    "pool": [{"id": "{{ pool_id }}", "port": "{{ value }}"}],
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        {
+            "name": "nat64_translation_pool_protocol",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+nat64
+                \s+source
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+translation
+                \s+pool
+                \s+(?P<pool_id>\d+)
+                \s+protocol
+                \s+(?P<value>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "nat64 source rule {{ id }} translation pool {{ pool_id }} protocol {{ value }}",
+            "result": {
+                "nat64": {
+                    "source": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "translation": {
+                                    "pool": [{"id": "{{ pool_id }}", "protocol": "{{ value }}"}],
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        },
     ]
+
     # fmt: on

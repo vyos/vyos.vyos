@@ -46,7 +46,7 @@ class NatArgs(object):  # pylint: disable=R0903
                                                 "type": "dict",
                                                 "options": {
                                                     "port": {
-                                                        "type": "int",
+                                                        "type": "str",
                                                     },
                                                 },
                                             },
@@ -114,6 +114,29 @@ class NatArgs(object):  # pylint: disable=R0903
                                     "description": {
                                         "type": "str",
                                     },
+                                    "protocol": {
+                                        "type": "str",
+                                    },
+                                    "exclude": {
+                                        "type": "bool",
+                                    },
+                                    "log": {
+                                        "type": "bool",
+                                    },
+                                    "disable": {
+                                        "type": "bool",
+                                    },
+                                    "inbound_interface": {
+                                        "type": "dict",
+                                        "options": {
+                                            "name": {
+                                                "type": "str",
+                                            },
+                                            "group": {
+                                                "type": "str",
+                                            },
+                                        },
+                                    },
                                     "destination": {
                                         "type": "dict",
                                         "options": {
@@ -121,6 +144,9 @@ class NatArgs(object):  # pylint: disable=R0903
                                                 "type": "str",
                                             },
                                             "fqdn": {
+                                                "type": "str",
+                                            },
+                                            "port": {
                                                 "type": "str",
                                             },
                                             "group": {
@@ -143,20 +169,33 @@ class NatArgs(object):  # pylint: disable=R0903
                                                     },
                                                 },
                                             },
+                                        },
+                                    },
+                                    "translation": {
+                                        "type": "dict",
+                                        "options": {
+                                            "address": {
+                                                "type": "str",
+                                            },
                                             "port": {
                                                 "type": "str",
                                             },
-                                            "protocol": {
+                                            "redirect_port": {
                                                 "type": "str",
                                             },
-                                            "exclude": {
-                                                "type": "bool",
+                                            "address_mapping": {
+                                                "type": "str",
+                                                "choices": [
+                                                    "random",
+                                                    "persistent",
+                                                ],
                                             },
-                                            "log": {
-                                                "type": "bool",
-                                            },
-                                            "disable": {
-                                                "type": "bool",
+                                            "port_mapping": {
+                                                "type": "str",
+                                                "choices": [
+                                                    "random",
+                                                    "none",
+                                                ],
                                             },
                                         },
                                     },
@@ -178,6 +217,18 @@ class NatArgs(object):  # pylint: disable=R0903
                                     "description": {
                                         "type": "str",
                                     },
+                                    "protocol": {
+                                        "type": "str",
+                                    },
+                                    "exclude": {
+                                        "type": "bool",
+                                    },
+                                    "log": {
+                                        "type": "bool",
+                                    },
+                                    "disable": {
+                                        "type": "bool",
+                                    },
                                     "destination": {
                                         "type": "dict",
                                         "options": {
@@ -209,18 +260,6 @@ class NatArgs(object):  # pylint: disable=R0903
                                             },
                                             "port": {
                                                 "type": "str",
-                                            },
-                                            "protocol": {
-                                                "type": "str",
-                                            },
-                                            "exclude": {
-                                                "type": "bool",
-                                            },
-                                            "log": {
-                                                "type": "bool",
-                                            },
-                                            "disable": {
-                                                "type": "bool",
                                             },
                                         },
                                     },

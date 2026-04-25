@@ -28,6 +28,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.nat import (
     NatTemplate,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import combine
 
 
 # from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
@@ -70,14 +71,17 @@ class Nat(ResourceModule):
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
 
-        self._module.fail_json(msg={"want": wantd, " ******** have": haved})
+        #     wantd = self._ntp_list_to_dict(self.want)
+        #     haved = self._ntp_list_to_dict(self.have)
 
-    #     wantd = self._ntp_list_to_dict(self.want)
-    #     haved = self._ntp_list_to_dict(self.have)
+        # if state is merged, merge want onto have and then compare
+        if self.state == "merged":
+            # wantd = dict_merge(haved, wantd)
+            wantd = combine(haved, wantd, recursive=True, list_merge="append_rp")
 
-    #     # if state is merged, merge want onto have and then compare
-    #     if self.state == "merged":
-    #         wantd = dict_merge(haved, wantd)
+        # self._module.fail_json(msg={"want": wantd, " ******** have": haved, "******** original want": self.want})
+        # self._module.fail_json(msg={"want": wantd, " ******** have": haved})
+        self._module.fail_json(msg={"have": haved})
 
     #     # if state is deleted, empty out wantd and set haved to wantd
     #     if self.state == "deleted":
