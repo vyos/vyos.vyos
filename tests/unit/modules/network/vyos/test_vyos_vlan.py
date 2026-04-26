@@ -26,35 +26,7 @@ from unittest.mock import patch
 from ansible_collections.vyos.vyos.plugins.modules import vyos_vlan
 from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
 
-from .vyos_module import TestVyosModule
-
-
-# show interfaces output with eth0.100 (vlan 100, description vlan-100)
-# and eth1.200 (vlan 200, ip 192.0.2.1/24, description vlan-200).
-# The parser skips the first 3 lines (Codes line, header, dashes).
-SHOW_INTERFACES_OUTPUT = """\
-Codes: S - State, L - Link, u - Up, D - Down, A - Admin Down
-Interface        IP Address                        S/L  Description
----------        ----------                        ---  -----------
-eth0             10.0.2.15/24                      u/u
-eth0.100         -                                 u/u  vlan-100
-eth1             -                                 u/u
-eth1.200         192.0.2.1/24                      u/u  vlan-200
-eth2             -                                 u/u
-lo               127.0.0.1/8                       u/u
-                 ::1/128
-"""
-
-# Empty show interfaces — no VLANs configured.
-SHOW_INTERFACES_EMPTY = """\
-Codes: S - State, L - Link, u - Up, D - Down, A - Admin Down
-Interface        IP Address                        S/L  Description
----------        ----------                        ---  -----------
-eth0             10.0.2.15/24                      u/u
-eth1             -                                 u/u
-eth2             -                                 u/u
-lo               127.0.0.1/8                       u/u
-"""
+from .vyos_module import TestVyosModule, load_fixture
 
 
 class TestVyosVlanModule(TestVyosModule):
@@ -81,9 +53,13 @@ class TestVyosVlanModule(TestVyosModule):
     def load_fixtures(self, commands=None, filename=None):
         self.load_config.return_value = dict(diff=None, session="session")
         if filename == "empty":
-            self.run_commands.return_value = [SHOW_INTERFACES_EMPTY]
+            self.run_commands.return_value = [
+                load_fixture("vyos_vlan_show_interfaces_empty.cfg"),
+            ]
         else:
-            self.run_commands.return_value = [SHOW_INTERFACES_OUTPUT]
+            self.run_commands.return_value = [
+                load_fixture("vyos_vlan_show_interfaces.cfg"),
+            ]
 
     def test_vyos_vlan_present(self):
         """Create a new VLAN with a description on eth2 (not in have)."""
