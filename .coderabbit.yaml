@@ -55,7 +55,8 @@ reviews:
         a Phorge task at vyos.dev. Every PR must include a changelog fragment in
         changelogs/fragments/ (YAML, valid keys: major_changes, minor_changes,
         breaking_changes, deprecated_features, removed_features, security_fixes,
-        bugfixes, doc_changes, trivial). Style: black line-length=100, isort
+        bugfixes, known_issues, doc_changes, trivial; plus release_summary as a
+        prelude section). Style: black line-length=100, isort
         profile=black line_length=100, flake8 max-line-length=120. Do not suggest
         88-char wrapping.
 
@@ -151,12 +152,13 @@ reviews:
         in config classes, not the action plugin.
 
     # ── Changelog fragments ────────────────────────────────────────────
-    - path: 'changelogs/fragments/*.yaml'
+    - path: 'changelogs/fragments/*.{yaml,yml}'
       instructions: |
         Changelog fragments for ansible-changelog. Valid top-level keys:
         major_changes, minor_changes, breaking_changes, deprecated_features,
-        removed_features, security_fixes, bugfixes, doc_changes, trivial.
-        Fragment filename should be descriptive (e.g., fix-bgp-neighbor-timers.yaml).
+        removed_features, security_fixes, bugfixes, known_issues, doc_changes,
+        trivial. release_summary is a prelude section (one per release).
+        Fragment filename should be descriptive (e.g., fix-bgp-neighbor-timers.yml).
         Use `trivial` for tooling/housekeeping. Entries should be complete sentences.
 
     # ── CI workflows ───────────────────────────────────────────────────
@@ -505,7 +507,7 @@ code_generation:
           ```
 
           Legacy modules (vyos_command, vyos_config, vyos_facts, vyos_banner,
-          vyos_ping, vyos_system, vyos_user, vyos_vlan, vyos_vrf) do not use
+          vyos_ping, vyos_system, vyos_user, vyos_vlan) do not use
           resource module states. Test: successful execution, error handling,
           idempotency where applicable, and specific module features (e.g.,
           vyos_command wait_for/retries, vyos_config src/lines/match).
