@@ -255,6 +255,18 @@ knowledge_base:
     scope: auto
   pull_requests:
     scope: auto
+  linked_repositories:
+    - repository: "ansible/ansible"
+      instructions: >
+        Core Ansible framework. Reference for module_utils base classes,
+        plugin interfaces (cliconf, terminal, action), module documentation
+        conventions (DOCUMENTATION/EXAMPLES/RETURN YAML blocks), and
+        ansible-test sanity requirements.
+    - repository: "ansible-collections/ansible.netcommon"
+      instructions: >
+        Network common collection. Contains ConfigBase, ResourceModule,
+        FactsBase, NetworkTemplate, and get_resource_connection — the base
+        classes and utilities that vyos.vyos modules directly extend.
 
 code_generation:
   docstrings:
