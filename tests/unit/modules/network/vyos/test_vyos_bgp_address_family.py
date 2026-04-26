@@ -18,7 +18,6 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
-
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -701,13 +700,13 @@ class TestVyosBgpafOpsModule13(TestVyosModule):
                             ],
                             redistribute=[
                                 dict(protocol="ospf", metric=25),
-                            ]
+                            ],
                         ),
                         dict(
                             afi="ipv6",
                             redistribute=[
                                 dict(protocol="ospfv3", metric=20),
-                                dict(protocol="ripng")
+                                dict(protocol="ripng"),
                             ],
                         ),
                     ],
@@ -738,13 +737,13 @@ class TestVyosBgpafOpsModule13(TestVyosModule):
                             ],
                             redistribute=[
                                 dict(protocol="ospf", metric=25),
-                            ]
+                            ],
                         ),
                         dict(
                             afi="ipv6",
                             redistribute=[
                                 dict(protocol="ospfv3", metric=20),
-                                dict(protocol="ripng")
+                                dict(protocol="ripng"),
                             ],
                         ),
                     ],
@@ -772,7 +771,7 @@ class TestVyosBgpafOpsModule13(TestVyosModule):
                             afi="ipv4",
                             networks=[
                                 dict(prefix="192.2.13.0/24"),
-                            ]
+                            ],
                         ),
                         dict(
                             afi="ipv6",

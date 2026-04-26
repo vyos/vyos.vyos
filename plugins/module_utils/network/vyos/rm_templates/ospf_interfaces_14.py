@@ -31,9 +31,7 @@ def _get_parameters(data):
 
 def _tmplt_ospf_int_delete(config_data):
     params = _get_parameters(config_data["address_family"])
-    command = (
-        "protocols " + params[0] + " interface {name}".format(**config_data)
-    )
+    command = "protocols " + params[0] + " interface {name}".format(**config_data)
 
     return command
 
@@ -81,10 +79,7 @@ def _tmplt_ospf_int_auth_md5(config_data):
 def _tmplt_ospf_int_auth_md5_delete(config_data):
     params = _get_parameters(config_data["address_family"])
     command = (
-        "protocols "
-        + params[0]
-        + " interface {name}".format(**config_data)
-        + " authentication"
+        "protocols " + params[0] + " interface {name}".format(**config_data) + " authentication"
     )
 
     return command
@@ -128,12 +123,7 @@ def _tmplt_ospf_int_dead_interval(config_data):
 
 def _tmplt_ospf_int_mtu_ignore(config_data):
     params = _get_parameters(config_data["address_family"])
-    command = (
-        "protocols "
-        + params[0]
-        + " interface {name}".format(**config_data)
-        + " mtu-ignore"
-    )
+    command = "protocols " + params[0] + " interface {name}".format(**config_data) + " mtu-ignore"
 
     return command
 
@@ -212,12 +202,7 @@ def _tmplt_ospf_int_instance(config_data):
 
 def _tmplt_ospf_int_passive(config_data):
     params = _get_parameters(config_data["address_family"])
-    command = (
-        "protocols "
-        + params[0]
-        + " interface {name}".format(**config_data)
-        + " passive"
-    )
+    command = "protocols " + params[0] + " interface {name}".format(**config_data) + " passive"
 
     return command
 
