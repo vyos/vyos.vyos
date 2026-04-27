@@ -77,13 +77,15 @@ class Firewall_globalFacts(object):
         :rtype: dictionary
         :returns: The generated config
         """
+
         conf = "\n".join(
             filter(
-                lambda x: ("firewall ipv6-name" and "firewall name" not in x),
+                lambda x: not (
+                    x.startswith("set firewall ipv6 name") or x.startswith("set firewall ipv6 name")
+                ),
                 conf,
             ),
         )
-
         a_lst = [
             "config_trap",
             "validation",
@@ -97,6 +99,7 @@ class Firewall_globalFacts(object):
             "group": self.parse_group(conf),
             "route_redirects": self.route_redirects(conf),
             "state_policy": self.parse_state_policy(conf),
+            "zone": self.parse_zone(conf),
         }
         firewall.update(f_sub)
         return firewall
@@ -400,3 +403,113 @@ class Firewall_globalFacts(object):
             "twa_hazards_protection",
         )
         return True if attrib in bool_set else False
+
+    def parse_zone(self, conf):
+        """
+        This function triggers the parsing of 'zone' attributes.
+        :param conf: configuration.
+        :return: generated config dictionary.
+        """
+        cfg_dict = {}
+
+        KEY_MAP = {
+            "interface": "interfaces",
+            "intra-zone-filtering": "intra-zone-filtering",
+            "from": "sources",
+        }
+
+        LIST_ATTRS = {
+            "interfaces",
+            "intra_zone_filtering",
+            "sources",
+        }
+
+        for line in conf.splitlines():
+
+            m = search(
+                r"^set firewall zone (?P<zone>\S+)\s+(?P<attr>[a-z-]+)(?:\s+(?P<value>'[^']+'|[^\n]+))?$",
+                line,
+            )
+            if not m:
+                continue
+
+            zone_name = m.group("zone")
+            raw_attr = m.group("attr").replace("-", "_")
+            value = m.group("value")
+
+            if value is None:
+                value = True
+            else:
+                value = value.strip("'")
+
+            zone = cfg_dict.setdefault(zone_name, {"name": zone_name})
+
+            attr = KEY_MAP.get(raw_attr, raw_attr)
+
+            if attr in LIST_ATTRS:
+                if attr == "intra_zone_filtering":
+                    izf = zone.setdefault(attr, {})
+                    izf_attr = self._parse_izf(value)
+                    for k, v in izf_attr.items():
+                        if isinstance(v, dict):
+                            izf.setdefault(k, {}).update(v)
+                        else:
+                            izf[k] = v
+                elif attr == "sources":
+                    self._parse_sources(zone, value)
+                else:
+                    zone.setdefault(attr, []).append(value)
+            else:
+                zone[attr] = value
+
+        # self._module.fail_json(msg={"cfg_dict": cfg_dict})
+
+        return list(cfg_dict.values())
+
+    def _parse_izf(self, value):
+
+        tokens = value.replace("'", "").split()
+
+        result = {}
+
+        key = tokens[0].replace("-", "_")
+
+        if len(tokens) == 2:
+            result[key] = tokens[1]
+
+        elif len(tokens) >= 3:
+            subkey = tokens[1].replace("-", "_")
+            result[key] = {subkey: tokens[2]}
+
+        return result
+
+    def _parse_sources(self, zone, value):
+
+        tokens = value.split()
+
+        if len(tokens) < 1:
+            return
+
+        src_zone = tokens[0]
+
+        sources = zone.setdefault("sources", [])
+
+        entry = None
+        for s in sources:
+            if s.get("zone") == src_zone:
+                entry = s
+                break
+
+        if entry is None:
+            entry = {"zone": src_zone}
+            sources.append(entry)
+
+        if len(tokens) == 1:
+            return
+
+        if tokens[1] == "firewall" and len(tokens) >= 4:
+            key = tokens[2].replace("-", "_")
+            val = tokens[3].strip("'")
+
+            firewall = entry.setdefault("firewall", {})
+            firewall[key] = val
