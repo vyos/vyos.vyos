@@ -77,12 +77,6 @@ class Firewall_globalFacts(object):
         :rtype: dictionary
         :returns: The generated config
         """
-        # conf = "\n".join(
-        #     filter(
-        #         lambda x: ("firewall ipv6-name" and "firewall name" not in x),
-        #         conf,
-        #     ),
-        # )
 
         conf = "\n".join(
             filter(
