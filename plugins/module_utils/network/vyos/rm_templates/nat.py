@@ -660,7 +660,7 @@ class NatTemplate(NetworkTemplate):
                 r"""
                 ^set
                 \s+nat
-                \s+(?P<type>destination|source|static)
+                \s+(?P<type>destination|source)
                 \s+rule
                 \s+(?P<id>\S+)
                 \s+inbound-interface
@@ -689,7 +689,7 @@ class NatTemplate(NetworkTemplate):
                 r"""
                 ^set
                 \s+nat
-                \s+(?P<type>destination|source|static)
+                \s+(?P<type>destination|source)
                 \s+rule
                 \s+(?P<id>\S+)
                 \s+inbound-interface
@@ -706,6 +706,35 @@ class NatTemplate(NetworkTemplate):
                             {
                                 "id": "{{ id }}",
                                 "inbound_interface": {"group": "{{ value }}"},
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+
+        {
+            "name": "nat_static_inbound_interface",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+nat
+                \s+static
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+inbound-interface
+                \s+(?P<value>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "nat static rule {{ id }} inbound-interface {{ value }}",
+            "result": {
+                "nat": {
+                    "static": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "inbound_interface": "{{ value }}",
                             },
                         ],
                     },
@@ -744,13 +773,14 @@ class NatTemplate(NetworkTemplate):
             },
         },
 
+
         # outbound interface
         {
             "name": "nat_type_outbound_interface",
             "getval": re.compile(
                 r"""
                 ^set
-                \s+(?P<nat>nat64|nat66)
+                \s+(?P<nat>nat|nat64|nat66)
                 \s+(?P<type>destination|source|static)
                 \s+rule
                 \s+(?P<id>\S+)
@@ -767,14 +797,74 @@ class NatTemplate(NetworkTemplate):
                         "rule": [
                             {
                                 "id": "{{ id }}",
-                                "outbound_interface": "{{ value }}",
+                                "outbound_interface": {"name": "{{ value }}"},
                             },
                         ],
                     },
                 },
             },
         },
-
+        {
+            "name": "nat_type_outbound_interface_group",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+(?P<nat>nat|nat64|nat66)
+                \s+(?P<type>destination|source|static)
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+outbound-interface
+                \s+group
+                \s+(?P<value>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "{{ nat }} {{ type }} rule {{ id }} outbound-interface group {{ value }}",
+            "result": {
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "outbound_interface": {"group": "{{ value }}"},
+                            },
+                        ],
+                    },
+                },
+            },
+        },
+        {
+            "name": "nat_type_address_group",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+(?P<nat>nat|nat64|nat66)
+                \s+(?P<type>destination|source)
+                \s+rule
+                \s+(?P<id>\S+)
+                \s+(?P<atype>destination|source)
+                \s+group
+                \s+(?P<gtype>address-group|domain-group|mac-group|network-group|port-group)
+                \s+(?P<value>\S+)
+                $""",
+                re.VERBOSE,
+            ),
+            "setval": "{{ nat }} {{ type }} rule {{ id }} {{ atype }} group {{ gtype }} {{ value }}",
+            "result": {
+                "{{ nat }}": {
+                    "{{ type }}": {
+                        "rule": [
+                            {
+                                "id": "{{ id }}",
+                                "{{ atype }}": {
+                                    "{{ gtype | replace('-', '_') }}": "{{ value }}",
+                                },
+                            },
+                        ],
+                    },
+                },
+            },
+        },
         # packet type
         {
             "name": "nat_type_packet_type",

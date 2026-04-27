@@ -117,6 +117,9 @@ class NatArgs(object):  # pylint: disable=R0903
                                     "protocol": {
                                         "type": "str",
                                     },
+                                    "packet_type": {
+                                        "type": "str",
+                                    },
                                     "exclude": {
                                         "type": "bool",
                                     },
@@ -149,25 +152,20 @@ class NatArgs(object):  # pylint: disable=R0903
                                             "port": {
                                                 "type": "str",
                                             },
-                                            "group": {
-                                                "type": "dict",
-                                                "options": {
-                                                    "address_group": {
-                                                        "type": "str",
-                                                    },
-                                                    "domain_group": {
-                                                        "type": "str",
-                                                    },
-                                                    "mac_group": {
-                                                        "type": "str",
-                                                    },
-                                                    "network_group": {
-                                                        "type": "str",
-                                                    },
-                                                    "port_group": {
-                                                        "type": "str",
-                                                    },
-                                                },
+                                            "address_group": {
+                                                "type": "str",
+                                            },
+                                            "domain_group": {
+                                                "type": "str",
+                                            },
+                                            "mac_group": {
+                                                "type": "str",
+                                            },
+                                            "network_group": {
+                                                "type": "str",
+                                            },
+                                            "port_group": {
+                                                "type": "str",
                                             },
                                         },
                                     },
@@ -220,6 +218,9 @@ class NatArgs(object):  # pylint: disable=R0903
                                     "protocol": {
                                         "type": "str",
                                     },
+                                    "packet_type": {
+                                        "type": "str",
+                                    },
                                     "exclude": {
                                         "type": "bool",
                                     },
@@ -228,6 +229,17 @@ class NatArgs(object):  # pylint: disable=R0903
                                     },
                                     "disable": {
                                         "type": "bool",
+                                    },
+                                    "outbound_interface": {
+                                        "type": "dict",
+                                        "options": {
+                                            "name": {
+                                                "type": "str",
+                                            },
+                                            "group": {
+                                                "type": "str",
+                                            },
+                                        },
                                     },
                                     "destination": {
                                         "type": "dict",
@@ -238,28 +250,61 @@ class NatArgs(object):  # pylint: disable=R0903
                                             "fqdn": {
                                                 "type": "str",
                                             },
-                                            "group": {
-                                                "type": "dict",
-                                                "options": {
-                                                    "address_group": {
-                                                        "type": "str",
-                                                    },
-                                                    "domain_group": {
-                                                        "type": "str",
-                                                    },
-                                                    "mac_group": {
-                                                        "type": "str",
-                                                    },
-                                                    "network_group": {
-                                                        "type": "str",
-                                                    },
-                                                    "port_group": {
-                                                        "type": "str",
-                                                    },
-                                                },
+                                            "address_group": {
+                                                "type": "str",
+                                            },
+                                            "domain_group": {
+                                                "type": "str",
+                                            },
+                                            "mac_group": {
+                                                "type": "str",
+                                            },
+                                            "network_group": {
+                                                "type": "str",
+                                            },
+                                            "port_group": {
+                                                "type": "str",
                                             },
                                             "port": {
                                                 "type": "str",
+                                            },
+                                        },
+                                    },
+                                    "source": {
+                                        "type": "dict",
+                                        "options": {
+                                            "address": {"type": "str"},
+                                            "fqdn": {"type": "str"},
+                                            "port": {"type": "str"},
+                                            "address_group": {"type": "str"},
+                                            "domain_group": {"type": "str"},
+                                            "mac_group": {"type": "str"},
+                                            "network_group": {"type": "str"},
+                                            "port_group": {"type": "str"},
+                                        },
+                                    },
+                                    "translation": {
+                                        "type": "dict",
+                                        "options": {
+                                            "address": {
+                                                "type": "str",
+                                            },
+                                            "port": {
+                                                "type": "str",
+                                            },
+                                            "address_mapping": {
+                                                "type": "str",
+                                                "choices": [
+                                                    "random",
+                                                    "persistent",
+                                                ],
+                                            },
+                                            "port_mapping": {
+                                                "type": "str",
+                                                "choices": [
+                                                    "random",
+                                                    "none",
+                                                ],
                                             },
                                         },
                                     },
@@ -293,9 +338,6 @@ class NatArgs(object):  # pylint: disable=R0903
                                         "type": "str",
                                     },
                                     "log": {
-                                        "type": "bool",
-                                    },
-                                    "disable": {
                                         "type": "bool",
                                     },
                                     "translation": {
@@ -336,7 +378,7 @@ class NatArgs(object):  # pylint: disable=R0903
                                         "type": "dict",
                                         "options": {
                                             "mark": {
-                                                "type": "int",
+                                                "type": "str",
                                             },
                                         },
                                     },
