@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - Add unit tests for vyos_l3_interfaces, vyos_lldp_interfaces, and vyos_vlan modules.
