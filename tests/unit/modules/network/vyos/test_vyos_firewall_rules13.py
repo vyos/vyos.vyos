@@ -1576,3 +1576,17 @@ class TestVyosFirewallRulesModule13(TestVyosModule):
         ]
         self.maxDiff = None
         self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_rules_parsed_icmp_type_code(self):
+        """parse_icmp_attr: legacy 'type/code' token parses into integer type and code."""
+        raw = (
+            "set firewall name TEST rule 1 action 'accept'\n"
+            "set firewall name TEST rule 1 protocol 'icmp'\n"
+            "set firewall name TEST rule 1 icmp type '3/4'\n"
+        )
+        set_module_args(dict(running_config=raw, state="parsed"))
+        result = self.execute_module(changed=False)
+        parsed = result["parsed"]
+        rule = parsed[0]["rule_sets"][0]["rules"][0]
+        self.assertEqual(rule["icmp"]["type"], 3)
+        self.assertEqual(rule["icmp"]["code"], 4)
