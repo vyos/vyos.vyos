@@ -17,7 +17,7 @@ Version added: 1.0.0
 
 Synopsis
 --------
-- This module manages NAT configuration on devices running Vyos
+- This module manages NAT configuration on devices running VyOS.
 
 
 
@@ -100,7 +100,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>Whether to log CGNAT address allocations.</div>
+                        <div>Log CGNAT address allocations.</div>
                 </td>
             </tr>
             <tr>
@@ -214,7 +214,7 @@ Parameters
                     <b>port</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">integer</span>
+                        <span style="color: purple">string</span>
                     </div>
                 </td>
                 <td>
@@ -365,7 +365,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Source configuration for CGNAT translation.</div>
+                        <div>Source pool configuration for CGNAT translation.</div>
                 </td>
             </tr>
                                 <tr>
@@ -385,7 +385,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Source pool to use for CGNAT translation.</div>
+                        <div>Source pool name to use for CGNAT translation.</div>
                 </td>
             </tr>
 
@@ -405,7 +405,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Translation configuration for CGNAT.</div>
+                        <div>Translation pool configuration for CGNAT.</div>
                 </td>
             </tr>
                                 <tr>
@@ -425,7 +425,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Translation pool to use for CGNAT translation.</div>
+                        <div>Translation pool name to use for CGNAT translation.</div>
                 </td>
             </tr>
 
@@ -522,7 +522,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>IP address, subnet, or range to match for destination NAT.</div>
+                        <div>IP address, subnet, or range to match.</div>
                 </td>
             </tr>
             <tr>
@@ -532,6 +532,146 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                 <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>address_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Address group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>domain_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Domain group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>fqdn</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Fully qualified domain name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>mac_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>MAC address group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>network_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Network group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>port</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Port number or range to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>port_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Port group name to match.</div>
+                </td>
+            </tr>
+
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>disable</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -554,8 +694,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>exclude</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -578,22 +717,41 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>fqdn</b>
+                    <b>id</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">string</span>
+                        <span style="color: purple">integer</span>
+                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
-                        <div>Fully qualified domain name to match for destination NAT.</div>
+                        <div>Rule number for destination NAT.</div>
                 </td>
             </tr>
             <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>inbound_interface</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Match inbound interface.</div>
+                </td>
+            </tr>
+                                <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
@@ -604,34 +762,13 @@ Parameters
                     <b>group</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">dictionary</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Address/network/port group to match for destination NAT.</div>
-                </td>
-            </tr>
-                                <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>address_group</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
                         <span style="color: purple">string</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
-                        <div>Address group name to match.</div>
+                        <div>Interface group to match.</div>
                 </td>
             </tr>
             <tr>
@@ -640,10 +777,9 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>domain_group</b>
+                    <b>name</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
@@ -652,70 +788,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Domain group name to match.</div>
-                </td>
-            </tr>
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>mac_group</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>MAC address group name to match.</div>
-                </td>
-            </tr>
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>network_group</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Network group name to match.</div>
-                </td>
-            </tr>
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>port_group</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">string</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Port group name to match.</div>
+                        <div>Interface name to match.</div>
                 </td>
             </tr>
 
@@ -724,8 +797,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>log</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -740,7 +812,108 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>Log packets hitting this destination NAT rule.</div>
+                        <div>Log packets hitting this rule.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>packet_type</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Packet type to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>protocol</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Protocol to NAT (default all).</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>translation</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Translation configuration for destination NAT.</div>
+                </td>
+            </tr>
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>address</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>IP address or prefix to translate destination to.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>address_mapping</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>random</li>
+                                    <li>persistent</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Address mapping mode for translation.</div>
                 </td>
             </tr>
             <tr>
@@ -760,7 +933,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Port number or range for destination NAT.</div>
+                        <div>Port number or range to translate destination port to.</div>
                 </td>
             </tr>
             <tr>
@@ -771,7 +944,31 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>protocol</b>
+                    <b>port_mapping</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>random</li>
+                                    <li>none</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Port mapping mode for translation.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>redirect_port</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
@@ -780,30 +977,10 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Protocol to match (TCP, UDP, ICMP, etc.).</div>
+                        <div>Redirect to local port number.</div>
                 </td>
             </tr>
 
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="3">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>id</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">integer</span>
-                         / <span style="color: red">required</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Rule number for destination NAT.</div>
-                </td>
-            </tr>
 
 
             <tr>
@@ -877,7 +1054,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Match criteria for source NAT.</div>
+                        <div>Destination match criteria for source NAT.</div>
                 </td>
             </tr>
                                 <tr>
@@ -897,7 +1074,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>IP address, subnet, or range to match for source NAT.</div>
+                        <div>IP address, subnet, or range to match.</div>
                 </td>
             </tr>
             <tr>
@@ -907,6 +1084,146 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                 <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>address_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Address group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>domain_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Domain group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>fqdn</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Fully qualified domain name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>mac_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>MAC address group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>network_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Network group name to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>port</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Port number or range to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>port_group</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Port group name to match.</div>
+                </td>
+            </tr>
+
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>disable</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -929,8 +1246,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>exclude</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -953,22 +1269,64 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="2">
+                <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>fqdn</b>
+                    <b>id</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">string</span>
+                        <span style="color: purple">integer</span>
+                         / <span style="color: red">required</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
-                        <div>Fully qualified domain name to match for source NAT.</div>
+                        <div>Rule number for source NAT.</div>
                 </td>
             </tr>
             <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>log</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>no</li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Log packets hitting this rule.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>outbound_interface</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Match outbound interface.</div>
+                </td>
+            </tr>
+                                <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
@@ -979,13 +1337,91 @@ Parameters
                     <b>group</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Interface group to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>name</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Interface name to match.</div>
+                </td>
+            </tr>
+
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>packet_type</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Packet type to match.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>protocol</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Protocol to NAT (default all).</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>source</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
                         <span style="color: purple">dictionary</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
-                        <div>Address/network/port group to match for source NAT.</div>
+                        <div>Source match criteria for source NAT.</div>
                 </td>
             </tr>
                                 <tr>
@@ -994,8 +1430,27 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>address</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>IP address, subnet, or range to match.</div>
+                </td>
+            </tr>
+            <tr>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>address_group</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -1015,8 +1470,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>domain_group</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -1036,8 +1490,27 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>fqdn</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Fully qualified domain name to match.</div>
+                </td>
+            </tr>
+            <tr>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>mac_group</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -1057,8 +1530,7 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>network_group</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -1078,8 +1550,27 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>port</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Port number or range to match.</div>
+                </td>
+            </tr>
+            <tr>
                     <td class="elbow-placeholder"></td>
-                <td colspan="1">
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>port_group</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
@@ -1099,23 +1590,62 @@ Parameters
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>translation</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>Translation configuration for source NAT.</div>
+                </td>
+            </tr>
+                                <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>log</b>
+                    <b>address</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">boolean</span>
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>IP address or prefix to translate source to. Use masquerade to masquerade as the outbound interface address.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>address_mapping</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
                     </div>
                 </td>
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>no</li>
-                                    <li>yes</li>
+                                    <li>random</li>
+                                    <li>persistent</li>
                         </ul>
                 </td>
                 <td>
-                        <div>Log packets hitting this source NAT rule.</div>
+                        <div>Address mapping mode for translation.</div>
                 </td>
             </tr>
             <tr>
@@ -1135,7 +1665,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Port number or range for source NAT.</div>
+                        <div>Port number or range to translate source port to.</div>
                 </td>
             </tr>
             <tr>
@@ -1146,39 +1676,23 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>protocol</b>
+                    <b>port_mapping</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
                         <span style="color: purple">string</span>
                     </div>
                 </td>
                 <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>random</li>
+                                    <li>none</li>
+                        </ul>
                 </td>
                 <td>
-                        <div>Protocol to match (TCP, UDP, ICMP, etc.).</div>
+                        <div>Port mapping mode for translation.</div>
                 </td>
             </tr>
 
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="3">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>id</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">integer</span>
-                         / <span style="color: red">required</span>
-                    </div>
-                </td>
-                <td>
-                </td>
-                <td>
-                        <div>Rule number for source NAT.</div>
-                </td>
-            </tr>
 
 
             <tr>
@@ -1195,7 +1709,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Configuration for static NAT rules.</div>
+                        <div>Configuration for static one-to-one NAT rules.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1272,33 +1786,10 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>IP address, subnet, or range to match for static NAT.</div>
+                        <div>IP address, subnet, or range to match.</div>
                 </td>
             </tr>
 
-            <tr>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                    <td class="elbow-placeholder"></td>
-                <td colspan="3">
-                    <div class="ansibleOptionAnchor" id="parameter-"></div>
-                    <b>disable</b>
-                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
-                    <div style="font-size: small">
-                        <span style="color: purple">boolean</span>
-                    </div>
-                </td>
-                <td>
-                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>no</li>
-                                    <li>yes</li>
-                        </ul>
-                </td>
-                <td>
-                        <div>Disable this static NAT rule.</div>
-                </td>
-            </tr>
             <tr>
                     <td class="elbow-placeholder"></td>
                     <td class="elbow-placeholder"></td>
@@ -1316,7 +1807,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Rule number for static NAT (one-to-one).</div>
+                        <div>Rule number for static NAT.</div>
                 </td>
             </tr>
             <tr>
@@ -1335,7 +1826,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>List of inbound interfaces that this static NAT rule applies to.</div>
+                        <div>Inbound interface that this static NAT rule applies to.</div>
                 </td>
             </tr>
             <tr>
@@ -1417,7 +1908,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Configuration for NAT64 (IPv6-to-IPv4 NAT) rules.</div>
+                        <div>Configuration for NAT64 (IPv6-to-IPv4) rules.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1515,7 +2006,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Rule number for NAT64 source rule.</div>
+                        <div>Rule number for NAT64 source rule (1-999999).</div>
                 </td>
             </tr>
             <tr>
@@ -1548,7 +2039,7 @@ Parameters
                     <b>mark</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">integer</span>
+                        <span style="color: purple">string</span>
                     </div>
                 </td>
                 <td>
@@ -1574,7 +2065,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Source prefix to match for NAT64 translation.</div>
+                        <div>IPv6 source prefix to match for NAT64 translation.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1792,7 +2283,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Configuration for NAT66 (IPv6-to-IPv6 NAT) rules.</div>
+                        <div>Configuration for NAT66 (IPv6-to-IPv6) rules.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1886,7 +2377,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>IPv6 address or prefix to match. Supports single address (h:h:h:h:h:h:h:h), prefix (h:h:h:h:h:h:h:h/x), and negated forms (!h:h:h:h:h:h:h:h, !h:h:h:h:h:h:h:h/x).</div>
+                        <div>IPv6 address or prefix to match.</div>
                 </td>
             </tr>
             <tr>
@@ -1906,7 +2397,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Port number, range, or name to match.</div>
+                        <div>Port number or range to match.</div>
                 </td>
             </tr>
 
@@ -2012,7 +2503,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Interface name to match. Supports wildcard (txt*) and negated (!text) forms.</div>
+                        <div>Interface name to match.</div>
                 </td>
             </tr>
 
@@ -2055,7 +2546,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Protocol to match. Supports named protocols, numeric (0-255), negated (!protocol), all, and tcp_udp.</div>
+                        <div>Protocol to match.</div>
                 </td>
             </tr>
             <tr>
@@ -2094,7 +2585,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>IPv6 source address or prefix to match. Supports single address, prefix, and negated forms.</div>
+                        <div>IPv6 source address or prefix to match.</div>
                 </td>
             </tr>
             <tr>
@@ -2114,7 +2605,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Source port number, range, or name to match.</div>
+                        <div>Source port number or range to match.</div>
                 </td>
             </tr>
 
@@ -2271,7 +2762,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Destination port number, range, or name to match.</div>
+                        <div>Destination port number or range to match.</div>
                 </td>
             </tr>
             <tr>
@@ -2291,7 +2782,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>IPv6 destination prefix to match (h:h:h:h:h:h:h:h/x). Supports negated form (!h:h:h:h:h:h:h:h/x).</div>
+                        <div>IPv6 destination prefix to match (h:h:h:h:h:h:h:h/x).</div>
                 </td>
             </tr>
 
@@ -2420,7 +2911,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Interface name to match. Supports wildcard (txt*) and negated (!text) forms.</div>
+                        <div>Interface name to match.</div>
                 </td>
             </tr>
 
@@ -2440,7 +2931,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Protocol to match. Supports named protocols, numeric (0-255), negated (!protocol), all, and tcp_udp.</div>
+                        <div>Protocol to match.</div>
                 </td>
             </tr>
             <tr>
@@ -2479,7 +2970,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Source port number, range, or name to match.</div>
+                        <div>Source port number or range to match.</div>
                 </td>
             </tr>
             <tr>
@@ -2499,7 +2990,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>IPv6 source prefix to match (h:h:h:h:h:h:h:h/x). Supports negated form (!h:h:h:h:h:h:h:h/x).</div>
+                        <div>IPv6 source prefix to match (h:h:h:h:h:h:h:h/x).</div>
                 </td>
             </tr>
 
@@ -2580,9 +3071,9 @@ Parameters
                 </td>
                 <td>
                         <div>This option is used only with state <em>parsed</em>.</div>
-                        <div>The value of this option should be the output received from the VYOS device by executing the command <b>show configuration commands | grep nat</b>.</div>
+                        <div>The value of this option should be the output received from the VyOS device by executing the command <b>show configuration commands | grep nat</b>.</div>
+                        <div>The state <em>parsed</em> reads the configuration from <code>show configuration commands | grep nat</code> and transforms it into Ansible structured data as per the module argspec. The value is then returned in the <em>parsed</em> key within the result.</div>
                         <div>The states <em>replaced</em> and <em>overridden</em> have identical behaviour for this module.</div>
-                        <div>The state <em>parsed</em> reads the configuration from <code>show configuration commands | grep nat</code> option and transforms it into Ansible structured data as per the resource module&#x27;s argspec and the value is then returned in the <em>parsed</em> key within the result.</div>
                 </td>
             </tr>
             <tr>
@@ -2617,7 +3108,7 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025
+   - Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025.
    - This module works with connection ``network_cli``.
 
 
@@ -2627,14 +3118,124 @@ Examples
 
 .. code-block:: yaml
 
-    # Using merged
-    - name: Merge NAT source rule
+    # Using merged - configure CGNAT
+    - name: Merge CGNAT configuration
       vyos.vyos.vyos_nat:
         config:
-          source:
-            rule:
-              - id: 100
-                description: "Outbound masquerade"
+          nat:
+            cgnat:
+              log_allocation: true
+              pool:
+                external:
+                  - name: ext-pool-1
+                    external_port_range: "10000-20000"
+                    per_user_limit:
+                      port: "200"
+                    range:
+                      - 203.0.113.0/24
+                internal:
+                  - name: int-pool-1
+                    range:
+                      - 10.0.0.0/24
+              rule:
+                - id: 1
+                  source:
+                    pool: int-pool-1
+                  translation:
+                    pool: ext-pool-1
+        state: merged
+
+    # Using merged - configure destination NAT
+    - name: Merge destination NAT rule
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 100
+                  description: "Web server NAT"
+                  protocol: tcp
+                  log: true
+                  destination:
+                    address: 198.51.100.10
+                    port: "80"
+                  translation:
+                    address: 192.168.1.10
+                    port: "8080"
+        state: merged
+
+    # Using merged - configure source NAT
+    - name: Merge source NAT rule
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            source:
+              rule:
+                - id: 200
+                  description: "Outbound masquerade"
+                  protocol: tcp
+                  log: true
+                  outbound_interface:
+                    name: eth0
+                  translation:
+                    address: masquerade
+        state: merged
+
+    # Using merged - configure static NAT
+    - name: Merge static NAT rule
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            static:
+              rule:
+                - id: 300
+                  description: "Static mapping"
+                  inbound_interface: eth2
+                  destination:
+                    address: 198.51.100.20
+                  translation:
+                    address: 192.168.1.20
+                  log: true
+        state: merged
+
+    # Using merged - configure NAT64
+    - name: Merge NAT64 source rule
+      vyos.vyos.vyos_nat:
+        config:
+          nat64:
+            source:
+              rule:
+                - id: 10
+                  description: "NAT64 example"
+                  source:
+                    prefix: 2001:db8::/96
+                  match:
+                    mark: "100"
+                  translation:
+                    pool:
+                      - id: 1
+                        address: 192.168.100.10
+                        port: "1-65535"
+                        protocol: udp
+        state: merged
+
+    # Using merged - configure NAT66
+    - name: Merge NAT66 destination rule
+      vyos.vyos.vyos_nat:
+        config:
+          nat66:
+            destination:
+              rule:
+                - id: 20
+                  description: "NAT66 DNAT"
+                  protocol: tcp
+                  inbound_interface:
+                    name: eth1
+                  destination:
+                    address: 2001:db8::1
+                  translation:
+                    address: 2001:db8:1::10
+                    port: "8443"
         state: merged
 
     # Using gathered
@@ -2643,22 +3244,25 @@ Examples
         state: gathered
 
     # Using deleted
-    - name: Delete NAT config
+    - name: Delete all NAT config
       vyos.vyos.vyos_nat:
         state: deleted
 
     # Using replaced
-    - name: Replace NAT config
+    - name: Replace NAT source rules
       vyos.vyos.vyos_nat:
         config:
-          source:
-            rule:
-              - id: 100
-                description: "Replaced rule"
+          nat:
+            source:
+              rule:
+                - id: 200
+                  description: "Replaced outbound rule"
+                  translation:
+                    address: masquerade
         state: replaced
 
     # Using parsed
-    - name: Parse NAT config
+    - name: Parse NAT config from file
       vyos.vyos.vyos_nat:
         running_config: "{{ lookup('file', './nat_config.cfg') }}"
         state: parsed
@@ -2667,130 +3271,16 @@ Examples
     - name: Render NAT config offline
       vyos.vyos.vyos_nat:
         config:
-          source:
-            rule:
-              - id: 100
-                description: "Rendered rule"
+          nat:
+            source:
+              rule:
+                - id: 200
+                  description: "Rendered rule"
+                  translation:
+                    address: masquerade
         state: rendered
 
 
-
-Return Values
--------------
-Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html#common-return-values>`_, the following are the fields unique to this module:
-
-.. raw:: html
-
-    <table border=0 cellpadding=0 class="documentation-table">
-        <tr>
-            <th colspan="1">Key</th>
-            <th>Returned</th>
-            <th width="100%">Description</th>
-        </tr>
-            <tr>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="return-"></div>
-                    <b>after</b>
-                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
-                    <div style="font-size: small">
-                      <span style="color: purple">dictionary</span>
-                    </div>
-                </td>
-                <td>when changed</td>
-                <td>
-                            <div>The resulting configuration after module execution.</div>
-                    <br/>
-                        <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="return-"></div>
-                    <b>before</b>
-                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
-                    <div style="font-size: small">
-                      <span style="color: purple">dictionary</span>
-                    </div>
-                </td>
-                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
-                <td>
-                            <div>The configuration prior to the module execution.</div>
-                    <br/>
-                        <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="return-"></div>
-                    <b>commands</b>
-                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
-                    <div style="font-size: small">
-                      <span style="color: purple">list</span>
-                    </div>
-                </td>
-                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code>, <code>deleted</code> or <code>purged</code></td>
-                <td>
-                            <div>The set of commands pushed to the remote device.</div>
-                    <br/>
-                        <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set nat source rule 100 description &#x27;Outbound masquerade&#x27;&quot;]</div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="return-"></div>
-                    <b>gathered</b>
-                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
-                    <div style="font-size: small">
-                      <span style="color: purple">dictionary</span>
-                    </div>
-                </td>
-                <td>when <em>state</em> is <code>gathered</code></td>
-                <td>
-                            <div>Facts about the network resource gathered from the remote device as structured data.</div>
-                    <br/>
-                        <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="return-"></div>
-                    <b>parsed</b>
-                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
-                    <div style="font-size: small">
-                      <span style="color: purple">dictionary</span>
-                    </div>
-                </td>
-                <td>when <em>state</em> is <code>parsed</code></td>
-                <td>
-                            <div>The device native config provided in <em>running_config</em> option parsed into structured data as per module argspec.</div>
-                    <br/>
-                        <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
-                </td>
-            </tr>
-            <tr>
-                <td colspan="1">
-                    <div class="ansibleOptionAnchor" id="return-"></div>
-                    <b>rendered</b>
-                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
-                    <div style="font-size: small">
-                      <span style="color: purple">list</span>
-                    </div>
-                </td>
-                <td>when <em>state</em> is <code>rendered</code></td>
-                <td>
-                            <div>The provided configuration in the task rendered in device-native format (offline).</div>
-                    <br/>
-                        <div style="font-size: smaller"><b>Sample:</b></div>
-                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set nat source rule 100 description &#x27;Rendered rule&#x27;&quot;]</div>
-                </td>
-            </tr>
-    </table>
-    <br/><br/>
 
 
 Status

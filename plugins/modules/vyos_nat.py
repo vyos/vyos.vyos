@@ -18,11 +18,11 @@ module: vyos_nat
 version_added: 1.0.0
 short_description: NAT resource module
 description:
-- This module manages NAT configuration on devices running Vyos
+- This module manages NAT configuration on devices running VyOS.
 author:
 - Evgeny Molotkov (@omnom62)
 notes:
-- Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025
+- Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025.
 - This module works with connection C(network_cli).
 options:
   config:
@@ -40,7 +40,7 @@ options:
             suboptions:
               log_allocation:
                 type: bool
-                description: Whether to log CGNAT address allocations.
+                description: Log CGNAT address allocations.
               pool:
                 type: dict
                 description: Configuration for CGNAT pools.
@@ -62,7 +62,7 @@ options:
                         description: Per-user limit configuration for the external pool.
                         suboptions:
                           port:
-                            type: int
+                            type: str
                             description: Maximum number of ports allocated per user.
                       range:
                         type: list
@@ -92,18 +92,18 @@ options:
                     description: Rule number for CGNAT.
                   source:
                     type: dict
-                    description: Source configuration for CGNAT translation.
+                    description: Source pool configuration for CGNAT translation.
                     suboptions:
                       pool:
                         type: str
-                        description: Source pool to use for CGNAT translation.
+                        description: Source pool name to use for CGNAT translation.
                   translation:
                     type: dict
-                    description: Translation configuration for CGNAT.
+                    description: Translation pool configuration for CGNAT.
                     suboptions:
                       pool:
                         type: str
-                        description: Translation pool to use for CGNAT translation.
+                        description: Translation pool name to use for CGNAT translation.
           destination:
             type: dict
             description: Configuration for destination NAT rules.
@@ -120,50 +120,84 @@ options:
                   description:
                     type: str
                     description: User-friendly description of the destination NAT rule.
+                  protocol:
+                    type: str
+                    description: Protocol to NAT (default all).
+                  packet_type:
+                    type: str
+                    description: Packet type to match.
+                  exclude:
+                    type: bool
+                    description: Exclude packets matching this rule from NAT.
+                  log:
+                    type: bool
+                    description: Log packets hitting this rule.
+                  disable:
+                    type: bool
+                    description: Disable this destination NAT rule.
+                  inbound_interface:
+                    type: dict
+                    description: Match inbound interface.
+                    suboptions:
+                      name:
+                        type: str
+                        description: Interface name to match.
+                      group:
+                        type: str
+                        description: Interface group to match.
                   destination:
                     type: dict
                     description: Match criteria for destination NAT.
                     suboptions:
                       address:
                         type: str
-                        description: IP address, subnet, or range to match for destination NAT.
+                        description: IP address, subnet, or range to match.
                       fqdn:
                         type: str
-                        description: Fully qualified domain name to match for destination NAT.
-                      group:
-                        type: dict
-                        description: Address/network/port group to match for destination NAT.
-                        suboptions:
-                          address_group:
-                            type: str
-                            description: Address group name to match.
-                          domain_group:
-                            type: str
-                            description: Domain group name to match.
-                          mac_group:
-                            type: str
-                            description: MAC address group name to match.
-                          network_group:
-                            type: str
-                            description: Network group name to match.
-                          port_group:
-                            type: str
-                            description: Port group name to match.
+                        description: Fully qualified domain name to match.
                       port:
                         type: str
-                        description: Port number or range for destination NAT.
-                      protocol:
+                        description: Port number or range to match.
+                      address_group:
                         type: str
-                        description: Protocol to match (TCP, UDP, ICMP, etc.).
-                      exclude:
-                        type: bool
-                        description: Exclude packets matching this rule from NAT.
-                      log:
-                        type: bool
-                        description: Log packets hitting this destination NAT rule.
-                      disable:
-                        type: bool
-                        description: Disable this destination NAT rule.
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
+                  translation:
+                    type: dict
+                    description: Translation configuration for destination NAT.
+                    suboptions:
+                      address:
+                        type: str
+                        description: IP address or prefix to translate destination to.
+                      port:
+                        type: str
+                        description: Port number or range to translate destination port to.
+                      redirect_port:
+                        type: str
+                        description: Redirect to local port number.
+                      address_mapping:
+                        type: str
+                        choices:
+                          - random
+                          - persistent
+                        description: Address mapping mode for translation.
+                      port_mapping:
+                        type: str
+                        choices:
+                          - random
+                          - none
+                        description: Port mapping mode for translation.
           source:
             type: dict
             description: Configuration for source NAT rules.
@@ -180,53 +214,112 @@ options:
                   description:
                     type: str
                     description: User-friendly description of the source NAT rule.
+                  protocol:
+                    type: str
+                    description: Protocol to NAT (default all).
+                  packet_type:
+                    type: str
+                    description: Packet type to match.
+                  exclude:
+                    type: bool
+                    description: Exclude packets matching this rule from NAT.
+                  log:
+                    type: bool
+                    description: Log packets hitting this rule.
+                  disable:
+                    type: bool
+                    description: Disable this source NAT rule.
+                  outbound_interface:
+                    type: dict
+                    description: Match outbound interface.
+                    suboptions:
+                      name:
+                        type: str
+                        description: Interface name to match.
+                      group:
+                        type: str
+                        description: Interface group to match.
                   destination:
                     type: dict
-                    description: Match criteria for source NAT.
+                    description: Destination match criteria for source NAT.
                     suboptions:
                       address:
                         type: str
-                        description: IP address, subnet, or range to match for source NAT.
+                        description: IP address, subnet, or range to match.
                       fqdn:
                         type: str
-                        description: Fully qualified domain name to match for source NAT.
-                      group:
-                        type: dict
-                        description: Address/network/port group to match for source NAT.
-                        suboptions:
-                          address_group:
-                            type: str
-                            description: Address group name to match.
-                          domain_group:
-                            type: str
-                            description: Domain group name to match.
-                          mac_group:
-                            type: str
-                            description: MAC address group name to match.
-                          network_group:
-                            type: str
-                            description: Network group name to match.
-                          port_group:
-                            type: str
-                            description: Port group name to match.
+                        description: Fully qualified domain name to match.
                       port:
                         type: str
-                        description: Port number or range for source NAT.
-                      protocol:
+                        description: Port number or range to match.
+                      address_group:
                         type: str
-                        description: Protocol to match (TCP, UDP, ICMP, etc.).
-                      exclude:
-                        type: bool
-                        description: Exclude packets matching this rule from NAT.
-                      log:
-                        type: bool
-                        description: Log packets hitting this source NAT rule.
-                      disable:
-                        type: bool
-                        description: Disable this source NAT rule.
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
+                  source:
+                    type: dict
+                    description: Source match criteria for source NAT.
+                    suboptions:
+                      address:
+                        type: str
+                        description: IP address, subnet, or range to match.
+                      fqdn:
+                        type: str
+                        description: Fully qualified domain name to match.
+                      port:
+                        type: str
+                        description: Port number or range to match.
+                      address_group:
+                        type: str
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
+                  translation:
+                    type: dict
+                    description: Translation configuration for source NAT.
+                    suboptions:
+                      address:
+                        type: str
+                        description: IP address or prefix to translate source to. Use masquerade to masquerade as the outbound interface address.
+                      port:
+                        type: str
+                        description: Port number or range to translate source port to.
+                      address_mapping:
+                        type: str
+                        choices:
+                          - random
+                          - persistent
+                        description: Address mapping mode for translation.
+                      port_mapping:
+                        type: str
+                        choices:
+                          - random
+                          - none
+                        description: Port mapping mode for translation.
           static:
             type: dict
-            description: Configuration for static NAT rules.
+            description: Configuration for static one-to-one NAT rules.
             suboptions:
               rule:
                 type: list
@@ -236,7 +329,7 @@ options:
                   id:
                     type: int
                     required: true
-                    description: Rule number for static NAT (one-to-one).
+                    description: Rule number for static NAT.
                   description:
                     type: str
                     description: User-friendly description of the static NAT rule.
@@ -246,16 +339,13 @@ options:
                     suboptions:
                       address:
                         type: str
-                        description: IP address, subnet, or range to match for static NAT.
+                        description: IP address, subnet, or range to match.
+                  inbound_interface:
+                    type: str
+                    description: Inbound interface that this static NAT rule applies to.
                   log:
                     type: bool
                     description: Log packets hitting this static NAT rule.
-                  disable:
-                    type: bool
-                    description: Disable this static NAT rule.
-                  inbound_interface:
-                    type: str
-                    description: List of inbound interfaces that this static NAT rule applies to.
                   translation:
                     type: dict
                     description: Translation configuration for static NAT.
@@ -265,7 +355,7 @@ options:
                         description: IP address or prefix to translate to.
       nat64:
         type: dict
-        description: Configuration for NAT64 (IPv6-to-IPv4 NAT) rules.
+        description: Configuration for NAT64 (IPv6-to-IPv4) rules.
         suboptions:
           source:
             type: dict
@@ -279,7 +369,7 @@ options:
                   id:
                     type: int
                     required: true
-                    description: Rule number for NAT64 source rule.
+                    description: Rule number for NAT64 source rule (1-999999).
                   description:
                     type: str
                     description: User-friendly description of the NAT64 source rule.
@@ -291,11 +381,11 @@ options:
                     description: Match criteria for NAT64 source rule.
                     suboptions:
                       mark:
-                        type: int
+                        type: str
                         description: Match on firewall mark value (1-2147483647).
                   source:
                     type: dict
-                    description: Source prefix to match for NAT64 translation.
+                    description: IPv6 source prefix to match for NAT64 translation.
                     suboptions:
                       prefix:
                         type: str
@@ -334,7 +424,7 @@ options:
                             description: Protocol for this translation pool entry.
       nat66:
         type: dict
-        description: Configuration for NAT66 (IPv6-to-IPv6 NAT) rules.
+        description: Configuration for NAT66 (IPv6-to-IPv6) rules.
         suboptions:
           destination:
             type: dict
@@ -358,13 +448,10 @@ options:
                     suboptions:
                       address:
                         type: str
-                        description: >
-                          IPv6 address or prefix to match. Supports single address
-                          (h:h:h:h:h:h:h:h), prefix (h:h:h:h:h:h:h:h/x), and negated
-                          forms (!h:h:h:h:h:h:h:h, !h:h:h:h:h:h:h:h/x).
+                        description: IPv6 address or prefix to match.
                       port:
                         type: str
-                        description: Port number, range, or name to match.
+                        description: Port number or range to match.
                   disable:
                     type: bool
                     description: Disable this NAT66 destination rule.
@@ -377,29 +464,23 @@ options:
                     suboptions:
                       name:
                         type: str
-                        description: >
-                          Interface name to match. Supports wildcard (txt*) and
-                          negated (!text) forms.
+                        description: Interface name to match.
                   log:
                     type: bool
                     description: Log packets hitting this NAT66 destination rule.
                   protocol:
                     type: str
-                    description: >
-                      Protocol to match. Supports named protocols, numeric (0-255),
-                      negated (!protocol), all, and tcp_udp.
+                    description: Protocol to match.
                   source:
                     type: dict
                     description: Source match criteria for NAT66 destination rule.
                     suboptions:
                       address:
                         type: str
-                        description: >
-                          IPv6 source address or prefix to match. Supports single
-                          address, prefix, and negated forms.
+                        description: IPv6 source address or prefix to match.
                       port:
                         type: str
-                        description: Source port number, range, or name to match.
+                        description: Source port number or range to match.
                   translation:
                     type: dict
                     description: Translation configuration for NAT66 destination rule.
@@ -432,12 +513,10 @@ options:
                     suboptions:
                       port:
                         type: str
-                        description: Destination port number, range, or name to match.
+                        description: Destination port number or range to match.
                       prefix:
                         type: str
-                        description: >
-                          IPv6 destination prefix to match (h:h:h:h:h:h:h:h/x).
-                          Supports negated form (!h:h:h:h:h:h:h:h/x).
+                        description: IPv6 destination prefix to match (h:h:h:h:h:h:h:h/x).
                   disable:
                     type: bool
                     description: Disable this NAT66 source rule.
@@ -453,48 +532,39 @@ options:
                     suboptions:
                       name:
                         type: str
-                        description: >
-                          Interface name to match. Supports wildcard (txt*) and
-                          negated (!text) forms.
+                        description: Interface name to match.
                   protocol:
                     type: str
-                    description: >
-                      Protocol to match. Supports named protocols, numeric (0-255),
-                      negated (!protocol), all, and tcp_udp.
+                    description: Protocol to match.
                   source:
                     type: dict
                     description: Source match criteria for NAT66 source rule.
                     suboptions:
                       port:
                         type: str
-                        description: Source port number, range, or name to match.
+                        description: Source port number or range to match.
                       prefix:
                         type: str
-                        description: >
-                          IPv6 source prefix to match (h:h:h:h:h:h:h:h/x).
-                          Supports negated form (!h:h:h:h:h:h:h:h/x).
+                        description: IPv6 source prefix to match (h:h:h:h:h:h:h:h/x).
                   translation:
                     type: dict
                     description: Translation configuration for NAT66 source rule.
                     suboptions:
                       address:
                         type: str
-                        description: >
-                          IPv6 address or prefix to translate source to.
-                          Use masquerade to masquerade as the outbound interface address.
+                        description: IPv6 address or prefix to translate source to. Use masquerade to masquerade as the outbound interface address.
                       port:
                         type: str
                         description: Port number or range to translate source port to.
   running_config:
     description:
     - This option is used only with state I(parsed).
-    - The value of this option should be the output received from the VYOS device by
+    - The value of this option should be the output received from the VyOS device by
       executing the command B(show configuration commands | grep nat).
-    - The states I(replaced) and I(overridden) have identical
-      behaviour for this module.
-    - The state I(parsed) reads the configuration from C(show configuration commands | grep nat) option and
-      transforms it into Ansible structured data as per the resource module's argspec
-      and the value is then returned in the I(parsed) key within the result.
+    - The state I(parsed) reads the configuration from C(show configuration commands | grep nat)
+      and transforms it into Ansible structured data as per the module argspec.
+      The value is then returned in the I(parsed) key within the result.
+    - The states I(replaced) and I(overridden) have identical behaviour for this module.
     type: str
   state:
     description:
@@ -512,14 +582,124 @@ options:
 """
 
 EXAMPLES = """
-# Using merged
-- name: Merge NAT source rule
+# Using merged - configure CGNAT
+- name: Merge CGNAT configuration
   vyos.vyos.vyos_nat:
     config:
-      source:
-        rule:
-          - id: 100
-            description: "Outbound masquerade"
+      nat:
+        cgnat:
+          log_allocation: true
+          pool:
+            external:
+              - name: ext-pool-1
+                external_port_range: "10000-20000"
+                per_user_limit:
+                  port: "200"
+                range:
+                  - 203.0.113.0/24
+            internal:
+              - name: int-pool-1
+                range:
+                  - 10.0.0.0/24
+          rule:
+            - id: 1
+              source:
+                pool: int-pool-1
+              translation:
+                pool: ext-pool-1
+    state: merged
+
+# Using merged - configure destination NAT
+- name: Merge destination NAT rule
+  vyos.vyos.vyos_nat:
+    config:
+      nat:
+        destination:
+          rule:
+            - id: 100
+              description: "Web server NAT"
+              protocol: tcp
+              log: true
+              destination:
+                address: 198.51.100.10
+                port: "80"
+              translation:
+                address: 192.168.1.10
+                port: "8080"
+    state: merged
+
+# Using merged - configure source NAT
+- name: Merge source NAT rule
+  vyos.vyos.vyos_nat:
+    config:
+      nat:
+        source:
+          rule:
+            - id: 200
+              description: "Outbound masquerade"
+              protocol: tcp
+              log: true
+              outbound_interface:
+                name: eth0
+              translation:
+                address: masquerade
+    state: merged
+
+# Using merged - configure static NAT
+- name: Merge static NAT rule
+  vyos.vyos.vyos_nat:
+    config:
+      nat:
+        static:
+          rule:
+            - id: 300
+              description: "Static mapping"
+              inbound_interface: eth2
+              destination:
+                address: 198.51.100.20
+              translation:
+                address: 192.168.1.20
+              log: true
+    state: merged
+
+# Using merged - configure NAT64
+- name: Merge NAT64 source rule
+  vyos.vyos.vyos_nat:
+    config:
+      nat64:
+        source:
+          rule:
+            - id: 10
+              description: "NAT64 example"
+              source:
+                prefix: 2001:db8::/96
+              match:
+                mark: "100"
+              translation:
+                pool:
+                  - id: 1
+                    address: 192.168.100.10
+                    port: "1-65535"
+                    protocol: udp
+    state: merged
+
+# Using merged - configure NAT66
+- name: Merge NAT66 destination rule
+  vyos.vyos.vyos_nat:
+    config:
+      nat66:
+        destination:
+          rule:
+            - id: 20
+              description: "NAT66 DNAT"
+              protocol: tcp
+              inbound_interface:
+                name: eth1
+              destination:
+                address: 2001:db8::1
+              translation:
+                address: 2001:db8:1::10
+                port: "8443"
     state: merged
 
 # Using gathered
@@ -528,22 +708,25 @@ EXAMPLES = """
     state: gathered
 
 # Using deleted
-- name: Delete NAT config
+- name: Delete all NAT config
   vyos.vyos.vyos_nat:
     state: deleted
 
 # Using replaced
-- name: Replace NAT config
+- name: Replace NAT source rules
   vyos.vyos.vyos_nat:
     config:
-      source:
-        rule:
-          - id: 100
-            description: "Replaced rule"
+      nat:
+        source:
+          rule:
+            - id: 200
+              description: "Replaced outbound rule"
+              translation:
+                address: masquerade
     state: replaced
 
 # Using parsed
-- name: Parse NAT config
+- name: Parse NAT config from file
   vyos.vyos.vyos_nat:
     running_config: "{{ lookup('file', './nat_config.cfg') }}"
     state: parsed
@@ -552,54 +735,14 @@ EXAMPLES = """
 - name: Render NAT config offline
   vyos.vyos.vyos_nat:
     config:
-      source:
-        rule:
-          - id: 100
-            description: "Rendered rule"
+      nat:
+        source:
+          rule:
+            - id: 200
+              description: "Rendered rule"
+              translation:
+                address: masquerade
     state: rendered
-"""
-
-RETURN = """
-before:
-  description: The configuration prior to the module execution.
-  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
-  type: dict
-  sample: >
-    This output will always be in the same format as the
-    module argspec.
-after:
-  description: The resulting configuration after module execution.
-  returned: when changed
-  type: dict
-  sample: >
-    This output will always be in the same format as the
-    module argspec.
-commands:
-  description: The set of commands pushed to the remote device.
-  returned: when I(state) is C(merged), C(replaced), C(overridden), C(deleted) or C(purged)
-  type: list
-  sample:
-    - set nat source rule 100 description 'Outbound masquerade'
-rendered:
-  description: The provided configuration in the task rendered in device-native format (offline).
-  returned: when I(state) is C(rendered)
-  type: list
-  sample:
-    - set nat source rule 100 description 'Rendered rule'
-gathered:
-  description: Facts about the network resource gathered from the remote device as structured data.
-  returned: when I(state) is C(gathered)
-  type: dict
-  sample: >
-    This output will always be in the same format as the
-    module argspec.
-parsed:
-  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
-  returned: when I(state) is C(parsed)
-  type: dict
-  sample: >
-    This output will always be in the same format as the
-    module argspec.
 """
 
 from ansible.module_utils.basic import AnsibleModule

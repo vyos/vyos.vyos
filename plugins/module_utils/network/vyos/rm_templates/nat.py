@@ -765,7 +765,7 @@ class NatTemplate(NetworkTemplate):
                         "rule": [
                             {
                                 "id": "{{ id }}",
-                                "inbound_interface": "{{ value }}",
+                                "inbound_interface": {"name": "{{ value }}"},
                             },
                         ],
                     },
