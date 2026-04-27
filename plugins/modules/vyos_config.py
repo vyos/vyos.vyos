@@ -67,6 +67,7 @@ options:
     default: line
     choices:
     - line
+    - smart
     - none
   backup:
     description:
@@ -159,6 +160,7 @@ EXAMPLES = """
 
 - name: render a Jinja2 template onto the VyOS router
   vyos.vyos.vyos_config:
+    match: smart
     src: vyos_template.j2
 
 - name: revert after ten minutes, if connection is lost
@@ -360,7 +362,7 @@ def main():
     argument_spec = dict(
         src=dict(type="path"),
         lines=dict(type="list", elements="str"),
-        match=dict(default="line", choices=["line", "none"]),
+        match=dict(default="line", choices=["line", "smart", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
         confirm=dict(choices=["automatic", "manual", "none"], default='none'),
         confirm_timeout=dict(type="int", default=10),
