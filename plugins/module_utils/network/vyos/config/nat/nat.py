@@ -73,15 +73,18 @@ class Nat(ResourceModule):
 
         #     wantd = self._ntp_list_to_dict(self.want)
         #     haved = self._ntp_list_to_dict(self.have)
+        # self._module.fail_json(msg={"want": wantd})
 
         # if state is merged, merge want onto have and then compare
         if self.state == "merged":
             # wantd = dict_merge(haved, wantd)
             wantd = combine(haved, wantd, recursive=True, list_merge="append_rp")
 
-        # self._module.fail_json(msg={"want": wantd, " ******** have": haved, "******** original want": self.want})
+        self._module.fail_json(
+            msg={"merged": wantd, " ******** have": haved, "******** original want": self.want},
+        )
         # self._module.fail_json(msg={"want": wantd, " ******** have": haved})
-        self._module.fail_json(msg={"have": haved})
+        # self._module.fail_json(msg={"have": haved})
 
     #     # if state is deleted, empty out wantd and set haved to wantd
     #     if self.state == "deleted":
