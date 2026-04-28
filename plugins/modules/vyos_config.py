@@ -142,6 +142,20 @@ options:
           in C(filename) within I(backup) directory.
         type: path
     type: dict
+  allow_password_change:
+    description:
+    - The C(allow_password_change) argument specifies whether any configuration lines which
+      would change a user's password should be filtered out.  By default only plaintext
+      password changes are allowed and any encrypted-password keys are filtered out. In
+      order to allow all password updates, both plaintext and encrypted, set this argument
+      to C(all).
+    type: str
+    default: plaintext
+    choices:
+    - all
+    - plaintext
+    - encrypted
+    - none
 """
 
 EXAMPLES = """
@@ -233,9 +247,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
 
 DEFAULT_COMMENT = "configured by vyos_config"
 
-CONFIG_FILTERS = [
-    re.compile(r"set system login user \S+ authentication encrypted-password"),
-]
+PASSWORD_NEEDLE = re.compile(r"set system login user \S+ authentication (encrypted|plaintext)-password")
 
 
 def get_candidate(module):
@@ -294,14 +306,26 @@ def diff_config(commands, config):
     return list(updates)
 
 
-def sanitize_config(config, result):
+def sanitize_config(config, result, allow):
     result["filtered"] = list()
+
+    if allow == "all":
+        return
+
     index_to_filter = list()
-    for regex in CONFIG_FILTERS:
-        for index, line in enumerate(list(config)):
-            if regex.search(line):
-                result["filtered"].append(line)
-                index_to_filter.append(index)
+
+    for index, line in enumerate(list(config)):
+        found = PASSWORD_NEEDLE.search(line)
+
+        if found is None:
+            continue
+
+        if allow == found[1]:
+            continue
+
+        result["filtered"].append(line)
+        index_to_filter.append(index)
+
     # Delete all filtered configs
     for filter_index in sorted(index_to_filter, reverse=True):
         del config[filter_index]
@@ -328,7 +352,9 @@ def run(module, result):
         module.fail_json(msg=to_text(exc, errors="surrogate_then_replace"))
 
     commands = response.get("config_diff")
-    sanitize_config(commands, result)
+
+    allow_password_change = module.params["allow_password_change"]
+    sanitize_config(commands, result, allow=allow_password_change)
 
     result["commands"] = commands
 
@@ -368,6 +394,7 @@ def main():
         backup=dict(type="bool", default=False),
         backup_options=dict(type="dict", options=backup_spec),
         save=dict(type="bool", default=False),
+        allow_password_change=dict(default="plaintext", choices=["all", "encrypted", "plaintext", "none"])
     )
 
     mutually_exclusive = [("lines", "src")]
