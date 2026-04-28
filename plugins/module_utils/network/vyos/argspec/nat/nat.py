@@ -378,7 +378,7 @@ class NatArgs(object):  # pylint: disable=R0903
                                         "type": "dict",
                                         "options": {
                                             "mark": {
-                                                "type": "str",
+                                                "type": "int",
                                             },
                                         },
                                     },

@@ -381,7 +381,7 @@ options:
                     description: Match criteria for NAT64 source rule.
                     suboptions:
                       mark:
-                        type: str
+                        type: int
                         description: Match on firewall mark value (1-2147483647).
                   source:
                     type: dict

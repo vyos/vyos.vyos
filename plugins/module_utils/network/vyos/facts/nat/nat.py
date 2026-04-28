@@ -38,7 +38,7 @@ class NatFacts(object):
         return connection.get("show configuration commands | match 'nat'")
 
     def populate_facts(self, connection, ansible_facts, data=None):
-        """Populate the facts for Ntp network resource
+        """Populate the facts for NAT network resource
 
         :param connection: the device connection
         :param ansible_facts: Facts dictionary
@@ -55,7 +55,7 @@ class NatFacts(object):
             data = self.get_config(connection)
 
         for resource in data.splitlines():
-            config_lines.append(re.sub("'", "", resource))
+            config_lines.append(re.sub(r"'([^']*)'", r"\1", resource))
 
         nat_parser = NatTemplate(lines=config_lines, module=self._module)
 
@@ -72,74 +72,84 @@ class NatFacts(object):
             facts["nat"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
 
-        # self._module.fail_json(msg=ansible_facts)
         return ansible_facts
+
+    def _deep_merge(self, base, override):
+        for k, v in override.items():
+            if k in base and isinstance(base[k], dict) and isinstance(v, dict):
+                self._deep_merge(base[k], v)
+            elif k in base and isinstance(base[k], list) and isinstance(v, list):
+                for entry in v:
+                    if entry not in base[k]:
+                        base[k].append(entry)
+            else:
+                base[k] = v
+        return base
 
     def _merge_rule_list(self, rules):
         merged = {}
-
         for item in rules:
             rid = item["id"]
-
             if rid not in merged:
                 merged[rid] = {"id": rid}
-
             for k, v in item.items():
                 if k == "id":
                     continue
-
-                if isinstance(v, dict):
+                if isinstance(v, list):
+                    existing = merged[rid].setdefault(k, [])
+                    for entry in v:
+                        if entry not in existing:
+                            existing.append(entry)
+                elif isinstance(v, dict):
                     merged[rid].setdefault(k, {})
-                    merged[rid][k].update(v)
+                    self._deep_merge(merged[rid][k], v)
                 else:
                     merged[rid][k] = v
-
         return list(merged.values())
 
     def _merge_pool_list(self, pools):
         merged = {}
-
         for item in pools:
             name = item["name"]
-
             if name not in merged:
                 merged[name] = {"name": name}
-
             for k, v in item.items():
                 if k == "name":
                     continue
-
-                if isinstance(v, dict):
-                    merged[name].setdefault(k, {})
-                    merged[name][k].update(v)
-
-                elif isinstance(v, list):
+                if isinstance(v, list):
                     merged[name].setdefault(k, [])
                     for val in v:
                         if val not in merged[name][k]:
                             merged[name][k].append(val)
-
+                elif isinstance(v, dict):
+                    merged[name].setdefault(k, {})
+                    self._deep_merge(merged[name][k], v)
                 else:
                     merged[name][k] = v
-
         return list(merged.values())
 
     def _normalise(self, objs):
         for nat_type in ["nat", "nat64", "nat66"]:
             nat = objs.get(nat_type)
-
             if not nat:
                 continue
 
             for section in ["destination", "source", "static", "cgnat"]:
                 if section in nat and "rule" in nat[section]:
-                    nat[section]["rule"] = self._merge_rule_list(
-                        nat[section]["rule"],
-                    )
+                    nat[section]["rule"] = self._merge_rule_list(nat[section]["rule"])
+                    nat[section]["rule"].sort(key=lambda x: x.get("id", 0))
+
             if "cgnat" in nat and "pool" in nat["cgnat"]:
                 pool = nat["cgnat"]["pool"]
-
                 for ptype in ["external", "internal"]:
                     if ptype in pool:
                         pool[ptype] = self._merge_pool_list(pool[ptype])
+
+            if nat_type == "nat64":
+                for rule in nat.get("source", {}).get("rule", []):
+                    pools = rule.get("translation", {}).get("pool")
+                    if pools:
+                        rule["translation"]["pool"] = self._merge_rule_list(pools)
+                        rule["translation"]["pool"].sort(key=lambda x: x.get("id", 0))
+
         return objs
