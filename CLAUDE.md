@@ -40,7 +40,3 @@ Twin at `VyOS-Networks/vyos.vyos`. Canonical side here.
 - Galaxy versioning is independent of VyOS train versioning — bump in `galaxy.yml` per release.
 - Tested matrix is in README; expand only after smoketesting against real images.
 - `PR408_README.md` plus `pr408-diagram.png` document a non-trivial historical refactor; read before touching resource-module structure.
-
----
-
-This file is mirrored on Confluence: [`vyos/vyos.vyos`](https://internal.confluence.vyos.com/wiki/spaces/VYOS/pages/817889753). The Confluence page also carries the per-repo audit data (settings, workflows, secret counts, hygiene) that complements this CLAUDE.md. Edit either side; resync via the documentation pipeline.
