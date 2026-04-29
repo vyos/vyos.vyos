@@ -28,7 +28,8 @@ The official Ansible Collection for managing VyOS network appliances (`vyos.vyos
 - The `vyos.vyos` collection talks to VyOS via `network_cli` connections; supports the same train branches (`current`, `circinus`, `sagitta`, `equuleus`).
 
 ## Conventions
-- Commit / PR title: `component: T12345: description` (Phorge ID at https://vyos.dev mandatory).
+- Commit / PR title: `T12345: description` (Phorge ID at https://vyos.dev mandatory).
+- Every PR must include exactly one changelog fragment under `changelogs/fragments/`; use `doc_changes` for documentation-only updates, or `trivial` for tooling / housekeeping changes.
 - Default branch `main` (not `current` — this repo predates the rename convention).
 - Issues tracked at https://vyos.dev (see `galaxy.yml`).
 - Codecov + CodeRabbit configured (`codecov.yml`, `.coderabbit.yaml`).

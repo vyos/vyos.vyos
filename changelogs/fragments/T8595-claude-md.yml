@@ -1,0 +1,3 @@
+trivial:
+  - Add CLAUDE.md with project purpose, tech stack, build/test/run instructions,
+    repository layout, cross-repo context, conventions, and contributor notes.
