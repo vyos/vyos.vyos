@@ -66,8 +66,16 @@ options:
                             description: Maximum number of ports allocated per user.
                       range:
                         type: list
-                        elements: str
-                        description: List of external IP addresses or prefixes in the pool.
+                        elements: dict
+                        description: List of external IP address ranges in the pool.
+                        suboptions:
+                          value:
+                            type: str
+                            required: true
+                            description: IP address, prefix, or range (e.g. 203.0.113.0/24 or 203.0.113.1-203.0.113.60).
+                          seq:
+                            type: str
+                            description: Optional sequence number for this range entry.
                   internal:
                     type: list
                     elements: dict

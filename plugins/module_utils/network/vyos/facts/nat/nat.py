@@ -116,7 +116,11 @@ class NatFacts(object):
             for k, v in item.items():
                 if k == "name":
                     continue
-                if isinstance(v, list):
+                if k == "range" and isinstance(v, list):
+                    existing = merged[name].setdefault(k, [])
+                    existing.extend(v)
+                    merged[name][k] = self._merge_range_list(existing)
+                elif isinstance(v, list):  # ← elif not if
                     merged[name].setdefault(k, [])
                     for val in v:
                         if val not in merged[name][k]:
@@ -153,3 +157,18 @@ class NatFacts(object):
                         rule["translation"]["pool"].sort(key=lambda x: x.get("id", 0))
 
         return objs
+
+    def _merge_range_list(self, ranges):
+        """Merge range entries by value, preserving seq."""
+        merged = {}
+        for entry in ranges:
+            if isinstance(entry, dict):
+                key = entry["value"]
+                if key not in merged:
+                    merged[key] = {"value": key}
+                if entry.get("seq"):
+                    merged[key]["seq"] = entry["seq"]
+            else:
+                # fallback for plain strings during transition
+                merged[entry] = entry
+        return list(merged.values())

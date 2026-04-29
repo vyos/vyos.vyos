@@ -52,7 +52,11 @@ class NatArgs(object):  # pylint: disable=R0903
                                             },
                                             "range": {
                                                 "type": "list",
-                                                "elements": "str",
+                                                "elements": "dict",
+                                                "options": {
+                                                    "value": {"type": "str", "required": True},
+                                                    "seq": {"type": "str"},
+                                                },
                                             },
                                         },
                                     },

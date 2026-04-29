@@ -16,97 +16,6 @@ class NatTemplate(NetworkTemplate):
         prefix = {"set": "set", "remove": "delete"}
         super(NatTemplate, self).__init__(lines=lines, tmplt=self, prefix=prefix, module=module)
 
-    # def parse(self):
-    #     data = super(NatTemplate, self).parse()
-    #     return self._normalize(data)
-
-    # def _normalize(self, data):
-    #     def convert_rules(section):
-    #         if not section or "rule" not in section:
-    #             return section
-
-    #         rules = section["rule"]
-
-    #         if isinstance(rules, dict):
-    #             new_rules = []
-    #             for rule_id, rule_data in rules.items():
-    #                 rule = rule_data.copy()
-
-    #                 # normalize id
-    #                 try:
-    #                     rule["id"] = int(rule_id)
-    #                 except (ValueError, TypeError):
-    #                     rule["id"] = rule_id
-
-    #                 new_rules.append(rule)
-
-    #             section["rule"] = sorted(new_rules, key=lambda x: x.get("id", 0))
-
-    #         return section
-
-    #     if not data:
-    #         return data
-
-    #     for nat_type in ["nat", "nat64", "nat66"]:
-    #         if nat_type not in data:
-    #             continue
-
-    #         nat = data[nat_type]
-
-    #         for block in ["destination", "source", "static"]:
-    #             if block in nat:
-    #                 nat[block] = convert_rules(nat[block])
-
-    #         # CGNAT rules
-    #         if "cgnat" in nat and "rule" in nat["cgnat"]:
-    #             rules = nat["cgnat"]["rule"]
-    #             if isinstance(rules, list):
-    #                 for r in rules:
-    #                     if "id" in r:
-    #                         r["id"] = int(r["id"])
-
-    #     return data
-
-    # def _normalize(self, data):
-    #     if not data:
-    #         return data
-
-    #     def normalize_rules(rules):
-    #         """Convert rules dict → sorted list with int IDs, or cast IDs in existing list."""
-    #         if isinstance(rules, dict):
-    #             result = []
-    #             for rule_id, rule_data in rules.items():
-    #                 rule = rule_data.copy()
-    #                 try:
-    #                     rule["id"] = int(rule_id)
-    #                 except (ValueError, TypeError):
-    #                     rule["id"] = rule_id
-    #                 result.append(rule)
-    #             return sorted(result, key=lambda x: x.get("id", 0))
-
-    #         if isinstance(rules, list):
-    #             for rule in rules:
-    #                 if "id" in rule:
-    #                     try:
-    #                         rule["id"] = int(rule["id"])
-    #                     except (ValueError, TypeError):
-    #                         pass
-    #             return rules
-
-    #         return rules
-
-    #     for nat_type in ["nat", "nat64", "nat66"]:
-    #         nat = data.get(nat_type)
-    #         if not nat:
-    #             continue
-
-    #         for block in ["destination", "source", "static", "cgnat"]:
-    #             section = nat.get(block)
-    #             if section and "rule" in section:
-    #                 section["rule"] = normalize_rules(section["rule"])
-
-    #     return data
-
     # fmt: off
     PARSERS = [
 
@@ -158,8 +67,12 @@ class NatTemplate(NetworkTemplate):
                             "external": [
                                 {
                                     "name": "{{ name }}",
-                                    "range": ["{{ range }}"],
-                                    "seq": "{{ seq }}",
+                                    "range": [
+                                        {
+                                            "value": "{{ range }}",
+                                            "seq": "{{ seq }}",
+                                        },
+                                    ],
                                 },
                             ],
                         },
