@@ -25,14 +25,13 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.bgp
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_global import (
     Bgp_globalTemplate,
 )
-
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_global_14 import (
     Bgp_globalTemplate14,
 )
-
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Bgp_globalFacts(object):
