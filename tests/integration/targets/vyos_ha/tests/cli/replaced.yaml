@@ -1,0 +1,37 @@
+---
+- debug:
+    msg: START vyos_ha replaced integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replace the provided configuration with the existing running configuration
+      register: result
+      vyos.vyos.vyos_ha: &id001
+        config: "{{ merged.config }}"
+        state: replaced
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: ha
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands | symmetric_difference(replaced.commands) == []
+          - "result.after == ansible_facts['network_resources']['ha']"
+
+    - name: Replace the provided configuration with the existing running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_ha: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+          - result['commands'] == []
+          - "result['before'] == ansible_facts['network_resources']['ha']"
+
+  always:
+    - include_tasks: _remove_config.yaml

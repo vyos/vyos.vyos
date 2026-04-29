@@ -1,0 +1,44 @@
+---
+- debug:
+    msg: Start vyos_ha purged / deleted_all integration tests ansible_connection={{ ansible_connection }}
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Purge all the HA configuration.
+      register: result
+      vyos.vyos.vyos_ha: &id001
+        config:
+        state: deleted
+
+    - name: Assert that the before dicts were correctly generated
+      assert:
+        that:
+          - "merged.before == result['before']"
+
+    - name: Assert that the correct set of commands were generated
+      assert:
+        that:
+          - "{{ purged.commands | symmetric_difference(result['commands']) | length == 0 }}"
+
+    - name: Assert that the after dicts were correctly generated
+      assert:
+        that:
+          - "purged.after  == result['after']"
+
+    - name: Delete attributes of given interfaces (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_ha: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result.changed == false
+          - result.commands | length == 0
+
+    - name: Assert that the before dicts were correctly generated
+      assert:
+        that:
+          - "purged.after == result['before']"
+  always:
+    - include_tasks: _remove_config.yaml

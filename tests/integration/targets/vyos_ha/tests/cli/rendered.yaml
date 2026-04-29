@@ -1,0 +1,15 @@
+---
+- debug:
+    msg: START vyos_ha rendered integration tests on connection={{ ansible_connection }}
+
+- block:
+    - name: Structure provided configuration into device specific commands
+      register: result
+      vyos.vyos.vyos_ha:
+        config: "{{ rendered.config }}"
+        state: rendered
+
+    - assert:
+        that:
+          - result.changed == false
+          - "result.rendered == rendered.commands"

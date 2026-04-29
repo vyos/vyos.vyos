@@ -287,22 +287,58 @@ def in_target_not_none(h, key):
     return True if h and key in h and h[key] is not None else False
 
 
+# def combine(a, b, recursive=False, list_merge="replace"):
+#     """
+#     Merge two dictionaries (shallow or deep).
+#     :param a: dict
+#     :param b: dict
+#     :param recursive: bool, deep merge
+#     :param list_merge: str, only 'replace' is supported (default Ansible behavior)
+#     """
+#     if not isinstance(a, dict) or not isinstance(b, dict):
+#         raise ValueError("combine expects two dictionaries")
+
+#     result = a.copy()
+
+#     for k, v in b.items():
+#         if recursive and k in result and isinstance(result[k], dict) and isinstance(v, dict):
+#             result[k] = combine(result[k], v, recursive=True, list_merge=list_merge)
+#         else:
+#             result[k] = v
+
+#     return result
+
+
 def combine(a, b, recursive=False, list_merge="replace"):
-    """
-    Merge two dictionaries (shallow or deep).
-    :param a: dict
-    :param b: dict
-    :param recursive: bool, deep merge
-    :param list_merge: str, only 'replace' is supported (default Ansible behavior)
-    """
     if not isinstance(a, dict) or not isinstance(b, dict):
         raise ValueError("combine expects two dictionaries")
 
     result = a.copy()
 
     for k, v in b.items():
-        if recursive and k in result and isinstance(result[k], dict) and isinstance(v, dict):
-            result[k] = combine(result[k], v, recursive=True, list_merge=list_merge)
+        if k in result:
+            # dict merge
+            if recursive and isinstance(result[k], dict) and isinstance(v, dict):
+                result[k] = combine(result[k], v, recursive=True, list_merge=list_merge)
+
+            # list merge
+            elif isinstance(result[k], list) and isinstance(v, list):
+                if list_merge == "replace":
+                    result[k] = v
+                elif list_merge == "append":
+                    result[k] = result[k] + v
+                elif list_merge == "prepend":
+                    result[k] = v + result[k]
+                elif list_merge == "append_rp":
+                    result[k] = list(dict.fromkeys(result[k] + v))
+                elif list_merge == "prepend_rp":
+                    result[k] = list(dict.fromkeys(v + result[k]))
+                else:
+                    raise ValueError(f"Unsupported list_merge mode: {list_merge}")
+
+            # everything else
+            else:
+                result[k] = v
         else:
             result[k] = v
 
