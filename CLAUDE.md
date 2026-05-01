@@ -24,7 +24,7 @@ The official Ansible Collection for managing VyOS network appliances (`vyos.vyos
 
 ## Cross-repo context
 - Consumed by Ansible users running playbooks against VyOS routers built by `vyos/vyos-build`.
-- Sibling of `VyOS-Networks/vyos-ansible-collection` (older, mostly stale) and `VyOS-Networks/vyos-ansible-smoketests` (Jinja2 playbook smoketests driving this collection).
+- Sibling of `VyOS-Networks/vyos-ansible-smoketests` (Jinja2 playbook smoketests driving this collection).
 - The `vyos.vyos` collection talks to VyOS via `network_cli` connections; supports the same train branches (`current`, `circinus`, `sagitta`, `equuleus`).
 
 ## Conventions
