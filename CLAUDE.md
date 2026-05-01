@@ -24,7 +24,6 @@ The official Ansible Collection for managing VyOS network appliances (`vyos.vyos
 
 ## Cross-repo context
 - Consumed by Ansible users running playbooks against VyOS routers built by `vyos/vyos-build`.
-- Sibling of `VyOS-Networks/vyos-ansible-smoketests` (Jinja2 playbook smoketests driving this collection).
 - The `vyos.vyos` collection talks to VyOS via `network_cli` connections; supports the same train branches (`current`, `circinus`, `sagitta`, `equuleus`).
 
 ## Conventions
@@ -33,9 +32,6 @@ The official Ansible Collection for managing VyOS network appliances (`vyos.vyos
 - Default branch `main` (not `current` — this repo predates the rename convention).
 - Issues tracked at https://vyos.dev (see `galaxy.yml`).
 - Codecov + CodeRabbit configured (`codecov.yml`, `.coderabbit.yaml`).
-
-## Mirror relationship
-Twin at `VyOS-Networks/vyos.vyos`. Canonical side here.
 
 ## Notes for future contributors
 - Galaxy versioning is independent of VyOS train versioning — bump in `galaxy.yml` per release.
