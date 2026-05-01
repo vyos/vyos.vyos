@@ -49,7 +49,44 @@ class Nat(ResourceModule):
             resource="nat",
             tmplt=NatTemplate(),
         )
-        self.parsers = []
+        self.parsers = [
+            "cgnat_log_allocation",
+            "cgnat_pool_external_range",
+            "cgnat_pool_external_port_range",
+            "cgnat_pool_external_per_user",
+            "cgnat_pool_internal_range",
+            "cgnat_rule_source_pool",
+            "cgnat_rule_translation_pool",
+            "nat_type_description",
+            "nat_type_protocol",
+            "nat_type_disable",
+            "nat_type_exclude",
+            "nat_type_log",
+            "nat_type_address",
+            "nat_type_prefix",
+            "nat_type_fqdn",
+            "nat_type_port",
+            "nat_type_translation_address",
+            "nat_type_translation_port",
+            "nat_inbound_interface_name",
+            "nat_inbound_interface_group",
+            "nat_static_inbound_interface",
+            "nat6x_inbound_interface",
+            "nat_type_outbound_interface",
+            "nat_type_outbound_interface_group",
+            "nat_type_address_group",
+            "nat_type_packet_type",
+            "nat_type_lb_backend",
+            "nat_type_lb_hash",
+            "nat_type_translation_options",
+            "nat_type_translation_redirect",
+            "nat64_match_mark",
+            "nat64_translation_pool_address",
+            "nat64_translation_pool_description",
+            "nat64_translation_pool_disable",
+            "nat64_translation_pool_port",
+            "nat64_translation_pool_protocol",
+        ]
 
     def execute_module(self):
         """Execute the module
@@ -71,130 +108,14 @@ class Nat(ResourceModule):
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
 
-        #     wantd = self._ntp_list_to_dict(self.want)
-        #     haved = self._ntp_list_to_dict(self.have)
-        # self._module.fail_json(msg={"want": wantd})
-
         # if state is merged, merge want onto have and then compare
         if self.state == "merged":
             # wantd = dict_merge(haved, wantd)
             wantd = combine(haved, wantd, recursive=True, list_merge="append_rp")
 
-        self._module.fail_json(
-            msg={"merged": wantd, " ******** have": haved, "******** original want": self.want},
-        )
-        # self._module.fail_json(msg={"want": wantd, " ******** have": haved})
-        # self._module.fail_json(msg={"have": haved})
+        # self._module.fail_json(
+        #     msg={"merged": wantd, " ******** have": haved, "******** original want": self.want},
+        # )
 
-    #     # if state is deleted, empty out wantd and set haved to wantd
-    #     if self.state == "deleted":
-    #         haved = {k: v for k, v in haved.items() if k in wantd or not wantd}
-    #         wantd = {}
-
-    #         commandlist = self._commandlist(haved)
-    #         servernames = self._servernames(haved)
-    #         # removing the servername and commandlist from the list after deleting it from haved
-    #         # iterate through the top-level items to delete
-    #         for k, have in haved.items():
-    #             if k not in wantd:
-    #                 for hk, hval in have.items():
-    #                     if hk == "allow_clients" and hk in commandlist:
-    #                         self.commands.append(
-    #                             self._tmplt.render({"": hk}, "allow_clients_delete", True),
-    #                         )
-    #                         commandlist.remove(hk)
-    #                     elif hk == "listen_addresses" and hk in commandlist:
-    #                         self.commands.append(
-    #                             self._tmplt.render({"": hk}, "listen_addresses_delete", True),
-    #                         )
-    #                         commandlist.remove(hk)
-    #                     elif hk == "server" and have["server"] in servernames:
-    #                         self._compareoverride(want={}, have=have)
-    #                         servernames.remove(have["server"])
-    #         # if everything is deleted add the delete command for {path} ntp
-    #         # this should be equiv: servernames == [] and commandlist == ["server"]:
-    #         if wantd == {} and haved != {}:
-    #             self.commands.append(
-    #                 self._tmplt.render({}, "service_delete", True),
-    #             )
-
-    #     # remove existing config for overridden and replaced
-    #     # Getting the list of the server names from haved
-    #     #   to avoid the duplication of overridding/replacing the servers
-    #     if self.state in ["overridden", "replaced"]:
-    #         commandlist = self._commandlist(haved)
-    #         servernames = self._servernames(haved)
-
-    #         for k, have in haved.items():
-    #             if k not in wantd:
-    #                 if "server" not in have:
-    #                     self._compareoverride(want={}, have=have)
-    #                     # removing the servername from the list after deleting it from haved
-    #                 elif have["server"] in servernames:
-    #                     self._compareoverride(want={}, have=have)
-    #                     servernames.remove(have["server"])
-
-    #     for k, want in wantd.items():
-    #         self._compare(want=want, have=haved.pop(k, {}))
-
-    # def _compare(self, want, have):
-    #     """Leverages the base class `compare()` method and
-    #     populates the list of commands to be run by comparing
-    #     the `want` and `have` data with the `parsers` defined
-    #     for the Ntp network resource.
-    #     """
-    #     if "options" in want:
-    #         self.compare(parsers="options", want=want, have=have)
-    #     else:
-    #         self.compare(parsers=self.parsers, want=want, have=have)
-
-    # def _compareoverride(self, want, have):
-    #     # do not delete configuration with options level
-    #     for i, val in have.items():
-    #         if i == "options":
-    #             pass
-    #         else:
-    #             self.compare(parsers=i, want={}, have=have)
-
-    # def _ntp_list_to_dict(self, entry):
-    #     servers_dict = {}
-    #     for k, data in entry.items():
-    #         if k == "servers":
-    #             for value in data:
-    #                 if "options" in value:
-    #                     result = self._serveroptions_list_to_dict(value)
-    #                     for res, resvalue in result.items():
-    #                         servers_dict.update({res: resvalue})
-    #                 else:
-    #                     servers_dict.update({value["server"]: value})
-    #         else:
-    #             for value in data:
-    #                 servers_dict.update({"ip_" + value: {k: value}})
-    #     return servers_dict
-
-    # def _serveroptions_list_to_dict(self, entry):
-    #     serveroptions_dict = {}
-    #     for Opk, Op in entry.items():
-    #         if Opk == "options":
-    #             for val in Op:
-    #                 dict = {}
-    #                 dict.update({"server": entry["server"]})
-    #                 dict.update({Opk: val})
-    #                 serveroptions_dict.update({entry["server"] + "_" + val: dict})
-    #     return serveroptions_dict
-
-    # def _commandlist(self, haved):
-    #     commandlist = []
-    #     for k, have in haved.items():
-    #         for ck, cval in have.items():
-    #             if ck != "options" and ck not in commandlist:
-    #                 commandlist.append(ck)
-    #     return commandlist
-
-    # def _servernames(self, haved):
-    #     servernames = []
-    #     for k, have in haved.items():
-    #         for sk, sval in have.items():
-    #             if sk != "options" and sval not in servernames:
-    #                 servernames.append(sval)
-    #     return servernames
+        self.compare(parsers=self.parsers, want=wantd, have=haved)
+        self._module.fail_json(msg={"commands": self.commands})
