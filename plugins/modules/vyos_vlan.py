@@ -279,15 +279,11 @@ def map_config_to_obj(module):
         obj = {}
 
         eth = splitted_line[0].strip("'")
-        if eth.startswith("eth"):
+        if eth.startswith("eth") and "." in eth:
             obj["interfaces"] = []
-            if "." in eth:
-                interface = eth.split(".")[0]
-                obj["interfaces"].append(interface)
-                obj["vlan_id"] = eth.split(".")[-1]
-            else:
-                obj["interfaces"].append(eth)
-                obj["vlan_id"] = None
+            interface = eth.split(".")[0]
+            obj["interfaces"].append(interface)
+            obj["vlan_id"] = eth.split(".")[-1]
 
             if splitted_line[1].strip("'") != "-":
                 obj["address"] = splitted_line[1].strip("'")
