@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - rm_templates - Fix slow parse() in 9 templates (route_maps, bgp_global, bgp_address_family, snmp_server, ospf_interfaces) caused by group-quantifier patterns like `(?P<X>\S+)*$` that triggered O(2^n) regex backtracking on prefix-sharing inputs. Three related shapes corrected across ~224 sites. parse() time on representative configs drops from ~50s to <1ms; resolves "socket path does not exist" failures from vyos_route_maps and related modules. Refs T8609.
