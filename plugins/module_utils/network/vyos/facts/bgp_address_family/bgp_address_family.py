@@ -28,10 +28,10 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_template
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.bgp_address_family_14 import (
     Bgp_address_familyTemplate14,
 )
-
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
-
-from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import LooseVersion
 
 
 class Bgp_address_familyFacts(object):
