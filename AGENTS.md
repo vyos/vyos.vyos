@@ -11,8 +11,8 @@ The official Ansible Collection for managing VyOS network appliances (`vyos.vyos
 
 ## Build / test / run
 - Build: `ansible-galaxy collection build` produces a `vyos-vyos-<version>.tar.gz`.
-- Install local dev: `ansible-galaxy collection install . --force`.
-- Test (unit): `source .venv/bin/activate && PYTHONPATH=".collections" python -m pytest tests/unit` (config in `pyproject.toml`). CI runs sanity / unit / integration via GitHub Actions (`.github/workflows/tests.yml`) against VyOS 1.3.8 / 1.4.1 / 1.5-rolling.
+- Install local dev: `ansible-galaxy collection install. --force`.
+- Test (unit): `source.venv/bin/activate && PYTHONPATH=".collections" python -m pytest tests/unit` (config in `pyproject.toml`). CI runs sanity / unit / integration via GitHub Actions (`.github/workflows/tests.yml`) against VyOS 1.3.8 / 1.4.1 / 1.5-rolling.
 
 ## Repository layout
 - `plugins/{action,cliconf,doc_fragments,filter,inventory,module_utils,modules,terminal}/` — collection content.
