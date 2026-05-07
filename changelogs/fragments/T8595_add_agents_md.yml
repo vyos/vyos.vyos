@@ -1,0 +1,2 @@
+trivial:
+  - Add AGENTS.md tool-neutral contributor documentation, with .github/copilot-instructions.md symlink for Copilot code review compatibility.
