@@ -12,11 +12,11 @@ The official Ansible Collection for managing VyOS network appliances (`vyos.vyos
 ## Build / test / run
 - Build: `ansible-galaxy collection build` produces a `vyos-vyos-<version>.tar.gz`.
 - Install local dev: `ansible-galaxy collection install . --force`.
-- Test (unit): `source .venv/bin/activate && PYTHONPATH=".collections" python -m pytest tests/unit` (config in `pyproject.toml`). CI runs sanity / unit / integration via GitHub Actions (`.github/workflows/tests.yml`) against VyOS 1.3.8 / 1.4.1 / 1.5-rolling.
+- Test (unit): `source .venv/bin/activate && PYTHONPATH=".collections" python -m pytest tests/unit` (config in `pyproject.toml`). CI (`.github/workflows/tests.yml`) runs the changelog / build-import / ansible-lint / sanity / unit jobs; integration tests live under `tests/integration/` but are not yet wired into CI. Per `README.md`, the collection targets VyOS 1.3.8 / 1.4.1 / 1.5-rolling (no version matrix in the workflow itself).
 
 ## Repository layout
 - `plugins/{action,cliconf,doc_fragments,filter,inventory,module_utils,modules,terminal}/` — collection content.
-- `tests/` — sanity, unit, integration; CI via GitHub Actions under `.github/workflows/tests.yml`.
+- `tests/` — sanity, unit, integration directories. CI (`.github/workflows/tests.yml`) runs sanity + unit only; integration is not yet wired into CI.
 - `docs/` — generated module docs.
 - `meta/`, `changelogs/`, `CHANGELOG.rst` — Galaxy + release metadata.
 - `pyproject.toml` (black/pytest config), `.flake8`, `.isort.cfg`, `.ansible-lint`, `.pre-commit-config.yaml`.
