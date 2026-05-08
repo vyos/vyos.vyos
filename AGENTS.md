@@ -12,7 +12,7 @@ The official Ansible Collection for managing VyOS network appliances (`vyos.vyos
 ## Build / test / run
 - Build: `ansible-galaxy collection build` produces a `vyos-vyos-<version>.tar.gz`.
 - Install local dev: `ansible-galaxy collection install . --force`.
-- Test (unit): `source .venv/bin/activate && PYTHONPATH=".collections" python -m pytest tests/unit` (config in `pyproject.toml`). CI (`.github/workflows/tests.yml`) runs the changelog / build-import / ansible-lint / sanity / unit-galaxy / unit-source jobs; integration tests live under `tests/integration/` but are not yet wired into CI. Per `README.md`, the collection targets VyOS 1.3.8 / 1.4.1 / 1.5-rolling (no version matrix in the workflow itself).
+- Test (unit): `ansible-test units` (matches `unit-galaxy` CI job; requires collection installed under `~/.ansible/collections/`). Fast local alternative: `source .venv/bin/activate && PYTHONPATH=".collections" python -m pytest tests/unit` (matches `unit-source` CI path; config in `pyproject.toml`). CI (`.github/workflows/tests.yml`) runs the changelog / build-import / ansible-lint / sanity / unit-galaxy / unit-source jobs; integration tests live under `tests/integration/` but are not yet wired into CI. Per `README.md`, the collection targets VyOS 1.3.8 / 1.4.1 / 1.5-rolling (no version matrix in the workflow itself).
 
 ## Repository layout
 - `plugins/{action,cliconf,doc_fragments,filter,inventory,module_utils,modules,terminal}/` — collection content.
@@ -27,7 +27,7 @@ The official Ansible Collection for managing VyOS network appliances (`vyos.vyos
 - The `vyos.vyos` collection talks to VyOS via `network_cli` connections; supports the same train branches (`current`, `circinus`, `sagitta`, `equuleus`).
 
 ## Conventions
-- Commit / PR title: `T12345: description` (Phorge ID at https://vyos.dev mandatory).
+- Commit headline: `T12345: description` (Phorge ID at https://vyos.dev mandatory). No workflow enforces PR title format in this repo.
 - Every PR must include exactly one changelog fragment under `changelogs/fragments/`; use `doc_changes` for documentation-only updates, or `trivial` for tooling / housekeeping changes.
 - Default branch `main` (not `current` — this repo predates the rename convention).
 - Issues tracked at https://vyos.dev (see `galaxy.yml`).
