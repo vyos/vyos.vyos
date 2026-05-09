@@ -846,7 +846,6 @@ class Firewall_global(ConfigBase):
                         if opr and key in l_set and not (h and self._is_w_same(want, h, key)):
                             if key == "name":
                                 pass
-                                # commands.append(cmd + " A-" + str(val))
                             elif isinstance(val, bool):
                                 commands.append(
                                     cmd + " " + want["name"] + " " + key.replace("_", "-"),
@@ -868,7 +867,9 @@ class Firewall_global(ConfigBase):
                                 want,
                                 "name",
                             ):
-                                commands.append(cmd + " D-" + want["name"] + " " + key)
+                                commands.append(
+                                    cmd + " " + want["name"] + " " + key.replace("_", "-"),
+                                )
                         elif key == "interfaces":
                             commands.extend(
                                 self._render_interfaces(
@@ -905,8 +906,6 @@ class Firewall_global(ConfigBase):
                                     attr,
                                 ),
                             )
-        # self._module.fail_json(msg=commands)
-
         return commands
 
     def _render_interfaces(self, attr, w, h, opr, cmd, name, type):
@@ -998,7 +997,7 @@ class Firewall_global(ConfigBase):
                     )
             elif not opr and not have:
                 commands.append(
-                    cmd + " " + name + " intra-zone-filtering " + attr,
+                    cmd + " " + name + " intra-zone-filtering",
                 )
         return commands
 
