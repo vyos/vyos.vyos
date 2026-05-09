@@ -376,7 +376,7 @@ class TestVyosHaModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
-    def test_ntp_replaced_idempotent(self):
+    def test_vrrp_replaced_idempotent(self):
         set_module_args(
             dict(
                 config=dict(

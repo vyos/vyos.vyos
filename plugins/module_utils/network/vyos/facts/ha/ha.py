@@ -38,7 +38,7 @@ class HaFacts(object):
         return connection.get('show configuration commands |  match "set high-availability"')
 
     def get_config_set(self, data, connection):
-        """To classify the configurations beased on high availability sections"""
+        """To classify the configurations based on high availability sections"""
         config_dict = {}
         for config_line in data.splitlines():
             vrrp_grp = re.search(r"set high-availability vrrp group (\S+).*", config_line)
@@ -108,7 +108,7 @@ class HaFacts(object):
                         existing = vrrp_facts[section].get(name, {})
                         vrrp_facts[section][name] = self.deep_merge(existing, data)
 
-        ansible_facts["ansible_network_resources"].pop("vrrp", None)
+        ansible_facts["ansible_network_resources"].pop("ha", None)
         vrrp_facts = self.normalize_config(vrrp_facts)
         validate_parser = HaTemplate(lines=[], module=self._module)
         params = utils.remove_empties(
