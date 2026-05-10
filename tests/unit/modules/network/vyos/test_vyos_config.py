@@ -143,25 +143,35 @@ class TestVyosConfigModule(TestVyosModule):
 
     def test_vyos_config_match_smart(self):
         lines = [
-            "set system interfaces ethernet eth0 address 1.2.3.4/24",
-            "set system interfaces ethernet eth0 description test string",
+            "set interfaces ethernet eth0 address '1.2.3.4/24'",
+            "set interfaces ethernet eth0 description 'test string'",
         ]
         set_module_args(dict(lines=lines, match="smart"))
         candidate = "\n".join(lines)
-        self.conn.get_diff = MagicMock(
-            return_value=self.cliconf_obj.get_diff(
-                candidate,
-                self.running_config,
-                diff_match="smart",
-            ),
+
+        response = self.cliconf_obj.get_diff(
+            candidate,
+            self.running_config,
+            diff_match="smart",
         )
-        self.execute_module(changed=True, sort=False)
+
+        self.conn.get_diff = MagicMock(return_value=response)
+        result = self.execute_module(changed=True, sort=False)
 
         self.conn.get_diff.assert_called_once_with(
             candidate=candidate,
             running=self.running_config,
             diff_match="smart",
         )
+
+        expected_config_diff = [
+            "delete system",
+            "delete interfaces ethernet eth1",
+        ]
+        self.assertEqual(response["config_diff"], expected_config_diff)
+
+        expected_commands = expected_config_diff
+        self.assertEqual(result["commands"], expected_commands)
 
     def test_vyos_config_confirm_automatic(self):
         src = load_fixture("vyos_config_src.cfg")

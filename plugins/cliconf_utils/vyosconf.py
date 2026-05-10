@@ -121,7 +121,7 @@ class VyosConf:
 
     def run_commands(self, commands):
         """
-        This function runs a a list of command strings.
+        This function runs a list of command strings.
         :param commands: commands to run
         :return: dict
         """
