@@ -5,7 +5,7 @@
 - include_tasks: _populate_config.yaml
 
 - block:
-    - name: Delete a vrrp group and sync_group based on its name name.
+    - name: Delete a vrrp group and sync_group based on its name.
       register: result
       vyos.vyos.vyos_ha: &id001
         config:
