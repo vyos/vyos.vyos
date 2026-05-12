@@ -125,7 +125,13 @@ class Cliconf(CliconfBase):
         return out
 
     def edit_config(
-        self, candidate=None, commit=True, replace=None, diff=False, comment=None, confirm=None
+        self,
+        candidate=None,
+        commit=True,
+        replace=None,
+        diff=False,
+        comment=None,
+        confirm=None,
     ):
         resp = {}
         operations = self.get_device_operations()
@@ -200,7 +206,7 @@ class Cliconf(CliconfBase):
             if comment:
                 command = 'commit-confirm {0} comment "{1}"'.format(confirm, comment)
             else:
-                command = 'commit-confirm {0}'.format(confirm)
+                command = "commit-confirm {0}".format(confirm)
             self.send_command(command, "Proceed?", "\n")
         else:
             if comment:
@@ -268,8 +274,8 @@ class Cliconf(CliconfBase):
             diff["config_diff"] = list(candidate_commands)
             return diff
         if diff_match == "smart":
-            running_conf = VyosConf(running.splitlines())
-            candidate_conf = VyosConf(candidate_commands)
+            running_conf = VyosConf([line for line in running.splitlines() if line.strip()])
+            candidate_conf = VyosConf([line for line in candidate_commands if line.strip()])
             diff["config_diff"] = running_conf.diff_commands_to(candidate_conf)
             return diff
 
