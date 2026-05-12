@@ -256,7 +256,6 @@ class Cliconf(CliconfBase):
 
             config = [c.line for c in candidate_obj.items]
             commands = list()
-            # this filters out less specific lines
             for item in config:
                 for index, entry in enumerate(commands):
                     if item.startswith(entry):
@@ -273,7 +272,7 @@ class Cliconf(CliconfBase):
         if diff_match == "none":
             diff["config_diff"] = list(candidate_commands)
             return diff
-        if diff_match == "smart":
+        if diff_match == "smart" and running is not None:
             running_conf = VyosConf([line for line in running.splitlines() if line.strip()])
             candidate_conf = VyosConf([line for line in candidate_commands if line.strip()])
             diff["config_diff"] = running_conf.diff_commands_to(candidate_conf)
