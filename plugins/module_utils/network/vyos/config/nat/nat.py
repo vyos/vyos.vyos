@@ -50,10 +50,10 @@ class Nat(ResourceModule):
             tmplt=NatTemplate(),
         )
         self.parsers = [
-            "cgnat_log_allocation",
-            "cgnat_pool_external_range",
-            "cgnat_pool_external_port_range",
-            "cgnat_pool_external_per_user",
+            "nat.cgnat.log_allocation",
+            "nat.cgnat.pool.external.range",
+            "nat.cgnat.pool.external.external_port_range",
+            "nat.cgnat.pool.external.external_per_user",
             "cgnat_pool_internal_range",
             "cgnat_rule_source_pool",
             "cgnat_rule_translation_pool",
@@ -113,9 +113,28 @@ class Nat(ResourceModule):
             # wantd = dict_merge(haved, wantd)
             wantd = combine(haved, wantd, recursive=True, list_merge="append_rp")
 
-        # self._module.fail_json(
-        #     msg={"merged": wantd, " ******** have": haved, "******** original want": self.want},
-        # )
-
+        # self._module.fail_json(msg={"want": wantd, " ******** have": haved},)
+        # self._module.fail_json(msg={"merged": wantd, " ******** have": haved, "******** original want": self.want},)
+        wantd = {
+            "nat": {
+                "cgnat": {
+                    "pool": {
+                        "external": {
+                            "ext-pool-1": {
+                                "name": "ext-pool-1",
+                                "range": [
+                                    {
+                                        "address": "192.168.1.0/24",
+                                        "seq": 1,
+                                    },
+                                ],
+                            },
+                        },
+                    },
+                },
+            },
+        }
+        # wantd = {"nat": {"cgnat": {"pool": {"external": {}}}}}
+        haved = {}
         self.compare(parsers=self.parsers, want=wantd, have=haved)
         self._module.fail_json(msg={"commands": self.commands})

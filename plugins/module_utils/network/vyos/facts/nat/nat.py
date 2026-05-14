@@ -60,6 +60,7 @@ class NatFacts(object):
         nat_parser = NatTemplate(lines=config_lines, module=self._module)
 
         objs = nat_parser.parse()
+        self._module.fail_json(msg=objs)
         objs = self._normalise(objs)
 
         ansible_facts["ansible_network_resources"].pop("nat", None)
@@ -120,7 +121,7 @@ class NatFacts(object):
                     existing = merged[name].setdefault(k, [])
                     existing.extend(v)
                     merged[name][k] = self._merge_range_list(existing)
-                elif isinstance(v, list):  # ← elif not if
+                elif isinstance(v, list):
                     merged[name].setdefault(k, [])
                     for val in v:
                         if val not in merged[name][k]:
@@ -163,9 +164,9 @@ class NatFacts(object):
         merged = {}
         for entry in ranges:
             if isinstance(entry, dict):
-                key = entry["value"]
+                key = entry["address"]
                 if key not in merged:
-                    merged[key] = {"value": key}
+                    merged[key] = {"address": key}
                 if entry.get("seq"):
                     merged[key]["seq"] = entry["seq"]
             else:
