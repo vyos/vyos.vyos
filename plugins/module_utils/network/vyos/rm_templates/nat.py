@@ -44,43 +44,6 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-        # {
-        #     "name": "cgnat_pool_external_range",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \s+nat
-        #         \s+cgnat
-        #         \s+pool
-        #         \s+external
-        #         \s+(?P<name>\S+)
-        #         \s+range
-        #         \s+(?P<range>\S+)(?:\s+seq\s+(?P<seq>\d+))?
-        #         $""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "nat cgnat pool external {{ name }} range {{ range }}{% if seq is defined %} seq {{ seq }}{% endif %}",
-        #     "compval": "external.range",
-        #     "result": {
-        #         "nat": {
-        #             "cgnat": {
-        #                 "pool": {
-        #                     "external": [
-        #                         {
-        #                             "name": "{{ name }}",
-        #                             "range": [
-        #                                 {
-        #                                     "address": "{{ range }}",
-        #                                     "seq": "{{ seq }}",
-        #                                 },
-        #                             ],
-        #                         },
-        #                     ],
-        #                 },
-        #             },
-        #         },
-        #     },
-        # },
         {
             "name": "nat.cgnat.pool.external.range",
             "getval": re.compile(
@@ -117,38 +80,6 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-        # {
-        #     "name": "cgnat_pool_external_port_range",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \s+nat
-        #         \s+cgnat
-        #         \s+pool
-        #         \s+external
-        #         \s+(?P<name>\S+)
-        #         \s+external-port-range
-        #         \s+(?P<range>\S+)
-        #         $""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "nat cgnat pool external {{ name }} external-port-range {{ range }}",
-        #     "compval": "nat.cgnat.pool.external",
-        #     "result": {
-        #         "nat": {
-        #             "cgnat": {
-        #                 "pool": {
-        #                     "external": [
-        #                         {
-        #                             "name": "{{ name }}",
-        #                             "external_port_range": "{{ range }}",
-        #                         },
-        #                     ],
-        #                 },
-        #             },
-        #         },
-        #     },
-        # },
         {
             "name": "nat.cgnat.pool.external.external_port_range",
             "getval": re.compile(
@@ -180,38 +111,6 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-        # {
-        #     "name": "cgnat_pool_external_per_user",
-        #     "getval": re.compile(
-        #         r"""
-        #         ^set
-        #         \s+nat
-        #         \s+cgnat
-        #         \s+pool
-        #         \s+external
-        #         \s+(?P<name>\S+)
-        #         \s+per-user-limit
-        #         \s+port
-        #         \s+(?P<limit>\d+)
-        #         $""",
-        #         re.VERBOSE,
-        #     ),
-        #     "setval": "nat cgnat pool external {{ name }} per-user-limit port {{ limit }}",
-        #     "result": {
-        #         "nat": {
-        #             "cgnat": {
-        #                 "pool": {
-        #                     "external": [
-        #                         {
-        #                             "name": "{{ name }}",
-        #                             "per_user_limit": {"port": "{{ limit }}"},
-        #                         },
-        #                     ],
-        #                 },
-        #             },
-        #         },
-        #     },
-        # },
         {
             "name": "nat.cgnat.pool.external.external_per_user",
             "getval": re.compile(
@@ -245,7 +144,7 @@ class NatTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "cgnat_pool_internal_range",
+            "name": "nat.cgnat.pool.internal.range",
             "getval": re.compile(
                 r"""
                 ^set
@@ -264,12 +163,12 @@ class NatTemplate(NetworkTemplate):
                 "nat": {
                     "cgnat": {
                         "pool": {
-                            "internal": [
-                                {
+                            "internal": {
+                                "{{ name }}": {
                                     "name": "{{ name }}",
                                     "range": ["{{ range }}"],
                                 },
-                            ],
+                            },
                         },
                     },
                 },
@@ -294,12 +193,12 @@ class NatTemplate(NetworkTemplate):
             "result": {
                 "nat": {
                     "cgnat": {
-                        "rule": [
-                            {
+                        "rule": {
+                            "{{ id }}": {
                                 "id": "{{ id }}",
                                 "source": {"pool": "{{ pool }}"},
                             },
-                        ],
+                        },
                     },
                 },
             },
@@ -323,12 +222,12 @@ class NatTemplate(NetworkTemplate):
             "result": {
                 "nat": {
                     "cgnat": {
-                        "rule": [
-                            {
+                        "rule": {
+                            "{{ id }}": {
                                 "id": "{{ id }}",
                                 "translation": {"pool": "{{ pool }}"},
                             },
-                        ],
+                        },
                     },
                 },
             },
