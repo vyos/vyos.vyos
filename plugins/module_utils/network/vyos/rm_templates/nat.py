@@ -11,6 +11,28 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 )
 
 
+def _tmplt_cgnat_pool_ext(config_data):
+    config_data = config_data["nat"]["cgnat"]["pool"]["external"]
+    command = []
+    # cmd = "nat cgnat pool external {name}".format(**config_data)
+    cmd = "nat cgnat pool external {name}".format(**config_data)
+
+    # for key, value in config_data.items():
+    #     if (
+    #         key == "name"
+    #         or isinstance(value, dict)
+    #         or isinstance(value, list)
+    #         or isinstance(value, bool)
+    #         or value is None
+    #     ):
+    #         continue
+    #     else:
+    #         if key == "description":
+    #             value = f"'{value}'"
+    #         command.append(f"{cmd} {key.replace('_', '-')} {value}")
+    return str(cmd)
+
+
 class NatTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
@@ -45,21 +67,20 @@ class NatTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "nat.cgnat.pool.external.range",
+            "name": "nat.cgnat.pool.external",
             "getval": re.compile(
                 r"""
-                ^set
-                \s+nat
-                \s+cgnat
-                \s+pool
-                \s+external
-                \s+(?P<name>\S+)
-                \s+range
-                \s+(?P<range>\S+)(?:\s+seq\s+(?P<seq>\d+))?
-                $""",
+                ^set\s+nat\s+cgnat\s+pool\s+external\s+(?P<name>\S+)
+                (?:
+                \s+external-port-range\s+(?P<port_range>\S+)
+                | \s+range\s+(?P<range>\S+)(?:\s+seq\s+(?P<seq>\d+))?
+                | \s+per-user-limit\s+port\s+(?P<limit>\d+)
+                )?
+                $
+                """,
                 re.VERBOSE,
             ),
-            "setval": "nat cgnat pool external {{ name }} range {{ range }}{% if seq is defined %} seq {{ seq }}{% endif %}",
+            "setval": _tmplt_cgnat_pool_ext,
             "result": {
                 "nat": {
                     "cgnat": {
@@ -67,6 +88,10 @@ class NatTemplate(NetworkTemplate):
                             "external": {
                                 "{{ name }}": {
                                     "name": "{{ name }}",
+                                    "external_port_range": "{{ port_range }}",
+                                    "per_user_limit": {
+                                        "port": "{{ limit }}",
+                                    },
                                     "range": [
                                         {
                                             "address": "{{ range }}",
@@ -80,69 +105,106 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
-        {
-            "name": "nat.cgnat.pool.external.external_port_range",
-            "getval": re.compile(
-                r"""
-                ^set
-                \s+nat
-                \s+cgnat
-                \s+pool
-                \s+external
-                \s+(?P<name>\S+)
-                \s+external-port-range
-                \s+(?P<range>\S+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "nat cgnat pool external {{ name }} external-port-range {{ range }}",
-            "result": {
-                "nat": {
-                    "cgnat": {
-                        "pool": {
-                            "external": {
-                                "{{ name }}": {
-                                    "name": "{{ name }}",
-                                    "external_port_range": "{{ range }}",
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        },
-        {
-            "name": "nat.cgnat.pool.external.external_per_user",
-            "getval": re.compile(
-                r"""
-                ^set
-                \s+nat
-                \s+cgnat
-                \s+pool
-                \s+external
-                \s+(?P<name>\S+)
-                \s+per-user-limit
-                \s+port
-                \s+(?P<limit>\d+)
-                $""",
-                re.VERBOSE,
-            ),
-            "setval": "nat cgnat pool external {{ name }} per-user-limit port {{ limit }}",
-            "result": {
-                "nat": {
-                    "cgnat": {
-                        "pool": {
-                            "external": {
-                                "{{ name }}": {
-                                    "name": "{{ name }}",
-                                    "per_user_limit": {"port": "{{ limit }}"},
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        },
+        # {
+        #     "name": "nat.cgnat.pool.external.range",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set
+        #         \s+nat
+        #         \s+cgnat
+        #         \s+pool
+        #         \s+external
+        #         \s+(?P<name>\S+)
+        #         \s+range
+        #         \s+(?P<range>\S+)(?:\s+seq\s+(?P<seq>\d+))?
+        #         $""",
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": "nat cgnat pool external {{ name }} range {{ range }}{% if seq is defined %} seq {{ seq }}{% endif %}",
+        #     "result": {
+        #         "nat": {
+        #             "cgnat": {
+        #                 "pool": {
+        #                     "external": {
+        #                         "{{ name }}": {
+        #                             "name": "{{ name }}",
+        #                             "range": [
+        #                                 {
+        #                                     "address": "{{ range }}",
+        #                                     "seq": "{{ seq }}",
+        #                                 },
+        #                             ],
+        #                         },
+        #                     },
+        #                 },
+        #             },
+        #         },
+        #     },
+        # },
+        # {
+        #     "name": "nat.cgnat.pool.external.external_port_range",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set
+        #         \s+nat
+        #         \s+cgnat
+        #         \s+pool
+        #         \s+external
+        #         \s+(?P<name>\S+)
+        #         \s+external-port-range
+        #         \s+(?P<port_range>\S+)
+        #         $""",
+        #         re.VERBOSE,
+        #     ),
+        #     # "setval": "nat cgnat pool external {{ name }} external-port-range {{ port_range }}",
+        #     "setval": "test",
+        #     "result": {
+        #         "nat": {
+        #             "cgnat": {
+        #                 "pool": {
+        #                     "external": {
+        #                         "{{ name }}": {
+        #                             "name": "{{ name }}",
+        #                             "external_port_range": "{{ port_range }}",
+        #                         },
+        #                     },
+        #                 },
+        #             },
+        #         },
+        #     },
+        # },
+        # {
+        #     "name": "nat.cgnat.pool.external.external_per_user",
+        #     "getval": re.compile(
+        #         r"""
+        #         ^set
+        #         \s+nat
+        #         \s+cgnat
+        #         \s+pool
+        #         \s+external
+        #         \s+(?P<name>\S+)
+        #         \s+per-user-limit
+        #         \s+port
+        #         \s+(?P<limit>\d+)
+        #         $""",
+        #         re.VERBOSE,
+        #     ),
+        #     "setval": "nat cgnat pool external {{ name }} per-user-limit port {{ limit }}",
+        #     "result": {
+        #         "nat": {
+        #             "cgnat": {
+        #                 "pool": {
+        #                     "external": {
+        #                         "{{ name }}": {
+        #                             "name": "{{ name }}",
+        #                             "per_user_limit": {"port": "{{ limit }}"},
+        #                         },
+        #                     },
+        #                 },
+        #             },
+        #         },
+        #     },
+        # },
         {
             "name": "nat.cgnat.pool.internal.range",
             "getval": re.compile(
@@ -175,7 +237,7 @@ class NatTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "cgnat_rule_source_pool",
+            "name": "nat.cgnat.rule.source.pool",
             "getval": re.compile(
                 r"""
                 ^set
@@ -204,7 +266,7 @@ class NatTemplate(NetworkTemplate):
             },
         },
         {
-            "name": "cgnat_rule_translation_pool",
+            "name": "nat.cgnat.rule.translation.pool",
             "getval": re.compile(
                 r"""
                 ^set

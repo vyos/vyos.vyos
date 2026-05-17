@@ -51,12 +51,13 @@ class Nat(ResourceModule):
         )
         self.parsers = [
             "nat.cgnat.log_allocation",
-            "nat.cgnat.pool.external.range",
-            "nat.cgnat.pool.external.external_port_range",
-            "nat.cgnat.pool.external.external_per_user",
-            "cgnat_pool_internal_range",
-            "cgnat_rule_source_pool",
-            "cgnat_rule_translation_pool",
+            "nat.cgnat.pool.external",
+            # "nat.cgnat.pool.external.range",
+            # "nat.cgnat.pool.external.external_port_range",
+            # "nat.cgnat.pool.external.external_per_user",
+            "nat.cgnat.pool.internal.range",
+            "nat.cgnat.rule.source.pool",
+            "nat.cgnat.rule.translation.pool",
             "nat_type_description",
             "nat_type_protocol",
             "nat_type_disable",
@@ -112,29 +113,39 @@ class Nat(ResourceModule):
         if self.state == "merged":
             # wantd = dict_merge(haved, wantd)
             wantd = combine(haved, wantd, recursive=True, list_merge="append_rp")
-
+        self._normalize_pool_list_to_dict(wantd)
         # self._module.fail_json(msg={"want": wantd, " ******** have": haved},)
         # self._module.fail_json(msg={"merged": wantd, " ******** have": haved, "******** original want": self.want},)
-        wantd = {
-            "nat": {
-                "cgnat": {
-                    "pool": {
-                        "external": {
-                            "ext-pool-1": {
-                                "name": "ext-pool-1",
-                                "range": [
-                                    {
-                                        "address": "192.168.1.0/24",
-                                        "seq": 1,
-                                    },
-                                ],
-                            },
-                        },
-                    },
-                },
-            },
-        }
+        # wantd = {
+        #     "nat": {
+        #         "cgnat": {
+        #             "pool": {
+        #                 "external": {
+        #                     "ext-pool-1": {
+        #                         "name": "ext-pool-1",
+        #                         "range": [
+        #                             {
+        #                                 "address": "192.168.1.0/24",
+        #                                 "seq": 1,
+        #                             },
+        #                         ],
+        #                     },
+        #                 },
+        #             },
+        #         },
+        #     },
+        # }
         # wantd = {"nat": {"cgnat": {"pool": {"external": {}}}}}
-        haved = {}
+        # haved = {}
         self.compare(parsers=self.parsers, want=wantd, have=haved)
         self._module.fail_json(msg={"commands": self.commands})
+
+    def _normalize_pool_list_to_dict(self, config):
+        """Convert pool.external and pool.internal from list to name-keyed dict."""
+        cgnat = config.get("nat", {}).get("cgnat", {})
+        pool = cgnat.get("pool", {})
+
+        for pool_type in ("external", "internal"):
+            entries = pool.get(pool_type)
+            if isinstance(entries, list):
+                pool[pool_type] = {item["name"]: item for item in entries}

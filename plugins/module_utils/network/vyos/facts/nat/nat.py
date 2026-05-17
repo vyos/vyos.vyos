@@ -35,7 +35,7 @@ class NatFacts(object):
         self.argument_spec = NatArgs.argument_spec
 
     def get_config(self, connection):
-        return connection.get("show configuration commands | match 'nat'")
+        return connection.get("show configuration commands | grep nat")
 
     def populate_facts(self, connection, ansible_facts, data=None):
         """Populate the facts for NAT network resource
@@ -60,8 +60,8 @@ class NatFacts(object):
         nat_parser = NatTemplate(lines=config_lines, module=self._module)
 
         objs = nat_parser.parse()
-        self._module.fail_json(msg=objs)
-        objs = self._normalise(objs)
+        # self._module.fail_json(msg=objs)
+        # objs = self._normalise(objs)
 
         ansible_facts["ansible_network_resources"].pop("nat", None)
 
@@ -73,6 +73,7 @@ class NatFacts(object):
             facts["nat"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
 
+        # self._module.fail_json(msg=ansible_facts)
         return ansible_facts
 
     def _deep_merge(self, base, override):
