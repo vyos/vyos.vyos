@@ -1,3 +1,12 @@
 ---
-bugfixes:
-  - rm_templates - Fix slow parse() in 9 templates (route_maps, bgp_global, bgp_address_family, snmp_server, ospf_interfaces) caused by group-quantifier patterns like `(?P<X>\S+)*$` that triggered O(2^n) regex backtracking on prefix-sharing inputs. Three related shapes corrected across ~224 sites. parse() time on representative configs drops from ~50s to <1ms; resolves "socket path does not exist" failures from vyos_route_maps and related modules. Refs T8609.
+bugixes
+- bgp_address_family.py - Fix slow parse() to stop regex backtracking on prefix-sharing inputs.
+- bgp_address_family_14.py - Fix slow parse() to stop regex backtracking on prefix-sharing inputs.
+- bgp_global.py - Fix slow parse() to stop regex backtracking on prefix-sharing inputs.
+- bgp_global_14.py - Fix slow parse() to stop regex backtracking on prefix-sharing inputs.
+- ospf_interfaces.py - Fix slow parse() to stop regex backtracking on prefix-sharing inputs.
+- ospf_interfaces_14.py - Fix slow parse() to stop regex backtracking on prefix-sharing inputs.
+- route_maps.py - Fix slow parse() to stop regex backtracking on prefix-sharing inputs.
+- route_maps_14.py - Fix slow parse() to stop regex backtracking on prefix-sharing inputs.
+- snmp_server.py - Fix slow parse() to stop regex backtracking on prefix-sharing inputs.
+- test_rm_templates_perf.py - Add unit test for the bugfixes
