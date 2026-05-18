@@ -55,9 +55,9 @@ class Nat(ResourceModule):
             # "nat.cgnat.pool.external.range",
             # "nat.cgnat.pool.external.external_port_range",
             # "nat.cgnat.pool.external.external_per_user",
-            "nat.cgnat.pool.internal.range",
+            "nat.cgnat.pool.internal",
             "nat.cgnat.rule.source.pool",
-            "nat.cgnat.rule.translation.pool",
+            # "nat.cgnat.rule.translation",
             "nat_type_description",
             "nat_type_protocol",
             "nat_type_disable",
@@ -116,27 +116,7 @@ class Nat(ResourceModule):
         self._normalize_pool_list_to_dict(wantd)
         # self._module.fail_json(msg={"want": wantd, " ******** have": haved},)
         # self._module.fail_json(msg={"merged": wantd, " ******** have": haved, "******** original want": self.want},)
-        # wantd = {
-        #     "nat": {
-        #         "cgnat": {
-        #             "pool": {
-        #                 "external": {
-        #                     "ext-pool-1": {
-        #                         "name": "ext-pool-1",
-        #                         "range": [
-        #                             {
-        #                                 "address": "192.168.1.0/24",
-        #                                 "seq": 1,
-        #                             },
-        #                         ],
-        #                     },
-        #                 },
-        #             },
-        #         },
-        #     },
-        # }
-        # wantd = {"nat": {"cgnat": {"pool": {"external": {}}}}}
-        # haved = {}
+
         self.compare(parsers=self.parsers, want=wantd, have=haved)
         self._module.fail_json(msg={"commands": self.commands})
 
