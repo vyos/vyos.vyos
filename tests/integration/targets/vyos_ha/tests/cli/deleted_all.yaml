@@ -26,7 +26,7 @@
         that:
           - "purged.after  == result['after']"
 
-    - name: Delete attributes of given interfaces (IDEMPOTENT)
+    - name: Purge all the HA configuration. (IDEMPOTENT)
       register: result
       vyos.vyos.vyos_ha: *id001
 
