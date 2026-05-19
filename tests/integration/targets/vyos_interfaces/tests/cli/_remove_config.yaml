@@ -11,13 +11,13 @@
       delete interfaces ethernet "{{ intf }}" vif
       {% endfor %}
 
-- name: Setup - Remove VRF from eth
+- name: Cleanup - Remove VRF from eth
   ansible.netcommon.cli_config:
     config: |-
       delete interfaces ethernet eth2 vrf
       delete interfaces ethernet eth1 vrf
 
-- name: Setup - Remove VRFs
+- name: Cleanup - Remove VRFs
   ansible.netcommon.cli_config:
     config: |-
       delete vrf
