@@ -230,7 +230,10 @@ class Firewall_globalArgs(object):  # pylint: disable=R0903
                             "elements": "dict",
                             "type": "list",
                             "options": {
-                                "zone": {"type": "str"},
+                                "zone": {
+                                    "required": True,
+                                    "type": "str",
+                                },
                                 "firewall": {
                                     "type": "dict",
                                     "options": {
