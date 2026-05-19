@@ -352,6 +352,7 @@ options:
                 description:
                 - Name of the source zone.
                 type: str
+                required: true
               firewall:
                 description:
                 - Firewall ruleset to apply to the source zone.
