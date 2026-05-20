@@ -44,6 +44,7 @@ merged:
             - "8.8.8.8 interface eth2"
           advertise_interval: 10
           peer_address: 192.168.1.3
+          preempt_delay: 15
           priority: 100
           disable: true
           no_preempt: true
@@ -191,6 +192,7 @@ populate_commands:
   - set high-availability vrrp group g1 interface eth2
   - set high-availability vrrp group g1 no-preempt
   - set high-availability vrrp group g1 peer-address 192.168.1.3
+  - set high-availability vrrp group g1 preempt-delay 15
   - set high-availability vrrp group g1 priority 100
   - set high-availability vrrp group g1 rfc3768-compatibility
   - set high-availability vrrp group g1 vrid 20
@@ -275,6 +277,7 @@ rendered:
             - "3.3.3.3 interface eth2"
           advertise_interval: 10
           peer_address: 192.168.1.3
+          preempt_delay: 15
           priority: 100
           disable: true
           no_preempt: true
@@ -367,6 +370,7 @@ rendered:
     - set high-availability vrrp group g1 interface eth2
     - set high-availability vrrp group g1 no-preempt
     - set high-availability vrrp group g1 peer-address 192.168.1.3
+    - set high-availability vrrp group g1 preempt-delay 15
     - set high-availability vrrp group g1 priority 100
     - set high-availability vrrp group g1 rfc3768-compatibility
     - set high-availability vrrp group g1 track exclude-vrrp-interface

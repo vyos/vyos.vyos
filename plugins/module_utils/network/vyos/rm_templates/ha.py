@@ -666,6 +666,7 @@ class HaTemplate(NetworkTemplate):
                 (?:\s+hello-source-address\s+(?P<hello_source>\S+))?
                 (?:\s+interface\s+(?P<interface>\S+))?
                 (?:\s+peer-address\s+(?P<peer_address>\S+))?
+                (?:\s+preempt-delay\s+(?P<preempt_delay>\S+))?
                 (?:\s+priority\s+(?P<priority>\S+))?
                 (?:\s+vrid\s+(?P<vrid>\S+))?
                 $
@@ -683,6 +684,7 @@ class HaTemplate(NetworkTemplate):
                             "hello_source_address": "{{ hello_source if hello_source is defined else None }}",
                             "interface": "{{ interface if interface is defined else None }}",
                             "peer_address": "{{ peer_address if peer_address is defined else None }}",
+                            "preempt_delay": "{{ preempt_delay if preempt_delay is defined else None }}",
                             "priority": "{{ priority if priority is defined else None }}",
                             "vrid": "{{ vrid if vrid is defined else None }}",
                         },

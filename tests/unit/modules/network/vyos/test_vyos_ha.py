@@ -247,6 +247,7 @@ class TestVyosHaModule(TestVyosModule):
                                     "192.168.3.3",
                                     "192.168.4.4 interface eth3",
                                 ],
+                                preempt_delay=15,
                             ),
                         ],
                         sync_groups=[
@@ -268,6 +269,7 @@ class TestVyosHaModule(TestVyosModule):
             "delete high-availability vrrp group g1 rfc3768-compatibility",
             "set high-availability vrrp group g2 address 192.168.3.3",
             "set high-availability vrrp group g2 address 192.168.4.4 interface eth3",
+            "set high-availability vrrp group g2 preempt-delay 15",
             "delete high-availability vrrp snmp",
             "set high-availability virtual-server s1 address 10.10.10.5",
             "set high-availability virtual-server s1 real-server 10.10.50.2 port 8443",
