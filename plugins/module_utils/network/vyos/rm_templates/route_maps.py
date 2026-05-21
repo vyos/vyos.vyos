@@ -50,8 +50,7 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "sequence",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)
-                *$""",
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\s*$""",
                 re.VERBOSE,
             ),
             "compval": "sequence",
@@ -166,8 +165,7 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "on_match_next",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\son-match\s(?P<next>next)
-                *$""",
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\son-match\s(?P<next>next)\s*$""",
                 re.VERBOSE,
             ),
             "compval": "on_match.next",
@@ -328,8 +326,7 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_atomic_aggregate",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\s(?P<as>atomic-aggregate)
-                *$""",
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\s(?P<as>atomic-aggregate)\s*$""",
                 re.VERBOSE,
             ),
             "compval": "set.atomic_aggregate",
@@ -517,8 +514,7 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_extcommunity_bandwidth_non_transitive",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity\s(?P<extcommunity_bw_nt>bandwidth-non-transitive)
-                *$""",
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity\s(?P<extcommunity_bw_nt>bandwidth-non-transitive)\s*$""",
                 re.VERBOSE,
             ),
             "compval": "set.extcommunity_bandwidth_non_transitive",
@@ -957,8 +953,7 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "match_community_exact_match",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\smatch\scommunity\sexact-match(?P<exact_match>)
-                *$""",
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\smatch\scommunity\sexact-match(?P<exact_match>)\s*$""",
                 re.VERBOSE,
             ),
             "compval": "match.community.exact_match",
