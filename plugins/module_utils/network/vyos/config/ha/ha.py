@@ -244,6 +244,7 @@ class Ha(ResourceModule):
             have.get("snmp") == "enabled"
             and want.get("snmp") != "enabled"
             and self.state not in ["deleted", "overridden"]
+            and (self.state != "merged" or "snmp" in want)
         ):
             self.commands.append("delete high-availability vrrp snmp")
 

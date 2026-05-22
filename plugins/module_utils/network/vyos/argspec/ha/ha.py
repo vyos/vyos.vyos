@@ -36,8 +36,7 @@ class HaArgs(object):  # pylint: disable=R0903
             "type": "dict",
             "required": False,
             "options": {
-                # "disable": {"type": "bool", "default": False},
-                "disable": {"type": "bool"},
+                "disable": {"type": "bool", "default": False},
                 "virtual_servers": {
                     "type": "list",
                     "elements": "dict",
