@@ -1,0 +1,3 @@
+---
+minor_changes:
+  - pr-mirror-repo-sync.yml - An automated workflow to mirror pull requests and synchronize repositories
