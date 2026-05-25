@@ -217,3 +217,29 @@ class TestVyosConfigModule(TestVyosModule):
         candidate = "set interfaces ethernet eth0 address 1.2.3.4/24"
         response = self.cliconf_obj.get_diff(candidate, running_with_blanks, diff_match="smart")
         self.assertIn("config_diff", response)
+
+    def test_vyos_config_match_smart_additions(self):
+        lines = [
+            "set interfaces ethernet eth0 address '1.2.3.4/24'",
+            "set interfaces ethernet eth0 description 'test string'",
+            "set interfaces ethernet eth2 address '192.0.2.1/24'",
+        ]
+        set_module_args(dict(lines=lines, match="smart"))
+        candidate = "\n".join(lines)
+        response = self.cliconf_obj.get_diff(
+            candidate,
+            self.running_config,
+            diff_match="smart",
+        )
+        self.conn.get_diff = MagicMock(return_value=response)
+        result = self.execute_module(changed=True, sort=False)
+        self.conn.get_diff.assert_called_once_with(
+            candidate=candidate,
+            running=self.running_config,
+            diff_match="smart",
+        )
+        self.assertIn(
+            "set interfaces ethernet eth2 address 192.0.2.1/24",
+            response["config_diff"],
+        )
+        self.assertEqual(result["commands"], response["config_diff"])
