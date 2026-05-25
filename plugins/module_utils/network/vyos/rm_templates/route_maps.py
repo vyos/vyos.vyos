@@ -514,7 +514,8 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "set_extcommunity_bandwidth_non_transitive",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sset\sextcommunity\s(?P<extcommunity_bw_nt>bandwidth-non-transitive)\s*$""",
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)
+                \sset\sextcommunity\s(?P<extcommunity_bw_nt>bandwidth-non-transitive)\s*$""",
                 re.VERBOSE,
             ),
             "compval": "set.extcommunity_bandwidth_non_transitive",
