@@ -55,7 +55,7 @@ plugin_routing:
     prefix_lists:
       redirect: vyos.vyos.vyos_prefix_lists
     snmp_server:
-      redirect: vyos.vyos.vyos_snmp_servers
+      redirect: vyos.vyos.vyos_snmp_server
     static_routes:
       redirect: vyos.vyos.vyos_static_routes
     system:
