@@ -262,6 +262,7 @@ class TestVyosL3InterfacesModule(TestVyosModule):
                         name="eth3",
                         vifs=[
                             dict(vlan_id=101),
+                            dict(vlan_id=102),
                         ],
                     ),
                 ],
