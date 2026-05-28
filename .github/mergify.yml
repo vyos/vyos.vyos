@@ -1,0 +1,4 @@
+# yaml-language-server: $schema=https://docs.mergify.com/configuration/file-format/
+extends: mergify
+merge_protections_settings:
+  reporting_method: check-runs
