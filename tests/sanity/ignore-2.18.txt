@@ -8,6 +8,7 @@ plugins/action/facts.py action-plugin-docs
 plugins/action/firewall_global.py action-plugin-docs
 plugins/action/firewall_interfaces.py action-plugin-docs
 plugins/action/firewall_rules.py action-plugin-docs
+plugins/action/ha.py action-plugin-docs
 plugins/action/hostname.py action-plugin-docs
 plugins/action/interface.py action-plugin-docs
 plugins/action/interfaces.py action-plugin-docs
