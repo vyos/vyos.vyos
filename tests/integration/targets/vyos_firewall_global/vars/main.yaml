@@ -37,6 +37,12 @@ merged:
         connection_type: invalid
     twa_hazards_protection: true
     validation: strict
+    zone:
+      - name: ZONE-TEST
+        default_action: drop
+        description: zone-test test description
+        interfaces:
+          - eth0.1234
   config:
     validation: strict
     log_martians: true
@@ -70,6 +76,12 @@ merged:
           description: This group has the Management network addresses
           members:
             - address: 192.0.1.0/24
+    zone:
+      - name: ZONE-TEST
+        description: zone-test test description
+        interfaces:
+          - eth0.1234
+
   diff_config:
     validation: strict
     log_martians: true
@@ -139,7 +151,12 @@ populate:
         members:
           - address: 192.0.1.0/24
         afi: ipv4
-
+  zone:
+    - name: ZONE-TEST
+      description: zone-test test description
+      interfaces:
+        - eth0.1234
+      default_action: drop
 replaced:
   commands: "{{ replaced_commands }}"
   after:
@@ -183,6 +200,16 @@ replaced:
     syn_cookies: true
     twa_hazards_protection: true
     validation: strict
+    zone:
+      - name: FZP-2
+        default_action: reject
+        default_log: true
+        description: This is the Firewall zone fzp2
+        interfaces:
+          - eth2
+          - lo0
+        intra_zone_filtering:
+          action: accept
   config:
     validation: strict
     log_martians: true
@@ -221,6 +248,16 @@ replaced:
           description: This group has the Management network addresses
           members:
             - address: 192.0.1.0/24
+    zone:
+      - name: FZP-2
+        default_action: reject
+        default_log: true
+        description: This is the Firewall zone fzp2
+        interfaces:
+          - eth2
+          - lo0
+        intra_zone_filtering:
+          action: accept
   diff_config:
     validation: strict
     log_martians: true
@@ -300,6 +337,12 @@ rendered:
           description: This group has the Management network addresses
           members:
             - address: 192.0.1.0/24
+    zone:
+      - name: ZONE-TEST
+        description: zone-test test description
+        interfaces:
+          - eth0.1234
+        default_action: drop
 
 deleted:
   commands: "{{ deleted_commands }}"
@@ -341,6 +384,16 @@ round_trip:
           members:
             - address: 192.0.1.0/24
           afi: ipv4
+    zone:
+      - name: FZP-2
+        default_action: reject
+        default_log: true
+        description: This is the Firewall zone fzp2
+        interfaces:
+          - eth2
+          - lo0
+        intra_zone_filtering:
+          action: accept
   forward_config:
     validation: strict
     log_martians: true
@@ -374,6 +427,16 @@ round_trip:
           description: This group has the Management network addresses
           members:
             - address: 192.0.1.0/24
+    zone:
+      - name: FZP-2
+        default_action: reject
+        default_log: true
+        description: This is the Firewall zone fzp2
+        interfaces:
+          - eth2
+          - lo0
+        intra_zone_filtering:
+          action: accept
   revert_config:
     validation: strict
     log_martians: false
