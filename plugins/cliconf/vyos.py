@@ -49,11 +49,13 @@ import re
 from ansible.errors import AnsibleConnectionFailure
 from ansible.module_utils._text import to_text
 from ansible.module_utils.common._collections_compat import Mapping
+from ansible.plugins.cliconf import CliconfBase
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import (
     NetworkConfig,
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import to_list
-from ansible_collections.ansible.netcommon.plugins.plugin_utils.cliconf_base import CliconfBase
+
+from ansible_collections.vyos.vyos.plugins.cliconf_utils.vyosconf import VyosConf
 
 
 class Cliconf(CliconfBase):
@@ -123,7 +125,13 @@ class Cliconf(CliconfBase):
         return out
 
     def edit_config(
-        self, candidate=None, commit=True, replace=None, diff=False, comment=None, confirm=None
+        self,
+        candidate=None,
+        commit=True,
+        replace=None,
+        diff=False,
+        comment=None,
+        confirm=None,
     ):
         resp = {}
         operations = self.get_device_operations()
@@ -198,7 +206,7 @@ class Cliconf(CliconfBase):
             if comment:
                 command = 'commit-confirm {0} comment "{1}"'.format(confirm, comment)
             else:
-                command = 'commit-confirm {0}'.format(confirm)
+                command = "commit-confirm {0}".format(confirm)
             self.send_command(command, "Proceed?", "\n")
         else:
             if comment:
@@ -248,7 +256,6 @@ class Cliconf(CliconfBase):
 
             config = [c.line for c in candidate_obj.items]
             commands = list()
-            # this filters out less specific lines
             for item in config:
                 for index, entry in enumerate(commands):
                     if item.startswith(entry):
@@ -264,6 +271,11 @@ class Cliconf(CliconfBase):
 
         if diff_match == "none":
             diff["config_diff"] = list(candidate_commands)
+            return diff
+        if diff_match == "smart" and running is not None:
+            running_conf = VyosConf([line for line in running.splitlines() if line.strip()])
+            candidate_conf = VyosConf([line for line in candidate_commands if line.strip()])
+            diff["config_diff"] = running_conf.diff_commands_to(candidate_conf)
             return diff
 
         running_commands = [str(c).replace("'", "") for c in running.splitlines()]
@@ -337,7 +349,7 @@ class Cliconf(CliconfBase):
     def get_option_values(self):
         return {
             "format": ["text", "set"],
-            "diff_match": ["line", "none"],
+            "diff_match": ["line", "smart", "none"],
             "diff_replace": [],
             "output": [],
         }
