@@ -79,6 +79,7 @@ class InterfacesArgs(object):  # pylint: disable=R0903
                     },
                     "type": "list",
                 },
+                "vrf": {"type": "str"},
             },
             "type": "list",
         },
