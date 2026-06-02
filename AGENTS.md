@@ -24,7 +24,7 @@ The official Ansible Collection for managing VyOS network appliances (`vyos.vyos
 
 ## Cross-repo context
 - Consumed by Ansible users running playbooks against VyOS routers built by `vyos/vyos-build`.
-- The `vyos.vyos` collection talks to VyOS via `network_cli` connections; supports the same train branches (`current`, `circinus`, `sagitta`, `equuleus`).
+- The `vyos.vyos` collection talks to VyOS via `network_cli` connections; supports the same train branches (`rolling`, `circinus`, `sagitta`, `equuleus`).
 
 ## Conventions
 - Commit headline: `T12345: description` (Phorge ID at https://vyos.dev mandatory). No workflow enforces PR title format in this repo.
