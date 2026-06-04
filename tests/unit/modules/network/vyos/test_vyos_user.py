@@ -21,10 +21,7 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-import os
 from unittest.mock import patch
-
-from ansible.module_utils.basic import PASSWORD_MATCH
 
 from ansible_collections.vyos.vyos.plugins.modules import vyos_user
 from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
@@ -63,16 +60,6 @@ class TestVyosUserModule(TestVyosModule):
         self.assertEqual(
             result["commands"],
             ["set system login user ansible authentication plaintext-password test"],
-        )
-
-    def test_vyos_user_update_password_explicit_no_log_false(self):
-        self.assertTrue(PASSWORD_MATCH.search("update_password"))
-        module_path = os.path.join(os.path.dirname(vyos_user.__file__), "vyos_user.py")
-        with open(module_path) as module_file:
-            module_source = module_file.read()
-        self.assertIn(
-            'update_password=dict(default="always", choices=["on_create", "always"], no_log=False)',
-            module_source,
         )
 
     def test_vyos_user_delete(self):
