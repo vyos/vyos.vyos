@@ -59,7 +59,7 @@ class TestVyosUserModule(TestVyosModule):
         result = self.execute_module(changed=True)
         self.assertEqual(
             result["commands"],
-            ["set system login user ansible authentication plaintext-password 'test'"],
+            ["set system login user ansible authentication plaintext-password test"],
         )
 
     def test_vyos_user_password_special_chars(self):
@@ -112,7 +112,7 @@ class TestVyosUserModule(TestVyosModule):
         result = self.execute_module(changed=True)
         self.assertEqual(
             result["commands"],
-            ["set system login user test authentication plaintext-password 'test'"],
+            ["set system login user test authentication plaintext-password test"],
         )
 
     def test_vyos_user_update_password_on_create_ok(self):
@@ -136,7 +136,7 @@ class TestVyosUserModule(TestVyosModule):
         result = self.execute_module(changed=True)
         self.assertEqual(
             result["commands"],
-            ["set system login user ansible authentication plaintext-password 'test'"],
+            ["set system login user ansible authentication plaintext-password test"],
         )
 
     def test_vyos_user_set_ssh_key(self):

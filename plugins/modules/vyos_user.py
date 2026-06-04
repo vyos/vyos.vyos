@@ -201,10 +201,11 @@ commands:
   returned: always
   type: list
   sample:
-    - set system login user authentication plaintext-password 'password'
+    - set system login user authentication plaintext-password password
 """
 
 import re
+import shlex
 
 from copy import deepcopy
 from functools import partial
@@ -218,11 +219,6 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
     get_config,
     load_config,
 )
-
-
-def _quote_config_value(value):
-    """Return a shell-safe quoted value for VyOS set commands."""
-    return "'" + value.replace("'", "'\"'\"'") + "'"
 
 
 def spec_to_commands(updates, module):
@@ -282,7 +278,7 @@ def spec_to_commands(updates, module):
                     commands,
                     want,
                     "authentication plaintext-password %s"
-                    % _quote_config_value(want["configured_password"]),
+                    % shlex.quote(want["configured_password"]),
                 )
 
     return commands
