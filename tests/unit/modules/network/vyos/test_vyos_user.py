@@ -21,7 +21,6 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-import shlex
 from unittest.mock import patch
 
 from ansible_collections.vyos.vyos.plugins.modules import vyos_user
@@ -84,14 +83,14 @@ class TestVyosUserModule(TestVyosModule):
         )
 
     def test_vyos_user_password_complex_special_chars(self):
-        password = "P@ss w0rd!$#'xy\\"
-        set_module_args(dict(name="ansible", configured_password=password))
+        set_module_args(dict(name="ansible", configured_password="P@ss w0rd!$#'xy\\"))
         result = self.execute_module(changed=True)
-        expected_command = (
-            "set system login user ansible authentication plaintext-password %s"
-            % shlex.quote(password)
+        self.assertEqual(
+            result["commands"],
+            [
+                "set system login user ansible authentication plaintext-password 'P@ss w0rd!$#'\"'\"'xy\\'",
+            ],
         )
-        self.assertEqual(result["commands"], [expected_command])
 
     def test_vyos_user_delete(self):
         set_module_args(dict(name="ansible", state="absent"))
