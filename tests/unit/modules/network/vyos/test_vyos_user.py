@@ -62,6 +62,26 @@ class TestVyosUserModule(TestVyosModule):
             ["set system login user ansible authentication plaintext-password 'test'"],
         )
 
+    def test_vyos_user_password_special_chars(self):
+        set_module_args(dict(name="ansible", configured_password="test$123!@"))
+        result = self.execute_module(changed=True)
+        self.assertEqual(
+            result["commands"],
+            [
+                "set system login user ansible authentication plaintext-password 'test$123!@'",
+            ],
+        )
+
+    def test_vyos_user_password_embedded_quote(self):
+        set_module_args(dict(name="ansible", configured_password="pa'ss"))
+        result = self.execute_module(changed=True)
+        self.assertEqual(
+            result["commands"],
+            [
+                "set system login user ansible authentication plaintext-password 'pa'\"'\"'ss'",
+            ],
+        )
+
     def test_vyos_user_delete(self):
         set_module_args(dict(name="ansible", state="absent"))
         result = self.execute_module(changed=True)
