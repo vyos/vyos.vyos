@@ -454,7 +454,7 @@ def main():
         full_name=dict(),
         configured_password=dict(no_log=True),
         encrypted_password=dict(no_log=False),
-        update_password=dict(default="always", choices=["on_create", "always"]),
+        update_password=dict(default="always", choices=["on_create", "always"], no_log=False),
         state=dict(default="present", choices=["present", "absent"]),
         public_keys=dict(type="list", elements="dict", options=public_key_spec),
     )
