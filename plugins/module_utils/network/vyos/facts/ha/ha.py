@@ -38,31 +38,45 @@ class HaFacts(object):
         return connection.get('show configuration commands |  match "set high-availability"')
 
     def get_config_set(self, data, connection):
-        """To classify the configurations based on high availability sections"""
+        """Classify config lines into per-object buckets for isolated parsing.
+
+        Each bucket is parsed by a single HaTemplate instance so that facts
+        from different objects (groups, sync-groups, virtual-servers) never
+        bleed into each other.
+
+        Keys are namespaced to avoid collisions between a VRRP group and a
+        sync-group that share the same name (e.g. both named "g1").
+        An elif chain ensures each line lands in exactly one bucket.
+        """
         config_dict = {}
         for config_line in data.splitlines():
-            vrrp_grp = re.search(r"set high-availability vrrp group (\S+).*", config_line)
+            vrrp_disable = re.search(r"set high-availability disable", config_line)
+            vrrp_snmp = re.search(r"set high-availability vrrp snmp", config_line)
             vrrp_gp = re.search(
                 r"set high-availability vrrp global-parameters (\S+).*",
                 config_line,
             )
+            vrrp_grp = re.search(r"set high-availability vrrp group (\S+).*", config_line)
             vrrp_sg = re.search(r"set high-availability vrrp sync-group (\S+).*", config_line)
             vrrp_vsrv = re.search(r"set high-availability virtual-server (\S+).*", config_line)
-            vrrp_disable = re.search(r"set high-availability disable", config_line)
-            vrrp_snmp = re.search(r"set high-availability vrrp snmp", config_line)
 
             if vrrp_disable:
                 config_dict.setdefault("disable", []).append(config_line)
-            if vrrp_snmp:
+            elif vrrp_snmp:
                 config_dict.setdefault("vrrp", []).append(config_line)
-            if vrrp_gp:
+            elif vrrp_gp:
                 config_dict.setdefault("global_parameters", []).append(config_line)
-            if vrrp_vsrv:
+            elif vrrp_grp:
+                # Namespace with prefix to avoid collision with sync-groups
+                # that share the same name.
+                key = "vrrp_group_{0}".format(vrrp_grp.group(1))
+                config_dict.setdefault(key, []).append(config_line)
+            elif vrrp_sg:
+                key = "vrrp_sg_{0}".format(vrrp_sg.group(1))
+                config_dict.setdefault(key, []).append(config_line)
+            elif vrrp_vsrv:
                 config_dict.setdefault(vrrp_vsrv.group(1), []).append(config_line)
-            if vrrp_sg:
-                config_dict.setdefault(vrrp_sg.group(1), []).append(config_line)
-            if vrrp_grp:
-                config_dict.setdefault(vrrp_grp.group(1), []).append(config_line)
+
         return list(config_dict.values())
 
     def deep_merge(self, dest, src):
@@ -109,7 +123,13 @@ class HaFacts(object):
                         vrrp_facts[section][name] = self.deep_merge(existing, data)
 
         ansible_facts["ansible_network_resources"].pop("ha", None)
+
+        # normalize_config must run before validate_config so that
+        # virtual_servers, groups, and sync_groups are already lists.
+        # validate_config cannot coerce a keyed dict to a list and will
+        # fail_json if it receives one.
         vrrp_facts = self.normalize_config(vrrp_facts)
+
         validate_parser = HaTemplate(lines=[], module=self._module)
         params = utils.remove_empties(
             validate_parser.validate_config(
@@ -119,7 +139,7 @@ class HaFacts(object):
             ),
         )
 
-        facts["ha"] = self.normalize_config(params.get("config", []))
+        facts["ha"] = params.get("config", {})
         ansible_facts["ansible_network_resources"].update(facts)
         return ansible_facts
 
@@ -127,11 +147,12 @@ class HaFacts(object):
         if not config:
             return config
 
-        # Normalize virtual_servers
+        # Normalize virtual_servers dict → list. This conversion is safe to
+        # call repeatedly (already-a-list case is a no-op) but should only
+        # be needed once — after validate_config has run.
         if isinstance(config.get("virtual_servers"), dict):
             config["virtual_servers"] = list(config["virtual_servers"].values())
 
-        # Normalize vrrp
         vrrp = config.get("vrrp", {})
 
         if isinstance(vrrp.get("groups"), dict):
@@ -144,8 +165,6 @@ class HaFacts(object):
         for vs in config.get("virtual_servers", []):
             if isinstance(vs.get("real_server"), dict):
                 vs["real_server"] = list(vs["real_server"].values())
-
-        vrrp = config.get("vrrp", {})
 
         for group in vrrp.get("groups", []):
             if isinstance(group.get("address"), list):

@@ -54,6 +54,10 @@ class Ha(ResourceModule):
         self.parsers = [
             "disable",
         ]
+        # Validate once at construction time rather than on every parse()
+        # and get_parser() call. get_os_version() triggers a device
+        # round-trip; calling it 20+ times per module execution is wasteful.
+        self._validate_template()
 
     def _validate_template(self):
         version = get_os_version(self._module)
@@ -61,16 +65,6 @@ class Ha(ResourceModule):
             self._tmplt = HaTemplate()
         else:
             self._module.fail_json(msg="High Availability is not supported in this version of VyOS")
-
-    def parse(self):
-        """override parse to check template"""
-        self._validate_template()
-        return super().parse()
-
-    def get_parser(self, name):
-        """get_parsers"""
-        self._validate_template()
-        return super().get_parser(name)
 
     def execute_module(self):
         """Execute the module
@@ -597,10 +591,21 @@ class Ha(ResourceModule):
         return wc, hc, path
 
     def _remove_defaults(self, data):
+        """Strip None and False from config dicts, but preserve "disabled".
+
+        False is the argspec default for boolean flags (disable, no_preempt,
+        rfc3768_compatibility) and carries no config intent — stripping it
+        prevents spurious `delete` commands for fields already at their
+        default state.
+
+        "disabled" is an explicit user choice for snmp and must be preserved
+        so that _prune_stubs can act on it. The original code stripped it,
+        which made `snmp: disabled` invisible to the deleted-state logic.
+        """
         if isinstance(data, dict):
             cleaned = {}
             for k, v in data.items():
-                if v in [None, False, "disabled"]:
+                if v is None or v is False:
                     continue
                 v = self._remove_defaults(v)
                 cleaned[k] = v

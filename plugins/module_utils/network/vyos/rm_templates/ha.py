@@ -540,6 +540,10 @@ class HaTemplate(NetworkTemplate):
                 },
             },
         },
+        # vrrp.sync_groups.health_check — all sub-fields are independently
+        # optional. VyOS emits one field per line; placing ? inside each
+        # group (not on a separate line) ensures every single-field line
+        # matches regardless of which field is present.
         {
             "name": "vrrp.sync_groups.health_check",
             "getval": re.compile(
@@ -547,10 +551,10 @@ class HaTemplate(NetworkTemplate):
                 ^set\shigh-availability\svrrp\ssync-group
                 \s+(?P<sgname>\S+)
                 \shealth-check
-                (?:\s+failure-count\s+(?P<failure_count>\S+))
-                ?(?:\s+interval\s+(?P<int>\S+))
-                ?(?:\s+ping\s+(?P<ping>\S+))
-                ?(?:\s+script\s+(?P<script>\S+))?
+                (?:\s+failure-count\s+(?P<failure_count>\S+))?
+                (?:\s+interval\s+(?P<int>\S+))?
+                (?:\s+ping\s+(?P<ping>\S+))?
+                (?:\s+script\s+(?P<script>\S+))?
                 $
                 """,
                 re.VERBOSE,
@@ -572,6 +576,7 @@ class HaTemplate(NetworkTemplate):
                 },
             },
         },
+        # vrrp.sync_groups.transition_script — same rationale as health_check.
         {
             "name": "vrrp.sync_groups.transition_script",
             "getval": re.compile(
@@ -634,11 +639,15 @@ class HaTemplate(NetworkTemplate):
                 },
             },
         },
+        # Lookahead requires at least one known field to be present so the
+        # bare "global-parameters" prefix line does not produce an empty
+        # merge into facts.
         {
             "name": "vrrp.global_parameters",
             "getval": re.compile(
                 r"""
                 ^set\shigh-availability\svrrp\sglobal-parameters
+                (?=\s+(?:startup-delay|version)\s)
                 (?:\s+startup-delay\s+(?P<startup_delay>\S+))?
                 (?:\s+version\s+(?P<version>\S+))?
                 $
@@ -679,7 +688,10 @@ class HaTemplate(NetworkTemplate):
                     "groups": {
                         "{{ gname }}": {
                             "name": "{{ gname }}",
-                            "description": "{{ description if description is defined else None }}",
+                            # Strip surrounding quotes added by VyOS so the
+                            # round-trip through setval (which re-adds them)
+                            # is idempotent.
+                            "description": "{{ description | replace(\"'\", \"\") if description is defined else None }}",
                             "advertise_interval": "{{ advertise_interval if advertise_interval is defined else None }}",
                             "hello_source_address": "{{ hello_source if hello_source is defined else None }}",
                             "interface": "{{ interface if interface is defined else None }}",
@@ -806,6 +818,7 @@ class HaTemplate(NetworkTemplate):
                 },
             },
         },
+        # vrrp.groups.transition_script — same rationale as sync_groups variant.
         {
             "name": "vrrp.groups.transition_script",
             "getval": re.compile(
@@ -838,6 +851,7 @@ class HaTemplate(NetworkTemplate):
                 },
             },
         },
+        # vrrp.groups.health_check — same rationale as sync_groups variant.
         {
             "name": "vrrp.groups.health_check",
             "getval": re.compile(
@@ -845,10 +859,10 @@ class HaTemplate(NetworkTemplate):
                 ^set\shigh-availability\svrrp\sgroup
                 \s+(?P<gname>\S+)
                 \shealth-check
-                (?:\s+failure-count\s+(?P<failure_count>\S+))
-                ?(?:\s+interval\s+(?P<int>\S+))
-                ?(?:\s+ping\s+(?P<ping>\S+))
-                ?(?:\s+script\s+(?P<script>\S+))?
+                (?:\s+failure-count\s+(?P<failure_count>\S+))?
+                (?:\s+interval\s+(?P<int>\S+))?
+                (?:\s+ping\s+(?P<ping>\S+))?
+                (?:\s+script\s+(?P<script>\S+))?
                 $
                 """,
                 re.VERBOSE,
