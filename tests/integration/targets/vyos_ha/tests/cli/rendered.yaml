@@ -12,4 +12,4 @@
     - assert:
         that:
           - result.changed == false
-          - "result.rendered == rendered.commands"
+          - "result.rendered | sort == rendered.commands | sort"

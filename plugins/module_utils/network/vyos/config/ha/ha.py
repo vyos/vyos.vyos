@@ -95,14 +95,10 @@ class Ha(ResourceModule):
         """Generate configuration commands to send based on
         want, have and desired state.
         """
-        wantd = {}
-        haved = {}
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
         for entry in wantd, haved:
-            self._vrrp_groups_list_to_dict(entry)
-            self._virtual_servers_list_to_dict(entry)
-            self._vrrp_sync_groups_list_to_dict(entry)
+            self._list_to_named_dict(entry)
             self._normalize_lists(entry)
 
         if self.state in ["deleted"]:
@@ -166,10 +162,19 @@ class Ha(ResourceModule):
                 have={k: have},
             )
 
-        self.commands = sorted(list(dict.fromkeys(self.commands)))
+        # Deduplicate while preserving insertion order. Do NOT sort —
+        # sorting breaks set/delete ordering and makes the command list
+        # harder to reason about.
+        self.commands = list(dict.fromkeys(self.commands))
 
     def _compare_vsrvs(self, want, have):
-        """Compare virtual servers of VRRP"""
+        """Compare virtual servers.
+
+        Pre-index both want and have by (name, attribute) signature so that
+        each lookup is O(1) instead of O(n). Groups that are identical
+        between want and have are skipped entirely via an equality
+        short-circuit before leaf decomposition.
+        """
         vs_parsers = [
             "virtual_servers.address",
             "virtual_servers.algorithm",
@@ -184,35 +189,98 @@ class Ha(ResourceModule):
             "virtual_servers.real_server.connection_timeout",
         ]
 
-        hlist = self._extract_named_leafs(have)
-        wlist = self._extract_named_leafs(want)
+        # Build name-keyed indexes once — O(n) — rather than scanning the
+        # full list for every item — O(n²).
+        want_index = (
+            {vs["name"]: vs for vs in want.values() if isinstance(vs, dict) and vs.get("name")}
+            if isinstance(want, dict)
+            else {}
+        )
+        have_index = (
+            {vs["name"]: vs for vs in have.values() if isinstance(vs, dict) and vs.get("name")}
+            if isinstance(have, dict)
+            else {}
+        )
 
-        if self.state == "rendered":
-            hlist = []
+        all_names = set(want_index) | set(have_index)
 
-        if self.state in ["replaced", "deleted"]:
+        for name in all_names:
+            w = want_index.get(name, {})
+            h = have_index.get(name, {})
+
+            # Short-circuit: identical virtual servers need no commands.
+            if w == h and self.state not in ["rendered"]:
+                continue
+
+            wlist = self._extract_named_leafs(w) if w else []
+            hlist = self._extract_named_leafs(h) if h else []
+
+            if self.state == "rendered":
+                hlist = []
+
+            # Build leaf-level indexes for this server.
+            def _vsrv_sig(item):
+                if not isinstance(item, dict):
+                    return None
+                iname = item.get("name")
+                if not iname:
+                    return None
+                if "real_server" in item:
+                    rs = item["real_server"]
+                    if not isinstance(rs, dict) or "address" not in rs:
+                        return None
+                    addr = rs["address"]
+                    for k in rs:
+                        if k != "address":
+                            return ("real_server", iname, addr, k)
+                    return ("real_server", iname, addr, None)
+                for k in item:
+                    if k != "name":
+                        return ("attr", iname, k)
+                return None
+
+            have_leaf_index = {}
             for hdict in hlist:
-                wdict = self._find_matching_vsrv(hdict, wlist)
-                if self.state == "deleted" and wdict:
-                    wdict = {}
-                elif not wdict:
-                    hdict = {}
-                self.compare(
-                    parsers=vs_parsers,
-                    want={"virtual_servers": wdict},
-                    have={"virtual_servers": hdict},
-                )
-        if self.state in ["merged", "replaced", "rendered", "overridden"]:
+                sig = _vsrv_sig(hdict)
+                if sig is not None:
+                    have_leaf_index[sig] = hdict
+
+            want_leaf_index = {}
             for wdict in wlist:
-                hdict = self._find_matching_vsrv(wdict, hlist)
-                self.compare(
-                    parsers=vs_parsers,
-                    want={"virtual_servers": wdict},
-                    have={"virtual_servers": hdict},
-                )
+                sig = _vsrv_sig(wdict)
+                if sig is not None:
+                    want_leaf_index[sig] = wdict
+
+            if self.state in ["replaced", "deleted"]:
+                for sig, hdict in have_leaf_index.items():
+                    wdict = want_leaf_index.get(sig, {})
+                    if self.state == "deleted" and wdict:
+                        wdict = {}
+                    elif not wdict:
+                        hdict = {}
+                    self.compare(
+                        parsers=vs_parsers,
+                        want={"virtual_servers": wdict},
+                        have={"virtual_servers": hdict},
+                    )
+
+            if self.state in ["merged", "replaced", "rendered", "overridden"]:
+                for sig, wdict in want_leaf_index.items():
+                    hdict = have_leaf_index.get(sig, {})
+                    self.compare(
+                        parsers=vs_parsers,
+                        want={"virtual_servers": wdict},
+                        have={"virtual_servers": hdict},
+                    )
 
     def _compare_vrrp(self, want, have):
-        """Compare the instances of VRRP"""
+        """Compare VRRP groups and sync-groups.
+
+        Pre-index groups by name so matching is O(1). Groups that are
+        identical between want and have are skipped via equality
+        short-circuit before any leaf decomposition occurs — this is the
+        dominant performance win for large idempotent runs.
+        """
         vrrp_parsers = [
             "vrrp.snmp",
             "vrrp.global_parameters",
@@ -242,89 +310,158 @@ class Ha(ResourceModule):
         ):
             self.commands.append("delete high-availability vrrp snmp")
 
-        hlist = self._extract_leaf_items(have)
-        wlist = self._extract_leaf_items(want)
+        # Process global_parameters and snmp via the existing leaf extractor
+        # since they are not named objects. Only groups/sync_groups get the
+        # indexed treatment.
+        non_named = {k: v for k, v in (want or {}).items() if k not in ("groups", "sync_groups")}
+        non_named_have = {
+            k: v for k, v in (have or {}).items() if k not in ("groups", "sync_groups")
+        }
+
+        hlist_non = self._extract_leaf_items(non_named_have)
+        wlist_non = self._extract_leaf_items(non_named)
 
         if self.state == "rendered":
-            hlist = []
+            hlist_non = []
+
+        # Build leaf index for non-named items.
+        have_non_index = {}
+        for hdict in hlist_non:
+            sig = self._vrrp_leaf_sig(hdict)
+            have_non_index[sig] = hdict
+
+        want_non_index = {}
+        for wdict in wlist_non:
+            sig = self._vrrp_leaf_sig(wdict)
+            want_non_index[sig] = wdict
 
         if self.state in ["replaced", "deleted"]:
-            for hdict in hlist:
-                wdict = self._find_matching_vrrp(hdict, wlist)
-
+            for sig, hdict in have_non_index.items():
+                wdict = want_non_index.get(sig, {})
                 if self.state == "deleted" and wdict:
                     wdict = {}
                 if self.state == "replaced" and wdict and wdict != hdict:
                     wdict = {}
                 elif not wdict:
                     hdict = {}
-
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
 
         if self.state in ["merged", "replaced", "rendered", "overridden"]:
-
-            for wdict in wlist:
-                hdict = self._find_matching_vrrp(wdict, hlist)
+            for sig, wdict in want_non_index.items():
+                hdict = have_non_index.get(sig, {})
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
 
-    def _vrrp_groups_list_to_dict(self, data):
+        # Process named objects (groups, sync_groups) with per-name
+        # short-circuit and indexed leaf lookup.
+        for section in ("groups", "sync_groups"):
+            want_objs = (want or {}).get(section, {})
+            have_objs = (have or {}).get(section, {})
 
-        vrrp = data.get("vrrp", {})
-        groups = vrrp.get("groups")
+            if not isinstance(want_objs, dict):
+                want_objs = {}
+            if not isinstance(have_objs, dict):
+                have_objs = {}
 
-        if not groups:
-            return data
-        if isinstance(groups, dict):
-            return data
-        if isinstance(groups, list):
-            new_groups = {}
-            for item in groups:
-                name = item.get("name")
-                if not name:
+            all_names = set(want_objs) | set(have_objs)
+
+            for name in all_names:
+                w = want_objs.get(name, {})
+                h = have_objs.get(name, {})
+
+                # Short-circuit: identical objects need no commands.
+                if w == h and self.state not in ["rendered"]:
                     continue
-                new_groups[name] = item
 
-            data["vrrp"]["groups"] = new_groups
-            return data
-        return data
+                wlist = self._extract_leaf_items({section: {name: w}}) if w else []
+                hlist = self._extract_leaf_items({section: {name: h}}) if h else []
 
-    def _vrrp_sync_groups_list_to_dict(self, data):
-        vrrp = data.get("vrrp", {})
-        groups = vrrp.get("sync_groups")
+                if self.state == "rendered":
+                    hlist = []
 
-        if not groups:
-            return data
-        if isinstance(groups, dict):
-            return data
-        if isinstance(groups, list):
-            new_groups = {}
-            for item in groups:
-                name = item.get("name")
-                if not name:
+                # Index leaves for this named object.
+                have_leaf_index = {}
+                for hdict in hlist:
+                    sig = self._vrrp_leaf_sig(hdict)
+                    have_leaf_index[sig] = hdict
+
+                want_leaf_index = {}
+                for wdict in wlist:
+                    sig = self._vrrp_leaf_sig(wdict)
+                    want_leaf_index[sig] = wdict
+
+                if self.state in ["replaced", "deleted"]:
+                    for sig, hdict in have_leaf_index.items():
+                        wdict = want_leaf_index.get(sig, {})
+                        if self.state == "deleted" and wdict:
+                            wdict = {}
+                        if self.state == "replaced" and wdict and wdict != hdict:
+                            wdict = {}
+                        elif not wdict:
+                            hdict = {}
+                        self.compare(
+                            parsers=vrrp_parsers,
+                            want={"vrrp": wdict},
+                            have={"vrrp": hdict},
+                        )
+
+                if self.state in ["merged", "replaced", "rendered", "overridden"]:
+                    for sig, wdict in want_leaf_index.items():
+                        hdict = have_leaf_index.get(sig, {})
+                        self.compare(
+                            parsers=vrrp_parsers,
+                            want={"vrrp": wdict},
+                            have={"vrrp": hdict},
+                        )
+
+    def _vrrp_leaf_sig(self, item):
+        """Build a hashable signature for a VRRP leaf dict for O(1) indexing."""
+        if not isinstance(item, dict) or not item:
+            return ()
+
+        container = next(iter(item))
+        inner = item[container]
+
+        sig = [container]
+
+        if isinstance(inner, dict) and "name" in inner:
+            sig.append(("name", inner["name"]))
+
+        if isinstance(inner, dict):
+            for k, v in inner.items():
+                if k == "name":
                     continue
-                new_groups[name] = item
+                if not isinstance(v, dict):
+                    sig.append(k)
+                    break
+                sig.append(k)
+                for leaf in v:
+                    sig.append(leaf)
+                    break
+                break
 
-            data["vrrp"]["sync_groups"] = new_groups
-            return data
-        return data
+        return tuple(sig)
 
-    def _virtual_servers_list_to_dict(self, data):
+    def _list_to_named_dict(self, data):
+        """Convert all named-object lists to name-keyed dicts in-place.
 
+        Replaces the three separate _vrrp_groups_list_to_dict,
+        _vrrp_sync_groups_list_to_dict, and _virtual_servers_list_to_dict
+        methods with a single helper. Also normalises real_server lists
+        inside virtual servers.
+        """
+        # VRRP groups and sync_groups
+        vrrp = data.get("vrrp", {})
+        for key in ("groups", "sync_groups"):
+            items = vrrp.get(key)
+            if isinstance(items, list):
+                vrrp[key] = {
+                    item["name"]: item
+                    for item in items
+                    if isinstance(item, dict) and item.get("name")
+                }
+
+        # Virtual servers
         vss = data.get("virtual_servers")
-        if not vss:
-            return data
-
-        if isinstance(vss, dict):
-            for vs in vss.items():
-                rs = vs.get("real_server")
-                if isinstance(rs, list):
-                    vs["real_server"] = {
-                        item["address"]: item
-                        for item in rs
-                        if isinstance(item, dict) and item.get("address")
-                    }
-            return data
-
         if isinstance(vss, list):
             new_vss = {}
             for vs in vss:
@@ -340,11 +477,19 @@ class Ha(ResourceModule):
                         for item in rs
                         if isinstance(item, dict) and item.get("address")
                     }
-
                 new_vss[name] = vs
-
             data["virtual_servers"] = new_vss
-            return data
+        elif isinstance(vss, dict):
+            for vs in vss.values():
+                if not isinstance(vs, dict):
+                    continue
+                rs = vs.get("real_server")
+                if isinstance(rs, list):
+                    vs["real_server"] = {
+                        item["address"]: item
+                        for item in rs
+                        if isinstance(item, dict) and item.get("address")
+                    }
 
         return data
 
@@ -381,82 +526,6 @@ class Ha(ResourceModule):
 
         results.append(out)
         return results
-
-    def _find_matching_vsrv(self, want_item, have_list):
-
-        def build_sig(item):
-            if not isinstance(item, dict):
-                return None
-
-            name = item.get("name")
-            if not name:
-                return None
-
-            if "real_server" in item:
-                rs = item["real_server"]
-                if not isinstance(rs, dict) or "address" not in rs:
-                    return None
-
-                addr = rs["address"]
-
-                for k in rs:
-                    if k != "address":
-                        return ("real_server", name, addr, k)
-
-                return ("real_server", name, addr, None)
-
-            for k in item:
-                if k != "name":
-                    return ("attr", name, k)
-
-            return None
-
-        sig_want = build_sig(want_item)
-
-        for obj in have_list:
-            if build_sig(obj) == sig_want:
-                return obj
-
-        return {}
-
-    def _find_matching_vrrp(self, want_item, have_list):
-
-        def build_sig(item):
-            if not isinstance(item, dict) or not item:
-                return ()
-
-            container = next(iter(item))
-            inner = item[container]
-
-            sig = [container]
-
-            if isinstance(inner, dict) and "name" in inner:
-                sig.append(("name", inner["name"]))
-
-            if isinstance(inner, dict):
-                for k, v in inner.items():
-                    if k == "name":
-                        continue
-
-                    if not isinstance(v, dict):
-                        sig.append(k)
-                        break
-
-                    sig.append(k)
-                    for leaf in v:
-                        sig.append(leaf)
-                        break
-                    break
-
-            return tuple(sig)
-
-        sig_want = build_sig(want_item)
-
-        for obj in have_list:
-            if build_sig(obj) == sig_want:
-                return obj
-
-        return {}
 
     def _normalize_lists(self, node):
         """
