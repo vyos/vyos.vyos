@@ -1002,6 +1002,7 @@ class TestVyosHaModule(TestVyosModule):
             "set high-availability vrrp sync-group sg1 transition-script stop /var/tmp/script.sh",
         ]
         result = self.execute_module(changed=False)
+        # rendered output order is not significant — use sorted comparison
         self.assertEqual(
             sorted(result["rendered"]),
             sorted(rendered_commands),
@@ -1033,6 +1034,8 @@ class TestVyosHaModule(TestVyosModule):
             "set high-availability vrrp global-parameters startup-delay 30",
             "set high-availability vrrp global-parameters version 3",
             "set high-availability vrrp group g1 address '1.1.1.1'",
+            "set high-availability vrrp group g1 address '3.3.3.3'",
+            "set high-availability vrrp group g1 address '5.5.5.5' interface 'eth2'",
             "set high-availability vrrp group g1 advertise-interval 10",
             "set high-availability vrrp group g1 authentication password 'testpass'",
             "set high-availability vrrp group g1 authentication type 'plaintext-password'",
@@ -1136,7 +1139,7 @@ class TestVyosHaModule(TestVyosModule):
                         "no_preempt": True,
                         "rfc3768_compatibility": True,
                         "interface": "eth2",
-                        "address": "1.1.1.1",
+                        "address": ["1.1.1.1", "3.3.3.3", "5.5.5.5 interface eth2"],
                         "advertise_interval": 10,
                         "peer_address": "192.168.1.3",
                         "priority": 100,
@@ -1174,6 +1177,13 @@ class TestVyosHaModule(TestVyosModule):
                         ],
                         "hello_source_address": "192.168.1.2",
                     },
+                    {
+                        "name": "g2",
+                        "address": ["192.168.3.3", "192.168.4.4 interface eth3"],
+                        "disable": False,
+                        "no_preempt": False,
+                        "rfc3768_compatibility": False,
+                    },
                 ],
                 "sync_groups": [
                     {
@@ -1195,7 +1205,7 @@ class TestVyosHaModule(TestVyosModule):
                 ],
             },
         }
-        self.assertEqual(sorted(parsed_list), sorted(result["parsed"]))
+        self.assertEqual(parsed_list, result["parsed"])
 
     def test_vrrp_gathered(self):
         set_module_args(dict(state="gathered"))
@@ -1258,7 +1268,7 @@ class TestVyosHaModule(TestVyosModule):
                         "no_preempt": True,
                         "rfc3768_compatibility": True,
                         "interface": "eth2",
-                        "address": "1.1.1.1",
+                        "address": ["1.1.1.1", "3.3.3.3", "5.5.5.5 interface eth2"],
                         "advertise_interval": 10,
                         "peer_address": "192.168.1.3",
                         "priority": 100,
@@ -1317,8 +1327,7 @@ class TestVyosHaModule(TestVyosModule):
                 ],
             },
         }
-
-        self.assertEqual(sorted(gathered_list), sorted(result["gathered"]))
+        self.assertEqual(gathered_list, result["gathered"])
 
     def test_vrrp_groups_deleted(self):
         set_module_args(
