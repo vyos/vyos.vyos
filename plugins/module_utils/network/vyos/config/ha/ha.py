@@ -54,9 +54,7 @@ class Ha(ResourceModule):
         self.parsers = [
             "disable",
         ]
-        # Validate once at construction time rather than on every parse()
-        # and get_parser() call. get_os_version() triggers a device
-        # round-trip; calling it 20+ times per module execution is wasteful.
+
         self._validate_template()
 
     def _validate_template(self):
@@ -162,9 +160,6 @@ class Ha(ResourceModule):
                 have={k: have},
             )
 
-        # Deduplicate while preserving insertion order. Do NOT sort —
-        # sorting breaks set/delete ordering and makes the command list
-        # harder to reason about.
         self.commands = list(dict.fromkeys(self.commands))
 
     def _compare_vsrvs(self, want, have):
@@ -189,8 +184,6 @@ class Ha(ResourceModule):
             "virtual_servers.real_server.connection_timeout",
         ]
 
-        # Build name-keyed indexes once — O(n) — rather than scanning the
-        # full list for every item — O(n²).
         want_index = (
             {vs["name"]: vs for vs in want.values() if isinstance(vs, dict) and vs.get("name")}
             if isinstance(want, dict)
@@ -208,7 +201,6 @@ class Ha(ResourceModule):
             w = want_index.get(name, {})
             h = have_index.get(name, {})
 
-            # Short-circuit: identical virtual servers need no commands.
             if w == h and self.state not in ["rendered"]:
                 continue
 
@@ -218,7 +210,6 @@ class Ha(ResourceModule):
             if self.state == "rendered":
                 hlist = []
 
-            # Build leaf-level indexes for this server.
             def _vsrv_sig(item):
                 if not isinstance(item, dict):
                     return None
@@ -310,9 +301,6 @@ class Ha(ResourceModule):
         ):
             self.commands.append("delete high-availability vrrp snmp")
 
-        # Process global_parameters and snmp via the existing leaf extractor
-        # since they are not named objects. Only groups/sync_groups get the
-        # indexed treatment.
         non_named = {k: v for k, v in (want or {}).items() if k not in ("groups", "sync_groups")}
         non_named_have = {
             k: v for k, v in (have or {}).items() if k not in ("groups", "sync_groups")
@@ -324,7 +312,6 @@ class Ha(ResourceModule):
         if self.state == "rendered":
             hlist_non = []
 
-        # Build leaf index for non-named items.
         have_non_index = {}
         for hdict in hlist_non:
             sig = self._vrrp_leaf_sig(hdict)
@@ -351,8 +338,6 @@ class Ha(ResourceModule):
                 hdict = have_non_index.get(sig, {})
                 self.compare(parsers=vrrp_parsers, want={"vrrp": wdict}, have={"vrrp": hdict})
 
-        # Process named objects (groups, sync_groups) with per-name
-        # short-circuit and indexed leaf lookup.
         for section in ("groups", "sync_groups"):
             want_objs = (want or {}).get(section, {})
             have_objs = (have or {}).get(section, {})
@@ -368,7 +353,6 @@ class Ha(ResourceModule):
                 w = want_objs.get(name, {})
                 h = have_objs.get(name, {})
 
-                # Short-circuit: identical objects need no commands.
                 if w == h and self.state not in ["rendered"]:
                     continue
 
@@ -378,7 +362,6 @@ class Ha(ResourceModule):
                 if self.state == "rendered":
                     hlist = []
 
-                # Index leaves for this named object.
                 have_leaf_index = {}
                 for hdict in hlist:
                     sig = self._vrrp_leaf_sig(hdict)

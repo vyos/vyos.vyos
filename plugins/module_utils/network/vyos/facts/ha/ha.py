@@ -67,8 +67,6 @@ class HaFacts(object):
             elif vrrp_gp:
                 config_dict.setdefault("global_parameters", []).append(config_line)
             elif vrrp_grp:
-                # Namespace with prefix to avoid collision with sync-groups
-                # that share the same name.
                 key = "vrrp_group_{0}".format(vrrp_grp.group(1))
                 config_dict.setdefault(key, []).append(config_line)
             elif vrrp_sg:
@@ -124,10 +122,6 @@ class HaFacts(object):
 
         ansible_facts["ansible_network_resources"].pop("ha", None)
 
-        # normalize_config must run before validate_config so that
-        # virtual_servers, groups, and sync_groups are already lists.
-        # validate_config cannot coerce a keyed dict to a list and will
-        # fail_json if it receives one.
         vrrp_facts = self.normalize_config(vrrp_facts)
 
         validate_parser = HaTemplate(lines=[], module=self._module)
@@ -147,9 +141,6 @@ class HaFacts(object):
         if not config:
             return config
 
-        # Normalize virtual_servers dict → list. This conversion is safe to
-        # call repeatedly (already-a-list case is a no-op) but should only
-        # be needed once — after validate_config has run.
         if isinstance(config.get("virtual_servers"), dict):
             config["virtual_servers"] = list(config["virtual_servers"].values())
 

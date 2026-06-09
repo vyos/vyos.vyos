@@ -288,6 +288,30 @@ def in_target_not_none(h, key):
 
 
 def combine(a, b, recursive=False, list_merge="replace"):
+    """Merge dict ``b`` into dict ``a``, returning a new dict.
+
+    :param a: Base dictionary.
+    :param b: Dictionary whose values take precedence over ``a``.
+    :param recursive: When True, nested dicts are merged recursively rather
+        than replaced wholesale.
+    :param list_merge: Controls how list values are combined when the same key
+        exists in both dicts. Supported modes:
+
+        - ``"replace"`` *(default)* — ``b``'s list replaces ``a``'s list.
+        - ``"append"`` — ``b``'s list is appended to ``a``'s list (duplicates
+          kept).
+        - ``"prepend"`` — ``b``'s list is prepended to ``a``'s list
+          (duplicates kept).
+        - ``"append_rp"`` — like ``"append"`` but duplicates are removed,
+          preserving the first occurrence (rp = remove-preserve).
+        - ``"prepend_rp"`` — like ``"prepend"`` but duplicates are removed,
+          preserving the first occurrence.
+
+        Passing any other value raises ``ValueError``.
+    :returns: New merged dict.
+    :raises ValueError: If either argument is not a dict, or if an
+        unsupported ``list_merge`` mode is given.
+    """
     if not isinstance(a, dict) or not isinstance(b, dict):
         raise ValueError("combine expects two dictionaries")
 
