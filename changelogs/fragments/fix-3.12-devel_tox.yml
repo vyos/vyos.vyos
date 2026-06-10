@@ -1,3 +1,3 @@
 ---
 trivial:
-  - tox-ansible.ini - Configuration to skip 3.12 to stop 3.12-devel tests failing due to upstream enforcing minimul Python version.
+  - tox-ansible.ini - Configure skipping Python 3.12 to stop 3.12-devel tests failing due to upstream enforcing a minimum required Python version.
