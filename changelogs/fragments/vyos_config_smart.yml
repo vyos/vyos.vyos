@@ -1,3 +1,3 @@
 ---
 minor_changes:
-  - vyos_config - new feature match 'smart' to enforce the configuration
+  - vyos_config - Add match 'smart' to enforce the supplied configuration.
