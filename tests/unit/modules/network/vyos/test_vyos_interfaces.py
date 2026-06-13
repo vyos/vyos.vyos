@@ -524,7 +524,7 @@ class TestVyosInterfacesModule(TestVyosModule):
 
         self.execute_module(failed=True)
 
-    def test_vyos_interfaces_merged_idem_vrf(self):
+    def test_vyos_interfaces_merged_idempotent_vrf(self):
 
         self.fixture_path = "vyos_interfaces_config_vrf.cfg"
         set_module_args(
@@ -539,7 +539,7 @@ class TestVyosInterfacesModule(TestVyosModule):
         commands = []
         self.execute_module(changed=False, commands=commands)
 
-    def test_vyos_interfaces_replaced_idem_vrf(self):
+    def test_vyos_interfaces_replaced_idempotent_vrf(self):
 
         self.fixture_path = "vyos_interfaces_config_vrf.cfg"
         set_module_args(
@@ -554,7 +554,7 @@ class TestVyosInterfacesModule(TestVyosModule):
         commands = []
         self.execute_module(changed=False, commands=commands)
 
-    def test_vyos_interfaces_overridden_idem_vrf(self):
+    def test_vyos_interfaces_overridden_idempotent_vrf(self):
 
         self.fixture_path = "vyos_interfaces_config_vrf.cfg"
         set_module_args(
