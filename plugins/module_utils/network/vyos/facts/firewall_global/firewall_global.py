@@ -462,8 +462,6 @@ class Firewall_globalFacts(object):
             else:
                 zone[attr] = value
 
-        # self._module.fail_json(msg={"cfg_dict": cfg_dict})
-
         return list(cfg_dict.values())
 
     def _parse_izf(self, value):
