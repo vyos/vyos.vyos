@@ -39,11 +39,25 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
 
         self.execute_show_command = self.mock_execute_show_command.start()
 
+        self.mock_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.logging_global.logging_global.get_os_version",
+        )
+        self.get_os_version = self.mock_get_os_version.start()
+        self.get_os_version.return_value = "1.3"
+
+        self.mock_facts_get_os_version = patch(
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.logging_global.logging_global.get_os_version",
+        )
+        self.get_facts_os_version = self.mock_facts_get_os_version.start()
+        self.get_facts_os_version.return_value = "1.3"
+
     def tearDown(self):
         super(TestVyosLoggingGlobalModule, self).tearDown()
         self.mock_get_resource_connection_config.stop()
         self.mock_get_resource_connection_facts.stop()
         self.mock_execute_show_command.stop()
+        self.mock_get_os_version.stop()
+        self.mock_facts_get_os_version.stop()
 
     def test_vyos_logging_global_merged_idempotent(self):
         self.execute_show_command.return_value = dedent(

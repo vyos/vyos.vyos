@@ -62,7 +62,7 @@ class Logging_global(ResourceModule):
         else:
             self._tmplt = Logging_globalTemplate()
 
-        self.parsers = [p["name"] for p in self._tmplt.PARSERS]
+        self.parsers = [p["name"] for p in self._tmplt.PARSERS if not p["name"].endswith(".state")]
 
     def parse(self):
         """override parse to check template"""
@@ -88,6 +88,8 @@ class Logging_global(ResourceModule):
 
     def _strip_unsupported_15(self, data):
         """Remove 1.4-only keys from a list_to_dict result for 1.5 devices."""
+        if not data:
+            return data
         for key in ("files", "users"):
             data.pop(key, None)
         if "global_params" in data:
