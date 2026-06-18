@@ -1026,8 +1026,8 @@ Notes
 .. note::
    - Tested against VyOS 1.3.8, 1.4.2, 1.5.0, and the rolling release of spring 2025.
    - This module works with connection ``network_cli``.
-   - The Configuration defaults of the Vyos network devices are supposed to hinder idempotent behavior of plays.
-   - **VyOS 1.5+ breaking changes**: The ``files``, ``users``, and ``global_params.archive`` options are not supported on VyOS 1.5+. If provided, they will be silently ignored with a warning. The ``global_params`` facilities now map to ``set system syslog local`` (was ``set system syslog global``). Remote hosts now map to ``set system syslog remote`` (was ``set system syslog host``). The ``marker_interval`` and ``preserve_fqdn`` options moved to top-level (was under ``global_params`` in the CLI, argspec key unchanged).
+   - The Configuration defaults of the VyOS network devices are supposed to hinder idempotent behavior of plays.
+   - **VyOS 1.5+ breaking changes**: The ``files``, ``users``, and ``global_params.archive`` options are not supported on VyOS 1.5+. If provided, they will be ignored with a warning. The ``global_params`` facilities now map to ``set system syslog local`` (was ``set system syslog global``). Remote hosts now map to ``set system syslog remote`` (was ``set system syslog host``). The ``marker_interval`` and ``preserve_fqdn`` options moved to top-level (was under ``global_params`` in the CLI, argspec key unchanged).
 
 
 

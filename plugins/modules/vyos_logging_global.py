@@ -22,12 +22,12 @@ author: Sagar Paul (@KB-perByte)
 notes:
   - Tested against VyOS 1.3.8, 1.4.2, 1.5.0, and the rolling release of spring 2025.
   - This module works with connection C(network_cli).
-  - The Configuration defaults of the Vyos network devices
+  - The Configuration defaults of the VyOS network devices
     are supposed to hinder idempotent behavior of plays.
   - >
     B(VyOS 1.5+ breaking changes): The C(files), C(users), and
     C(global_params.archive) options are not supported on VyOS 1.5+.
-    If provided, they will be silently ignored with a warning.
+    If provided, they will be ignored with a warning.
     The C(global_params) facilities now map to C(set system syslog local)
     (was C(set system syslog global)).
     Remote hosts now map to C(set system syslog remote)

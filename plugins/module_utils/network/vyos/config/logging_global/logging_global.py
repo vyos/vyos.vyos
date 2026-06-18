@@ -86,16 +86,6 @@ class Logging_global(ResourceModule):
             self.run_commands()
         return self.result
 
-    # def _strip_unsupported_15(self, data):
-    #     """Remove 1.4-only keys from a list_to_dict result for 1.5 devices."""
-    #     if not data:
-    #         return data
-    #     for key in ("files", "users"):
-    #         data.pop(key, None)
-    #     if "global_params" in data:
-    #         data["global_params"].pop("archive", None)
-    #     return data
-
     def _strip_unsupported_15(self, data):
         """Remove 1.4-only keys from a list_to_dict result for 1.5 devices."""
         if not data:
