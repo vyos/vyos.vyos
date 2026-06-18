@@ -1,11 +1,4 @@
 ---
-host_172_16_2_15: &host_172_16_2_15
-  - hostname: 172.16.2.15
-    facilities:
-      - facility: all
-        severity: all
-    protocol: tcp
-
 merged:
   before: {}
   commands:

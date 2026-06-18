@@ -136,7 +136,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                 global_params=dict(
                     archive=dict(size=111, file_num=2),
                     marker_interval=111,
-                    preserve_fqdn="True",
+                    preserve_fqdn=True,
                     facilities=[
                         dict(facility="cron", severity="debug"),
                         dict(facility="local7", severity="debug"),
@@ -208,7 +208,7 @@ class TestVyosLoggingGlobalModule(TestVyosModule):
                 global_params=dict(
                     archive=dict(size=111, file_num=2),
                     marker_interval=111,
-                    preserve_fqdn="True",
+                    preserve_fqdn=True,
                     facilities=[
                         dict(facility="cron", severity="debug"),
                         dict(facility="local7", severity="debug"),

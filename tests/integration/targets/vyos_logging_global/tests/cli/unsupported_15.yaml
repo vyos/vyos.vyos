@@ -1,0 +1,46 @@
+---
+- debug:
+    msg: START vyos_logging_global unsupported 1.5 keys integration tests on connection={{ ansible_connection }}
+
+- name: ensure facts
+  include_tasks: _get_version.yaml
+
+- block:
+    - name: Test warning on unsupported 1.5 keys - merged
+      register: result
+      vyos.vyos.vyos_logging_global:
+        config:
+          console:
+            facilities:
+              - facility: all
+          files:
+            - path: abc
+              archive:
+                size: 125
+          users:
+            - username: vyos
+              facilities:
+                - facility: local7
+                  severity: debug
+          global_params:
+            archive:
+              size: 111
+            facilities:
+              - facility: cron
+                severity: debug
+        state: merged
+
+    - name: Assert unsupported keys warned and ignored
+      ansible.builtin.assert:
+        that:
+          - result.warnings | select('search', 'files') | list | length > 0
+          - result.warnings | select('search', 'users') | list | length > 0
+          - result.warnings | select('search', 'global_params.archive') | list | length > 0
+          - "'set system syslog file' not in result.commands | join(' ')"
+          - "'set system syslog user' not in result.commands | join(' ')"
+          - "'set system syslog local facility cron level debug' in result.commands"
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+  when: vyos_version is version('1.5', '>=')
