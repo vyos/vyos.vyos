@@ -7,10 +7,6 @@ on: # yamllint disable-line rule:truthy
   push:
   pull_request:
     branches: [main]
-
-permissions:
-  contents: read
-
 jobs:
   codecoverage:
     env:
