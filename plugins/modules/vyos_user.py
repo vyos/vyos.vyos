@@ -201,7 +201,7 @@ commands:
   returned: always
   type: list
   sample:
-    - set system login user authentication plaintext-password password
+    - set system login user ansible authentication plaintext-password password
 """
 
 import re
@@ -222,6 +222,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
 
 
 def spec_to_commands(updates, module):
+    """Generate VyOS CLI commands from a list of (want, have) update tuples."""
     commands = list()
     update_password = module.params["update_password"]
 
@@ -285,6 +286,7 @@ def spec_to_commands(updates, module):
 
 
 def parse_full_name(data):
+    """Extract the full-name value from a VyOS user configuration block."""
     match = re.search(r"full-name '(\S+)'", data, re.M)
     if match:
         full_name = match.group(1)[1:-1]
@@ -292,6 +294,7 @@ def parse_full_name(data):
 
 
 def parse_key(data):
+    """Extract the public key string from an SSH key configuration block."""
     match = re.search(r"key '(\S+)'", data, re.M)
     if match:
         key = match.group(1)
@@ -299,6 +302,7 @@ def parse_key(data):
 
 
 def parse_key_type(data):
+    """Extract the key type from an SSH key configuration block."""
     match = re.search(r"type '(\S+)'", data, re.M)
     if match:
         key_type = match.group(1)
@@ -329,6 +333,7 @@ def parse_public_keys(data):
 
 
 def parse_encrypted_password(data):
+    """Extract the encrypted password from a VyOS user configuration block."""
     match = re.search(r"authentication encrypted-password '(\S+)'", data, re.M)
     if match:
         encrypted_password = match.group(1)
@@ -336,6 +341,7 @@ def parse_encrypted_password(data):
 
 
 def config_to_dict(module):
+    """Read the running configuration and return a list of current user objects."""
     data = get_config(module)
 
     match = re.findall(r"^set system login user (\S+)", data, re.M)
@@ -362,6 +368,7 @@ def config_to_dict(module):
 
 
 def get_param_value(key, item, module):
+    """Return the effective value for a parameter, falling back to module params and running any validator."""
     # if key doesn't exist in the item, get it from module.params
     if not item.get(key):
         value = module.params[key]
@@ -392,6 +399,7 @@ def map_key_params_to_dict(keys):
 
 
 def map_params_to_obj(module):
+    """Build a list of normalised user objects from module parameters."""
     aggregate = module.params["aggregate"]
     if not aggregate:
         if not module.params["name"] and module.params["purge"]:
@@ -421,6 +429,7 @@ def map_params_to_obj(module):
 
 
 def update_objects(want, have):
+    """Compare desired state against current state and return pairs that require changes."""
     updates = list()
     for entry in want:
         item = next((i for i in have if i["name"] == entry["name"]), None)
