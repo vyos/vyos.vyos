@@ -8,13 +8,6 @@ from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
-"""
-The vyos ntp fact class
-It is in this file the configuration is collected from the device
-for a given resource, parsed, and the facts tree is populated
-based on the configuration.
-"""
-
 import re
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
@@ -35,20 +28,10 @@ class NatFacts(object):
         self.argument_spec = NatArgs.argument_spec
 
     def get_config(self, connection):
-        return connection.get("show configuration commands | grep nat")
+        return connection.get("show configuration commands | match 'nat'")
 
     def populate_facts(self, connection, ansible_facts, data=None):
-        """Populate the facts for NAT network resource
-
-        :param connection: the device connection
-        :param ansible_facts: Facts dictionary
-        :param data: previously collected conf
-
-        :rtype: dictionary
-        :returns: facts
-        """
         facts = {}
-        objs = []
         config_lines = []
 
         if not data:
@@ -58,10 +41,8 @@ class NatFacts(object):
             config_lines.append(re.sub(r"'([^']*)'", r"\1", resource))
 
         nat_parser = NatTemplate(lines=config_lines, module=self._module)
-
         objs = nat_parser.parse()
-        # self._module.fail_json(msg=objs)
-        # objs = self._normalise(objs)
+        objs = self._normalise(objs)
 
         ansible_facts["ansible_network_resources"].pop("nat", None)
 
@@ -73,7 +54,6 @@ class NatFacts(object):
             facts["nat"] = params["config"]
         ansible_facts["ansible_network_resources"].update(facts)
 
-        # self._module.fail_json(msg=ansible_facts)
         return ansible_facts
 
     def _deep_merge(self, base, override):
@@ -121,7 +101,10 @@ class NatFacts(object):
                 if k == "range" and isinstance(v, list):
                     existing = merged[name].setdefault(k, [])
                     existing.extend(v)
-                    merged[name][k] = self._merge_range_list(existing)
+                    if v and isinstance(v[0], dict):
+                        merged[name][k] = self._merge_range_list(existing)
+                    else:
+                        merged[name][k] = list(dict.fromkeys(existing))
                 elif isinstance(v, list):
                     merged[name].setdefault(k, [])
                     for val in v:
@@ -134,6 +117,23 @@ class NatFacts(object):
                     merged[name][k] = v
         return list(merged.values())
 
+    def _merge_range_list(self, ranges):
+        """Merge external pool range entries by value, preserving seq."""
+        merged = {}
+        for entry in ranges:
+            if isinstance(entry, dict):
+                key = entry.get("value") or entry.get("address", "")
+                if not key:
+                    continue
+                if key not in merged:
+                    merged[key] = {"value": key}
+                if entry.get("seq"):
+                    merged[key]["seq"] = entry["seq"]
+            else:
+                if entry not in merged:
+                    merged[entry] = {"value": entry}
+        return list(merged.values())
+
     def _normalise(self, objs):
         for nat_type in ["nat", "nat64", "nat66"]:
             nat = objs.get(nat_type)
@@ -141,36 +141,37 @@ class NatFacts(object):
                 continue
 
             for section in ["destination", "source", "static", "cgnat"]:
-                if section in nat and "rule" in nat[section]:
-                    nat[section]["rule"] = self._merge_rule_list(nat[section]["rule"])
+                if section not in nat:
+                    continue
+                rules = nat[section].get("rule")
+                if isinstance(rules, list):
+                    nat[section]["rule"] = self._merge_rule_list(rules)
                     nat[section]["rule"].sort(key=lambda x: x.get("id", 0))
 
             if "cgnat" in nat and "pool" in nat["cgnat"]:
                 pool = nat["cgnat"]["pool"]
                 for ptype in ["external", "internal"]:
-                    if ptype in pool:
+                    if ptype in pool and isinstance(pool[ptype], list):
                         pool[ptype] = self._merge_pool_list(pool[ptype])
 
             if nat_type == "nat64":
                 for rule in nat.get("source", {}).get("rule", []):
                     pools = rule.get("translation", {}).get("pool")
-                    if pools:
+                    if pools and isinstance(pools, list):
                         rule["translation"]["pool"] = self._merge_rule_list(pools)
                         rule["translation"]["pool"].sort(key=lambda x: x.get("id", 0))
 
+        self._cast_ports(objs)
         return objs
 
-    def _merge_range_list(self, ranges):
-        """Merge range entries by value, preserving seq."""
-        merged = {}
-        for entry in ranges:
-            if isinstance(entry, dict):
-                key = entry["address"]
-                if key not in merged:
-                    merged[key] = {"address": key}
-                if entry.get("seq"):
-                    merged[key]["seq"] = entry["seq"]
-            else:
-                # fallback for plain strings during transition
-                merged[entry] = entry
-        return list(merged.values())
+    def _cast_ports(self, obj):
+        """Recursively cast known integer port/seq fields to str."""
+        if isinstance(obj, dict):
+            for k, v in obj.items():
+                if k in ("port", "seq") and isinstance(v, int):
+                    obj[k] = str(v)
+                else:
+                    self._cast_ports(v)
+        elif isinstance(obj, list):
+            for item in obj:
+                self._cast_ports(item)

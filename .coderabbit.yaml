@@ -28,8 +28,8 @@ reviews:
     # central already filters `!**/__pycache__/**`, `!**/*.pyc`,
     # `!**/*.egg-info/**`, `!**/.venv/**`, `!**/.worktrees/**` — so they
     # are not repeated here.
-    - '!changelogs/changelog.yaml'
-    - '!.collections/**'
+    - "!changelogs/changelog.yaml"
+    - "!.collections/**"
 
   path_instructions:
     # ── Global PR hygiene ──────────────────────────────────────────────
@@ -193,7 +193,6 @@ reviews:
         entry (short name → FQCN). Tombstoned modules (logging, vyos_logging) must
         not be un-tombstoned. requires_ansible must stay >=2.15.0 unless explicitly
         bumping minimum version.
-
 
 knowledge_base:
   jira:
