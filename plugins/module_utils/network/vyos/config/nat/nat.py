@@ -462,31 +462,25 @@ class Nat(ResourceModule):
             wp = want_pools.get(pid, {})
             hp = have_pools.get(pid, {})
 
-            changed = {k: v for k, v in wp.items() if k not in ("id", "disable") and hp.get(k) != v}
+            if wp == hp:
+                continue
+
+            changed = {k: v for k, v in wp.items() if k != "id" and hp.get(k) != v}
             removed = {
                 k: v
                 for k, v in hp.items()
-                if k not in ("id", "disable")
-                and k not in wp
-                and self.state in ("replaced", "overridden")
+                if k != "id" and k not in wp and self.state in ("replaced", "overridden")
             }
 
-            for field, parser in (
-                ("address", "nat64_translation_pool_address"),
-                ("description", "nat64_translation_pool_description"),
-                ("port", "nat64_translation_pool_port"),
-                ("protocol", "nat64_translation_pool_protocol"),
-            ):
-                if field in changed:
-                    self.addcmd(dict(ctx, pool_id=pid, value=changed[field]), parser, False)
-                if field in removed:
-                    self.addcmd(dict(ctx, pool_id=pid, value=removed[field]), parser, True)
-
-            w_dis = bool(wp.get("disable"))
-            h_dis = bool(hp.get("disable"))
-            if w_dis != h_dis:
+            if changed:
                 self.addcmd(
-                    dict(ctx, pool_id=pid),
-                    "nat64_translation_pool_disable",
-                    not w_dis,
+                    dict(ctx, pool_id=pid, pool=changed),
+                    "nat64_translation_pool",
+                    False,
+                )
+            if removed:
+                self.addcmd(
+                    dict(ctx, pool_id=pid, pool=removed),
+                    "nat64_translation_pool",
+                    True,
                 )

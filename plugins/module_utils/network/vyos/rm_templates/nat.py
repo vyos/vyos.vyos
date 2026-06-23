@@ -61,6 +61,31 @@ def _tmplt_nat_rule_translation(config_data):
     return commands
 
 
+def _tmplt_nat64_translation_pool(config_data):
+    """Generate all nat64 translation pool commands from a single call."""
+    nat = config_data["nat"]
+    type_ = config_data["type"]
+    rid = config_data["id"]
+    pool_id = config_data["pool_id"]
+    pool = config_data["pool"]
+
+    base = f"{nat} {type_} rule {rid} translation pool {pool_id}"
+    commands = []
+
+    if pool.get("address") is not None:
+        commands.append(f"{base} address {pool['address']}")
+    if pool.get("description") is not None:
+        commands.append(f"{base} description '{pool['description']}'")
+    if pool.get("port") is not None:
+        commands.append(f"{base} port {pool['port']}")
+    if pool.get("protocol") is not None:
+        commands.append(f"{base} protocol {pool['protocol']}")
+    if pool.get("disable"):
+        commands.append(f"{base} disable")
+
+    return commands
+
+
 class NatTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
@@ -987,6 +1012,12 @@ class NatTemplate(NetworkTemplate):
             },
         },
         {
+            "name": "nat64_translation_pool",
+            "getval": re.compile(r"^$"),  # never matches — setval only
+            "setval": _tmplt_nat64_translation_pool,
+            "result": {},
+        },
+        {
             "name": "nat64_translation_pool_address",
             "getval": re.compile(
                 r"""
@@ -1019,6 +1050,7 @@ class NatTemplate(NetworkTemplate):
                 },
             },
         },
+
         {
             "name": "nat64_translation_pool_description",
             "getval": re.compile(
