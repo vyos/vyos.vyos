@@ -15,7 +15,7 @@ __metaclass__ = type
 
 DOCUMENTATION = """
 module: vyos_nat
-version_added: 1.0.0
+version_added: 6.0.0
 short_description: NAT resource module
 description:
 - This module manages NAT configuration on devices running VyOS.
@@ -568,8 +568,8 @@ options:
     description:
     - This option is used only with state I(parsed).
     - The value of this option should be the output received from the VyOS device by
-      executing the command B(show configuration commands | grep nat).
-    - The state I(parsed) reads the configuration from C(show configuration commands | grep nat)
+      executing the command B(show configuration commands | match 'nat').
+    - The state I(parsed) reads the configuration from C(show configuration commands | match 'nat')
       and transforms it into Ansible structured data as per the module argspec.
       The value is then returned in the I(parsed) key within the result.
     - The states I(replaced) and I(overridden) have identical behaviour for this module.
@@ -588,7 +588,6 @@ options:
     - parsed
     default: merged
 """
-
 EXAMPLES = """
 # Using merged - configure CGNAT
 - name: Merge CGNAT configuration
@@ -604,7 +603,7 @@ EXAMPLES = """
                 per_user_limit:
                   port: "200"
                 range:
-                  - 203.0.113.0/24
+                  - value: 203.0.113.0/24
             internal:
               - name: int-pool-1
                 range:
@@ -682,7 +681,7 @@ EXAMPLES = """
               source:
                 prefix: 2001:db8::/96
               match:
-                mark: "100"
+                mark: 100
               translation:
                 pool:
                   - id: 1
@@ -710,47 +709,143 @@ EXAMPLES = """
                 port: "8443"
     state: merged
 
-# Using gathered
-- name: Gather NAT config
+# Using replaced - replace specific NAT rules
+- name: Replace destination NAT rule
   vyos.vyos.vyos_nat:
-    state: gathered
+    config:
+      nat:
+        destination:
+          rule:
+            - id: 100
+              description: "Replaced web server NAT"
+              protocol: tcp
+              destination:
+                address: 198.51.100.10
+                port: "443"
+              translation:
+                address: 192.168.1.10
+                port: "8443"
+    state: replaced
 
-# Using deleted
-- name: Delete all NAT config
+# Using overridden - override entire NAT configuration
+- name: Override entire NAT configuration
+  vyos.vyos.vyos_nat:
+    config:
+      nat:
+        destination:
+          rule:
+            - id: 100
+              description: "Only rule after override"
+              protocol: tcp
+              destination:
+                address: 198.51.100.10
+                port: "80"
+              translation:
+                address: 192.168.1.10
+                port: "8080"
+    state: overridden
+
+# Using deleted - delete all NAT configuration
+- name: Delete all NAT configuration
   vyos.vyos.vyos_nat:
     state: deleted
 
-# Using replaced
-- name: Replace NAT source rules
+# Using deleted - delete specific NAT rules
+- name: Delete specific NAT rules
   vyos.vyos.vyos_nat:
     config:
       nat:
+        destination:
+          rule:
+            - id: 100
         source:
           rule:
             - id: 200
-              description: "Replaced outbound rule"
+      nat64:
+        source:
+          rule:
+            - id: 10
+    state: deleted
+
+# Using gathered
+- name: Gather NAT configuration from device
+  vyos.vyos.vyos_nat:
+    state: gathered
+
+# Using rendered
+- name: Render NAT configuration offline
+  vyos.vyos.vyos_nat:
+    config:
+      nat:
+        destination:
+          rule:
+            - id: 100
+              description: "Rendered rule"
+              protocol: tcp
+              destination:
+                address: 198.51.100.10
+                port: "80"
               translation:
-                address: masquerade
-    state: replaced
+                address: 192.168.1.10
+                port: "8080"
+    state: rendered
 
 # Using parsed
-- name: Parse NAT config from file
+- name: Parse NAT configuration from file
   vyos.vyos.vyos_nat:
     running_config: "{{ lookup('file', './nat_config.cfg') }}"
     state: parsed
-
-# Using rendered
-- name: Render NAT config offline
-  vyos.vyos.vyos_nat:
-    config:
-      nat:
-        source:
-          rule:
-            - id: 200
-              description: "Rendered rule"
-              translation:
-                address: masquerade
-    state: rendered
+"""
+RETURN = """
+before:
+  description: The configuration prior to the module execution.
+  returned: when I(state) is C(merged), C(replaced), C(overridden) or C(deleted)
+  type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+after:
+  description: The resulting configuration after module execution.
+  returned: when changed
+  type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+commands:
+  description: The set of commands pushed to the remote device.
+  returned: when I(state) is C(merged), C(replaced), C(overridden) or C(deleted)
+  type: list
+  sample:
+    - set nat destination rule 100 description 'Web server NAT'
+    - set nat destination rule 100 protocol tcp
+    - set nat destination rule 100 inbound-interface name eth2
+    - set nat destination rule 100 destination address 198.51.100.10
+    - set nat destination rule 100 translation address 192.168.1.10
+    - delete nat source rule 200
+rendered:
+  description: The provided configuration in the task rendered in device-native format (offline).
+  returned: when I(state) is C(rendered)
+  type: list
+  sample:
+    - set nat destination rule 100 description 'Web server NAT'
+    - set nat destination rule 100 protocol tcp
+    - set nat destination rule 100 inbound-interface name eth2
+    - set nat destination rule 100 destination address 198.51.100.10
+    - set nat destination rule 100 translation address 192.168.1.10
+gathered:
+  description: Facts about the network resource gathered from the remote device as structured data.
+  returned: when I(state) is C(gathered)
+  type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+parsed:
+  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
+  returned: when I(state) is C(parsed)
+  type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
 """
 
 from ansible.module_utils.basic import AnsibleModule

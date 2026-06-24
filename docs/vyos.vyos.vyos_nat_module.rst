@@ -8,7 +8,7 @@ vyos.vyos.vyos_nat
 **NAT resource module**
 
 
-Version added: 1.0.0
+Version added: 6.0.0
 
 .. contents::
    :local:
@@ -3115,8 +3115,8 @@ Parameters
                 </td>
                 <td>
                         <div>This option is used only with state <em>parsed</em>.</div>
-                        <div>The value of this option should be the output received from the VyOS device by executing the command <b>show configuration commands | grep nat</b>.</div>
-                        <div>The state <em>parsed</em> reads the configuration from <code>show configuration commands | grep nat</code> and transforms it into Ansible structured data as per the module argspec. The value is then returned in the <em>parsed</em> key within the result.</div>
+                        <div>The value of this option should be the output received from the VyOS device by executing the command <b>show configuration commands | match &#x27;nat&#x27;</b>.</div>
+                        <div>The state <em>parsed</em> reads the configuration from <code>show configuration commands | match &#x27;nat&#x27;</code> and transforms it into Ansible structured data as per the module argspec. The value is then returned in the <em>parsed</em> key within the result.</div>
                         <div>The states <em>replaced</em> and <em>overridden</em> have identical behaviour for this module.</div>
                 </td>
             </tr>
@@ -3176,7 +3176,7 @@ Examples
                     per_user_limit:
                       port: "200"
                     range:
-                      - 203.0.113.0/24
+                      - value: 203.0.113.0/24
                 internal:
                   - name: int-pool-1
                     range:
@@ -3254,7 +3254,7 @@ Examples
                   source:
                     prefix: 2001:db8::/96
                   match:
-                    mark: "100"
+                    mark: 100
                   translation:
                     pool:
                       - id: 1
@@ -3282,49 +3282,211 @@ Examples
                     port: "8443"
         state: merged
 
-    # Using gathered
-    - name: Gather NAT config
-      vyos.vyos.vyos_nat:
-        state: gathered
-
-    # Using deleted
-    - name: Delete all NAT config
-      vyos.vyos.vyos_nat:
-        state: deleted
-
-    # Using replaced
-    - name: Replace NAT source rules
+    # Using replaced - replace specific NAT rules
+    - name: Replace destination NAT rule
       vyos.vyos.vyos_nat:
         config:
           nat:
+            destination:
+              rule:
+                - id: 100
+                  description: "Replaced web server NAT"
+                  protocol: tcp
+                  destination:
+                    address: 198.51.100.10
+                    port: "443"
+                  translation:
+                    address: 192.168.1.10
+                    port: "8443"
+        state: replaced
+
+    # Using overridden - override entire NAT configuration
+    - name: Override entire NAT configuration
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 100
+                  description: "Only rule after override"
+                  protocol: tcp
+                  destination:
+                    address: 198.51.100.10
+                    port: "80"
+                  translation:
+                    address: 192.168.1.10
+                    port: "8080"
+        state: overridden
+
+    # Using deleted - delete all NAT configuration
+    - name: Delete all NAT configuration
+      vyos.vyos.vyos_nat:
+        state: deleted
+
+    # Using deleted - delete specific NAT rules
+    - name: Delete specific NAT rules
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 100
             source:
               rule:
                 - id: 200
-                  description: "Replaced outbound rule"
+          nat64:
+            source:
+              rule:
+                - id: 10
+        state: deleted
+
+    # Using gathered
+    - name: Gather NAT configuration from device
+      vyos.vyos.vyos_nat:
+        state: gathered
+
+    # Using rendered
+    - name: Render NAT configuration offline
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 100
+                  description: "Rendered rule"
+                  protocol: tcp
+                  destination:
+                    address: 198.51.100.10
+                    port: "80"
                   translation:
-                    address: masquerade
-        state: replaced
+                    address: 192.168.1.10
+                    port: "8080"
+        state: rendered
 
     # Using parsed
-    - name: Parse NAT config from file
+    - name: Parse NAT configuration from file
       vyos.vyos.vyos_nat:
         running_config: "{{ lookup('file', './nat_config.cfg') }}"
         state: parsed
 
-    # Using rendered
-    - name: Render NAT config offline
-      vyos.vyos.vyos_nat:
-        config:
-          nat:
-            source:
-              rule:
-                - id: 200
-                  description: "Rendered rule"
-                  translation:
-                    address: masquerade
-        state: rendered
 
 
+Return Values
+-------------
+Common return values are documented `here <https://docs.ansible.com/ansible/latest/reference_appendices/common_return_values.html#common-return-values>`_, the following are the fields unique to this module:
+
+.. raw:: html
+
+    <table border=0 cellpadding=0 class="documentation-table">
+        <tr>
+            <th colspan="1">Key</th>
+            <th>Returned</th>
+            <th width="100%">Description</th>
+        </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>after</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>when changed</td>
+                <td>
+                            <div>The resulting configuration after module execution.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>before</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code> or <code>deleted</code></td>
+                <td>
+                            <div>The configuration prior to the module execution.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>commands</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>merged</code>, <code>replaced</code>, <code>overridden</code> or <code>deleted</code></td>
+                <td>
+                            <div>The set of commands pushed to the remote device.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set nat destination rule 100 description &#x27;Web server NAT&#x27;&quot;, &#x27;set nat destination rule 100 protocol tcp&#x27;, &#x27;set nat destination rule 100 inbound-interface name eth2&#x27;, &#x27;set nat destination rule 100 destination address 198.51.100.10&#x27;, &#x27;set nat destination rule 100 translation address 192.168.1.10&#x27;, &#x27;delete nat source rule 200&#x27;]</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>gathered</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>gathered</code></td>
+                <td>
+                            <div>Facts about the network resource gathered from the remote device as structured data.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>parsed</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">dictionary</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>parsed</code></td>
+                <td>
+                            <div>The device native config provided in <em>running_config</em> option parsed into structured data as per module argspec.</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="return-"></div>
+                    <b>rendered</b>
+                    <a class="ansibleOptionLink" href="#return-" title="Permalink to this return value"></a>
+                    <div style="font-size: small">
+                      <span style="color: purple">list</span>
+                    </div>
+                </td>
+                <td>when <em>state</em> is <code>rendered</code></td>
+                <td>
+                            <div>The provided configuration in the task rendered in device-native format (offline).</div>
+                    <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set nat destination rule 100 description &#x27;Web server NAT&#x27;&quot;, &#x27;set nat destination rule 100 protocol tcp&#x27;, &#x27;set nat destination rule 100 inbound-interface name eth2&#x27;, &#x27;set nat destination rule 100 destination address 198.51.100.10&#x27;, &#x27;set nat destination rule 100 translation address 192.168.1.10&#x27;]</div>
+                </td>
+            </tr>
+    </table>
+    <br/><br/>
 
 
 Status
