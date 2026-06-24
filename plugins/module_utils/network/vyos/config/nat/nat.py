@@ -64,11 +64,11 @@ class Nat(ResourceModule):
 
         if self.state == "replaced":
             self._delete_nat_objects(wantd, haved, only_missing=False)
-            self._set_commands(wantd, {})
+            self._set_commands(wantd, haved)
         elif self.state == "overridden":
             self._delete_nat_objects(wantd, haved, only_missing=True)
             self._delete_nat_objects(wantd, haved, only_missing=False)
-            self._set_commands(wantd, {})
+            self._set_commands(wantd, haved)
         else:
             self._set_commands(wantd, haved)
 
@@ -138,7 +138,7 @@ class Nat(ResourceModule):
     def _delete_nat_objects(self, wantd, haved, only_missing=False):
         """
         Generate delete commands for NAT objects.
-        only_missing=False: delete objects present in both want and have
+        only_missing=False: delete objects present in both want and have (when different)
         only_missing=True:  delete objects present in have but absent from want
         """
         for nat_type in haved:
@@ -169,16 +169,18 @@ class Nat(ResourceModule):
                                     f"delete {nat_type} cgnat pool {pool_type} {name}",
                                 )
                             elif not only_missing and name in want_pools:
-                                self.commands.append(
-                                    f"delete {nat_type} cgnat pool {pool_type} {name}",
-                                )
+                                if want_pools[name] != have_pools[name]:
+                                    self.commands.append(
+                                        f"delete {nat_type} cgnat pool {pool_type} {name}",
+                                    )
                     want_rules = want_section.get("rule", {})
                     have_rules = have_section.get("rule", {})
                     for rid in have_rules:
                         if only_missing and rid not in want_rules:
                             self.commands.append(f"delete {nat_type} cgnat rule {rid}")
                         elif not only_missing and rid in want_rules:
-                            self.commands.append(f"delete {nat_type} cgnat rule {rid}")
+                            if want_rules[rid] != have_rules[rid]:
+                                self.commands.append(f"delete {nat_type} cgnat rule {rid}")
                 else:
                     want_rules = want_section.get("rule", {})
                     have_rules = have_section.get("rule", {})
@@ -189,15 +191,18 @@ class Nat(ResourceModule):
                                 f"delete {nat_type} {cli_section} rule {rid}",
                             )
                         elif not only_missing and rid in want_rules:
-                            self.commands.append(
-                                f"delete {nat_type} {cli_section} rule {rid}",
-                            )
+                            if want_rules[rid] != have_rules[rid]:
+                                self.commands.append(
+                                    f"delete {nat_type} {cli_section} rule {rid}",
+                                )
 
     # -------------------------------------------------------------------------
     # CGNAT
     # -------------------------------------------------------------------------
 
     def _compare_cgnat_global(self, wantd, haved):
+        if self.state in ("replaced", "overridden") and not wantd.get("nat", {}).get("cgnat"):
+            return
         w = wantd.get("nat", {}).get("cgnat", {}).get("log_allocation")
         h = haved.get("nat", {}).get("cgnat", {}).get("log_allocation")
         if bool(w) != bool(h):
@@ -213,10 +218,14 @@ class Nat(ResourceModule):
         want_int = wantd.get("nat", {}).get("cgnat", {}).get("pool", {}).get("internal", {})
         have_int = haved.get("nat", {}).get("cgnat", {}).get("pool", {}).get("internal", {})
 
-        for name in set(want_ext) | set(have_ext):
+        scope = self.state in ("replaced", "overridden")
+        ext_names = set(want_ext) if scope else set(want_ext) | set(have_ext)
+        int_names = set(want_int) if scope else set(want_int) | set(have_int)
+
+        for name in ext_names:
             self._compare_external_pool(name, want_ext.get(name, {}), have_ext.get(name, {}))
 
-        for name in set(want_int) | set(have_int):
+        for name in int_names:
             self._compare_internal_pool(name, want_int.get(name, {}), have_int.get(name, {}))
 
     def _compare_external_pool(self, name, want, have):
@@ -267,9 +276,18 @@ class Nat(ResourceModule):
         want_rules = wantd.get("nat", {}).get("cgnat", {}).get("rule", {})
         have_rules = haved.get("nat", {}).get("cgnat", {}).get("rule", {})
 
-        for rid in set(want_rules) | set(have_rules):
+        rids = (
+            set(want_rules)
+            if self.state in ("replaced", "overridden")
+            else set(want_rules) | set(have_rules)
+        )
+
+        for rid in rids:
             w = want_rules.get(rid, {})
             h = have_rules.get(rid, {})
+
+            if self.state in ("replaced", "overridden") and w != h:
+                h = {}
 
             w_src = w.get("source", {}).get("pool")
             h_src = h.get("source", {}).get("pool")
@@ -295,9 +313,17 @@ class Nat(ResourceModule):
         want_rules = wantd.get(nat_type, {}).get(section, {}).get("rule", {})
         have_rules = haved.get(nat_type, {}).get(section, {}).get("rule", {})
 
-        for rid in set(want_rules) | set(have_rules):
+        rids = (
+            set(want_rules)
+            if self.state in ("replaced", "overridden")
+            else set(want_rules) | set(have_rules)
+        )
+
+        for rid in rids:
             w = want_rules.get(rid, {})
             h = have_rules.get(rid, {})
+            if self.state in ("replaced", "overridden") and w != h:
+                h = {}
             if w == h and self.state != "rendered":
                 continue
             self._compare_rule(nat_type, section, rid, w, h)
@@ -305,23 +331,17 @@ class Nat(ResourceModule):
     def _compare_rule(self, nat_type, section, rid, want, have):
         ctx = {"nat": nat_type, "type": section, "id": rid}
 
-        self._cmp_scalar(want, have, "description", ctx, "nat_type_description")
-        self._cmp_scalar(want, have, "protocol", ctx, "nat_type_protocol")
-        self._cmp_scalar(want, have, "packet_type", ctx, "nat_type_packet_type")
-
-        for field, parser in (
-            ("disable", "nat_type_disable"),
-            ("exclude", "nat_type_exclude"),
-            ("log", "nat_type_log"),
-        ):
-            self._cmp_bool(want, have, field, ctx, parser)
+        for field in set(want) | set(have):
+            val = want.get(field) if field in want else have.get(field)
+            if isinstance(val, bool):
+                self._cmp_bool(want, have, field, ctx, f"nat_type_{field}")
+            elif isinstance(val, str):
+                self._cmp_scalar(want, have, field, ctx, f"nat_type_{field}")
 
         self._cmp_interface(want, have, ctx, nat_type, section)
         self._cmp_outbound_interface(want, have, ctx)
-
         for atype in ("destination", "source"):
             self._cmp_addr_sub(want, have, atype, ctx)
-
         self._cmp_translation(want, have, ctx)
         self._cmp_match_mark(want, have, ctx)
         self._cmp_nat64_pools(want, have, ctx)
@@ -343,7 +363,10 @@ class Nat(ResourceModule):
         w = bool(want.get(field))
         h = bool(have.get(field))
         if w != h:
-            self.addcmd(dict(ctx), parser, not w)
+            if w:
+                self.addcmd(dict(ctx), parser, False)
+            elif self.state in ("replaced", "overridden"):
+                self.addcmd(dict(ctx), parser, True)
 
     def _cmp_interface(self, want, have, ctx, nat_type, section):
         iface_w = want.get("inbound_interface")
