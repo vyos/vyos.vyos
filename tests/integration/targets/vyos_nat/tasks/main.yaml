@@ -1,0 +1,5 @@
+---
+- name: Run CLI tests
+  ansible.builtin.include_tasks: cli.yaml
+  tags:
+    - network_cli

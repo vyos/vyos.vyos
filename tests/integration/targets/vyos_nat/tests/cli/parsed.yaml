@@ -1,0 +1,16 @@
+---
+- debug:
+    msg: START vyos_nat parsed integration tests on connection={{ ansible_connection }}
+
+- name: Parse NAT configuration from file
+  register: result
+  vyos.vyos.vyos_nat:
+    running_config: "{{ lookup('file', '_parsed.cfg') }}"
+    state: parsed
+
+- assert:
+    that:
+      - result.changed == false
+      - result.parsed|symmetric_difference(merged.before) == []
+
+- include_tasks: _remove_config.yaml
