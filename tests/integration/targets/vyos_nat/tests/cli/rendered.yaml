@@ -1,0 +1,32 @@
+---
+- debug:
+    msg: START vyos_nat rendered integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Render NAT configuration without applying to device
+      register: result
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 100
+                  description: Rendered rule
+                  protocol: tcp
+                  destination:
+                    address: 198.51.100.10
+                    port: "80"
+                  translation:
+                    address: 192.168.1.10
+                    port: "8080"
+        state: rendered
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.rendered|symmetric_difference(rendered.commands) == []
+
+  always:
+    - include_tasks: _remove_config.yaml

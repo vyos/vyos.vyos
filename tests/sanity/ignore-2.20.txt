@@ -19,6 +19,7 @@ plugins/action/lldp.py action-plugin-docs
 plugins/action/lldp_global.py action-plugin-docs
 plugins/action/lldp_interface.py action-plugin-docs
 plugins/action/lldp_interfaces.py action-plugin-docs
+plugins/action/nat.py action-plugin-docs
 plugins/action/logging_global.py action-plugin-docs
 plugins/action/ntp_global.py action-plugin-docs
 plugins/action/ospf_interfaces.py action-plugin-docs

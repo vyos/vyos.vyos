@@ -1,0 +1,10 @@
+---
+- name: Remove NAT configuration
+  vyos.vyos.vyos_config:
+    lines:
+      - delete nat
+      - delete nat64
+      - delete nat66
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
