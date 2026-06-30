@@ -141,6 +141,38 @@ class TestVyosConfigModule(TestVyosModule):
         )
         self.execute_module(changed=True, commands=lines, sort=False)
 
+    def test_vyos_config_match_smart(self):
+        lines = [
+            "set interfaces ethernet eth0 address '1.2.3.4/24'",
+            "set interfaces ethernet eth0 description 'test string'",
+        ]
+        set_module_args(dict(lines=lines, match="smart"))
+        candidate = "\n".join(lines)
+
+        response = self.cliconf_obj.get_diff(
+            candidate,
+            self.running_config,
+            diff_match="smart",
+        )
+
+        self.conn.get_diff = MagicMock(return_value=response)
+        result = self.execute_module(changed=True, sort=False)
+
+        self.conn.get_diff.assert_called_once_with(
+            candidate=candidate,
+            running=self.running_config,
+            diff_match="smart",
+        )
+
+        expected_config_diff = [
+            "delete system",
+            "delete interfaces ethernet eth1",
+        ]
+        self.assertEqual(response["config_diff"], expected_config_diff)
+
+        expected_commands = expected_config_diff
+        self.assertEqual(result["commands"], expected_commands)
+
     def test_vyos_config_confirm_automatic(self):
         src = load_fixture("vyos_config_src.cfg")
         confirm_timeout = 7
@@ -178,3 +210,36 @@ class TestVyosConfigModule(TestVyosModule):
 
         self.assertEqual(self.load_config.call_args[1]["confirm"], confirm_timeout)
         self.run_commands.assert_not_called()
+
+    def test_vyos_config_match_smart_blank_lines(self):
+        """smart diff must not raise IndexError on blank lines in running config."""
+        running_with_blanks = self.running_config + "\n\n"
+        candidate = "set interfaces ethernet eth0 address 1.2.3.4/24"
+        response = self.cliconf_obj.get_diff(candidate, running_with_blanks, diff_match="smart")
+        self.assertIn("config_diff", response)
+
+    def test_vyos_config_match_smart_additions(self):
+        lines = [
+            "set interfaces ethernet eth0 address '1.2.3.4/24'",
+            "set interfaces ethernet eth0 description 'test string'",
+            "set interfaces ethernet eth2 address '192.0.2.1/24'",
+        ]
+        set_module_args(dict(lines=lines, match="smart"))
+        candidate = "\n".join(lines)
+        response = self.cliconf_obj.get_diff(
+            candidate,
+            self.running_config,
+            diff_match="smart",
+        )
+        self.conn.get_diff = MagicMock(return_value=response)
+        result = self.execute_module(changed=True, sort=False)
+        self.conn.get_diff.assert_called_once_with(
+            candidate=candidate,
+            running=self.running_config,
+            diff_match="smart",
+        )
+        self.assertIn(
+            "set interfaces ethernet eth2 address 192.0.2.1/24",
+            response["config_diff"],
+        )
+        self.assertEqual(result["commands"], response["config_diff"])
