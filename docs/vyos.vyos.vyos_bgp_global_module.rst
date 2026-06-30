@@ -888,7 +888,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Allow this EBGP neighbor to not be on a directly connected network. Specify the number hops.</div>
+                        <div>Allow this EBGP neighbor to not be on a directly connected network. Specify the number of hops.</div>
                 </td>
             </tr>
             <tr>

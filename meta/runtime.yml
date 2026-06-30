@@ -66,3 +66,5 @@ plugin_routing:
       redirect: vyos.vyos.vyos_vlan
     vrf:
       redirect: vyos.vyos.vyos_vrf
+    ha:
+      redirect: vyos.vyos.vyos_ha
