@@ -1,0 +1,5 @@
+---
+bugfixes:
+  - firewall_rules - fix parse_icmp_attr() using wrong split delimiter ('.' instead of '/')
+    and referencing undefined variable type_no in the numeric-only branch, which caused
+    ValueError or UnboundLocalError when gathering firewall rules with ICMP type conditions.
