@@ -142,6 +142,13 @@ options:
           in C(filename) within I(backup) directory.
         type: path
     type: dict
+  replace:
+    description:
+    - The C(replace) argument will replace the entire config, instead of merging it
+      with the base config that is already present. This only works in C(match) is in
+      C(line) mode. For backwards compatibility default is C(false).
+    type: bool
+    default: no
   allow_password_change:
     description:
     - The C(allow_password_change) argument specifies whether any configuration lines which
@@ -347,6 +354,7 @@ def run(module, result):
             candidate=candidate,
             running=config,
             diff_match=module.params["match"],
+            diff_replace=module.params["replace"]
         )
     except ConnectionError as exc:
         module.fail_json(msg=to_text(exc, errors="surrogate_then_replace"))
@@ -394,6 +402,7 @@ def main():
         backup=dict(type="bool", default=False),
         backup_options=dict(type="dict", options=backup_spec),
         save=dict(type="bool", default=False),
+        replace=dict(type="bool", default=False),
         allow_password_change=dict(default="plaintext", choices=["all", "encrypted", "plaintext", "none"])
     )
 
