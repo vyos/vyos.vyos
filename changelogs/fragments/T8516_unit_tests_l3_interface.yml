@@ -1,3 +1,5 @@
 ---
 trivial:
   - Add unit tests for vyos_l3_interfaces module.
+bugfixes:
+  - Safeguarded L3 config to deal with L3 attributes. Updates to unit and integration tests.
