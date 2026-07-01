@@ -32,6 +32,13 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.logging_global import (
     Logging_globalTemplate,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.logging_global_15 import (
+    Logging_globalTemplate15,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
 class Logging_global(ResourceModule):
@@ -47,22 +54,25 @@ class Logging_global(ResourceModule):
             resource="logging_global",
             tmplt=Logging_globalTemplate(),
         )
-        self.parsers = [
-            "console.facilities",
-            "global_params.archive.file_num",
-            "global_params.archive.size",
-            "global_params.marker_interval",
-            "global_params.preserve_fqdn",
-            "global_params.facilities",
-            "files.archive.size",
-            "files.archive.file_num",
-            "files",
-            "hosts.port",
-            "hosts.facility.protocol",  # 1.3 and below
-            "hosts.protocol",
-            "hosts",
-            "users",
-        ]
+
+    def _validate_template(self):
+        version = get_os_version(self._module)
+        if LooseVersion(version) >= LooseVersion("1.5"):
+            self._tmplt = Logging_globalTemplate15()
+        else:
+            self._tmplt = Logging_globalTemplate()
+
+        self.parsers = [p["name"] for p in self._tmplt.PARSERS if not p["name"].endswith(".state")]
+
+    def parse(self):
+        """override parse to check template"""
+        self._validate_template()
+        return super().parse()
+
+    def get_parser(self, name):
+        """get_parsers"""
+        self._validate_template()
+        return super().get_parser(name)
 
     def execute_module(self):
         """Execute the module
@@ -70,10 +80,30 @@ class Logging_global(ResourceModule):
         :rtype: A dictionary
         :returns: The result from module execution
         """
+        self._validate_template()
         if self.state not in ["parsed", "gathered"]:
             self.generate_commands()
             self.run_commands()
         return self.result
+
+    def _strip_unsupported_15(self, data):
+        """Remove 1.4-only keys from a list_to_dict result for 1.5 devices."""
+        if not data:
+            return data
+        warnings = []
+        for key in ("files", "users"):
+            if data.pop(key, None) is not None:
+                warnings.append(
+                    "'{0}' is not supported on VyOS 1.5+, ignoring.".format(key),
+                )
+        if "global_params" in data:
+            if data["global_params"].pop("archive", None) is not None:
+                warnings.append(
+                    "'global_params.archive' is not supported on VyOS 1.5+, ignoring.",
+                )
+        for warning in warnings:
+            self._module.warn(warning)
+        return data
 
     def generate_commands(self):
         """Generate configuration commands to send based on
@@ -87,6 +117,11 @@ class Logging_global(ResourceModule):
             haved = self.list_to_dict(self.have, "have")
         else:
             haved = dict()
+
+        version = get_os_version(self._module)
+        if LooseVersion(version) >= LooseVersion("1.5"):
+            wantd = self._strip_unsupported_15(wantd)
+            haved = self._strip_unsupported_15(haved)
 
         if self.state in ["overridden", "replaced"]:
             if wantd != haved:

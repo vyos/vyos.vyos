@@ -66,3 +66,70 @@ populate_logging_global_hosts:
     facilities:
       - facility: all
         protocol: udp
+
+rendered:
+  commands:
+    - set system syslog console facility all
+    - set system syslog file abc archive size 125
+    - set system syslog host 172.16.2.15 facility all level all
+    - set system syslog user vyos facility local7 level debug
+    - set system syslog global facility cron level debug
+
+deleted:
+  commands:
+    - delete system syslog
+  after: {}
+
+parsed:
+  after:
+    console:
+      facilities:
+        - facility: news
+          severity: debug
+    files:
+      - path: def
+        facilities:
+          - facility: local7
+            severity: emerg
+    global_params:
+      facilities:
+        - facility: local7
+          severity: debug
+
+populate_config:
+  console:
+    facilities:
+      - facility: all
+      - facility: local7
+        severity: err
+      - facility: news
+        severity: debug
+  files:
+    - path: def
+      archive:
+        file_num: 2
+      facilities:
+        - facility: local6
+          severity: emerg
+        - facility: local7
+          severity: emerg
+  hosts: "{{ populate_logging_global_hosts }}"
+  users:
+    - username: vyos
+      facilities:
+        - facility: local7
+          severity: debug
+        - facility: local6
+          severity: alert
+    - username: paul
+      facilities:
+        - facility: local7
+          severity: err
+  global_params:
+    facilities:
+      - facility: cron
+        severity: debug
+      - facility: local7
+        severity: debug
+
+parsed_config_file: "_parsed.cfg"

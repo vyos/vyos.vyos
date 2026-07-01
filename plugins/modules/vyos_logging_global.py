@@ -20,10 +20,20 @@ short_description: Logging resource module
 description: This module manages the logging attributes of Vyos network devices
 author: Sagar Paul (@KB-perByte)
 notes:
-  - Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025
+  - Tested against VyOS 1.3.8, 1.4.2, 1.5.0, and the rolling release of spring 2025.
   - This module works with connection C(network_cli).
-  - The Configuration defaults of the Vyos network devices
-    are supposed to hinder idempotent behavior of plays
+  - The Configuration defaults of the VyOS network devices
+    are supposed to hinder idempotent behavior of plays.
+  - >
+    B(VyOS 1.5+ breaking changes): The C(files), C(users), and
+    C(global_params.archive) options are not supported on VyOS 1.5+.
+    If provided, they will be ignored with a warning.
+    The C(global_params) facilities now map to C(set system syslog local)
+    (was C(set system syslog global)).
+    Remote hosts now map to C(set system syslog remote)
+    (was C(set system syslog host)).
+    The C(marker_interval) and C(preserve_fqdn) options moved to top-level
+    (was under C(global_params) in the CLI, argspec key unchanged).
 options:
   config:
     description: A list containing dictionary of logging options
@@ -85,7 +95,9 @@ options:
                   - debug
                   - all
       files:
-        description: logging to file
+        description: >
+          Logging to file. B(Not supported on VyOS 1.5+.) If provided on a
+          1.5+ device, this option will be ignored with a warning.
         type: list
         elements: dict
         suboptions:
@@ -111,7 +123,11 @@ options:
               facility: *facility
               severity: *severity
       global_params:
-        description: logging to serial console
+        description: >
+          Global logging parameters. On VyOS 1.5+, facilities map to
+          C(set system syslog local), and C(marker_interval)/C(preserve_fqdn)
+          move to top-level CLI paths. The C(archive) suboption is
+          B(not supported on VyOS 1.5+) and will be ignored with a warning.
         type: dict
         suboptions:
           state: *state_config
@@ -124,7 +140,9 @@ options:
             description: uses FQDN for logging
             type: bool
       hosts:
-        description: logging to serial console
+        description: >
+          Logging to remote hosts. On VyOS 1.5+, maps to
+          C(set system syslog remote) (was C(set system syslog host)).
         type: list
         elements: dict
         suboptions:
@@ -159,7 +177,9 @@ options:
         suboptions:
           state: *state_config
       users:
-        description: logging to file
+        description: >
+          Logging to a local user terminal. B(Not supported on VyOS 1.5+.)
+          If provided on a 1.5+ device, this option will be ignored with a warning.
         type: list
         elements: dict
         suboptions:
@@ -699,6 +719,141 @@ EXAMPLES = """
 #     ]
 #   }
 # }
+# Using state: merged (VyOS 1.5+)
+
+# Before state:
+# -------------
+
+# vyos:~$ show configuration commands | grep syslog
+
+- name: Apply the provided configuration (VyOS 1.5+)
+  vyos.vyos.vyos_logging_global:
+    config:
+      console:
+        facilities:
+          - facility: local7
+            severity: err
+      hosts:
+        - hostname: 172.16.0.1
+          facilities:
+            - facility: local7
+              severity: all
+          port: 514
+          protocol: udp
+      global_params:
+        facilities:
+          - facility: cron
+            severity: debug
+        marker_interval: 111
+        preserve_fqdn: true
+    state: merged
+
+# Commands Fired:
+# ---------------
+
+# "commands": [
+#     "set system syslog console facility local7 level err",
+#     "set system syslog remote 172.16.0.1 facility local7 level all",
+#     "set system syslog remote 172.16.0.1 port 514",
+#     "set system syslog remote 172.16.0.1 protocol udp",
+#     "set system syslog local facility cron level debug",
+#     "set system syslog marker interval 111",
+#     "set system syslog preserve-fqdn"
+# ],
+
+# After state:
+# ------------
+
+# vyos:~$ show configuration commands | grep syslog
+# set system syslog console facility local7 level 'err'
+# set system syslog local facility cron level 'debug'
+# set system syslog marker interval '111'
+# set system syslog preserve-fqdn
+# set system syslog remote 172.16.0.1 facility local7 level 'all'
+# set system syslog remote 172.16.0.1 port '514'
+# set system syslog remote 172.16.0.1 protocol 'udp'
+
+# Using state: gathered (VyOS 1.5+)
+
+- name: Gather logging config (VyOS 1.5+)
+  vyos.vyos.vyos_logging_global:
+    state: gathered
+
+# Module Execution Result:
+# ------------------------
+
+# "gathered": {
+#     "console": {
+#         "facilities": [
+#             {
+#                 "facility": "local7",
+#                 "severity": "err"
+#             }
+#         ]
+#     },
+#     "global_params": {
+#         "facilities": [
+#             {
+#                 "facility": "cron",
+#                 "severity": "debug"
+#             }
+#         ],
+#         "marker_interval": 111,
+#         "preserve_fqdn": true
+#     },
+#     "hosts": [
+#         {
+#             "facilities": [
+#                 {
+#                     "facility": "local7",
+#                     "severity": "all"
+#                 }
+#             ],
+#             "hostname": "172.16.0.1",
+#             "port": 514,
+#             "protocol": "udp"
+#         }
+#     ]
+# },
+
+# Using state: rendered (VyOS 1.5+)
+# Note: files, users, and global_params.archive are not supported on VyOS 1.5+
+# and will be ignored with a warning if provided.
+
+- name: Render the provided configuration (VyOS 1.5+)
+  vyos.vyos.vyos_logging_global:
+    config:
+      console:
+        facilities:
+          - facility: local7
+            severity: err
+      hosts:
+        - hostname: 172.16.0.1
+          facilities:
+            - facility: local7
+              severity: all
+          port: 514
+          protocol: udp
+      global_params:
+        facilities:
+          - facility: cron
+            severity: debug
+        marker_interval: 111
+        preserve_fqdn: true
+    state: rendered
+
+# Module Execution Result:
+# ------------------------
+
+# "rendered": [
+#     "set system syslog console facility local7 level err",
+#     "set system syslog remote 172.16.0.1 facility local7 level all",
+#     "set system syslog remote 172.16.0.1 port 514",
+#     "set system syslog remote 172.16.0.1 protocol udp",
+#     "set system syslog local facility cron level debug",
+#     "set system syslog marker interval 111",
+#     "set system syslog preserve-fqdn"
+# ]
 """
 
 RETURN = """
