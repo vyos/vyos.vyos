@@ -1,0 +1,4 @@
+# Formatting commits - ignore in git blame
+# style: apply black formatting across entire codebase
+# NOTE: Update this hash after the formatting PR is merged
+221ac461e4b3dcf37629f4cce89e45a59ace873c
