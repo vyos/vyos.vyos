@@ -149,10 +149,11 @@ class TestVyosL3InterfacesModule(TestVyosModule):
             ),
         )
         commands = [
-            "delete interfaces ethernet eth0",
-            "delete interfaces ethernet eth1",
-            "delete interfaces ethernet eth3",
-            "delete interfaces loopback lo",
+            "delete interfaces ethernet eth0 address 'dhcp'",
+            "delete interfaces ethernet eth1 address '192.0.2.14/24'",
+            "delete interfaces ethernet eth3 address '198.51.100.10/24'",
+            "delete interfaces ethernet eth3 vif 101 address '198.51.100.130/25'",
+            "delete interfaces ethernet eth3 vif 102 address '2001:db8:4000::3/34'",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -167,7 +168,7 @@ class TestVyosL3InterfacesModule(TestVyosModule):
             ),
         )
         commands = [
-            "delete interfaces ethernet eth1",
+            "delete interfaces ethernet eth1 address '192.0.2.14/24'",
         ]
         self.execute_module(changed=True, commands=commands)
 
