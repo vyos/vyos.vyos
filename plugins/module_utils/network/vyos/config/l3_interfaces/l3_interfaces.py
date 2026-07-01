@@ -254,26 +254,39 @@ class L3_interfaces(ConfigBase):
         return commands
 
     def _state_deleted(self, want, have):
-        """The command generator when state is deleted
-
-        :rtype: A list
-        :returns: the commands necessary to remove the current configuration
-                  of the provided objects
-        """
         commands = []
         want_copy = deepcopy(remove_empties(want))
         have_copy = deepcopy(have)
 
         if have_copy is not None:
             if all(v in (None, {}, []) for k, v in want_copy.items() if k != "name"):
-                commands.append(
-                    self._compute_commands(
-                        key=None,
-                        value=None,
-                        interface=want_copy["name"],
-                        remove=True,
-                    ),
-                )
+                # Only delete L3 attributes we own — do not touch L2 config
+                have_vifs = have_copy.pop("vifs", []) or []
+
+                for addr_family in ("ipv4", "ipv6"):
+                    for addr in have_copy.get(addr_family) or []:
+                        commands.append(
+                            self._compute_commands(
+                                key="address",
+                                value=addr["address"],
+                                interface=want_copy["name"],
+                                remove=True,
+                            ),
+                        )
+
+                for have_vif in have_vifs:
+                    for addr_family in ("ipv4", "ipv6"):
+                        for addr in have_vif.get(addr_family) or []:
+                            commands.append(
+                                self._compute_commands(
+                                    key="address",
+                                    value=addr["address"],
+                                    interface=want_copy["name"],
+                                    vif=have_vif["vlan_id"],
+                                    remove=True,
+                                ),
+                            )
+
                 return commands
 
             want_vifs = want_copy.pop("vifs", [])

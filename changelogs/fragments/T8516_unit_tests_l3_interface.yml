@@ -1,0 +1,5 @@
+---
+trivial:
+  - Add unit tests for vyos_l3_interfaces module.
+bugfixes:
+  - Safeguard interface L2 configuration by deleting only L3 address attributes in vyos_l3_interfaces; update unit and integration tests accordingly.
