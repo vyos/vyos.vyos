@@ -255,7 +255,7 @@ class TestVyosL3InterfacesModule(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_l3_interfaces_vif_deleted(self):
-        """Delete addresses from VIF sub-interfaces on eth3."""
+        """Delete all L3 addresses from eth3, including VIF sub-interfaces."""
         set_module_args(
             dict(
                 config=[
