@@ -27,6 +27,7 @@
               - vlan_id: 101
                 description: Eth1 - VIF 101
                 enabled: true
+            vrf: "pink"
           - name: eth2
             description: Configured by Ansible - Interface 2 (ADMIN DOWN)
             mtu: 1406
@@ -36,6 +37,6 @@
     - name: Assert that correct set of commands were generated
       assert:
         that:
-          - "{{ rendered['commands'] | symmetric_difference(result['rendered']) |length == 0 }}"
+          - "{{ rendered['commands'] | symmetric_difference(result['rendered']) | length == 0 }}"
   always:
     - include_tasks: _remove_config.yaml
