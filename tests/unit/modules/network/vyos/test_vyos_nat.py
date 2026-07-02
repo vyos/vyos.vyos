@@ -162,7 +162,7 @@ class TestVyosNatModule(TestVyosModule):
                                             dict(
                                                 id=1,
                                                 address="192.168.100.10",
-                                                description="NAT64 translacton pool",
+                                                description="NAT64 translation pool",
                                                 disable=True,
                                                 port="1-65535",
                                                 protocol="udp",
