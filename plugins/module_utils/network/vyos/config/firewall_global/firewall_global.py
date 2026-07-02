@@ -987,13 +987,7 @@ class Firewall_global(ConfigBase):
 
                 for izf in izfs:
                     commands.append(
-                        cmd
-                        + " "
-                        + name
-                        + " intra-zone-filtering "
-                        + izf[0].replace(".", " ")
-                        + " "
-                        + izf[1],
+                        cmd + " " + name + " intra-zone-filtering " + izf[0].replace(".", " "),
                     )
             elif not opr and not have:
                 commands.append(
@@ -1101,16 +1095,12 @@ class Firewall_global(ConfigBase):
                                 + " from "
                                 + zone
                                 + " firewall "
-                                + source[0].replace("_", "-")
-                                + " "
-                                + source[1],
+                                + source[0].replace("_", "-"),
                             )
-                    elif not opr and not have:
-                        sources = self._dict_diff(wfw, hfw)
-                        for source in sources:
-                            commands.append(
-                                cmd + " " + name + " from " + zone,
-                            )
+                    elif not opr and not hfw:
+                        commands.append(
+                            cmd + " " + name + " from " + zone,
+                        )
             elif opr:
                 wfw = item1.get("firewall", {})
                 for key, val in wfw.items():
@@ -1126,4 +1116,8 @@ class Firewall_global(ConfigBase):
                             + " "
                             + val,
                         )
+            elif not opr:
+                commands.append(
+                    cmd + " " + name + " from " + zone,
+                )
         return commands
