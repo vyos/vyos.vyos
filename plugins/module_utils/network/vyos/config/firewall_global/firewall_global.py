@@ -926,24 +926,36 @@ class Firewall_global(ConfigBase):
             want = w.get(attr) or []
         if h:
             have = h.get(attr) or []
+
+        # VyOS 1.5.0 GA moved 'interface' under a new 'member' node
+        # ("set firewall zone <name> member interface <ifname>"). 1.4.x and
+        # 1.5-rolling snapshots predating this change still use the bare
+        # 'interface' node. Known limitation: a 1.5-rolling build reporting
+        # "1.5" that predates this change will incorrectly get the new
+        # syntax -- accepted trade-off, see PR notes.
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.5"):
+            iface_kw = "member interface"
+        else:
+            iface_kw = "interface"
+
         if want:
             if opr:
                 interfaces = list_diff_want_only(want, have)
 
                 for interface in interfaces:
                     commands.append(
-                        cmd + " " + name + " interface " + interface,
+                        cmd + " " + name + " " + iface_kw + " " + interface,
                     )
             elif not opr and have:
                 interfaces = list_diff_want_only(want, have)
                 for interface in interfaces:
                     commands.append(
-                        cmd + " " + name + " interface " + interface,
+                        cmd + " " + name + " " + iface_kw + " " + interface,
                     )
             elif not opr and not have:
                 for interface in want:
                     commands.append(
-                        cmd + " " + name + " interface " + interface,
+                        cmd + " " + name + " " + iface_kw + " " + interface,
                     )
         else:
             self._module.fail_json(msg={"want": want, "have": have, "opr": opr})

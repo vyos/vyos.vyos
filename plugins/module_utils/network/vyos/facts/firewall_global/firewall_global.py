@@ -442,6 +442,15 @@ class Firewall_globalFacts(object):
             else:
                 value = value.strip("'")
 
+            # VyOS 1.5.0 GA wraps 'interface' under a new 'member' node:
+            # "set firewall zone <name> member interface <ifname>". Unwrap
+            # it here so it lands in the same 'interfaces' list as the
+            # pre-1.5.0 bare "interface <ifname>" form. No version check
+            # needed -- 1.4.x/1.5-rolling configs never emit 'member'.
+            if raw_attr == "member" and isinstance(value, str) and value.startswith("interface "):
+                raw_attr = "interface"
+                value = value.split(None, 1)[1].strip("'")
+
             zone = cfg_dict.setdefault(zone_name, {"name": zone_name})
 
             attr = KEY_MAP.get(raw_attr, raw_attr)
