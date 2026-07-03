@@ -254,6 +254,16 @@ class L3_interfaces(ConfigBase):
         return commands
 
     def _state_deleted(self, want, have):
+        """The command generator when state is deleted
+
+        Deletes only the L3 address attributes (base interface and VIFs)
+        owned by this module, never the interface subtree, so L2 settings
+        are preserved.
+
+        :rtype: A list
+        :returns: the commands necessary to remove the current configuration
+                  of the provided objects
+        """
         commands = []
         want_copy = deepcopy(remove_empties(want))
         have_copy = deepcopy(have)

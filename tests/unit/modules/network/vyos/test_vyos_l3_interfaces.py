@@ -135,7 +135,7 @@ class TestVyosL3InterfacesModule(TestVyosModule):
         self.execute_module(changed=True, commands=commands)
 
     def test_vyos_l3_interfaces_overridden(self):
-        """Override: keep only eth2, delete all other interface stanzas included in the L3 facts."""
+        """Override: keep only eth2; delete L3 addresses from all other interfaces."""
         set_module_args(
             dict(
                 config=[
