@@ -207,7 +207,7 @@ replaced:
         description: This is the Firewall zone fzp2
         interfaces:
           - eth2
-          - lo0
+          - lo
         intra_zone_filtering:
           action: accept
   config:
@@ -255,7 +255,7 @@ replaced:
         description: This is the Firewall zone fzp2
         interfaces:
           - eth2
-          - lo0
+          - lo
         intra_zone_filtering:
           action: accept
   diff_config:
@@ -391,7 +391,7 @@ round_trip:
         description: This is the Firewall zone fzp2
         interfaces:
           - eth2
-          - lo0
+          - lo
         intra_zone_filtering:
           action: accept
   forward_config:
@@ -434,7 +434,7 @@ round_trip:
         description: This is the Firewall zone fzp2
         interfaces:
           - eth2
-          - lo0
+          - lo
         intra_zone_filtering:
           action: accept
   revert_config:
