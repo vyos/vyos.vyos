@@ -120,3 +120,13 @@ class TestVyosFirewallRulesModule15(TestVyosModule):
         self.assertEqual(zone["interfaces"], ["eth2"])
         self.assertEqual(zone["description"], "existing 1.5.0 zone for facts parsing test")
         self.assertNotIn("member", zone)
+
+    def test_vyos_firewall_global_ruleset_lines_filtered_from_facts(self):
+        # Same coverage as the 1.4 version, confirmed independently on the
+        # 1.5.0 fixture/version path.
+        set_module_args(dict(config=dict(), state="gathered"))
+        result = self.execute_module(changed=False)
+        facts = result["gathered"]
+        self.assertNotIn("TESTRULESET-V4", str(facts))
+        self.assertNotIn("TESTRULESET-V6-LEGACY", str(facts))
+        self.assertNotIn("TESTRULESET-V6-1_4PLUS", str(facts))

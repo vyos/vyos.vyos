@@ -1005,3 +1005,15 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "delete firewall zone ZONE-IZF from zone-src",
         ]
         self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_global_ruleset_lines_filtered_from_facts(self):
+        # Confirms render_config's pre-filter strips all three ruleset-line
+        # prefixes (IPv4 name, legacy hyphenated ipv6-name, and 1.4+
+        # space-separated "ipv6 name") before zone/global-options parsing
+        # runs, on a real 1.4.x-shaped fixture alongside existing zone data.
+        set_module_args(dict(config=dict(), state="gathered"))
+        result = self.execute_module(changed=False)
+        facts = result["gathered"]
+        self.assertNotIn("TESTRULESET-V4", str(facts))
+        self.assertNotIn("TESTRULESET-V6-LEGACY", str(facts))
+        self.assertNotIn("TESTRULESET-V6-1_4PLUS", str(facts))

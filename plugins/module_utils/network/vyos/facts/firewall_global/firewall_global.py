@@ -81,7 +81,9 @@ class Firewall_globalFacts(object):
         conf = "\n".join(
             filter(
                 lambda x: not (
-                    x.startswith("set firewall name") or x.startswith("set firewall ipv6 name")
+                    x.startswith("set firewall name")
+                    or x.startswith("set firewall ipv6-name")
+                    or x.startswith("set firewall ipv6 name")
                 ),
                 conf,
             ),
