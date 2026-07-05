@@ -588,3 +588,50 @@ class TestVyosInterfacesModule(TestVyosModule):
             "set interfaces ethernet eth1 vrf 'pink'",
         ]
         self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_interfaces_gathered_vrf(self):
+        # gathered facts should surface the vrf set on eth2
+        self.fixture_path = "vyos_interfaces_config_vrf.cfg"
+        set_module_args(
+            dict(
+                config=[],
+                state="gathered",
+            ),
+        )
+
+        result = self.execute_module(changed=False)
+        eth2_facts = [i for i in result["gathered"] if i["name"] == "eth2"][0]
+        self.assertEqual(eth2_facts["vrf"], "green")
+
+    def test_vyos_interfaces_parsed_vrf(self):
+        # parsing a running_config string should surface vrf on eth2
+        set_module_args(
+            dict(
+                running_config="set interfaces ethernet eth2 vrf 'green'",
+                state="parsed",
+            ),
+        )
+
+        result = self.execute_module(changed=False)
+        eth2_facts = [i for i in result["parsed"] if i["name"] == "eth2"][0]
+        self.assertEqual(eth2_facts["vrf"], "green")
+
+    def test_vyos_interfaces_rendered_vrf(self):
+        # rendered output should include the vrf set command without touching a device
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth1",
+                        vrf="pink",
+                    ),
+                ],
+                state="rendered",
+            ),
+        )
+
+        result = self.execute_module(changed=False)
+        commands = [
+            "set interfaces ethernet eth1 vrf 'pink'",
+        ]
+        self.assertEqual(sorted(result["rendered"]), sorted(commands))

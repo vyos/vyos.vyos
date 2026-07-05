@@ -16,6 +16,7 @@
     config: |-
       delete interfaces ethernet eth2 vrf
       delete interfaces ethernet eth1 vrf
+  ignore_errors: true
 
 - name: Cleanup - Remove VRFs
   ansible.netcommon.cli_config:
