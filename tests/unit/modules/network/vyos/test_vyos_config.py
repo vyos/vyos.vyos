@@ -243,3 +243,39 @@ class TestVyosConfigModule(TestVyosModule):
             response["config_diff"],
         )
         self.assertEqual(result["commands"], response["config_diff"])
+
+    def test_vyos_config_match_smart_rejects_delete_lines(self):
+        """
+        match=smart treats the candidate as the complete desired end-state.
+        A candidate containing 'delete' lines must be rejected rather than
+        silently producing a diff that removes most/all of the running
+        config (regression test for a candidate that is a no-op/delete-only
+        input generating deletes for everything the candidate omits).
+        """
+        lines = ["delete interfaces ethernet eth0 address"]
+        candidate = "\n".join(lines)
+
+        with self.assertRaises(ValueError):
+            self.cliconf_obj.get_diff(
+                candidate,
+                self.running_config,
+                diff_match="smart",
+            )
+
+    def test_vyos_config_match_smart_rejects_empty_candidate(self):
+        """
+        A candidate that is empty, whitespace-only, or comment-only must be
+        rejected rather than silently treated as an empty desired end-state
+        (which would generate deletes for the entire running config).
+        Comment-only candidates are also stripped away entirely by upstream
+        NetworkConfig parsing before reaching VyosConf, so this is a second,
+        distinct route to the same mass-deletion failure mode as the
+        'delete' lines case above.
+        """
+        for candidate in ("", "   ", "# just a comment"):
+            with self.assertRaises(ValueError):
+                self.cliconf_obj.get_diff(
+                    candidate,
+                    self.running_config,
+                    diff_match="smart",
+                )

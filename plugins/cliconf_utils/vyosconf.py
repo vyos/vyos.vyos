@@ -49,7 +49,10 @@ class VyosConf:
     def del_entry(self, path, leaf):
         """
         This function deletes a value from the configuration given a path
-        and also removes all the parents that are now empty.
+        and also removes all the parents that are now empty.  If the leaf
+        does not exist at the given path, the configuration is left
+        unchanged (delete is treated as a no-op, matching VyOS's own
+        behaviour when deleting a path that isn't set).
         :param path: list of strings to traverse in the config
         :param leaf: value to delete at the destination
         :return: dict
@@ -65,6 +68,9 @@ class VyosConf:
             else:
                 first_no_sibling_key = None
             target = target[key]
+
+        if leaf not in target:
+            return self.config
 
         if first_no_sibling_key is None:
             first_no_sibling_key = [target, leaf]
@@ -83,11 +89,9 @@ class VyosConf:
         """
         target = self.config
         path = path + [leaf]
-        existing = []
         for key in path:
             if key not in target or not isinstance(target[key], dict):
                 return False
-            existing.append(key)
             target = target[key]
         return True
 

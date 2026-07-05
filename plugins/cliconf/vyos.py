@@ -273,8 +273,26 @@ class Cliconf(CliconfBase):
             diff["config_diff"] = list(candidate_commands)
             return diff
         if diff_match == "smart" and running is not None:
+            smart_candidate_lines = [line for line in candidate_commands if line.strip()]
+            if not smart_candidate_lines:
+                raise ValueError(
+                    "diff_match=smart received an empty candidate (after stripping blank/"
+                    "comment lines); refusing to treat that as a desired end-state of "
+                    "'delete everything'. Provide 'set' commands describing the desired "
+                    "configuration.",
+                )
+            for line in smart_candidate_lines:
+                first_token = line.strip().split(None, 1)[0]
+                if first_token != "set":
+                    raise ValueError(
+                        "diff_match=smart treats the candidate as the complete desired "
+                        "configuration end-state and only supports 'set' commands; "
+                        "line does not start with 'set' (found: {0!r})".format(
+                            line.strip(),
+                        ),
+                    )
             running_conf = VyosConf([line for line in running.splitlines() if line.strip()])
-            candidate_conf = VyosConf([line for line in candidate_commands if line.strip()])
+            candidate_conf = VyosConf(smart_candidate_lines)
             diff["config_diff"] = running_conf.diff_commands_to(candidate_conf)
             return diff
 

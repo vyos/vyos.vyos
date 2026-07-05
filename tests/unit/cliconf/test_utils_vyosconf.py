@@ -57,6 +57,34 @@ class TestListElements(unittest.TestCase):
         conf.del_entry(["a", "b", "c"], "d")
         self.assertEqual(conf.config, {"a": {"b": {"d": {}}}})
 
+    def test_del_missing_leaf_is_noop(self):
+        """
+        Deleting a leaf that was never set must leave the config unchanged.
+        Regression test: del_entry() used to raise KeyError when the leaf's
+        parent had siblings, and could delete an unrelated ancestor subtree
+        (or the entire config) when the parent path had no siblings.
+        """
+        # parent has siblings: previously raised KeyError
+        conf = VyosConf()
+        conf.set_entry(["a", "b"], "c")
+        conf.set_entry(["a", "b"], "d")
+        conf.del_entry(["a", "b"], "nonexistent")
+        self.assertEqual(conf.config, {"a": {"b": {"c": {}, "d": {}}}})
+
+        # parent path is an unbranched chain: previously deleted the
+        # entire config instead of no-op'ing
+        conf = VyosConf()
+        conf.set_entry(["a", "b"], "d")
+        conf.del_entry(["a", "b"], "c")
+        self.assertEqual(conf.config, {"a": {"b": {"d": {}}}})
+
+        # missing intermediate path element already behaved correctly;
+        # confirm it still does
+        conf = VyosConf()
+        conf.set_entry(["a", "b"], "c")
+        conf.del_entry(["a", "x"], "c")
+        self.assertEqual(conf.config, {"a": {"b": {"c": {}}}})
+
     def test_parse(self):
         conf = VyosConf()
         self.assertListEqual(
