@@ -119,6 +119,19 @@ class TestVyosNatModule(TestVyosModule):
                                         port_mapping="random",
                                     ),
                                 ),
+                                dict(
+                                    id=105,
+                                    protocol="tcp",
+                                    destination=dict(port="80"),
+                                    inbound_interface=dict(name="eth0"),
+                                    load_balance=dict(
+                                        hash=["source-address", "destination-address"],
+                                        backend=[
+                                            dict(ip="10.10.10.1", weight=60),
+                                            dict(ip="10.10.10.2", weight=40),
+                                        ],
+                                    ),
+                                ),
                             ],
                         ),
                         source=dict(
@@ -591,6 +604,7 @@ class TestVyosNatModule(TestVyosModule):
             "delete nat64",
             "delete nat66",
             "delete nat destination rule 100",
+            "delete nat destination rule 105",
             "set nat destination rule 100 description 'Overridden web server NAT'",
             "set nat destination rule 100 protocol tcp",
             "set nat destination rule 100 inbound-interface name eth3",
@@ -687,3 +701,139 @@ class TestVyosNatModule(TestVyosModule):
         self.assertEqual(gathered["nat"]["destination"]["rule"][0]["id"], 100)
         self.assertEqual(gathered["nat64"]["source"]["rule"][0]["id"], 10)
         self.assertEqual(gathered["nat66"]["destination"]["rule"][0]["id"], 20)
+
+    def test_vyos_nat_merged_load_balance_new_rule(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat=dict(
+                        destination=dict(
+                            rule=[
+                                dict(
+                                    id=110,
+                                    protocol="tcp",
+                                    destination=dict(port="443"),
+                                    load_balance=dict(
+                                        hash=["random"],
+                                        backend=[
+                                            dict(ip="10.20.20.1", weight=100),
+                                        ],
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+                state="merged",
+            ),
+        )
+        commands = [
+            "set nat destination rule 110 protocol tcp",
+            "set nat destination rule 110 destination port 443",
+            "set nat destination rule 110 load-balance hash random",
+            "set nat destination rule 110 load-balance backend 10.20.20.1 weight 100",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_nat_merged_load_balance_hash_add(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat=dict(
+                        destination=dict(
+                            rule=[
+                                dict(
+                                    id=105,
+                                    protocol="tcp",
+                                    destination=dict(port="80"),
+                                    inbound_interface=dict(name="eth0"),
+                                    load_balance=dict(
+                                        hash=[
+                                            "source-address",
+                                            "destination-address",
+                                            "source-port",
+                                        ],
+                                        backend=[
+                                            dict(ip="10.10.10.1", weight=60),
+                                            dict(ip="10.10.10.2", weight=40),
+                                        ],
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+                state="merged",
+            ),
+        )
+        commands = ["set nat destination rule 105 load-balance hash source-port"]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_nat_merged_load_balance_backend_weight_change(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat=dict(
+                        destination=dict(
+                            rule=[
+                                dict(
+                                    id=105,
+                                    protocol="tcp",
+                                    destination=dict(port="80"),
+                                    inbound_interface=dict(name="eth0"),
+                                    load_balance=dict(
+                                        hash=["source-address", "destination-address"],
+                                        backend=[
+                                            dict(ip="10.10.10.1", weight=70),
+                                            dict(ip="10.10.10.2", weight=30),
+                                        ],
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+                state="merged",
+            ),
+        )
+        commands = [
+            "set nat destination rule 105 load-balance backend 10.10.10.1 weight 70",
+            "set nat destination rule 105 load-balance backend 10.10.10.2 weight 30",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_nat_replaced_load_balance_removes_omitted(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat=dict(
+                        destination=dict(
+                            rule=[
+                                dict(
+                                    id=105,
+                                    protocol="tcp",
+                                    destination=dict(port="80"),
+                                    inbound_interface=dict(name="eth0"),
+                                    load_balance=dict(
+                                        hash=["source-address"],
+                                        backend=[
+                                            dict(ip="10.10.10.1", weight=100),
+                                        ],
+                                    ),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+                state="replaced",
+            ),
+        )
+        commands = [
+            "delete nat destination rule 105",
+            "set nat destination rule 105 protocol tcp",
+            "set nat destination rule 105 destination port 80",
+            "set nat destination rule 105 inbound-interface name eth0",
+            "set nat destination rule 105 load-balance hash source-address",
+            "set nat destination rule 105 load-balance backend 10.10.10.1 weight 100",
+        ]
+        self.execute_module(changed=True, commands=commands)
