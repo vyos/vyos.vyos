@@ -43,7 +43,6 @@
   delay: 10
   until: hostname_reverted is succeeded and inventory_hostname_short in hostname_reverted.stdout[0]
   ignore_unreachable: true
-  ignore_errors: true
 
 - name: reset connection after device reboot recovery
   meta: reset_connection
