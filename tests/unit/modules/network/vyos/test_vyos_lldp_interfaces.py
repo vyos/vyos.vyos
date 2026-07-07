@@ -51,7 +51,7 @@ class TestVyosLldpInterfacesModule(TestVyosModule):
 
     def load_fixtures(self, commands=None, filename=None):
         self.get_resource_connection_facts.return_value.get_config.return_value = load_fixture(
-            "vyos_lldp_interfaces_config.cfg"
+            "vyos_lldp_interfaces_config.cfg",
         )
 
     # -------------------------------------------------------------------------
@@ -227,6 +227,8 @@ class TestVyosLldpInterfacesModule(TestVyosModule):
         coord = eth2["location"]["coordinate_based"]
         self.assertEqual(coord["altitude"], 2200)
         self.assertEqual(coord["datum"], "WGS84")
+        self.assertEqual(coord["latitude"], "33.524449N")
+        self.assertEqual(coord["longitude"], "222.267255W")
 
     # -------------------------------------------------------------------------
     # rendered
