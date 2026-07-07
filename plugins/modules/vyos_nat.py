@@ -211,7 +211,7 @@ options:
                       hash:
                         type: list
                         elements: str
-                        description: One or more fields used to compute the load-balancing hash. Mutually exclusive with I(translation.address) on the same rule.
+                        description: Fields to hash on for load balancing. Mutually exclusive with I(translation.address).
                         choices:
                           - source-address
                           - destination-address
@@ -221,7 +221,7 @@ options:
                       backend:
                         type: list
                         elements: dict
-                        description: List of translation backends to load-balance across. The sum of I(weight) values across all backends for a rule should equal 100.
+                        description: List of backends to load-balance across. Weights should sum to 100.
                         suboptions:
                           ip:
                             type: str
@@ -355,7 +355,7 @@ options:
                       hash:
                         type: list
                         elements: str
-                        description: One or more fields used to compute the load-balancing hash. Mutually exclusive with I(translation.address) on the same rule.
+                        description: Fields to hash on for load balancing. Mutually exclusive with I(translation.address).
                         choices:
                           - source-address
                           - destination-address
@@ -365,7 +365,7 @@ options:
                       backend:
                         type: list
                         elements: dict
-                        description: List of translation backends to load-balance across. The sum of I(weight) values across all backends for a rule should equal 100.
+                        description: List of backends to load-balance across. Weights should sum to 100.
                         suboptions:
                           ip:
                             type: str

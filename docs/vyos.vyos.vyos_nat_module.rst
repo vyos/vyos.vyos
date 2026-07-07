@@ -873,7 +873,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>List of translation backends to load-balance across. The sum of <em>weight</em> values across all backends for a rule should equal 100.</div>
+                        <div>List of backends to load-balance across. Weights should sum to 100.</div>
                 </td>
             </tr>
                                 <tr>
@@ -944,7 +944,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>One or more fields used to compute the load-balancing hash. Mutually exclusive with <em>translation.address</em> on the same rule.</div>
+                        <div>Fields to hash on for load balancing. Mutually exclusive with <em>translation.address</em>.</div>
                 </td>
             </tr>
 
@@ -1477,7 +1477,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>List of translation backends to load-balance across. The sum of <em>weight</em> values across all backends for a rule should equal 100.</div>
+                        <div>List of backends to load-balance across. Weights should sum to 100.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1548,7 +1548,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>One or more fields used to compute the load-balancing hash. Mutually exclusive with <em>translation.address</em> on the same rule.</div>
+                        <div>Fields to hash on for load balancing. Mutually exclusive with <em>translation.address</em>.</div>
                 </td>
             </tr>
 
