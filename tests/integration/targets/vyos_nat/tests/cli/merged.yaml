@@ -35,7 +35,7 @@
     - name: Assert that before dicts were correctly generated
       assert:
         that:
-          - "{{ merged['before'] | symmetric_difference(result['before']) |length == 0 }}"
+          - merged['before'] | symmetric_difference(result['before']) | length == 0
 
     - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
       register: result
@@ -45,6 +45,48 @@
       assert:
         that:
           - result['changed'] == false
+
+    - name: Add static rule with plain inbound_interface string
+      register: result
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            static:
+              rule:
+                - id: 300
+                  description: Static mapping
+                  inbound_interface: eth2
+                  destination:
+                    address: 192.168.100.20
+                  translation:
+                    address: 192.168.1.20
+        state: merged
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set nat static rule 300 inbound-interface eth2' in result.commands"
+
+    - name: Change static rule inbound_interface
+      register: result
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            static:
+              rule:
+                - id: 300
+                  description: Static mapping
+                  inbound_interface: eth3
+                  destination:
+                    address: 192.168.100.20
+                  translation:
+                    address: 192.168.1.20
+        state: merged
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands == ["set nat static rule 300 inbound-interface eth3"]
 
   always:
     - include_tasks: _remove_config.yaml

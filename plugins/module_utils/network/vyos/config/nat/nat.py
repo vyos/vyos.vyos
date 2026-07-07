@@ -164,8 +164,9 @@ class Nat(ResourceModule):
                                 self.commands.append(
                                     f"delete {nat_type} cgnat pool {pool_type} {name}",
                                 )
+
                             elif not only_missing and name in want_pools:
-                                if want_pools[name] != have_pools[name]:
+                                if self.state == "deleted" or want_pools[name] != have_pools[name]:
                                     self.commands.append(
                                         f"delete {nat_type} cgnat pool {pool_type} {name}",
                                     )
@@ -174,8 +175,9 @@ class Nat(ResourceModule):
                     for rid in have_rules:
                         if only_missing and rid not in want_rules:
                             self.commands.append(f"delete {nat_type} cgnat rule {rid}")
+
                         elif not only_missing and rid in want_rules:
-                            if want_rules[rid] != have_rules[rid]:
+                            if self.state == "deleted" or want_rules[rid] != have_rules[rid]:
                                 self.commands.append(f"delete {nat_type} cgnat rule {rid}")
                 else:
                     want_rules = want_section.get("rule", {})
@@ -186,8 +188,9 @@ class Nat(ResourceModule):
                             self.commands.append(
                                 f"delete {nat_type} {cli_section} rule {rid}",
                             )
+
                         elif not only_missing and rid in want_rules:
-                            if want_rules[rid] != have_rules[rid]:
+                            if self.state == "deleted" or want_rules[rid] != have_rules[rid]:
                                 self.commands.append(
                                     f"delete {nat_type} {cli_section} rule {rid}",
                                 )
@@ -219,10 +222,18 @@ class Nat(ResourceModule):
         int_names = set(want_int) if scope else set(want_int) | set(have_int)
 
         for name in ext_names:
-            self._compare_external_pool(name, want_ext.get(name, {}), have_ext.get(name, {}))
+            w = want_ext.get(name, {})
+            h = have_ext.get(name, {})
+            if scope and w != h:
+                h = {}
+            self._compare_external_pool(name, w, h)
 
         for name in int_names:
-            self._compare_internal_pool(name, want_int.get(name, {}), have_int.get(name, {}))
+            w = want_int.get(name, {})
+            h = have_int.get(name, {})
+            if scope and w != h:
+                h = {}
+            self._compare_internal_pool(name, w, h)
 
     def _compare_external_pool(self, name, want, have):
         w = want.get("external_port_range")
@@ -328,6 +339,8 @@ class Nat(ResourceModule):
         ctx = {"nat": nat_type, "type": section, "id": rid}
 
         for field in set(want) | set(have):
+            if field == "inbound_interface":
+                continue
             val = want.get(field) if field in want else have.get(field)
             if isinstance(val, bool):
                 self._cmp_bool(want, have, field, ctx, f"nat_type_{field}")

@@ -569,7 +569,8 @@ options:
     - The state I(parsed) reads the configuration from C(show configuration commands | match 'nat')
       and transforms it into Ansible structured data as per the module argspec.
       The value is then returned in the I(parsed) key within the result.
-    - The states I(replaced) and I(overridden) have identical behaviour for this module.
+    - The state I(replaced) replaces only the provided configuration, while I(overridden) removes any
+      existing NAT configuration not specified in I(config).
     type: str
   state:
     description:

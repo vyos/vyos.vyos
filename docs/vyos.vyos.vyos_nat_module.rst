@@ -3117,7 +3117,7 @@ Parameters
                         <div>This option is used only with state <em>parsed</em>.</div>
                         <div>The value of this option should be the output received from the VyOS device by executing the command <b>show configuration commands | match &#x27;nat&#x27;</b>.</div>
                         <div>The state <em>parsed</em> reads the configuration from <code>show configuration commands | match &#x27;nat&#x27;</code> and transforms it into Ansible structured data as per the module argspec. The value is then returned in the <em>parsed</em> key within the result.</div>
-                        <div>The states <em>replaced</em> and <em>overridden</em> have identical behaviour for this module.</div>
+                        <div>The state <em>replaced</em> replaces only the provided configuration, while <em>overridden</em> removes any existing NAT configuration not specified in <em>config</em>.</div>
                 </td>
             </tr>
             <tr>

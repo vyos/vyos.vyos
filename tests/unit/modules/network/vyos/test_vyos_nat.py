@@ -327,6 +327,31 @@ class TestVyosNatModule(TestVyosModule):
         ]
         self.execute_module(changed=True, commands=commands)
 
+    def test_vyos_nat_merged_static_inbound_interface_change(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat=dict(
+                        static=dict(
+                            rule=[
+                                dict(
+                                    id=300,
+                                    description="Static mapping",
+                                    inbound_interface="eth3",
+                                    destination=dict(address="192.168.100.20"),
+                                    translation=dict(address="192.168.1.20"),
+                                    log=True,
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+                state="merged",
+            ),
+        )
+        commands = ["set nat static rule 300 inbound-interface eth3"]
+        self.execute_module(changed=True, commands=commands)
+
     # -------------------------------------------------------------------------
     # deleted
     # -------------------------------------------------------------------------
@@ -407,6 +432,28 @@ class TestVyosNatModule(TestVyosModule):
         )
         self.execute_module(changed=False, commands=[])
 
+    def test_vyos_nat_deleted_cgnat_rule_full_match(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat=dict(
+                        cgnat=dict(
+                            rule=[
+                                dict(
+                                    id=1,
+                                    source=dict(pool="int-pool-1"),
+                                    translation=dict(pool="ext-pool-1"),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+                state="deleted",
+            ),
+        )
+        commands = ["delete nat cgnat rule 1"]
+        self.execute_module(changed=True, commands=commands)
+
     # -------------------------------------------------------------------------
     # replaced
     # -------------------------------------------------------------------------
@@ -470,6 +517,41 @@ class TestVyosNatModule(TestVyosModule):
             "set nat destination rule 100 destination port 53",
             "set nat destination rule 100 translation address 192.168.1.53",
             "set nat destination rule 100 translation port 53",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_nat_replaced_cgnat_pool_partial_field_change(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat=dict(
+                        cgnat=dict(
+                            pool=dict(
+                                external=[
+                                    dict(
+                                        name="ext-pool-1",
+                                        external_port_range="30000-40000",
+                                        per_user_limit=dict(port="200"),
+                                        range=[
+                                            dict(value="203.0.113.0/24"),
+                                            dict(value="203.1.113.1-203.1.113.60", seq="10"),
+                                        ],
+                                    ),
+                                ],
+                            ),
+                        ),
+                    ),
+                ),
+                state="replaced",
+            ),
+        )
+        commands = [
+            "delete nat cgnat pool external ext-pool-1",
+            "delete nat cgnat log-allocation",
+            "set nat cgnat pool external ext-pool-1 external-port-range 30000-40000",
+            "set nat cgnat pool external ext-pool-1 per-user-limit port 200",
+            "set nat cgnat pool external ext-pool-1 range 203.0.113.0/24",
+            "set nat cgnat pool external ext-pool-1 range 203.1.113.1-203.1.113.60 seq 10",
         ]
         self.execute_module(changed=True, commands=commands)
 
