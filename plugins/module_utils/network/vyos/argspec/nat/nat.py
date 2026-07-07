@@ -204,6 +204,30 @@ class NatArgs(object):  # pylint: disable=R0903
                                                 },
                                             },
                                         },
+                                        "load_balance": {
+                                            "type": "dict",
+                                            "options": {
+                                                "backend": {
+                                                    "type": "list",
+                                                    "elements": "dict",
+                                                    "options": {
+                                                        "ip": {"type": "str"},
+                                                        "weight": {"type": "int"},
+                                                    },
+                                                },
+                                                "hash": {
+                                                    "type": "list",
+                                                    "elements": "str",
+                                                    "choices": [
+                                                        "source-address",
+                                                        "destination-address",
+                                                        "source-port",
+                                                        "destination-port",
+                                                        "random",
+                                                    ],
+                                                },
+                                            },
+                                        },
                                     },
                                 },
                             },
@@ -311,6 +335,30 @@ class NatArgs(object):  # pylint: disable=R0903
                                                     "choices": [
                                                         "random",
                                                         "none",
+                                                    ],
+                                                },
+                                            },
+                                        },
+                                        "load_balance": {
+                                            "type": "dict",
+                                            "options": {
+                                                "backend": {
+                                                    "type": "list",
+                                                    "elements": "dict",
+                                                    "options": {
+                                                        "ip": {"type": "str"},
+                                                        "weight": {"type": "int"},
+                                                    },
+                                                },
+                                                "hash": {
+                                                    "type": "list",
+                                                    "elements": "str",
+                                                    "choices": [
+                                                        "source-address",
+                                                        "destination-address",
+                                                        "source-port",
+                                                        "destination-port",
+                                                        "random",
                                                     ],
                                                 },
                                             },

@@ -354,6 +354,7 @@ class Nat(ResourceModule):
         self._cmp_translation(want, have, ctx)
         self._cmp_match_mark(want, have, ctx)
         self._cmp_nat64_pools(want, have, ctx)
+        self._cmp_load_balance(want, have, ctx)
 
     # -------------------------------------------------------------------------
     # Field-level helpers
@@ -516,3 +517,33 @@ class Nat(ResourceModule):
                     "nat64_translation_pool",
                     True,
                 )
+
+    def _cmp_load_balance(self, want, have, ctx):
+        lb_w = want.get("load_balance") or {}
+        lb_h = have.get("load_balance") or {}
+
+        want_hash = set(lb_w.get("hash") or [])
+        have_hash = set(lb_h.get("hash") or [])
+
+        for h in want_hash - have_hash:
+            self.addcmd(dict(ctx, value=h), "nat_type_lb_hash", False)
+        if self.state in ("replaced", "overridden"):
+            for h in have_hash - want_hash:
+                self.addcmd(dict(ctx, value=h), "nat_type_lb_hash", True)
+
+        want_backends = lb_w.get("backend", [])
+        have_backends = lb_h.get("backend", [])
+        if isinstance(want_backends, list):
+            want_backends = {b["ip"]: b for b in want_backends}
+        if isinstance(have_backends, list):
+            have_backends = {b["ip"]: b for b in have_backends}
+
+        for ip in set(want_backends) | set(have_backends):
+            wb = want_backends.get(ip, {})
+            hb = have_backends.get(ip, {})
+            if wb == hb:
+                continue
+            if wb:
+                self.addcmd(dict(ctx, ip=ip, weight=wb.get("weight")), "nat_type_lb_backend", False)
+            elif self.state in ("replaced", "overridden"):
+                self.addcmd(dict(ctx, ip=ip, weight=hb.get("weight")), "nat_type_lb_backend", True)

@@ -204,6 +204,31 @@ options:
                           - random
                           - none
                         description: Port mapping mode for translation.
+                  load_balance:
+                    type: dict
+                    description: Load balancing configuration for this NAT rule.
+                    suboptions:
+                      hash:
+                        type: list
+                        elements: str
+                        description: One or more fields used to compute the load-balancing hash. Mutually exclusive with I(translation.address) on the same rule.
+                        choices:
+                          - source-address
+                          - destination-address
+                          - source-port
+                          - destination-port
+                          - random
+                      backend:
+                        type: list
+                        elements: dict
+                        description: List of translation backends to load-balance across. The sum of I(weight) values across all backends for a rule should equal 100.
+                        suboptions:
+                          ip:
+                            type: str
+                            description: IP address of the backend translation target.
+                          weight:
+                            type: int
+                            description: Relative weight (1-100) for this backend's share of load-balanced traffic.
           source:
             type: dict
             description: Configuration for source NAT rules.
@@ -323,6 +348,31 @@ options:
                           - random
                           - none
                         description: Port mapping mode for translation.
+                  load_balance:
+                    type: dict
+                    description: Load balancing configuration for this NAT rule.
+                    suboptions:
+                      hash:
+                        type: list
+                        elements: str
+                        description: One or more fields used to compute the load-balancing hash. Mutually exclusive with I(translation.address) on the same rule.
+                        choices:
+                          - source-address
+                          - destination-address
+                          - source-port
+                          - destination-port
+                          - random
+                      backend:
+                        type: list
+                        elements: dict
+                        description: List of translation backends to load-balance across. The sum of I(weight) values across all backends for a rule should equal 100.
+                        suboptions:
+                          ip:
+                            type: str
+                            description: IP address of the backend translation target.
+                          weight:
+                            type: int
+                            description: Relative weight (1-100) for this backend's share of load-balanced traffic.
           static:
             type: dict
             description: Configuration for static one-to-one NAT rules.

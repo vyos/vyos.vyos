@@ -943,10 +943,9 @@ class NatTemplate(NetworkTemplate):
                             {
                                 "id": "{{ id }}",
                                 "load_balance": {
-                                    "backend": {
-                                        "ip": "{{ ip }}",
-                                        "weight": "{{ weight }}",
-                                    },
+                                    "backend": [
+                                        {"ip": "{{ ip }}", "weight": "{{ weight }}"},
+                                    ],
                                 },
                             },
                         ],
@@ -976,7 +975,7 @@ class NatTemplate(NetworkTemplate):
                         "rule": [
                             {
                                 "id": "{{ id }}",
-                                "load_balance": {"hash": "{{ value }}"},
+                                "load_balance": {"hash": ["{{ value }}"]},
                             },
                         ],
                     },
