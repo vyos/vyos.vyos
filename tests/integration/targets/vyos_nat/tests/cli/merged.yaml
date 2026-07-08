@@ -48,7 +48,7 @@
 
     - name: Add static rule with plain inbound_interface string
       register: result
-      vyos.vyos.vyos_nat:
+      vyos.vyos.vyos_nat: &id002
         config:
           nat:
             static:
@@ -67,9 +67,18 @@
           - result.changed == true
           - "'set nat static rule 300 inbound-interface eth2' in result.commands"
 
+    - name: Add static rule again (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id002
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
     - name: Change static rule inbound_interface
       register: result
-      vyos.vyos.vyos_nat:
+      vyos.vyos.vyos_nat: &id003
         config:
           nat:
             static:
@@ -87,6 +96,15 @@
         that:
           - result.changed == true
           - result.commands == ["set nat static rule 300 inbound-interface eth3"]
+
+    - name: Change static rule inbound_interface again (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id003
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
 
   always:
     - include_tasks: _remove_config.yaml
