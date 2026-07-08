@@ -281,10 +281,15 @@ class Cliconf(CliconfBase):
                 raise ValueError("line must start with either `set` or `delete`")
 
             elif item.startswith("set"):
-                match = False
-                for rline in running_commands:
-                    if match_cmd(item, rline):
-                        match = True
+                if diff_replace:
+                    # Quote-insensitive comparison is only needed for replace
+                    # mode, where `running` values may be re-quoted before
+                    # being compared here. Gating this behind diff_replace
+                    # preserves the original exact-match idempotency check
+                    # for all existing (non-replace) callers.
+                    match = any(match_cmd(item, rline) for rline in running_commands)
+                else:
+                    match = item in running_commands
                 if not match:
                     updates.append(line)
 
@@ -310,7 +315,7 @@ class Cliconf(CliconfBase):
                         match = True
 
                 if not match:
-                    line = re.sub(r"set", "delete", line)
+                    line = re.sub(r"^set\b", "delete", line, count=1)
                     updates.append(line)
 
         diff["config_diff"] = list(updates)
