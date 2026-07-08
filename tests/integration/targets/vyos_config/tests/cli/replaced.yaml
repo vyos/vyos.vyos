@@ -23,42 +23,29 @@
       dir_path: "{{ role_path }}/tests/output"
       filename: "replace_baseline_{{ inventory_hostname_short }}.cfg"
 
-- name: read the backup content on the controller
-  delegate_to: localhost
-  connection: local
-  ansible.builtin.slurp:
-    src: "{{ backup_result.backup_path }}"
-  register: baseline_slurp
-
-- name: build edited candidate (drop only rule 200's line, keep everything else verbatim)
-  delegate_to: localhost
+- name: build edited candidate lines (drop only rule 200, keep everything else verbatim)
+  # lookup('file', ...) runs inside Jinja on the controller process itself --
+  # no connection plugin involved at all, so this sidesteps the delegate_to +
+  # inherited network_cli conflict entirely rather than fighting it.
   ansible.builtin.set_fact:
-    edited_candidate: >-
-      {{ (baseline_slurp.content | b64decode).splitlines()
-         | reject('search', "firewall ipv4 name example rule 200")
-         | list | join('\n') }}
-
-- name: write edited candidate to a temp file
-  delegate_to: localhost
-  connection: local
-  ansible.builtin.copy:
-    content: "{{ edited_candidate }}\n"
-    dest: "{{ role_path }}/tests/output/replace_candidate_{{ inventory_hostname_short }}.cfg"
+    edited_candidate_lines: >-
+      {{ lookup('file', backup_result.backup_path).splitlines()
+         | reject('search', 'firewall ipv4 name example rule 200')
+         | list }}
 
 - name: sanity check candidate still contains SSH/management essentials
-  delegate_to: localhost
   ansible.builtin.assert:
     that:
-      # adjust these greps to whatever this lab image's real baseline contains --
+      # adjust these to whatever this lab image's real baseline contains --
       # the point is: FAIL LOUDLY here rather than push a candidate missing
       # management config, instead of discovering it via a dropped SSH session.
-      - "'service ssh' in edited_candidate or 'set service ssh' in edited_candidate"
-      - "'interfaces ethernet eth0' in edited_candidate"
+      - "edited_candidate_lines | select('search', 'service ssh') | list | length > 0"
+      - "edited_candidate_lines | select('search', 'interfaces ethernet eth0') | list | length > 0"
 
 - name: replace with edited full config (rule 200 removed, everything else intact)
   register: result
   vyos.vyos.vyos_config:
-    src: "{{ role_path }}/tests/output/replace_candidate_{{ inventory_hostname_short }}.cfg"
+    lines: "{{ edited_candidate_lines }}"
     replace: true
 
 - assert:

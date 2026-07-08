@@ -178,3 +178,116 @@ class TestVyosConfigModule(TestVyosModule):
 
         self.assertEqual(self.load_config.call_args[1]["confirm"], confirm_timeout)
         self.run_commands.assert_not_called()
+
+    def test_vyos_config_replace_leaf_change(self):
+        """replace=True with a full candidate: only the actually-changed leaf should be touched.
+
+        `running` must be hierarchical/brace text in replace mode (matching what
+        get_config(module, format="text") returns) -- the tree-aware diff needs
+        real node structure to distinguish leaf value changes from node removal.
+        """
+        running_hierarchical = "\n".join(
+            [
+                "system {",
+                "    host-name router",
+                "    domain-name example.com",
+                "}",
+            ],
+        )
+        candidate = "\n".join(
+            [
+                "set system host-name 'foo'",
+                "set system domain-name 'example.com'",
+            ],
+        )
+        diff = self.cliconf_obj.get_diff(candidate, running_hierarchical, diff_replace=True)
+        assert diff["config_diff"] == ["set system host-name 'foo'"]
+
+    def test_vyos_config_replace_removes_missing_leaf(self):
+        """replace=True: a leaf present on router but absent from candidate gets deleted."""
+        running_hierarchical = "\n".join(
+            [
+                "system {",
+                "    host-name router",
+                "}",
+                "interfaces {",
+                "    ethernet eth1 {",
+                "        address 6.7.8.9/24",
+                '        description "test string"',
+                "    }",
+                "}",
+            ],
+        )
+        candidate = "\n".join(
+            [
+                "set system host-name router",
+                "set interfaces ethernet eth1 address '6.7.8.9/24'",
+            ],
+        )
+        diff = self.cliconf_obj.get_diff(candidate, running_hierarchical, diff_replace=True)
+        assert "delete interfaces ethernet eth1 description" in " ".join(diff["config_diff"])
+
+    def test_vyos_config_replace_does_not_affect_default_match(self):
+        """Regression guard: replace=False must produce byte-identical diff to pre-PR behavior."""
+        src = load_fixture("vyos_config_src.cfg")
+        candidate = "\n".join(self.module.format_commands(src.splitlines()))
+        diff_default = self.cliconf_obj.get_diff(candidate, self.running_config)
+        diff_explicit_false = self.cliconf_obj.get_diff(
+            candidate,
+            self.running_config,
+            diff_replace=False,
+        )
+        assert diff_default == diff_explicit_false
+
+    def test_vyos_config_replace_quoted_value_not_falsely_flagged(self):
+        """Double-quote-insensitive matching must stay scoped to replace mode.
+
+        Single quotes are already stripped unconditionally on both sides before
+        this comparison, so they can't distinguish the two code paths. Double
+        quotes are the actual difference: match_cmd() (used only when
+        diff_replace=True) strips them too, while the default exact-match path
+        does not. This locks in that the default path still treats a
+        double-quoted running value as distinct from an unquoted candidate value,
+        while replace mode (which requires hierarchical running) correctly
+        treats them as the same value.
+        """
+        candidate = "set system host-name foo"
+
+        running_flat = 'set system host-name "foo"'
+        diff_default = self.cliconf_obj.get_diff(candidate, running_flat)
+        assert diff_default["config_diff"] == ["set system host-name foo"]
+
+        running_hierarchical = 'system {\n    host-name "foo"\n}\n'
+        diff_replace = self.cliconf_obj.get_diff(
+            candidate,
+            running_hierarchical,
+            diff_replace=True,
+        )
+        assert diff_replace["config_diff"] == []
+
+    def test_vyos_config_replace_removes_orphaned_node(self):
+        """A rule entirely removed from candidate must not leave an empty stub node."""
+        running_hierarchical = "\n".join(
+            [
+                "firewall {",
+                "    ipv4 {",
+                "        name example {",
+                "            rule 100 {",
+                "                action drop",
+                "            }",
+                "            rule 200 {",
+                "                action accept",
+                "            }",
+                "        }",
+                "    }",
+                "}",
+            ],
+        )
+        candidate = "set firewall ipv4 name example rule 100 action 'drop'"
+        diff = self.cliconf_obj.get_diff(candidate, running_hierarchical, diff_replace=True)
+        commands = diff["config_diff"]
+        # must delete the whole rule node, not just its leaf
+        assert "delete firewall ipv4 name example rule 200" in commands
+        assert not any(
+            "action" in c and "rule 200" in c for c in commands if c.startswith("delete")
+        )

@@ -38,6 +38,9 @@ notes:
 - This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 - To ensure idempotency and correct diff the configuration lines in the relevant module options should be similar to how they
   appear if present in the running configuration on device including the indentation.
+- C(replace) currently has no way to scope its effect to part of the
+  configuration; it always operates against the entire device configuration.
+  There is no C(path) parameter to constrain C(replace) to a subtree.
 options:
   lines:
     description:
@@ -144,9 +147,18 @@ options:
     type: dict
   replace:
     description:
-    - The C(replace) argument will replace the entire config, instead of merging it
-      with the base config that is already present. This only works in C(match) is in
-      C(line) mode. For backwards compatibility default is C(false).
+    - The C(replace) argument replaces the device's entire configuration with
+      the supplied candidate, rather than merging the candidate into the
+      existing configuration.
+    - C(replace) requires the candidate (C(lines)/C(src)) to represent the
+      complete desired configuration. Any configuration present on the
+      device but not included in the candidate will be deleted, including
+      management interfaces, SSH, and login users if they are omitted.
+      Always provide a full configuration when using C(replace), never a
+      partial one.
+    - C(replace) has no effect when C(match) is set to C(none); the module
+      will not warn in this case.
+    - For backwards compatibility, the default is C(false).
     type: bool
     default: no
   allow_password_change:
@@ -199,6 +211,59 @@ EXAMPLES = """
     backup_options:
       filename: backup.cfg
       dir_path: /home/user
+
+- name: replace the entire running config with a fully edited candidate
+  # replace requires the complete desired configuration -- never a partial
+  # one. A safe pattern is to back up the current config, edit it, then
+  # replace with the edited whole, as shown here.
+  vyos.vyos.vyos_config:
+    backup: true
+    backup_options:
+      filename: pre_replace_backup.cfg
+  register: backup_result
+
+- name: (edit backup_result's backup file as needed, then)
+  vyos.vyos.vyos_config:
+    src: /home/user/pre_replace_backup_edited.cfg
+    replace: true
+"""
+
+RETURN = """
+commands:
+  description: The list of configuration commands sent to the device
+  returned: always
+  type: list
+  sample: ['...', '...']
+filtered:
+  description: The list of configuration commands removed to avoid a load failure
+  returned: always
+  type: list
+  sample: ['...', '...']
+backup_path:
+  description: The full path to the backup file
+  returned: when backup is yes
+  type: str
+  sample: /playbooks/ansible/backup/vyos_config.2016-07-16@22:28:34
+filename:
+  description: The name of the backup file
+  returned: when backup is yes and filename is not specified in backup options
+  type: str
+  sample: vyos_config.2016-07-16@22:28:34
+shortname:
+  description: The full path to the backup file excluding the timestamp
+  returned: when backup is yes and filename is not specified in backup options
+  type: str
+  sample: /playbooks/ansible/backup/vyos_config
+date:
+  description: The date extracted from the backup file name
+  returned: when backup is yes
+  type: str
+  sample: "2016-07-16"
+time:
+  description: The time extracted from the backup file name
+  returned: when backup is yes
+  type: str
+  sample: "22:28:34"
 """
 
 RETURN = """
@@ -254,7 +319,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
 
 DEFAULT_COMMENT = "configured by vyos_config"
 
-PASSWORD_NEEDLE = re.compile(r"set system login user \S+ authentication (encrypted|plaintext)-password")
+PASSWORD_NEEDLE = re.compile(
+    r"set system login user \S+ authentication (encrypted|plaintext)-password",
+)
 
 
 def get_candidate(module):
@@ -340,9 +407,17 @@ def sanitize_config(config, result, allow):
 
 def run(module, result):
     # get the current active config from the node or passed in via
-    # the config param
-
-    config = module.params["config"] or get_config(module)
+    # the config param.
+    # replace mode requires the hierarchical/brace config form so the
+    # tree-aware diff in get_diff() can distinguish whole nodes from leaf
+    # values (see T6837) -- gated behind replace so every other caller
+    # keeps the existing flat "set" command format unchanged.
+    if module.params["config"]:
+        config = module.params["config"]
+    elif module.params["replace"]:
+        config = get_config(module, format="text")
+    else:
+        config = get_config(module)
 
     # create the candidate config object from the arguments
     candidate = get_candidate(module)
@@ -354,7 +429,7 @@ def run(module, result):
             candidate=candidate,
             running=config,
             diff_match=module.params["match"],
-            diff_replace=module.params["replace"]
+            diff_replace=module.params["replace"],
         )
     except ConnectionError as exc:
         module.fail_json(msg=to_text(exc, errors="surrogate_then_replace"))
@@ -396,14 +471,17 @@ def main():
         lines=dict(type="list", elements="str"),
         match=dict(default="line", choices=["line", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
-        confirm=dict(choices=["automatic", "manual", "none"], default='none'),
+        confirm=dict(choices=["automatic", "manual", "none"], default="none"),
         confirm_timeout=dict(type="int", default=10),
         config=dict(),
         backup=dict(type="bool", default=False),
         backup_options=dict(type="dict", options=backup_spec),
         save=dict(type="bool", default=False),
         replace=dict(type="bool", default=False),
-        allow_password_change=dict(default="plaintext", choices=["all", "encrypted", "plaintext", "none"])
+        allow_password_change=dict(
+            default="plaintext",
+            choices=["all", "encrypted", "plaintext", "none"],
+        ),
     )
 
     mutually_exclusive = [("lines", "src")]

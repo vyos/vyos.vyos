@@ -269,7 +269,26 @@ class Cliconf(CliconfBase):
             diff["config_diff"] = list(candidate_commands)
             return diff
 
-        running_commands = [str(c).replace("'", "") for c in running.splitlines()]
+        if diff_replace:
+            # `running` is hierarchical/brace text in replace mode (see the
+            # tree-aware block below). It must be flattened to full-path
+            # "set" commands the same way candidate is above -- naively
+            # splitting on newlines here would compare raw brace-syntax
+            # fragments (e.g. "    host-name router") against candidate's
+            # flat commands and never match, making every candidate line
+            # look incorrectly "missing".
+            running_obj = NetworkConfig(indent=4, contents=running)
+            running_lines = [c.line for c in running_obj.items]
+            running_flat = list()
+            for item in running_lines:
+                for index, entry in enumerate(running_flat):
+                    if item.startswith(entry):
+                        del running_flat[index]
+                        break
+                running_flat.append(item)
+            running_commands = ["set %s" % cmd.replace(" {", "") for cmd in running_flat]
+        else:
+            running_commands = [str(c).replace("'", "") for c in running.splitlines()]
 
         updates = list()
         visited = set()
@@ -306,17 +325,78 @@ class Cliconf(CliconfBase):
                             visited.add(line)
 
         if diff_replace:
-            for line in running.splitlines():
-                line = line.replace("'", '"')
+            # T6837: replace mode must operate on the config's actual tree
+            # structure, not flat line text. `running` is required to be in
+            # hierarchical/brace form here (get_config(..., format="text")),
+            # so that intermediate nodes (e.g. a firewall rule) are visible
+            # as distinct entities from their leaf values. Diffing on flat
+            # "set" lines alone cannot tell "a whole node was removed" apart
+            # from "a leaf's value changed", which is what caused both the
+            # orphaned-node bug and the redundant-delete-on-value-change bug.
+            if running.lstrip().startswith(("set ", "delete ")):
+                raise ValueError(
+                    "diff_replace requires 'running' in hierarchical config "
+                    "format, not flat set/delete commands",
+                )
 
-                match = False
-                for cline in candidate_commands:
-                    if match_cmd(line, cline):
-                        match = True
+            candidate_bodies = [_strip_cmd_prefix(c) for c in candidate_commands]
+            running_tree = NetworkConfig(indent=4, contents=running)
 
-                if not match:
-                    line = re.sub(r"^set\b", "delete", line, count=1)
-                    updates.append(line)
+            by_parent_running = {}
+            for item in running_tree.items:
+                if not item.children:
+                    by_parent_running.setdefault(
+                        (tuple(item.parents), leaf_key(item)),
+                        [],
+                    ).append(item)
+
+            visited_nodes = set()
+
+            for item in running_tree.items:
+                prefix = _node_prefix(item)
+
+                if item.children:
+                    # intermediate node: does an equivalent structural path
+                    # exist anywhere in candidate? If not, the whole subtree
+                    # is missing -- emit a single delete for the node itself
+                    # rather than descending into per-leaf deletes.
+                    if not _candidate_has_prefix(prefix, candidate_bodies):
+                        if not any(
+                            prefix == v or prefix.startswith(v + " ") for v in visited_nodes
+                        ):
+                            updates.append("delete %s" % prefix)
+                            visited_nodes.add(prefix)
+                    continue
+
+                # leaf node
+                if any(body == prefix for body in candidate_bodies):
+                    continue  # exact match, nothing to do
+
+                parent_prefix = " ".join(p.replace(" {", "") for p in item.parents)
+                if any(
+                    parent_prefix == v or parent_prefix.startswith(v + " ") for v in visited_nodes
+                ):
+                    continue  # already covered by an ancestor delete above
+
+                key = leaf_key(item)
+                siblings_running = by_parent_running.get((tuple(item.parents), key), [])
+                siblings_candidate_count = _candidate_key_count(
+                    parent_prefix,
+                    key,
+                    candidate_bodies,
+                )
+
+                if len(siblings_running) == 1 and siblings_candidate_count == 1:
+                    # unique scalar attribute: its value differs, but the
+                    # corresponding `set` command (already computed above
+                    # from candidate_commands) updates it in place --
+                    # no separate delete needed.
+                    continue
+
+                # list/tag-style attribute (multiple values under the same
+                # key), or a key genuinely absent from candidate: exact
+                # per-value delete semantics apply.
+                updates.append("delete %s" % prefix)
 
         diff["config_diff"] = list(updates)
         return diff
@@ -390,3 +470,52 @@ def match_cmd(cmd1, cmd2):
         return True
     else:
         return False
+
+
+def _strip_cmd_prefix(cmd):
+    """Remove a leading 'set '/'delete ' keyword, leaving the bare config path."""
+    if cmd.startswith("set "):
+        return cmd[4:]
+    if cmd.startswith("delete "):
+        return cmd[7:]
+    return cmd
+
+
+def leaf_key(item):
+    """The attribute keyword for a leaf: the first whitespace token of its
+    own text. This distinguishes different scalar attributes under the same
+    parent (e.g. 'host-name' vs 'domain-name') while still grouping repeated
+    list-style leaves that share a keyword (e.g. multiple 'name-server'
+    entries), since VyOS config text alone doesn't declare which is which."""
+    tokens = item.text.split()
+    return tokens[0] if tokens else item.text
+
+
+def _node_prefix(item):
+    """Full structural path for a config tree node: parents + own text,
+    brace markers stripped, space-joined. Unambiguous for intermediate
+    (non-leaf) nodes, since their .text is a pure identifier, never a
+    key+value pair -- only leaf text mixes a keyword with a value."""
+    parts = [p.replace(" {", "").strip() for p in item.parents]
+    parts.append(item.text.replace(" {", "").strip())
+    return " ".join(p for p in parts if p)
+
+
+def _candidate_has_prefix(prefix, candidate_bodies):
+    return any(body == prefix or body.startswith(prefix + " ") for body in candidate_bodies)
+
+
+def _candidate_key_count(parent_prefix, key, candidate_bodies):
+    """Count distinct candidate leaves under parent_prefix whose own first
+    token matches `key` -- used to tell a unique scalar attribute apart
+    from a list/tag-style attribute with multiple values."""
+    prefix_tok = ("%s " % parent_prefix) if parent_prefix else ""
+    prefix_len = len(prefix_tok)
+    matches = set()
+    for body in candidate_bodies:
+        if not body.startswith(prefix_tok):
+            continue
+        remainder = body[prefix_len:]
+        if remainder.split()[:1] == [key]:
+            matches.add(body)
+    return len(matches)
