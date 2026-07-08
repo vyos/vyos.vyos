@@ -265,44 +265,6 @@ time:
   type: str
   sample: "22:28:34"
 """
-
-RETURN = """
-commands:
-  description: The list of configuration commands sent to the device
-  returned: always
-  type: list
-  sample: ['...', '...']
-filtered:
-  description: The list of configuration commands removed to avoid a load failure
-  returned: always
-  type: list
-  sample: ['...', '...']
-backup_path:
-  description: The full path to the backup file
-  returned: when backup is yes
-  type: str
-  sample: /playbooks/ansible/backup/vyos_config.2016-07-16@22:28:34
-filename:
-  description: The name of the backup file
-  returned: when backup is yes and filename is not specified in backup options
-  type: str
-  sample: vyos_config.2016-07-16@22:28:34
-shortname:
-  description: The full path to the backup file excluding the timestamp
-  returned: when backup is yes and filename is not specified in backup options
-  type: str
-  sample: /playbooks/ansible/backup/vyos_config
-date:
-  description: The date extracted from the backup file name
-  returned: when backup is yes
-  type: str
-  sample: "2016-07-16"
-time:
-  description: The time extracted from the backup file name
-  returned: when backup is yes
-  type: str
-  sample: "22:28:34"
-"""
 import re
 
 from ansible.module_utils._text import to_text
@@ -407,6 +369,9 @@ def sanitize_config(config, result, allow):
 
 def run(module, result):
     # get the current active config from the node or passed in via
+    # the config param
+
+    # get the current active config from the node or passed in via
     # the config param.
     # replace mode requires the hierarchical/brace config form so the
     # tree-aware diff in get_diff() can distinguish whole nodes from leaf
@@ -431,7 +396,7 @@ def run(module, result):
             diff_match=module.params["match"],
             diff_replace=module.params["replace"],
         )
-    except ConnectionError as exc:
+    except (ConnectionError, ValueError) as exc:
         module.fail_json(msg=to_text(exc, errors="surrogate_then_replace"))
 
     commands = response.get("config_diff")

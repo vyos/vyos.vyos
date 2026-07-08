@@ -1,5 +1,5 @@
 ---
-- debug: msg="START cli/replace.yaml on connection={{ ansible_connection }}"
+- debug: msg="START cli/replaced.yaml on connection={{ ansible_connection }}"
 
 # SAFETY NOTE: `replace: true` currently has no path/scope parameter (see
 # T6837). Any candidate that omits a line present on the device will queue
@@ -71,4 +71,4 @@
       - delete firewall ipv4 name example
     match: none
 
-- debug: msg="END cli/replace.yaml on connection={{ ansible_connection }}"
+- debug: msg="END cli/replaced.yaml on connection={{ ansible_connection }}"

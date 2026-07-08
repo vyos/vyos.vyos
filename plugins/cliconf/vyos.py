@@ -369,7 +369,7 @@ class Cliconf(CliconfBase):
                     continue
 
                 # leaf node
-                if any(body == prefix for body in candidate_bodies):
+                if any(match_cmd(body, prefix) for body in candidate_bodies):
                     continue  # exact match, nothing to do
 
                 parent_prefix = " ".join(p.replace(" {", "") for p in item.parents)
