@@ -36,6 +36,27 @@ Parameters
             <tr>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>allow_password_change</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>all</li>
+                                    <li><div style="color: blue"><b>plaintext</b>&nbsp;&larr;</div></li>
+                                    <li>encrypted</li>
+                                    <li>none</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>The <code>allow_password_change</code> argument specifies whether any configuration lines which would change a user&#x27;s password should be filtered out.  By default only plaintext password changes are allowed and any encrypted-password keys are filtered out. In order to allow all password updates, both plaintext and encrypted, set this argument to <code>all</code>.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>backup</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -200,6 +221,25 @@ Parameters
                 </td>
                 <td>
                         <div>The <code>match</code> argument controls the method used to match against the current active configuration.  By default, the desired config is matched against the active config and the deltas are loaded.  If the <code>match</code> argument is set to <code>none</code> the active configuration is ignored and the configuration is always loaded.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>replace</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>The <code>replace</code> argument will replace the entire config, instead of merging it with the base config that is already present. This only works in <code>match</code> is in <code>line</code> mode. For backwards compatibility default is <code>false</code>.</div>
                 </td>
             </tr>
             <tr>

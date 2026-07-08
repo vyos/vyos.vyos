@@ -123,7 +123,13 @@ class Cliconf(CliconfBase):
         return out
 
     def edit_config(
-        self, candidate=None, commit=True, replace=None, diff=False, comment=None, confirm=None
+        self,
+        candidate=None,
+        commit=True,
+        replace=None,
+        diff=False,
+        comment=None,
+        confirm=None,
     ):
         resp = {}
         operations = self.get_device_operations()
@@ -198,7 +204,7 @@ class Cliconf(CliconfBase):
             if comment:
                 command = 'commit-confirm {0} comment "{1}"'.format(confirm, comment)
             else:
-                command = 'commit-confirm {0}'.format(confirm)
+                command = "commit-confirm {0}".format(confirm)
             self.send_command(command, "Proceed?", "\n")
         else:
             if comment:
@@ -296,7 +302,7 @@ class Cliconf(CliconfBase):
 
         if diff_replace:
             for line in running.splitlines():
-                line = line.replace("'", "\"")
+                line = line.replace("'", '"')
 
                 match = False
                 for cline in candidate_commands:
@@ -370,6 +376,7 @@ class Cliconf(CliconfBase):
         """
         if self._connection.connected:
             self._update_cli_prompt_context(config_context="#", exit_command="exit discard")
+
 
 def match_cmd(cmd1, cmd2):
     cmd1 = re.sub("['\"]", "", cmd1)
