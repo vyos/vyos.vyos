@@ -1,87 +1,34 @@
 ---
-- debug: msg="START cli/replace.yaml on connection={{ ansible_connection }}"
+- debug: msg="START cli/comment.yaml on connection={{ ansible_connection }}"
 
-# SAFETY NOTE: `replace: true` currently has no path/scope parameter (see
-# T6837). Any candidate that omits a line present on the device will queue
-# a delete for it -- including management interfaces, SSH, and login users.
-# Every step below therefore operates on a FULL backup of the running
-# config, edited in place, never a partial/minimal candidate. Do not
-# shortcut this pattern until replace supports scoping.
-
-- name: setup baseline firewall rules
+- name: setup
   vyos.vyos.vyos_config:
-    lines:
-      - set firewall ipv4 name example rule 100 action drop
-      - set firewall ipv4 name example rule 200 action accept
+    lines: set system host-name {{ inventory_hostname_short }}
     match: none
 
-- name: backup full running config before mutating it
-  register: backup_result
-  vyos.vyos.vyos_config:
-    backup: true
-    backup_options:
-      dir_path: "{{ role_path }}/tests/output"
-      filename: "replace_baseline_{{ inventory_hostname_short }}.cfg"
-
-- name: read the backup content on the controller
-  delegate_to: localhost
-  connection: local
-  ansible.builtin.slurp:
-    src: "{{ backup_result.backup_path }}"
-  register: baseline_slurp
-
-- name: build edited candidate (drop only rule 200's line, keep everything else verbatim)
-  delegate_to: localhost
-  ansible.builtin.set_fact:
-    edited_candidate: >-
-      {{ (baseline_slurp.content | b64decode).splitlines()
-         | reject('search', "firewall ipv4 name example rule 200")
-         | list | join('\n') }}
-
-- name: write edited candidate to a temp file
-  delegate_to: localhost
-  connection: local
-  ansible.builtin.copy:
-    content: "{{ edited_candidate }}\n"
-    dest: "{{ role_path }}/tests/output/replace_candidate_{{ inventory_hostname_short }}.cfg"
-
-- name: sanity check candidate still contains SSH/management essentials
-  delegate_to: localhost
-  ansible.builtin.assert:
-    that:
-      # adjust these greps to whatever this lab image's real baseline contains --
-      # the point is: FAIL LOUDLY here rather than push a candidate missing
-      # management config, instead of discovering it via a dropped SSH session.
-      - "'service ssh' in edited_candidate or 'set service ssh' in edited_candidate"
-      - "'interfaces ethernet eth0' in edited_candidate"
-
-- name: replace with edited full config (rule 200 removed, everything else intact)
+- name: configure using comment
   register: result
   vyos.vyos.vyos_config:
-    src: "{{ role_path }}/tests/output/replace_candidate_{{ inventory_hostname_short }}.cfg"
-    replace: true
+    lines: set system host-name foo
+    comment: this is a test
 
 - assert:
     that:
       - result.changed == true
-      - '''delete firewall ipv4 name example rule 200'' in result.commands or
-        ''delete firewall ipv4 name example rule 200 action "accept"'' in result.commands'
-      # the real regression check for T6837: no leftover empty rule 200 stub
-      - result.commands | select('match', '^set firewall ipv4 name example rule 200') | list | length == 0
+      - "'set system host-name foo' in result.commands"
 
-- name: verify connectivity survived (would hang/fail above already if not, but confirm explicitly)
-  vyos.vyos.vyos_facts:
-    gather_subset: min
-  register: facts_check
+- name: collect system commits
+  register: result
+  vyos.vyos.vyos_command:
+    commands: show system commit
 
 - assert:
     that:
-      - facts_check is succeeded
+      - "'this is a test' in result.stdout_lines[0][1]"
 
-- name: teardown firewall rule
+- name: teardown
   vyos.vyos.vyos_config:
-    lines:
-      - delete firewall ipv4 name example
+    lines: set system host-name {{ inventory_hostname_short }}
     match: none
 
-- debug: msg="END cli/replace.yaml on connection={{ ansible_connection }}"
+- debug: msg="END cli/comment.yaml on connection={{ ansible_connection }}"

@@ -241,7 +241,7 @@ Parameters
                 <td>
                         <div>The <code>replace</code> argument replaces the device&#x27;s entire configuration with the supplied candidate, rather than merging the candidate into the existing configuration.</div>
                         <div><code>replace</code> requires the candidate (<code>lines</code>/<code>src</code>) to represent the complete desired configuration. Any configuration present on the device but not included in the candidate will be deleted, including management interfaces, SSH, and login users if they are omitted. Always provide a full configuration when using <code>replace</code>, never a partial one.</div>
-                        <div><code>replace</code> has no effect when <code>match</code> is set to <code>none</code>; the module will not warn in this case.</div>
+                        <div><code>replace</code> is only supported when <code>match</code> is set to <code>line</code> (the default). Combining <code>replace</code> with <code>match</code> set to <code>none</code> results in an error.</div>
                         <div>For backwards compatibility, the default is <code>false</code>.</div>
                 </td>
             </tr>

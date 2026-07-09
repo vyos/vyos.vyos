@@ -156,8 +156,9 @@ options:
       management interfaces, SSH, and login users if they are omitted.
       Always provide a full configuration when using C(replace), never a
       partial one.
-    - C(replace) has no effect when C(match) is set to C(none); the module
-      will not warn in this case.
+    - C(replace) is only supported when C(match) is set to C(line) (the
+      default). Combining C(replace) with C(match) set to C(none) results
+      in an error.
     - For backwards compatibility, the default is C(false).
     type: bool
     default: no

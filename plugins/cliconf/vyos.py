@@ -244,6 +244,14 @@ class Cliconf(CliconfBase):
         if path:
             raise ValueError("'path' in diff is not supported")
 
+        if diff_replace and diff_match == "none":
+            # Module documentation states replace only works when match is
+            # 'line'. Without this check, diff_replace silently has no
+            # effect under match='none' (that branch returns before the
+            # diff_replace logic below ever runs) -- failing loudly here
+            # is safer than letting a user believe replace ran.
+            raise ValueError("'replace' is not supported when 'match' is set to 'none'")
+
         set_format = candidate.startswith("set") or candidate.startswith("delete")
         candidate_obj = NetworkConfig(indent=4, contents=candidate)
 
@@ -414,7 +422,7 @@ class Cliconf(CliconfBase):
 
     def get_device_operations(self):
         return {
-            "supports_diff_replace": False,
+            "supports_diff_replace": True,
             "supports_commit": True,
             "supports_rollback": False,
             "supports_defaults": False,
@@ -424,14 +432,14 @@ class Cliconf(CliconfBase):
             "supports_diff_match": True,
             "supports_diff_ignore_lines": False,
             "supports_generate_diff": False,
-            "supports_replace": False,
+            "supports_replace": True,
         }
 
     def get_option_values(self):
         return {
             "format": ["text", "set"],
             "diff_match": ["line", "none"],
-            "diff_replace": [],
+            "diff_replace": [True, False],
             "output": [],
         }
 
