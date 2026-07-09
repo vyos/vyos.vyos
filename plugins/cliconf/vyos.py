@@ -301,6 +301,14 @@ class Cliconf(CliconfBase):
         updates = list()
         visited = set()
 
+        if diff_replace:
+            # Precompute once instead of scanning + regex-substituting
+            # running_commands for every candidate line below. This turns
+            # the set-line match from O(N*M) with two regex subs per
+            # comparison into O(N+M), while preserving the same
+            # quote-insensitive equality match_cmd() provides.
+            running_commands_normalized = {re.sub("['\"]", "", rline) for rline in running_commands}
+
         for line in candidate_commands:
             item = str(line).replace("'", "")
 
@@ -314,7 +322,7 @@ class Cliconf(CliconfBase):
                     # being compared here. Gating this behind diff_replace
                     # preserves the original exact-match idempotency check
                     # for all existing (non-replace) callers.
-                    match = any(match_cmd(item, rline) for rline in running_commands)
+                    match = re.sub("['\"]", "", item) in running_commands_normalized
                 else:
                     match = item in running_commands
                 if not match:
