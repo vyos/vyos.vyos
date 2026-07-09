@@ -395,7 +395,19 @@ class Cliconf(CliconfBase):
                 # never one a `set` has already superseded.
                 replace_deletes.append("delete %s" % prefix)
 
-        diff["config_diff"] = replace_deletes + list(updates) if diff_replace else list(updates)
+        if diff_replace:
+            # A candidate may include an explicit "delete ..." line for a
+            # node that the structure-aware pass above also independently
+            # determined is absent. Without deduplication both paths emit
+            # the same delete, and a repeated delete for an already-deleted
+            # path can fail commit idempotency on strict devices.
+            existing_deletes = {
+                str(c).strip() for c in updates if str(c).strip().startswith("delete ")
+            }
+            replace_deletes = [c for c in replace_deletes if c not in existing_deletes]
+            diff["config_diff"] = replace_deletes + list(updates)
+        else:
+            diff["config_diff"] = list(updates)
         return diff
 
     def run_commands(self, commands=None, check_rc=True):
@@ -470,7 +482,7 @@ def match_cmd(cmd1, cmd2):
 
 
 def _strip_cmd_prefix(cmd):
-    """Remove a leading 'set '/'delete ' keyword, leaving the bare config path."""
+    """Remove a leading 'set ' / 'delete ' keyword, leaving the bare config path."""
     if cmd.startswith("set "):
         return cmd[4:]
     if cmd.startswith("delete "):

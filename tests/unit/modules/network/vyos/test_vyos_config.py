@@ -313,6 +313,7 @@ class TestVyosConfigModule(TestVyosModule):
         commands = diff["config_diff"]
         # must delete the whole rule node, not just its leaf
         assert "delete firewall ipv4 name example rule 200" in commands
+        assert commands.count("delete firewall ipv4 name example rule 200") == 1
         assert not any(
             "action" in c and "rule 200" in c for c in commands if c.startswith("delete")
         )
