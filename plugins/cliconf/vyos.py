@@ -446,7 +446,7 @@ class Cliconf(CliconfBase):
             "supports_diff_match": True,
             "supports_diff_ignore_lines": False,
             "supports_generate_diff": False,
-            "supports_replace": True,
+            "supports_replace": False,
         }
 
     def get_option_values(self):
@@ -491,10 +491,16 @@ def _strip_cmd_prefix(cmd):
 
 
 def _node_prefix(item):
-    """Full structural path for a config tree node: parents + own text,
-    brace markers stripped, space-joined. Unambiguous for intermediate
-    (non-leaf) nodes, since their .text is a pure identifier, never a
-    key+value pair -- only leaf text mixes a keyword with a value."""
+    """Return the full structural path for a config tree node (parents + own
+    text). Brace markers are stripped and parts are space-joined. Note that
+    intermediate nodes may include key/value-like tokens (for example
+    ``rule 200`` or ``ethernet eth1``) -- do not assume item.text is a bare
+    identifier. What makes intermediate-node identity unambiguous for this
+    diff isn't that the text is a pure keyword, but that the full parents +
+    text path is a complete, structural node identifier with no separate
+    "value" component to guess at, unlike a leaf's own text which mixes an
+    attribute keyword with a value.
+    """
     parts = [p.replace(" {", "").strip() for p in item.parents]
     parts.append(item.text.replace(" {", "").strip())
     return " ".join(p for p in parts if p)

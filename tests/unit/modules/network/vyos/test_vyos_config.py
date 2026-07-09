@@ -378,3 +378,21 @@ class TestVyosConfigModule(TestVyosModule):
 
         # must not have wrongly deleted the entire firewall subtree
         assert "delete firewall" not in commands
+
+    def test_vyos_config_replace_requests_hierarchical_config(self):
+        """replace=True must request get_config(module, format='text') so
+        get_diff() receives hierarchical running config, not flat set-lines.
+
+        Regression guard for the module-side wiring: all the other
+        replace-mode tests call Cliconf.get_diff() directly and never
+        exercise run()'s own get_config() call, so a future change to that
+        call site (e.g. dropping the format="text" argument) would go
+        completely undetected by the rest of the suite.
+        """
+        lines = ["set system host-name foo"]
+        set_module_args(dict(lines=lines, replace=True))
+        self.conn.get_diff = MagicMock(return_value={"config_diff": lines})
+
+        self.execute_module(changed=True, commands=lines)
+
+        assert self.get_config.call_args.kwargs.get("format") == "text"
