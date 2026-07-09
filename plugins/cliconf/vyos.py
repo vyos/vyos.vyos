@@ -358,6 +358,7 @@ class Cliconf(CliconfBase):
             candidate_bodies = [
                 _strip_cmd_prefix(c) for c in candidate_commands if c.startswith("set ")
             ]
+            candidate_bodies_normalized = {re.sub("['\"]", "", b) for b in candidate_bodies}
             running_tree = NetworkConfig(indent=4, contents=running)
 
             replace_deletes = list()
@@ -380,7 +381,7 @@ class Cliconf(CliconfBase):
                     continue
 
                 # leaf node
-                if any(match_cmd(body, prefix) for body in candidate_bodies):
+                if re.sub("['\"]", "", prefix) in candidate_bodies_normalized:
                     continue  # exact match, nothing to do
 
                 parent_prefix = " ".join(p.replace(" {", "") for p in item.parents)
