@@ -316,3 +316,64 @@ class TestVyosConfigModule(TestVyosModule):
         assert not any(
             "action" in c and "rule 200" in c for c in commands if c.startswith("delete")
         )
+
+    def test_vyos_config_replace_explicit_delete_line_not_treated_as_present(self):
+        """replace=True: an explicit delete line for a node must not fool the
+        tree-diff into thinking that node is still 'present' in the desired
+        state.
+
+        Regression guard for a real bug: candidate_bodies previously included
+        stripped bodies from delete lines too, so a candidate containing
+        `delete firewall ipv4 name example rule 200` (while otherwise valid,
+        e.g. with other unrelated set lines making up the rest of a full
+        candidate) made _candidate_has_prefix() think that path "existed",
+        suppressing the clean whole-node delete and instead deleting rule
+        200's children one at a time -- the same empty-stub orphan pattern
+        this whole diff_replace rewrite exists to fix, just reached via an
+        explicit delete line instead of omission.
+        """
+        running_hierarchical = "\n".join(
+            [
+                "firewall {",
+                "    ipv4 {",
+                "        name example {",
+                "            rule 100 {",
+                "                action drop",
+                "            }",
+                "            rule 200 {",
+                "                action accept",
+                "                description example",
+                "            }",
+                "        }",
+                "    }",
+                "}",
+                "system {",
+                "    host-name router",
+                "}",
+            ],
+        )
+        candidate = "\n".join(
+            [
+                "set firewall ipv4 name example rule 100 action drop",
+                "delete firewall ipv4 name example rule 200",
+                "set system host-name router",
+            ],
+        )
+        diff = self.cliconf_obj.get_diff(candidate, running_hierarchical, diff_replace=True)
+        commands = diff["config_diff"]
+
+        # the whole node must be deleted as a single unit, not per-leaf
+        assert "delete firewall ipv4 name example rule 200" in commands
+        assert not any(
+            "action" in c and "rule 200" in c for c in commands if c.startswith("delete")
+        )
+        assert not any(
+            "description" in c and "rule 200" in c for c in commands if c.startswith("delete")
+        )
+
+        # unrelated paths present in the full candidate must be untouched
+        assert not any("rule 100" in c and c.startswith("delete") for c in commands)
+        assert not any("host-name" in c and c.startswith("delete") for c in commands)
+
+        # must not have wrongly deleted the entire firewall subtree
+        assert "delete firewall" not in commands

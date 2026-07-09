@@ -347,7 +347,9 @@ class Cliconf(CliconfBase):
                     "format, not flat set/delete commands",
                 )
 
-            candidate_bodies = [_strip_cmd_prefix(c) for c in candidate_commands]
+            candidate_bodies = [
+                _strip_cmd_prefix(c) for c in candidate_commands if c.startswith("set ")
+            ]
             running_tree = NetworkConfig(indent=4, contents=running)
 
             replace_deletes = list()
