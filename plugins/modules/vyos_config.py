@@ -370,9 +370,6 @@ def sanitize_config(config, result, allow):
 
 def run(module, result):
     # get the current active config from the node or passed in via
-    # the config param
-
-    # get the current active config from the node or passed in via
     # the config param.
     # replace mode requires the hierarchical/brace config form so the
     # tree-aware diff in get_diff() can distinguish whole nodes from leaf
