@@ -180,11 +180,18 @@ class TestVyosConfigModule(TestVyosModule):
         self.run_commands.assert_not_called()
 
     def test_vyos_config_replace_leaf_change(self):
-        """replace=True with a full candidate: only the actually-changed leaf should be touched.
+        """replace=True with a full candidate: a changed scalar value gets an
+        explicit delete-then-set pair.
 
-        `running` must be hierarchical/brace text in replace mode (matching what
-        get_config(module, format="text") returns) -- the tree-aware diff needs
-        real node structure to distinguish leaf value changes from node removal.
+        Earlier design suppressed the delete here based on observed
+        cardinality (1 running value, 1 candidate value -> assumed unique
+        scalar). That heuristic was unsound: it can't distinguish a
+        genuinely scalar attribute from a list-style attribute that merely
+        has one value right now (see test_vyos_config_replace_list_value_change
+        below for the failure case this caused). Deleting unconditionally,
+        ordered before the corresponding set, is correct for both cases and
+        carries no risk of the delete clobbering the just-applied set, since
+        the delete always runs first, while its target value is still active.
         """
         running_hierarchical = "\n".join(
             [
@@ -201,7 +208,25 @@ class TestVyosConfigModule(TestVyosModule):
             ],
         )
         diff = self.cliconf_obj.get_diff(candidate, running_hierarchical, diff_replace=True)
-        assert diff["config_diff"] == ["set system host-name 'foo'"]
+        assert diff["config_diff"] == [
+            "delete system host-name router",
+            "set system host-name 'foo'",
+        ]
+
+    def test_vyos_config_replace_list_value_change(self):
+        """replace=True: a list-style attribute with one value changing to a
+        different single value must not retain the old value alongside the
+        new one. Regression guard for a real bug: a cardinality-based
+        heuristic previously mistook this for a scalar attribute update and
+        suppressed the delete, leaving both values configured.
+        """
+        running_hierarchical = "system {\n    name-server 8.8.8.8\n}\n"
+        candidate = "set system name-server 8.8.4.4"
+        diff = self.cliconf_obj.get_diff(candidate, running_hierarchical, diff_replace=True)
+        assert diff["config_diff"] == [
+            "delete system name-server 8.8.8.8",
+            "set system name-server 8.8.4.4",
+        ]
 
     def test_vyos_config_replace_removes_missing_leaf(self):
         """replace=True: a leaf present on router but absent from candidate gets deleted."""

@@ -342,14 +342,7 @@ class Cliconf(CliconfBase):
             candidate_bodies = [_strip_cmd_prefix(c) for c in candidate_commands]
             running_tree = NetworkConfig(indent=4, contents=running)
 
-            by_parent_running = {}
-            for item in running_tree.items:
-                if not item.children:
-                    by_parent_running.setdefault(
-                        (tuple(item.parents), leaf_key(item)),
-                        [],
-                    ).append(item)
-
+            replace_deletes = list()
             visited_nodes = set()
 
             for item in running_tree.items:
@@ -364,7 +357,7 @@ class Cliconf(CliconfBase):
                         if not any(
                             prefix == v or prefix.startswith(v + " ") for v in visited_nodes
                         ):
-                            updates.append("delete %s" % prefix)
+                            replace_deletes.append("delete %s" % prefix)
                             visited_nodes.add(prefix)
                     continue
 
@@ -378,27 +371,21 @@ class Cliconf(CliconfBase):
                 ):
                     continue  # already covered by an ancestor delete above
 
-                key = leaf_key(item)
-                siblings_running = by_parent_running.get((tuple(item.parents), key), [])
-                siblings_candidate_count = _candidate_key_count(
-                    parent_prefix,
-                    key,
-                    candidate_bodies,
-                )
+                # Leaf is either genuinely absent from candidate, or its
+                # value changed. Delete it unconditionally -- there is no
+                # reliable way to tell a coincidentally-single-valued
+                # list-style attribute (e.g. a single 'name-server' entry)
+                # apart from a genuinely scalar one (e.g. 'host-name') from
+                # config text alone; treating them differently by observed
+                # cardinality can leave stale values behind for list-style
+                # attributes (see T6837 review discussion). This is made
+                # safe by ordering: replace_deletes are placed before the
+                # candidate-driven `set` commands below, so each delete
+                # always targets the value that is still genuinely active,
+                # never one a `set` has already superseded.
+                replace_deletes.append("delete %s" % prefix)
 
-                if len(siblings_running) == 1 and siblings_candidate_count == 1:
-                    # unique scalar attribute: its value differs, but the
-                    # corresponding `set` command (already computed above
-                    # from candidate_commands) updates it in place --
-                    # no separate delete needed.
-                    continue
-
-                # list/tag-style attribute (multiple values under the same
-                # key), or a key genuinely absent from candidate: exact
-                # per-value delete semantics apply.
-                updates.append("delete %s" % prefix)
-
-        diff["config_diff"] = list(updates)
+        diff["config_diff"] = replace_deletes + list(updates) if diff_replace else list(updates)
         return diff
 
     def run_commands(self, commands=None, check_rc=True):
@@ -481,16 +468,6 @@ def _strip_cmd_prefix(cmd):
     return cmd
 
 
-def leaf_key(item):
-    """The attribute keyword for a leaf: the first whitespace token of its
-    own text. This distinguishes different scalar attributes under the same
-    parent (e.g. 'host-name' vs 'domain-name') while still grouping repeated
-    list-style leaves that share a keyword (e.g. multiple 'name-server'
-    entries), since VyOS config text alone doesn't declare which is which."""
-    tokens = item.text.split()
-    return tokens[0] if tokens else item.text
-
-
 def _node_prefix(item):
     """Full structural path for a config tree node: parents + own text,
     brace markers stripped, space-joined. Unambiguous for intermediate
@@ -503,19 +480,3 @@ def _node_prefix(item):
 
 def _candidate_has_prefix(prefix, candidate_bodies):
     return any(body == prefix or body.startswith(prefix + " ") for body in candidate_bodies)
-
-
-def _candidate_key_count(parent_prefix, key, candidate_bodies):
-    """Count distinct candidate leaves under parent_prefix whose own first
-    token matches `key` -- used to tell a unique scalar attribute apart
-    from a list/tag-style attribute with multiple values."""
-    prefix_tok = ("%s " % parent_prefix) if parent_prefix else ""
-    prefix_len = len(prefix_tok)
-    matches = set()
-    for body in candidate_bodies:
-        if not body.startswith(prefix_tok):
-            continue
-        remainder = body[prefix_len:]
-        if remainder.split()[:1] == [key]:
-            matches.add(body)
-    return len(matches)
