@@ -285,6 +285,11 @@ class Cliconf(CliconfBase):
             # fragments (e.g. "    host-name router") against candidate's
             # flat commands and never match, making every candidate line
             # look incorrectly "missing".
+            if running.lstrip().startswith(("set ", "delete ")):
+                raise ValueError(
+                    "diff_replace requires 'running' in hierarchical config "
+                    "format, not flat set/delete commands",
+                )
             running_obj = NetworkConfig(indent=4, contents=running)
             running_lines = [c.line for c in running_obj.items]
             running_flat = list()
@@ -349,11 +354,6 @@ class Cliconf(CliconfBase):
             # "set" lines alone cannot tell "a whole node was removed" apart
             # from "a leaf's value changed", which is what caused both the
             # orphaned-node bug and the redundant-delete-on-value-change bug.
-            if running.lstrip().startswith(("set ", "delete ")):
-                raise ValueError(
-                    "diff_replace requires 'running' in hierarchical config "
-                    "format, not flat set/delete commands",
-                )
 
             candidate_bodies = [
                 _strip_cmd_prefix(c) for c in candidate_commands if c.startswith("set ")
