@@ -306,12 +306,11 @@ class Cliconf(CliconfBase):
         updates = list()
         visited = set()
 
-        if diff_replace:
             # Precompute once instead of scanning + regex-substituting
             # running_commands for every candidate line below. This turns
             # the set-line match from O(N*M) with two regex subs per
-            # comparison into O(N+M), while preserving the same
-            # quote-insensitive equality match_cmd() provides.
+            # comparison into O(N+M), while preserving quote-insensitive
+            # equality by stripping both single and double quotes.
             running_commands_normalized = {re.sub("['\"]", "", rline) for rline in running_commands}
 
         for line in candidate_commands:
