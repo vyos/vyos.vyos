@@ -306,6 +306,7 @@ class Cliconf(CliconfBase):
         updates = list()
         visited = set()
 
+        if diff_replace:
             # Precompute once instead of scanning + regex-substituting
             # running_commands for every candidate line below. This turns
             # the set-line match from O(N*M) with two regex subs per
