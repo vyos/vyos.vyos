@@ -13,15 +13,21 @@ The vyos vpn_ipsec fact class
 It is in this file the configuration is collected from the device
 for a given resource, parsed, and the facts tree is populated
 based on the configuration.
+
+Follows the established per-key conversion convention used by
+vyos_logging_global/vyos_ha (explicit process_facts() naming each
+name-keyed dict that needs converting to a list), matching the config.py
+convention for this module, rather than a generic argspec-driven walker.
 """
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import (
     utils,
 )
-from ansible_collections.vyos.vyos_test.plugins.module_utils.network.vyos.argspec.vpn_ipsec.vpn_ipsec import (
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.vpn_ipsec.vpn_ipsec import (
     Vpn_ipsecArgs,
 )
-from ansible_collections.vyos.vyos_test.plugins.module_utils.network.vyos.rm_templates.vpn_ipsec import (
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.vpn_ipsec import (
     Vpn_ipsecTemplate,
 )
 
@@ -38,14 +44,13 @@ class Vpn_ipsecFacts(object):
 
     def process_facts(self, objFinal):
         """Convert the name-keyed dicts produced by the parser into the
-        lists the argspec expects (config: type dict, with ike_group/
-        esp_group/profile/authentication.psk each: type list, elements
-        dict). Mirrors logging_global's hosts/files/users conversion.
+        lists the argspec expects. Each key handled explicitly, matching
+        the vyos_logging_global/vyos_ha convention.
         """
         if not objFinal:
             return objFinal
 
-        for key in ("ike_group", "esp_group", "profile"):
+        for key in ("ike_group", "esp_group"):
             if key in objFinal:
                 items = list(objFinal[key].values())
                 for item in items:
@@ -55,6 +60,12 @@ class Vpn_ipsecFacts(object):
                             key=lambda p: int(p["proposal_id"]),
                         )
                 objFinal[key] = sorted(items, key=lambda item: item["name"])
+
+        if "profile" in objFinal:
+            objFinal["profile"] = sorted(
+                objFinal["profile"].values(),
+                key=lambda item: item["name"],
+            )
 
         if "authentication" in objFinal:
             auth = objFinal["authentication"]

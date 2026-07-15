@@ -1,3 +1,19 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# Copyright 2026 Red Hat
+# GNU General Public License v3.0+
+# (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
+
+"""
+The module file for vyos_vpn_ipsec
+"""
+
+from __future__ import absolute_import, division, print_function
+
+
+__metaclass__ = type
+
+DOCUMENTATION = """
 module: vyos_vpn_ipsec
 short_description: Manages global IPsec (ike-group, esp-group, profile, authentication, options) attributes of VyOS network devices.
 description: This module manages global VPN IPsec configuration on VyOS devices — IKE groups, ESP groups, PSK/PPK authentication, IPsec profiles, and global options. Site-to-site peers and IKEv2 remote-access connections are handled by separate modules.
@@ -66,31 +82,7 @@ options:
               dh_group:
                 description: Diffie-Hellman group.
                 type: int
-                choices:
-                  [
-                    1,
-                    2,
-                    5,
-                    14,
-                    15,
-                    16,
-                    17,
-                    18,
-                    19,
-                    20,
-                    21,
-                    22,
-                    23,
-                    24,
-                    25,
-                    26,
-                    27,
-                    28,
-                    29,
-                    30,
-                    31,
-                    32,
-                  ]
+                choices: [1, 2, 5, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
               encryption:
                 description: Encryption algorithm.
                 type: str
@@ -153,35 +145,11 @@ options:
               hash:
                 description: Hash algorithm.
                 type: str
-                choices:
-                  [
-                    md5,
-                    md5_128,
-                    sha1,
-                    sha1_160,
-                    sha256,
-                    sha256_96,
-                    sha384,
-                    sha512,
-                    aesxcbc,
-                    aescmac,
-                    aes128gmac,
-                    aes192gmac,
-                    aes256gmac,
-                  ]
+                choices: [md5, md5_128, sha1, sha1_160, sha256, sha256_96, sha384, sha512, aesxcbc, aescmac, aes128gmac, aes192gmac, aes256gmac]
               prf:
                 description: Pseudo-Random Function.
                 type: str
-                choices:
-                  [
-                    prfmd5,
-                    prfsha1,
-                    prfaesxcbc,
-                    prfaescmac,
-                    prfsha256,
-                    prfsha384,
-                    prfsha512,
-                  ]
+                choices: [prfmd5, prfsha1, prfaesxcbc, prfaescmac, prfsha256, prfsha384, prfsha512]
       esp_group:
         description: List of ESP groups.
         type: list
@@ -308,22 +276,7 @@ options:
               hash:
                 description: Hash algorithm.
                 type: str
-                choices:
-                  [
-                    md5,
-                    md5_128,
-                    sha1,
-                    sha1_160,
-                    sha256,
-                    sha256_96,
-                    sha384,
-                    sha512,
-                    aesxcbc,
-                    aescmac,
-                    aes128gmac,
-                    aes192gmac,
-                    aes256gmac,
-                  ]
+                choices: [md5, md5_128, sha1, sha1_160, sha256, sha256_96, sha384, sha512, aesxcbc, aescmac, aes128gmac, aes192gmac, aes256gmac]
       authentication:
         description: Global pre-shared-key and post-quantum pre-shared-key definitions.
         type: dict
@@ -422,27 +375,7 @@ options:
             description: Per-subsystem logging levels to enable.
             type: list
             elements: str
-            choices:
-              [
-                dmn,
-                mgr,
-                ike,
-                chd,
-                job,
-                cfg,
-                knl,
-                net,
-                asn,
-                enc,
-                lib,
-                esp,
-                tls,
-                tnc,
-                imc,
-                imv,
-                pts,
-                any,
-              ]
+            choices: [dmn, mgr, ike, chd, job, cfg, knl, net, asn, enc, lib, esp, tls, tnc, imc, imv, pts, any]
       options:
         type: dict
         suboptions:
@@ -478,3 +411,179 @@ options:
     type: str
     choices: [merged, replaced, overridden, deleted, gathered, rendered, parsed]
     default: merged
+"""
+
+EXAMPLES = """
+# -------------------
+# Using merged
+# -------------------
+
+# Before state:
+# -------------
+# vyos@vyos:~$ show configuration commands | match "vpn ipsec"
+# (empty)
+
+# Task
+# -------------
+# - name: Merge provided configuration with device configuration
+#   vyos.vyos.vyos_vpn_ipsec:
+#     config:
+#       esp_group:
+#         - name: ESP-TEST
+#           proposal:
+#             - proposal_id: 1
+#               encryption: aes256
+#               hash: sha256
+#       ike_group:
+#         - name: IKE-TEST
+#           key_exchange: ikev2
+#           proposal:
+#             - proposal_id: 1
+#               encryption: aes256
+#               hash: sha256
+#               dh_group: 14
+#     state: merged
+
+# Task output:
+# -------------
+# "commands": [
+#     "set vpn ipsec esp-group ESP-TEST",
+#     "set vpn ipsec esp-group ESP-TEST proposal 1",
+#     "set vpn ipsec esp-group ESP-TEST proposal 1 encryption aes256",
+#     "set vpn ipsec esp-group ESP-TEST proposal 1 hash sha256",
+#     "set vpn ipsec ike-group IKE-TEST",
+#     "set vpn ipsec ike-group IKE-TEST key-exchange ikev2",
+#     "set vpn ipsec ike-group IKE-TEST proposal 1",
+#     "set vpn ipsec ike-group IKE-TEST proposal 1 encryption aes256",
+#     "set vpn ipsec ike-group IKE-TEST proposal 1 hash sha256",
+#     "set vpn ipsec ike-group IKE-TEST proposal 1 dh-group 14"
+# ]
+
+# -------------------
+# Using gathered
+# -------------------
+
+# Task
+# -------------
+# - name: Gather current vpn_ipsec configuration
+#   vyos.vyos.vyos_vpn_ipsec:
+#     state: gathered
+
+# -------------------
+# Using deleted
+# -------------------
+
+# Task
+# -------------
+# - name: Remove all vpn_ipsec configuration
+#   vyos.vyos.vyos_vpn_ipsec:
+#     state: deleted
+
+# -------------------
+# Using rendered
+# -------------------
+
+# Task
+# -------------
+# - name: Render configuration without touching the device
+#   vyos.vyos.vyos_vpn_ipsec:
+#     config:
+#       esp_group:
+#         - name: ESP-TEST
+#           proposal:
+#             - proposal_id: 1
+#               encryption: aes256
+#               hash: sha256
+#     state: rendered
+
+# -------------------
+# Using parsed
+# -------------------
+
+# Task
+# -------------
+# - name: Parse raw config text into structured facts
+#   vyos.vyos.vyos_vpn_ipsec:
+#     running_config: "{{ lookup('file', './vpn_ipsec.cfg') }}"
+#     state: parsed
+"""
+
+RETURN = """
+before:
+  description: The configuration prior to the module execution.
+  returned: when I(state) is C(merged), C(replaced), C(overridden) or C(deleted)
+  type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+after:
+  description: The resulting configuration after module execution.
+  returned: when changed
+  type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+commands:
+  description: The set of commands pushed to the remote device.
+  returned: when I(state) is C(merged), C(replaced), C(overridden) or C(deleted)
+  type: list
+  sample:
+    - set vpn ipsec esp-group ESP-TEST proposal 1 encryption aes256
+    - set vpn ipsec ike-group IKE-TEST key-exchange ikev2
+rendered:
+  description: The provided configuration in the task rendered in device-native format (offline).
+  returned: when I(state) is C(rendered)
+  type: list
+  sample:
+    - set vpn ipsec esp-group ESP-TEST proposal 1 encryption aes256
+gathered:
+  description: Facts about the network resource gathered from the remote device as structured data.
+  returned: when I(state) is C(gathered)
+  type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+parsed:
+  description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
+  returned: when I(state) is C(parsed)
+  type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
+"""
+
+from ansible.module_utils.basic import AnsibleModule
+
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.vpn_ipsec.vpn_ipsec import (
+    Vpn_ipsecArgs,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.vpn_ipsec.vpn_ipsec import (
+    Vpn_ipsec,
+)
+
+
+def main():
+    """
+    Main entry point for module execution
+
+    :returns: the result form module invocation
+    """
+    module = AnsibleModule(
+        argument_spec=Vpn_ipsecArgs.argument_spec,
+        mutually_exclusive=[["config", "running_config"]],
+        required_if=[
+            ["state", "merged", ["config"]],
+            ["state", "replaced", ["config"]],
+            ["state", "overridden", ["config"]],
+            ["state", "rendered", ["config"]],
+            ["state", "parsed", ["running_config"]],
+        ],
+        supports_check_mode=True,
+    )
+
+    result = Vpn_ipsec(module).execute_module()
+    module.exit_json(**result)
+
+
+if __name__ == "__main__":
+    main()
