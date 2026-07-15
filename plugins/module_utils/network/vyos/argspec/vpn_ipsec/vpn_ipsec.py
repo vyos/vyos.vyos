@@ -68,18 +68,10 @@ class Vpn_ipsecArgs(object):  # pylint: disable=R0903
                             "elements": "dict",
                             "options": {
                                 "proposal_id": {"type": "int"},
-                                "dh_group": {
-                                    "type": "int",
-                                },
-                                "encryption": {
-                                    "type": "str",
-                                },
-                                "hash": {
-                                    "type": "str",
-                                },
-                                "prf": {
-                                    "type": "str",
-                                },
+                                "dh_group": {"type": "int"},
+                                "encryption": {"type": "str"},
+                                "hash": {"type": "str"},
+                                "prf": {"type": "str"},
                             },
                         },
                     },
@@ -98,20 +90,14 @@ class Vpn_ipsecArgs(object):  # pylint: disable=R0903
                             "type": "str",
                             "choices": ["tunnel", "transport"],
                         },
-                        "pfs": {
-                            "type": "str",
-                        },
+                        "pfs": {"type": "str"},
                         "proposal": {
                             "type": "list",
                             "elements": "dict",
                             "options": {
                                 "proposal_id": {"type": "int"},
-                                "encryption": {
-                                    "type": "str",
-                                },
-                                "hash": {
-                                    "type": "str",
-                                },
+                                "encryption": {"type": "str"},
+                                "hash": {"type": "str"},
                             },
                         },
                     },
@@ -163,10 +149,7 @@ class Vpn_ipsecArgs(object):  # pylint: disable=R0903
                                     "type": "str",
                                     "choices": ["pre-shared-secret"],
                                 },
-                                "pre_shared_secret": {
-                                    "type": "str",
-                                    "no_log": True,
-                                },
+                                "pre_shared_secret": {"type": "str", "no_log": True},
                             },
                         },
                         "bind_tunnel": {"type": "list", "elements": "str"},
@@ -179,7 +162,7 @@ class Vpn_ipsecArgs(object):  # pylint: disable=R0903
                 "log": {
                     "type": "dict",
                     "options": {
-                        "level": {"type": "int", "choices": [0, 1, 2]},
+                        "level": {"type": "int"},
                         "subsystem": {
                             "type": "list",
                             "elements": "str",

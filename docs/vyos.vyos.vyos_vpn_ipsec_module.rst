@@ -17,7 +17,7 @@ Version added: 6.2.0
 
 Synopsis
 --------
-- This module manages global VPN IPsec configuration on VyOS devices — IKE groups, ESP groups, PSK/PPK authentication, IPsec profiles, and global options. Site-to-site peers and IKEv2 remote-access connections are handled by separate modules.
+- This module manages global VPN IPsec configuration on VyOS devices -- IKE groups, ESP groups, PSK/PPK authentication, IPsec profiles, and global options. Site-to-site peers and IKEv2 remote-access connections are handled by separate modules.
 
 
 
@@ -461,35 +461,9 @@ Parameters
                     </div>
                 </td>
                 <td>
-                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>enable</li>
-                                    <li>disable</li>
-                                    <li>dh-group1</li>
-                                    <li>dh-group2</li>
-                                    <li>dh-group5</li>
-                                    <li>dh-group14</li>
-                                    <li>dh-group15</li>
-                                    <li>dh-group16</li>
-                                    <li>dh-group17</li>
-                                    <li>dh-group18</li>
-                                    <li>dh-group19</li>
-                                    <li>dh-group20</li>
-                                    <li>dh-group21</li>
-                                    <li>dh-group22</li>
-                                    <li>dh-group23</li>
-                                    <li>dh-group24</li>
-                                    <li>dh-group25</li>
-                                    <li>dh-group26</li>
-                                    <li>dh-group27</li>
-                                    <li>dh-group28</li>
-                                    <li>dh-group29</li>
-                                    <li>dh-group30</li>
-                                    <li>dh-group31</li>
-                                    <li>dh-group32</li>
-                        </ul>
                 </td>
                 <td>
-                        <div>ESP Perfect Forward Secrecy.</div>
+                        <div>ESP Perfect Forward Secrecy. See VyOS/strongSwan documentation for the full set of valid values -- validated device-side, not enumerated here since the set is version-dependent.</div>
                 </td>
             </tr>
             <tr>
@@ -523,66 +497,9 @@ Parameters
                     </div>
                 </td>
                 <td>
-                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>null</li>
-                                    <li>aes128</li>
-                                    <li>aes192</li>
-                                    <li>aes256</li>
-                                    <li>aes128ctr</li>
-                                    <li>aes192ctr</li>
-                                    <li>aes256ctr</li>
-                                    <li>aes128ccm64</li>
-                                    <li>aes192ccm64</li>
-                                    <li>aes256ccm64</li>
-                                    <li>aes128ccm96</li>
-                                    <li>aes192ccm96</li>
-                                    <li>aes256ccm96</li>
-                                    <li>aes128ccm128</li>
-                                    <li>aes192ccm128</li>
-                                    <li>aes256ccm128</li>
-                                    <li>aes128gcm64</li>
-                                    <li>aes192gcm64</li>
-                                    <li>aes256gcm64</li>
-                                    <li>aes128gcm96</li>
-                                    <li>aes192gcm96</li>
-                                    <li>aes256gcm96</li>
-                                    <li>aes128gcm128</li>
-                                    <li>aes192gcm128</li>
-                                    <li>aes256gcm128</li>
-                                    <li>aes128gmac</li>
-                                    <li>aes192gmac</li>
-                                    <li>aes256gmac</li>
-                                    <li>3des</li>
-                                    <li>blowfish128</li>
-                                    <li>blowfish192</li>
-                                    <li>blowfish256</li>
-                                    <li>camellia128</li>
-                                    <li>camellia192</li>
-                                    <li>camellia256</li>
-                                    <li>camellia128ctr</li>
-                                    <li>camellia192ctr</li>
-                                    <li>camellia256ctr</li>
-                                    <li>camellia128ccm64</li>
-                                    <li>camellia192ccm64</li>
-                                    <li>camellia256ccm64</li>
-                                    <li>camellia128ccm96</li>
-                                    <li>camellia192ccm96</li>
-                                    <li>camellia256ccm96</li>
-                                    <li>camellia128ccm128</li>
-                                    <li>camellia192ccm128</li>
-                                    <li>camellia256ccm128</li>
-                                    <li>serpent128</li>
-                                    <li>serpent192</li>
-                                    <li>serpent256</li>
-                                    <li>twofish128</li>
-                                    <li>twofish192</li>
-                                    <li>twofish256</li>
-                                    <li>cast128</li>
-                                    <li>chacha20poly1305</li>
-                        </ul>
                 </td>
                 <td>
-                        <div>Encryption algorithm.</div>
+                        <div>Encryption algorithm. See VyOS/strongSwan documentation for the full set of valid values -- validated device-side, not enumerated here since the set is version-dependent.</div>
                 </td>
             </tr>
             <tr>
@@ -598,24 +515,9 @@ Parameters
                     </div>
                 </td>
                 <td>
-                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>md5</li>
-                                    <li>md5_128</li>
-                                    <li>sha1</li>
-                                    <li>sha1_160</li>
-                                    <li>sha256</li>
-                                    <li>sha256_96</li>
-                                    <li>sha384</li>
-                                    <li>sha512</li>
-                                    <li>aesxcbc</li>
-                                    <li>aescmac</li>
-                                    <li>aes128gmac</li>
-                                    <li>aes192gmac</li>
-                                    <li>aes256gmac</li>
-                        </ul>
                 </td>
                 <td>
-                        <div>Hash algorithm.</div>
+                        <div>Hash algorithm. See VyOS/strongSwan documentation for the full set of valid values -- validated device-side.</div>
                 </td>
             </tr>
             <tr>
@@ -904,33 +806,9 @@ Parameters
                     </div>
                 </td>
                 <td>
-                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>1</li>
-                                    <li>2</li>
-                                    <li>5</li>
-                                    <li>14</li>
-                                    <li>15</li>
-                                    <li>16</li>
-                                    <li>17</li>
-                                    <li>18</li>
-                                    <li>19</li>
-                                    <li>20</li>
-                                    <li>21</li>
-                                    <li>22</li>
-                                    <li>23</li>
-                                    <li>24</li>
-                                    <li>25</li>
-                                    <li>26</li>
-                                    <li>27</li>
-                                    <li>28</li>
-                                    <li>29</li>
-                                    <li>30</li>
-                                    <li>31</li>
-                                    <li>32</li>
-                        </ul>
                 </td>
                 <td>
-                        <div>Diffie-Hellman group.</div>
+                        <div>Diffie-Hellman group. See VyOS/strongSwan documentation for the full set of valid values -- validated device-side, not enumerated here since the set is version-dependent.</div>
                 </td>
             </tr>
             <tr>
@@ -946,66 +824,9 @@ Parameters
                     </div>
                 </td>
                 <td>
-                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>null</li>
-                                    <li>aes128</li>
-                                    <li>aes192</li>
-                                    <li>aes256</li>
-                                    <li>aes128ctr</li>
-                                    <li>aes192ctr</li>
-                                    <li>aes256ctr</li>
-                                    <li>aes128ccm64</li>
-                                    <li>aes192ccm64</li>
-                                    <li>aes256ccm64</li>
-                                    <li>aes128ccm96</li>
-                                    <li>aes192ccm96</li>
-                                    <li>aes256ccm96</li>
-                                    <li>aes128ccm128</li>
-                                    <li>aes192ccm128</li>
-                                    <li>aes256ccm128</li>
-                                    <li>aes128gcm64</li>
-                                    <li>aes192gcm64</li>
-                                    <li>aes256gcm64</li>
-                                    <li>aes128gcm96</li>
-                                    <li>aes192gcm96</li>
-                                    <li>aes256gcm96</li>
-                                    <li>aes128gcm128</li>
-                                    <li>aes192gcm128</li>
-                                    <li>aes256gcm128</li>
-                                    <li>aes128gmac</li>
-                                    <li>aes192gmac</li>
-                                    <li>aes256gmac</li>
-                                    <li>3des</li>
-                                    <li>blowfish128</li>
-                                    <li>blowfish192</li>
-                                    <li>blowfish256</li>
-                                    <li>camellia128</li>
-                                    <li>camellia192</li>
-                                    <li>camellia256</li>
-                                    <li>camellia128ctr</li>
-                                    <li>camellia192ctr</li>
-                                    <li>camellia256ctr</li>
-                                    <li>camellia128ccm64</li>
-                                    <li>camellia192ccm64</li>
-                                    <li>camellia256ccm64</li>
-                                    <li>camellia128ccm96</li>
-                                    <li>camellia192ccm96</li>
-                                    <li>camellia256ccm96</li>
-                                    <li>camellia128ccm128</li>
-                                    <li>camellia192ccm128</li>
-                                    <li>camellia256ccm128</li>
-                                    <li>serpent128</li>
-                                    <li>serpent192</li>
-                                    <li>serpent256</li>
-                                    <li>twofish128</li>
-                                    <li>twofish192</li>
-                                    <li>twofish256</li>
-                                    <li>cast128</li>
-                                    <li>chacha20poly1305</li>
-                        </ul>
                 </td>
                 <td>
-                        <div>Encryption algorithm.</div>
+                        <div>Encryption algorithm. See VyOS/strongSwan documentation for the full set of valid values -- validated device-side, not enumerated here since the set is version-dependent.</div>
                 </td>
             </tr>
             <tr>
@@ -1021,24 +842,9 @@ Parameters
                     </div>
                 </td>
                 <td>
-                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>md5</li>
-                                    <li>md5_128</li>
-                                    <li>sha1</li>
-                                    <li>sha1_160</li>
-                                    <li>sha256</li>
-                                    <li>sha256_96</li>
-                                    <li>sha384</li>
-                                    <li>sha512</li>
-                                    <li>aesxcbc</li>
-                                    <li>aescmac</li>
-                                    <li>aes128gmac</li>
-                                    <li>aes192gmac</li>
-                                    <li>aes256gmac</li>
-                        </ul>
                 </td>
                 <td>
-                        <div>Hash algorithm.</div>
+                        <div>Hash algorithm. See VyOS/strongSwan documentation for the full set of valid values -- validated device-side.</div>
                 </td>
             </tr>
             <tr>
@@ -1054,18 +860,9 @@ Parameters
                     </div>
                 </td>
                 <td>
-                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>prfmd5</li>
-                                    <li>prfsha1</li>
-                                    <li>prfaesxcbc</li>
-                                    <li>prfaescmac</li>
-                                    <li>prfsha256</li>
-                                    <li>prfsha384</li>
-                                    <li>prfsha512</li>
-                        </ul>
                 </td>
                 <td>
-                        <div>Pseudo-Random Function.</div>
+                        <div>Pseudo-Random Function. See VyOS/strongSwan documentation for the full set of valid values -- validated device-side.</div>
                 </td>
             </tr>
             <tr>
@@ -1118,6 +915,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>IPsec logging settings.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1132,11 +930,6 @@ Parameters
                     </div>
                 </td>
                 <td>
-                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>0</li>
-                                    <li>1</li>
-                                    <li>2</li>
-                        </ul>
                 </td>
                 <td>
                         <div>Global IPsec logging level.</div>
@@ -1155,26 +948,6 @@ Parameters
                     </div>
                 </td>
                 <td>
-                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li>dmn</li>
-                                    <li>mgr</li>
-                                    <li>ike</li>
-                                    <li>chd</li>
-                                    <li>job</li>
-                                    <li>cfg</li>
-                                    <li>knl</li>
-                                    <li>net</li>
-                                    <li>asn</li>
-                                    <li>enc</li>
-                                    <li>lib</li>
-                                    <li>esp</li>
-                                    <li>tls</li>
-                                    <li>tnc</li>
-                                    <li>imc</li>
-                                    <li>imv</li>
-                                    <li>pts</li>
-                                    <li>any</li>
-                        </ul>
                 </td>
                 <td>
                         <div>Per-subsystem logging levels to enable.</div>
@@ -1194,6 +967,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Global IPsec options.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1269,6 +1043,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>IPsec retransmission settings.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1379,6 +1154,7 @@ Parameters
                 <td>
                 </td>
                 <td>
+                        <div>Authentication settings for this profile.</div>
                 </td>
             </tr>
                                 <tr>
@@ -1514,6 +1290,24 @@ Parameters
             </tr>
 
 
+            <tr>
+                <td colspan="4">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>running_config</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>This option is used only with state <em>parsed</em>.</div>
+                        <div>The value of this option should be the output received from the VyOS device by executing the command <b>show configuration commands | match &quot;vpn ipsec&quot;</b>.</div>
+                        <div>The states <em>replaced</em> and <em>overridden</em> have identical behaviour for this module with respect to named collections (ike_group, esp_group, profile, authentication), but differ in scope -- see the module description for detail.</div>
+                        <div>The state <em>parsed</em> reads the configuration from the <code>running_config</code> option and transforms it into Ansible structured data as per the resource module&#x27;s argspec, returned in the <em>parsed</em> key within the result.</div>
+                </td>
+            </tr>
             <tr>
                 <td colspan="4">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
@@ -1776,4 +1570,4 @@ Status
 Authors
 ~~~~~~~
 
-- Evgeny (@omnom62)
+- Evgeny Molotkov (@omnom62)

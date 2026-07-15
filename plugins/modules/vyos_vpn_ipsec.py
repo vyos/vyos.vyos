@@ -16,9 +16,12 @@ __metaclass__ = type
 DOCUMENTATION = """
 module: vyos_vpn_ipsec
 short_description: Manages global IPsec (ike-group, esp-group, profile, authentication, options) attributes of VyOS network devices.
-description: This module manages global VPN IPsec configuration on VyOS devices — IKE groups, ESP groups, PSK/PPK authentication, IPsec profiles, and global options. Site-to-site peers and IKEv2 remote-access connections are handled by separate modules.
+description: This module manages global VPN IPsec configuration on VyOS devices
+  -- IKE groups, ESP groups, PSK/PPK authentication, IPsec profiles, and global
+  options. Site-to-site peers and IKEv2 remote-access connections are handled by
+  separate modules.
 version_added: 6.2.0
-author: Evgeny (@omnom62)
+author: Evgeny Molotkov (@omnom62)
 notes:
   - Tested against VyOS 1.4 and 1.5.
   - "Source of truth for field types/choices: device node.def templates under /opt/vyatta/share/vyatta-cfg/templates/vpn/ipsec/."
@@ -80,76 +83,23 @@ options:
                 description: The proposal identifier.
                 type: int
               dh_group:
-                description: Diffie-Hellman group.
+                description: Diffie-Hellman group. See VyOS/strongSwan documentation for the
+                  full set of valid values -- validated device-side, not enumerated here since
+                  the set is version-dependent.
                 type: int
-                choices: [1, 2, 5, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32]
               encryption:
-                description: Encryption algorithm.
+                description: Encryption algorithm. See VyOS/strongSwan documentation for the
+                  full set of valid values -- validated device-side, not enumerated here since
+                  the set is version-dependent.
                 type: str
-                choices:
-                  - "null"
-                  - aes128
-                  - aes192
-                  - aes256
-                  - aes128ctr
-                  - aes192ctr
-                  - aes256ctr
-                  - aes128ccm64
-                  - aes192ccm64
-                  - aes256ccm64
-                  - aes128ccm96
-                  - aes192ccm96
-                  - aes256ccm96
-                  - aes128ccm128
-                  - aes192ccm128
-                  - aes256ccm128
-                  - aes128gcm64
-                  - aes192gcm64
-                  - aes256gcm64
-                  - aes128gcm96
-                  - aes192gcm96
-                  - aes256gcm96
-                  - aes128gcm128
-                  - aes192gcm128
-                  - aes256gcm128
-                  - aes128gmac
-                  - aes192gmac
-                  - aes256gmac
-                  - 3des
-                  - blowfish128
-                  - blowfish192
-                  - blowfish256
-                  - camellia128
-                  - camellia192
-                  - camellia256
-                  - camellia128ctr
-                  - camellia192ctr
-                  - camellia256ctr
-                  - camellia128ccm64
-                  - camellia192ccm64
-                  - camellia256ccm64
-                  - camellia128ccm96
-                  - camellia192ccm96
-                  - camellia256ccm96
-                  - camellia128ccm128
-                  - camellia192ccm128
-                  - camellia256ccm128
-                  - serpent128
-                  - serpent192
-                  - serpent256
-                  - twofish128
-                  - twofish192
-                  - twofish256
-                  - cast128
-                  - chacha20poly1305
               hash:
-                description: Hash algorithm.
+                description: Hash algorithm. See VyOS/strongSwan documentation for the
+                  full set of valid values -- validated device-side.
                 type: str
-                choices: [md5, md5_128, sha1, sha1_160, sha256, sha256_96, sha384, sha512, aesxcbc, aescmac, aes128gmac, aes192gmac, aes256gmac]
               prf:
-                description: Pseudo-Random Function.
+                description: Pseudo-Random Function. See VyOS/strongSwan documentation for the
+                  full set of valid values -- validated device-side.
                 type: str
-                choices: [prfmd5, prfsha1, prfaesxcbc, prfaescmac, prfsha256, prfsha384, prfsha512]
       esp_group:
         description: List of ESP groups.
         type: list
@@ -179,33 +129,10 @@ options:
             type: str
             choices: [tunnel, transport]
           pfs:
-            description: ESP Perfect Forward Secrecy.
+            description: ESP Perfect Forward Secrecy. See VyOS/strongSwan documentation for the
+              full set of valid values -- validated device-side, not enumerated here since
+              the set is version-dependent.
             type: str
-            choices:
-              - enable
-              - disable
-              - dh-group1
-              - dh-group2
-              - dh-group5
-              - dh-group14
-              - dh-group15
-              - dh-group16
-              - dh-group17
-              - dh-group18
-              - dh-group19
-              - dh-group20
-              - dh-group21
-              - dh-group22
-              - dh-group23
-              - dh-group24
-              - dh-group25
-              - dh-group26
-              - dh-group27
-              - dh-group28
-              - dh-group29
-              - dh-group30
-              - dh-group31
-              - dh-group32
           proposal:
             description: List of ESP proposals.
             type: list
@@ -215,68 +142,14 @@ options:
                 description: The proposal identifier.
                 type: int
               encryption:
-                description: Encryption algorithm.
+                description: Encryption algorithm. See VyOS/strongSwan documentation for the
+                  full set of valid values -- validated device-side, not enumerated here since
+                  the set is version-dependent.
                 type: str
-                choices:
-                  - "null"
-                  - aes128
-                  - aes192
-                  - aes256
-                  - aes128ctr
-                  - aes192ctr
-                  - aes256ctr
-                  - aes128ccm64
-                  - aes192ccm64
-                  - aes256ccm64
-                  - aes128ccm96
-                  - aes192ccm96
-                  - aes256ccm96
-                  - aes128ccm128
-                  - aes192ccm128
-                  - aes256ccm128
-                  - aes128gcm64
-                  - aes192gcm64
-                  - aes256gcm64
-                  - aes128gcm96
-                  - aes192gcm96
-                  - aes256gcm96
-                  - aes128gcm128
-                  - aes192gcm128
-                  - aes256gcm128
-                  - aes128gmac
-                  - aes192gmac
-                  - aes256gmac
-                  - 3des
-                  - blowfish128
-                  - blowfish192
-                  - blowfish256
-                  - camellia128
-                  - camellia192
-                  - camellia256
-                  - camellia128ctr
-                  - camellia192ctr
-                  - camellia256ctr
-                  - camellia128ccm64
-                  - camellia192ccm64
-                  - camellia256ccm64
-                  - camellia128ccm96
-                  - camellia192ccm96
-                  - camellia256ccm96
-                  - camellia128ccm128
-                  - camellia192ccm128
-                  - camellia256ccm128
-                  - serpent128
-                  - serpent192
-                  - serpent256
-                  - twofish128
-                  - twofish192
-                  - twofish256
-                  - cast128
-                  - chacha20poly1305
               hash:
-                description: Hash algorithm.
+                description: Hash algorithm. See VyOS/strongSwan documentation for the
+                  full set of valid values -- validated device-side.
                 type: str
-                choices: [md5, md5_128, sha1, sha1_160, sha256, sha256_96, sha384, sha512, aesxcbc, aescmac, aes128gmac, aes192gmac, aes256gmac]
       authentication:
         description: Global pre-shared-key and post-quantum pre-shared-key definitions.
         type: dict
@@ -301,7 +174,6 @@ options:
               secret:
                 description: IKE pre-shared secret key.
                 type: str
-                no_log: true
               secret_type:
                 description: Secret encoding type.
                 type: str
@@ -322,7 +194,6 @@ options:
               secret:
                 description: Post-quantum pre-shared secret key.
                 type: str
-                no_log: true
               secret_type:
                 description: Secret encoding type.
                 type: str
@@ -337,6 +208,7 @@ options:
             type: str
             required: true
           authentication:
+            description: Authentication settings for this profile.
             type: dict
             suboptions:
               mode:
@@ -346,7 +218,6 @@ options:
               pre_shared_secret:
                 description: Pre-shared secret key.
                 type: str
-                no_log: true
           bind_tunnel:
             description: Tunnel interface(s) associated with this profile.
             type: list
@@ -365,18 +236,18 @@ options:
         type: list
         elements: str
       log:
+        description: IPsec logging settings.
         type: dict
         suboptions:
           level:
             description: Global IPsec logging level.
             type: int
-            choices: [0, 1, 2]
           subsystem:
             description: Per-subsystem logging levels to enable.
             type: list
             elements: str
-            choices: [dmn, mgr, ike, chd, job, cfg, knl, net, asn, enc, lib, esp, tls, tnc, imc, imv, pts, any]
       options:
+        description: Global IPsec options.
         type: dict
         suboptions:
           disable_route_autoinstall:
@@ -389,6 +260,7 @@ options:
             description: Single interface for IPsec options scope (distinct from top-level interface list).
             type: str
           retransmission:
+            description: IPsec retransmission settings.
             type: dict
             suboptions:
               attempts:
@@ -406,6 +278,18 @@ options:
       disable_uniqreqids:
         description: Disable requirement for unique IDs in the Security Database.
         type: bool
+  running_config:
+    description:
+      - This option is used only with state I(parsed).
+      - The value of this option should be the output received from the VyOS device by
+        executing the command B(show configuration commands | match "vpn ipsec").
+      - The states I(replaced) and I(overridden) have identical behaviour for this module
+        with respect to named collections (ike_group, esp_group, profile, authentication),
+        but differ in scope -- see the module description for detail.
+      - The state I(parsed) reads the configuration from the C(running_config) option and
+        transforms it into Ansible structured data as per the resource module's argspec,
+        returned in the I(parsed) key within the result.
+    type: str
   state:
     description: The state the configuration should be left in.
     type: str
