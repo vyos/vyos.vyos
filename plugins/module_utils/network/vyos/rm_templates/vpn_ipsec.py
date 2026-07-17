@@ -368,7 +368,7 @@ class Vpn_ipsecTemplate(NetworkTemplate):
                 \sauthentication\smode\s'?(?P<mode>[\w-]+)'?
                 \s*$""", re.VERBOSE,
             ),
-            "setval": "vpn ipsec profile {{ name }} authentication mode {{ authentication.mode }}",
+            "setval": "vpn ipsec profile {{ name }} authentication mode {{ mode }}",
             "result": {
                 "profile": {
                     "{{ profile }}": {
@@ -388,7 +388,7 @@ class Vpn_ipsecTemplate(NetworkTemplate):
                 \sauthentication\spre-shared-secret\s'?(?P<pre_shared_secret>[^']+)'?
                 \s*$""", re.VERBOSE,
             ),
-            "setval": "vpn ipsec profile {{ name }} authentication pre-shared-secret '{{ authentication.pre_shared_secret }}'",
+            "setval": "vpn ipsec profile {{ name }} authentication pre-shared-secret '{{ pre_shared_secret }}'",
             "result": {
                 "profile": {
                     "{{ profile }}": {
