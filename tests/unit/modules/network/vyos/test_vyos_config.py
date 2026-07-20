@@ -279,3 +279,65 @@ class TestVyosConfigModule(TestVyosModule):
                     self.running_config,
                     diff_match="smart",
                 )
+
+    def test_vyos_config_match_smart_requires_running(self):
+        """
+        diff_match=smart with running=None must raise a clear ValueError
+        instead of falling through to an AttributeError on
+        running.splitlines().
+        """
+        with self.assertRaises(ValueError):
+            self.cliconf_obj.get_diff(
+                "set system host-name foo",
+                None,
+                diff_match="smart",
+            )
+
+    def test_vyos_config_match_smart_ignores_comment_lines(self):
+        """
+        Comment lines mixed in with 'set' lines must be stripped out rather
+        than causing the whole candidate to be rejected as not starting
+        with 'set'.
+        """
+        candidate = "\n".join(
+            [
+                "set interfaces ethernet eth0 address '1.2.3.4/24'",
+                "# a note about this interface",
+                "set interfaces ethernet eth0 description 'test string'",
+            ],
+        )
+        running = "set interfaces ethernet eth0 address '1.2.3.4/24'"
+        response = self.cliconf_obj.get_diff(
+            candidate,
+            running,
+            diff_match="smart",
+        )
+        self.assertIn(
+            "set interfaces ethernet eth0 description 'test string'",
+            response["config_diff"],
+        )
+
+    def test_sanitize_config_filters_password_delete_lines(self):
+        """
+        sanitize_config()/PASSWORD_NEEDLE must filter 'delete ... password'
+        lines the same way it filters 'set ... password' lines, since
+        match=smart can generate deletes for password config the candidate
+        omits. Without this, allow_password_change=none/plaintext/encrypted
+        would fail to catch a password-affecting delete.
+        """
+        result = {}
+        commands = [
+            "set system host-name foo",
+            "delete system login user admin authentication encrypted-password",
+            "set system login user admin authentication plaintext-password 'secret'",
+        ]
+        vyos_config.sanitize_config(commands, result, allow="none")
+        self.assertIn(
+            "delete system login user admin authentication encrypted-password",
+            result["filtered"],
+        )
+        self.assertIn(
+            "set system login user admin authentication plaintext-password 'secret'",
+            result["filtered"],
+        )
+        self.assertNotIn("set system host-name foo", result["filtered"])

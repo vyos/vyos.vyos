@@ -272,8 +272,16 @@ class Cliconf(CliconfBase):
         if diff_match == "none":
             diff["config_diff"] = list(candidate_commands)
             return diff
-        if diff_match == "smart" and running is not None:
-            smart_candidate_lines = [line for line in candidate_commands if line.strip()]
+        if diff_match == "smart":
+            if running is None:
+                raise ValueError(
+                    "diff_match=smart requires a running configuration to diff against",
+                )
+            smart_candidate_lines = [
+                line
+                for line in candidate_commands
+                if line.strip() and not line.lstrip().startswith("#")
+            ]
             if not smart_candidate_lines:
                 raise ValueError(
                     "diff_match=smart received an empty candidate (after stripping blank/"

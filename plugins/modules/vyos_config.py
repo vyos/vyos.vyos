@@ -257,7 +257,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
 DEFAULT_COMMENT = "configured by vyos_config"
 
 PASSWORD_NEEDLE = re.compile(
-    r"set system login user \S+ authentication (encrypted|plaintext)-password",
+    r"(?:set|delete) system login user \S+ authentication (encrypted|plaintext)-password",
 )
 
 
