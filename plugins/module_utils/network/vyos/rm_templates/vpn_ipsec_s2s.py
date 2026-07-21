@@ -421,7 +421,17 @@ class Vpn_ipsec_s2sTemplate(NetworkTemplate):
             "setval": "vpn ipsec site-to-site peer {{ name }} tunnel {{ tunnel_id }} disable",
             "result": {
                 "site_to_site": {
-                    "peer": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"{{ tunnel_id }}": {"tunnel_id": "{{ tunnel_id }}", "disable": True}}}},
+                    "peer": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "tunnel": {
+                                "{{ tunnel_id }}": {
+                                    "tunnel_id": "{{ tunnel_id }}",
+                                    "disable": True,
+                                },
+                            },
+                        },
+                    },
                 },
             },
         },
@@ -436,7 +446,17 @@ class Vpn_ipsec_s2sTemplate(NetworkTemplate):
             "setval": "vpn ipsec site-to-site peer {{ name }} tunnel {{ tunnel_id }} esp-group '{{ esp_group }}'",
             "result": {
                 "site_to_site": {
-                    "peer": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"{{ tunnel_id }}": {"tunnel_id": "{{ tunnel_id }}", "esp_group": "{{ esp_group }}"}}}},
+                    "peer": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "tunnel": {
+                                "{{ tunnel_id }}": {
+                                    "tunnel_id": "{{ tunnel_id }}",
+                                    "esp_group": "{{ esp_group }}",
+                                },
+                            },
+                        },
+                    },
                 },
             },
         },
@@ -451,7 +471,17 @@ class Vpn_ipsec_s2sTemplate(NetworkTemplate):
             "setval": "vpn ipsec site-to-site peer {{ name }} tunnel {{ tunnel_id }} protocol '{{ protocol }}'",
             "result": {
                 "site_to_site": {
-                    "peer": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"{{ tunnel_id }}": {"tunnel_id": "{{ tunnel_id }}", "protocol": "{{ protocol }}"}}}},
+                    "peer": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "tunnel": {
+                                "{{ tunnel_id }}": {
+                                    "tunnel_id": "{{ tunnel_id }}",
+                                    "protocol": "{{ protocol }}",
+                                },
+                            },
+                        },
+                    },
                 },
             },
         },
@@ -466,7 +496,17 @@ class Vpn_ipsec_s2sTemplate(NetworkTemplate):
             "setval": "vpn ipsec site-to-site peer {{ name }} tunnel {{ tunnel_id }} priority '{{ priority }}'",
             "result": {
                 "site_to_site": {
-                    "peer": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"{{ tunnel_id }}": {"tunnel_id": "{{ tunnel_id }}", "priority": "{{ priority }}"}}}},
+                    "peer": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "tunnel": {
+                                "{{ tunnel_id }}": {
+                                    "tunnel_id": "{{ tunnel_id }}",
+                                    "priority": "{{ priority }}",
+                                },
+                            },
+                        },
+                    },
                 },
             },
         },
@@ -481,7 +521,17 @@ class Vpn_ipsec_s2sTemplate(NetworkTemplate):
             "setval": "vpn ipsec site-to-site peer {{ name }} tunnel {{ tunnel_id }} local port '{{ port }}'",
             "result": {
                 "site_to_site": {
-                    "peer": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"{{ tunnel_id }}": {"tunnel_id": "{{ tunnel_id }}", "local": {"port": "{{ port }}"}}}}},
+                    "peer": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "tunnel": {
+                                "{{ tunnel_id }}": {
+                                    "tunnel_id": "{{ tunnel_id }}",
+                                    "local": {"port": "{{ port }}"},
+                                },
+                            },
+                        },
+                    },
                 },
             },
         },
@@ -516,7 +566,17 @@ class Vpn_ipsec_s2sTemplate(NetworkTemplate):
             "setval": "vpn ipsec site-to-site peer {{ name }} tunnel {{ tunnel_id }} remote port '{{ port }}'",
             "result": {
                 "site_to_site": {
-                    "peer": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"{{ tunnel_id }}": {"tunnel_id": "{{ tunnel_id }}", "remote": {"port": "{{ port }}"}}}}},
+                    "peer": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "tunnel": {
+                                "{{ tunnel_id }}": {
+                                    "tunnel_id": "{{ tunnel_id }}",
+                                    "remote": {"port": "{{ port }}"},
+                                },
+                            },
+                        },
+                    },
                 },
             },
         },

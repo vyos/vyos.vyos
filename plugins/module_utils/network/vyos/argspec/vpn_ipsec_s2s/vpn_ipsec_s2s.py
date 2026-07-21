@@ -55,9 +55,9 @@ class Vpn_ipsec_s2sArgs(object):  # pylint: disable=R0903
                                 "rsa": {
                                     "type": "dict",
                                     "options": {
-                                        "local_key": {"type": "str"},
+                                        "local_key": {"type": "str", "no_log": True},
                                         "passphrase": {"type": "str", "no_log": True},
-                                        "remote_key": {"type": "str"},
+                                        "remote_key": {"type": "str", "no_log": True},
                                     },
                                 },
                                 "x509": {
