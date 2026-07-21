@@ -9,33 +9,10 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 """
-The Vpn_ipsec parser templates file. This contains
+The VPN IPSEC parser templates file. This contains
 a list of parser definitions and associated functions that
 facilitates both facts gathering and native command generation for
 the given network resource.
-
-NOTE: this is a first pass, built only against the fixture lines
-actually captured on target150 so far:
-
-    set vpn ipsec authentication psk PSK-TEST id 'local@example.com'
-    set vpn ipsec authentication psk PSK-TEST id 'remote@example.com'
-    set vpn ipsec authentication psk PSK-TEST secret 'test-not-real-secret'
-    set vpn ipsec esp-group ESP-TEST proposal 1 encryption 'aes256'
-    set vpn ipsec esp-group ESP-TEST proposal 1 hash 'sha256'
-    set vpn ipsec ike-group IKE-TEST key-exchange 'ikev2'
-    set vpn ipsec ike-group IKE-TEST proposal 1 dh-group '14'
-    set vpn ipsec ike-group IKE-TEST proposal 1 encryption 'aes256'
-    set vpn ipsec ike-group IKE-TEST proposal 1 hash 'sha256'
-    set vpn ipsec profile testprofile authentication mode 'pre-shared-secret'
-    set vpn ipsec profile testprofile authentication pre-shared-secret 'test-not-real-secret'
-    set vpn ipsec profile testprofile bind tunnel 'tun0'
-    set vpn ipsec profile testprofile esp-group 'ESP-TEST'
-    set vpn ipsec profile testprofile ike-group 'IKE-TEST'
-
-Remaining fields from the docstring (dead_peer_detection, lifetime, mode,
-pfs, disable_rekey, compression, log, options, disable_uniqreqids,
-esp_group/ike_group bare-tag-only lines) are NOT covered here yet —
-need a second fixture pass exercising those before this is complete.
 """
 
 import re
