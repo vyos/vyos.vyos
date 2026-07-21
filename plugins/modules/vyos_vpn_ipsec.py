@@ -20,7 +20,7 @@ description: This module manages global VPN IPsec configuration on VyOS devices
   -- IKE groups, ESP groups, PSK/PPK authentication, IPsec profiles, and global
   options. Site-to-site peers and IKEv2 remote-access connections are handled by
   separate modules.
-version_added: 6.2.0
+version_added: 1.0.0
 author: Evgeny Molotkov (@omnom62)
 notes:
   - Tested against VyOS 1.4 and 1.5.

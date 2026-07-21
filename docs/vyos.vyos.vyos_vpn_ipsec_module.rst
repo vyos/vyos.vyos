@@ -8,7 +8,7 @@ vyos.vyos.vyos_vpn_ipsec
 **Manages global IPsec (ike-group, esp-group, profile, authentication, options) attributes of VyOS network devices.**
 
 
-Version added: 6.2.0
+Version added: 1.0.0
 
 .. contents::
    :local:

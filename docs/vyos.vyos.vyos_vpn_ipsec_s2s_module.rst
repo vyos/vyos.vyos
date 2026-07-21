@@ -8,7 +8,7 @@ vyos.vyos.vyos_vpn_ipsec_s2s
 **Manages IPsec site-to-site VPN peers on VyOS network devices.**
 
 
-Version added: 6.3.0
+Version added: 1.0.0
 
 .. contents::
    :local:
@@ -1215,4 +1215,4 @@ Status
 Authors
 ~~~~~~~
 
-- Evgeny (@omnom62)
+- Evgeny Molotkov (@omnom62)

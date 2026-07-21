@@ -20,8 +20,8 @@ description: This module manages VPN IPsec site-to-site peer configuration on Vy
   devices -- policy-based tunnels and route-based (VTI) connections. IKE/ESP groups,
   PSK/PPK authentication, and IPsec profiles are managed by the separate vyos_vpn_ipsec
   module; peers here reference those by name.
-version_added: 6.3.0
-author: Evgeny (@omnom62)
+version_added: 1.0.0
+author: Evgeny Molotkov (@omnom62)
 notes:
   - Tested against VyOS 1.4 and 1.5.
   - "Source of truth: vyos-1x's interface-definitions/vpn_ipsec.xml.in, resolved and
