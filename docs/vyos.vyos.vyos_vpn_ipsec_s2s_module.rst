@@ -1081,6 +1081,8 @@ Notes
 .. note::
    - Tested against VyOS 1.4 and 1.5.
    - Source of truth: vyos-1x's interface-definitions/vpn_ipsec.xml.in, resolved and drafted via this collection's fetch_vyos_xml_definition.py / parse_xml_definitions.py helper scripts, then hand-reviewed.
+   - The argspec only requires *name* on a peer, but VyOS itself enforces several more requirements at commit time -- confirmed via real device testing, not visible in the argspec: every peer needs ``authentication``, a real ``remote_address`` (not just omitted), a ``local_address`` or ``dhcp_interface``, and at least one of ``tunnel`` or ``vti``. A peer missing any of these will pass Ansible's own argument validation but fail the device commit with a specific error naming what's missing.
+   - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
 
 
 
@@ -1127,6 +1129,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                             <div>The resulting configuration after module execution.</div>
                     <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
                 </td>
             </tr>
             <tr>
@@ -1142,6 +1146,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                             <div>The configuration prior to the module execution.</div>
                     <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
                 </td>
             </tr>
             <tr>
@@ -1157,6 +1163,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                             <div>The set of commands pushed to the remote device.</div>
                     <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set vpn ipsec site-to-site peer PEER-TEST ike-group &#x27;IKE-TEST&#x27;&quot;, &quot;set vpn ipsec site-to-site peer PEER-TEST default-esp-group &#x27;ESP-TEST&#x27;&quot;]</div>
                 </td>
             </tr>
             <tr>
@@ -1172,6 +1180,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                             <div>Facts about the network resource gathered from the remote device as structured data.</div>
                     <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
                 </td>
             </tr>
             <tr>
@@ -1187,6 +1197,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                             <div>The device native config provided in <em>running_config</em> option parsed into structured data as per module argspec.</div>
                     <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">This output will always be in the same format as the module argspec.</div>
                 </td>
             </tr>
             <tr>
@@ -1202,6 +1214,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 <td>
                             <div>The provided configuration in the task rendered in device-native format (offline).</div>
                     <br/>
+                        <div style="font-size: smaller"><b>Sample:</b></div>
+                        <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&quot;set vpn ipsec site-to-site peer PEER-TEST ike-group &#x27;IKE-TEST&#x27;&quot;]</div>
                 </td>
             </tr>
     </table>

@@ -1342,6 +1342,7 @@ Notes
 .. note::
    - Tested against VyOS 1.4 and 1.5.
    - Source of truth for field types/choices: device node.def templates under /opt/vyatta/share/vyatta-cfg/templates/vpn/ipsec/.
+   - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
 
 
 
@@ -1350,98 +1351,77 @@ Examples
 
 .. code-block:: yaml
 
-    # -------------------
-    # Using merged
-    # -------------------
+    - name: Merge provided configuration with device configuration
+      vyos.vyos.vyos_vpn_ipsec:
+        config:
+          esp_group:
+            - name: ESP-TEST
+              proposal:
+                - proposal_id: 1
+                  encryption: aes256
+                  hash: sha256
+          ike_group:
+            - name: IKE-TEST
+              key_exchange: ikev2
+              proposal:
+                - proposal_id: 1
+                  encryption: aes256
+                  hash: sha256
+                  dh_group: 14
+        state: merged
 
-    # Before state:
-    # -------------
-    # vyos@vyos:~$ show configuration commands | match "vpn ipsec"
-    # (empty)
+    - name: Replace one named esp-group, leaving all other groups untouched
+      vyos.vyos.vyos_vpn_ipsec:
+        config:
+          esp_group:
+            - name: ESP-TEST
+              proposal:
+                - proposal_id: 1
+                  encryption: aes128
+                  hash: sha256
+        state: replaced
 
-    # Task
-    # -------------
-    # - name: Merge provided configuration with device configuration
-    #   vyos.vyos.vyos_vpn_ipsec:
-    #     config:
-    #       esp_group:
-    #         - name: ESP-TEST
-    #           proposal:
-    #             - proposal_id: 1
-    #               encryption: aes256
-    #               hash: sha256
-    #       ike_group:
-    #         - name: IKE-TEST
-    #           key_exchange: ikev2
-    #           proposal:
-    #             - proposal_id: 1
-    #               encryption: aes256
-    #               hash: sha256
-    #               dh_group: 14
-    #     state: merged
+    - name: Override the whole configuration -- anything not listed here is removed
+      vyos.vyos.vyos_vpn_ipsec:
+        config:
+          esp_group:
+            - name: ESP-TEST
+              proposal:
+                - proposal_id: 1
+                  encryption: aes256
+                  hash: sha256
+        state: overridden
 
-    # Task output:
-    # -------------
-    # "commands": [
-    #     "set vpn ipsec esp-group ESP-TEST",
-    #     "set vpn ipsec esp-group ESP-TEST proposal 1",
-    #     "set vpn ipsec esp-group ESP-TEST proposal 1 encryption aes256",
-    #     "set vpn ipsec esp-group ESP-TEST proposal 1 hash sha256",
-    #     "set vpn ipsec ike-group IKE-TEST",
-    #     "set vpn ipsec ike-group IKE-TEST key-exchange ikev2",
-    #     "set vpn ipsec ike-group IKE-TEST proposal 1",
-    #     "set vpn ipsec ike-group IKE-TEST proposal 1 encryption aes256",
-    #     "set vpn ipsec ike-group IKE-TEST proposal 1 hash sha256",
-    #     "set vpn ipsec ike-group IKE-TEST proposal 1 dh-group 14"
-    # ]
+    - name: Delete one named esp-group, leaving all other groups untouched
+      vyos.vyos.vyos_vpn_ipsec:
+        config:
+          esp_group:
+            - name: ESP-TEST
+        state: deleted
 
-    # -------------------
-    # Using gathered
-    # -------------------
+    - name: Remove all vpn_ipsec configuration
+      vyos.vyos.vyos_vpn_ipsec:
+        state: deleted
 
-    # Task
-    # -------------
-    # - name: Gather current vpn_ipsec configuration
-    #   vyos.vyos.vyos_vpn_ipsec:
-    #     state: gathered
+    - name: Gather current vpn_ipsec configuration
+      vyos.vyos.vyos_vpn_ipsec:
+        state: gathered
 
-    # -------------------
-    # Using deleted
-    # -------------------
+    - name: Render configuration without touching the device
+      vyos.vyos.vyos_vpn_ipsec:
+        config:
+          esp_group:
+            - name: ESP-TEST
+              proposal:
+                - proposal_id: 1
+                  encryption: aes256
+                  hash: sha256
+        state: rendered
 
-    # Task
-    # -------------
-    # - name: Remove all vpn_ipsec configuration
-    #   vyos.vyos.vyos_vpn_ipsec:
-    #     state: deleted
-
-    # -------------------
-    # Using rendered
-    # -------------------
-
-    # Task
-    # -------------
-    # - name: Render configuration without touching the device
-    #   vyos.vyos.vyos_vpn_ipsec:
-    #     config:
-    #       esp_group:
-    #         - name: ESP-TEST
-    #           proposal:
-    #             - proposal_id: 1
-    #               encryption: aes256
-    #               hash: sha256
-    #     state: rendered
-
-    # -------------------
-    # Using parsed
-    # -------------------
-
-    # Task
-    # -------------
-    # - name: Parse raw config text into structured facts
-    #   vyos.vyos.vyos_vpn_ipsec:
-    #     running_config: "{{ lookup('file', './vpn_ipsec.cfg') }}"
-    #     state: parsed
+    - name: Parse raw config text into structured facts
+      vyos.vyos.vyos_vpn_ipsec:
+        running_config: "{{ lookup('file', './vpn_ipsec.cfg') }}"
+        state: parsed
 
 
 

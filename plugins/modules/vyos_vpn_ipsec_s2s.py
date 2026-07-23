@@ -22,11 +22,20 @@ description: This module manages VPN IPsec site-to-site peer configuration on Vy
   module; peers here reference those by name.
 version_added: 1.0.0
 author: Evgeny Molotkov (@omnom62)
+extends_documentation_fragment:
+  - vyos.vyos.vyos
 notes:
   - Tested against VyOS 1.4 and 1.5.
   - "Source of truth: vyos-1x's interface-definitions/vpn_ipsec.xml.in, resolved and
     drafted via this collection's fetch_vyos_xml_definition.py / parse_xml_definitions.py
     helper scripts, then hand-reviewed."
+  - "The argspec only requires I(name) on a peer, but VyOS itself enforces
+    several more requirements at commit time -- confirmed via real device
+    testing, not visible in the argspec: every peer needs C(authentication),
+    a real C(remote_address) (not just omitted), a C(local_address) or
+    C(dhcp_interface), and at least one of C(tunnel) or C(vti). A peer
+    missing any of these will pass Ansible's own argument validation but
+    fail the device commit with a specific error naming what's missing."
 options:
   config:
     description: IPsec site-to-site configuration.
@@ -252,26 +261,43 @@ before:
   description: The configuration prior to the module execution.
   returned: when I(state) is C(merged), C(replaced), C(overridden) or C(deleted)
   type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
 after:
   description: The resulting configuration after module execution.
   returned: when changed
   type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
 commands:
   description: The set of commands pushed to the remote device.
   returned: when I(state) is C(merged), C(replaced), C(overridden) or C(deleted)
   type: list
+  sample:
+    - set vpn ipsec site-to-site peer PEER-TEST ike-group 'IKE-TEST'
+    - set vpn ipsec site-to-site peer PEER-TEST default-esp-group 'ESP-TEST'
 rendered:
   description: The provided configuration in the task rendered in device-native format (offline).
   returned: when I(state) is C(rendered)
   type: list
+  sample:
+    - set vpn ipsec site-to-site peer PEER-TEST ike-group 'IKE-TEST'
 gathered:
   description: Facts about the network resource gathered from the remote device as structured data.
   returned: when I(state) is C(gathered)
   type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
 parsed:
   description: The device native config provided in I(running_config) option parsed into structured data as per module argspec.
   returned: when I(state) is C(parsed)
   type: dict
+  sample: >
+    This output will always be in the same format as the
+    module argspec.
 """
 
 from ansible.module_utils.basic import AnsibleModule
