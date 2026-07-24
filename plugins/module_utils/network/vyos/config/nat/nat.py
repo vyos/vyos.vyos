@@ -560,6 +560,9 @@ class Nat(ResourceModule):
             if wb == hb:
                 continue
             if wb:
-                self.addcmd(dict(ctx, ip=ip, weight=wb.get("weight")), "nat_type_lb_backend", False)
+                weight = wb.get("weight")
+                if weight is None:
+                    self._module.fail_json(msg="load_balance.backend entries require 'weight'")
+                self.addcmd(dict(ctx, ip=ip, weight=weight), "nat_type_lb_backend", False)
             elif self.state in ("replaced", "overridden"):
                 self.addcmd(dict(ctx, ip=ip, weight=hb.get("weight")), "nat_type_lb_backend", True)
