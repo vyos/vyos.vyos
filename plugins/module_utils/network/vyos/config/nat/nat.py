@@ -43,7 +43,7 @@ class Nat(ResourceModule):
         haved = deepcopy(self.have)
 
         if self.state == "merged":
-            wantd = combine(haved, wantd, recursive=True, list_merge="append_rp")
+            wantd = combine(haved, wantd, recursive=True)
 
         if self.state == "deleted":
             if not wantd:
@@ -255,7 +255,8 @@ class Nat(ResourceModule):
         want_ranges = {(r["value"] if isinstance(r, dict) else r): r for r in want.get("range", [])}
         have_ranges = {(r["value"] if isinstance(r, dict) else r): r for r in have.get("range", [])}
         for val, rng in want_ranges.items():
-            if val not in have_ranges:
+            existing = have_ranges.get(val)
+            if existing is None or existing != rng:
                 seq = rng.get("seq") if isinstance(rng, dict) else None
                 self.addcmd(
                     {"name": name, "range": val, "seq": seq},
@@ -337,6 +338,21 @@ class Nat(ResourceModule):
 
     def _compare_rule(self, nat_type, section, rid, want, have):
         ctx = {"nat": nat_type, "type": section, "id": rid}
+
+        want_lb = want.get("load_balance") or {}
+        want_trans_addr = (want.get("translation") or {}).get("address")
+        have_trans_addr = (have.get("translation") or {}).get("address")
+        if want_lb and want_trans_addr is not None:
+            self._module.fail_json(
+                msg="translation.address and load_balance are mutually exclusive",
+            )
+        if self.state == "merged" and want_lb and have_trans_addr is not None:
+            self._module.fail_json(
+                msg=(
+                    "Cannot add load_balance to a rule that already has translation.address with "
+                    "state=merged; use state=replaced or state=overridden"
+                ),
+            )
 
         for field in set(want) | set(have):
             if field == "inbound_interface":

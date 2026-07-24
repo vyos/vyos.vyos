@@ -25,7 +25,7 @@ class NatFacts(object):
         self.argument_spec = NatArgs.argument_spec
 
     def get_config(self, connection):
-        return connection.get("show configuration commands | match 'nat'")
+        return connection.get("show configuration commands | match 'set nat'")
 
     def populate_facts(self, connection, ansible_facts, data=None):
         facts = {}

@@ -293,8 +293,14 @@ def combine(a, b, recursive=False, list_merge="replace"):
     :param a: dict
     :param b: dict
     :param recursive: bool, deep merge
-    :param list_merge: str, only 'replace' is supported (default Ansible behavior)
+    :param list_merge: str, accepted for call-site compatibility only --
+        NOT implemented. Any list value in `b` always replaces the
+        corresponding list in `a` wholesale, regardless of what this
+        parameter is set to. There is no item-level list merging here;
+        callers needing that must convert lists to ID-keyed dicts
+        themselves before calling combine() (see Nat._list_to_dict()).
     """
+
     if not isinstance(a, dict) or not isinstance(b, dict):
         raise ValueError("combine expects two dictionaries")
 
