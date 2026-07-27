@@ -139,9 +139,9 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\scommunity
                 \s+(?P<name>\S+)
-                \s*(?P<auth>authorization\srw|authorization\sro)*
-                \s*(client\s(?P<client>\S+))*
-                \s*(network\s(?P<network>\S+))*
+                \s*(?P<auth>authorization\srw|authorization\sro)?
+                \s*(client\s(?P<client>\S+))?
+                \s*(network\s(?P<network>\S+))?
                 $""",
                 re.VERBOSE,
             ),
@@ -163,8 +163,7 @@ class Snmp_serverTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\sservice\ssnmp\scontact
-                \s+(?P<name>\S+)
-                *$""",
+                \s+(?P<name>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "service snmp contact {{ contact }}",
@@ -178,8 +177,7 @@ class Snmp_serverTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\sservice\ssnmp\sdescription
-                \s+(?P<name>\S+)
-                *$""",
+                \s+(?P<name>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "service snmp description {{ description }}",
@@ -194,8 +192,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\slisten-address
                 \s+(?P<addr>\S+)
-                \s*(port)*
-                \s*(?P<port>\d+)*
+                \s*(port)?
+                \s*(?P<port>\d+)?
                 $""",
                 re.VERBOSE,
             ),
@@ -231,8 +229,7 @@ class Snmp_serverTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\sservice\ssnmp\ssmux-peer
-                \s+(?P<name>\S+)
-                *$""",
+                \s+(?P<name>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "service snmp smux-peer {{ smux_peer }}",
@@ -246,8 +243,7 @@ class Snmp_serverTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\sservice\ssnmp\strap-source
-                \s+(?P<name>\S+)
-                *$""",
+                \s+(?P<name>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "service snmp trap-source {{ trap_source }}",
@@ -262,9 +258,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\strap-target
                 \s+(?P<name>\S+)
-                \s*(?P<comm>community\s\S+)*
-                \s*(?P<port>port\s\d+)*
-                $""",
+                \s*(?P<comm>community\s\S+)?
+                \s*(?P<port>port\s\d+)?                $""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_snmp_server_trap_target,
@@ -282,8 +277,7 @@ class Snmp_serverTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\sservice\ssnmp\sv3\sengineid
-                \s+(?P<name>\S+)
-                *$""",
+                \s+(?P<name>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "service snmp v3 engineid {{ snmp_v3.engine_id }}",
@@ -300,9 +294,9 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\sgroup
                 \s+(?P<name>\S+)
-                \s*(?P<mode>mode\s\S+)*
-                \s*(?P<sec>seclevel\s\S+)*
-                \s*(?P<view>view\s\S+)*
+                \s*(?P<mode>mode\s\S+)?
+                \s*(?P<sec>seclevel\s\S+)?
+                \s*(?P<view>view\s\S+)?
                 $""",
                 re.VERBOSE,
             ),
@@ -328,9 +322,9 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\sv3\strap-target
                 \s+(?P<name>\S+)
                 \s+auth
-                \s*(?P<enc>encrypted-password\s\S+)*
-                \s*(?P<plain>plaintext-password\s\S+)*
-                \s*(?P<type>type\s\S+)*
+                \s*(?P<enc>encrypted-password\s\S+)?
+                \s*(?P<plain>plaintext-password\s\S+)?
+                \s*(?P<type>type\s\S+)?
                 $""",
                 re.VERBOSE,
             ),
@@ -357,8 +351,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\strap-target
                 \s+(?P<name>\S+)
-                \s+(?P<port>port\s\d+)*
-                $""",
+                \s+(?P<port>port\s\d+)?                $""",
                 re.VERBOSE,
             ),
             "setval": "service snmp v3 trap-target port {{ snmp_v3.trap_targets.port }}",
@@ -380,7 +373,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\strap-target
                 \s+(?P<name>\S+)
-                \s+(?P<protocol>protocol\s\S+)*
+                \s+(?P<protocol>protocol\s\S+)?
                 $""",
                 re.VERBOSE,
             ),
@@ -403,7 +396,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\strap-target
                 \s+(?P<name>\S+)
-                \s+(?P<type>type\s\S+)*
+                \s+(?P<type>type\s\S+)?
                 $""",
                 re.VERBOSE,
             ),
@@ -426,7 +419,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\strap-target
                 \s+(?P<name>\S+)
-                \s+(?P<user>user\s\S+)*
+                \s+(?P<user>user\s\S+)?
                 $""",
                 re.VERBOSE,
             ),
@@ -450,9 +443,9 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\sv3\strap-target
                 \s+(?P<name>\S+)
                 \s+privacy
-                \s*(?P<enc>encrypted-password\s\S+)*
-                \s*(?P<plain>plaintext-password\s\S+)*
-                \s*(?P<type>type\s\S+)*
+                \s*(?P<enc>encrypted-password\s\S+)?
+                \s*(?P<plain>plaintext-password\s\S+)?
+                \s*(?P<type>type\s\S+)?
                 $""",
                 re.VERBOSE,
             ),
@@ -480,9 +473,9 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\sv3\suser
                 \s+(?P<name>\S+)
                 \s+auth
-                \s*(?P<enc>encrypted-password\s\S+)*
-                \s*(?P<plain>plaintext-password\s\S+)*
-                \s*(?P<type>type\s\S+)*
+                \s*(?P<enc>encrypted-password\s\S+)?
+                \s*(?P<plain>plaintext-password\s\S+)?
+                \s*(?P<type>type\s\S+)?
                 $""",
                 re.VERBOSE,
             ),
@@ -510,9 +503,9 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\sv3\suser
                 \s+(?P<name>\S+)
                 \s+privacy
-                \s*(?P<enc>encrypted-password\s\S+)*
-                \s*(?P<plain>plaintext-password\s\S+)*
-                \s*(?P<type>type\s\S+)*
+                \s*(?P<enc>encrypted-password\s\S+)?
+                \s*(?P<plain>plaintext-password\s\S+)?
+                \s*(?P<type>type\s\S+)?
                 $""",
                 re.VERBOSE,
             ),
@@ -539,8 +532,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\suser
                 \s+(?P<name>\S+)
-                \s+(?P<group>group\s.+)*
-                $""",
+                \s+(?P<group>group\s.+)?                $""",
                 re.VERBOSE,
             ),
             "setval": "service snmp v3 user {{ snmp_v3.users.user }} group {{ snmp_v3.users.group }}",
@@ -562,7 +554,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\suser
                 \s+(?P<name>\S+)
-                \s+(?P<mode>mode\s\S+)*
+                \s+(?P<mode>mode\s\S+)?
                 $""",
                 re.VERBOSE,
             ),
@@ -586,8 +578,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 ^set\sservice\ssnmp\sv3\sview
                 \s+(?P<name>\S+)
                 \s+(?P<oid>oid\s\S+)
-                \s*(?P<ex>exclude\s\S+)*
-                \s*(?P<mask>mask\s\S+)*
+                \s*(?P<ex>exclude\s\S+)?
+                \s*(?P<mask>mask\s\S+)?
                 $""",
                 re.VERBOSE,
             ),

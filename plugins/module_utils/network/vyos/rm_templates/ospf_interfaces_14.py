@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -224,8 +225,7 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 \s+protocols
                 \s+(?P<proto>ospf|ospfv3)
                 \s+interface
-                \s+(?P<name>\S+)
-                *$""",
+                \s+(?P<name>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "remval": _tmplt_ospf_int_delete,
@@ -250,8 +250,7 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 \s+(?P<name>\S+)
                 \s+authentication
                 \s+plaintext-password
-                \s+(?P<text>\S+)
-                *$""",
+                \s+(?P<text>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_ospf_int_auth_password,
@@ -282,8 +281,7 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 \s+key-id
                 \s+(?P<id>\d+)
                 \s+md5-key
-                \s+(?P<text>\S+)
-                *$""",
+                \s+(?P<text>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_ospf_int_auth_md5,
@@ -443,8 +441,7 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 \s+interface
                 \s+(?P<name>\S+)
                 \s+network
-                \s+(?P<val>\S+)
-                *$""",
+                \s+(?P<val>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_ospf_int_network,

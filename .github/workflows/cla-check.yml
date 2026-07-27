@@ -11,5 +11,5 @@ on:
     types: [created]
 jobs:
   call-cla-assistant:
-    uses: vyos/vyos-cla-signatures/.github/workflows/cla-reusable.yml@current
+    uses: vyos/vyos-cla-signatures/.github/workflows/cla-reusable.yml@production
     secrets: inherit

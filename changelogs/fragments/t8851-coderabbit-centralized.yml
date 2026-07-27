@@ -1,0 +1,6 @@
+trivial:
+  - Migrate ``.coderabbit.yaml`` from standalone configuration to centralized
+    inheritance under the org-level baseline at ``vyos/coderabbit``. No effect
+    on consumers; the file shrinks from 591 lines to 205 while preserving all
+    Ansible-collection-specific ``path_instructions`` and adding a
+    ``knowledge_base.jira`` block scoped to ``VD`` (T8851).

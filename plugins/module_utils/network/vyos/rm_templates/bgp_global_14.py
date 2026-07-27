@@ -233,8 +233,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+advertisement-interval
-                \s+(?P<interval>\S+)
-                *$""",
+                \s+(?P<interval>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} advertisement-interval {{ neighbor.advertisement_interval }}",
@@ -426,8 +425,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+capability
                 \s+orf
                 \s+prefix-list
-                \s+(?P<orf>\S+)
-                *$""",
+                \s+(?P<orf>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} capability orf prefix-list {{ neighbor.capability.orf }}",
@@ -455,8 +453,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+(?P<address>\S+)
                 \s+default-originate
                 \s+route-map
-                \s+(?P<map>\S+)
-                *$""",
+                \s+(?P<map>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} default-originate route-map {{ neighbor.default_originate }}",
@@ -481,8 +478,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+description
-                \s+(?P<desc>\S+)
-                *$""",
+                \s+(?P<desc>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} description {{ neighbor.description }}",
@@ -557,8 +553,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+disable-send-community
-                \s+(?P<comm>\S+)
-                *$""",
+                \s+(?P<comm>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} disable-send-community {{ neighbor.disable_send_community }}",
@@ -615,8 +610,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+ebgp-multihop
-                \s+(?P<hop>\S+)
-                *$""",
+                \s+(?P<hop>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} ebgp-multihop {{ neighbor.ebgp_multihop }}",
@@ -642,8 +636,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+(?P<address>\S+)
                 \s+filter-list
                 \s+(?P<action>export|import)
-                \s+(?P<list>\S+)
-                *$""",
+                \s+(?P<list>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_neighbor_filter_list,
@@ -700,8 +693,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+maximum-prefix
-                \s+(?P<num>\S+)
-                *$""",
+                \s+(?P<num>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} maximum-prefix {{ neighbor.maximum_prefix }}",
@@ -801,8 +793,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+password
-                \s+(?P<pwd>\S+)
-                *$""",
+                \s+(?P<pwd>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} password {{ neighbor.password }}",
@@ -827,8 +818,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+peer-group
-                \s+(?P<name>\S+)
-                *$""",
+                \s+(?P<name>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} peer-group {{ neighbor.peer_group_name }}",
@@ -853,8 +843,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+port
-                \s+(?P<num>\S+)
-                *$""",
+                \s+(?P<num>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} port {{ neighbor.port }}",
@@ -880,8 +869,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+(?P<address>\S+)
                 \s+prefix-list
                 \s+(?P<action>export|import)
-                \s+(?P<list>\S+)
-                *$""",
+                \s+(?P<list>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_neighbor_prefix_list,
@@ -911,8 +899,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+remote-as
-                \s+(?P<num>\S+)
-                *$""",
+                \s+(?P<num>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} remote-as {{ neighbor.remote_as }}",
@@ -963,8 +950,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+(?P<address>\S+)
                 \s+route-map
                 \s+(?P<action>export|import)
-                \s+(?P<map>\S+)
-                *$""",
+                \s+(?P<map>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_neighbor_route_map,
@@ -1120,8 +1106,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+unsuppress-map
-                \s+(?P<map>\S+)
-                *$""",
+                \s+(?P<map>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} unsuppress-map {{ neighbor.unsuppress_map }}",
@@ -1146,8 +1131,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+update-source
-                \s+(?P<src>\S+)
-                *$""",
+                \s+(?P<src>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} update-source {{ neighbor.update_source }}",
@@ -1172,8 +1156,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+weight
-                \s+(?P<num>\S+)
-                *$""",
+                \s+(?P<num>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} weight {{ neighbor.weight }}",
@@ -1198,8 +1181,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+ttl-security
-                \s+(?P<ttl>\S+)
-                *$""",
+                \s+(?P<ttl>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} ttl-security {{ neighbor.ttl_security }}",
@@ -1225,8 +1207,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+(?P<address>\S+)
                 \s+timers
                 \s+(?P<type>connect|holdtime|keepalive)
-                \s+(?P<sec>\S+)
-                *$""",
+                \s+(?P<sec>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_neighbor_timers,
@@ -1253,8 +1234,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+bgp
                 \s+timers
                 \s+(?P<type>\S+)
-                \s+(?P<val>\S+)
-                *$""",
+                \s+(?P<val>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_timers,
@@ -1371,8 +1351,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+bgp
                 \s+parameters
                 \s+cluster-id
-                \s+(?P<id>\S+)
-                *$""",
+                \s+(?P<id>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp parameters cluster-id {{ bgp_params.cluster_id }}",
@@ -1394,8 +1373,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+parameters
                 \s+confederation
                 \s+(?P<type>identifier|peers)
-                \s+(?P<val>\S+)
-                *$""",
+                \s+(?P<val>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_params_confederation,
@@ -1422,8 +1400,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+parameters
                 \s+dampening
                 \s+half-life
-                \s+(?P<val>\S+)
-                *$""",
+                \s+(?P<val>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp parameters dampening half-life {{ bgp_params.dampening.half_life}}",
@@ -1447,8 +1424,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+parameters
                 \s+dampening
                 \s+max-suppress-time
-                \s+(?P<val>\S+)
-                *$""",
+                \s+(?P<val>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp parameters dampening max-suppress-time {{ bgp_params.dampening.max_suppress_time}}",
@@ -1472,8 +1448,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+parameters
                 \s+dampening
                 \s+re-use
-                \s+(?P<val>\S+)
-                *$""",
+                \s+(?P<val>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp parameters dampening re-use {{ bgp_params.dampening.re_use}}",
@@ -1497,8 +1472,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+parameters
                 \s+dampening
                 \s+start-suppress-time
-                \s+(?P<val>\S+)
-                *$""",
+                \s+(?P<val>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp parameters dampening start-suppress-time {{ bgp_params.dampening.start_suppress_time}}",
@@ -1521,9 +1495,8 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+bgp
                 \s+parameters
                 \s+default
-                \s*(?P<no_ipv4_unicast>no-ipv4-unicast)*
-                \s*(?P<local_pref>local-pref\s\S+)
-                *$""",
+                \s*(?P<no_ipv4_unicast>no-ipv4-unicast)?
+                \s*(?P<local_pref>local-pref\s\S+)?\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_params_default,
@@ -1592,8 +1565,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+distance\sprefix
                 \s+(?P<prefix>\S+)
                 \s+distance
-                \s+(?P<val>\S+)
-                *$""",
+                \s+(?P<val>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp parameters distance prefix {{ bgp_params.distance.prefix }} distance {{ bgp_params.distance.value }}",
@@ -1621,8 +1593,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+parameters
                 \s+distance\sglobal
                 \s+(?P<type>\S+)
-                \s+(?P<val>\S+)
-                *$""",
+                \s+(?P<val>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_params_distance,
@@ -1670,8 +1641,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+bgp
                 \s+parameters
                 \s+graceful-restart\s+stalepath-time
-                \s+(?P<val>\S+)
-                *$""",
+                \s+(?P<val>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp parameters graceful-restart stalepath-time {{ bgp_params.graceful_restart }}",
@@ -1755,8 +1725,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+bgp
                 \s+parameters
                 \s+router-id
-                \s+(?P<id>\S+)
-                *$""",
+                \s+(?P<id>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "protocols bgp parameters router-id {{ bgp_params.router_id }}",

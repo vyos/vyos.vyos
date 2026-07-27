@@ -1,0 +1,3 @@
+---
+trivial:
+  - Add unit tests for the vyos_vlan module covering present, absent, aggregate, purge, and address scenarios.

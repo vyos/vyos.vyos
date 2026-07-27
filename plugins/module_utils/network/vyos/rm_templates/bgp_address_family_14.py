@@ -308,8 +308,8 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+(?P<afi>\S+)-unicast
                 \s+aggregate-address
                 \s+(?P<address>\S+)
-                \s*(?P<as_set>as-set)*
-                \s*(?P<summary_only>summary-only)*
+                \s*(?P<as_set>as-set)?
+                \s*(?P<summary_only>summary-only)?
                 $""",
                 re.VERBOSE,
             ),
@@ -409,8 +409,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+network
                 \s+(?P<address>\S+)
                 \s+path-limit
-                \s+(?P<limit>\S+)
-                *$""",
+                \s+(?P<limit>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_network,
@@ -443,8 +442,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+network
                 \s+(?P<address>\S+)
                 \s+route-map
-                \s+(?P<map>\S+)
-                *$""",
+                \s+(?P<map>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_network,
@@ -507,8 +505,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+(?P<afi>\S+)-unicast
                 \s+redistribute
                 \s+(?P<proto>\S+)
-                \s+metric\s+(?P<val>\S+)
-                *$""",
+                \s+metric\s+(?P<val>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_redistribute,
@@ -541,8 +538,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+redistribute
                 \s+(?P<proto>\S+)
                 \s+route-map
-                \s+(?P<map>\S+)
-                *$""",
+                \s+(?P<map>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_redistribute,
@@ -574,8 +570,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+(?P<afi>\S+)-unicast
                 \s+redistribute
                 \s+table
-                \s+(?P<tab>\S+)
-                *$""",
+                \s+(?P<tab>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_redistribute,
@@ -662,8 +657,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+(?P<afi>\S+)-unicast
                 \s+allowas-in
                 \s+number
-                \s+(?P<num>\S+)
-                *$""",
+                \s+(?P<num>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor,
@@ -874,8 +868,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+(?P<afi>\S+)-unicast
                 \s+capability
                 \s+prefix-list
-                \s+(?P<orf>\S+)
-                *$""",
+                \s+(?P<orf>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor,
@@ -911,8 +904,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+(?P<afi>\S+)-unicast
                 \s+default-originate
                 \s+route-map
-                \s+(?P<map>\S+)
-                *$""",
+                \s+(?P<map>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor,
@@ -986,8 +978,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+(?P<afi>\S+)-unicast
                 \s+prefix-list
                 \s+(?P<action>export|import)
-                \s+(?P<list>\S+)
-                *$""",
+                \s+(?P<list>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor_prefix_list,
@@ -1026,8 +1017,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+(?P<afi>\S+)-unicast
                 \s+filter-list
                 \s+(?P<action>export|import)
-                \s+(?P<list>\S+)
-                *$""",
+                \s+(?P<list>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor_filter_list,
@@ -1065,8 +1055,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+maximum-prefix
-                \s+(?P<num>\S+)
-                *$""",
+                \s+(?P<num>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor,
@@ -1165,8 +1154,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+peer-group
-                \s+(?P<name>\S+)
-                *$""",
+                \s+(?P<name>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor,
@@ -1233,8 +1221,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+(?P<afi>\S+)-unicast
                 \s+route-map
                 \s+(?P<action>export|import)
-                \s+(?P<map>\S+)
-                *$""",
+                \s+(?P<map>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor_route_map,
@@ -1372,8 +1359,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+unsuppress-map
-                \s+(?P<map>\S+)
-                *$""",
+                \s+(?P<map>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor,
@@ -1406,8 +1392,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+weight
-                \s+(?P<num>\S+)
-                *$""",
+                \s+(?P<num>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor,
