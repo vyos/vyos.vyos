@@ -1,6 +1,6 @@
 [tool.black]
 line-length = 100
-exclude = "\\.collections"
+extend-exclude = "^\\.collections"
 
 [tool.pytest.ini_options]
 addopts = ["-vvv", "-n", "2", "--log-level", "WARNING", "--color", "yes"]
