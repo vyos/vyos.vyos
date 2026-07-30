@@ -365,8 +365,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+(?P<proto>ospf|ospfv3)
                 \s+authentication
                 \s+plaintext-password
-                \s+(?P<text>\S+)
-                *$""",
+                \s+(?P<text>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_ospf_int_auth_password,
@@ -399,8 +398,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+key-id
                 \s+(?P<id>\d+)
                 \s+md5-key
-                \s+(?P<text>\S+)
-                *$""",
+                \s+(?P<text>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_ospf_int_auth_md5,
@@ -572,8 +570,7 @@ class Ospf_interfacesTemplate(NetworkTemplate):
                 \s+(?P<afi>ip|ipv6)
                 \s+(?P<proto>ospf|ospfv3)
                 \s+network
-                \s+(?P<val>\S+)
-                *$""",
+                \s+(?P<val>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_ospf_int_network,

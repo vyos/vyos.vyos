@@ -1,0 +1,2 @@
+trivial:
+  - Add CodeQL analysis workflow calling the VyOS org-wide central reusable (T9082).
