@@ -66,11 +66,11 @@ options:
                 type: str
                 choices: ['ipv4', 'ipv6']
               disable_forwarding:
-                default: False
+                default: false
                 description: Disable forwarding for this address family
                 type: bool
               nht_no_resolve_via_default:
-                default: False
+                default: false
                 description: Disable next-hop resolution via default route
                 type: bool
               route_maps:
