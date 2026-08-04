@@ -55,7 +55,7 @@ options:
         description:
         - The username to be configured on the VyOS device. This argument accepts a string
           value and is mutually exclusive with the C(aggregate) argument.
-        required: True
+        required: true
         type: str
       full_name:
         description:
