@@ -81,7 +81,7 @@ options:
       the playbook root directory or role root directory, if playbook is part of an
       ansible role. If the directory does not exist, it is created.
     type: bool
-    default: no
+    default: false
   comment:
     description:
     - Allows a commit description to be specified to be included when the configuration
@@ -121,14 +121,14 @@ options:
     description:
     - The C(save) argument controls whether or not changes made to the active configuration
       are saved to disk.  This is independent of committing the config.  When set
-      to True, the active configuration is saved.
+      to C(true), the active configuration is saved.
     type: bool
-    default: no
+    default: false
   backup_options:
     description:
     - This is a dict object containing configurable options related to backup file
-      path. The value of this option is read only when C(backup) is set to I(yes),
-      if C(backup) is set to I(no) this option will be silently ignored.
+      path. The value of this option is read only when C(backup) is set to C(true),
+      if C(backup) is set to C(false) this option will be silently ignored.
     suboptions:
       filename:
         description:
@@ -253,7 +253,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
 
 DEFAULT_COMMENT = "configured by vyos_config"
 
-PASSWORD_NEEDLE = re.compile(r"set system login user \S+ authentication (encrypted|plaintext)-password")
+PASSWORD_NEEDLE = re.compile(
+    r"set system login user \S+ authentication (encrypted|plaintext)-password",
+)
 
 
 def get_candidate(module):
@@ -394,13 +396,16 @@ def main():
         lines=dict(type="list", elements="str"),
         match=dict(default="line", choices=["line", "smart", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
-        confirm=dict(choices=["automatic", "manual", "none"], default='none'),
+        confirm=dict(choices=["automatic", "manual", "none"], default="none"),
         confirm_timeout=dict(type="int", default=10),
         config=dict(),
         backup=dict(type="bool", default=False),
         backup_options=dict(type="dict", options=backup_spec),
         save=dict(type="bool", default=False),
-        allow_password_change=dict(default="plaintext", choices=["all", "encrypted", "plaintext", "none"])
+        allow_password_change=dict(
+            default="plaintext",
+            choices=["all", "encrypted", "plaintext", "none"],
+        ),
     )
 
     mutually_exclusive = [("lines", "src")]
