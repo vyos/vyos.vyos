@@ -85,7 +85,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>This is a dict object containing configurable options related to backup file path. The value of this option is read only when <code>backup</code> is set to <em>yes</em>, if <code>backup</code> is set to <em>no</em> this option will be silently ignored.</div>
+                        <div>This is a dict object containing configurable options related to backup file path. The value of this option is read only when <code>backup</code> is set to <code>true</code>, if <code>backup</code> is set to <code>false</code> this option will be silently ignored.</div>
                 </td>
             </tr>
                                 <tr>
@@ -239,7 +239,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>The <code>save</code> argument controls whether or not changes made to the active configuration are saved to disk.  This is independent of committing the config.  When set to True, the active configuration is saved.</div>
+                        <div>The <code>save</code> argument controls whether or not changes made to the active configuration are saved to disk.  This is independent of committing the config.  When set to <code>true</code>, the active configuration is saved.</div>
                 </td>
             </tr>
             <tr>
