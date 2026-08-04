@@ -36,6 +36,27 @@ Parameters
             <tr>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>allow_password_change</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>all</li>
+                                    <li><div style="color: blue"><b>plaintext</b>&nbsp;&larr;</div></li>
+                                    <li>encrypted</li>
+                                    <li>none</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>The <code>allow_password_change</code> argument specifies whether any configuration lines which would change a user&#x27;s password should be filtered out.  By default only plaintext password changes are allowed and any encrypted-password keys are filtered out. In order to allow all password updates, both plaintext and encrypted, set this argument to <code>all</code>.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>backup</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -64,7 +85,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>This is a dict object containing configurable options related to backup file path. The value of this option is read only when <code>backup</code> is set to <em>yes</em>, if <code>backup</code> is set to <em>no</em> this option will be silently ignored.</div>
+                        <div>This is a dict object containing configurable options related to backup file path. The value of this option is read only when <code>backup</code> is set to <code>true</code>, if <code>backup</code> is set to <code>false</code> this option will be silently ignored.</div>
                 </td>
             </tr>
                                 <tr>
@@ -218,7 +239,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>The <code>save</code> argument controls whether or not changes made to the active configuration are saved to disk.  This is independent of committing the config.  When set to True, the active configuration is saved.</div>
+                        <div>The <code>save</code> argument controls whether or not changes made to the active configuration are saved to disk.  This is independent of committing the config.  When set to <code>true</code>, the active configuration is saved.</div>
                 </td>
             </tr>
             <tr>
