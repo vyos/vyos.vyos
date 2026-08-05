@@ -38,6 +38,9 @@ notes:
 - This module works with connection C(ansible.netcommon.network_cli). See L(the VyOS OS Platform Options,../network/user_guide/platform_vyos.html).
 - To ensure idempotency and correct diff the configuration lines in the relevant module options should be similar to how they
   appear if present in the running configuration on device including the indentation.
+- C(replace=config) currently has no way to scope its effect to part of the
+  configuration; it always operates against the entire device configuration.
+  There is no C(path) parameter to constrain it to a subtree.
 options:
   lines:
     description:
@@ -46,6 +49,7 @@ options:
       device running-config to ensure idempotency and correct diff. Be sure
       to note the configuration command syntax as some commands are automatically
       modified by the device config parser.
+    - Not supported when C(replace) is set to C(config) -- see C(replace) below.
     type: list
     elements: str
   src:
@@ -55,6 +59,12 @@ options:
       file can include Jinja2 template variables. The configuration lines in the source
       file should be similar to how it will appear if present in the running-configuration
       of the device including indentation to ensure idempotency and correct diff.
+    - When C(replace) is set to C(config), C(src) is required and must contain a
+      complete configuration in hierarchical/bracket format -- the same format
+      produced by C(show configuration) or found in C(/config/config.boot). Flat
+      C(set)/C(delete) command format (as produced by C(show configuration
+      commands)) is not accepted in that mode; VyOS's native C(load) command
+      rejects it with a parse error.
     type: path
   match:
     description:
@@ -63,6 +73,8 @@ options:
       active config and the deltas are loaded.  If the C(match) argument is set to
       C(none) the active configuration is ignored and the configuration is always
       loaded.
+    - Ignored when C(replace) is set to C(config), since no line-level diff is
+      computed in that mode.
     type: str
     default: line
     choices:
@@ -111,6 +123,7 @@ options:
       The configuration lines in the option value should be similar to how it
       will appear if present in the running-configuration of the device including indentation
       to ensure idempotency and correct diff.
+    - Ignored when C(replace) is set to C(config).
     type: str
   save:
     description:
@@ -142,6 +155,43 @@ options:
           in C(filename) within I(backup) directory.
         type: path
     type: dict
+  replace:
+    description:
+    - Controls how the module applies configuration to the device.
+    - When set to C(line) (default), the module computes a set/delete command
+      diff and pushes only the changed lines -- this is the existing behavior,
+      unchanged.
+    - When set to C(config), the module uploads the full candidate configuration
+      (C(src)) to the device and issues VyOS's native C(load) command in
+      configuration mode, which replaces the running configuration wholesale
+      with the candidate's exact contents. VyOS's own configuration engine
+      performs the reconciliation, rather than the module computing per-line
+      deltas. This mirrors the mechanism offered by C(cisco.iosxr.iosxr_config)'s
+      C(replace=config).
+    - C(replace=config) requires C(src) and does not accept C(lines) -- there is
+      no way to convert flat set/delete commands into the hierarchical form
+      C(load) requires without re-implementing VyOS's own config-tree builder.
+    - As with C(src) in the default C(line) mode, the module does not validate
+      the candidate's contents or format under C(replace=config) -- supplying a
+      well-formed, complete configuration is the caller's responsibility.
+    - C(replace=config) requires the device to accept file transfer (SCP) over
+      the same C(network_cli) SSH session used for configuration commands.
+    - C(replace=config) writes the candidate to a fixed path on the device
+      (overwritten on each run, matching C(cisco.iosxr.iosxr_config)'s own
+      C(replace=config) precedent). Running C(replace=config) concurrently
+      against the same host is not supported.
+    - Any configuration present on the device but omitted from the candidate
+      will be removed, including management interfaces, SSH access, and login
+      users if they are omitted. Always supply a complete configuration, never
+      a partial one.
+    - Even under C(check_mode), the candidate is written to a temporary file on
+      the device so that VyOS's own C(compare) can produce an accurate preview
+      diff. No C(commit) occurs in check mode.
+    type: str
+    default: line
+    choices:
+    - line
+    - config
   allow_password_change:
     description:
     - The C(allow_password_change) argument specifies whether any configuration lines which
@@ -149,6 +199,9 @@ options:
       password changes are allowed and any encrypted-password keys are filtered out. In
       order to allow all password updates, both plaintext and encrypted, set this argument
       to C(all).
+    - Not applied when C(replace) is set to C(config); the candidate is loaded
+      as-is via VyOS's native C(load), which has no equivalent filtering
+      mechanism.
     type: str
     default: plaintext
     choices:
@@ -192,16 +245,37 @@ EXAMPLES = """
     backup_options:
       filename: backup.cfg
       dir_path: /home/user
+
+- name: replace the entire running config with a full candidate (native load)
+  # replace=config requires the complete desired configuration in
+  # hierarchical/bracket format -- never a partial one, and never flat
+  # set-command format. A safe pattern is to back up the current config,
+  # edit it, then replace with the edited whole, as shown here.
+  vyos.vyos.vyos_config:
+    backup: true
+    backup_options:
+      filename: pre_replace_backup.cfg
+  register: backup_result
+
+- name: (edit backup_result's backup file as needed, then)
+  vyos.vyos.vyos_config:
+    src: /home/user/pre_replace_backup_edited.cfg
+    replace: config
 """
 
 RETURN = """
 commands:
-  description: The list of configuration commands sent to the device
+  description:
+  - In C(replace=line) mode (default), the list of set/delete commands sent to
+    the device.
+  - In C(replace=config) mode, contains only the single C(load <path>) command
+    actually issued to the device -- not an itemized diff. See C(diff) for the
+    actual change content, sourced from VyOS's own C(compare) output.
   returned: always
   type: list
   sample: ['...', '...']
 filtered:
-  description: The list of configuration commands removed to avoid a load failure
+  description: The list of configuration commands removed to avoid a load failure. Not populated when C(replace) is set to C(config).
   returned: always
   type: list
   sample: ['...', '...']
@@ -231,13 +305,16 @@ time:
   type: str
   sample: "22:28:34"
 """
+import os
 import re
+import tempfile
 
-from ansible.module_utils._text import to_text
+from ansible.module_utils._text import to_bytes, to_text
 from ansible.module_utils.basic import AnsibleModule
 from ansible.module_utils.connection import ConnectionError
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    copy_file,
     get_config,
     get_connection,
     load_config,
@@ -247,7 +324,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
 
 DEFAULT_COMMENT = "configured by vyos_config"
 
-PASSWORD_NEEDLE = re.compile(r"set system login user \S+ authentication (encrypted|plaintext)-password")
+PASSWORD_NEEDLE = re.compile(
+    r"(?:set|delete) system login user \S+ authentication (encrypted|plaintext)-password",
+)
 
 
 def get_candidate(module):
@@ -381,6 +460,69 @@ def run(module, result):
         result["diff"] = {"prepared": diff}
 
 
+def run_replace_config(module, result):
+    """replace=config: push the full candidate to the device and let VyOS's
+    own `load` command perform the replacement natively, rather than
+    computing a set/delete diff in Python.
+
+    Deliberately smaller than cisco.iosxr's equivalent implementation:
+    - No bidirectional pre-diff to decide whether anything changed --
+      confirmed on real VyOS 1.5 hardware that `load` of an
+      already-applied file, followed by `compare`, natively reports
+      "No changes between working and active configurations" with no
+      Python-side pre-check needed.
+    - No special `replace=<path>` argument threaded through load_config()/
+      edit_config() -- confirmed that `load <path>` behaves as an ordinary
+      configuration command through the existing configure/compare/commit
+      flow already implemented in Cliconf.edit_config(), unmodified.
+
+    Candidate format requirement (hierarchical/bracket, not flat set/delete)
+    is enforced by VyOS's own `load` parser, not by this module -- confirmed
+    empirically: flat set-command input produces
+    "ValueError: Failed to parse config: Syntax error...".
+    """
+    candidate = to_bytes(module.params["src"], errors="surrogate_or_strict")
+
+    tmp = tempfile.NamedTemporaryFile(delete=False)
+    local_path = tmp.name
+    try:
+        tmp.write(candidate)
+        tmp.close()
+
+        remote_path = "/tmp/ansible_vyos_replace.cfg"
+        copy_file(module, local_path, remote_path, "scp")
+    finally:
+        os.unlink(local_path)
+
+    # TODO: nothing currently removes remote_path from the device after
+    # commit/discard. Untested: whether VyOS exposes an op-mode file-delete
+    # primitive reachable via run_commands() suitable for cleanup here.
+    # Left as a known, explicit gap rather than guessing at a command.
+
+    commit = not module.check_mode
+    comment = module.params["comment"]
+    confirm = None
+    if module.params["confirm"] == "automatic" or module.params["confirm"] == "manual":
+        confirm = module.params["confirm_timeout"]
+
+    diff = load_config(
+        module,
+        ["load %s" % remote_path],
+        commit=commit,
+        comment=comment,
+        confirm=confirm,
+    )
+
+    if module.params["confirm"] == "automatic":
+        run_commands(module, ["configure", "confirm", "exit"])
+
+    result["commands"] = ["load %s" % remote_path]
+    result["changed"] = bool(diff)
+
+    if module._diff:
+        result["diff"] = {"prepared": diff}
+
+
 def main():
     backup_spec = dict(filename=dict(), dir_path=dict(type="path"))
     argument_spec = dict(
@@ -388,20 +530,26 @@ def main():
         lines=dict(type="list", elements="str"),
         match=dict(default="line", choices=["line", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
-        confirm=dict(choices=["automatic", "manual", "none"], default='none'),
+        confirm=dict(choices=["automatic", "manual", "none"], default="none"),
         confirm_timeout=dict(type="int", default=10),
         config=dict(),
         backup=dict(type="bool", default=False),
         backup_options=dict(type="dict", options=backup_spec),
         save=dict(type="bool", default=False),
-        allow_password_change=dict(default="plaintext", choices=["all", "encrypted", "plaintext", "none"])
+        replace=dict(type="str", default="line", choices=["line", "config"]),
+        allow_password_change=dict(
+            default="plaintext",
+            choices=["all", "encrypted", "plaintext", "none"],
+        ),
     )
 
     mutually_exclusive = [("lines", "src")]
+    required_if = [("replace", "config", ["src"])]
 
     module = AnsibleModule(
         argument_spec=argument_spec,
         mutually_exclusive=mutually_exclusive,
+        required_if=required_if,
         supports_check_mode=True,
     )
 
@@ -412,7 +560,9 @@ def main():
     if module.params["backup"]:
         result["__backup__"] = get_config(module=module)
 
-    if any((module.params["src"], module.params["lines"])):
+    if module.params["replace"] == "config":
+        run_replace_config(module, result)
+    elif any((module.params["src"], module.params["lines"])):
         run(module, result)
 
     if module.params["save"]:
@@ -426,7 +576,11 @@ def main():
             result["changed"] = True
         run_commands(module, commands=["exit"])
 
-    if result.get("changed") and any((module.params["src"], module.params["lines"])):
+    if (
+        result.get("changed")
+        and module.params["replace"] != "config"
+        and any((module.params["src"], module.params["lines"]))
+    ):
         msg = (
             "To ensure idempotency and correct diff the input configuration lines should be"
             " similar to how they appear if present in"
