@@ -201,4 +201,5 @@ knowledge_base:
     # public vyos source it self-disables.
     usage: auto
     project_keys:
+      - NOS
       - VD
