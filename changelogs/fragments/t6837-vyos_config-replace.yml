@@ -1,5 +1,5 @@
 ---
-minor_features:
+minor_changes:
   - vyos_config - added a new ``replace`` option value, ``config`` (in addition
     to the existing default, ``line``). When set to ``replace=config``, the
     module uploads the complete candidate configuration supplied via ``src``
