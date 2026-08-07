@@ -1,0 +1,231 @@
+---
+- debug: msg="START cli/replace_config.yaml on connection={{ ansible_connection }}"
+
+# SAFETY NOTE: replace=config requires a COMPLETE configuration in
+# hierarchical/bracket format (the same format `show configuration` /
+# /config/config.boot use) -- never flat set/delete commands (VyOS's `load`
+# rejects those with a parse error) and never a partial candidate (anything
+# omitted is deleted, including management interfaces, SSH, and login
+# users). Every step below operates on a full baseline captured live from
+# the device itself, edited in place -- never a minimal hand-written or
+# statically-shipped candidate. This also sidesteps a real safety concern:
+# a checked-in static fixture would either need fake device-specific data
+# (interface hw-ids, password hashes) that's wrong for every real target,
+# or genuine credentials baked into git -- capturing live avoids both.
+#
+# NOTE on `src` / templates/replace_config_candidate.cfg: this file's
+# entire content is the single Jinja2 expression
+# "{{ replace_config_candidate_content }}". netcommon's action plugin
+# (_handle_src_option) reads whatever `src` points to and renders it as a
+# Jinja2 template using the play's own templar *before* the module runs --
+# this lets us point `src` at one static, checked-in, device-agnostic file
+# for every task below, and change only the in-memory fact
+# (replace_config_candidate_content) each time, with zero local file
+# writes and therefore no delegate_to/connection wrangling at all.
+# This mechanism is deprecated upstream (removal after 2028-01-01) in favor
+# of a `content:` module parameter -- cisco.iosxr.iosxr_config already has
+# one; vyos_config does not yet. Adding `content:` to vyos_config, mirroring
+# iosxr_config, would let this test drop the deprecated path entirely, but
+# that's real module-feature scope beyond this PR, not test plumbing.
+#
+# NOTE on `backup`: intentionally not combined with the idempotency
+# assertions in this file. `backup=yes`'s `changed` reflects whether the
+# backup file on the control node changed, not whether the device changed
+# (see DOCUMENTATION) -- this is pre-existing, shared netcommon action
+# plugin behavior, not specific to replace=config, and asserting on it here
+# would conflate two unrelated things.
+
+- name: setup baseline marker value
+  vyos.vyos.vyos_config:
+    lines:
+      - set system option reboot-on-upgrade-failure '7'
+    match: none
+    # save=true is required here: commit alone updates the running config
+    # but not /config/config.boot, which our baseline capture below reads
+    # directly. Without an explicit save, config.boot can reflect a stale
+    # value from any earlier save in the device's history rather than what
+    # was just committed -- confirmed as the root cause of a real failure
+    # during development (a stale, unrelated value silently made it into
+    # the candidate instead of this task's freshly-committed one).
+    save: true
+
+- name: capture full hierarchical baseline config from the device
+  # cat /config/config.boot directly, rather than `show configuration` --
+  # confirmed during development that `show configuration` returns masked
+  # placeholder values for local users' password hashes when queried via
+  # automation (vyos_command/network_cli), even though the same rendering
+  # shows real values when typed interactively. /config/config.boot is the
+  # same underlying file `show configuration` renders (confirmed identical
+  # structure during development), read directly rather than through
+  # VyOS's `show` masking layer.
+  vyos.vyos.vyos_command:
+    commands: "cat /config/config.boot"
+  register: baseline_show
+
+# VyOS appears to mask local users' encrypted-password/plaintext-password
+# values (a run of literal asterisks) specifically when show configuration
+# is queried through automation (vyos_command/network_cli), even though the
+# identical command returns the real hash when typed interactively at a
+# terminal -- observed directly during development of this test. Pushing a
+# masked capture back through replace=config sends the literal placeholder
+# as the new password value and fails at commit (see DOCUMENTATION for the
+# broader implication of this for replace=config generally). Fail fast here
+# with a clear, actionable message rather than letting that surface as a
+# confusing device-side "Invalid encrypted password" commit failure deep
+# inside the actual test.
+- name: safety check -- fail fast if the device masked secrets in this capture
+  ansible.builtin.assert:
+    that:
+      - "'****************' not in baseline_show.stdout[0]"
+    fail_msg: >-
+      show configuration returned masked secret placeholders in this
+      capture. This is a known VyOS behavior when querying via automation
+      (see DOCUMENTATION note on replace=config); this test cannot safely
+      continue with a masked candidate. Re-run against a lab image/session
+      where show configuration returns real values, or adjust the baseline
+      capture method.
+
+- name: build edited candidate content (v1 -- change the marker value only)
+  ansible.builtin.set_fact:
+    edited_candidate_v1: >-
+      {{ baseline_show.stdout[0]
+         | replace('reboot-on-upgrade-failure "7"', 'reboot-on-upgrade-failure "12"') }}
+
+# Fail fast here if the substitution above silently didn't match --
+# config.boot quotes leaf values (reboot-on-upgrade-failure "7"), and a
+# search string that misses that quoting produces a silent no-op edit
+# rather than an error, which is a real bug caught during development:
+# the candidate ends up byte-identical to the (possibly stale) capture,
+# and any resulting diff reflects leftover device state rather than this
+# test's intended edit.
+- name: sanity check the marker edit actually took effect
+  ansible.builtin.assert:
+    that:
+      - '''reboot-on-upgrade-failure "12"'' in edited_candidate_v1'
+      - '''reboot-on-upgrade-failure "7"'' not in edited_candidate_v1'
+    fail_msg: >-
+      The marker substitution did not match anything in the captured
+      baseline -- edited_candidate_v1 is identical to the raw capture.
+      Check that the baseline actually contains
+      reboot-on-upgrade-failure "7" (quoted) and that the setup task's
+      save=true actually persisted before this capture ran.
+
+- name: sanity check candidate still contains SSH/management essentials
+  ansible.builtin.assert:
+    that:
+      - "'service' in edited_candidate_v1"
+      - "'ssh' in edited_candidate_v1"
+      - "'login' in edited_candidate_v1"
+
+- name: replace with edited full config (native load)
+  register: result
+  diff: true
+  vyos.vyos.vyos_config:
+    src: "{{ role_path }}/templates/replace_config_candidate.cfg"
+    replace: config
+  vars:
+    replace_config_candidate_content: "{{ edited_candidate_v1 }}"
+
+- assert:
+    that:
+      - result.changed == true
+      - result.commands == ["load /tmp/ansible_vyos_replace.cfg"]
+      # replace=config surfaces VyOS's own compare() output verbatim in
+      # diff, not an itemized set/delete list -- commands is deliberately
+      # not the change content in this mode (see RETURN docs). Checking
+      # the specific new value (not just the field name) is deliberate --
+      # a weaker check here previously let a wrong-value regression through
+      # undetected for several tasks.
+      - '''reboot-on-upgrade-failure "12"'' in (result.diff.prepared | default(''''))'
+
+- name: verify connectivity survived
+  vyos.vyos.vyos_facts:
+    gather_subset: min
+  register: facts_check
+
+- assert:
+    that:
+      - facts_check is succeeded
+
+- name: re-run the identical replace (idempotency check, no backup involved)
+  register: result_repeat
+  vyos.vyos.vyos_config:
+    src: "{{ role_path }}/templates/replace_config_candidate.cfg"
+    replace: config
+  vars:
+    replace_config_candidate_content: "{{ edited_candidate_v1 }}"
+
+- assert:
+    that:
+      - result_repeat.changed == false
+
+- name: confirm replace=config rejects a candidate without src
+  register: no_src_result
+  ignore_errors: true
+  vyos.vyos.vyos_config:
+    replace: config
+
+- assert:
+    that:
+      - no_src_result is failed
+      - "'src' in no_src_result.msg"
+
+- name: confirm replace=config rejects lines+src together
+  register: lines_and_src_result
+  ignore_errors: true
+  vyos.vyos.vyos_config:
+    replace: config
+    src: "{{ role_path }}/templates/replace_config_candidate.cfg"
+    lines:
+      - "set system host-name foo"
+  vars:
+    replace_config_candidate_content: "{{ edited_candidate_v1 }}"
+
+- assert:
+    that:
+      - lines_and_src_result is failed
+
+- name: build edited candidate content (v2 -- further marker change, for check_mode)
+  ansible.builtin.set_fact:
+    edited_candidate_v2: >-
+      {{ edited_candidate_v1
+         | replace('reboot-on-upgrade-failure "12"', 'reboot-on-upgrade-failure "20"') }}
+
+- name: sanity check the v2 marker edit actually took effect
+  ansible.builtin.assert:
+    that:
+      - '''reboot-on-upgrade-failure "20"'' in edited_candidate_v2'
+      - '''reboot-on-upgrade-failure "12"'' not in edited_candidate_v2'
+
+- name: check_mode preview does not commit
+  check_mode: true
+  diff: true
+  register: check_result
+  vyos.vyos.vyos_config:
+    src: "{{ role_path }}/templates/replace_config_candidate.cfg"
+    replace: config
+  vars:
+    replace_config_candidate_content: "{{ edited_candidate_v2 }}"
+
+- assert:
+    that:
+      - check_result.changed == true
+      - '''reboot-on-upgrade-failure "20"'' in (check_result.diff.prepared | default(''''))'
+
+- name: confirm check_mode preview above was not actually applied
+  vyos.vyos.vyos_command:
+    commands: "show configuration commands | match reboot-on-upgrade-failure"
+  register: post_check_value
+
+- assert:
+    that:
+      - "'20' not in post_check_value.stdout[0]"
+      - "'12' in post_check_value.stdout[0]"
+
+- name: teardown -- restore marker to a neutral value
+  vyos.vyos.vyos_config:
+    lines:
+      - set system option reboot-on-upgrade-failure '5'
+    match: none
+
+- debug: msg="END cli/replace_config.yaml on connection={{ ansible_connection }}"

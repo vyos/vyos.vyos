@@ -1,4 +1,3 @@
-#
 # (c) 2016 Red Hat Inc.
 #
 # This file is part of Ansible
@@ -57,6 +56,11 @@ class TestVyosConfigModule(TestVyosModule):
         )
         self.get_connection = self.mock_get_connection.start()
 
+        self.mock_copy_file = patch(
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_config.copy_file",
+        )
+        self.copy_file = self.mock_copy_file.start()
+
         self.cliconf_obj = Cliconf(MagicMock())
         self.running_config = load_fixture("vyos_config_config.cfg")
 
@@ -71,6 +75,7 @@ class TestVyosConfigModule(TestVyosModule):
         self.mock_load_config.stop()
         self.mock_run_commands.stop()
         self.mock_get_connection.stop()
+        self.mock_copy_file.stop()
 
     def load_fixtures(self, commands=None, filename=None):
         config_file = "vyos_config_config.cfg"
@@ -178,3 +183,143 @@ class TestVyosConfigModule(TestVyosModule):
 
         self.assertEqual(self.load_config.call_args[1]["confirm"], confirm_timeout)
         self.run_commands.assert_not_called()
+
+    # -- replace=config (T6837, cisco.iosxr.iosxr_config replace=config analogue) --
+
+    def test_vyos_config_replace_config_requires_src(self):
+        """replace=config without src must fail argument validation, not run."""
+        set_module_args(dict(replace="config"))
+        result = self.execute_module(failed=True)
+        self.assertIn("src", result["msg"])
+
+    def test_vyos_config_replace_config_rejects_lines_only(self):
+        """replace=config with only lines (no src) must fail --
+        required_if demands src regardless of what else is set.
+        """
+        set_module_args(dict(replace="config", lines=["set system host-name foo"]))
+        self.execute_module(failed=True)
+
+    def test_vyos_config_replace_config_rejects_lines_and_src_together(self):
+        """lines/src remain mutually exclusive regardless of replace --
+        this is the pre-existing constraint, unaffected by replace=config."""
+        set_module_args(
+            dict(
+                replace="config",
+                src="system {\n    host-name router\n}\n",
+                lines=["set system host-name foo"],
+            ),
+        )
+        self.execute_module(failed=True)
+
+    def test_vyos_config_replace_config_pushes_and_loads(self):
+        """replace=config with a real change: copies the candidate to a fixed
+        remote path, issues a single `load <path>` command, and reports the
+        device's own diff verbatim -- not an itemized set/delete list.
+        """
+        src = "interfaces {\n    ethernet eth0 {\n        address dhcp\n    }\n}\n"
+        set_module_args(dict(replace="config", src=src))
+        self.load_config.side_effect = lambda *a, **kw: (
+            "[edit interfaces]\n+ethernet eth0 {\n+    address dhcp\n+}"
+        )
+
+        result = self.execute_module(changed=True)
+
+        self.assertEqual(result["commands"], ["load /tmp/ansible_vyos_replace.cfg"])
+        self.copy_file.assert_called_once()
+        # positional call: copy_file(module, local_path, remote_path, proto)
+        self.assertEqual(self.copy_file.call_args[0][2], "/tmp/ansible_vyos_replace.cfg")
+        self.assertEqual(self.copy_file.call_args[0][3], "scp")
+        self.assertEqual(
+            self.load_config.call_args[0][1],
+            ["load /tmp/ansible_vyos_replace.cfg"],
+        )
+
+    def test_vyos_config_replace_config_noop(self):
+        """replace=config with load_config() returning falsy (VyOS's own
+        `compare` reported no changes) must report changed=False, not
+        unconditionally True.
+        """
+        src = "system {\n    host-name router\n}\n"
+        set_module_args(dict(replace="config", src=src))
+        self.load_config.return_value = None
+
+        result = self.execute_module(changed=False)
+        self.assertEqual(result["commands"], ["load /tmp/ansible_vyos_replace.cfg"])
+
+    def test_vyos_config_replace_config_check_mode(self):
+        """Under check_mode, commit=False must be passed through to
+        load_config() -- the candidate is still copied/loaded for an accurate
+        compare-based preview diff, but nothing is committed.
+        """
+        src = "system {\n    host-name router\n}\n"
+        set_module_args(dict(replace="config", src=src, _ansible_check_mode=True))
+        self.load_config.side_effect = lambda *a, **kw: (
+            "[edit system]\n-host-name foo\n+host-name router"
+        )
+
+        self.execute_module(changed=True)
+
+        self.assertEqual(self.load_config.call_args[1]["commit"], False)
+
+    def test_vyos_config_replace_config_confirm_automatic(self):
+        src = "system {\n    host-name router\n}\n"
+        confirm_timeout = 9
+        set_module_args(
+            dict(
+                replace="config",
+                src=src,
+                confirm="automatic",
+                confirm_timeout=confirm_timeout,
+            ),
+        )
+        self.load_config.side_effect = lambda *a, **kw: (
+            "[edit system]\n-host-name foo\n+host-name router"
+        )
+
+        self.execute_module(changed=True)
+
+        self.assertEqual(self.load_config.call_args[1]["confirm"], confirm_timeout)
+        self.run_commands.assert_called_once()
+        self.assertEqual(["configure", "confirm", "exit"], self.run_commands.call_args[0][1])
+
+    def test_vyos_config_replace_config_diff(self):
+        """With --diff, result['diff']['prepared'] must carry VyOS's own
+        compare() output verbatim -- not an itemized command list, since none
+        is computed in this mode.
+        """
+        src = "system {\n    host-name router\n}\n"
+        set_module_args(dict(replace="config", src=src, _ansible_diff=True))
+        raw_compare = "[edit system]\n-host-name foo\n+host-name router"
+        self.load_config.side_effect = lambda *a, **kw: raw_compare
+
+        result = self.execute_module(changed=True)
+
+        self.assertEqual(result["diff"]["prepared"], raw_compare)
+
+    def test_vyos_config_replace_config_does_not_use_line_diff_path(self):
+        """replace=config must never call connection.get_diff() -- that path
+        (and match/allow_password_change) is specific to replace=line and is
+        documented as ignored under replace=config.
+        """
+        src = "system {\n    host-name router\n}\n"
+        set_module_args(dict(replace="config", src=src, match="none"))
+        self.load_config.side_effect = lambda *a, **kw: (
+            "[edit system]\n-host-name foo\n+host-name router"
+        )
+
+        self.execute_module(changed=True)
+
+        self.conn.get_diff.assert_not_called()
+
+    def test_vyos_config_replace_line_default_unaffected(self):
+        """Regression guard: default replace='line' must behave identically
+        to the pre-patch module -- copy_file() must never be invoked.
+        """
+        commands = ["set system host-name foo"]
+        set_module_args(dict(lines=commands))
+        candidate = "\n".join(commands)
+        self.conn.get_diff = MagicMock(
+            return_value=self.cliconf_obj.get_diff(candidate, self.running_config),
+        )
+        self.execute_module(changed=True, commands=commands)
+        self.copy_file.assert_not_called()

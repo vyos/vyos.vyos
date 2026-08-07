@@ -184,9 +184,28 @@ options:
       will be removed, including management interfaces, SSH access, and login
       users if they are omitted. Always supply a complete configuration, never
       a partial one.
+    - When capturing a candidate from the device's own output (for example
+      via C(show configuration)) rather than from a trusted, separately
+      maintained source, be aware that VyOS may return masked placeholder
+      values (for example a run of literal asterisks) in place of local
+      users' C(encrypted-password)/C(plaintext-password) values when queried
+      through automation, even though the identical command returns the real
+      value when typed interactively at a terminal. Pushing a masked capture
+      back through C(replace=config) sends the literal placeholder as the new
+      password value; VyOS's own commit-time validation is expected to reject
+      an obviously malformed hash, but a masked value that happens to pass
+      basic format validation could apply silently. Prefer sourcing
+      C(replace=config) candidates from a trusted, version-controlled
+      artifact rather than a live automated capture whenever the
+      configuration contains local password-based users.
     - Even under C(check_mode), the candidate is written to a temporary file on
       the device so that VyOS's own C(compare) can produce an accurate preview
       diff. No C(commit) occurs in check mode.
+    - When combined with C(backup=yes), the value of C(changed) reflects
+      whether the backup file's content changed on the Ansible control node,
+      not whether the device configuration changed -- this is existing
+      behavior in the shared netcommon action plugin backing config-family
+      modules across collections, not specific to C(replace=config).
     type: str
     default: line
     choices:
@@ -481,6 +500,11 @@ def run_replace_config(module, result):
     empirically: flat set-command input produces
     "ValueError: Failed to parse config: Syntax error...".
     """
+    # module.params["src"] is already the rendered file *content* by this
+    # point, not a path -- netcommon's generic action plugin for src-based
+    # network config modules reads the local file and substitutes its
+    # (Jinja2-rendered) content into this param before the module runs. Same
+    # assumption get_candidate() already relies on elsewhere in this file.
     candidate = to_bytes(module.params["src"], errors="surrogate_or_strict")
 
     tmp = tempfile.NamedTemporaryFile(delete=False)
@@ -489,15 +513,16 @@ def run_replace_config(module, result):
         tmp.write(candidate)
         tmp.close()
 
+        # Fixed remote filename, always overwritten -- same precedent as
+        # cisco.iosxr.iosxr_config's copy_file_to_node(), which always
+        # writes to the same "/harddisk:/ansible_config.txt". Avoids
+        # per-run temp-file accumulation on the device, at the accepted
+        # cost (shared with iosxr_config) that two concurrent replace=config
+        # runs against the same host could race on this path.
         remote_path = "/tmp/ansible_vyos_replace.cfg"
         copy_file(module, local_path, remote_path, "scp")
     finally:
         os.unlink(local_path)
-
-    # TODO: nothing currently removes remote_path from the device after
-    # commit/discard. Untested: whether VyOS exposes an op-mode file-delete
-    # primitive reachable via run_commands() suitable for cleanup here.
-    # Left as a known, explicit gap rather than guessing at a command.
 
     commit = not module.check_mode
     comment = module.params["comment"]
@@ -512,7 +537,6 @@ def run_replace_config(module, result):
         comment=comment,
         confirm=confirm,
     )
-
     if module.params["confirm"] == "automatic":
         run_commands(module, ["configure", "confirm", "exit"])
 

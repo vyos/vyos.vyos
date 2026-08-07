@@ -1,0 +1,19 @@
+---
+minor_features:
+  - vyos_config - added a new ``replace`` option value, ``config`` (in addition
+    to the existing default, ``line``). When set to ``replace=config``, the
+    module uploads the complete candidate configuration supplied via ``src``
+    to the device and issues VyOS's native ``load`` command in configuration
+    mode, letting VyOS's own configuration engine perform the replacement,
+    rather than the module computing a set/delete command diff. This mirrors
+    the mechanism offered by ``cisco.iosxr.iosxr_config``'s ``replace=config``
+    (https://github.com/vyos/vyos.vyos/issues/T6837).
+bugfixes:
+  - vyos_config - the ``allow_password_change`` filter used a regular
+    expression that only matched ``set`` lines
+    (``set system login user ... authentication (encrypted|plaintext)-password``),
+    so a ``delete`` line for the same path was never filtered regardless of
+    the ``allow_password_change`` value. This meant an account omitted from a
+    full-config candidate could have its password deleted without the
+    existing safety filter ever inspecting the line. The regular expression
+    now matches both ``set`` and ``delete`` lines.
