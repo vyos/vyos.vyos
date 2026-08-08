@@ -55,7 +55,7 @@ options:
         description:
         - The username to be configured on the VyOS device. This argument accepts a string
           value and is mutually exclusive with the C(aggregate) argument.
-        required: True
+        required: true
         type: str
       full_name:
         description:
@@ -205,6 +205,7 @@ commands:
 """
 
 import re
+import shlex
 
 from copy import deepcopy
 from functools import partial
@@ -276,7 +277,8 @@ def spec_to_commands(updates, module):
                 add(
                     commands,
                     want,
-                    "authentication plaintext-password %s" % want["configured_password"],
+                    "authentication plaintext-password %s"
+                    % shlex.quote(want["configured_password"]),
                 )
 
     return commands

@@ -412,11 +412,11 @@ class Firewall_rulesFacts(object):
                     # <1.3 could be # (type), #/# (type/code) or 'type' (type_name)
                     # recent this is only for strings
                     if "/" in val:  # type/code
-                        (type_no, code) = val.split(".")
-                        config["type"] = type_no
-                        config["code"] = code
+                        (type_no, code) = val.split("/")
+                        config["type"] = int(type_no)
+                        config["code"] = int(code)
                     elif val.isnumeric():
-                        config["type"] = type_no
+                        config["type"] = int(val)
                     else:
                         config["type_name"] = val
         return config
