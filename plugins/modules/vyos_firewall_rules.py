@@ -90,9 +90,9 @@ options:
             - reject (Drop and notify source if no prior rules are hit)
             - accept (Accept if no prior rules are hit)
             - jump (Jump to another rule-set, 1.4+)
-            - return (Return from the current chain and continue at the next rule of the last chain., 1.4+)
+            - return (Return from the current chain and continue at the next rule of the last chain, 1.4+)
             type: str
-            choices: ['drop', 'reject', 'accept', 'jump']
+            choices: ['drop', 'reject', 'accept', 'jump', 'return']
           default_jump_target:
             description:
             - Default jump target if the default action is jump.

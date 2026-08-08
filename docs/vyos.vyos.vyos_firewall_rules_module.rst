@@ -112,7 +112,7 @@ Parameters
                         <div>reject (Drop and notify source if no prior rules are hit)</div>
                         <div>accept (Accept if no prior rules are hit)</div>
                         <div>jump (Jump to another rule-set, 1.4+)</div>
-                        <div>return (Return from the current chain and continue at the next rule of the last chain., 1.4+)</div>
+                        <div>return (Return from the current chain and continue at the next rule of the last chain, 1.4+)</div>
                 </td>
             </tr>
             <tr>
