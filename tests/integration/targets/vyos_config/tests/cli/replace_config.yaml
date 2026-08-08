@@ -101,8 +101,8 @@
 - name: sanity check the marker edit actually took effect
   ansible.builtin.assert:
     that:
-      - '''reboot-on-upgrade-failure "12"'' in edited_candidate_v1'
-      - '''reboot-on-upgrade-failure "7"'' not in edited_candidate_v1'
+      - ('reboot-on-upgrade-failure "12"' in edited_candidate_v1)
+      - ('reboot-on-upgrade-failure "7"' not in edited_candidate_v1)
     fail_msg: >-
       The marker substitution did not match anything in the captured
       baseline -- edited_candidate_v1 is identical to the raw capture.
@@ -136,7 +136,7 @@
       # the specific new value (not just the field name) is deliberate --
       # a weaker check here previously let a wrong-value regression through
       # undetected for several tasks.
-      - '''reboot-on-upgrade-failure "12"'' in (result.diff.prepared | default(''''))'
+      - ('reboot-on-upgrade-failure "12"' in (result.diff.prepared | default('')))
 
 - name: verify connectivity survived
   vyos.vyos.vyos_facts:
@@ -194,8 +194,8 @@
 - name: sanity check the v2 marker edit actually took effect
   ansible.builtin.assert:
     that:
-      - '''reboot-on-upgrade-failure "20"'' in edited_candidate_v2'
-      - '''reboot-on-upgrade-failure "12"'' not in edited_candidate_v2'
+      - ('reboot-on-upgrade-failure "20"' in edited_candidate_v2)
+      - ('reboot-on-upgrade-failure "12"' not in edited_candidate_v2)
 
 - name: check_mode preview does not commit
   check_mode: true
@@ -210,7 +210,7 @@
 - assert:
     that:
       - check_result.changed == true
-      - '''reboot-on-upgrade-failure "20"'' in (check_result.diff.prepared | default(''''))'
+      - ('reboot-on-upgrade-failure "20"' in (check_result.diff.prepared | default('')))
 
 - name: confirm check_mode preview above was not actually applied
   vyos.vyos.vyos_command:

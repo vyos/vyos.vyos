@@ -86,7 +86,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>This is a dict object containing configurable options related to backup file path. The value of this option is read only when <code>backup</code> is set to <code>true</code>, if <code>backup</code> is set to <code>false</code> this option will be silently ignored.</div>
+                        <div>This is a dict object containing configurable options related to backup file path. The value of this option is read only when <code>backup</code> is set to <em>yes</em>, if <code>backup</code> is set to <em>no</em> this option will be silently ignored.</div>
                 </td>
             </tr>
                                 <tr>
@@ -272,7 +272,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>The <code>save</code> argument controls whether or not changes made to the active configuration are saved to disk.  This is independent of committing the config.  When set to <code>true</code>, the active configuration is saved.</div>
+                        <div>The <code>save</code> argument controls whether or not changes made to the active configuration are saved to disk.  This is independent of committing the config.  When set to True, the active configuration is saved.</div>
                 </td>
             </tr>
             <tr>
@@ -456,7 +456,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>always</td>
                 <td>
-                            <div>The list of configuration commands removed to avoid a load failure. Not populated when <code>replace</code> is set to <code>config</code>.</div>
+                            <div>The list of configuration commands removed to avoid a load failure.</div>
+                            <div>Not populated when <code>replace</code> is set to <code>config</code>.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;...&#x27;, &#x27;...&#x27;]</div>

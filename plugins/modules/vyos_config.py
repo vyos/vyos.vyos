@@ -88,7 +88,7 @@ options:
       the playbook root directory or role root directory, if playbook is part of an
       ansible role. If the directory does not exist, it is created.
     type: bool
-    default: false
+    default: no
   comment:
     description:
     - Allows a commit description to be specified to be included when the configuration
@@ -129,14 +129,14 @@ options:
     description:
     - The C(save) argument controls whether or not changes made to the active configuration
       are saved to disk.  This is independent of committing the config.  When set
-      to C(true), the active configuration is saved.
+      to True, the active configuration is saved.
     type: bool
-    default: false
+    default: no
   backup_options:
     description:
     - This is a dict object containing configurable options related to backup file
-      path. The value of this option is read only when C(backup) is set to C(true),
-      if C(backup) is set to C(false) this option will be silently ignored.
+      path. The value of this option is read only when C(backup) is set to I(yes),
+      if C(backup) is set to I(no) this option will be silently ignored.
     suboptions:
       filename:
         description:
@@ -294,7 +294,9 @@ commands:
   type: list
   sample: ['...', '...']
 filtered:
-  description: The list of configuration commands removed to avoid a load failure. Not populated when C(replace) is set to C(config).
+  description:
+  - The list of configuration commands removed to avoid a load failure.
+  - Not populated when C(replace) is set to C(config).
   returned: always
   type: list
   sample: ['...', '...']
@@ -480,26 +482,25 @@ def run(module, result):
 
 
 def run_replace_config(module, result):
-    """replace=config: push the full candidate to the device and let VyOS's
-    own `load` command perform the replacement natively, rather than
-    computing a set/delete diff in Python.
-
-    Deliberately smaller than cisco.iosxr's equivalent implementation:
-    - No bidirectional pre-diff to decide whether anything changed --
-      confirmed on real VyOS 1.5 hardware that `load` of an
-      already-applied file, followed by `compare`, natively reports
-      "No changes between working and active configurations" with no
-      Python-side pre-check needed.
-    - No special `replace=<path>` argument threaded through load_config()/
-      edit_config() -- confirmed that `load <path>` behaves as an ordinary
-      configuration command through the existing configure/compare/commit
-      flow already implemented in Cliconf.edit_config(), unmodified.
-
-    Candidate format requirement (hierarchical/bracket, not flat set/delete)
-    is enforced by VyOS's own `load` parser, not by this module -- confirmed
-    empirically: flat set-command input produces
-    "ValueError: Failed to parse config: Syntax error...".
-    """
+    # replace=config: push the full candidate to the device and let VyOS's
+    # own `load` command perform the replacement natively, rather than
+    # computing a set/delete diff in Python.
+    #
+    # Deliberately smaller than cisco.iosxr's equivalent implementation:
+    # - No bidirectional pre-diff to decide whether anything changed --
+    #   confirmed on real VyOS 1.5 hardware that `load` of an
+    #   already-applied file, followed by `compare`, natively reports
+    #   "No changes between working and active configurations" with no
+    #   Python-side pre-check needed.
+    # - No special `replace=<path>` argument threaded through load_config()/
+    #   edit_config() -- confirmed that `load <path>` behaves as an ordinary
+    #   configuration command through the existing configure/compare/commit
+    #   flow already implemented in Cliconf.edit_config(), unmodified.
+    #
+    # Candidate format requirement (hierarchical/bracket, not flat
+    # set/delete) is enforced by VyOS's own `load` parser, not by this
+    # module -- confirmed empirically: flat set-command input produces
+    # "ValueError: Failed to parse config: Syntax error...".
     # module.params["src"] is already the rendered file *content* by this
     # point, not a path -- netcommon's generic action plugin for src-based
     # network config modules reads the local file and substitutes its
@@ -537,7 +538,7 @@ def run_replace_config(module, result):
         comment=comment,
         confirm=confirm,
     )
-    if module.params["confirm"] == "automatic":
+    if module.params["confirm"] == "automatic" and diff and not module.check_mode:
         run_commands(module, ["configure", "confirm", "exit"])
 
     result["commands"] = ["load %s" % remote_path]

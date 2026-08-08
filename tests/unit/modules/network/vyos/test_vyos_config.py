@@ -311,6 +311,42 @@ class TestVyosConfigModule(TestVyosModule):
 
         self.conn.get_diff.assert_not_called()
 
+    def test_vyos_config_replace_config_confirm_automatic_check_mode_no_confirm_sent(self):
+        """Regression guard: confirm=automatic must not send the
+        configure/confirm/exit sequence under check_mode, even when a real
+        diff is present -- nothing was actually committed to confirm.
+        """
+        src = "system {\n    host-name router\n}\n"
+        set_module_args(
+            dict(
+                replace="config",
+                src=src,
+                confirm="automatic",
+                _ansible_check_mode=True,
+            ),
+        )
+        self.load_config.side_effect = lambda *a, **kw: (
+            "[edit system]\n-host-name foo\n+host-name router"
+        )
+
+        self.execute_module(changed=True)
+
+        self.run_commands.assert_not_called()
+
+    def test_vyos_config_replace_config_confirm_automatic_noop_no_confirm_sent(self):
+        """Regression guard: confirm=automatic must not send the
+        configure/confirm/exit sequence when load_config() reports no diff
+        (VyOS's own compare() found nothing to commit) -- there is nothing
+        pending to confirm.
+        """
+        src = "system {\n    host-name router\n}\n"
+        set_module_args(dict(replace="config", src=src, confirm="automatic"))
+        self.load_config.return_value = None
+
+        self.execute_module(changed=False)
+
+        self.run_commands.assert_not_called()
+
     def test_vyos_config_replace_line_default_unaffected(self):
         """Regression guard: default replace='line' must behave identically
         to the pre-patch module -- copy_file() must never be invoked.
