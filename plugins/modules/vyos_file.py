@@ -22,9 +22,9 @@ description:
     get_connection()/run_commands() pattern shared with vyos_command — there is
     no dedicated action plugin; this module uses the shared generic vyos action
     plugin like every other module in the collection.
-version_added: "5.4.0"
+version_added: "1.0.0"
 author:
-  - VyOS maintainers and contributors
+  - VyOS maintainers and contributors (@vyos)
 options:
   dest:
     description: Absolute path to the remote file or directory to manage.
@@ -48,7 +48,6 @@ options:
         is commonly used to push credential material. Mutually exclusive with
         I(src).
     type: str
-    no_log: true
   owner:
     description: Name of the user that should own I(dest).
     type: str
