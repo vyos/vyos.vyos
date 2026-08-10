@@ -1,0 +1,6 @@
+---
+- name: reset test directory to a known-absent baseline
+  vyos.vyos.vyos_command:
+    commands:
+      - "sudo rm -rf {{ test_dir }}"
+  ignore_errors: true

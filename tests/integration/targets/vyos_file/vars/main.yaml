@@ -1,0 +1,4 @@
+---
+test_dir: /config/auth/_vyos_file_test
+test_group: vyattacfg
+test_owner: vyos

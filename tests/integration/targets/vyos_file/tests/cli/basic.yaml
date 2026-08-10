@@ -1,0 +1,148 @@
+---
+- debug:
+    msg: START vyos_file basic integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_files.yaml
+
+- block:
+    - name: 1. create directory
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}"
+        state: present
+        owner: "{{ test_owner }}"
+        group: "{{ test_group }}"
+        mode: "0750"
+      register: t1
+
+    - assert:
+        that:
+          - t1.changed
+          - "'state' in t1.diff_fields"
+          - "'owner' in t1.diff_fields"
+          - "'group' in t1.diff_fields"
+          - "'mode' in t1.diff_fields"
+
+    - name: 2. re-run same task — must be a no-op
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}"
+        state: present
+        owner: "{{ test_owner }}"
+        group: "{{ test_group }}"
+        mode: "0750"
+      register: t2
+
+    - assert:
+        that:
+          - not t2.changed
+          - t2.diff_fields == []
+
+    - name: 3. push inline content
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        content: "integration test content\n"
+        owner: "{{ test_owner }}"
+        group: "{{ test_group }}"
+        mode: "0600"
+      register: t3
+
+    - assert:
+        that:
+          - t3.changed
+          - "'content' in t3.diff_fields"
+
+    - name: 3b. re-run identical content push — must be a no-op
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        content: "integration test content\n"
+        owner: "{{ test_owner }}"
+        group: "{{ test_group }}"
+        mode: "0600"
+      register: t3b
+
+    - assert:
+        that:
+          - not t3b.changed
+          - t3b.diff_fields == []
+
+    - name: 4. change mode only, non-canonical string
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        mode: "0640"
+      register: t4
+
+    - assert:
+        that:
+          - t4.changed
+          - t4.diff_fields == ['mode']
+
+    - name: 5. re-assert same mode, non-zero-padded — mode string normalization
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        mode: "640"
+      register: t5
+
+    - assert:
+        that:
+          - not t5.changed
+          - t5.diff_fields == []
+
+    - name: 6. check_mode dry run must report a diff without converging
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        mode: "0777"
+      check_mode: true
+      register: t6
+
+    - assert:
+        that:
+          - t6.changed
+          - t6.diff_fields == ['mode']
+
+    - name: verify check_mode did not actually touch the file
+      vyos.vyos.vyos_command:
+        commands:
+          - "sudo stat --format='%a' {{ test_dir }}/hello.txt"
+      register: post_check_mode_stat
+
+    - assert:
+        that:
+          - "'640' in post_check_mode_stat.stdout[0]"
+        fail_msg: "check_mode leaked a real converge — mode changed despite check_mode:true"
+
+    - name: 7. remove file
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        state: absent
+      register: t7
+
+    - assert:
+        that:
+          - t7.changed
+          - t7.diff_fields == ['state']
+
+    - name: 8. remove again — must be a no-op
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        state: absent
+      register: t8
+
+    - assert:
+        that:
+          - not t8.changed
+          - t8.diff_fields == []
+
+    - name: 9. explicit setgid request is honored (not ignored like an implicit one)
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}"
+        mode: "2750"
+      register: t9
+
+    - assert:
+        that:
+          # mode was already 2750 in practice (VyOS's own setgid convention
+          # on /config/auth — vyos.dev T2713) so an EXPLICIT request for the
+          # same value is a no-op; this distinguishes "explicitly asked for
+          # setgid" from "didn't care" (which ignores the special-bits digit)
+          - not t9.changed
+  always:
+    - include_tasks: _remove_files.yaml
