@@ -260,6 +260,8 @@ def main():
     become = "sudo " if module.params.get("become", True) else ""
     dest = module.params["dest"]
 
+    if not dest.startswith("/") or dest == "/":
+        module.fail_json(msg="vyos_file: dest must be an absolute path and must not be '/'")
     want = build_want(module.params, local_content_hash(module.params))
     have = get_have(
         module,
