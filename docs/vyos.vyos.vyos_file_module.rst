@@ -8,7 +8,7 @@ vyos.vyos.vyos_file
 **Manage files, directories, and their ownership on VyOS devices**
 
 
-Version added: 1.0.0
+Version added: 5.4.0
 
 .. contents::
    :local:
@@ -246,4 +246,4 @@ Status
 Authors
 ~~~~~~~
 
-- Evgeny Molotkov (@omnom62)
+- VyOS maintainers and contributors

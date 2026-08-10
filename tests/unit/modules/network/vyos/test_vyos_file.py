@@ -17,15 +17,19 @@ import json
 from unittest.mock import patch
 
 from ansible_collections.vyos.vyos.plugins.modules import vyos_file
+from ansible_collections.vyos.vyos.tests.unit.modules.network.vyos.vyos_module import (
+    TestVyosModule,
+)
 from ansible_collections.vyos.vyos.tests.unit.modules.utils import (
     AnsibleExitJson,
     AnsibleFailJson,
-    ModuleTestCase,
     set_module_args,
 )
 
 
-class TestVyosFileModule(ModuleTestCase):
+class TestVyosFileModule(TestVyosModule):
+
+    module = vyos_file
 
     def setUp(self):
         super(TestVyosFileModule, self).setUp()

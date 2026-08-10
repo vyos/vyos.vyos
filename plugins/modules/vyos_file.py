@@ -22,9 +22,9 @@ description:
     get_connection()/run_commands() pattern shared with vyos_command — there is
     no dedicated action plugin; this module uses the shared generic vyos action
     plugin like every other module in the collection.
-version_added: "1.0.0"
+version_added: "5.4.0"
 author:
-  - Evgeny Molotkov (@omnom62)
+  - VyOS maintainers and contributors
 options:
   dest:
     description: Absolute path to the remote file or directory to manage.
@@ -48,6 +48,7 @@ options:
         is commonly used to push credential material. Mutually exclusive with
         I(src).
     type: str
+    no_log: true
   owner:
     description: Name of the user that should own I(dest).
     type: str
@@ -110,6 +111,7 @@ diff_fields:
 
 import base64
 import hashlib
+import shlex
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -136,22 +138,45 @@ ARGUMENT_SPEC = dict(
 
 
 def get_have(module, become, dest, need_content_hash=False):
-
+    quoted_dest = shlex.quote(dest)
+    # check_rc=False is required here: a missing path is a normal, expected
+    # outcome on first-run creation, not a failure. With the default
+    # check_rc=True, run_commands() would call module.fail_json() on every
+    # "file doesn't exist yet" case, which is exactly the case we need to
+    # handle gracefully to build `have`.
     responses = run_commands(
         module,
-        ["{0}stat --format='%a %U %G %s' {1}".format(become, dest)],
+        ["{0}stat --format='%a %U %G %s' {1}".format(become, quoted_dest)],
         check_rc=False,
     )
     out = responses[0] if responses else ""
-    if not out or "No such file" in out or ("stat:" in out and "cannot stat" in out):
+
+    # Only treat the specific "doesn't exist" message as absent. Any other
+    # stat failure (permission denied, I/O error, etc.) is a real problem
+    # that should fail loudly rather than be silently reinterpreted as
+    # "create it" — a permission-denied stat masked as "missing" could lead
+    # this module to attempt mkdir/chown/chmod against a path it actually
+    # has no visibility into, with confusing results.
+    if not out:
         return None
+    if "No such file" in out:
+        return None
+    if "stat:" in out and "cannot stat" in out:
+        module.fail_json(
+            msg="vyos_file: stat failed for {0}: {1}".format(dest, out.strip()),
+        )
+
     have = parse_stat(out)
 
     if need_content_hash and have is not None:
-
+        # Only hash when content comparison actually matters (src/content
+        # given) — no need to pay this cost for plain directory/ownership
+        # management. Without this, `have["content_hash"]` would always be
+        # None, so `content` would show as "different" forever, even right
+        # after a successful write.
         hash_responses = run_commands(
             module,
-            ["{0}sha256sum {1}".format(become, dest)],
+            ["{0}sha256sum {1}".format(become, quoted_dest)],
             check_rc=False,
         )
         hash_out = hash_responses[0] if hash_responses else ""
@@ -186,9 +211,10 @@ def read_local_bytes(params):
 
 def converge(module, become, dest, want, diff, params):
     cmds = []
+    quoted_dest = shlex.quote(dest)
 
     if want["state"] == "absent":
-        cmds.append("{0}rm -rf {1}".format(become, dest))
+        cmds.append("{0}rm -rf {1}".format(become, quoted_dest))
         run_commands(module, cmds)
         post_have = get_have(module, become, dest)
         if post_have is not None:
@@ -200,23 +226,36 @@ def converge(module, become, dest, want, diff, params):
     if "content" in diff:
         data = read_local_bytes(params)
         b64 = base64.b64encode(data).decode()
+        # base64's alphabet (A-Za-z0-9+/=) contains no shell metacharacters,
+        # so it's safe unquoted on its own — but dest still needs quoting.
         cmds.append(
-            '{0}sh -c "echo {1} | base64 -d > {2}"'.format(become, b64, dest),
+            '{0}sh -c "echo {1} | base64 -d > {2}"'.format(become, b64, quoted_dest),
         )
     elif "state" in diff and have_is_missing(diff):
-        cmds.append("{0}mkdir -p {1}".format(become, dest))
+        cmds.append("{0}mkdir -p {1}".format(become, quoted_dest))
 
     if "owner" in diff and "group" in diff:
         cmds.append(
-            "{0}chown {1}:{2} {3}".format(become, want["owner"], want["group"], dest),
+            "{0}chown {1}:{2} {3}".format(
+                become,
+                shlex.quote(want["owner"]),
+                shlex.quote(want["group"]),
+                quoted_dest,
+            ),
         )
     elif "owner" in diff:
-        cmds.append("{0}chown {1} {2}".format(become, want["owner"], dest))
+        cmds.append(
+            "{0}chown {1} {2}".format(become, shlex.quote(want["owner"]), quoted_dest),
+        )
     elif "group" in diff:
-        cmds.append("{0}chgrp {1} {2}".format(become, want["group"], dest))
+        cmds.append(
+            "{0}chgrp {1} {2}".format(become, shlex.quote(want["group"]), quoted_dest),
+        )
 
     if "mode" in diff:
-        cmds.append("{0}chmod {1} {2}".format(become, want["mode"], dest))
+        cmds.append(
+            "{0}chmod {1} {2}".format(become, shlex.quote(want["mode"]), quoted_dest),
+        )
 
     if cmds:
         run_commands(module, cmds)
