@@ -150,24 +150,24 @@ def get_have(module, become, dest, need_content_hash=False):
     )
     out = responses[0] if responses else ""
 
-    # Only treat the specific "doesn't exist" message as absent. Any other
-    # stat failure (permission denied, I/O error, etc.) is a real problem
-    # that should fail loudly rather than be silently reinterpreted as
-    # "create it" — a permission-denied stat masked as "missing" could lead
-    # this module to attempt mkdir/chown/chmod against a path it actually
-    # has no visibility into, with confusing results.
     if not out:
         return None
     if "No such file" in out:
         return None
-    if "stat:" in out and "cannot stat" in out:
-        module.fail_json(
-            msg="vyos_file: stat failed for {0}: {1}".format(dest, out.strip()),
-        )
 
     have = parse_stat(out)
+    if have is None:
+        # Anything that isn't the specific "doesn't exist" message and
+        # doesn't parse as valid stat output is a real problem — permission
+        # denied, I/O error, unexpected format, etc. Fail loudly rather than
+        # silently treating it as "create it", which could otherwise lead
+        # this module to attempt mkdir/chown/chmod against a path it
+        # actually has no real visibility into.
+        module.fail_json(
+            msg="vyos_file: unexpected stat output for {0}: {1}".format(dest, out.strip()),
+        )
 
-    if need_content_hash and have is not None:
+    if need_content_hash:
         # Only hash when content comparison actually matters (src/content
         # given) — no need to pay this cost for plain directory/ownership
         # management. Without this, `have["content_hash"]` would always be
@@ -181,8 +181,12 @@ def get_have(module, become, dest, need_content_hash=False):
         hash_out = hash_responses[0] if hash_responses else ""
         # sha256sum output format: "<hex digest>  <path>"
         parts = hash_out.strip().split()
-        if parts:
+        if parts and len(parts[0]) == 64 and all(c in "0123456789abcdef" for c in parts[0].lower()):
             have["content_hash"] = parts[0]
+        # else: leave content_hash unset — a malformed/errored sha256sum
+        # (e.g. the file vanished in a race between stat and sha256sum)
+        # should surface as a real diff on the next comparison, not get
+        # silently recorded as a bogus "hash".
 
     return have
 
@@ -298,8 +302,6 @@ def main():
     become = "sudo " if module.params.get("become", True) else ""
     dest = module.params["dest"]
 
-    if not dest.startswith("/") or dest == "/":
-        module.fail_json(msg="vyos_file: dest must be an absolute path and must not be '/'")
     want = build_want(module.params, local_content_hash(module.params))
     have = get_have(
         module,

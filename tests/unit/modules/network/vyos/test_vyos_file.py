@@ -176,6 +176,34 @@ class TestVyosFileModule(TestVyosModule):
         result = self._run({"dest": "/x", "state": "absent"})
         self.assertFalse(result["changed"])
 
+    def test_real_stat_error_fails_loudly_instead_of_treated_as_missing(self):
+        # Permission denied (or any other real stat failure) must NOT be
+        # silently treated the same as "doesn't exist" — that could lead
+        # the module to attempt mkdir/chown/chmod against a path it
+        # actually has no real visibility into.
+        self._queue(["stat: cannot statx '/x': Permission denied"])
+        result = self._run({"dest": "/x", "mode": "0750"}, expect_fail=True)
+        self.assertIn("unexpected stat output", result["msg"])
+
+    def test_malformed_sha256sum_output_does_not_get_recorded_as_a_hash(self):
+        # If sha256sum itself errors (e.g. a race where the file vanished
+        # between stat and sha256sum), the garbage output must not be
+        # silently trusted as a real content hash — that would corrupt the
+        # comparison instead of surfacing as a real, visible diff.
+        # check_mode=True keeps this isolated to have/diff computation only,
+        # without needing to model a full converge cycle.
+        self._queue(
+            ["600 vyos vyattacfg 10"],
+            ["sha256sum: /x: No such file or directory"],
+        )
+        set_module_args({"dest": "/x", "content": "hi\n", "_ansible_check_mode": True})
+        with self.assertRaises(AnsibleExitJson) as ctx:
+            vyos_file.main()
+        result = ctx.exception.args[0]
+        # have.content_hash stays unset -> compared against a real want hash
+        # -> reported as a genuine diff, not silently accepted as converged.
+        self.assertIn("content", result.get("diff_fields", []))
+
     # ---- silent-failure detection (the real bug this caught on hardware) --
 
     def test_post_check_fails_module_when_chown_silently_no_ops(self):
@@ -188,7 +216,7 @@ class TestVyosFileModule(TestVyosModule):
         self._queue(
             ["stat: cannot statx '/x': No such file or directory"],
             ["", "chown: invalid group: 'x:bogus'"],  # mkdir ok, chown failed
-            ["root nogroup 4096"],  # post-check: neither owner nor group took
+            ["644 root nogroup 4096"],  # post-check: neither owner nor group took
         )
         result = self._run({"dest": "/x", "owner": "vyos", "group": "bogus"}, expect_fail=True)
         self.assertIn("post-check", result["msg"])
