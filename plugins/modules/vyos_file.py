@@ -229,11 +229,9 @@ def converge(module, become, dest, want, diff, params):
     if "content" in diff:
         data = read_local_bytes(params)
         b64 = base64.b64encode(data).decode()
-        # base64's alphabet (A-Za-z0-9+/=) contains no shell metacharacters,
-        # so it's safe unquoted on its own — but dest still needs quoting.
-        cmds.append(
-            '{0}sh -c "echo {1} | base64 -d > {2}"'.format(become, b64, quoted_dest),
-        )
+        # Quote the entire script as a single argument to sh -c (safe even if dest contains quotes).
+        script = "echo {0} | base64 -d > {1}".format(b64, shlex.quote(dest))
+        cmds.append("{0}sh -c {1}".format(become, shlex.quote(script)))
     elif "state" in diff and have_is_missing(diff):
         cmds.append("{0}mkdir -p {1}".format(become, quoted_dest))
 
