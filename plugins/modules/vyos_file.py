@@ -22,7 +22,7 @@ description:
     get_connection()/run_commands() pattern shared with vyos_command — there is
     no dedicated action plugin; this module uses the shared generic vyos action
     plugin like every other module in the collection.
-version_added: "1.0.0"
+version_added: "6.0.0"
 author:
   - VyOS maintainers and contributors (@vyos)
 options:
