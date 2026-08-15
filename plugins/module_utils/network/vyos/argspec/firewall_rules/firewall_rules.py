@@ -25,6 +25,7 @@
 The arg spec for the vyos_firewall_rules module
 """
 
+
 from __future__ import absolute_import, division, print_function
 
 
@@ -56,6 +57,7 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                 "accept",
                                 "jump",
                                 "return",
+                                "continue",
                             ],
                             "type": "str",
                         },

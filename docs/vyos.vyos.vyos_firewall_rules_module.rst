@@ -104,6 +104,8 @@ Parameters
                                     <li>reject</li>
                                     <li>accept</li>
                                     <li>jump</li>
+                                    <li>return</li>
+                                    <li>continue</li>
                         </ul>
                 </td>
                 <td>
@@ -113,6 +115,7 @@ Parameters
                         <div>accept (Accept if no prior rules are hit)</div>
                         <div>jump (Jump to another rule-set, 1.4+)</div>
                         <div>return (Return from the current chain and continue at the next rule of the last chain, 1.4+)</div>
+                        <div>continue (Continue parsing next rule, 1.4+)</div>
                 </td>
             </tr>
             <tr>
