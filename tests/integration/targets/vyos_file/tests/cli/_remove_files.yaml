@@ -4,4 +4,5 @@
     commands:
       - "sudo rm -rf {{ test_dir }}"
       - "sudo rm -rf {{ test_dir_tmp }}"
+      - "sudo rm -rf {{ test_dir_protected }}"
   ignore_errors: true

@@ -1,5 +1,6 @@
 ---
 test_dir: /config/auth/_vyos_file_test
 test_dir_tmp: /tmp/_vyos_file_test_bits
+test_dir_protected: /etc/_vyos_file_test_protected
 test_group: vyattacfg
 test_owner: vyos

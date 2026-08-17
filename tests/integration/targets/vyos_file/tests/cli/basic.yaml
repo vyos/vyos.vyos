@@ -189,5 +189,51 @@
       vyos.vyos.vyos_file:
         dest: "{{ test_dir_tmp }}"
         state: absent
+
+    - name: 11a. pre-stage a genuinely protected directory (root:root, 0700 — vyos has zero direct access)
+      vyos.vyos.vyos_command:
+        commands:
+          - "sudo mkdir -p {{ test_dir_protected }}"
+          - "sudo chown root:root {{ test_dir_protected }}"
+          - "sudo chmod 0700 {{ test_dir_protected }}"
+
+    - name: 11b. content push to a protected destination must succeed via staged transfer + sudo mv
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir_protected }}/secret.txt"
+        content: "content pushed to a root-only directory\n"
+        owner: root
+        mode: "0600"
+      register: t11
+
+    - assert:
+        that:
+          - t11.changed
+          - "'content' in t11.diff_fields"
+        fail_msg: >-
+          content push to a protected (root-only) destination failed —
+          the staging-then-sudo-mv approach should succeed here even
+          though a direct SCP write (no become) would be rejected
+
+    - name: verify the file actually landed with correct content (root reads it, vyos cannot)
+      vyos.vyos.vyos_command:
+        commands:
+          - "sudo cat {{ test_dir_protected }}/secret.txt"
+      register: protected_content_check
+
+    - assert:
+        that:
+          - "'content pushed to a root-only directory' in protected_content_check.stdout[0]"
+
+    - name: 11c. re-run identical push to protected destination — must be a no-op (idempotency under become)
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir_protected }}/secret.txt"
+        content: "content pushed to a root-only directory\n"
+        owner: root
+        mode: "0600"
+      register: t11c
+
+    - assert:
+        that:
+          - not t11c.changed
   always:
     - include_tasks: _remove_files.yaml
