@@ -131,6 +131,7 @@ import os
 import re
 import shlex
 import tempfile
+import uuid
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -278,7 +279,7 @@ def read_local_bytes(params):
     return None
 
 
-def push_content_via_scp(module, connection, dest, params):
+def push_content_via_scp(module, connection, become, dest, params):
     # Real SCP transfer over the connection's own persistent SSH session —
     # content/src bytes never appear inside a command string sent through
     # run_commands(). The earlier base64-in-a-shell-command approach was
@@ -292,6 +293,16 @@ def push_content_via_scp(module, connection, dest, params):
     # JSON-RPC proxy net_put builds via Connection(socket_path) — so this is
     # not action-plugin-only, despite that being true historically for some
     # other network_cli file-transfer patterns.
+    #
+    # connection.copy_file() writes as the connecting user with NO `become`
+    # applied — it has no concept of sudo. That's fine for a destination
+    # the connecting user already has access to (e.g. /config/auth, which
+    # `vyos` can write via its vyattacfg group membership), but it would
+    # fail outright against a genuinely protected destination. So: always
+    # transfer to a /tmp staging path the connecting user can unconditionally
+    # write to, then relocate it into the real `dest` via a sudo-prefixed
+    # `mv` — `mv` only ever references paths, never content, so this still
+    # never puts secret material inside a command string.
     cleanup_local = False
     if params.get("src"):
         local_path = params["src"]
@@ -306,17 +317,29 @@ def push_content_via_scp(module, connection, dest, params):
             os.remove(local_path)
             raise
 
+    remote_staging_path = "/tmp/.vyos_file_staging_{0}".format(uuid.uuid4().hex)
     try:
         timeout = connection.get_option("persistent_command_timeout")
         connection.copy_file(
             source=local_path,
-            destination=dest,
+            destination=remote_staging_path,
             proto="scp",
             timeout=timeout,
         )
     finally:
         if cleanup_local:
             os.remove(local_path)
+
+    run_commands(
+        module,
+        [
+            "{0}mv {1} {2}".format(
+                become,
+                shlex.quote(remote_staging_path),
+                shlex.quote(dest),
+            ),
+        ],
+    )
 
 
 def converge(module, become, dest, want, diff, params):
@@ -335,7 +358,7 @@ def converge(module, become, dest, want, diff, params):
 
     if "content" in diff:
         connection = get_connection(module)
-        push_content_via_scp(module, connection, dest, params)
+        push_content_via_scp(module, connection, become, dest, params)
     elif "state" in diff and have_is_missing(diff):
         cmds.append("{0}mkdir -p {1}".format(become, quoted_dest))
 

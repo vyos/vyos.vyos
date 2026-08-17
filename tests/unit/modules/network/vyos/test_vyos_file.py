@@ -188,14 +188,15 @@ class TestVyosFileModule(TestVyosModule):
     # ---- content ---------------------------------------------------------
 
     def test_content_push_detected_and_verified(self):
-        # Content transfer now goes through connection.copy_file() (mocked
-        # via self.mock_connection), not run_commands() — so the converge
-        # batch here only contains chown+chmod (2 items), not the old
-        # 3-item base64-write+chown+chmod batch.
+        # Content transfer now stages to a /tmp path via copy_file(), then
+        # relocates into `dest` via a sudo-prefixed mv (run_commands call).
+        # That mv is now a separate run_commands() call inserted between
+        # the initial stat and the chown+chmod batch.
         real_hash = "98ea6e4f216f2fb4b69fff9b3a44842c38686ca685f3f55dc48c5d3fb1107be4"
         self._queue(
             ["stat: cannot statx '/config/auth/x/hello.txt': No such file or directory"],
-            ["", ""],  # chown, chmod — batched (content push is separate now)
+            [""],  # mv staging path -> dest
+            ["", ""],  # chown, chmod — batched
             ["600 vyos vyattacfg 10"],  # post-check stat
             ["{0}  /config/auth/x/hello.txt".format(real_hash)],  # post-check sha256sum
         )
@@ -210,10 +211,15 @@ class TestVyosFileModule(TestVyosModule):
         self.assertTrue(result["changed"])
         self.assertIn("content", result["diff_fields"])
         self.mock_connection.copy_file.assert_called_once()
-        self.assertEqual(
-            self.mock_connection.copy_file.call_args.kwargs["destination"],
-            "/config/auth/x/hello.txt",
-        )
+        # copy_file's destination is now the /tmp staging path, NOT the
+        # final dest — the mv (with become applied) does the real placement.
+        staged_dest = self.mock_connection.copy_file.call_args.kwargs["destination"]
+        self.assertTrue(staged_dest.startswith("/tmp/.vyos_file_staging_"))
+        mv_call = self.run_commands.call_args_list[1]
+        mv_cmd = mv_call.args[1][0]
+        self.assertIn("mv", mv_cmd)
+        self.assertIn(staged_dest, mv_cmd)
+        self.assertIn("/config/auth/x/hello.txt", mv_cmd)
 
     def test_src_upload_reads_local_file_and_pushes_content(self):
         # src takes a different code path from content (read_local_bytes()
@@ -231,7 +237,8 @@ class TestVyosFileModule(TestVyosModule):
             ).hexdigest()
             self._queue(
                 ["stat: cannot statx '/config/auth/x/client.pem': No such file or directory"],
-                ["", ""],  # chown, chmod — batched (transfer is via copy_file, separate)
+                [""],  # mv staging path -> dest
+                ["", ""],  # chown, chmod — batched
                 ["600 vyos vyattacfg 10"],
                 ["{0}  /config/auth/x/client.pem".format(real_hash)],
             )
@@ -254,6 +261,9 @@ class TestVyosFileModule(TestVyosModule):
             os.unlink(local_path)
 
     def test_src_upload_idempotent_on_matching_remote_content(self):
+        # have already matches want entirely -> diff is empty -> converge()
+        # (and therefore push_content_via_scp/mv) never runs at all, so
+        # this stays at 1 run_commands call, unaffected by the staging change.
         data = b"identical content\n"
         with tempfile.NamedTemporaryFile(mode="wb", suffix=".txt", delete=False) as f:
             f.write(data)
@@ -266,6 +276,7 @@ class TestVyosFileModule(TestVyosModule):
             )
             result = self._run({"dest": "/x", "src": local_path, "owner": "vyos", "mode": "0600"})
             self.assertFalse(result["changed"], result.get("diff_fields"))
+            self.mock_connection.copy_file.assert_not_called()
         finally:
             os.unlink(local_path)
 
@@ -382,9 +393,10 @@ class TestVyosFileModule(TestVyosModule):
         self.assertEqual(self.run_commands.call_count, 0)
 
     def test_rejects_src_that_is_a_directory(self):
-        result = self._run({"dest": "/x", "src": "/tmp"}, expect_fail=True)
-        self.assertIn("directory", result["msg"])
-        self.assertEqual(self.run_commands.call_count, 0)
+        with tempfile.TemporaryDirectory() as tmpdir:
+            result = self._run({"dest": "/x", "src": tmpdir}, expect_fail=True)
+            self.assertIn("directory", result["msg"])
+            self.assertEqual(self.run_commands.call_count, 0)
 
     def test_malformed_sha256sum_output_does_not_get_recorded_as_a_hash(self):
         # If sha256sum itself errors (e.g. a race where the file vanished
@@ -455,6 +467,7 @@ class TestVyosFileModule(TestVyosModule):
         self.mock_connection.copy_file.side_effect = fake_copy_file
         self._queue(
             ["stat: cannot statx '/x': No such file or directory"],
+            [""],  # mv staging path -> dest (now unconditional, even with no owner/mode)
             ["600 vyos vyattacfg 10"],
             [hashlib.sha256(b"hi\n").hexdigest() + "  /x"],
         )
@@ -472,6 +485,7 @@ class TestVyosFileModule(TestVyosModule):
         try:
             self._queue(
                 ["stat: cannot statx '/x': No such file or directory"],
+                [""],  # mv staging path -> dest
                 ["600 vyos vyattacfg 10"],
                 [hashlib.sha256(b"real file content\n").hexdigest() + "  /x"],
             )
@@ -488,13 +502,13 @@ class TestVyosFileModule(TestVyosModule):
 
     def test_content_not_echoed_in_result(self):
         # No owner/group/mode requested here, so converge()'s cmds list
-        # stays empty (content push is separate, via copy_file) — meaning
-        # the old "chown/chmod batch" run_commands call doesn't happen at
-        # all in this scenario. Only 3 run_commands calls total: initial
-        # stat, post-check stat, post-check sha256sum.
+        # stays empty — but push_content_via_scp's mv is unconditional
+        # regardless, so it's still 4 run_commands calls total: initial
+        # stat, mv, post-check stat, post-check sha256sum.
         real_hash = "03767fbe485736bb40cc5d85e4c9bb10b12a415674b46faf005aa22188a39a10"
         self._queue(
             ["stat: cannot statx '/x': No such file or directory"],
+            [""],  # mv staging path -> dest
             ["600 root root 4"],  # post-check stat
             ["{0}  /x".format(real_hash)],  # post-check sha256sum
         )
@@ -503,4 +517,8 @@ class TestVyosFileModule(TestVyosModule):
         # the secret must not leak into the copy_file() call args either —
         # only a real local temp-file path should appear there
         for call in self.mock_connection.copy_file.call_args_list:
+            self.assertNotIn("super-secret-value", str(call))
+        # nor into any run_commands() call — the mv only ever references
+        # paths (staging path, dest), never file content
+        for call in self.run_commands.call_args_list:
             self.assertNotIn("super-secret-value", str(call))
