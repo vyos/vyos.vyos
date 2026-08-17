@@ -50,7 +50,6 @@ options:
         is commonly used to push credential material. Mutually exclusive with
         I(src).
     type: str
-    no_log: true
   owner:
     description: Name of the user that should own I(dest).
     type: str
