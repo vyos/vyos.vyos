@@ -173,8 +173,10 @@ Notes
 
 .. note::
    - This module works with connection ``ansible.netcommon.network_cli``.
+   - Tested against VyOS 1.4.2 and 1.5.0.
    - File state managed by this module is independent of VyOS's config revision system. A rollback to a previous config revision will not revert changes made by this module.
    - Paths under */config/auth* are deliberately setgid ``vyattacfg`` by VyOS's own config-management convention (see vyos.dev T2713). If *mode* is given with a leading digit of ``0`` (e.g. ``'0750'``), this module compares only the rwx bits and will not report a diff for VyOS's own setgid bit. To manage the setgid/setuid/sticky bit explicitly, pass a non-zero leading digit (e.g. ``'2750'``).
+   - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
 
 
 

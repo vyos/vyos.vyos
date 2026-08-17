@@ -131,18 +131,63 @@
           - not t8.changed
           - t8.diff_fields == []
 
-    - name: 9. explicit setgid request is honored (not ignored like an implicit one)
+    - name: 9a. explicit setgid request converges on a path with no prior special bits (/tmp, outside VyOS's own /config/auth enforcement)
       vyos.vyos.vyos_file:
-        dest: "{{ test_dir }}"
+        dest: "{{ test_dir_tmp }}"
+        state: present
+        owner: "{{ test_owner }}"
+        group: "{{ test_group }}"
         mode: "2750"
-      register: t9
+      register: t9a
 
     - assert:
         that:
-          # mode was already 2750 in practice (VyOS's own setgid convention
-          # on /config/auth — vyos.dev T2713) so an EXPLICIT request for the
-          # same value is a no-op; this distinguishes "explicitly asked for
-          # setgid" from "didn't care" (which ignores the special-bits digit)
-          - not t9.changed
+          - t9a.changed
+          - "'mode' in t9a.diff_fields"
+
+    - name: 9b. re-run identical explicit request — must be a no-op (idempotency)
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir_tmp }}"
+        mode: "2750"
+      register: t9b
+
+    - assert:
+        that:
+          - not t9b.changed
+
+    - name: 10a. pre-stage setgid via raw command, outside this module's control
+      vyos.vyos.vyos_command:
+        commands:
+          - "sudo chmod 2770 {{ test_dir_tmp }}"
+
+    - name: 10b. implicit mode request must preserve the pre-existing setgid bit
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir_tmp }}"
+        mode: "0640"
+      register: t10
+
+    - assert:
+        that:
+          - t10.changed
+          - t10.diff_fields == ['mode']
+
+    - name: verify setgid survived an implicit-mode rwx change (the real regression this guards against)
+      vyos.vyos.vyos_command:
+        commands:
+          - "sudo stat --format='%a' {{ test_dir_tmp }}"
+      register: post_implicit_mode_stat
+
+    - assert:
+        that:
+          - "'2640' in post_implicit_mode_stat.stdout[0]"
+        fail_msg: >-
+          implicit mode request cleared the pre-existing setgid bit —
+          expected 2640 (setgid preserved, rwx changed to 640), got
+          {{ post_implicit_mode_stat.stdout[0] }}
+
+    - name: cleanup /tmp test path
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir_tmp }}"
+        state: absent
   always:
     - include_tasks: _remove_files.yaml

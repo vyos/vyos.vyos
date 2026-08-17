@@ -25,6 +25,8 @@ description:
 version_added: "6.0.0"
 author:
   - VyOS maintainers and contributors (@vyos)
+extends_documentation_fragment:
+  - vyos.vyos.vyos
 options:
   dest:
     description: Absolute path to the remote file or directory to manage.
@@ -48,6 +50,7 @@ options:
         is commonly used to push credential material. Mutually exclusive with
         I(src).
     type: str
+    no_log: true
   owner:
     description: Name of the user that should own I(dest).
     type: str
@@ -66,6 +69,7 @@ options:
     default: true
 notes:
   - This module works with connection C(ansible.netcommon.network_cli).
+  - Tested against VyOS 1.4.2 and 1.5.0.
   - File state managed by this module is independent of VyOS's config revision
     system. A rollback to a previous config revision will not revert changes
     made by this module.
@@ -110,6 +114,8 @@ diff_fields:
 
 import base64
 import hashlib
+import os
+import re
 import shlex
 
 from ansible.module_utils.basic import AnsibleModule
@@ -191,6 +197,51 @@ def get_have(module, become, dest, need_content_hash=False):
     return have
 
 
+_OCTAL_DIGIT_TO_SYMBOLIC = {
+    "0": "",
+    "1": "x",
+    "2": "w",
+    "3": "wx",
+    "4": "r",
+    "5": "rx",
+    "6": "rw",
+    "7": "rwx",
+}
+
+
+def _rwx_digits_to_symbolic_mode(mode4):
+    """Convert the last 3 digits of a normalized 4-digit mode string into a
+    symbolic chmod argument (e.g. "0750" -> "u=rwx,g=rx,o="). Symbolic mode
+    assignment for u/g/o only touches those classes — unlike any numeric
+    chmod form, it leaves existing setuid/setgid/sticky bits untouched
+    unless explicitly referenced (u+s, g+s, +t), which is exactly the
+    "special bits are unmanaged for implicit mode requests" guarantee this
+    module's docs and diff logic already promise but a plain numeric chmod
+    would silently violate.
+    """
+    u, g, o = mode4[-3], mode4[-2], mode4[-1]
+    return "u={0},g={1},o={2}".format(
+        _OCTAL_DIGIT_TO_SYMBOLIC[u],
+        _OCTAL_DIGIT_TO_SYMBOLIC[g],
+        _OCTAL_DIGIT_TO_SYMBOLIC[o],
+    )
+
+
+def _build_chmod_command(become, mode4, quoted_dest):
+    if mode4[0] == "0":
+        # Implicit special bits (caller didn't ask for them): use symbolic
+        # mode so existing setuid/setgid/sticky bits survive. A numeric
+        # chmod here — even a bare 3-digit form — always explicitly sets
+        # the special-bits digit to 0, silently clearing e.g. VyOS's own
+        # setgid convention on /config/auth (vyos.dev T2713) the moment any
+        # rwx change is needed, rather than genuinely leaving it unmanaged.
+        symbolic = _rwx_digits_to_symbolic_mode(mode4)
+        return "{0}chmod {1} {2}".format(become, shlex.quote(symbolic), quoted_dest)
+    # Explicit non-zero leading digit: caller wants exact control over
+    # special bits too, so a plain numeric chmod is correct here.
+    return "{0}chmod {1} {2}".format(become, shlex.quote(mode4), quoted_dest)
+
+
 def local_content_hash(params):
     if params.get("src"):
         h = hashlib.sha256()
@@ -229,7 +280,14 @@ def converge(module, become, dest, want, diff, params):
     if "content" in diff:
         data = read_local_bytes(params)
         b64 = base64.b64encode(data).decode()
-        # Quote the entire script as a single argument to sh -c (safe even if dest contains quotes).
+        # Build the whole inner script as one plain string, quoting dest
+        # within it, then quote the ENTIRE script once as a single argument
+        # to `sh -c`. Do not nest a shlex.quote()'d fragment inside a
+        # separately-quoted outer string (e.g. double quotes) — if dest
+        # contains a single quote, shlex.quote()'s escaping introduces a
+        # literal double quote into its output, which would prematurely
+        # close a surrounding double-quoted wrapper and reintroduce the
+        # exact shell-injection risk quoting was meant to prevent.
         script = "echo {0} | base64 -d > {1}".format(b64, shlex.quote(dest))
         cmds.append("{0}sh -c {1}".format(become, shlex.quote(script)))
     elif "state" in diff and have_is_missing(diff):
@@ -254,9 +312,7 @@ def converge(module, become, dest, want, diff, params):
         )
 
     if "mode" in diff:
-        cmds.append(
-            "{0}chmod {1} {2}".format(become, shlex.quote(want["mode"]), quoted_dest),
-        )
+        cmds.append(_build_chmod_command(become, want["mode"], quoted_dest))
 
     if cmds:
         run_commands(module, cmds)
@@ -290,6 +346,56 @@ def have_is_missing(diff):
     return diff.get("state") == (None, "present")
 
 
+def validate_dest(module, dest):
+    # dest is type=path in ARGUMENT_SPEC, which expands ~ and env vars but
+    # does NOT enforce absoluteness — a relative value would resolve against
+    # whatever the underlying shell's cwd happens to be, an unintended and
+    # unpredictable target. And since this module issues raw `rm -rf`,
+    # `chmod`, `chown` against dest with no config-tree safety net, a
+    # dest of "/" (or anything that normalizes to it) combined with
+    # state=absent would attempt to recursively remove the entire
+    # filesystem. Both must be rejected before any stat/converge runs.
+    if not os.path.isabs(dest):
+        module.fail_json(
+            msg="vyos_file: dest must be an absolute path, got {0!r}".format(dest),
+        )
+    normalized = os.path.normpath(dest)
+    # normalized == "/" alone is insufficient: os.path.normpath preserves
+    # "//" as-is (a POSIX quirk permitting implementation-defined behavior
+    # for exactly two leading slashes), so dest="//" would otherwise bypass
+    # this check entirely. Stripping all slashes catches "/", "//", "///",
+    # etc. uniformly.
+    if normalized.strip("/") == "":
+        module.fail_json(
+            msg=(
+                "vyos_file: refusing to manage the root filesystem path "
+                "(dest normalized to {0!r}): {1!r}".format(normalized, dest)
+            ),
+        )
+
+
+_MODE_RE = re.compile(r"^[0-7]{3,4}$")
+
+
+def validate_mode(module, mode):
+    # _normalize_mode() (module_utils) does str(mode).zfill(4)[-4:], which
+    # for genuinely invalid input silently mangles it into something that
+    # LOOKS valid rather than rejecting it — e.g. "10640" (5 digits, an
+    # obvious typo for a 4-digit mode) becomes "0640" by truncation, and
+    # the module would silently apply permissions the caller never actually
+    # asked for. Validate strictly here, before that normalization ever
+    # runs, so malformed input fails loudly instead of being reinterpreted.
+    if mode is None:
+        return
+    if not _MODE_RE.match(mode):
+        module.fail_json(
+            msg=(
+                "vyos_file: mode must be an octal string of 3 or 4 digits "
+                "(0-7 only), got {0!r}".format(mode)
+            ),
+        )
+
+
 def main():
     module = AnsibleModule(
         argument_spec=ARGUMENT_SPEC,
@@ -297,8 +403,11 @@ def main():
         supports_check_mode=True,
     )
 
-    become = "sudo " if module.params.get("become", True) else ""
     dest = module.params["dest"]
+    validate_dest(module, dest)
+    validate_mode(module, module.params.get("mode"))
+
+    become = "sudo " if module.params.get("become", True) else ""
 
     want = build_want(module.params, local_content_hash(module.params))
     have = get_have(
