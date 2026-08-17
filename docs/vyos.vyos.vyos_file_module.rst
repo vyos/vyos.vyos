@@ -67,6 +67,7 @@ Parameters
                 </td>
                 <td>
                         <div>Inline text content to write to <em>dest</em>. Marked no_log, since this module is commonly used to push credential material. Mutually exclusive with <em>src</em>.</div>
+                        <div>Since <em>content</em> is a normal string-type module option, Ansible renders any Jinja expressions in it (e.g. <code>{{ my_var }}</code>) before this module ever runs, the same as any other option value — no special templating support is implemented by this module itself.</div>
                 </td>
             </tr>
             <tr>
@@ -142,7 +143,8 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Path to a local file (on the Ansible controller) whose content should be pushed to <em>dest</em>. Read locally and pushed as base64 via a single CLI command, since network_cli has no SFTP/SCP channel available to this module. Mutually exclusive with <em>content</em>.</div>
+                        <div>Path to a local file (on the Ansible controller) whose content should be pushed to <em>dest</em>. Transferred via a real SCP session over the connection&#x27;s own persistent socket (the same mechanism <span class='module'>ansible.netcommon.net_put</span> uses), never placed inside a command string. Mutually exclusive with <em>content</em>.</div>
+                        <div>File bytes are uploaded exactly as they exist on disk — Ansible does not render Jinja expressions inside the file&#x27;s contents for <em>src</em>, only in the option values of the task itself (e.g. a templated path string). To push templated text, render it first with the <code>template</code> lookup and pass the result via <em>content</em> instead.</div>
                 </td>
             </tr>
             <tr>
@@ -173,10 +175,8 @@ Notes
 
 .. note::
    - This module works with connection ``ansible.netcommon.network_cli``.
-   - Tested against VyOS 1.4.2 and 1.5.0.
    - File state managed by this module is independent of VyOS's config revision system. A rollback to a previous config revision will not revert changes made by this module.
    - Paths under */config/auth* are deliberately setgid ``vyattacfg`` by VyOS's own config-management convention (see vyos.dev T2713). If *mode* is given with a leading digit of ``0`` (e.g. ``'0750'``), this module compares only the rwx bits and will not report a diff for VyOS's own setgid bit. To manage the setgid/setuid/sticky bit explicitly, pass a non-zero leading digit (e.g. ``'2750'``).
-   - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
 
 
 
@@ -204,6 +204,14 @@ Examples
       vyos.vyos.vyos_file:
         dest: /config/auth/old-vpn/client.pem
         state: absent
+
+    - name: push templated LDAP auth config (content is rendered by Ansible before this module runs)
+      vyos.vyos.vyos_file:
+        dest: /config/auth/office-vpn/ldap-auth.config
+        content: "{{ lookup('template', 'ldap_auth.config.j2') }}"
+        owner: openvpn
+        group: openvpn
+        mode: '0640'
 
 
 

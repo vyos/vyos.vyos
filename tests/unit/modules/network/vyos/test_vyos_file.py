@@ -17,7 +17,7 @@ import json
 import os
 import tempfile
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from ansible_collections.vyos.vyos.plugins.modules import vyos_file
 from ansible_collections.vyos.vyos.tests.unit.modules.network.vyos.vyos_module import (
@@ -41,9 +41,22 @@ class TestVyosFileModule(TestVyosModule):
         )
         self.run_commands = self.mock_run_commands.start()
 
+        # content/src transfer now goes through a real SCP call via
+        # get_connection(module).copy_file(...) — never through
+        # run_commands() — so it needs its own mock, separate from the
+        # command-based stat/chown/chmod/rm path above.
+        self.mock_get_connection = patch(
+            "ansible_collections.vyos.vyos.plugins.modules.vyos_file.get_connection",
+        )
+        self.get_connection = self.mock_get_connection.start()
+        self.mock_connection = MagicMock()
+        self.mock_connection.get_option.return_value = 30
+        self.get_connection.return_value = self.mock_connection
+
     def tearDown(self):
         super(TestVyosFileModule, self).tearDown()
         self.mock_run_commands.stop()
+        self.mock_get_connection.stop()
 
     # ---- helpers -----------------------------------------------------
 
@@ -175,18 +188,14 @@ class TestVyosFileModule(TestVyosModule):
     # ---- content ---------------------------------------------------------
 
     def test_content_push_detected_and_verified(self):
-        # need_content_hash is True (content was given), but get_have()
-        # only actually hashes when the path already exists — on the
-        # initial (absent) lookup it's skipped, so that first call is a
-        # single stat. converge() batches base64-write + chown into one
-        # call. The post-check, now that the file exists, issues stat AND
-        # sha256sum as two separate calls. The queued hash must be the
-        # REAL sha256("hi\n") hex digest, or the module's own post-check
-        # will (correctly) call fail_json on a genuine mismatch.
+        # Content transfer now goes through connection.copy_file() (mocked
+        # via self.mock_connection), not run_commands() — so the converge
+        # batch here only contains chown+chmod (2 items), not the old
+        # 3-item base64-write+chown+chmod batch.
         real_hash = "98ea6e4f216f2fb4b69fff9b3a44842c38686ca685f3f55dc48c5d3fb1107be4"
         self._queue(
             ["stat: cannot statx '/config/auth/x/hello.txt': No such file or directory"],
-            ["", "", ""],  # base64 write, chown, chmod — batched (mode was also requested)
+            ["", ""],  # chown, chmod — batched (content push is separate now)
             ["600 vyos vyattacfg 10"],  # post-check stat
             ["{0}  /config/auth/x/hello.txt".format(real_hash)],  # post-check sha256sum
         )
@@ -200,6 +209,11 @@ class TestVyosFileModule(TestVyosModule):
         )
         self.assertTrue(result["changed"])
         self.assertIn("content", result["diff_fields"])
+        self.mock_connection.copy_file.assert_called_once()
+        self.assertEqual(
+            self.mock_connection.copy_file.call_args.kwargs["destination"],
+            "/config/auth/x/hello.txt",
+        )
 
     def test_src_upload_reads_local_file_and_pushes_content(self):
         # src takes a different code path from content (read_local_bytes()
@@ -217,7 +231,7 @@ class TestVyosFileModule(TestVyosModule):
             ).hexdigest()
             self._queue(
                 ["stat: cannot statx '/config/auth/x/client.pem': No such file or directory"],
-                ["", "", ""],  # base64 write, chown, chmod
+                ["", ""],  # chown, chmod — batched (transfer is via copy_file, separate)
                 ["600 vyos vyattacfg 10"],
                 ["{0}  /config/auth/x/client.pem".format(real_hash)],
             )
@@ -231,6 +245,11 @@ class TestVyosFileModule(TestVyosModule):
             )
             self.assertTrue(result["changed"])
             self.assertIn("content", result["diff_fields"])
+            self.mock_connection.copy_file.assert_called_once()
+            self.assertEqual(
+                self.mock_connection.copy_file.call_args.kwargs["source"],
+                local_path,
+            )
         finally:
             os.unlink(local_path)
 
@@ -348,6 +367,25 @@ class TestVyosFileModule(TestVyosModule):
                 result = self._run({"dest": "/x", "mode": valid_mode})
                 self.assertFalse(result["changed"])
 
+    # ---- src validation --------------------------------------------------
+
+    def test_rejects_missing_src_file(self):
+        # Without this check, open() inside local_content_hash() would
+        # raise an unhandled FileNotFoundError instead of a clean module
+        # error — and this happens even under check_mode, since content
+        # hashing runs before the check-mode short-circuit.
+        result = self._run(
+            {"dest": "/x", "src": "/definitely/does/not/exist/x.pem"},
+            expect_fail=True,
+        )
+        self.assertIn("src not found", result["msg"])
+        self.assertEqual(self.run_commands.call_count, 0)
+
+    def test_rejects_src_that_is_a_directory(self):
+        result = self._run({"dest": "/x", "src": "/tmp"}, expect_fail=True)
+        self.assertIn("directory", result["msg"])
+        self.assertEqual(self.run_commands.call_count, 0)
+
     def test_malformed_sha256sum_output_does_not_get_recorded_as_a_hash(self):
         # If sha256sum itself errors (e.g. a race where the file vanished
         # between stat and sha256sum), the garbage output must not be
@@ -399,13 +437,70 @@ class TestVyosFileModule(TestVyosModule):
 
     # ---- secrets discipline ------------------------------------------------
 
+    def test_content_push_via_scp_creates_and_cleans_up_temp_file_for_inline_content(self):
+        # For `content` (no src), a real local temp file must be created to
+        # hand to copy_file() (SCP needs a real source path — it can't
+        # stream an in-memory string), and that temp file must be removed
+        # again afterward regardless of outcome, since it briefly holds
+        # secret material on the controller's local disk.
+        captured_path = {}
+
+        def fake_copy_file(source, destination, proto, timeout):
+            captured_path["source"] = source
+            # the temp file must exist at the moment copy_file is invoked
+            self.assertTrue(os.path.exists(source))
+            with open(source, "rb") as f:
+                self.assertEqual(f.read(), b"hi\n")
+
+        self.mock_connection.copy_file.side_effect = fake_copy_file
+        self._queue(
+            ["stat: cannot statx '/x': No such file or directory"],
+            ["600 vyos vyattacfg 10"],
+            [hashlib.sha256(b"hi\n").hexdigest() + "  /x"],
+        )
+        self._run({"dest": "/x", "content": "hi\n"})
+        # cleaned up after the transfer completes — nothing sensitive left
+        # sitting on the controller's local disk
+        self.assertFalse(os.path.exists(captured_path["source"]))
+
+    def test_content_push_via_scp_uses_src_path_directly_without_a_temp_file(self):
+        # When src is given, the provided path IS the source — no temp
+        # file should be created or deleted for it.
+        with tempfile.NamedTemporaryFile(mode="w", delete=False) as f:
+            f.write("real file content\n")
+            local_path = f.name
+        try:
+            self._queue(
+                ["stat: cannot statx '/x': No such file or directory"],
+                ["600 vyos vyattacfg 10"],
+                [hashlib.sha256(b"real file content\n").hexdigest() + "  /x"],
+            )
+            self._run({"dest": "/x", "src": local_path})
+            self.assertEqual(
+                self.mock_connection.copy_file.call_args.kwargs["source"],
+                local_path,
+            )
+            # the caller's own file must still exist — this module must
+            # never delete a user-provided src path
+            self.assertTrue(os.path.exists(local_path))
+        finally:
+            os.unlink(local_path)
+
     def test_content_not_echoed_in_result(self):
+        # No owner/group/mode requested here, so converge()'s cmds list
+        # stays empty (content push is separate, via copy_file) — meaning
+        # the old "chown/chmod batch" run_commands call doesn't happen at
+        # all in this scenario. Only 3 run_commands calls total: initial
+        # stat, post-check stat, post-check sha256sum.
         real_hash = "03767fbe485736bb40cc5d85e4c9bb10b12a415674b46faf005aa22188a39a10"
         self._queue(
             ["stat: cannot statx '/x': No such file or directory"],
-            [""],  # single batched command: base64 write only (no owner/mode given)
             ["600 root root 4"],  # post-check stat
             ["{0}  /x".format(real_hash)],  # post-check sha256sum
         )
         result = self._run({"dest": "/x", "content": "super-secret-value"})
         self.assertNotIn("super-secret-value", json.dumps(result))
+        # the secret must not leak into the copy_file() call args either —
+        # only a real local temp-file path should appear there
+        for call in self.mock_connection.copy_file.call_args_list:
+            self.assertNotIn("super-secret-value", str(call))

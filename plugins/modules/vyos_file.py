@@ -25,8 +25,6 @@ description:
 version_added: "6.0.0"
 author:
   - VyOS maintainers and contributors (@vyos)
-extends_documentation_fragment:
-  - vyos.vyos.vyos
 options:
   dest:
     description: Absolute path to the remote file or directory to manage.
@@ -40,15 +38,25 @@ options:
   src:
     description:
       - Path to a local file (on the Ansible controller) whose content should be
-        pushed to I(dest). Read locally and pushed as base64 via a single CLI
-        command, since network_cli has no SFTP/SCP channel available to this
-        module. Mutually exclusive with I(content).
+        pushed to I(dest). Transferred via a real SCP session over the
+        connection's own persistent socket (the same mechanism
+        M(ansible.netcommon.net_put) uses), never placed inside a command
+        string. Mutually exclusive with I(content).
+      - File bytes are uploaded exactly as they exist on disk — Ansible does
+        not render Jinja expressions inside the file's contents for I(src),
+        only in the option values of the task itself (e.g. a templated path
+        string). To push templated text, render it first with the C(template)
+        lookup and pass the result via I(content) instead.
     type: path
   content:
     description:
       - Inline text content to write to I(dest). Marked no_log, since this module
         is commonly used to push credential material. Mutually exclusive with
         I(src).
+      - Since I(content) is a normal string-type module option, Ansible renders
+        any Jinja expressions in it (e.g. C({{ my_var }})) before this module
+        ever runs, the same as any other option value — no special templating
+        support is implemented by this module itself.
     type: str
   owner:
     description: Name of the user that should own I(dest).
@@ -68,7 +76,6 @@ options:
     default: true
 notes:
   - This module works with connection C(ansible.netcommon.network_cli).
-  - Tested against VyOS 1.4.2 and 1.5.0.
   - File state managed by this module is independent of VyOS's config revision
     system. A rollback to a previous config revision will not revert changes
     made by this module.
@@ -100,6 +107,14 @@ EXAMPLES = """
   vyos.vyos.vyos_file:
     dest: /config/auth/old-vpn/client.pem
     state: absent
+
+- name: push templated LDAP auth config (content is rendered by Ansible before this module runs)
+  vyos.vyos.vyos_file:
+    dest: /config/auth/office-vpn/ldap-auth.config
+    content: "{{ lookup('template', 'ldap_auth.config.j2') }}"
+    owner: openvpn
+    group: openvpn
+    mode: '0640'
 """
 
 RETURN = """
@@ -111,15 +126,16 @@ diff_fields:
   sample: ["owner", "mode", "content"]
 """
 
-import base64
 import hashlib
 import os
 import re
 import shlex
+import tempfile
 
 from ansible.module_utils.basic import AnsibleModule
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
+    get_connection,
     run_commands,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos_file import (
@@ -262,6 +278,47 @@ def read_local_bytes(params):
     return None
 
 
+def push_content_via_scp(module, connection, dest, params):
+    # Real SCP transfer over the connection's own persistent SSH session —
+    # content/src bytes never appear inside a command string sent through
+    # run_commands(). The earlier base64-in-a-shell-command approach was
+    # only ever encoded, not encrypted, and remained fully readable to
+    # anything logging connection traffic (e.g. persistent connection
+    # logging), regardless of no_log on the task — a real problem given
+    # this module's actual purpose (VPN certs, LDAP credentials).
+    #
+    # net_put's own action plugin uses this exact mechanism — connection
+    # here is get_connection(module), the same Connection(module._socket_path)
+    # JSON-RPC proxy net_put builds via Connection(socket_path) — so this is
+    # not action-plugin-only, despite that being true historically for some
+    # other network_cli file-transfer patterns.
+    cleanup_local = False
+    if params.get("src"):
+        local_path = params["src"]
+    else:
+        data = read_local_bytes(params)
+        fd, local_path = tempfile.mkstemp(prefix="vyos_file_")
+        cleanup_local = True
+        try:
+            with os.fdopen(fd, "wb") as f:
+                f.write(data)
+        except Exception:
+            os.remove(local_path)
+            raise
+
+    try:
+        timeout = connection.get_option("persistent_command_timeout")
+        connection.copy_file(
+            source=local_path,
+            destination=dest,
+            proto="scp",
+            timeout=timeout,
+        )
+    finally:
+        if cleanup_local:
+            os.remove(local_path)
+
+
 def converge(module, become, dest, want, diff, params):
     cmds = []
     quoted_dest = shlex.quote(dest)
@@ -277,18 +334,8 @@ def converge(module, become, dest, want, diff, params):
         return
 
     if "content" in diff:
-        data = read_local_bytes(params)
-        b64 = base64.b64encode(data).decode()
-        # Build the whole inner script as one plain string, quoting dest
-        # within it, then quote the ENTIRE script once as a single argument
-        # to `sh -c`. Do not nest a shlex.quote()'d fragment inside a
-        # separately-quoted outer string (e.g. double quotes) — if dest
-        # contains a single quote, shlex.quote()'s escaping introduces a
-        # literal double quote into its output, which would prematurely
-        # close a surrounding double-quoted wrapper and reintroduce the
-        # exact shell-injection risk quoting was meant to prevent.
-        script = "echo {0} | base64 -d > {1}".format(b64, shlex.quote(dest))
-        cmds.append("{0}sh -c {1}".format(become, shlex.quote(script)))
+        connection = get_connection(module)
+        push_content_via_scp(module, connection, dest, params)
     elif "state" in diff and have_is_missing(diff):
         cmds.append("{0}mkdir -p {1}".format(become, quoted_dest))
 
@@ -395,6 +442,25 @@ def validate_mode(module, mode):
         )
 
 
+def validate_src(module, src):
+    # local_content_hash()/read_local_bytes() do plain open(src, "rb")
+    # calls with no existence/type/permission check. A missing file, a
+    # directory passed where a file is expected, or an unreadable path
+    # would otherwise surface as an unhandled Python traceback instead of
+    # a clean module error — and this happens even under check_mode, since
+    # content-hashing runs before the check-mode short-circuit.
+    if src is None:
+        return
+    if not os.path.exists(src):
+        module.fail_json(msg="vyos_file: src not found: {0!r}".format(src))
+    if os.path.isdir(src):
+        module.fail_json(
+            msg="vyos_file: src is a directory, expected a file: {0!r}".format(src),
+        )
+    if not os.access(src, os.R_OK):
+        module.fail_json(msg="vyos_file: src is not readable: {0!r}".format(src))
+
+
 def main():
     module = AnsibleModule(
         argument_spec=ARGUMENT_SPEC,
@@ -405,6 +471,7 @@ def main():
     dest = module.params["dest"]
     validate_dest(module, dest)
     validate_mode(module, module.params.get("mode"))
+    validate_src(module, module.params.get("src"))
 
     become = "sudo " if module.params.get("become", True) else ""
 
