@@ -58,7 +58,7 @@ jobs:
 
       - name: Run Coverage tests
         run: |
-          pytest tests/unit -v --cov-report xml --cov=./
+          pytest tests/unit -v --cov-report xml --cov=./ --junitxml=test-results/junit-codecoverage-codecoverage-pytest-s0.xml
         working-directory: ${{ steps.identify.outputs.collection_path }}
 
       - name: Upload coverage report to Codecov
@@ -69,3 +69,16 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Upload test results to Codecov
+        if: ${{ !cancelled() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false) && github.actor != 'dependabot[bot]' }}
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
+        timeout-minutes: 5
+        with:
+          report_type: test_results
+          files: ${{ steps.identify.outputs.collection_path }}/test-results/junit-codecoverage-codecoverage-pytest-s0.xml
+          disable_search: true
+          fail_ci_if_error: false
+          flags: unit-pytest-s0
+          name: unit-pytest-s0
+          version: v11.3.1
