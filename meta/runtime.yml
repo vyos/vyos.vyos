@@ -72,3 +72,5 @@ plugin_routing:
       redirect: vyos.vyos.vyos_vpn_ipsec
     vpn_ipsec_s2s:
       redirect: vyos.vyos.vyos_vpn_ipsec_s2s
+    ha:
+      redirect: vyos.vyos.vyos_ha
