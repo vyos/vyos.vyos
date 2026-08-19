@@ -14,6 +14,8 @@ plugin_routing:
       redirect: vyos.vyos.vyos_config
     facts:
       redirect: vyos.vyos.vyos_facts
+    file:
+      redirect: vyos.vyos.vyos_file
     firewall_global:
       redirect: vyos.vyos.vyos_firewall_global
     firewall_interfaces:
