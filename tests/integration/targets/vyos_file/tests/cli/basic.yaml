@@ -1,0 +1,239 @@
+---
+- debug:
+    msg: START vyos_file basic integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_files.yaml
+
+- block:
+    - name: 1. create directory
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}"
+        state: present
+        owner: "{{ test_owner }}"
+        group: "{{ test_group }}"
+        mode: "0750"
+      register: t1
+
+    - assert:
+        that:
+          - t1.changed
+          - "'state' in t1.diff_fields"
+          - "'owner' in t1.diff_fields"
+          - "'group' in t1.diff_fields"
+          - "'mode' in t1.diff_fields"
+
+    - name: 2. re-run same task — must be a no-op
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}"
+        state: present
+        owner: "{{ test_owner }}"
+        group: "{{ test_group }}"
+        mode: "0750"
+      register: t2
+
+    - assert:
+        that:
+          - not t2.changed
+          - t2.diff_fields == []
+
+    - name: 3. push inline content
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        content: "integration test content\n"
+        owner: "{{ test_owner }}"
+        group: "{{ test_group }}"
+        mode: "0600"
+      register: t3
+
+    - assert:
+        that:
+          - t3.changed
+          - "'content' in t3.diff_fields"
+
+    - name: 3b. re-run identical content push — must be a no-op
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        content: "integration test content\n"
+        owner: "{{ test_owner }}"
+        group: "{{ test_group }}"
+        mode: "0600"
+      register: t3b
+
+    - assert:
+        that:
+          - not t3b.changed
+          - t3b.diff_fields == []
+
+    - name: 4. change mode only, non-canonical string
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        mode: "0640"
+      register: t4
+
+    - assert:
+        that:
+          - t4.changed
+          - t4.diff_fields == ['mode']
+
+    - name: 5. re-assert same mode, non-zero-padded — mode string normalization
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        mode: "640"
+      register: t5
+
+    - assert:
+        that:
+          - not t5.changed
+          - t5.diff_fields == []
+
+    - name: 6. check_mode dry run must report a diff without converging
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        mode: "0777"
+      check_mode: true
+      register: t6
+
+    - assert:
+        that:
+          - t6.changed
+          - t6.diff_fields == ['mode']
+
+    - name: verify check_mode did not actually touch the file
+      vyos.vyos.vyos_command:
+        commands:
+          - "sudo stat --format='%a' {{ test_dir }}/hello.txt"
+      register: post_check_mode_stat
+
+    - assert:
+        that:
+          - "'640' in post_check_mode_stat.stdout[0]"
+        fail_msg: "check_mode leaked a real converge — mode changed despite check_mode:true"
+
+    - name: 7. remove file
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        state: absent
+      register: t7
+
+    - assert:
+        that:
+          - t7.changed
+          - t7.diff_fields == ['state']
+
+    - name: 8. remove again — must be a no-op
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir }}/hello.txt"
+        state: absent
+      register: t8
+
+    - assert:
+        that:
+          - not t8.changed
+          - t8.diff_fields == []
+
+    - name: 9a. explicit setgid request converges on a path with no prior special bits (/tmp, outside VyOS's own /config/auth enforcement)
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir_tmp }}"
+        state: present
+        owner: "{{ test_owner }}"
+        group: "{{ test_group }}"
+        mode: "2750"
+      register: t9a
+
+    - assert:
+        that:
+          - t9a.changed
+          - "'mode' in t9a.diff_fields"
+
+    - name: 9b. re-run identical explicit request — must be a no-op (idempotency)
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir_tmp }}"
+        mode: "2750"
+      register: t9b
+
+    - assert:
+        that:
+          - not t9b.changed
+
+    - name: 10a. pre-stage setgid via raw command, outside this module's control
+      vyos.vyos.vyos_command:
+        commands:
+          - "sudo chmod 2770 {{ test_dir_tmp }}"
+
+    - name: 10b. implicit mode request must preserve the pre-existing setgid bit
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir_tmp }}"
+        mode: "0640"
+      register: t10
+
+    - assert:
+        that:
+          - t10.changed
+          - t10.diff_fields == ['mode']
+
+    - name: verify setgid survived an implicit-mode rwx change (the real regression this guards against)
+      vyos.vyos.vyos_command:
+        commands:
+          - "sudo stat --format='%a' {{ test_dir_tmp }}"
+      register: post_implicit_mode_stat
+
+    - assert:
+        that:
+          - "'2640' in post_implicit_mode_stat.stdout[0]"
+        fail_msg: >-
+          implicit mode request cleared the pre-existing setgid bit —
+          expected 2640 (setgid preserved, rwx changed to 640), got
+          {{ post_implicit_mode_stat.stdout[0] }}
+
+    - name: cleanup /tmp test path
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir_tmp }}"
+        state: absent
+
+    - name: 11a. pre-stage a genuinely protected directory (root:root, 0700 — vyos has zero direct access)
+      vyos.vyos.vyos_command:
+        commands:
+          - "sudo mkdir -p {{ test_dir_protected }}"
+          - "sudo chown root:root {{ test_dir_protected }}"
+          - "sudo chmod 0700 {{ test_dir_protected }}"
+
+    - name: 11b. content push to a protected destination must succeed via staged transfer + sudo mv
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir_protected }}/secret.txt"
+        content: "content pushed to a root-only directory\n"
+        owner: root
+        mode: "0600"
+      register: t11
+
+    - assert:
+        that:
+          - t11.changed
+          - "'content' in t11.diff_fields"
+        fail_msg: >-
+          content push to a protected (root-only) destination failed —
+          the staging-then-sudo-mv approach should succeed here even
+          though a direct SCP write (no become) would be rejected
+
+    - name: verify the file actually landed with correct content (root reads it, vyos cannot)
+      vyos.vyos.vyos_command:
+        commands:
+          - "sudo cat {{ test_dir_protected }}/secret.txt"
+      register: protected_content_check
+
+    - assert:
+        that:
+          - "'content pushed to a root-only directory' in protected_content_check.stdout[0]"
+
+    - name: 11c. re-run identical push to protected destination — must be a no-op (idempotency under become)
+      vyos.vyos.vyos_file:
+        dest: "{{ test_dir_protected }}/secret.txt"
+        content: "content pushed to a root-only directory\n"
+        owner: root
+        mode: "0600"
+      register: t11c
+
+    - assert:
+        that:
+          - not t11c.changed
+  always:
+    - include_tasks: _remove_files.yaml
