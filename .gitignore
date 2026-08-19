@@ -114,6 +114,7 @@ venv.bak/
 *.code-workspace
 .vscode/
 .DS_Store
+*.bak
 
 changelogs/.plugin-cache.yaml
 # inventory for testing
