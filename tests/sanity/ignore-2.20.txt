@@ -34,3 +34,4 @@ plugins/action/system.py action-plugin-docs
 plugins/action/user.py action-plugin-docs
 plugins/action/vlan.py action-plugin-docs
 plugins/action/vrf.py action-plugin-docs
+plugins/action/file.py action-plugin-docs
