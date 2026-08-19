@@ -1,0 +1,35 @@
+---
+- debug:
+    msg: START vyos_ha overridden integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Override the existing configuration with the provided running configuration
+      register: result
+      vyos.vyos.vyos_ha: &id001
+        config: "{{ overridden.config }}"
+        state: overridden
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: ha
+
+    - name: Verify that the configuration was correctly overridden
+      assert:
+        that:
+          - result.changed == true
+          - result.after == ansible_facts['network_resources']['ha']
+
+    - name: Override the existing configuration with the provided running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_ha: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml
