@@ -48,6 +48,7 @@ Name | Description
 [vyos.vyos.vyos_command](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_command_module.rst)|Run one or more commands on VyOS devices
 [vyos.vyos.vyos_config](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_config_module.rst)|Manage VyOS configuration on remote device
 [vyos.vyos.vyos_facts](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_facts_module.rst)|Get facts about vyos devices.
+[vyos.vyos.vyos_file](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_file_module.rst)|Manage files, directories, and their ownership on VyOS devices
 [vyos.vyos.vyos_firewall_global](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_global_module.rst)|Firewall global resource module
 [vyos.vyos.vyos_firewall_interfaces](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_interfaces_module.rst)|Firewall interfaces resource module
 [vyos.vyos.vyos_firewall_rules](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_firewall_rules_module.rst)|Firewall rules resource module
