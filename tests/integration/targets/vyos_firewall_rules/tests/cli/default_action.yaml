@@ -1,3 +1,4 @@
+---
 - debug:
     msg: START vyos_firewall_rules default_action integration tests on connection={{ ansible_connection }}
 
