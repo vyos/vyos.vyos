@@ -1,0 +1,58 @@
+---
+- debug:
+    msg: START vyos_vpn_ipsec_s2s merged integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- name: PREREQ Create the esp-group/ike-group referenced by the test peer
+  vyos.vyos.vyos_vpn_ipsec:
+    config:
+      esp_group:
+        - name: ESP-TEST
+          proposal:
+            - proposal_id: 1
+              encryption: aes256
+              hash: sha256
+      ike_group:
+        - name: IKE-TEST
+          key_exchange: ikev2
+          proposal:
+            - proposal_id: 1
+              encryption: aes256
+              hash: sha256
+    state: merged
+
+- name: PREREQ Create the vti0 interface referenced by vti.bind
+  vyos.vyos.vyos_config:
+    lines:
+      - set interfaces vti vti0
+
+- block:
+    - name: Merge the provided configuration with the existing running configuration
+      register: result
+      vyos.vyos.vyos_vpn_ipsec_s2s: &id001
+        config: "{{ merged.config }}"
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: vpn_ipsec_s2s
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ merged['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+          - result.changed == true
+          - result.before == {}
+
+    - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vpn_ipsec_s2s: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+          - result['commands'] == []
+
+  always:
+    - include_tasks: _remove_config.yaml

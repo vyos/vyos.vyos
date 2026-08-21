@@ -1,0 +1,231 @@
+---
+merged:
+  config:
+    esp_group:
+      - name: ESP-TEST
+        compression: true
+        proposal:
+          - proposal_id: 1
+            encryption: aes256
+            hash: sha256
+    ike_group:
+      - name: IKE-TEST
+        key_exchange: ikev2
+        disable_mobike: true
+        dead_peer_detection:
+          action: restart
+          interval: 15
+          timeout: 60
+        proposal:
+          - proposal_id: 1
+            encryption: aes256
+            hash: sha256
+            dh_group: 14
+  commands:
+    - set vpn ipsec esp-group ESP-TEST
+    - set vpn ipsec esp-group ESP-TEST compression
+    - set vpn ipsec esp-group ESP-TEST proposal 1
+    - set vpn ipsec esp-group ESP-TEST proposal 1 encryption aes256
+    - set vpn ipsec esp-group ESP-TEST proposal 1 hash sha256
+    - set vpn ipsec ike-group IKE-TEST
+    - set vpn ipsec ike-group IKE-TEST key-exchange ikev2
+    - set vpn ipsec ike-group IKE-TEST disable-mobike
+    - set vpn ipsec ike-group IKE-TEST dead-peer-detection action restart
+    - set vpn ipsec ike-group IKE-TEST dead-peer-detection interval 15
+    - set vpn ipsec ike-group IKE-TEST dead-peer-detection timeout 60
+    - set vpn ipsec ike-group IKE-TEST proposal 1
+    - set vpn ipsec ike-group IKE-TEST proposal 1 encryption aes256
+    - set vpn ipsec ike-group IKE-TEST proposal 1 hash sha256
+    - set vpn ipsec ike-group IKE-TEST proposal 1 dh-group 14
+  after:
+    esp_group:
+      - name: ESP-TEST
+        compression: true
+        proposal:
+          - proposal_id: 1
+            encryption: aes256
+            hash: sha256
+    ike_group:
+      - name: IKE-TEST
+        key_exchange: ikev2
+        disable_mobike: true
+        dead_peer_detection:
+          action: restart
+          interval: 15
+          timeout: 60
+        proposal:
+          - proposal_id: 1
+            encryption: aes256
+            hash: sha256
+            dh_group: 14
+
+# Full pre-populated state used by replaced/overridden/deleted/gathered --
+# matches the same shape as the unit test fixture, so expected
+# commands/after values here are grounded in what's already unit-tested,
+# not invented fresh.
+populate_config:
+  esp_group:
+    - name: ESP-TEST
+      compression: true
+      proposal:
+        - proposal_id: 1
+          encryption: aes256
+          hash: sha256
+  ike_group:
+    - name: IKE-TEST
+      key_exchange: ikev2
+      disable_mobike: true
+      dead_peer_detection:
+        action: restart
+        interval: 15
+        timeout: 60
+      proposal:
+        - proposal_id: 1
+          encryption: aes256
+          hash: sha256
+          dh_group: 14
+    - name: IKE-EXTRA
+      key_exchange: ikev1
+  authentication:
+    psk:
+      - name: PSK-TEST
+        id:
+          - local@example.com
+          - remote@example.com
+        secret: test-not-real-secret
+    ppk:
+      - name: PPK-TEST
+        id:
+          - ppk-id-1
+        secret: test-ppk-secret
+  profile:
+    - name: testprofile
+      authentication:
+        mode: pre-shared-secret
+        pre_shared_secret: test-not-real-secret
+      bind_tunnel:
+        - tun0
+      esp_group: ESP-TEST
+      ike_group: IKE-TEST
+  disable_uniqreqids: true
+  interface:
+    - eth0
+    - eth1
+  log:
+    level: 1
+    subsystem:
+      - ike
+      - chd
+  options:
+    flexvpn: true
+    retransmission:
+      attempts: 3
+
+replaced:
+  config:
+    esp_group:
+      - name: ESP-TEST
+        proposal:
+          - proposal_id: 1
+            encryption: aes128
+            hash: sha256
+  commands:
+    - delete vpn ipsec esp-group ESP-TEST compression
+    - set vpn ipsec esp-group ESP-TEST proposal 1 encryption aes128
+    - delete vpn ipsec disable-uniqreqids
+    - delete vpn ipsec interface eth0
+    - delete vpn ipsec interface eth1
+    - delete vpn ipsec log level 1
+    - delete vpn ipsec log subsystem chd
+    - delete vpn ipsec log subsystem ike
+    - delete vpn ipsec options flexvpn
+    - delete vpn ipsec options retransmission attempts 3
+  # NOTE: ike_group/profile/authentication are NOT in `after` deletions --
+  # they're left untouched since replaced only reconciles items it names.
+  # `after` below reflects only what replaced's scope actually changes;
+  # the un-named sections (ike_group, profile, authentication) remain
+  # exactly as populate_config left them and are checked separately in
+  # replaced.yaml via ansible_facts rather than duplicated here.
+  after:
+    esp_group:
+      - name: ESP-TEST
+        proposal:
+          - proposal_id: 1
+            encryption: aes128
+            hash: sha256
+
+overridden:
+  config:
+    esp_group:
+      - name: ESP-TEST
+        proposal:
+          - proposal_id: 1
+            encryption: aes128
+            hash: sha256
+  commands:
+    - delete vpn ipsec esp-group ESP-TEST compression
+    - set vpn ipsec esp-group ESP-TEST proposal 1 encryption aes128
+    - delete vpn ipsec ike-group IKE-TEST
+    - delete vpn ipsec ike-group IKE-EXTRA
+    - delete vpn ipsec profile testprofile
+    - delete vpn ipsec authentication psk PSK-TEST
+    - delete vpn ipsec authentication ppk PPK-TEST
+    - delete vpn ipsec disable-uniqreqids
+    - delete vpn ipsec interface eth0
+    - delete vpn ipsec interface eth1
+    - delete vpn ipsec log level 1
+    - delete vpn ipsec log subsystem chd
+    - delete vpn ipsec log subsystem ike
+    - delete vpn ipsec options flexvpn
+    - delete vpn ipsec options retransmission attempts 3
+  after:
+    esp_group:
+      - name: ESP-TEST
+        proposal:
+          - proposal_id: 1
+            encryption: aes128
+            hash: sha256
+
+deleted:
+  commands:
+    - delete vpn ipsec esp-group ESP-TEST
+    - delete vpn ipsec ike-group IKE-TEST
+    - delete vpn ipsec ike-group IKE-EXTRA
+    - delete vpn ipsec profile testprofile
+    - delete vpn ipsec authentication psk PSK-TEST
+    - delete vpn ipsec authentication ppk PPK-TEST
+    - delete vpn ipsec disable-uniqreqids
+    - delete vpn ipsec interface eth0
+    - delete vpn ipsec interface eth1
+    - delete vpn ipsec log level 1
+    - delete vpn ipsec log subsystem chd
+    - delete vpn ipsec log subsystem ike
+    - delete vpn ipsec options flexvpn
+    - delete vpn ipsec options retransmission attempts 3
+  after: {}
+
+rendered:
+  config:
+    esp_group:
+      - name: ESP-RENDER-TEST
+        proposal:
+          - proposal_id: 1
+            encryption: aes256
+            hash: sha256
+  commands:
+    - set vpn ipsec esp-group ESP-RENDER-TEST
+    - set vpn ipsec esp-group ESP-RENDER-TEST proposal 1
+    - set vpn ipsec esp-group ESP-RENDER-TEST proposal 1 encryption aes256
+    - set vpn ipsec esp-group ESP-RENDER-TEST proposal 1 hash sha256
+
+parsed:
+  after:
+    esp_group:
+      - name: ESP-PARSE-TEST
+        proposal:
+          - proposal_id: 1
+            encryption: aes256
+            hash: sha256
+    ike_group:
+      - name: IKE-PARSE-TEST
+        key_exchange: ikev2
