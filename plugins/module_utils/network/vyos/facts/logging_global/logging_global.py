@@ -23,6 +23,13 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.log
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.logging_global import (
     Logging_globalTemplate,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.logging_global_15 import (
+    Logging_globalTemplate15,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.version import (
+    LooseVersion,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import get_os_version
 
 
 class Logging_globalFacts(object):
@@ -80,8 +87,17 @@ class Logging_globalFacts(object):
         if not data:
             data = self.get_logging_data(connection)
 
-        # parse native config using the Logging_global template
-        logging_global_parser = Logging_globalTemplate(lines=data.splitlines(), module=self._module)
+        if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.5"):
+            logging_global_parser = Logging_globalTemplate15(
+                lines=data.splitlines(),
+                module=self._module,
+            )
+        else:
+            logging_global_parser = Logging_globalTemplate(
+                lines=data.splitlines(),
+                module=self._module,
+            )
+
         objs = logging_global_parser.parse()
         ansible_facts["ansible_network_resources"].pop("logging_global", None)
         objs = self.process_facts(objs)

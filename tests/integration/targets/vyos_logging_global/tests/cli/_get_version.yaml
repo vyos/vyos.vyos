@@ -25,4 +25,10 @@
 
 - name: include correct vars
   include_vars: v1_4.yaml
-  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  when:
+    - vyos_version is version('1.4.0', '>=', version_type='semver')
+    - vyos_version is version('1.5.0', '<', version_type='semver')
+
+- name: include correct vars
+  include_vars: v1_5.yaml
+  when: vyos_version is version('1.5.0', '>=', version_type='semver')
