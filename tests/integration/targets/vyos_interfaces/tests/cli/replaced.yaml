@@ -18,6 +18,7 @@
           - name: eth2
             mtu: 1400
             description: Replaced by Ansible
+            vrf: red
         state: replaced
 
     - name: Assert that correct set of commands were generated

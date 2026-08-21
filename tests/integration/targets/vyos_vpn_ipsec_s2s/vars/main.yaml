@@ -1,0 +1,257 @@
+---
+populate_config:
+  peer:
+    - name: PEER-TEST
+      authentication:
+        local_id: local@example.com
+        mode: pre-shared-secret
+        remote_id: remote@example.com
+      childless: prefer
+      connection_type: initiate
+      default_esp_group: ESP-TEST
+      description: test peer for site-to-site module
+      force_udp_encapsulation: true
+      ike_group: IKE-TEST
+      ikev2_reauth: inherit
+      local_address: any
+      remote_address:
+        - 203.0.113.1
+      replay_window: 32
+      virtual_address:
+        - 0.0.0.0
+      tunnel:
+        - tunnel_id: 1
+          esp_group: ESP-TEST
+          priority: 10
+          protocol: tcp
+          local:
+            port: 443
+            prefix:
+              - 10.0.0.0/24
+          remote:
+            port: 443
+            prefix:
+              - 10.1.0.0/24
+      vti:
+        bind: vti0
+        esp_group: ESP-TEST
+        traffic_selector:
+          local:
+            prefix:
+              - 10.2.0.0/24
+          remote:
+            prefix:
+              - 10.3.0.0/24
+    - name: PEER-EXTRA
+      # Minimal, but genuinely commit-valid -- confirmed via FOUR
+      # separate real commit failures that VyOS requires, on every
+      # site-to-site peer regardless of how minimal: authentication, a
+      # real remote-address, a local-address (or dhcp-interface), and
+      # at least one of tunnel/vti (a cross-field constraint Ansible's
+      # argspec has no clean way to express for nested list-of-dict
+      # peer items -- worth documenting in the module itself, not just
+      # here).
+      ike_group: IKE-TEST
+      authentication:
+        mode: pre-shared-secret
+        local_id: extra-local@example.com
+        remote_id: extra-remote@example.com
+      remote_address:
+        - 198.51.100.1
+      local_address: any
+      tunnel:
+        - tunnel_id: 1
+          esp_group: ESP-TEST
+
+merged:
+  config:
+    peer:
+      - name: PEER-TEST
+        authentication:
+          local_id: local@example.com
+          mode: pre-shared-secret
+          remote_id: remote@example.com
+        childless: prefer
+        connection_type: initiate
+        default_esp_group: ESP-TEST
+        description: test peer for site-to-site module
+        force_udp_encapsulation: true
+        ike_group: IKE-TEST
+        ikev2_reauth: inherit
+        local_address: any
+        remote_address:
+          - 203.0.113.1
+        replay_window: 32
+        virtual_address:
+          - 0.0.0.0
+        tunnel:
+          - tunnel_id: 1
+            esp_group: ESP-TEST
+            priority: 10
+            protocol: tcp
+            local:
+              port: 443
+              prefix:
+                - 10.0.0.0/24
+            remote:
+              port: 443
+              prefix:
+                - 10.1.0.0/24
+        vti:
+          bind: vti0
+          esp_group: ESP-TEST
+          traffic_selector:
+            local:
+              prefix:
+                - 10.2.0.0/24
+            remote:
+              prefix:
+                - 10.3.0.0/24
+  commands:
+    - set vpn ipsec site-to-site peer PEER-TEST
+    - set vpn ipsec site-to-site peer PEER-TEST authentication local-id 'local@example.com'
+    - set vpn ipsec site-to-site peer PEER-TEST authentication remote-id 'remote@example.com'
+    - set vpn ipsec site-to-site peer PEER-TEST authentication mode 'pre-shared-secret'
+    - set vpn ipsec site-to-site peer PEER-TEST childless 'prefer'
+    - set vpn ipsec site-to-site peer PEER-TEST connection-type 'initiate'
+    - set vpn ipsec site-to-site peer PEER-TEST default-esp-group 'ESP-TEST'
+    - set vpn ipsec site-to-site peer PEER-TEST description 'test peer for site-to-site module'
+    - set vpn ipsec site-to-site peer PEER-TEST ike-group 'IKE-TEST'
+    - set vpn ipsec site-to-site peer PEER-TEST ikev2-reauth 'inherit'
+    - set vpn ipsec site-to-site peer PEER-TEST local-address 'any'
+    - set vpn ipsec site-to-site peer PEER-TEST force-udp-encapsulation
+    - set vpn ipsec site-to-site peer PEER-TEST replay-window '32'
+    - set vpn ipsec site-to-site peer PEER-TEST remote-address '203.0.113.1'
+    - set vpn ipsec site-to-site peer PEER-TEST virtual-address '0.0.0.0'
+    - set vpn ipsec site-to-site peer PEER-TEST tunnel 1
+    - set vpn ipsec site-to-site peer PEER-TEST tunnel 1 esp-group 'ESP-TEST'
+    - set vpn ipsec site-to-site peer PEER-TEST tunnel 1 protocol 'tcp'
+    - set vpn ipsec site-to-site peer PEER-TEST tunnel 1 priority '10'
+    - set vpn ipsec site-to-site peer PEER-TEST tunnel 1 local port '443'
+    - set vpn ipsec site-to-site peer PEER-TEST tunnel 1 local prefix '10.0.0.0/24'
+    - set vpn ipsec site-to-site peer PEER-TEST tunnel 1 remote port '443'
+    - set vpn ipsec site-to-site peer PEER-TEST tunnel 1 remote prefix '10.1.0.0/24'
+    - set vpn ipsec site-to-site peer PEER-TEST vti bind 'vti0'
+    - set vpn ipsec site-to-site peer PEER-TEST vti esp-group 'ESP-TEST'
+    - set vpn ipsec site-to-site peer PEER-TEST vti traffic-selector local prefix '10.2.0.0/24'
+    - set vpn ipsec site-to-site peer PEER-TEST vti traffic-selector remote prefix '10.3.0.0/24'
+
+replaced:
+  config:
+    peer:
+      - name: PEER-TEST
+        authentication:
+          local_id: local@example.com
+          mode: pre-shared-secret
+          remote_id: remote@example.com
+        childless: prefer
+        connection_type: initiate
+        default_esp_group: ESP-TEST
+        description: test peer for site-to-site module
+        force_udp_encapsulation: true
+        ike_group: IKE-TEST
+        ikev2_reauth: inherit
+        local_address: any
+        remote_address:
+          - 203.0.113.1
+        replay_window: 32
+        virtual_address:
+          - 0.0.0.0
+        tunnel:
+          - tunnel_id: 1
+            esp_group: ESP-TEST
+            priority: 99
+            protocol: tcp
+            local:
+              port: 443
+              prefix:
+                - 10.0.0.0/24
+            remote:
+              port: 443
+              prefix:
+                - 10.1.0.0/24
+        vti:
+          bind: vti0
+          esp_group: ESP-TEST
+          traffic_selector:
+            local:
+              prefix:
+                - 10.2.0.0/24
+            remote:
+              prefix:
+                - 10.3.0.0/24
+  # Only the priority differs from populate_config -- PEER-TEST is named
+  # fully/exactly otherwise, so replaced's per-item reconciliation has
+  # nothing else to change. PEER-EXTRA is not named at all and must
+  # survive untouched (checked separately in replaced.yaml).
+  commands:
+    - set vpn ipsec site-to-site peer PEER-TEST tunnel 1 priority '99'
+
+overridden:
+  config:
+    peer:
+      - name: PEER-TEST
+        authentication:
+          local_id: local@example.com
+          mode: pre-shared-secret
+          remote_id: remote@example.com
+        childless: prefer
+        connection_type: initiate
+        default_esp_group: ESP-TEST
+        description: test peer for site-to-site module
+        force_udp_encapsulation: true
+        ike_group: IKE-TEST
+        ikev2_reauth: inherit
+        local_address: any
+        remote_address:
+          - 203.0.113.1
+        replay_window: 32
+        virtual_address:
+          - 0.0.0.0
+        tunnel:
+          - tunnel_id: 1
+            esp_group: ESP-TEST
+            priority: 99
+            protocol: tcp
+            local:
+              port: 443
+              prefix:
+                - 10.0.0.0/24
+            remote:
+              port: 443
+              prefix:
+                - 10.1.0.0/24
+        vti:
+          bind: vti0
+          esp_group: ESP-TEST
+          traffic_selector:
+            local:
+              prefix:
+                - 10.2.0.0/24
+            remote:
+              prefix:
+                - 10.3.0.0/24
+  commands:
+    - delete vpn ipsec site-to-site peer PEER-EXTRA
+    - set vpn ipsec site-to-site peer PEER-TEST tunnel 1 priority '99'
+
+deleted:
+  commands:
+    - delete vpn ipsec site-to-site peer PEER-TEST
+    - delete vpn ipsec site-to-site peer PEER-EXTRA
+  after: {}
+
+rendered:
+  config:
+    peer:
+      - name: PEER-RENDER-TEST
+        ike_group: IKE-TEST
+  commands:
+    - set vpn ipsec site-to-site peer PEER-RENDER-TEST
+    - set vpn ipsec site-to-site peer PEER-RENDER-TEST ike-group 'IKE-TEST'
+
+parsed:
+  after:
+    peer:
+      - name: PEER-PARSE-TEST
+        ike_group: IKE-TEST

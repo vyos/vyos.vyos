@@ -1,0 +1,42 @@
+---
+- debug:
+    msg: START vyos_vpn_ipsec_s2s replaced integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace only the named peer -- other sections must be untouched
+      register: result
+      vyos.vyos.vyos_vpn_ipsec_s2s: &id001
+        config: "{{ replaced.config }}"
+        state: replaced
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: vpn_ipsec_s2s
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+          - result.changed == true
+
+    - name: Assert that PEER-EXTRA was left completely untouched
+      assert:
+        that:
+          - >-
+            (ansible_facts['network_resources']['vpn_ipsec_s2s']['peer']
+            | selectattr('name', 'equalto', 'PEER-EXTRA') | list | first)
+            == (populate_config.peer | selectattr('name', 'equalto', 'PEER-EXTRA') | list | first)
+
+    - name: Replace with the same configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vpn_ipsec_s2s: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+          - result['commands'] == []
+
+  always:
+    - include_tasks: _remove_config.yaml

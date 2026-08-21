@@ -1,0 +1,61 @@
+---
+- debug:
+    msg: START vyos_vpn_ipsec replaced integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace only the named esp_group -- other sections must be untouched
+      register: result
+      vyos.vyos.vyos_vpn_ipsec: &id001
+        config: "{{ replaced.config }}"
+        state: replaced
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: vpn_ipsec
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ replaced['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+          - result.changed == true
+
+    - name: Assert that ESP-TEST was correctly reconciled
+      assert:
+        that:
+          - ansible_facts['network_resources']['vpn_ipsec']['esp_group'] == replaced.after.esp_group
+
+    - name: Assert that un-named sections were left completely untouched
+      vars:
+        redacted: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+      assert:
+        that:
+          - (ansible_facts['network_resources']['vpn_ipsec']['ike_group'] | sort(attribute='name')) == (populate_config.ike_group | sort(attribute='name'))
+          - ansible_facts['network_resources']['vpn_ipsec']['profile'][0]['name'] == populate_config.profile[0].name
+          - ansible_facts['network_resources']['vpn_ipsec']['profile'][0]['authentication']['mode'] == populate_config.profile[0].authentication.mode
+          # pre_shared_secret/secret carry no_log: True in the argspec --
+          # gathered facts always redact them to this literal placeholder,
+          # never the real value, so that's what must be asserted here.
+          - ansible_facts['network_resources']['vpn_ipsec']['profile'][0]['authentication']['pre_shared_secret'] == redacted
+          - ansible_facts['network_resources']['vpn_ipsec']['profile'][0]['bind_tunnel'] == populate_config.profile[0].bind_tunnel
+          - ansible_facts['network_resources']['vpn_ipsec']['profile'][0]['esp_group'] == populate_config.profile[0].esp_group
+          - ansible_facts['network_resources']['vpn_ipsec']['profile'][0]['ike_group'] == populate_config.profile[0].ike_group
+          - ansible_facts['network_resources']['vpn_ipsec']['authentication']['psk'][0]['name'] == populate_config.authentication.psk[0].name
+          - ansible_facts['network_resources']['vpn_ipsec']['authentication']['psk'][0]['secret'] == redacted
+          - (ansible_facts['network_resources']['vpn_ipsec']['authentication']['psk'][0]['id'] | sort) == (populate_config.authentication.psk[0].id | sort)
+          - ansible_facts['network_resources']['vpn_ipsec']['authentication']['ppk'][0]['name'] == populate_config.authentication.ppk[0].name
+          - ansible_facts['network_resources']['vpn_ipsec']['authentication']['ppk'][0]['secret'] == redacted
+          - ansible_facts['network_resources']['vpn_ipsec']['authentication']['ppk'][0]['id'] == populate_config.authentication.ppk[0].id
+
+    - name: Replace with the same configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vpn_ipsec: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+          - result['commands'] == []
+
+  always:
+    - include_tasks: _remove_config.yaml

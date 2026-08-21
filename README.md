@@ -73,6 +73,8 @@ Name | Description
 [vyos.vyos.vyos_system](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_system_module.rst)|Run `set system` commands on VyOS devices
 [vyos.vyos.vyos_user](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_user_module.rst)|Manage the collection of local users on VyOS device
 [vyos.vyos.vyos_vlan](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vlan_module.rst)|Manage VLANs on VyOS network devices
+[vyos.vyos.vyos_vpn_ipsec](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vpn_ipsec_module.rst)|Manages global IPsec (ike-group, esp-group, profile, authentication, options) attributes of VyOS network devices.
+[vyos.vyos.vyos_vpn_ipsec_s2s](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vpn_ipsec_s2s_module.rst)|Manages IPsec site-to-site VPN peers on VyOS network devices.
 [vyos.vyos.vyos_vrf](https://github.com/vyos/vyos.vyos/blob/main/docs/vyos.vyos.vyos_vrf_module.rst)|VRF resource module
 
 <!--end collection content-->

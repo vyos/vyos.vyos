@@ -1,0 +1,15 @@
+---
+- debug:
+    msg: START vyos_vpn_ipsec rendered integration tests on connection={{ ansible_connection }}
+
+- block:
+    - name: Structure provided configuration into device specific commands
+      register: result
+      vyos.vyos.vyos_vpn_ipsec:
+        config: "{{ rendered.config }}"
+        state: rendered
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ rendered['commands'] | symmetric_difference(result['rendered']) | length == 0 }}"

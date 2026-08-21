@@ -1,0 +1,28 @@
+---
+- debug:
+    msg: START vyos_vpn_ipsec gathered integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: TEST - [gathered] Gather the existing running configuration
+      register: result
+      vyos.vyos.vyos_vpn_ipsec:
+        state: gathered
+
+    - name: TEST - [gathered] Assert
+      vars:
+        redacted: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+      assert:
+        that:
+          - result.changed == false
+          - result.gathered.esp_group == populate_config.esp_group
+          - result.gathered.profile[0].name == populate_config.profile[0].name
+          - result.gathered.profile[0].authentication.mode == populate_config.profile[0].authentication.mode
+          - result.gathered.profile[0].authentication.pre_shared_secret == redacted
+          - result.gathered.profile[0].bind_tunnel == populate_config.profile[0].bind_tunnel
+          - result.gathered.profile[0].esp_group == populate_config.profile[0].esp_group
+          - result.gathered.profile[0].ike_group == populate_config.profile[0].ike_group
+
+  always:
+    - include_tasks: _remove_config.yaml
