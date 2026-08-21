@@ -1,0 +1,20 @@
+---
+- debug:
+    msg: START vyos_vpn_ipsec_s2s gathered integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: TEST - [gathered] Gather the existing running configuration
+      register: result
+      vyos.vyos.vyos_vpn_ipsec_s2s:
+        state: gathered
+
+    - name: TEST - [gathered] Assert
+      assert:
+        that:
+          - result.changed == false
+          - result.gathered.peer | map(attribute='name') | sort | list == ['PEER-EXTRA', 'PEER-TEST']
+
+  always:
+    - include_tasks: _remove_config.yaml

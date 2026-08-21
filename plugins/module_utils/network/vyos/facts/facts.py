@@ -83,6 +83,12 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.snmp_
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.static_routes.static_routes import (
     Static_routesFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vpn_ipsec.vpn_ipsec import (
+    Vpn_ipsecFacts,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vpn_ipsec_s2s.vpn_ipsec_s2s import (
+    Vpn_ipsec_s2sFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vrf.vrf import VrfFacts
 
 FACT_LEGACY_SUBSETS = dict(default=Default, neighbors=Neighbors, config=Config)
@@ -109,6 +115,8 @@ FACT_RESOURCE_SUBSETS = dict(
     snmp_server=Snmp_serverFacts,
     hostname=HostnameFacts,
     vrf=VrfFacts,
+    vpn_ipsec=Vpn_ipsecFacts,
+    vpn_ipsec_s2s=Vpn_ipsec_s2sFacts,
 )
 
 

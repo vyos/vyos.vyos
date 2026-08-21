@@ -1,0 +1,13 @@
+---
+- name: delete the provided configuration
+  vyos.vyos.vyos_vpn_ipsec_s2s:
+    state: deleted
+
+- name: Remove the prerequisite esp-group/ike-group
+  vyos.vyos.vyos_vpn_ipsec:
+    state: deleted
+
+- name: Remove the prerequisite vti0 interface
+  vyos.vyos.vyos_config:
+    lines:
+      - delete interfaces vti vti0

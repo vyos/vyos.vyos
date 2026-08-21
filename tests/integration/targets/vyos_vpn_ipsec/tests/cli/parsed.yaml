@@ -1,0 +1,14 @@
+---
+- debug:
+    msg: START vyos_vpn_ipsec parsed integration tests on connection={{ ansible_connection }}
+
+- name: TEST - [parsed] Parse the commands for provided configuration
+  register: result
+  vyos.vyos.vyos_vpn_ipsec:
+    running_config: "{{ lookup('file', '_parsed.cfg') }}"
+    state: parsed
+
+- assert:
+    that:
+      - result.changed == false
+      - parsed['after'] == result.parsed
