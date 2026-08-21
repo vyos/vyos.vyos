@@ -18,7 +18,6 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
-
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -380,15 +379,15 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
                                 name="DELETE-HOSTS",
                                 description="The (single) last address from this group will be deleted in the tests",
                                 members=[
-                                    dict(address='1.2.3.4'),
-                                ]
+                                    dict(address="1.2.3.4"),
+                                ],
                             ),
                             dict(
                                 afi="ipv4",
                                 name="ZONE-TEST",
                                 members=[
                                     dict(address="1.2.3.4"),
-                                ]
+                                ],
                             ),
                             dict(
                                 afi="ipv6",
