@@ -79,6 +79,7 @@ class InterfacesFacts(object):
                 facts["interfaces"].append(utils.remove_empties(cfg))
 
         ansible_facts["ansible_network_resources"].update(facts)
+
         return ansible_facts
 
     def render_config(self, conf):
@@ -93,7 +94,7 @@ class InterfacesFacts(object):
         """
         vif_conf = "\n".join(filter(lambda x: ("vif" in x), conf))
         eth_conf = "\n".join(filter(lambda x: ("vif" not in x), conf))
-        config = self.parse_attribs(["description", "speed", "mtu", "duplex"], eth_conf)
+        config = self.parse_attribs(["description", "speed", "mtu", "duplex", "vrf"], eth_conf)
         config["vifs"] = self.parse_vifs(vif_conf)
 
         return utils.remove_empties(config)
