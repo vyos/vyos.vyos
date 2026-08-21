@@ -226,6 +226,28 @@ Parameters
             <tr>
                 <td colspan="2">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>replace</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">boolean</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                    <li>yes</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>The <code>replace</code> argument replaces the device&#x27;s entire configuration with the supplied candidate, rather than merging the candidate into the existing configuration.</div>
+                        <div><code>replace</code> requires the candidate (<code>lines</code>/<code>src</code>) to represent the complete desired configuration. Any configuration present on the device but not included in the candidate will be deleted, including management interfaces, SSH, and login users if they are omitted. Always provide a full configuration when using <code>replace</code>, never a partial one.</div>
+                        <div><code>replace</code> is only supported when <code>match</code> is set to <code>line</code> (the default). Combining <code>replace</code> with <code>match</code> set to <code>none</code> results in an error.</div>
+                        <div>For backwards compatibility, the default is <code>false</code>.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>save</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -268,6 +290,7 @@ Notes
    - Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025.
    - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
    - To ensure idempotency and correct diff the configuration lines in the relevant module options should be similar to how they appear if present in the running configuration on device including the indentation.
+   - ``replace`` currently has no way to scope its effect to part of the configuration; it always operates against the entire device configuration. There is no ``path`` parameter to constrain ``replace`` to a subtree.
    - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
 
 
@@ -310,6 +333,21 @@ Examples
         backup_options:
           filename: backup.cfg
           dir_path: /home/user
+
+    - name: replace the entire running config with a fully edited candidate
+      # replace requires the complete desired configuration -- never a partial
+      # one. A safe pattern is to back up the current config, edit it, then
+      # replace with the edited whole, as shown here.
+      vyos.vyos.vyos_config:
+        backup: true
+        backup_options:
+          filename: pre_replace_backup.cfg
+      register: backup_result
+
+    - name: (edit backup_result's backup file as needed, then)
+      vyos.vyos.vyos_config:
+        src: /home/user/pre_replace_backup_edited.cfg
+        replace: true
 
 
 
