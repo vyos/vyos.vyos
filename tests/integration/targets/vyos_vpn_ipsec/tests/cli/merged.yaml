@@ -1,0 +1,37 @@
+---
+- debug:
+    msg: START vyos_vpn_ipsec merged integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge the provided configuration with the existing running configuration
+      register: result
+      vyos.vyos.vyos_vpn_ipsec: &id001
+        config: "{{ merged.config }}"
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: vpn_ipsec
+
+    - name: Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ merged['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+          - result.changed == true
+          - result.after == ansible_facts['network_resources']['vpn_ipsec']
+          - result.after == merged.after
+          - result.before == {}
+
+    - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vpn_ipsec: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+          - result['commands'] == []
+
+  always:
+    - include_tasks: _remove_config.yaml
