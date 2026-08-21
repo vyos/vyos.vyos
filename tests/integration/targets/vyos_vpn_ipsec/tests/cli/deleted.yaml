@@ -1,0 +1,69 @@
+---
+- debug:
+    msg: START vyos_vpn_ipsec deleted integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: TEST - [deleted] Remove all configuration
+      vyos.vyos.vyos_vpn_ipsec:
+        state: deleted
+      register: result
+
+    - name: TEST - [deleted] Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ deleted['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+          - result.changed == true
+          - result.after == deleted.after
+
+    - name: TEST - [deleted] Remove all configuration again (IDEMPOTENT)
+      vyos.vyos.vyos_vpn_ipsec:
+        state: deleted
+      register: result
+
+    - name: TEST - [deleted] Assert idempotent
+      assert:
+        that:
+          - result.changed == false
+          - result.commands == []
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+- block:
+    - include_tasks: _populate.yaml
+
+    - name: TEST - [deleted scoped] Remove only IKE-EXTRA by name
+      vyos.vyos.vyos_vpn_ipsec:
+        config:
+          ike_group:
+            - name: IKE-EXTRA
+        state: deleted
+      register: result
+
+    - name: TEST - [deleted scoped] Assert only IKE-EXTRA was removed
+      assert:
+        that:
+          - result.commands == ["delete vpn ipsec ike-group IKE-EXTRA"]
+          - result.changed == true
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: vpn_ipsec
+
+    - name: TEST - [deleted scoped] Assert IKE-TEST and everything else survived
+      vars:
+        redacted: VALUE_SPECIFIED_IN_NO_LOG_PARAMETER
+      assert:
+        that:
+          - ansible_facts['network_resources']['vpn_ipsec']['ike_group'] == [populate_config.ike_group[0]]
+          - ansible_facts['network_resources']['vpn_ipsec']['esp_group'] == populate_config.esp_group
+          - ansible_facts['network_resources']['vpn_ipsec']['profile'][0]['name'] == populate_config.profile[0].name
+          - ansible_facts['network_resources']['vpn_ipsec']['profile'][0]['authentication']['mode'] == populate_config.profile[0].authentication.mode
+          - ansible_facts['network_resources']['vpn_ipsec']['profile'][0]['authentication']['pre_shared_secret'] == redacted
+          - ansible_facts['network_resources']['vpn_ipsec']['profile'][0]['bind_tunnel'] == populate_config.profile[0].bind_tunnel
+          - ansible_facts['network_resources']['vpn_ipsec']['profile'][0]['esp_group'] == populate_config.profile[0].esp_group
+          - ansible_facts['network_resources']['vpn_ipsec']['profile'][0]['ike_group'] == populate_config.profile[0].ike_group
+
+  always:
+    - include_tasks: _remove_config.yaml
