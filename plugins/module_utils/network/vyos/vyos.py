@@ -85,6 +85,24 @@ def get_config(module, flags=None, format=None):
         return cfg
 
 
+def copy_file(module, source, destination, proto="scp"):
+    """Copy a local file to the remote device over the existing network_cli
+    SSH session, using netcommon's generic connection-level file transfer
+    RPC (the same mechanism ansible.netcommon.net_put uses).
+
+    Requires the device to have SCP/SFTP reachable over the same SSH
+    session used for network_cli. Mirrors the calling convention of
+    cisco.iosxr's module_utils copy_file(module, source, destination, proto),
+    confirmed against cisco.iosxr's iosxr_config.py call site:
+    copy_file(module, src, dst, "sftp").
+    """
+    connection = get_connection(module)
+    try:
+        connection.copy_file(source, destination, proto)
+    except ConnectionError as exc:
+        module.fail_json(msg=to_text(exc, errors="surrogate_then_replace"))
+
+
 def run_commands(module, commands, check_rc=True):
     connection = get_connection(module)
     try:
@@ -99,7 +117,10 @@ def load_config(module, commands, commit=False, comment=None, confirm=None):
 
     try:
         response = connection.edit_config(
-            candidate=commands, commit=commit, comment=comment, confirm=confirm
+            candidate=commands,
+            commit=commit,
+            comment=comment,
+            confirm=confirm,
         )
     except ConnectionError as exc:
         module.fail_json(msg=to_text(exc, errors="surrogate_then_replace"))
