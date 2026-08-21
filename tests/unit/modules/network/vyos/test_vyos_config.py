@@ -140,6 +140,38 @@ class TestVyosConfigModule(TestVyosModule):
         )
         self.execute_module(changed=True, commands=lines, sort=False)
 
+    def test_vyos_config_match_smart(self):
+        lines = [
+            "set interfaces ethernet eth0 address '1.2.3.4/24'",
+            "set interfaces ethernet eth0 description 'test string'",
+        ]
+        set_module_args(dict(lines=lines, match="smart"))
+        candidate = "\n".join(lines)
+
+        response = self.cliconf_obj.get_diff(
+            candidate,
+            self.running_config,
+            diff_match="smart",
+        )
+
+        self.conn.get_diff = MagicMock(return_value=response)
+        result = self.execute_module(changed=True, sort=False)
+
+        self.conn.get_diff.assert_called_once_with(
+            candidate=candidate,
+            running=self.running_config,
+            diff_match="smart",
+        )
+
+        expected_config_diff = [
+            "delete system",
+            "delete interfaces ethernet eth1",
+        ]
+        self.assertEqual(response["config_diff"], expected_config_diff)
+
+        expected_commands = expected_config_diff
+        self.assertEqual(result["commands"], expected_commands)
+
     def test_vyos_config_confirm_automatic(self):
         src = load_fixture("vyos_config_src.cfg")
         confirm_timeout = 7
@@ -177,3 +209,134 @@ class TestVyosConfigModule(TestVyosModule):
 
         self.assertEqual(self.load_config.call_args[1]["confirm"], confirm_timeout)
         self.run_commands.assert_not_called()
+
+    def test_vyos_config_match_smart_blank_lines(self):
+        """smart diff must not raise IndexError on blank lines in running config."""
+        running_with_blanks = self.running_config + "\n\n"
+        candidate = "set interfaces ethernet eth0 address 1.2.3.4/24"
+        response = self.cliconf_obj.get_diff(candidate, running_with_blanks, diff_match="smart")
+        self.assertIn("config_diff", response)
+
+    def test_vyos_config_match_smart_additions(self):
+        lines = [
+            "set interfaces ethernet eth0 address '1.2.3.4/24'",
+            "set interfaces ethernet eth0 description 'test string'",
+            "set interfaces ethernet eth2 address '192.0.2.1/24'",
+        ]
+        set_module_args(dict(lines=lines, match="smart"))
+        candidate = "\n".join(lines)
+        response = self.cliconf_obj.get_diff(
+            candidate,
+            self.running_config,
+            diff_match="smart",
+        )
+        self.conn.get_diff = MagicMock(return_value=response)
+        result = self.execute_module(changed=True, sort=False)
+        self.conn.get_diff.assert_called_once_with(
+            candidate=candidate,
+            running=self.running_config,
+            diff_match="smart",
+        )
+        self.assertIn(
+            "set interfaces ethernet eth2 address 192.0.2.1/24",
+            response["config_diff"],
+        )
+        self.assertEqual(result["commands"], response["config_diff"])
+
+    def test_vyos_config_match_smart_rejects_delete_lines(self):
+        """
+        match=smart treats the candidate as the complete desired end-state.
+        A candidate containing 'delete' lines must be rejected rather than
+        silently producing a diff that removes most/all of the running
+        config (regression test for a candidate that is a no-op/delete-only
+        input generating deletes for everything the candidate omits).
+        """
+        lines = ["delete interfaces ethernet eth0 address"]
+        candidate = "\n".join(lines)
+
+        with self.assertRaises(ValueError):
+            self.cliconf_obj.get_diff(
+                candidate,
+                self.running_config,
+                diff_match="smart",
+            )
+
+    def test_vyos_config_match_smart_rejects_empty_candidate(self):
+        """
+        A candidate that is empty, whitespace-only, or comment-only must be
+        rejected rather than silently treated as an empty desired end-state
+        (which would generate deletes for the entire running config).
+        Comment-only candidates are also stripped away entirely by upstream
+        NetworkConfig parsing before reaching VyosConf, so this is a second,
+        distinct route to the same mass-deletion failure mode as the
+        'delete' lines case above.
+        """
+        for candidate in ("", "   ", "# just a comment"):
+            with self.assertRaises(ValueError):
+                self.cliconf_obj.get_diff(
+                    candidate,
+                    self.running_config,
+                    diff_match="smart",
+                )
+
+    def test_vyos_config_match_smart_requires_running(self):
+        """
+        diff_match=smart with running=None must raise a clear ValueError
+        instead of falling through to an AttributeError on
+        running.splitlines().
+        """
+        with self.assertRaises(ValueError):
+            self.cliconf_obj.get_diff(
+                "set system host-name foo",
+                None,
+                diff_match="smart",
+            )
+
+    def test_vyos_config_match_smart_ignores_comment_lines(self):
+        """
+        Comment lines mixed in with 'set' lines must be stripped out rather
+        than causing the whole candidate to be rejected as not starting
+        with 'set'.
+        """
+        candidate = "\n".join(
+            [
+                "set interfaces ethernet eth0 address '1.2.3.4/24'",
+                "# a note about this interface",
+                "set interfaces ethernet eth0 description 'test string'",
+            ],
+        )
+        running = "set interfaces ethernet eth0 address '1.2.3.4/24'"
+        response = self.cliconf_obj.get_diff(
+            candidate,
+            running,
+            diff_match="smart",
+        )
+        self.assertIn(
+            "set interfaces ethernet eth0 description 'test string'",
+            response["config_diff"],
+        )
+
+    def test_sanitize_config_filters_password_delete_lines(self):
+        """
+        sanitize_config()/PASSWORD_NEEDLE must filter 'delete ... password'
+        lines the same way it filters 'set ... password' lines, since
+        match=smart can generate deletes for password config the candidate
+        omits. Without this, allow_password_change=none/plaintext/encrypted
+        would fail to catch a password-affecting delete.
+        """
+        result = {}
+        commands = [
+            "set system host-name foo",
+            "delete system login user admin authentication encrypted-password",
+            "set system login user admin authentication plaintext-password 'secret'",
+        ]
+        vyos_config.sanitize_config(commands, result, allow="none")
+        self.assertIn(
+            "delete system login user admin authentication encrypted-password",
+            result["filtered"],
+        )
+        self.assertIn(
+            "set system login user admin authentication plaintext-password 'secret'",
+            result["filtered"],
+        )
+        self.assertNotIn("set system host-name foo", result["filtered"])
