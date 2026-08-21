@@ -56,6 +56,8 @@ class Firewall_rulesArgs(object):  # pylint: disable=R0903
                                 "reject",
                                 "accept",
                                 "jump",
+                                "return",
+                                "continue",
                             ],
                             "type": "str",
                         },
