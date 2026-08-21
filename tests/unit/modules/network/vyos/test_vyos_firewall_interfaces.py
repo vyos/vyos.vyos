@@ -18,7 +18,6 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
-
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -437,19 +436,19 @@ class TestVyosFirewallInterfacesModule(TestVyosModule):
             ),
         )
         commands = [
-            'delete interfaces ethernet eth0 firewall in name',
-            'delete interfaces ethernet eth0 firewall local name',
-            'delete interfaces ethernet eth0 firewall out name',
-            'delete interfaces ethernet eth0 firewall local ipv6-name',
-            'delete interfaces ethernet eth2 firewall in name',
-            'delete interfaces ethernet eth2 firewall local name',
-            'delete interfaces ethernet eth2 firewall out name',
-            'delete interfaces ethernet eth2 firewall local ipv6-name',
+            "delete interfaces ethernet eth0 firewall in name",
+            "delete interfaces ethernet eth0 firewall local name",
+            "delete interfaces ethernet eth0 firewall out name",
+            "delete interfaces ethernet eth0 firewall local ipv6-name",
+            "delete interfaces ethernet eth2 firewall in name",
+            "delete interfaces ethernet eth2 firewall local name",
+            "delete interfaces ethernet eth2 firewall out name",
+            "delete interfaces ethernet eth2 firewall local ipv6-name",
             "set interfaces ethernet eth0 vif 100 firewall in name 'INBOUND'",
             "set interfaces ethernet eth0 vif 100 firewall local ipv6-name 'V6-LOCAL'",
             "set interfaces bonding bond2 firewall local name 'LOCAL'",
             "set interfaces bonding bond2 firewall local ipv6-name 'V6-LOCAL'",
             "set interfaces wireguard wg4 firewall local name 'LOCAL'",
-            "set interfaces wireguard wg4 firewall local ipv6-name 'V6-LOCAL'"
+            "set interfaces wireguard wg4 firewall local ipv6-name 'V6-LOCAL'",
         ]
         self.execute_module(changed=True, commands=commands)
