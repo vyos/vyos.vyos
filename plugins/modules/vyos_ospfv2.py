@@ -28,7 +28,6 @@ The module file for vyos_ospfv2
 
 from __future__ import absolute_import, division, print_function
 
-
 __metaclass__ = type
 
 ANSIBLE_METADATA = {
