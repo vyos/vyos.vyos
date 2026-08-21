@@ -1,0 +1,60 @@
+---
+- debug:
+    msg: START vyos_vpn_ipsec_s2s deleted integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: TEST - [deleted] Remove all configuration
+      vyos.vyos.vyos_vpn_ipsec_s2s:
+        state: deleted
+      register: result
+
+    - name: TEST - [deleted] Assert that correct set of commands were generated
+      assert:
+        that:
+          - "{{ deleted['commands'] | symmetric_difference(result['commands']) | length == 0 }}"
+          - result.changed == true
+          - result.after == deleted.after
+
+    - name: TEST - [deleted] Remove all configuration again (IDEMPOTENT)
+      vyos.vyos.vyos_vpn_ipsec_s2s:
+        state: deleted
+      register: result
+
+    - name: TEST - [deleted] Assert idempotent
+      assert:
+        that:
+          - result.changed == false
+          - result.commands == []
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+- block:
+    - include_tasks: _populate.yaml
+
+    - name: TEST - [deleted scoped] Remove only PEER-EXTRA by name
+      vyos.vyos.vyos_vpn_ipsec_s2s:
+        config:
+          peer:
+            - name: PEER-EXTRA
+        state: deleted
+      register: result
+
+    - name: TEST - [deleted scoped] Assert only PEER-EXTRA was removed
+      assert:
+        that:
+          - result.commands == ["delete vpn ipsec site-to-site peer PEER-EXTRA"]
+          - result.changed == true
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: vpn_ipsec_s2s
+
+    - name: TEST - [deleted scoped] Assert PEER-TEST survived
+      assert:
+        that:
+          - ansible_facts['network_resources']['vpn_ipsec_s2s']['peer'] | map(attribute='name') | list == ['PEER-TEST']
+
+  always:
+    - include_tasks: _remove_config.yaml

@@ -74,6 +74,7 @@ class Interfaces(ConfigBase):
 
         if self.state in self.ACTION_STATES:
             existing_interfaces_facts = self.get_interfaces_facts()
+
         else:
             existing_interfaces_facts = []
 
