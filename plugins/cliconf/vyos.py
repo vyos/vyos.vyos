@@ -17,7 +17,6 @@
 #
 from __future__ import absolute_import, division, print_function
 
-
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -198,7 +197,7 @@ class Cliconf(CliconfBase):
             if comment:
                 command = 'commit-confirm {0} comment "{1}"'.format(confirm, comment)
             else:
-                command = 'commit-confirm {0}'.format(confirm)
+                command = "commit-confirm {0}".format(confirm)
             self.send_command(command, "Proceed?", "\n")
         else:
             if comment:

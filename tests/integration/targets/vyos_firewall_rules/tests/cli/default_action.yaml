@@ -1,0 +1,69 @@
+---
+- debug:
+    msg: START vyos_firewall_rules default_action integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Select the default_action values supported by VyOS {{ vyos_version }}
+      set_fact:
+        default_action_sets: >-
+          {{ all_sets if vyos_version is version('1.4.0', '>=', version_type='semver')
+             else all_sets | rejectattr('default_action', 'in', ['jump', 'return', 'continue']) | list }}
+      vars:
+        all_sets:
+          - name: DA-DROP
+            default_action: drop
+          - name: DA-REJECT
+            default_action: reject
+          - name: DA-ACCEPT
+            default_action: accept
+          - name: DA-JUMP
+            default_action: jump
+            default_jump_target: DA-ACCEPT
+          - name: DA-RETURN
+            default_action: return
+          - name: DA-CONTINUE
+            default_action: continue
+
+    - name: Configure one rule-set per default_action value
+      register: result
+      vyos.vyos.vyos_firewall_rules: &id001
+        config:
+          - afi: ipv4
+            rule_sets: "{{ default_action_sets }}"
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: firewall_rules
+
+    - name: Assert that the device accepted and reports back every default_action
+      assert:
+        that:
+          - "{{ default_action_sets | symmetric_difference(gathered_sets) | length == 0 }}"
+      vars:
+        gathered_sets: >-
+          {{ ansible_facts['network_resources']['firewall_rules']
+             | selectattr('afi', 'eq', 'ipv4') | map(attribute='rule_sets') | first }}
+
+    - name: Assert that after dicts were correctly generated
+      assert:
+        that:
+          - "{{ default_action_sets | symmetric_difference(after_sets) | length == 0 }}"
+      vars:
+        after_sets: >-
+          {{ result['after'] | selectattr('afi', 'eq', 'ipv4') | map(attribute='rule_sets') | first }}
+
+    - name: Configure one rule-set per default_action value (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_firewall_rules: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+  always:
+    - include_tasks: _remove_config.yaml
+
+- debug:
+    msg: END vyos_firewall_rules default_action integration tests on connection={{ ansible_connection }}

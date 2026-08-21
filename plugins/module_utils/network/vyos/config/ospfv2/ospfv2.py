@@ -10,8 +10,8 @@ is compared to the provided configuration (as dict) and the command set
 necessary to bring the current configuration to it's desired end-state is
 created
 """
-from __future__ import absolute_import, division, print_function
 
+from __future__ import absolute_import, division, print_function
 
 __metaclass__ = type
 
@@ -57,7 +57,7 @@ class Ospfv2(ConfigBase):
         :returns: The current configuration as a dictionary
         """
 
-        (facts, _warnings) = Facts(self._module).get_facts(
+        facts, _warnings = Facts(self._module).get_facts(
             self.gather_subset,
             self.gather_network_resources,
             data=data,
