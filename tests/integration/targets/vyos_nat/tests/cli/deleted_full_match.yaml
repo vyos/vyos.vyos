@@ -1,0 +1,70 @@
+---
+- debug:
+    msg: START vyos_nat deleted full-match integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Delete destination rule 100 with full matching config
+      register: result
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 100
+                  description: Web server NAT
+                  protocol: tcp
+                  log: true
+                  inbound_interface:
+                    name: eth2
+                  destination:
+                    address: 198.51.100.10
+                    port: "80"
+                  translation:
+                    address: 192.168.1.10
+                    port: "8080"
+        state: deleted
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands == ["delete nat destination rule 100"]
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: nat
+
+    - name: Assert rule 100 is actually gone from the device
+      assert:
+        that:
+          - ansible_facts['network_resources']['nat'].nat.destination is not defined or
+            ansible_facts['network_resources']['nat'].nat.destination.rule | default([]) | selectattr('id', 'equalto', 100) | list | length == 0
+
+    - name: Delete the same configuration again (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 100
+                  description: Web server NAT
+                  protocol: tcp
+                  log: true
+                  inbound_interface:
+                    name: eth2
+                  destination:
+                    address: 198.51.100.10
+                    port: "80"
+                  translation:
+                    address: 192.168.1.10
+                    port: "8080"
+        state: deleted
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

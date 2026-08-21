@@ -1,0 +1,77 @@
+---
+- debug:
+    msg: START vyos_nat replaced cgnat pool integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Establish baseline CGNAT external pool
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            cgnat:
+              log_allocation: true
+              pool:
+                external:
+                  - name: ext-pool-1
+                    external_port_range: "10000-20000"
+                    per_user_limit:
+                      port: "200"
+                    range:
+                      - value: 203.0.113.0/24
+                      - value: 203.1.113.1-203.1.113.60
+                        seq: "10"
+                internal:
+                  - name: int-pool-1
+                    range:
+                      - 10.0.0.0/24
+              rule:
+                - id: 1
+                  source:
+                    pool: int-pool-1
+                  translation:
+                    pool: ext-pool-1
+        state: merged
+
+    - name: Replace CGNAT pool changing only external_port_range
+      register: result
+      vyos.vyos.vyos_nat:
+        config:
+          nat:
+            cgnat:
+              log_allocation: true
+              pool:
+                external:
+                  - name: ext-pool-1
+                    external_port_range: "30000-40000"
+                    per_user_limit:
+                      port: "200"
+                    range:
+                      - value: 203.0.113.0/24
+                      - value: 203.1.113.1-203.1.113.60
+                        seq: "10"
+                internal:
+                  - name: int-pool-1
+                    range:
+                      - 10.0.0.0/24
+              rule:
+                - id: 1
+                  source:
+                    pool: int-pool-1
+                  translation:
+                    pool: ext-pool-1
+        state: replaced
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: nat
+
+    - name: Assert all pool fields survived the replace, not just the changed one
+      assert:
+        that:
+          - result.changed == true
+          - ansible_facts['network_resources']['nat'].nat.cgnat.pool.external[0].external_port_range == "30000-40000"
+          - ansible_facts['network_resources']['nat'].nat.cgnat.pool.external[0].per_user_limit.port == "200"
+          - ansible_facts['network_resources']['nat'].nat.cgnat.pool.external[0].range | length == 2
+
+  always:
+    - include_tasks: _remove_config.yaml
