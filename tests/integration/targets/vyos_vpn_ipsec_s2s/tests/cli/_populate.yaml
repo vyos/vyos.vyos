@@ -1,0 +1,37 @@
+---
+- ansible.builtin.include_tasks: _remove_config.yaml
+
+# Real device dependencies discovered while building this module:
+# vpn ipsec site-to-site peer references esp-group/ike-group by name
+# (from the vyos_vpn_ipsec profile-layer module), and vti.bind requires
+# the referenced interface to already exist -- neither is created by
+# this module itself. Made self-contained here rather than assuming
+# vyos_vpn_ipsec's own tests already left this state behind.
+- name: PREREQ Create the esp-group/ike-group referenced by the test peer
+  vyos.vyos.vyos_vpn_ipsec:
+    config:
+      esp_group:
+        - name: ESP-TEST
+          proposal:
+            - proposal_id: 1
+              encryption: aes256
+              hash: sha256
+      ike_group:
+        - name: IKE-TEST
+          key_exchange: ikev2
+          proposal:
+            - proposal_id: 1
+              encryption: aes256
+              hash: sha256
+    state: merged
+
+- name: PREREQ Create the vti0 interface referenced by vti.bind
+  vyos.vyos.vyos_config:
+    lines:
+      - set interfaces vti vti0
+
+- name: POPULATE Apply the provided configuration
+  register: result
+  vyos.vyos.vyos_vpn_ipsec_s2s:
+    config: "{{ populate_config }}"
+    state: merged

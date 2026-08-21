@@ -1,0 +1,10 @@
+---
+- name: Setup - Add VRFs
+  ansible.netcommon.cli_config:
+    config: |-
+      set vrf name green description 'green'
+      set vrf name green table 101
+      set vrf name green vni 501
+      set vrf name red description 'red'
+      set vrf name red table 102
+      set vrf name red vni 502
