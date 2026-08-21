@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, print_function
 
-
 __metaclass__ = type
 
 # (c) 2017, Ansible by Red Hat, inc
@@ -456,7 +455,8 @@ def main():
         full_name=dict(),
         configured_password=dict(no_log=True),
         encrypted_password=dict(no_log=False),
-        update_password=dict(default="always", choices=["on_create", "always"]),
+        # Explicit no_log=False: unset no_log triggers Ansible PASSWORD_MATCH on *password* names.
+        update_password=dict(default="always", choices=["on_create", "always"], no_log=False),
         state=dict(default="present", choices=["present", "absent"]),
         public_keys=dict(type="list", elements="dict", options=public_key_spec),
     )

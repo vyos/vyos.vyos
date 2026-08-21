@@ -18,7 +18,6 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
-
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -1928,4 +1927,66 @@ class TestVyosFirewallRulesModule14(TestVyosModule):
             "set firewall ipv4 name V4-INGRESS rule 101 log",
         ]
         self.maxDiff = None
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_firewall_default_action_merged_01(self):
+        """Test that every default-action value is accepted and rendered"""
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        afi="ipv4",
+                        rule_sets=[
+                            dict(
+                                name="V4-DROP",
+                                description="Rule set configured with default_action drop",
+                                default_action="drop",
+                            ),
+                            dict(
+                                name="V4-JUMP",
+                                description="Rule set configured with default_action jump",
+                                default_action="jump",
+                                default_jump_target="V4-ACCEPT",
+                            ),
+                            dict(
+                                name="V4-REJECT",
+                                description="Rule set configured with default_action reject",
+                                default_action="reject",
+                            ),
+                            dict(
+                                name="V4-RETURN",
+                                description="Rule set configured with default_action return",
+                                default_action="return",
+                            ),
+                            dict(
+                                name="V4-ACCEPT",
+                                description="Rule set configured with default_action accept",
+                                default_action="accept",
+                            ),
+                            dict(
+                                name="V4-CONTINUE",
+                                description="Rule set configured with default_action continue",
+                                default_action="continue",
+                            ),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+        commands = [
+            "set firewall ipv4 name V4-DROP default-action 'drop'",
+            "set firewall ipv4 name V4-DROP description 'Rule set configured with default_action drop'",
+            "set firewall ipv4 name V4-JUMP default-action 'jump'",
+            "set firewall ipv4 name V4-JUMP default-jump-target 'V4-ACCEPT'",
+            "set firewall ipv4 name V4-JUMP description 'Rule set configured with default_action jump'",
+            "set firewall ipv4 name V4-REJECT default-action 'reject'",
+            "set firewall ipv4 name V4-REJECT description 'Rule set configured with default_action reject'",
+            "set firewall ipv4 name V4-RETURN default-action 'return'",
+            "set firewall ipv4 name V4-RETURN description 'Rule set configured with default_action return'",
+            "set firewall ipv4 name V4-ACCEPT default-action 'accept'",
+            "set firewall ipv4 name V4-ACCEPT description 'Rule set configured with default_action accept'",
+            "set firewall ipv4 name V4-CONTINUE default-action 'continue'",
+            "set firewall ipv4 name V4-CONTINUE description 'Rule set configured with default_action continue'",
+        ]
         self.execute_module(changed=True, commands=commands)
