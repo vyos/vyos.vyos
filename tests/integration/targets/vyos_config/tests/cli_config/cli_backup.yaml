@@ -9,6 +9,7 @@
     - "{{ role_path }}/backup_test_dir/"
     - "{{ role_path }}/backup/backup.cfg"
   run_once: true
+  connection: local
 
 - name: collect any backup files
   ansible.builtin.find:
@@ -22,6 +23,7 @@
     path: "{{ item.path }}"
     state: absent
   with_items: "{{backup_files.files|default([])}}"
+  connection: local
 
 - name: take config backup
   register: result
