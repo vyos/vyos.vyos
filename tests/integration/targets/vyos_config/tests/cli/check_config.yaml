@@ -48,6 +48,7 @@
       - delete system login user testadmin
       - delete system login user testjohn
     match: none
+  ignore_errors: true
 
 - block:
     - name: check multiple line config filter is working
@@ -105,5 +106,6 @@
           - delete system login user testadmin
           - delete system login user testjohn
         match: none
+      ignore_errors: true
 
 - debug: msg="END cli/config_check.yaml on connection={{ ansible_connection }}"
