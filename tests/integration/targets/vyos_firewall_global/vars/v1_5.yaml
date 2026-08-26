@@ -21,7 +21,7 @@ merged_commands:
   - set firewall global-options syn-cookies 'enable'
   - set firewall global-options source-validation 'strict'
   - set firewall zone ZONE-TEST description 'zone-test test description'
-  - set firewall zone ZONE-TEST interface eth0.1234
+  - set firewall zone ZONE-TEST member interface eth0.1234
   - set firewall zone ZONE-TEST default-action 'drop'
 
 populate_commands:
@@ -43,7 +43,7 @@ populate_commands:
   - set firewall global-options state-policy invalid action 'reject'
   - set firewall global-options syn-cookies 'enable'
   - set firewall global-options twa-hazards-protection 'enable'
-  - set firewall zone ZONE-TEST interface 'eth0.1234'
+  - set firewall zone ZONE-TEST member interface 'eth0.1234'
   - set firewall zone ZONE-TEST description 'zone-test test description'
 
 replaced_commands:
@@ -61,8 +61,8 @@ replaced_commands:
   - set firewall zone FZP-2 default-action 'reject'
   - set firewall zone FZP-2 default-log
   - set firewall zone FZP-2 description 'This is the Firewall zone fzp2'
-  - set firewall zone FZP-2 interface eth2
-  - set firewall zone FZP-2 interface lo
+  - set firewall zone FZP-2 member interface eth2
+  - set firewall zone FZP-2 member interface lo
   - set firewall zone FZP-2 intra-zone-filtering action accept
 
 rendered_commands:
@@ -90,14 +90,14 @@ rendered_commands:
   - set firewall global-options twa-hazards-protection 'enable'
   - set firewall global-options syn-cookies 'enable'
   - set firewall global-options source-validation 'strict'
-  - set firewall zone ZONE-TEST interface eth0.1234
+  - set firewall zone ZONE-TEST member interface eth0.1234
   - set firewall zone ZONE-TEST description 'zone-test test description'
   - set firewall zone ZONE-TEST default-action 'drop'
 
 deleted_commands:
   - "delete firewall"
 
-parsed_config_file: "_parsed_config_1_4.cfg"
+parsed_config_file: "_parsed_config_1_5.cfg"
 
 replaced_diff:
   - '+ network "1.1.1.1/32"'
