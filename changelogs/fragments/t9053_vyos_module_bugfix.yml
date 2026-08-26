@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - vyos_config.py - Fixing test case
