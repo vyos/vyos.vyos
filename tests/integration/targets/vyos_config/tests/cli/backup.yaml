@@ -2,17 +2,18 @@
 - debug: msg="START vyos/backup.yaml on connection={{ ansible_connection }}"
 
 - name: collect any backup files
-  find:
+  ansible.builtin.find:
     paths: "{{ role_path }}/backup"
     pattern: "{{ inventory_hostname_short }}_config*"
   register: backup_files
   connection: local
 
 - name: delete backup files
-  file:
+  ansible.builtin.file:
     path: "{{ item.path }}"
     state: absent
   with_items: "{{ backup_files.files|default([]) }}"
+  connection: local
 
 - name: take configure backup
   register: result
@@ -24,7 +25,7 @@
       - result.changed == true
 
 - name: collect any backup files
-  find:
+  ansible.builtin.find:
     paths: "{{ role_path }}/backup"
     pattern: "{{ inventory_hostname_short }}_config*"
   register: backup_files
@@ -35,13 +36,14 @@
       - backup_files.files is defined
 
 - name: delete configurable backup file path
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: absent
   with_items:
     - "{{ role_path }}/backup_test_dir/"
     - "{{ role_path }}/backup/backup.cfg"
   run_once: true
+  connection: local
 
 - name: take configuration backup in custom filename and directory path
   register: result
@@ -56,7 +58,7 @@
       - result.changed == true
 
 - name: check if the backup file-1 exist
-  find:
+  ansible.builtin.find:
     paths: "{{ role_path }}/backup_test_dir/{{ inventory_hostname_short }}/backup.cfg"
   register: backup_file
   connection: local
@@ -77,7 +79,7 @@
       - result.changed == true
 
 - name: check if the backup file-2 exist
-  find:
+  ansible.builtin.find:
     paths: "{{ role_path }}/backup/backup.cfg"
   register: backup_file
   connection: local
@@ -98,7 +100,7 @@
       - result.changed == true
 
 - name: check if the backup file-3 exist
-  find:
+  ansible.builtin.find:
     paths: "{{ role_path }}/backup_test_dir/{{ inventory_hostname_short }}"
     pattern: "{{ inventory_hostname_short }}_config*"
   register: backup_file
