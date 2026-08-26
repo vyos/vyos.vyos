@@ -8,6 +8,7 @@
 - name: debug vyos_facts
   debug:
     var: vyos_facts
+  when: vyos_facts is not skipped
 
 - name: pull version from facts
   set_fact:
@@ -19,10 +20,20 @@
     vyos_version: "{{ vyos_version }}.0"
   when: vyos_version.count('.') == 1
 
-- name: include correct vars
+- name: report resolved VyOS version
+  debug:
+    msg: "Using VyOS version {{ vyos_version }} for this testcase"
+
+- name: include correct vars (pre-1.4.0)
   include_vars: pre-v1_4.yaml
   when: vyos_version is version('1.4.0', '<', version_type='semver')
 
-- name: include correct vars
+- name: include correct vars (1.4.x)
   include_vars: v1_4.yaml
-  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  when: >-
+    vyos_version is version('1.4.0', '>=', version_type='semver') and
+    vyos_version is version('1.5.0', '<', version_type='semver')
+
+- name: include correct vars (1.5.0+)
+  include_vars: v1_5.yaml
+  when: vyos_version is version('1.5.0', '>=', version_type='semver')
