@@ -60,7 +60,6 @@ class Nat(ResourceModule):
 
         if self.state == "replaced":
             self._delete_nat_objects(wantd, haved, only_missing=False)
-            self._delete_nat_objects(wantd, haved, only_missing=False)
             self._set_commands(wantd, haved)
         elif self.state == "overridden":
             self._delete_nat_objects(wantd, haved, only_missing=True)
