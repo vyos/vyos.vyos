@@ -1,0 +1,3 @@
+---
+trivial:
+  - vyos_firewall_rules - Fix SIT for firewall_rules diff feature
