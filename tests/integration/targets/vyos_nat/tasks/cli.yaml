@@ -5,6 +5,7 @@
     patterns: "{{ testcase }}\\.yaml$"
     use_regex: true
   delegate_to: localhost
+  register: test_cases
 
 - name: Set test_items
   ansible.builtin.set_fact:

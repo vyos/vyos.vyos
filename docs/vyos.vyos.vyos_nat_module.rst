@@ -3376,7 +3376,7 @@ Notes
 -----
 
 .. note::
-   - Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025.
+   - Tested against VyOS 1.4.3 and 1.5.0.
    - This module works with connection ``network_cli``.
 
 

@@ -60,6 +60,7 @@ class Nat(ResourceModule):
 
         if self.state == "replaced":
             self._delete_nat_objects(wantd, haved, only_missing=False)
+            self._delete_nat_objects(wantd, haved, only_missing=False)
             self._set_commands(wantd, haved)
         elif self.state == "overridden":
             self._delete_nat_objects(wantd, haved, only_missing=True)
@@ -340,19 +341,28 @@ class Nat(ResourceModule):
         ctx = {"nat": nat_type, "type": section, "id": rid}
 
         want_lb = want.get("load_balance") or {}
+        have_lb = have.get("load_balance") or {}
         want_trans_addr = (want.get("translation") or {}).get("address")
         have_trans_addr = (have.get("translation") or {}).get("address")
         if want_lb and want_trans_addr is not None:
             self._module.fail_json(
                 msg="translation.address and load_balance are mutually exclusive",
             )
-        if self.state == "merged" and want_lb and have_trans_addr is not None:
-            self._module.fail_json(
-                msg=(
-                    "Cannot add load_balance to a rule that already has translation.address with "
-                    "state=merged; use state=replaced or state=overridden"
-                ),
-            )
+        if self.state == "merged":
+            if want_lb and have_trans_addr is not None:
+                self._module.fail_json(
+                    msg=(
+                        "Cannot add load_balance to a rule that already has translation.address with "
+                        "state=merged; use state=replaced or state=overridden"
+                    ),
+                )
+            if want_trans_addr is not None and have_lb:
+                self._module.fail_json(
+                    msg=(
+                        "Cannot add translation.address to a rule that already has load_balance with "
+                        "state=merged; use state=replaced or state=overridden"
+                    ),
+                )
 
         for field in set(want) | set(have):
             if field == "inbound_interface":
