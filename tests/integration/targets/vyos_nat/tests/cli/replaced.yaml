@@ -1,0 +1,45 @@
+---
+- debug:
+    msg: START vyos_nat replaced integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Replace NAT destination rule 100
+      register: result
+      vyos.vyos.vyos_nat: &id001
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 100
+                  description: Replaced DNAT rule
+                  protocol: udp
+                  destination:
+                    address: 198.51.100.10
+                    port: "53"
+                  translation:
+                    address: 192.168.1.53
+                    port: "53"
+        state: replaced
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: nat
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands|symmetric_difference(replaced.commands) == []
+          - result.after|symmetric_difference(ansible_facts['network_resources']['nat']) == []
+
+    - name: Replace the provided configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml
