@@ -52,6 +52,7 @@ Parameters
                 </td>
                 <td>
                         <div>The <code>allow_password_change</code> argument specifies whether any configuration lines which would change a user&#x27;s password should be filtered out.  By default only plaintext password changes are allowed and any encrypted-password keys are filtered out. In order to allow all password updates, both plaintext and encrypted, set this argument to <code>all</code>.</div>
+                        <div>Not applied when <code>replace</code> is set to <code>config</code>; the candidate is loaded as-is via VyOS&#x27;s native <code>load</code>, which has no equivalent filtering mechanism.</div>
                 </td>
             </tr>
             <tr>
@@ -85,7 +86,7 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>This is a dict object containing configurable options related to backup file path. The value of this option is read only when <code>backup</code> is set to <code>true</code>, if <code>backup</code> is set to <code>false</code> this option will be silently ignored.</div>
+                        <div>This is a dict object containing configurable options related to backup file path. The value of this option is read only when <code>backup</code> is set to <em>yes</em>, if <code>backup</code> is set to <em>no</em> this option will be silently ignored.</div>
                 </td>
             </tr>
                                 <tr>
@@ -150,6 +151,7 @@ Parameters
                 </td>
                 <td>
                         <div>The <code>config</code> argument specifies the base configuration to use to compare against the desired configuration.  If this value is not specified, the module will automatically retrieve the current active configuration from the remote device. The configuration lines in the option value should be similar to how it will appear if present in the running-configuration of the device including indentation to ensure idempotency and correct diff.</div>
+                        <div>Ignored when <code>replace</code> is set to <code>config</code>.</div>
                 </td>
             </tr>
             <tr>
@@ -202,6 +204,7 @@ Parameters
                 </td>
                 <td>
                         <div>The ordered set of commands that should be configured in the section. The commands must be the exact same commands as found in the device running-config as found in the device running-config to ensure idempotency and correct diff. Be sure to note the configuration command syntax as some commands are automatically modified by the device config parser.</div>
+                        <div>Not supported when <code>replace</code> is set to <code>config</code> -- see <code>replace</code> below.</div>
                 </td>
             </tr>
             <tr>
@@ -221,6 +224,36 @@ Parameters
                 </td>
                 <td>
                         <div>The <code>match</code> argument controls the method used to match against the current active configuration.  By default, the desired config is matched against the active config and the deltas are loaded.  If the <code>match</code> argument is set to <code>none</code> the active configuration is ignored and the configuration is always loaded.</div>
+                        <div>Ignored when <code>replace</code> is set to <code>config</code>, since no line-level diff is computed in that mode.</div>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>replace</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li><div style="color: blue"><b>line</b>&nbsp;&larr;</div></li>
+                                    <li>config</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Controls how the module applies configuration to the device.</div>
+                        <div>When set to <code>line</code> (default), the module computes a set/delete command diff and pushes only the changed lines -- this is the existing behavior, unchanged.</div>
+                        <div>When set to <code>config</code>, the module uploads the full candidate configuration (<code>src</code>) to the device and issues VyOS&#x27;s native <code>load</code> command in configuration mode, which replaces the running configuration wholesale with the candidate&#x27;s exact contents. VyOS&#x27;s own configuration engine performs the reconciliation, rather than the module computing per-line deltas. This mirrors the mechanism offered by <code>cisco.iosxr.iosxr_config</code>&#x27;s <code>replace=config</code>.</div>
+                        <div><code>replace=config</code> requires <code>src</code> and does not accept <code>lines</code> -- there is no way to convert flat set/delete commands into the hierarchical form <code>load</code> requires without re-implementing VyOS&#x27;s own config-tree builder.</div>
+                        <div>As with <code>src</code> in the default <code>line</code> mode, the module does not validate the candidate&#x27;s contents or format under <code>replace=config</code> -- supplying a well-formed, complete configuration is the caller&#x27;s responsibility.</div>
+                        <div><code>replace=config</code> requires the device to accept file transfer (SCP) over the same <code>network_cli</code> SSH session used for configuration commands.</div>
+                        <div><code>replace=config</code> writes the candidate to a fixed path on the device (overwritten on each run, matching <code>cisco.iosxr.iosxr_config</code>&#x27;s own <code>replace=config</code> precedent). Running <code>replace=config</code> concurrently against the same host is not supported.</div>
+                        <div>Any configuration present on the device but omitted from the candidate will be removed, including management interfaces, SSH access, and login users if they are omitted. Always supply a complete configuration, never a partial one.</div>
+                        <div>When capturing a candidate from the device&#x27;s own output (for example via <code>show configuration</code>) rather than from a trusted, separately maintained source, be aware that VyOS may return masked placeholder values (for example a run of literal asterisks) in place of local users&#x27; <code>encrypted-password</code>/<code>plaintext-password</code> values when queried through automation, even though the identical command returns the real value when typed interactively at a terminal. Pushing a masked capture back through <code>replace=config</code> sends the literal placeholder as the new password value; VyOS&#x27;s own commit-time validation is expected to reject an obviously malformed hash, but a masked value that happens to pass basic format validation could apply silently. Prefer sourcing <code>replace=config</code> candidates from a trusted, version-controlled artifact rather than a live automated capture whenever the configuration contains local password-based users.</div>
+                        <div>Even under <code>check_mode</code>, the candidate is written to a temporary file on the device so that VyOS&#x27;s own <code>compare</code> can produce an accurate preview diff. No <code>commit</code> occurs in check mode.</div>
+                        <div>When combined with <code>backup=yes</code>, the value of <code>changed</code> reflects whether the backup file&#x27;s content changed on the Ansible control node, not whether the device configuration changed -- this is existing behavior in the shared netcommon action plugin backing config-family modules across collections, not specific to <code>replace=config</code>.</div>
                 </td>
             </tr>
             <tr>
@@ -239,7 +272,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>The <code>save</code> argument controls whether or not changes made to the active configuration are saved to disk.  This is independent of committing the config.  When set to <code>true</code>, the active configuration is saved.</div>
+                        <div>The <code>save</code> argument controls whether or not changes made to the active configuration are saved to disk.  This is independent of committing the config.  When set to <code>True</code>, the active configuration is saved.</div>
                 </td>
             </tr>
             <tr>
@@ -255,6 +288,7 @@ Parameters
                 </td>
                 <td>
                         <div>The <code>src</code> argument specifies the path to the source config file to load.  The source config file can either be in bracket format or set format.  The source file can include Jinja2 template variables. The configuration lines in the source file should be similar to how it will appear if present in the running-configuration of the device including indentation to ensure idempotency and correct diff.</div>
+                        <div>When <code>replace</code> is set to <code>config</code>, <code>src</code> is required and must contain a complete configuration in hierarchical/bracket format -- the same format produced by <code>show configuration</code> or found in <code>/config/config.boot</code>. Flat <code>set</code>/<code>delete</code> command format (as produced by <code>show configuration commands</code>) is not accepted in that mode; VyOS&#x27;s native <code>load</code> command rejects it with a parse error.</div>
                 </td>
             </tr>
     </table>
@@ -268,6 +302,7 @@ Notes
    - Tested against VyOS 1.3.8, 1.4.2, the upcoming 1.5, and the rolling release of spring 2025.
    - This module works with connection ``ansible.netcommon.network_cli``. See `the VyOS OS Platform Options <../network/user_guide/platform_vyos.html>`_.
    - To ensure idempotency and correct diff the configuration lines in the relevant module options should be similar to how they appear if present in the running configuration on device including the indentation.
+   - ``replace=config`` currently has no way to scope its effect to part of the configuration; it always operates against the entire device configuration. There is no ``path`` parameter to constrain it to a subtree.
    - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
 
 
@@ -311,6 +346,22 @@ Examples
           filename: backup.cfg
           dir_path: /home/user
 
+    - name: replace the entire running config with a full candidate (native load)
+      # replace=config requires the complete desired configuration in
+      # hierarchical/bracket format -- never a partial one, and never flat
+      # set-command format. A safe pattern is to back up the current config,
+      # edit it, then replace with the edited whole, as shown here.
+      vyos.vyos.vyos_config:
+        backup: true
+        backup_options:
+          filename: pre_replace_backup.cfg
+      register: backup_result
+
+    - name: (edit backup_result's backup file as needed, then)
+      vyos.vyos.vyos_config:
+        src: /home/user/pre_replace_backup_edited.cfg
+        replace: config
+
 
 
 Return Values
@@ -353,7 +404,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>always</td>
                 <td>
-                            <div>The list of configuration commands sent to the device</div>
+                            <div>In <code>replace=line</code> mode (default), the list of set/delete commands sent to the device.</div>
+                            <div>In <code>replace=config</code> mode, contains only the single <code>load &lt;path&gt;</code> command actually issued to the device -- not an itemized diff. See <code>diff</code> for the actual change content, sourced from VyOS&#x27;s own <code>compare</code> output.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;...&#x27;, &#x27;...&#x27;]</div>
@@ -404,7 +456,8 @@ Common return values are documented `here <https://docs.ansible.com/ansible/late
                 </td>
                 <td>always</td>
                 <td>
-                            <div>The list of configuration commands removed to avoid a load failure</div>
+                            <div>The list of configuration commands removed to avoid a load failure.</div>
+                            <div>Not populated when <code>replace</code> is set to <code>config</code>.</div>
                     <br/>
                         <div style="font-size: smaller"><b>Sample:</b></div>
                         <div style="font-size: smaller; color: blue; word-wrap: break-word; word-break: break-all;">[&#x27;...&#x27;, &#x27;...&#x27;]</div>
