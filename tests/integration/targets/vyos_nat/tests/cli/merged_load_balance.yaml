@@ -1,0 +1,107 @@
+---
+- debug:
+    msg: START vyos_nat load balance integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Add destination rule with load-balance hash and backends
+      register: result
+      vyos.vyos.vyos_nat: &id001
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 105
+                  protocol: tcp
+                  destination:
+                    port: "80"
+                  inbound_interface:
+                    name: eth0
+                  load_balance:
+                    hash:
+                      - source-address
+                      - destination-address
+                    backend:
+                      - ip: 10.10.10.1
+                        weight: 60
+                      - ip: 10.10.10.2
+                        weight: 40
+        state: merged
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set nat destination rule 105 load-balance hash source-address' in result.commands"
+          - "'set nat destination rule 105 load-balance hash destination-address' in result.commands"
+          - "'set nat destination rule 105 load-balance backend 10.10.10.1 weight 60' in result.commands"
+          - "'set nat destination rule 105 load-balance backend 10.10.10.2 weight 40' in result.commands"
+
+    - name: Re-apply same load-balance config (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+    - name: Change backend weights only (in-place overwrite check)
+      register: result
+      vyos.vyos.vyos_nat: &id002
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 105
+                  protocol: tcp
+                  destination:
+                    port: "80"
+                  inbound_interface:
+                    name: eth0
+                  load_balance:
+                    hash:
+                      - source-address
+                      - destination-address
+                    backend:
+                      - ip: 10.10.10.1
+                        weight: 70
+                      - ip: 10.10.10.2
+                        weight: 30
+        state: merged
+
+    - assert:
+        that:
+          - result.changed == true
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: nat
+
+    - name: Extract rule 105 from gathered facts
+      set_fact:
+        rule_105: "{{ ansible_facts['network_resources']['nat'].nat.destination.rule | selectattr('id', 'equalto', 105) | first }}"
+
+    - name: Extract backend weights from rule 105
+      set_fact:
+        backend_105: "{{ rule_105.load_balance.backend }}"
+        weight_101: "{{ (rule_105.load_balance.backend | selectattr('ip', 'equalto', '10.10.10.1') | first).weight }}"
+        weight_102: "{{ (rule_105.load_balance.backend | selectattr('ip', 'equalto', '10.10.10.2') | first).weight }}"
+
+    - name: Assert weights updated and no duplicate/stale backend entries
+      assert:
+        that:
+          - backend_105 | length == 2
+          - weight_101 == 70
+          - weight_102 == 30
+
+    - name: Re-apply changed weights again (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id002
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

@@ -1,0 +1,172 @@
+---
+populate_config:
+  - set nat destination rule 100 description 'Web server NAT'
+  - set nat destination rule 100 destination address '198.51.100.10'
+  - set nat destination rule 100 destination port '80'
+  - set nat destination rule 100 inbound-interface name 'eth2'
+  - set nat destination rule 100 log
+  - set nat destination rule 100 protocol 'tcp'
+  - set nat destination rule 100 translation address '192.168.1.10'
+  - set nat destination rule 100 translation port '8080'
+  - set nat source rule 200 description 'Outbound NAT'
+  - set nat source rule 200 destination address '192.168.10.100'
+  - set nat source rule 200 destination port '8083'
+  - set nat source rule 200 disable
+  - set nat source rule 200 exclude
+  - set nat source rule 200 log
+  - set nat source rule 200 protocol 'tcp'
+  - set nat source rule 200 translation address 'masquerade'
+  - set nat source rule 200 translation port '443'
+
+merged:
+  before:
+    nat:
+      destination:
+        rule:
+          - id: 100
+            description: Web server NAT
+            protocol: tcp
+            log: true
+            inbound_interface:
+              name: eth2
+            destination:
+              address: 198.51.100.10
+              port: "80"
+            translation:
+              address: 192.168.1.10
+              port: "8080"
+      source:
+        rule:
+          - id: 200
+            description: Outbound NAT
+            protocol: tcp
+            log: true
+            disable: true
+            exclude: true
+            destination:
+              address: 192.168.10.100
+              port: "8083"
+            translation:
+              address: masquerade
+              port: "443"
+  commands:
+    - set nat destination rule 101 description 'New DNAT rule'
+    - set nat destination rule 101 protocol tcp
+    - set nat destination rule 101 destination address 198.51.100.11
+    - set nat destination rule 101 destination port 443
+    - set nat destination rule 101 translation address 192.168.1.11
+    - set nat destination rule 101 translation port 8443
+  after:
+    nat:
+      destination:
+        rule:
+          - id: 100
+            description: Web server NAT
+            protocol: tcp
+            log: true
+            inbound_interface:
+              name: eth2
+            destination:
+              address: 198.51.100.10
+              port: "80"
+            translation:
+              address: 192.168.1.10
+              port: "8080"
+          - id: 101
+            description: New DNAT rule
+            protocol: tcp
+            destination:
+              address: 198.51.100.11
+              port: "443"
+            translation:
+              address: 192.168.1.11
+              port: "8443"
+      source:
+        rule:
+          - id: 200
+            description: Outbound NAT
+            protocol: tcp
+            log: true
+            disable: true
+            exclude: true
+            destination:
+              address: 192.168.10.100
+              port: "8083"
+            translation:
+              address: masquerade
+              port: "443"
+
+replaced:
+  commands:
+    - delete nat destination rule 100
+    - set nat destination rule 100 description 'Replaced DNAT rule'
+    - set nat destination rule 100 protocol udp
+    - set nat destination rule 100 destination address 198.51.100.10
+    - set nat destination rule 100 destination port 53
+    - set nat destination rule 100 translation address 192.168.1.53
+    - set nat destination rule 100 translation port 53
+  after:
+    nat:
+      destination:
+        rule:
+          - id: 100
+            description: Replaced DNAT rule
+            protocol: udp
+            destination:
+              address: 198.51.100.10
+              port: "53"
+            translation:
+              address: 192.168.1.53
+              port: "53"
+      source:
+        rule:
+          - id: 200
+            description: Outbound NAT
+            protocol: tcp
+            log: true
+            disable: true
+            exclude: true
+            destination:
+              address: 192.168.10.100
+              port: "8083"
+            translation:
+              address: masquerade
+              port: "443"
+
+overridden:
+  commands:
+    - delete nat source
+    - delete nat destination rule 100
+    - set nat destination rule 100 description 'Overridden DNAT rule'
+    - set nat destination rule 100 protocol tcp
+    - set nat destination rule 100 destination address 198.51.100.20
+    - set nat destination rule 100 destination port 443
+    - set nat destination rule 100 translation address 192.168.1.20
+    - set nat destination rule 100 translation port 8443
+  after:
+    nat:
+      destination:
+        rule:
+          - id: 100
+            description: Overridden DNAT rule
+            protocol: tcp
+            destination:
+              address: 198.51.100.20
+              port: "443"
+            translation:
+              address: 192.168.1.20
+              port: "8443"
+
+deleted:
+  commands:
+    - delete nat
+  after: {}
+
+rendered:
+  commands:
+    - set nat destination rule 100 description 'Rendered rule'
+    - set nat destination rule 100 protocol tcp
+    - set nat destination rule 100 destination address 198.51.100.10
+    - set nat destination rule 100 destination port 80
+    - set nat destination rule 100 translation address 192.168.1.10
+    - set nat destination rule 100 translation port 8080

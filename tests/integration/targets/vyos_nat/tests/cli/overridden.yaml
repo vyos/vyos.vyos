@@ -1,0 +1,45 @@
+---
+- debug:
+    msg: START vyos_nat overridden integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Override NAT configuration
+      register: result
+      vyos.vyos.vyos_nat: &id001
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 100
+                  description: Overridden DNAT rule
+                  protocol: tcp
+                  destination:
+                    address: 198.51.100.20
+                    port: "443"
+                  translation:
+                    address: 192.168.1.20
+                    port: "8443"
+        state: overridden
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: nat
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands|symmetric_difference(overridden.commands) == []
+          - result.after|symmetric_difference(ansible_facts['network_resources']['nat']) == []
+
+    - name: Override the existing configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

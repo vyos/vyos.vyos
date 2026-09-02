@@ -1,0 +1,110 @@
+---
+- debug:
+    msg: START vyos_nat merged integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _populate.yaml
+
+- block:
+    - name: Merge new NAT rule with existing configuration
+      register: result
+      vyos.vyos.vyos_nat: &id001
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 101
+                  description: New DNAT rule
+                  protocol: tcp
+                  destination:
+                    address: 198.51.100.11
+                    port: "443"
+                  translation:
+                    address: 192.168.1.11
+                    port: "8443"
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: nat
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands|symmetric_difference(merged.commands) == []
+          - result.after|symmetric_difference(ansible_facts['network_resources']['nat']) == []
+
+    - name: Assert that before dicts were correctly generated
+      assert:
+        that:
+          - merged['before'] | symmetric_difference(result['before']) | length == 0
+
+    - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+    - name: Add static rule with plain inbound_interface string
+      register: result
+      vyos.vyos.vyos_nat: &id002
+        config:
+          nat:
+            static:
+              rule:
+                - id: 300
+                  description: Static mapping
+                  inbound_interface: eth2
+                  destination:
+                    address: 192.168.100.20
+                  translation:
+                    address: 192.168.1.20
+        state: merged
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set nat static rule 300 inbound-interface eth2' in result.commands"
+
+    - name: Add static rule again (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id002
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+    - name: Change static rule inbound_interface
+      register: result
+      vyos.vyos.vyos_nat: &id003
+        config:
+          nat:
+            static:
+              rule:
+                - id: 300
+                  description: Static mapping
+                  inbound_interface: eth3
+                  destination:
+                    address: 192.168.100.20
+                  translation:
+                    address: 192.168.1.20
+        state: merged
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands == ["set nat static rule 300 inbound-interface eth3"]
+
+    - name: Change static rule inbound_interface again (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id003
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml
