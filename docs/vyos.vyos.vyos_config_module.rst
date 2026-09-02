@@ -272,7 +272,7 @@ Parameters
                         </ul>
                 </td>
                 <td>
-                        <div>The <code>save</code> argument controls whether or not changes made to the active configuration are saved to disk.  This is independent of committing the config.  When set to True, the active configuration is saved.</div>
+                        <div>The <code>save</code> argument controls whether or not changes made to the active configuration are saved to disk.  This is independent of committing the config.  When set to <code>True</code>, the active configuration is saved.</div>
                 </td>
             </tr>
             <tr>

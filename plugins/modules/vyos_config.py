@@ -17,6 +17,7 @@
 #
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -128,7 +129,7 @@ options:
     description:
     - The C(save) argument controls whether or not changes made to the active configuration
       are saved to disk.  This is independent of committing the config.  When set
-      to True, the active configuration is saved.
+      to C(True), the active configuration is saved.
     type: bool
     default: no
   backup_options:
@@ -341,6 +342,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
     run_commands,
 )
 
+
 DEFAULT_COMMENT = "configured by vyos_config"
 
 PASSWORD_NEEDLE = re.compile(
@@ -540,6 +542,7 @@ def run_replace_config(module, result):
         run_commands(module, ["configure", "confirm", "exit"])
 
     result["commands"] = ["load %s" % remote_path]
+    result["filtered"] = []
     result["changed"] = bool(diff)
 
     if module._diff:
