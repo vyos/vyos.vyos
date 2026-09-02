@@ -101,7 +101,12 @@ def copy_file(module, source, destination, proto="scp"):
     connection = get_connection(module)
     try:
         timeout = connection.get_option("persistent_command_timeout")
-        connection.copy_file(source=source, destination=destination, proto=proto, timeout=timeout)
+        connection.copy_file(
+            source=source,
+            destination=destination,
+            proto=proto,
+            timeout=timeout,
+        )
     except ConnectionError as exc:
         module.fail_json(msg=to_text(exc, errors="surrogate_then_replace"))
 
