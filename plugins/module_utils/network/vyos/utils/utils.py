@@ -310,6 +310,7 @@ def combine(a, b, recursive=False, list_merge="replace"):
     :raises ValueError: If either argument is not a dict, or if an
         unsupported ``list_merge`` mode is given.
     """
+
     if not isinstance(a, dict) or not isinstance(b, dict):
         raise ValueError("combine expects two dictionaries")
 
