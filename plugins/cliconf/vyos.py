@@ -48,11 +48,13 @@ import re
 from ansible.errors import AnsibleConnectionFailure
 from ansible.module_utils._text import to_text
 from ansible.module_utils.common._collections_compat import Mapping
+from ansible.plugins.cliconf import CliconfBase
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.config import (
     NetworkConfig,
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import to_list
-from ansible_collections.ansible.netcommon.plugins.plugin_utils.cliconf_base import CliconfBase
+
+from ansible_collections.vyos.vyos.plugins.cliconf_utils.vyosconf import VyosConf
 
 
 class Cliconf(CliconfBase):
@@ -122,7 +124,13 @@ class Cliconf(CliconfBase):
         return out
 
     def edit_config(
-        self, candidate=None, commit=True, replace=None, diff=False, comment=None, confirm=None
+        self,
+        candidate=None,
+        commit=True,
+        replace=None,
+        diff=False,
+        comment=None,
+        confirm=None,
     ):
         resp = {}
         operations = self.get_device_operations()
@@ -247,7 +255,6 @@ class Cliconf(CliconfBase):
 
             config = [c.line for c in candidate_obj.items]
             commands = list()
-            # this filters out less specific lines
             for item in config:
                 for index, entry in enumerate(commands):
                     if item.startswith(entry):
@@ -263,6 +270,37 @@ class Cliconf(CliconfBase):
 
         if diff_match == "none":
             diff["config_diff"] = list(candidate_commands)
+            return diff
+        if diff_match == "smart":
+            if running is None:
+                raise ValueError(
+                    "diff_match=smart requires a running configuration to diff against",
+                )
+            smart_candidate_lines = [
+                line
+                for line in candidate_commands
+                if line.strip() and not line.lstrip().startswith("#")
+            ]
+            if not smart_candidate_lines:
+                raise ValueError(
+                    "diff_match=smart received an empty candidate (after stripping blank/"
+                    "comment lines); refusing to treat that as a desired end-state of "
+                    "'delete everything'. Provide 'set' commands describing the desired "
+                    "configuration.",
+                )
+            for line in smart_candidate_lines:
+                first_token = line.strip().split(None, 1)[0]
+                if first_token != "set":
+                    raise ValueError(
+                        "diff_match=smart treats the candidate as the complete desired "
+                        "configuration end-state and only supports 'set' commands; "
+                        "line does not start with 'set' (found: {0!r})".format(
+                            line.strip(),
+                        ),
+                    )
+            running_conf = VyosConf([line for line in running.splitlines() if line.strip()])
+            candidate_conf = VyosConf(smart_candidate_lines)
+            diff["config_diff"] = running_conf.diff_commands_to(candidate_conf)
             return diff
 
         running_commands = [str(c).replace("'", "") for c in running.splitlines()]
@@ -336,7 +374,7 @@ class Cliconf(CliconfBase):
     def get_option_values(self):
         return {
             "format": ["text", "set"],
-            "diff_match": ["line", "none"],
+            "diff_match": ["line", "smart", "none"],
             "diff_replace": [],
             "output": [],
         }

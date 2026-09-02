@@ -216,11 +216,12 @@ Parameters
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
                                     <li><div style="color: blue"><b>line</b>&nbsp;&larr;</div></li>
+                                    <li>smart</li>
                                     <li>none</li>
                         </ul>
                 </td>
                 <td>
-                        <div>The <code>match</code> argument controls the method used to match against the current active configuration.  By default, the desired config is matched against the active config and the deltas are loaded.  If the <code>match</code> argument is set to <code>none</code> the active configuration is ignored and the configuration is always loaded.</div>
+                        <div>The <code>match</code> argument controls the method used to match against the current active configuration.  By default, the desired config is matched against the active config and the deltas are loaded.  If the <code>match</code> argument is set to <code>none</code> the active configuration is ignored and the configuration is always loaded.  If the <code>match</code> argument is set to <code>smart</code> the supplied <code>lines</code> or <code>src</code> are treated as the complete desired end-state of the configuration, rather than a set of deltas to apply.  Any existing configuration not present in the supplied candidate is removed, so <code>smart</code> can generate <code>delete</code> commands for configuration the candidate does not mention.  <code>smart</code> is intended for candidates made up of <code>set</code> commands only; supplying <code>delete</code> lines alongside <code>match=smart</code> is not supported and will raise an error.</div>
                 </td>
             </tr>
             <tr>
@@ -291,6 +292,7 @@ Examples
 
     - name: render a Jinja2 template onto the VyOS router
       vyos.vyos.vyos_config:
+        match: smart
         src: vyos_template.j2
 
     - name: revert after ten minutes, if connection is lost

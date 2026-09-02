@@ -61,11 +61,19 @@ options:
       active configuration.  By default, the desired config is matched against the
       active config and the deltas are loaded.  If the C(match) argument is set to
       C(none) the active configuration is ignored and the configuration is always
-      loaded.
+      loaded.  If the C(match) argument is set to C(smart) the supplied C(lines)
+      or C(src) are treated as the complete desired end-state of the configuration,
+      rather than a set of deltas to apply.  Any existing configuration not present
+      in the supplied candidate is removed, so C(smart) can generate C(delete)
+      commands for configuration the candidate does not mention.  C(smart) is
+      intended for candidates made up of C(set) commands only; supplying
+      C(delete) lines alongside C(match=smart) is not supported and will
+      raise an error.
     type: str
     default: line
     choices:
     - line
+    - smart
     - none
   backup:
     description:
@@ -172,6 +180,7 @@ EXAMPLES = """
 
 - name: render a Jinja2 template onto the VyOS router
   vyos.vyos.vyos_config:
+    match: smart
     src: vyos_template.j2
 
 - name: revert after ten minutes, if connection is lost
@@ -246,7 +255,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
 DEFAULT_COMMENT = "configured by vyos_config"
 
 PASSWORD_NEEDLE = re.compile(
-    r"set system login user \S+ authentication (encrypted|plaintext)-password",
+    r"(?:set|delete) system login user \S+ authentication (encrypted|plaintext)-password",
 )
 
 
@@ -386,7 +395,7 @@ def main():
     argument_spec = dict(
         src=dict(type="path"),
         lines=dict(type="list", elements="str"),
-        match=dict(default="line", choices=["line", "none"]),
+        match=dict(default="line", choices=["line", "smart", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
         confirm=dict(choices=["automatic", "manual", "none"], default="none"),
         confirm_timeout=dict(type="int", default=10),
