@@ -177,3 +177,221 @@ class TestVyosConfigModule(TestVyosModule):
 
         self.assertEqual(self.load_config.call_args[1]["confirm"], confirm_timeout)
         self.run_commands.assert_not_called()
+
+    def test_vyos_config_replace_leaf_change(self):
+        """replace=True with a full candidate: a changed scalar value gets an
+        explicit delete-then-set pair.
+
+        Earlier design suppressed the delete here based on observed
+        cardinality (1 running value, 1 candidate value -> assumed unique
+        scalar). That heuristic was unsound: it can't distinguish a
+        genuinely scalar attribute from a list-style attribute that merely
+        has one value right now (see test_vyos_config_replace_list_value_change
+        below for the failure case this caused). Deleting unconditionally,
+        ordered before the corresponding set, is correct for both cases and
+        carries no risk of the delete clobbering the just-applied set, since
+        the delete always runs first, while its target value is still active.
+        """
+        running_hierarchical = "\n".join(
+            [
+                "system {",
+                "    host-name router",
+                "    domain-name example.com",
+                "}",
+            ],
+        )
+        candidate = "\n".join(
+            [
+                "set system host-name 'foo'",
+                "set system domain-name 'example.com'",
+            ],
+        )
+        diff = self.cliconf_obj.get_diff(candidate, running_hierarchical, diff_replace=True)
+        assert diff["config_diff"] == [
+            "delete system host-name router",
+            "set system host-name 'foo'",
+        ]
+
+    def test_vyos_config_replace_list_value_change(self):
+        """replace=True: a list-style attribute with one value changing to a
+        different single value must not retain the old value alongside the
+        new one. Regression guard for a real bug: a cardinality-based
+        heuristic previously mistook this for a scalar attribute update and
+        suppressed the delete, leaving both values configured.
+        """
+        running_hierarchical = "system {\n    name-server 8.8.8.8\n}\n"
+        candidate = "set system name-server 8.8.4.4"
+        diff = self.cliconf_obj.get_diff(candidate, running_hierarchical, diff_replace=True)
+        assert diff["config_diff"] == [
+            "delete system name-server 8.8.8.8",
+            "set system name-server 8.8.4.4",
+        ]
+
+    def test_vyos_config_replace_removes_missing_leaf(self):
+        """replace=True: a leaf present on router but absent from candidate gets deleted."""
+        running_hierarchical = "\n".join(
+            [
+                "system {",
+                "    host-name router",
+                "}",
+                "interfaces {",
+                "    ethernet eth1 {",
+                "        address 6.7.8.9/24",
+                '        description "test string"',
+                "    }",
+                "}",
+            ],
+        )
+        candidate = "\n".join(
+            [
+                "set system host-name router",
+                "set interfaces ethernet eth1 address '6.7.8.9/24'",
+            ],
+        )
+        diff = self.cliconf_obj.get_diff(candidate, running_hierarchical, diff_replace=True)
+        assert "delete interfaces ethernet eth1 description" in " ".join(diff["config_diff"])
+
+    def test_vyos_config_replace_does_not_affect_default_match(self):
+        """Regression guard: replace=False must produce byte-identical diff to pre-PR behavior."""
+        src = load_fixture("vyos_config_src.cfg")
+        candidate = "\n".join(self.module.format_commands(src.splitlines()))
+        diff_default = self.cliconf_obj.get_diff(candidate, self.running_config)
+        diff_explicit_false = self.cliconf_obj.get_diff(
+            candidate,
+            self.running_config,
+            diff_replace=False,
+        )
+        assert diff_default == diff_explicit_false
+
+    def test_vyos_config_replace_quoted_value_not_falsely_flagged(self):
+        """Double-quote-insensitive matching must stay scoped to replace mode.
+
+        Single quotes are already stripped unconditionally on both sides before
+        this comparison, so they can't distinguish the two code paths. Double
+        quotes are the actual difference: match_cmd() (used only when
+        diff_replace=True) strips them too, while the default exact-match path
+        does not. This locks in that the default path still treats a
+        double-quoted running value as distinct from an unquoted candidate value,
+        while replace mode (which requires hierarchical running) correctly
+        treats them as the same value.
+        """
+        candidate = "set system host-name foo"
+
+        running_flat = 'set system host-name "foo"'
+        diff_default = self.cliconf_obj.get_diff(candidate, running_flat)
+        assert diff_default["config_diff"] == ["set system host-name foo"]
+
+        running_hierarchical = 'system {\n    host-name "foo"\n}\n'
+        diff_replace = self.cliconf_obj.get_diff(
+            candidate,
+            running_hierarchical,
+            diff_replace=True,
+        )
+        assert diff_replace["config_diff"] == []
+
+    def test_vyos_config_replace_removes_orphaned_node(self):
+        """A rule entirely removed from candidate must not leave an empty stub node."""
+        running_hierarchical = "\n".join(
+            [
+                "firewall {",
+                "    ipv4 {",
+                "        name example {",
+                "            rule 100 {",
+                "                action drop",
+                "            }",
+                "            rule 200 {",
+                "                action accept",
+                "            }",
+                "        }",
+                "    }",
+                "}",
+            ],
+        )
+        candidate = "set firewall ipv4 name example rule 100 action 'drop'"
+        diff = self.cliconf_obj.get_diff(candidate, running_hierarchical, diff_replace=True)
+        commands = diff["config_diff"]
+        # must delete the whole rule node, not just its leaf
+        assert "delete firewall ipv4 name example rule 200" in commands
+        assert commands.count("delete firewall ipv4 name example rule 200") == 1
+        assert not any(
+            "action" in c and "rule 200" in c for c in commands if c.startswith("delete")
+        )
+
+    def test_vyos_config_replace_explicit_delete_line_not_treated_as_present(self):
+        """replace=True: an explicit delete line for a node must not fool the
+        tree-diff into thinking that node is still 'present' in the desired
+        state.
+
+        Regression guard for a real bug: candidate_bodies previously included
+        stripped bodies from delete lines too, so a candidate containing
+        `delete firewall ipv4 name example rule 200` (while otherwise valid,
+        e.g. with other unrelated set lines making up the rest of a full
+        candidate) made _candidate_has_prefix() think that path "existed",
+        suppressing the clean whole-node delete and instead deleting rule
+        200's children one at a time -- the same empty-stub orphan pattern
+        this whole diff_replace rewrite exists to fix, just reached via an
+        explicit delete line instead of omission.
+        """
+        running_hierarchical = "\n".join(
+            [
+                "firewall {",
+                "    ipv4 {",
+                "        name example {",
+                "            rule 100 {",
+                "                action drop",
+                "            }",
+                "            rule 200 {",
+                "                action accept",
+                "                description example",
+                "            }",
+                "        }",
+                "    }",
+                "}",
+                "system {",
+                "    host-name router",
+                "}",
+            ],
+        )
+        candidate = "\n".join(
+            [
+                "set firewall ipv4 name example rule 100 action drop",
+                "delete firewall ipv4 name example rule 200",
+                "set system host-name router",
+            ],
+        )
+        diff = self.cliconf_obj.get_diff(candidate, running_hierarchical, diff_replace=True)
+        commands = diff["config_diff"]
+
+        # the whole node must be deleted as a single unit, not per-leaf
+        assert "delete firewall ipv4 name example rule 200" in commands
+        assert not any(
+            "action" in c and "rule 200" in c for c in commands if c.startswith("delete")
+        )
+        assert not any(
+            "description" in c and "rule 200" in c for c in commands if c.startswith("delete")
+        )
+
+        # unrelated paths present in the full candidate must be untouched
+        assert not any("rule 100" in c and c.startswith("delete") for c in commands)
+        assert not any("host-name" in c and c.startswith("delete") for c in commands)
+
+        # must not have wrongly deleted the entire firewall subtree
+        assert "delete firewall" not in commands
+
+    def test_vyos_config_replace_requests_hierarchical_config(self):
+        """replace=True must request get_config(module, format='text') so
+        get_diff() receives hierarchical running config, not flat set-lines.
+
+        Regression guard for the module-side wiring: all the other
+        replace-mode tests call Cliconf.get_diff() directly and never
+        exercise run()'s own get_config() call, so a future change to that
+        call site (e.g. dropping the format="text" argument) would go
+        completely undetected by the rest of the suite.
+        """
+        lines = ["set system host-name foo"]
+        set_module_args(dict(lines=lines, replace=True))
+        self.conn.get_diff = MagicMock(return_value={"config_diff": lines})
+
+        self.execute_module(changed=True, commands=lines)
+
+        assert self.get_config.call_args.kwargs.get("format") == "text"
