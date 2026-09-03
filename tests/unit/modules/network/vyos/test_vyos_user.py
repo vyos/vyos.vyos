@@ -170,15 +170,20 @@ class TestVyosUserModule(TestVyosModule):
             ],
         )
 
-    def test_vyos_user_set_security_key(self):
+    def test_vyos_user_set_security_keys(self):
         set_module_args(
             dict(
                 name="ansible",
                 public_keys=[
                     dict(
-                        name="user@host",
+                        name="ecdsa@host",
                         key="AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTY",
                         type="sk-ecdsa-sha2-nistp256@openssh.com",
+                    ),
+                    dict(
+                        name="ed25519@host",
+                        key="AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIFIR0jrMvBdmvTJNY5EDhOD",
+                        type="sk-ssh-ed25519@openssh.com",
                     ),
                 ],
             ),
@@ -187,8 +192,10 @@ class TestVyosUserModule(TestVyosModule):
         self.assertEqual(
             result["commands"],
             [
-                "set system login user ansible authentication public-keys user@host key 'AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTY'",
-                "set system login user ansible authentication public-keys user@host type 'sk-ecdsa-sha2-nistp256@openssh.com'",
+                "set system login user ansible authentication public-keys ecdsa@host key 'AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTY'",
+                "set system login user ansible authentication public-keys ecdsa@host type 'sk-ecdsa-sha2-nistp256@openssh.com'",
+                "set system login user ansible authentication public-keys ed25519@host key 'AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIFIR0jrMvBdmvTJNY5EDhOD'",
+                "set system login user ansible authentication public-keys ed25519@host type 'sk-ssh-ed25519@openssh.com'",
             ],
         )
 
