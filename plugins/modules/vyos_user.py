@@ -117,6 +117,8 @@ options:
             - ecdsa-sha2-nistp384
             - ssh-ed25519
             - ecdsa-sha2-nistp521
+            - sk-ecdsa-sha2-nistp256@openssh.com
+            - sk-ssh-ed25519@openssh.com
 
   name:
     description:
@@ -447,6 +449,8 @@ def main():
                 "ecdsa-sha2-nistp384",
                 "ssh-ed25519",
                 "ecdsa-sha2-nistp521",
+                "sk-ecdsa-sha2-nistp256@openssh.com",
+                "sk-ssh-ed25519@openssh.com",
             ],
         ),
     )
