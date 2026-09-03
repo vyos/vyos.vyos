@@ -1,3 +1,3 @@
 ---
-minor_changes:
-  - vyos_user - Accept the OpenSSH security key types ``sk-ecdsa-sha2-nistp256@openssh.com`` and ``sk-ssh-ed25519@openssh.com`` for ``public_keys.type``, matching the types VyOS itself allows.
+bugfixes:
+  - vyos_user - Accept the OpenSSH security key types ``sk-ecdsa-sha2-nistp256@openssh.com`` and ``sk-ssh-ed25519@openssh.com`` for ``public_keys.type``, which VyOS accepts but the module rejected.
