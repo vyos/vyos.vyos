@@ -170,6 +170,28 @@ class TestVyosUserModule(TestVyosModule):
             ],
         )
 
+    def test_vyos_user_set_security_key(self):
+        set_module_args(
+            dict(
+                name="ansible",
+                public_keys=[
+                    dict(
+                        name="user@host",
+                        key="AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTY",
+                        type="sk-ecdsa-sha2-nistp256@openssh.com",
+                    ),
+                ],
+            ),
+        )
+        result = self.execute_module(changed=True)
+        self.assertEqual(
+            result["commands"],
+            [
+                "set system login user ansible authentication public-keys user@host key 'AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTY'",
+                "set system login user ansible authentication public-keys user@host type 'sk-ecdsa-sha2-nistp256@openssh.com'",
+            ],
+        )
+
     def test_vyos_user_set_ssh_key_idempotent(self):
         set_module_args(
             dict(
