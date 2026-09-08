@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -192,10 +193,14 @@ class TestVyosUserModule(TestVyosModule):
         self.assertEqual(
             result["commands"],
             [
-                "set system login user ansible authentication public-keys ecdsa@host key 'AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTY'",
-                "set system login user ansible authentication public-keys ecdsa@host type 'sk-ecdsa-sha2-nistp256@openssh.com'",
-                "set system login user ansible authentication public-keys ed25519@host key 'AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIFIR0jrMvBdmvTJNY5EDhOD'",
-                "set system login user ansible authentication public-keys ed25519@host type 'sk-ssh-ed25519@openssh.com'",
+                "set system login user ansible authentication public-keys "
+                "ecdsa@host key 'AAAAInNrLWVjZHNhLXNoYTItbmlzdHAyNTZAb3BlbnNzaC5jb20AAAAIbmlzdHAyNTY'",
+                "set system login user ansible authentication public-keys ecdsa@host "
+                "type 'sk-ecdsa-sha2-nistp256@openssh.com'",
+                "set system login user ansible authentication public-keys ed25519@host "
+                "key 'AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIFIR0jrMvBdmvTJNY5EDhOD'",
+                "set system login user ansible authentication public-keys ed25519@host "
+                "type 'sk-ssh-ed25519@openssh.com'",
             ],
         )
 
