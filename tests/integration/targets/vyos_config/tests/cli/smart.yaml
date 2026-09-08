@@ -1,0 +1,103 @@
+---
+- debug: msg="START cli/smart.yaml on connection={{ ansible_connection }}"
+
+# SAFETY: this file exercises match=smart's full end-state enforcement,
+# which deletes anything not present in the candidate. Never touch
+# service ssh, interface/IP addressing, routing, or firewall config here --
+# those are load-bearing for the management connection this test runs over.
+# Stick to inert subtrees only (lldp, bare protocols static, ntp, etc).
+
+- name: setup baseline config
+  vyos.vyos.vyos_config:
+    lines:
+      - set system host-name {{ inventory_hostname_short }}
+      - set service lldp
+      - set protocols static
+    match: none
+
+- name: enforce end-state with match=smart (should remove lldp, keep static, add ntp)
+  register: result
+  vyos.vyos.vyos_config:
+    lines:
+      - set system host-name {{ inventory_hostname_short }}
+      - set protocols static
+      - set service ntp server 192.0.2.1
+    match: smart
+
+- assert:
+    that:
+      - result.changed == true
+      - "'delete service lldp' in result.commands"
+      - "'set service ntp server 192.0.2.1' in result.commands"
+      - "'delete protocols static' not in result.commands"
+
+- name: check match=smart is idempotent against the same end-state
+  register: result
+  vyos.vyos.vyos_config:
+    lines:
+      - set system host-name {{ inventory_hostname_short }}
+      - set protocols static
+      - set service ntp server 192.0.2.1
+    match: smart
+
+- assert:
+    that:
+      - result.changed == false
+
+- name: match=smart tolerates blank lines and comments in the candidate
+  register: result
+  vyos.vyos.vyos_config:
+    lines:
+      - "# this is a comment"
+      - ""
+      - set system host-name {{ inventory_hostname_short }}
+      - set protocols static
+      - set service ntp server 192.0.2.1
+    match: smart
+
+- assert:
+    that:
+      - result.changed == false
+
+- name: match=smart rejects an incomplete set command
+  register: result
+  ignore_errors: true
+  vyos.vyos.vyos_config:
+    lines:
+      - set system host-name {{ inventory_hostname_short }}
+      - set
+    match: smart
+
+- assert:
+    that:
+      - result.failed == true
+
+- name: match=smart rejects delete lines in the candidate
+  register: result
+  ignore_errors: true
+  vyos.vyos.vyos_config:
+    lines:
+      - set system host-name {{ inventory_hostname_short }}
+      - delete protocols static
+    match: smart
+
+- assert:
+    that:
+      - result.failed == true
+
+- name: teardown
+  vyos.vyos.vyos_config:
+    lines:
+      - set system host-name {{ inventory_hostname_short }}
+    match: none
+
+- name: remove leftover test config
+  vyos.vyos.vyos_config:
+    lines:
+      - delete service ntp
+      - delete protocols static
+      - delete service lldp
+    match: none
+  ignore_errors: true
+
+- debug: msg="END cli/smart.yaml on connection={{ ansible_connection }}"

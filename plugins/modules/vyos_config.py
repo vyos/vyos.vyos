@@ -17,6 +17,7 @@
 #
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -60,8 +61,8 @@ options:
     - The C(match) argument controls the method used to match against the current
       active configuration.  By default, the desired config is matched against the
       active config and the deltas are loaded.  If the C(match) argument is set to
-      C(none) the active configuration is ignored and the configuration is always
-      loaded.  If the C(match) argument is set to C(smart) the supplied C(lines)
+      C(none), the active configuration is ignored and the configuration is always
+      loaded.  If the C(match) argument is set to C(smart), the supplied C(lines)
       or C(src) are treated as the complete desired end-state of the configuration,
       rather than a set of deltas to apply.  Any existing configuration not present
       in the supplied candidate is removed, so C(smart) can generate C(delete)
@@ -251,6 +252,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import
     load_config,
     run_commands,
 )
+
 
 DEFAULT_COMMENT = "configured by vyos_config"
 

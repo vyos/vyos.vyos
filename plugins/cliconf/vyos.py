@@ -17,6 +17,7 @@
 #
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -288,15 +289,30 @@ class Cliconf(CliconfBase):
                     "'delete everything'. Provide 'set' commands describing the desired "
                     "configuration.",
                 )
+            # for line in smart_candidate_lines:
+            #     first_token = line.strip().split(None, 1)[0]
+            #     if first_token != "set":
+            #         raise ValueError(
+            #             "diff_match=smart treats the candidate as the complete desired "
+            #             "configuration end-state and only supports 'set' commands; "
+            #             "line does not start with 'set' (found: {0!r})".format(
+            #                 line.strip(),
+            #             ),
+            #         )
             for line in smart_candidate_lines:
-                first_token = line.strip().split(None, 1)[0]
-                if first_token != "set":
+                tokens = line.strip().split()
+                if tokens[0] != "set":
                     raise ValueError(
                         "diff_match=smart treats the candidate as the complete desired "
                         "configuration end-state and only supports 'set' commands; "
                         "line does not start with 'set' (found: {0!r})".format(
                             line.strip(),
                         ),
+                    )
+                if len(tokens) < 3:
+                    raise ValueError(
+                        "diff_match=smart only supports complete 'set' commands with at least "
+                        "a path and a leaf; got: {0!r}".format(line.strip()),
                     )
             running_conf = VyosConf([line for line in running.splitlines() if line.strip()])
             candidate_conf = VyosConf(smart_candidate_lines)
