@@ -1,7 +1,7 @@
 ---
-- debug: msg="START cli/smart.yaml on connection={{ ansible_connection }}"
+- debug: msg="START cli/enforce.yaml on connection={{ ansible_connection }}"
 
-# SAFETY: this file exercises match=smart's full end-state enforcement,
+# SAFETY: this file exercises match=enforce's full end-state enforcement,
 # which deletes anything not present in the candidate. Never touch
 # service ssh, interface/IP addressing, routing, or firewall config here --
 # those are load-bearing for the management connection this test runs over.
@@ -15,14 +15,14 @@
       - set protocols static
     match: none
 
-- name: enforce end-state with match=smart (should remove lldp, keep static, add ntp)
+- name: enforce end-state with match=enforce (should remove lldp, keep static, add ntp)
   register: result
   vyos.vyos.vyos_config:
     lines:
       - set system host-name {{ inventory_hostname_short }}
       - set protocols static
       - set service ntp server 192.0.2.1
-    match: smart
+    match: enforce
 
 - assert:
     that:
@@ -31,20 +31,20 @@
       - "'set service ntp server 192.0.2.1' in result.commands"
       - "'delete protocols static' not in result.commands"
 
-- name: check match=smart is idempotent against the same end-state
+- name: check match=enforce is idempotent against the same end-state
   register: result
   vyos.vyos.vyos_config:
     lines:
       - set system host-name {{ inventory_hostname_short }}
       - set protocols static
       - set service ntp server 192.0.2.1
-    match: smart
+    match: enforce
 
 - assert:
     that:
       - result.changed == false
 
-- name: match=smart tolerates blank lines and comments in the candidate
+- name: match=enforce tolerates blank lines and comments in the candidate
   register: result
   vyos.vyos.vyos_config:
     lines:
@@ -53,33 +53,33 @@
       - set system host-name {{ inventory_hostname_short }}
       - set protocols static
       - set service ntp server 192.0.2.1
-    match: smart
+    match: enforce
 
 - assert:
     that:
       - result.changed == false
 
-- name: match=smart rejects an incomplete set command
+- name: match=enforce rejects an incomplete set command
   register: result
   ignore_errors: true
   vyos.vyos.vyos_config:
     lines:
       - set system host-name {{ inventory_hostname_short }}
       - set
-    match: smart
+    match: enforce
 
 - assert:
     that:
       - result.failed == true
 
-- name: match=smart rejects delete lines in the candidate
+- name: match=enforce rejects delete lines in the candidate
   register: result
   ignore_errors: true
   vyos.vyos.vyos_config:
     lines:
       - set system host-name {{ inventory_hostname_short }}
       - delete protocols static
-    match: smart
+    match: enforce
 
 - assert:
     that:
@@ -100,4 +100,4 @@
     match: none
   ignore_errors: true
 
-- debug: msg="END cli/smart.yaml on connection={{ ansible_connection }}"
+- debug: msg="END cli/enforce.yaml on connection={{ ansible_connection }}"

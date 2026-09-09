@@ -1,3 +1,0 @@
----
-minor_changes:
-  - vyos_config - Add `smart` match mode, which enforces the supplied configuration as the desired end-state.

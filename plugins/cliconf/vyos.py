@@ -272,38 +272,29 @@ class Cliconf(CliconfBase):
         if diff_match == "none":
             diff["config_diff"] = list(candidate_commands)
             return diff
-        if diff_match == "smart":
+        if diff_match == "enforce":
             if running is None:
                 raise ValueError(
-                    "diff_match=smart requires a running configuration to diff against",
+                    "diff_match=enforce requires a running configuration to diff against",
                 )
-            smart_candidate_lines = [
+            enforce_candidate_lines = [
                 line
                 for line in candidate_commands
                 if line.strip() and not line.lstrip().startswith("#")
             ]
-            if not smart_candidate_lines:
+            if not enforce_candidate_lines:
                 raise ValueError(
-                    "diff_match=smart received an empty candidate (after stripping blank/"
+                    "diff_match=enforce received an empty candidate (after stripping blank/"
                     "comment lines); refusing to treat that as a desired end-state of "
                     "'delete everything'. Provide 'set' commands describing the desired "
                     "configuration.",
                 )
-            # for line in smart_candidate_lines:
-            #     first_token = line.strip().split(None, 1)[0]
-            #     if first_token != "set":
-            #         raise ValueError(
-            #             "diff_match=smart treats the candidate as the complete desired "
-            #             "configuration end-state and only supports 'set' commands; "
-            #             "line does not start with 'set' (found: {0!r})".format(
-            #                 line.strip(),
-            #             ),
-            #         )
-            for line in smart_candidate_lines:
+
+            for line in enforce_candidate_lines:
                 tokens = line.strip().split()
                 if tokens[0] != "set":
                     raise ValueError(
-                        "diff_match=smart treats the candidate as the complete desired "
+                        "diff_match=enforce treats the candidate as the complete desired "
                         "configuration end-state and only supports 'set' commands; "
                         "line does not start with 'set' (found: {0!r})".format(
                             line.strip(),
@@ -311,11 +302,11 @@ class Cliconf(CliconfBase):
                     )
                 if len(tokens) < 3:
                     raise ValueError(
-                        "diff_match=smart only supports complete 'set' commands with at least "
+                        "diff_match=enforce only supports complete 'set' commands with at least "
                         "a path and a leaf; got: {0!r}".format(line.strip()),
                     )
             running_conf = VyosConf([line for line in running.splitlines() if line.strip()])
-            candidate_conf = VyosConf(smart_candidate_lines)
+            candidate_conf = VyosConf(enforce_candidate_lines)
             diff["config_diff"] = running_conf.diff_commands_to(candidate_conf)
             return diff
 
@@ -390,7 +381,7 @@ class Cliconf(CliconfBase):
     def get_option_values(self):
         return {
             "format": ["text", "set"],
-            "diff_match": ["line", "smart", "none"],
+            "diff_match": ["line", "enforce", "none"],
             "diff_replace": [],
             "output": [],
         }

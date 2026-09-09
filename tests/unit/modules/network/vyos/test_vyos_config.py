@@ -19,6 +19,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import MagicMock, patch
@@ -140,18 +141,18 @@ class TestVyosConfigModule(TestVyosModule):
         )
         self.execute_module(changed=True, commands=lines, sort=False)
 
-    def test_vyos_config_match_smart(self):
+    def test_vyos_config_match_enforce(self):
         lines = [
             "set interfaces ethernet eth0 address '1.2.3.4/24'",
             "set interfaces ethernet eth0 description 'test string'",
         ]
-        set_module_args(dict(lines=lines, match="smart"))
+        set_module_args(dict(lines=lines, match="enforce"))
         candidate = "\n".join(lines)
 
         response = self.cliconf_obj.get_diff(
             candidate,
             self.running_config,
-            diff_match="smart",
+            diff_match="enforce",
         )
 
         self.conn.get_diff = MagicMock(return_value=response)
@@ -160,7 +161,7 @@ class TestVyosConfigModule(TestVyosModule):
         self.conn.get_diff.assert_called_once_with(
             candidate=candidate,
             running=self.running_config,
-            diff_match="smart",
+            diff_match="enforce",
         )
 
         expected_config_diff = [
@@ -210,32 +211,32 @@ class TestVyosConfigModule(TestVyosModule):
         self.assertEqual(self.load_config.call_args[1]["confirm"], confirm_timeout)
         self.run_commands.assert_not_called()
 
-    def test_vyos_config_match_smart_blank_lines(self):
-        """smart diff must not raise IndexError on blank lines in running config."""
+    def test_vyos_config_match_enforce_blank_lines(self):
+        """enforce diff must not raise IndexError on blank lines in running config."""
         running_with_blanks = self.running_config + "\n\n"
         candidate = "set interfaces ethernet eth0 address 1.2.3.4/24"
-        response = self.cliconf_obj.get_diff(candidate, running_with_blanks, diff_match="smart")
+        response = self.cliconf_obj.get_diff(candidate, running_with_blanks, diff_match="enforce")
         self.assertIn("config_diff", response)
 
-    def test_vyos_config_match_smart_additions(self):
+    def test_vyos_config_match_enforce_additions(self):
         lines = [
             "set interfaces ethernet eth0 address '1.2.3.4/24'",
             "set interfaces ethernet eth0 description 'test string'",
             "set interfaces ethernet eth2 address '192.0.2.1/24'",
         ]
-        set_module_args(dict(lines=lines, match="smart"))
+        set_module_args(dict(lines=lines, match="enforce"))
         candidate = "\n".join(lines)
         response = self.cliconf_obj.get_diff(
             candidate,
             self.running_config,
-            diff_match="smart",
+            diff_match="enforce",
         )
         self.conn.get_diff = MagicMock(return_value=response)
         result = self.execute_module(changed=True, sort=False)
         self.conn.get_diff.assert_called_once_with(
             candidate=candidate,
             running=self.running_config,
-            diff_match="smart",
+            diff_match="enforce",
         )
         self.assertIn(
             "set interfaces ethernet eth2 address 192.0.2.1/24",
@@ -243,9 +244,9 @@ class TestVyosConfigModule(TestVyosModule):
         )
         self.assertEqual(result["commands"], response["config_diff"])
 
-    def test_vyos_config_match_smart_rejects_delete_lines(self):
+    def test_vyos_config_match_enforce_rejects_delete_lines(self):
         """
-        match=smart treats the candidate as the complete desired end-state.
+        match=enforce treats the candidate as the complete desired end-state.
         A candidate containing 'delete' lines must be rejected rather than
         silently producing a diff that removes most/all of the running
         config (regression test for a candidate that is a no-op/delete-only
@@ -258,10 +259,10 @@ class TestVyosConfigModule(TestVyosModule):
             self.cliconf_obj.get_diff(
                 candidate,
                 self.running_config,
-                diff_match="smart",
+                diff_match="enforce",
             )
 
-    def test_vyos_config_match_smart_rejects_empty_candidate(self):
+    def test_vyos_config_match_enforce_rejects_empty_candidate(self):
         """
         A candidate that is empty, whitespace-only, or comment-only must be
         rejected rather than silently treated as an empty desired end-state
@@ -276,12 +277,12 @@ class TestVyosConfigModule(TestVyosModule):
                 self.cliconf_obj.get_diff(
                     candidate,
                     self.running_config,
-                    diff_match="smart",
+                    diff_match="enforce",
                 )
 
-    def test_vyos_config_match_smart_requires_running(self):
+    def test_vyos_config_match_enforce_requires_running(self):
         """
-        diff_match=smart with running=None must raise a clear ValueError
+        diff_match=enforce with running=None must raise a clear ValueError
         instead of falling through to an AttributeError on
         running.splitlines().
         """
@@ -289,10 +290,10 @@ class TestVyosConfigModule(TestVyosModule):
             self.cliconf_obj.get_diff(
                 "set system host-name foo",
                 None,
-                diff_match="smart",
+                diff_match="enforce",
             )
 
-    def test_vyos_config_match_smart_ignores_comment_lines(self):
+    def test_vyos_config_match_enforce_ignores_comment_lines(self):
         """
         Comment lines mixed in with 'set' lines must be stripped out rather
         than causing the whole candidate to be rejected as not starting
@@ -309,7 +310,7 @@ class TestVyosConfigModule(TestVyosModule):
         response = self.cliconf_obj.get_diff(
             candidate,
             running,
-            diff_match="smart",
+            diff_match="enforce",
         )
         self.assertIn(
             "set interfaces ethernet eth0 description 'test string'",
@@ -320,7 +321,7 @@ class TestVyosConfigModule(TestVyosModule):
         """
         sanitize_config()/PASSWORD_NEEDLE must filter 'delete ... password'
         lines the same way it filters 'set ... password' lines, since
-        match=smart can generate deletes for password config the candidate
+        match=enforce can generate deletes for password config the candidate
         omits. Without this, allow_password_change=none/plaintext/encrypted
         would fail to catch a password-affecting delete.
         """
