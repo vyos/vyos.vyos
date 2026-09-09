@@ -165,11 +165,12 @@ Parameters
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
                                     <li>automatic</li>
                                     <li>manual</li>
-                                    <li><div style="color: blue"><b>none</b>&nbsp;&larr;</div></li>
+                                    <li>none</li>
                         </ul>
                 </td>
                 <td>
                         <div>The <code>confirm</code> argument will tell vyos to revert to the previous configuration if not explicitly confirmed after applying the new config. When set to <code>automatic</code> this module will automatically confirm the configuration, if the current session remains working with the new config. When set to <code>manual</code>, this module does not issue the confirmation itself.</div>
+                        <div>Defaults to <code>automatic</code> when <code>match</code> is set to <code>enforce</code>, since <code>enforce</code> can generate <code>delete</code> commands for configuration not mentioned in the candidate and a bad commit should self-revert rather than leave the device unreachable. Defaults to <code>none</code> for all other <code>match</code> value</div>
                 </td>
             </tr>
             <tr>

@@ -277,11 +277,13 @@ class Cliconf(CliconfBase):
                 raise ValueError(
                     "diff_match=enforce requires a running configuration to diff against",
                 )
+
             enforce_candidate_lines = [
-                line
-                for line in candidate_commands
+                line.strip()
+                for line in candidate.splitlines()
                 if line.strip() and not line.lstrip().startswith("#")
             ]
+
             if not enforce_candidate_lines:
                 raise ValueError(
                     "diff_match=enforce received an empty candidate (after stripping blank/"
@@ -305,9 +307,24 @@ class Cliconf(CliconfBase):
                         "diff_match=enforce only supports complete 'set' commands with at least "
                         "a path and a leaf; got: {0!r}".format(line.strip()),
                     )
-            running_conf = VyosConf([line for line in running.splitlines() if line.strip()])
+            running_conf = VyosConf(
+                [
+                    line
+                    for line in running.splitlines()
+                    if line.strip() and not line.lstrip().startswith("#")
+                ],
+            )
+
             candidate_conf = VyosConf(enforce_candidate_lines)
             diff["config_diff"] = running_conf.diff_commands_to(candidate_conf)
+            for cmd in diff["config_diff"]:
+                if re.match(r"^delete\s+service\s+ssh\b", cmd):
+                    raise ValueError(
+                        "diff_match=enforce refuses to generate 'delete service ssh ...' "
+                        "commands, since this could sever the management connection. "
+                        "Remove SSH configuration explicitly with a separate match=line "
+                        "or match=none task instead.",
+                    )
             return diff
 
         running_commands = [str(c).replace("'", "") for c in running.splitlines()]

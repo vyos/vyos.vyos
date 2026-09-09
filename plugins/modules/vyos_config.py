@@ -99,8 +99,11 @@ options:
       this module will automatically confirm the configuration, if the current session
       remains working with the new config. When set to C(manual), this module does
       not issue the confirmation itself.
+    - Defaults to C(automatic) when C(match) is set to C(enforce), since C(enforce)
+      can generate C(delete) commands for configuration not mentioned in the
+      candidate and a bad commit should self-revert rather than leave the device
+      unreachable. Defaults to C(none) for all other C(match) value
     type: str
-    default: none
     choices:
     - automatic
     - manual
@@ -369,16 +372,20 @@ def run(module, result):
 
     result["commands"] = commands
 
+    confirm_param = module.params["confirm"]
+    if confirm_param is None:
+        confirm_param = "automatic" if module.params["match"] == "enforce" else "none"
+
     commit = not module.check_mode
     comment = module.params["comment"]
     confirm = None
-    if module.params["confirm"] == "automatic" or module.params["confirm"] == "manual":
+    if confirm_param in ("automatic", "manual"):
         confirm = module.params["confirm_timeout"]
 
     diff = None
     if commands:
         diff = load_config(module, commands, commit=commit, comment=comment, confirm=confirm)
-        if module.params["confirm"] == "automatic":
+        if confirm_param == "automatic":
             run_commands(module, ["configure", "confirm", "exit"])
 
         if result.get("filtered"):
@@ -399,7 +406,7 @@ def main():
         lines=dict(type="list", elements="str"),
         match=dict(default="line", choices=["line", "enforce", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
-        confirm=dict(choices=["automatic", "manual", "none"], default="none"),
+        confirm=dict(choices=["automatic", "manual", "none"], default=None),
         confirm_timeout=dict(type="int", default=10),
         config=dict(),
         backup=dict(type="bool", default=False),

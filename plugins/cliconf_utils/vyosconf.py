@@ -22,7 +22,18 @@ __metaclass__ = type
 import re
 
 
-KEEP_EXISTING_VALUES = "..."
+class _KeepExistingSentinel:
+    """Unique marker for 'preserve whatever's already here' in a diff.
+    Deliberately not a plain string/value: a real config leaf could
+    legitimately be "..." (e.g. a description), and a string sentinel
+    would collide with it. An object identity never can.
+    """
+
+    def __repr__(self):
+        return "<keep-existing>"
+
+
+KEEP_EXISTING_VALUES = _KeepExistingSentinel()
 
 
 class VyosConf:
@@ -102,7 +113,11 @@ class VyosConf:
         :return: [command, path, leaf]
         """
         line = re.match(r"^('(.*)'|\"(.*)\"|([^#\"']*))*", line).group(0).strip()
+        if not line:
+            return ["", [], ""]
         path = re.findall(r"('.*?'|\".*?\"|\S+)", line)
+        if not path:
+            return ["", [], ""]
         leaf = path[-1]
         if leaf.startswith('"') and leaf.endswith('"'):
             leaf = leaf[1:-1]
@@ -231,9 +246,12 @@ class VyosConf:
     def diff_commands_to(self, other):
         """
         This function calculates the required commands to change the current into
-        the given configuration.
+        the given configuration. Only top-level sections present in the desired
+        configuration are enforced; top-level sections the candidate does not
+        mention at all are left completely untouched.
         :param other: VyosConf
         :return: [str]
         """
-        (toset, todel) = self.diff_to(other.config, self.config)
+        scoped_structure = {k: v for k, v in self.config.items() if k in other.config}
+        (toset, todel) = self.diff_to(other.config, scoped_structure)
         return ["delete " + c.strip() for c in todel] + ["set " + c.strip() for c in toset]
