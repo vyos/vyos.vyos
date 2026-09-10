@@ -21,7 +21,10 @@ __metaclass__ = type
 
 import unittest
 
-from ansible_collections.vyos.vyos.plugins.cliconf_utils.vyosconf import VyosConf
+from ansible_collections.vyos.vyos.plugins.cliconf_utils.vyosconf import (
+    KEEP_EXISTING_VALUES,
+    VyosConf,
+)
 
 
 class TestListElements(unittest.TestCase):
@@ -188,35 +191,25 @@ class TestListElements(unittest.TestCase):
             [],
         )
 
+        # KEEP_EXISTING_VALUES is no longer reachable via 'set'/'delete'
+        # command text (see #6): a literal "..." leaf is now an ordinary
+        # value, not a sentinel, so nothing is suppressed here.
         self.assertListEqual(
-            conf.diff_commands_to(
-                VyosConf(
-                    [
-                        "set a b ...",
-                    ],
-                ),
-            ),
+            conf.diff_commands_to(VyosConf(["set a b ..."])),
+            ["delete a b 'c a'", "delete a c", "set a b ..."],
+        )
+
+    def test_diff_commands_to_keep_existing_values_sentinel(self):
+        # KEEP_EXISTING_VALUES is only reachable via the Python API now.
+        # Build the candidate tree directly to prove diff_to() still
+        # honours it when used that way.
+        conf = VyosConf(["set a b 'c a'", "set a c b"])
+        candidate = VyosConf()
+        candidate.config = {"a": {"b": {KEEP_EXISTING_VALUES: {}}}}
+
+        self.assertListEqual(
+            conf.diff_commands_to(candidate),
             ["delete a c"],
-        )
-        self.assertListEqual(
-            conf.diff_commands_to(VyosConf(["set a ...", "set a d e"])),
-            ["set a d e"],
-        )
-        self.assertListEqual(
-            conf.diff_commands_to(VyosConf(["set a b", "set a c b"])),
-            ["delete a b 'c a'"],
-        )
-
-        self.assertListEqual(
-            conf.diff_commands_to(VyosConf(["set a b 'a c'", "set a c b"])),
-            ["delete a b 'c a'", "set a b 'a c'"],
-        )
-
-        self.assertListEqual(
-            VyosConf(
-                ["set a b c d", "set a b c e", "set a b d"],
-            ).diff_commands_to(VyosConf(["set a b c d", "set a b ..."])),
-            ["delete a b c e"],
         )
 
 

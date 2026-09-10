@@ -165,7 +165,6 @@ class TestVyosConfigModule(TestVyosModule):
         )
 
         expected_config_diff = [
-            "delete system",
             "delete interfaces ethernet eth1",
         ]
         self.assertEqual(response["config_diff"], expected_config_diff)
@@ -341,3 +340,73 @@ class TestVyosConfigModule(TestVyosModule):
             result["filtered"],
         )
         self.assertNotIn("set system host-name foo", result["filtered"])
+
+    def test_vyos_config_match_enforce_refuses_ssh_deletion(self):
+        """
+        match=enforce must refuse to generate 'delete service ssh ...'
+        commands, since this could sever the management connection.
+        Regression test for the incident where an enforce candidate that
+        didn't restate 'service ssh' generated a delete for it.
+        """
+        running = "\n".join(
+            [
+                "set service ssh port '22'",
+                "set service lldp",
+            ],
+        )
+        candidate = "set service lldp"
+
+        with self.assertRaises(ValueError):
+            self.cliconf_obj.get_diff(
+                candidate,
+                running,
+                diff_match="enforce",
+            )
+
+    def test_vyos_config_confirm_defaults_to_automatic_for_match_enforce(self):
+        """
+        confirm defaults to 'automatic' when match=enforce and confirm is
+        not explicitly set, since enforce can generate broad deletes and a
+        bad commit should self-revert rather than leave the device
+        unreachable.
+        """
+        lines = [
+            "set interfaces ethernet eth0 address '1.2.3.4/24'",
+            "set interfaces ethernet eth0 description 'test string'",
+        ]
+        set_module_args(dict(lines=lines, match="enforce"))
+        candidate = "\n".join(lines)
+        response = self.cliconf_obj.get_diff(
+            candidate,
+            self.running_config,
+            diff_match="enforce",
+        )
+        self.conn.get_diff = MagicMock(return_value=response)
+
+        self.execute_module(changed=True, sort=False)
+
+        self.assertEqual(self.load_config.call_args[1]["confirm"], 10)
+        self.run_commands.assert_called_once()
+        self.assertEqual(
+            ["configure", "confirm", "exit"],
+            self.run_commands.call_args[0][1],
+        )
+
+    def test_vyos_config_confirm_stays_none_for_other_match_values(self):
+        """
+        confirm stays 'none' (no confirm kwarg passed, no auto-confirm
+        run_commands call) when match is not 'enforce' and confirm is not
+        explicitly set -- the new conditional default must not change
+        existing behaviour for match=line/none.
+        """
+        lines = ["set system host-name foo"]
+        set_module_args(dict(lines=lines))
+        candidate = "\n".join(lines)
+        self.conn.get_diff = MagicMock(
+            return_value=self.cliconf_obj.get_diff(candidate, self.running_config),
+        )
+
+        self.execute_module(changed=True, commands=lines)
+
+        self.assertIsNone(self.load_config.call_args[1]["confirm"])
+        self.run_commands.assert_not_called()
