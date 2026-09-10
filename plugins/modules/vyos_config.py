@@ -102,7 +102,7 @@ options:
     - Defaults to C(automatic) when C(match) is set to C(enforce), since C(enforce)
       can generate C(delete) commands for configuration not mentioned in the
       candidate and a bad commit should self-revert rather than leave the device
-      unreachable. Defaults to C(none) for all other C(match) value
+      unreachable. Defaults to C(none) for all other C(match) values.
     type: str
     choices:
     - automatic
