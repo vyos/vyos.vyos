@@ -227,5 +227,6 @@
     lines:
       - set system option reboot-on-upgrade-failure '5'
     match: none
+    save: true
 
 - debug: msg="END cli/replace_config.yaml on connection={{ ansible_connection }}"
