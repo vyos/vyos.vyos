@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import MagicMock, patch
@@ -358,3 +359,27 @@ class TestVyosConfigModule(TestVyosModule):
         )
         self.execute_module(changed=True, commands=commands)
         self.copy_file.assert_not_called()
+
+    def test_sanitize_config_filters_password_delete_lines(self):
+        """
+        sanitize_config()/PASSWORD_NEEDLE must filter 'delete ... password'
+        lines the same way it filters 'set ... password' lines, since
+        replace=config can generate deletes for password config the
+        candidate omits.
+        """
+        result = {}
+        commands = [
+            "set system host-name foo",
+            "delete system login user admin authentication encrypted-password",
+            "set system login user admin authentication plaintext-password 'secret'",
+        ]
+        vyos_config.sanitize_config(commands, result, allow="none")
+        self.assertIn(
+            "delete system login user admin authentication encrypted-password",
+            result["filtered"],
+        )
+        self.assertIn(
+            "set system login user admin authentication plaintext-password 'secret'",
+            result["filtered"],
+        )
+        self.assertNotIn("set system host-name foo", result["filtered"])
