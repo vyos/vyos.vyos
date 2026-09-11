@@ -188,6 +188,8 @@ Parameters
                                     <li>ecdsa-sha2-nistp384</li>
                                     <li>ssh-ed25519</li>
                                     <li>ecdsa-sha2-nistp521</li>
+                                    <li>sk-ecdsa-sha2-nistp256@openssh.com</li>
+                                    <li>sk-ssh-ed25519@openssh.com</li>
                         </ul>
                 </td>
                 <td>
@@ -365,6 +367,8 @@ Parameters
                                     <li>ecdsa-sha2-nistp384</li>
                                     <li>ssh-ed25519</li>
                                     <li>ecdsa-sha2-nistp521</li>
+                                    <li>sk-ecdsa-sha2-nistp256@openssh.com</li>
+                                    <li>sk-ssh-ed25519@openssh.com</li>
                         </ul>
                 </td>
                 <td>
