@@ -346,20 +346,21 @@ Examples
           filename: backup.cfg
           dir_path: /home/user
 
-    - name: replace the entire running config with a full candidate (native load)
+    - name: capture the complete hierarchical configuration for editing
       # replace=config requires the complete desired configuration in
       # hierarchical/bracket format -- never a partial one, and never flat
-      # set-command format. A safe pattern is to back up the current config,
-      # edit it, then replace with the edited whole, as shown here.
-      vyos.vyos.vyos_config:
-        backup: true
-        backup_options:
-          filename: pre_replace_backup.cfg
-      register: backup_result
+      # set-command format. `backup: true` alone won't work here: it captures
+      # flat set-command output (via `show configuration commands`), which
+      # replace=config's underlying `load` command rejects. Capture the
+      # hierarchical form directly instead, edit it, then replace with the
+      # edited whole, as shown here.
+      vyos.vyos.vyos_command:
+        commands: "show configuration"
+      register: current_config
 
-    - name: (edit backup_result's backup file as needed, then)
+    - name: (edit current_config.stdout[0] as needed, save it locally, then)
       vyos.vyos.vyos_config:
-        src: /home/user/pre_replace_backup_edited.cfg
+        src: /home/user/edited_config.cfg
         replace: config
 
 

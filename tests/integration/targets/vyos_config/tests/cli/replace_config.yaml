@@ -35,13 +35,42 @@
 # plugin behavior, not specific to replace=config, and asserting on it here
 # would conflate two unrelated things.
 #
-# NOTE on teardown: this file captures the device's true pre-test
-# configuration *before* making any changes (original_full_config below)
+# NOTE on teardown: this file captures the device's true pre-test SAVED
+# configuration *before* making any changes (original_config_capture below)
 # and restores exactly that via the same replace=config mechanism the rest
 # of the file exercises, inside an `always` block -- so a failure partway
 # through (not just a clean run) still leaves the device as it was found,
 # rather than at a hard-coded value that may differ from whatever was
 # actually there originally.
+#
+# NOTE on unsaved changes: the restore above is only correct if the device
+# had NO unsaved running-config changes before this test started -- this
+# file cannot safely capture or restore the live running config (see the
+# masked-secrets note below), only the saved state in config.boot. The
+# pre-test check immediately below fails fast rather than silently
+# discarding any pre-existing unsaved work.
+
+- name: check for pre-existing unsaved changes before this test begins
+  vyos.vyos.vyos_command:
+    commands:
+      - configure
+      - compare saved
+      - exit
+  register: pre_test_save_diff
+
+- name: fail fast if the device has unsaved changes before this test starts
+  ansible.builtin.assert:
+    that:
+      - >-
+        pre_test_save_diff.stdout[1] in
+        ['[edit]', 'No changes between working and saved configurations.\n\n[edit]']
+    fail_msg: >-
+      This device has unsaved configuration changes from before this test
+      started. Teardown restores from a capture of /config/config.boot (the
+      saved state) taken before setup, and cannot safely preserve unsaved
+      running-config changes that predate this test -- doing so would
+      silently discard them. Save or discard any pending changes on this
+      device before running this test.
 
 - name: capture original full config before any changes, for teardown restoration
   vyos.vyos.vyos_command:
@@ -249,7 +278,7 @@
           - "'12' in post_check_value.stdout[0]"
 
   always:
-    - name: teardown -- restore the true original configuration captured before any changes
+    - name: teardown -- restore the true original saved configuration captured before any changes
       vyos.vyos.vyos_config:
         src: "{{ role_path }}/templates/replace_config_candidate.cfg"
         replace: config
