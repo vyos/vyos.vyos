@@ -64,12 +64,16 @@ options:
       C(none), the active configuration is ignored and the configuration is always
       loaded.  If the C(match) argument is set to C(enforce), the supplied C(lines)
       or C(src) are treated as the complete desired end-state of the configuration,
-      rather than a set of deltas to apply.  Any existing configuration not present
-      in the supplied candidate is removed, so C(enforce) can generate C(delete)
-      commands for configuration the candidate does not mention.  C(enforce) is
-      intended for candidates made up of C(set) commands only; supplying
-      C(delete) lines alongside C(match=enforce) is not supported and will
-      raise an error.
+      rather than a set of deltas to apply.
+      C(enforce) enforces only the top-level configuration
+      sections present in the supplied candidate as complete end-states;
+      existing configuration within those sections but not mentioned in the
+      candidate is removed, so C(enforce) can generate C(delete) commands for
+      configuration the candidate does not mention. Top-level sections the
+      candidate does not reference at all are left completely untouched.
+      C(enforce) is intended for candidates made up of C(set) commands only;
+      supplying C(delete) lines alongside C(match=enforce) is not supported
+      and will raise an error.
     type: str
     default: line
     choices:
@@ -263,6 +267,45 @@ PASSWORD_NEEDLE = re.compile(
     r"(?:set|delete) system login user \S+ authentication (encrypted|plaintext)-password",
 )
 
+# diff_match=enforce's scoping can collapse an entire untouched subtree into
+# a single parent delete (e.g. "delete system login" when a candidate
+# touches system without restating login, or "delete system login user
+# admin" without a specific authentication line). PASSWORD_NEEDLE can't see
+# into a collapsed delete to know whether it removes a password -- since
+# real users almost always have one configured, treat any subtree-level
+# login deletion as password-bearing by default, same conservative stance
+# as PASSWORD_NEEDLE itself.
+LOGIN_SUBTREE_DELETE_NEEDLE = re.compile(
+    r"^delete system login(?:\s+user\s+\S+)?\s*$",
+)
+
+
+def sanitize_config(config, result, allow):
+    result["filtered"] = list()
+
+    if allow == "all":
+        return
+
+    index_to_filter = list()
+
+    for index, line in enumerate(list(config)):
+        found = PASSWORD_NEEDLE.search(line)
+
+        if found is not None:
+            if allow == found[1]:
+                continue
+            result["filtered"].append(line)
+            index_to_filter.append(index)
+            continue
+
+        if LOGIN_SUBTREE_DELETE_NEEDLE.match(line.strip()):
+            result["filtered"].append(line)
+            index_to_filter.append(index)
+
+    # Delete all filtered configs
+    for filter_index in sorted(index_to_filter, reverse=True):
+        del config[filter_index]
+
 
 def get_candidate(module):
     contents = module.params["src"] or module.params["lines"]
@@ -318,31 +361,6 @@ def diff_config(commands, config):
                         visited.add(line)
 
     return list(updates)
-
-
-def sanitize_config(config, result, allow):
-    result["filtered"] = list()
-
-    if allow == "all":
-        return
-
-    index_to_filter = list()
-
-    for index, line in enumerate(list(config)):
-        found = PASSWORD_NEEDLE.search(line)
-
-        if found is None:
-            continue
-
-        if allow == found[1]:
-            continue
-
-        result["filtered"].append(line)
-        index_to_filter.append(index)
-
-    # Delete all filtered configs
-    for filter_index in sorted(index_to_filter, reverse=True):
-        del config[filter_index]
 
 
 def run(module, result):

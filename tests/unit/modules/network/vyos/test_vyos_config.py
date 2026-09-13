@@ -410,3 +410,101 @@ class TestVyosConfigModule(TestVyosModule):
 
         self.assertIsNone(self.load_config.call_args[1]["confirm"])
         self.run_commands.assert_not_called()
+
+    def test_vyos_config_match_enforce_rejects_comment_disguised_as_command(self):
+        """
+        A line like 'set # comment' has 3 raw tokens (passing a naive
+        token-count check) but parse_line() strips the trailing comment,
+        leaving no actual path/leaf. This must still be rejected rather
+        than silently contributing an empty/degenerate entry to the diff.
+        """
+        for bad_line in ("set # comment", "set foo # comment"):
+            candidate = "\n".join(["set system host-name foo", bad_line])
+            with self.assertRaises(ValueError):
+                self.cliconf_obj.get_diff(
+                    candidate,
+                    self.running_config,
+                    diff_match="enforce",
+                )
+
+    def test_sanitize_config_filters_collapsed_login_subtree_deletes(self):
+        """
+        match=enforce's scoping can collapse an untouched subtree into a
+        single parent delete (e.g. 'delete system login' when a candidate
+        touches system without restating login, rather than an itemized
+        per-field delete). PASSWORD_NEEDLE alone can't see into a collapsed
+        delete to know it removes a password -- it must be treated as
+        password-bearing by default under any restrictive
+        allow_password_change value.
+        """
+        result = {}
+        commands = [
+            "set system host-name foo",
+            "delete system login",
+        ]
+        vyos_config.sanitize_config(commands, result, allow="none")
+        self.assertIn("delete system login", result["filtered"])
+        self.assertNotIn("set system host-name foo", result["filtered"])
+
+    def test_sanitize_config_filters_collapsed_login_user_subtree_delete(self):
+        """
+        Same collapse risk at the per-user level: 'delete system login
+        user admin' (no specific authentication line) must also be
+        treated as password-bearing.
+        """
+        result = {}
+        commands = [
+            "set system host-name foo",
+            "delete system login user admin",
+        ]
+        vyos_config.sanitize_config(commands, result, allow="none")
+        self.assertIn("delete system login user admin", result["filtered"])
+
+    def test_sanitize_config_allows_collapsed_login_subtree_delete_when_all(self):
+        """
+        allow_password_change=all must still let a collapsed login-subtree
+        delete through, same as it already does for explicit password
+        lines.
+        """
+        result = {}
+        commands = [
+            "set system host-name foo",
+            "delete system login",
+        ]
+        vyos_config.sanitize_config(commands, result, allow="all")
+        self.assertEqual(result["filtered"], [])
+
+    def test_vyos_config_match_enforce_accepts_bracket_format_src(self):
+        """
+        match=enforce must accept bracket-format candidates the same way
+        match=line/none already do -- enforce_candidate_lines is now built
+        from the same shared, correctly-normalized candidate_commands
+        rather than parsing raw candidate text independently (which had no
+        concept of bracket format at all).
+        """
+        candidate = "system {\n    host-name foo\n}\n"
+        response = self.cliconf_obj.get_diff(
+            candidate,
+            self.running_config,
+            diff_match="enforce",
+        )
+        self.assertIn("set system host-name foo", response["config_diff"])
+
+    def test_vyos_config_match_line_ignores_comment_and_blank_lines(self):
+        """
+        A src/lines candidate containing comment or blank lines must not
+        raise under match=line -- these are stripped during candidate
+        normalization the same way match=enforce already does, rather than
+        hitting the 'line must start with set or delete' check.
+        """
+        lines = [
+            "# a note",
+            "",
+            "set system host-name foo",
+        ]
+        set_module_args(dict(lines=lines))
+        candidate = "\n".join(lines)
+        self.conn.get_diff = MagicMock(
+            return_value=self.cliconf_obj.get_diff(candidate, self.running_config),
+        )
+        self.execute_module(changed=True, commands=["set system host-name foo"])

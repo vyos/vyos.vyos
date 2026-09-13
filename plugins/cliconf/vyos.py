@@ -249,7 +249,15 @@ class Cliconf(CliconfBase):
         if path:
             raise ValueError("'path' in diff is not supported")
 
-        set_format = candidate.startswith("set") or candidate.startswith("delete")
+        first_line = next(
+            (
+                stripped
+                for stripped in (line.strip() for line in candidate.splitlines())
+                if stripped and not stripped.startswith("#")
+            ),
+            "",
+        )
+        set_format = first_line.startswith("set") or first_line.startswith("delete")
         candidate_obj = NetworkConfig(indent=4, contents=candidate)
 
         if not set_format:
@@ -267,7 +275,11 @@ class Cliconf(CliconfBase):
 
         else:
 
-            candidate_commands = str(candidate).strip().split("\n")
+            candidate_commands = [
+                line.strip()
+                for line in str(candidate).splitlines()
+                if line.strip() and not line.lstrip().startswith("#")
+            ]
 
         if diff_match == "none":
             diff["config_diff"] = list(candidate_commands)
@@ -278,11 +290,7 @@ class Cliconf(CliconfBase):
                     "diff_match=enforce requires a running configuration to diff against",
                 )
 
-            enforce_candidate_lines = [
-                line.strip()
-                for line in candidate.splitlines()
-                if line.strip() and not line.lstrip().startswith("#")
-            ]
+            enforce_candidate_lines = list(candidate_commands)
 
             if not enforce_candidate_lines:
                 raise ValueError(
@@ -302,7 +310,7 @@ class Cliconf(CliconfBase):
                             line.strip(),
                         ),
                     )
-                if len(tokens) < 3:
+                if len(VyosConf().parse_line(line)[1]) < 1:
                     raise ValueError(
                         "diff_match=enforce only supports complete 'set' commands with at least "
                         "a path and a leaf; got: {0!r}".format(line.strip()),
