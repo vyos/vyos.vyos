@@ -276,7 +276,7 @@ PASSWORD_NEEDLE = re.compile(
 # login deletion as password-bearing by default, same conservative stance
 # as PASSWORD_NEEDLE itself.
 LOGIN_SUBTREE_DELETE_NEEDLE = re.compile(
-    r"^delete system login(?:\s+user\s+\S+)?\s*$",
+    r"^delete system login(?:\s+user\s+\S+(?:\s+authentication)?)?\s*$",
 )
 
 

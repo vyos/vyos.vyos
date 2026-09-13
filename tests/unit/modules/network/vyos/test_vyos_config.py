@@ -508,3 +508,24 @@ class TestVyosConfigModule(TestVyosModule):
             return_value=self.cliconf_obj.get_diff(candidate, self.running_config),
         )
         self.execute_module(changed=True, commands=["set system host-name foo"])
+
+    def test_sanitize_config_filters_collapsed_login_user_authentication_subtree_delete(self):
+        """
+        A candidate that keeps other settings for a user but omits that
+        user's entire authentication subtree collapses to 'delete system
+        login user <name> authentication' -- one level deeper than the
+        per-user collapse already covered. This must also be treated as
+        password-bearing under the default allow_password_change=plaintext,
+        not just under allow_password_change=none.
+        """
+        result = {}
+        commands = [
+            "set system host-name foo",
+            "delete system login user admin authentication",
+        ]
+        vyos_config.sanitize_config(commands, result, allow="plaintext")
+        self.assertIn(
+            "delete system login user admin authentication",
+            result["filtered"],
+        )
+        self.assertNotIn("set system host-name foo", result["filtered"])
