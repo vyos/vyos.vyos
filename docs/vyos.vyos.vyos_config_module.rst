@@ -165,11 +165,12 @@ Parameters
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
                                     <li>automatic</li>
                                     <li>manual</li>
-                                    <li><div style="color: blue"><b>none</b>&nbsp;&larr;</div></li>
+                                    <li>none</li>
                         </ul>
                 </td>
                 <td>
                         <div>The <code>confirm</code> argument will tell vyos to revert to the previous configuration if not explicitly confirmed after applying the new config. When set to <code>automatic</code> this module will automatically confirm the configuration, if the current session remains working with the new config. When set to <code>manual</code>, this module does not issue the confirmation itself.</div>
+                        <div>Defaults to <code>automatic</code> when <code>match</code> is set to <code>enforce</code>, since <code>enforce</code> can generate <code>delete</code> commands for configuration not mentioned in the candidate and a bad commit should self-revert rather than leave the device unreachable. Defaults to <code>none</code> for all other <code>match</code> values.</div>
                 </td>
             </tr>
             <tr>
@@ -216,11 +217,12 @@ Parameters
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
                                     <li><div style="color: blue"><b>line</b>&nbsp;&larr;</div></li>
+                                    <li>enforce</li>
                                     <li>none</li>
                         </ul>
                 </td>
                 <td>
-                        <div>The <code>match</code> argument controls the method used to match against the current active configuration.  By default, the desired config is matched against the active config and the deltas are loaded.  If the <code>match</code> argument is set to <code>none</code> the active configuration is ignored and the configuration is always loaded.</div>
+                        <div>The <code>match</code> argument controls the method used to match against the current active configuration.  By default, the desired config is matched against the active config and the deltas are loaded.  If the <code>match</code> argument is set to <code>none</code>, the active configuration is ignored and the configuration is always loaded.  If the <code>match</code> argument is set to <code>enforce</code>, the supplied <code>lines</code> or <code>src</code> are treated as the complete desired end-state of the configuration, rather than a set of deltas to apply. <code>enforce</code> enforces only the top-level configuration sections present in the supplied candidate as complete end-states; existing configuration within those sections but not mentioned in the candidate is removed, so <code>enforce</code> can generate <code>delete</code> commands for configuration the candidate does not mention. Top-level sections the candidate does not reference at all are left completely untouched. <code>enforce</code> is intended for candidates made up of <code>set</code> commands only; supplying <code>delete</code> lines alongside <code>match=enforce</code> is not supported and will raise an error.</div>
                 </td>
             </tr>
             <tr>
@@ -291,6 +293,7 @@ Examples
 
     - name: render a Jinja2 template onto the VyOS router
       vyos.vyos.vyos_config:
+        match: enforce
         src: vyos_template.j2
 
     - name: revert after ten minutes, if connection is lost
