@@ -1,0 +1,18 @@
+---
+bugfixes:
+  - cliconf - fixed replace-mode diff in get_diff() leaving orphaned/invalid
+    config nodes on the device when an entire config node (not just a leaf
+    value) was absent from the candidate configuration, by making the diff
+    structure-aware instead of comparing flat config lines
+    (https://vyos.dev/T6837).
+  - cliconf - fixed get_diff() emitting a redundant delete alongside the
+    correct set command in replace mode when only a scalar attribute's
+    value changed.
+  - cliconf - fixed get_diff() applying quote-insensitive line matching to
+    non-replace calls, which could mask genuine configuration differences
+    during normal (non-replace) operation for any caller, including
+    ansible.netcommon.cli_config.
+minor_changes:
+  - vyos_config - replace mode now requests the hierarchical config format
+    from the device so the structure-aware diff in cliconf can correctly
+    distinguish node removal from leaf value changes.

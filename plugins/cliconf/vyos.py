@@ -122,7 +122,13 @@ class Cliconf(CliconfBase):
         return out
 
     def edit_config(
-        self, candidate=None, commit=True, replace=None, diff=False, comment=None, confirm=None
+        self,
+        candidate=None,
+        commit=True,
+        replace=None,
+        diff=False,
+        comment=None,
+        confirm=None,
     ):
         resp = {}
         operations = self.get_device_operations()
@@ -216,7 +222,7 @@ class Cliconf(CliconfBase):
         diff_match="line",
         diff_ignore_lines=None,
         path=None,
-        diff_replace=None,
+        diff_replace=False,
     ):
         diff = {}
         device_operations = self.get_device_operations()
@@ -231,14 +237,19 @@ class Cliconf(CliconfBase):
                 % (diff_match, ", ".join(option_values["diff_match"])),
             )
 
-        if diff_replace:
-            raise ValueError("'replace' in diff is not supported")
-
         if diff_ignore_lines:
             raise ValueError("'diff_ignore_lines' in diff is not supported")
 
         if path:
             raise ValueError("'path' in diff is not supported")
+
+        if diff_replace and diff_match == "none":
+            # Module documentation states replace only works when match is
+            # 'line'. Without this check, diff_replace silently has no
+            # effect under match='none' (that branch returns before the
+            # diff_replace logic below ever runs) -- failing loudly here
+            # is safer than letting a user believe replace ran.
+            raise ValueError("'replace' is not supported when 'match' is set to 'none'")
 
         set_format = candidate.startswith("set") or candidate.startswith("delete")
         candidate_obj = NetworkConfig(indent=4, contents=candidate)
@@ -265,10 +276,42 @@ class Cliconf(CliconfBase):
             diff["config_diff"] = list(candidate_commands)
             return diff
 
-        running_commands = [str(c).replace("'", "") for c in running.splitlines()]
+        if diff_replace:
+            # `running` is hierarchical/brace text in replace mode (see the
+            # tree-aware block below). It must be flattened to full-path
+            # "set" commands the same way candidate is above -- naively
+            # splitting on newlines here would compare raw brace-syntax
+            # fragments (e.g. "    host-name router") against candidate's
+            # flat commands and never match, making every candidate line
+            # look incorrectly "missing".
+            if running.lstrip().startswith(("set ", "delete ")):
+                raise ValueError(
+                    "diff_replace requires 'running' in hierarchical config "
+                    "format, not flat set/delete commands",
+                )
+            running_obj = NetworkConfig(indent=4, contents=running)
+            running_lines = [c.line for c in running_obj.items]
+            running_flat = list()
+            for item in running_lines:
+                for index, entry in enumerate(running_flat):
+                    if item.startswith(entry):
+                        del running_flat[index]
+                        break
+                running_flat.append(item)
+            running_commands = ["set %s" % cmd.replace(" {", "") for cmd in running_flat]
+        else:
+            running_commands = [str(c).replace("'", "") for c in running.splitlines()]
 
         updates = list()
         visited = set()
+
+        if diff_replace:
+            # Precompute once instead of scanning + regex-substituting
+            # running_commands for every candidate line below. This turns
+            # the set-line match from O(N*M) with two regex subs per
+            # comparison into O(N+M), while preserving quote-insensitive
+            # equality by stripping both single and double quotes.
+            running_commands_normalized = {re.sub("['\"]", "", rline) for rline in running_commands}
 
         for line in candidate_commands:
             item = str(line).replace("'", "")
@@ -276,8 +319,18 @@ class Cliconf(CliconfBase):
             if not item.startswith("set") and not item.startswith("delete"):
                 raise ValueError("line must start with either `set` or `delete`")
 
-            elif item.startswith("set") and item not in running_commands:
-                updates.append(line)
+            elif item.startswith("set"):
+                if diff_replace:
+                    # Quote-insensitive comparison is only needed for replace
+                    # mode, where `running` values may be re-quoted before
+                    # being compared here. Gating this behind diff_replace
+                    # preserves the original exact-match idempotency check
+                    # for all existing (non-replace) callers.
+                    match = re.sub("['\"]", "", item) in running_commands_normalized
+                else:
+                    match = item in running_commands
+                if not match:
+                    updates.append(line)
 
             elif item.startswith("delete"):
 
@@ -291,7 +344,78 @@ class Cliconf(CliconfBase):
                             updates.append(line)
                             visited.add(line)
 
-        diff["config_diff"] = list(updates)
+        if diff_replace:
+            # T6837: replace mode must operate on the config's actual tree
+            # structure, not flat line text. `running` is required to be in
+            # hierarchical/brace form here (get_config(..., format="text")),
+            # so that intermediate nodes (e.g. a firewall rule) are visible
+            # as distinct entities from their leaf values. Diffing on flat
+            # "set" lines alone cannot tell "a whole node was removed" apart
+            # from "a leaf's value changed", which is what caused both the
+            # orphaned-node bug and the redundant-delete-on-value-change bug.
+
+            candidate_bodies = [
+                _strip_cmd_prefix(c) for c in candidate_commands if c.startswith("set ")
+            ]
+            candidate_bodies_normalized = {re.sub("['\"]", "", b) for b in candidate_bodies}
+            running_tree = NetworkConfig(indent=4, contents=running)
+
+            replace_deletes = list()
+            visited_nodes = set()
+
+            for item in running_tree.items:
+                prefix = _node_prefix(item)
+
+                if item.children:
+                    # intermediate node: does an equivalent structural path
+                    # exist anywhere in candidate? If not, the whole subtree
+                    # is missing -- emit a single delete for the node itself
+                    # rather than descending into per-leaf deletes.
+                    if not _candidate_has_prefix(prefix, candidate_bodies):
+                        if not any(
+                            prefix == v or prefix.startswith(v + " ") for v in visited_nodes
+                        ):
+                            replace_deletes.append("delete %s" % prefix)
+                            visited_nodes.add(prefix)
+                    continue
+
+                # leaf node
+                if re.sub("['\"]", "", prefix) in candidate_bodies_normalized:
+                    continue  # exact match, nothing to do
+
+                parent_prefix = " ".join(p.replace(" {", "") for p in item.parents)
+                if any(
+                    parent_prefix == v or parent_prefix.startswith(v + " ") for v in visited_nodes
+                ):
+                    continue  # already covered by an ancestor delete above
+
+                # Leaf is either genuinely absent from candidate, or its
+                # value changed. Delete it unconditionally -- there is no
+                # reliable way to tell a coincidentally-single-valued
+                # list-style attribute (e.g. a single 'name-server' entry)
+                # apart from a genuinely scalar one (e.g. 'host-name') from
+                # config text alone; treating them differently by observed
+                # cardinality can leave stale values behind for list-style
+                # attributes (see T6837 review discussion). This is made
+                # safe by ordering: replace_deletes are placed before the
+                # candidate-driven `set` commands below, so each delete
+                # always targets the value that is still genuinely active,
+                # never one a `set` has already superseded.
+                replace_deletes.append("delete %s" % prefix)
+
+        if diff_replace:
+            # A candidate may include an explicit "delete ..." line for a
+            # node that the structure-aware pass above also independently
+            # determined is absent. Without deduplication both paths emit
+            # the same delete, and a repeated delete for an already-deleted
+            # path can fail commit idempotency on strict devices.
+            existing_deletes = {
+                str(c).strip() for c in updates if str(c).strip().startswith("delete ")
+            }
+            replace_deletes = [c for c in replace_deletes if c not in existing_deletes]
+            diff["config_diff"] = replace_deletes + list(updates)
+        else:
+            diff["config_diff"] = list(updates)
         return diff
 
     def run_commands(self, commands=None, check_rc=True):
@@ -320,7 +444,7 @@ class Cliconf(CliconfBase):
 
     def get_device_operations(self):
         return {
-            "supports_diff_replace": False,
+            "supports_diff_replace": True,
             "supports_commit": True,
             "supports_rollback": False,
             "supports_defaults": False,
@@ -337,7 +461,7 @@ class Cliconf(CliconfBase):
         return {
             "format": ["text", "set"],
             "diff_match": ["line", "none"],
-            "diff_replace": [],
+            "diff_replace": [True, False],
             "output": [],
         }
 
@@ -354,3 +478,41 @@ class Cliconf(CliconfBase):
         """
         if self._connection.connected:
             self._update_cli_prompt_context(config_context="#", exit_command="exit discard")
+
+
+def match_cmd(cmd1, cmd2):
+    cmd1 = re.sub("['\"]", "", cmd1)
+    cmd2 = re.sub("['\"]", "", cmd2)
+    if cmd1 == cmd2:
+        return True
+    else:
+        return False
+
+
+def _strip_cmd_prefix(cmd):
+    """Remove a leading 'set ' / 'delete ' keyword, leaving the bare config path."""
+    if cmd.startswith("set "):
+        return cmd[4:]
+    if cmd.startswith("delete "):
+        return cmd[7:]
+    return cmd
+
+
+def _node_prefix(item):
+    """Return the full structural path for a config tree node (parents + own
+    text). Brace markers are stripped and parts are space-joined. Note that
+    intermediate nodes may include key/value-like tokens (for example
+    ``rule 200`` or ``ethernet eth1``) -- do not assume item.text is a bare
+    identifier. What makes intermediate-node identity unambiguous for this
+    diff isn't that the text is a pure keyword, but that the full parents +
+    text path is a complete, structural node identifier with no separate
+    "value" component to guess at, unlike a leaf's own text which mixes an
+    attribute keyword with a value.
+    """
+    parts = [p.replace(" {", "").strip() for p in item.parents]
+    parts.append(item.text.replace(" {", "").strip())
+    return " ".join(p for p in parts if p)
+
+
+def _candidate_has_prefix(prefix, candidate_bodies):
+    return any(body == prefix or body.startswith(prefix + " ") for body in candidate_bodies)

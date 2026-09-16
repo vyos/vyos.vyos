@@ -1,0 +1,74 @@
+---
+- debug: msg="START cli/replaced.yaml on connection={{ ansible_connection }}"
+
+# SAFETY NOTE: `replace: true` currently has no path/scope parameter (see
+# T6837). Any candidate that omits a line present on the device will queue
+# a delete for it -- including management interfaces, SSH, and login users.
+# Every step below therefore operates on a FULL backup of the running
+# config, edited in place, never a partial/minimal candidate. Do not
+# shortcut this pattern until replace supports scoping.
+
+- name: setup baseline firewall rules
+  vyos.vyos.vyos_config:
+    lines:
+      - set firewall ipv4 name example rule 100 action drop
+      - set firewall ipv4 name example rule 200 action accept
+    match: none
+
+- name: backup full running config before mutating it
+  register: backup_result
+  vyos.vyos.vyos_config:
+    backup: true
+    backup_options:
+      dir_path: "{{ role_path }}/tests/output"
+      filename: "replace_baseline_{{ inventory_hostname_short }}.cfg"
+
+- name: build edited candidate lines (drop only rule 200, keep everything else verbatim)
+  # lookup('file', ...) runs inside Jinja on the controller process itself --
+  # no connection plugin involved at all, so this sidesteps the delegate_to +
+  # inherited network_cli conflict entirely rather than fighting it.
+  ansible.builtin.set_fact:
+    edited_candidate_lines: >-
+      {{ lookup('file', backup_result.backup_path).splitlines()
+         | reject('search', 'firewall ipv4 name example rule 200')
+         | list }}
+
+- name: sanity check candidate still contains SSH/management essentials
+  ansible.builtin.assert:
+    that:
+      # adjust these to whatever this lab image's real baseline contains --
+      # the point is: FAIL LOUDLY here rather than push a candidate missing
+      # management config, instead of discovering it via a dropped SSH session.
+      - "edited_candidate_lines | select('search', 'service ssh') | list | length > 0"
+      - "edited_candidate_lines | select('search', 'interfaces ethernet eth0') | list | length > 0"
+
+- name: replace with edited full config (rule 200 removed, everything else intact)
+  register: result
+  vyos.vyos.vyos_config:
+    lines: "{{ edited_candidate_lines }}"
+    replace: true
+
+- assert:
+    that:
+      - result.changed == true
+      - '''delete firewall ipv4 name example rule 200'' in result.commands or
+        ''delete firewall ipv4 name example rule 200 action "accept"'' in result.commands'
+      # the real regression check for T6837: no leftover empty rule 200 stub
+      - result.commands | select('match', '^set firewall ipv4 name example rule 200') | list | length == 0
+
+- name: verify connectivity survived (would hang/fail above already if not, but confirm explicitly)
+  vyos.vyos.vyos_facts:
+    gather_subset: min
+  register: facts_check
+
+- assert:
+    that:
+      - facts_check is succeeded
+
+- name: teardown firewall rule
+  vyos.vyos.vyos_config:
+    lines:
+      - delete firewall ipv4 name example
+    match: none
+
+- debug: msg="END cli/replaced.yaml on connection={{ ansible_connection }}"
