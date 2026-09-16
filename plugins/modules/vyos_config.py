@@ -562,7 +562,7 @@ def run_replace_config(module, result):
 
     confirm_param = module.params["confirm"]
     if confirm_param is None:
-        confirm_param = "automatic"
+        confirm_param = "none"
 
     commit = not module.check_mode
     comment = module.params["comment"]
