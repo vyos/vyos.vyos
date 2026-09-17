@@ -1,4 +1,0 @@
----
-minor_changes:
-  - vyos_vpn_ipsec - Add global VPN IPsec resource module support.
-  - vyos_vpn_ipsec_s2s - Add IPsec site-to-site peer resource module support.

@@ -1,3 +1,0 @@
----
-bugfixes:
-  - Fix meta/runtime.yml redirect for snmp_server pointing to non-existent vyos_snmp_servers module.

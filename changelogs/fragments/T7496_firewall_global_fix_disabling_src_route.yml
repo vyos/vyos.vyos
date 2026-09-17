@@ -1,2 +1,0 @@
-bugfixes:
-  - vyos_firewall_global - Fix disabling src route
