@@ -1,3 +1,0 @@
----
-minor_changes:
-  - vyos_file - Add support for file upload, management and templating.

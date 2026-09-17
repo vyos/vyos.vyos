@@ -1,3 +1,0 @@
----
-trivial:
-  - Fix isort import ordering violations across module_utils to satisfy pre-commit checks.

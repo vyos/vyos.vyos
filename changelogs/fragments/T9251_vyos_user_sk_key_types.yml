@@ -1,5 +1,0 @@
----
-bugfixes:
-  - >-
-    vyos_user - Accept OpenSSH security key types ``sk-ecdsa-sha2-nistp256@openssh.com`` and
-    ``sk-ssh-ed25519@openssh.com`` for ``public_keys.type``, which were previously rejected.

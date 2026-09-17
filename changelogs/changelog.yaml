@@ -622,3 +622,145 @@ releases:
       - test_module_patch.yml
       - tests.yml
     release_date: "2025-06-25"
+  6.1.0:
+    changes:
+      bugfixes:
+        - Fix edgecase with empty `commands` array.
+        - Fix meta/runtime.yml redirect for snmp_server pointing to non-existent vyos_snmp_servers
+          module.
+        - Safeguard interface L2 configuration by deleting only L3 address attributes
+          in vyos_l3_interfaces; update unit and integration tests accordingly.
+        - bgp_address_family.py - Fix slow parse() to stop regex backtracking on prefix-sharing
+          inputs.
+        - bgp_address_family_14.py - Fix slow parse() to stop regex backtracking on
+          prefix-sharing inputs.
+        - bgp_global.py - Fix slow parse() to stop regex backtracking on prefix-sharing
+          inputs.
+        - bgp_global_14.py - Fix slow parse() to stop regex backtracking on prefix-sharing
+          inputs.
+        - cliconf/vyos.py - Fixed greedy matching in configuration parsing
+        - facts/firewall_global.py - Fix confusion between firewall zone names and group
+          names.
+        - firewall_rules - fix parse_icmp_attr() using wrong split delimiter ('.' instead
+          of '/') and referencing undefined variable type_no in the numeric-only branch,
+          which caused ValueError or UnboundLocalError when gathering firewall rules
+          with ICMP type conditions.
+        - ospf_interfaces.py - Fix slow parse() to stop regex backtracking on prefix-sharing
+          inputs.
+        - ospf_interfaces_14.py - Fix slow parse() to stop regex backtracking on prefix-sharing
+          inputs.
+        - plugins/modules/vyos_user.py - Fix aggregate option when extra user properties
+          are defined
+        - route_maps.py - Fix slow parse() to stop regex backtracking on prefix-sharing
+          inputs.
+        - route_maps_14.py - Fix slow parse() to stop regex backtracking on prefix-sharing
+          inputs.
+        - snmp_server.py - Fix slow parse() to stop regex backtracking on prefix-sharing
+          inputs.
+        - test_rm_templates_perf.py - Add unit test for the bugfixes
+        - vyos_config - the ``allow_password_change`` filter used a regular expression
+          that only matched ``set`` lines (``set system login user ... authentication
+          (encrypted|plaintext)-password``), so a ``delete`` line for the same path
+          was never filtered regardless of the ``allow_password_change`` value. This
+          meant an account omitted from a full-config candidate could have its password
+          deleted without the existing safety filter ever inspecting the line. The regular
+          expression now matches both ``set`` and ``delete`` lines.
+        - vyos_config.py - Fixing test case
+        - vyos_firewall_global - Fix disabling src route
+        - vyos_firewall_rules - add 'offload' action
+        - vyos_l3_interfaces - ipv6 auto-config option incorrectly set
+        - vyos_logging_global - Add support for 1.5.0+ CLI changes.
+        - vyos_user - Accept OpenSSH security key types ``sk-ecdsa-sha2-nistp256@openssh.com``
+          and ``sk-ssh-ed25519@openssh.com`` for ``public_keys.type``, which were previously
+          rejected.
+        - vyos_user - Quote and escape plaintext-password values in set commands so
+          VyOS accepts special characters and embedded single quotes.
+        - vyos_user - Set explicit ``no_log=False`` on ``update_password`` so Ansible
+          does not treat it as sensitive and hide it from task output.
+        - vyos_vlan - fix purge generating invalid ``delete ... vif None`` commands
+          for bare interfaces without VLAN sub-interfaces.
+      minor_changes:
+        - Add unit tests for vyos_lldp_interfaces module.
+        - Add unit tests for vyos_vlan module.
+        - plugins/modules/vyos_config.py - Added an argument to control password filtering
+          in vyos_config. Current filtering behavior is still the default.
+        - vyos_bgp_global - remove commented-out pre-1.3 deprecated parameter documentation
+          artifacts.
+        - vyos_config - Add `enforce` match mode, which enforces the supplied configuration
+          as the desired end-state.
+        - vyos_config - add support for commit-confirm workflows (automatic/manual)
+          including configurable timeout
+        - vyos_config - added a new ``replace`` option value, ``config`` (in addition
+          to the existing default, ``line``). When set to ``replace=config``, the module
+          uploads the complete candidate configuration supplied via ``src`` to the device
+          and issues VyOS's native ``load`` command in configuration mode, letting VyOS's
+          own configuration engine perform the replacement, rather than the module computing
+          a set/delete command diff. This mirrors the mechanism offered by ``cisco.iosxr.iosxr_config``'s
+          ``replace=config`` (https://vyos.dev/T6837).
+        - vyos_file - Add support for file upload, management and templating.
+        - vyos_firewall_global - Added 'diff' support
+        - vyos_firewall_global - Added Firewall Zone Policy support.
+        - vyos_firewall_rules - Added 'return' and 'continue' to default action.
+        - vyos_ha - Add VRRP (High Availability) support.
+        - vyos_interfaces - Added VRF support.
+        - vyos_nat - Add new module to support NAT configuration.
+        - vyos_static_routes - Fixed interface handling in next-hop parsing
+        - vyos_vpn_ipsec - Add global VPN IPsec resource module support.
+        - vyos_vpn_ipsec_s2s - Add IPsec site-to-site peer resource module support.
+        - vyos_vrf - Add VRF support
+      release_summary: This is the 6.1.0 release vyos.vyos collection.
+    fragments:
+      - 6.1.0.yml
+      - T6890_all_boolean.yml
+      - T7260_edgecase_commands.yml
+      - T7496_firewall_global_fix_disabling_src_route.yml
+      - T7943-fix-sanity.yml
+      - T8205_vyos_user_aggregate_fix.yml
+      - T8321_vpn_ipsec.yml
+      - T8511-black-formatting.yml
+      - T8512-isort-fix.yml
+      - T8516_unit_tests_l3_interface.yml
+      - T8517_unit_tests_lldp_interfaces.yml
+      - T8518-vlan-unit-tests.yml
+      - T8595_add_agents_md.yml
+      - T8609_rm_templates_regex_backtracking.yml
+      - T9082-codeql-workflow.yml
+      - T9251_vyos_user_sk_key_types.yml
+      - add_cla_workflow.yml
+      - ades-fix.yml
+      - coderabbit-config.yml
+      - config_confirm.yml
+      - copilot-instructions.yml
+      - deprecated-cleanup.yml
+      - fix-icmp-parse-attr.yml
+      - fix-snmp-server-redirect.yml
+      - fix-vlan-purge.yml
+      - formatting-compliance.yml
+      - fw_rules_sit.yml
+      - ignore-2.22.yml
+      - missing-unit-tests.yml
+      - sanity-devel-fix.yml
+      - sanity_upstream_fixes.yml
+      - t6721-vyos_fw_global.yml
+      - t6818_password_filtering.yml
+      - t6820_vrrp.yml
+      - t6823_ipv6_autoconf.yml
+      - t6828-vyos_config-enforce.yml
+      - t6830_vyos_file.yml
+      - t6837-vyos_config-replace.yml
+      - t6838_vrf.yml
+      - t7701_greedy_starwith_fix.yml
+      - t7856_firewall_group_zone.yml
+      - t7933_fw_rules_offload.yml
+      - t8104-vyos_static_routes.yaml
+      - t8220-fpz.yaml
+      - t8323-vyos_nat.yml
+      - t8349_vyos_interfaces_vrf.yml
+      - t8851-coderabbit-centralized.yml
+      - t8983_logging_global_15.yml
+      - t9053_vyos_module_bugfix.yml
+      - t9180_fw_rules_return_action.yml
+      - typing_extensions_fix.yml
+      - vyos-user-quote-plaintext-password.yml
+      - vyos-user-update-password-no-log.yml
+    release_date: "2026-09-17"

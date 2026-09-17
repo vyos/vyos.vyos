@@ -1,3 +1,0 @@
----
-bugfixes:
-  - vyos_logging_global - Add support for 1.5.0+ CLI changes.
