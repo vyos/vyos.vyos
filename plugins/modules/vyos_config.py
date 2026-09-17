@@ -71,14 +71,26 @@ options:
     - The C(match) argument controls the method used to match against the current
       active configuration.  By default, the desired config is matched against the
       active config and the deltas are loaded.  If the C(match) argument is set to
-      C(none) the active configuration is ignored and the configuration is always
-      loaded.
+      C(none), the active configuration is ignored and the configuration is always
+      loaded.  If the C(match) argument is set to C(enforce), the supplied C(lines)
+      or C(src) are treated as the complete desired end-state of the configuration,
+      rather than a set of deltas to apply.
+      C(enforce) enforces only the top-level configuration
+      sections present in the supplied candidate as complete end-states;
+      existing configuration within those sections but not mentioned in the
+      candidate is removed, so C(enforce) can generate C(delete) commands for
+      configuration the candidate does not mention. Top-level sections the
+      candidate does not reference at all are left completely untouched.
+      C(enforce) is intended for candidates made up of C(set) commands only;
+      supplying C(delete) lines alongside C(match=enforce) is not supported
+      and will raise an error.
     - Ignored when C(replace) is set to C(config), since no line-level diff is
       computed in that mode.
     type: str
     default: line
     choices:
     - line
+    - enforce
     - none
   backup:
     description:
@@ -103,8 +115,11 @@ options:
       this module will automatically confirm the configuration, if the current session
       remains working with the new config. When set to C(manual), this module does
       not issue the confirmation itself.
+    - Defaults to C(automatic) when C(match) is set to C(enforce), since C(enforce)
+      can generate C(delete) commands for configuration not mentioned in the
+      candidate and a bad commit should self-revert rather than leave the device
+      unreachable. Defaults to C(none) for all other C(match) values.
     type: str
-    default: none
     choices:
     - automatic
     - manual
@@ -245,6 +260,7 @@ EXAMPLES = """
 
 - name: render a Jinja2 template onto the VyOS router
   vyos.vyos.vyos_config:
+    match: enforce
     src: vyos_template.j2
 
 - name: revert after ten minutes, if connection is lost
@@ -350,6 +366,45 @@ PASSWORD_NEEDLE = re.compile(
     r"(?:set|delete) system login user \S+ authentication (encrypted|plaintext)-password",
 )
 
+# diff_match=enforce's scoping can collapse an entire untouched subtree into
+# a single parent delete (e.g. "delete system login" when a candidate
+# touches system without restating login, or "delete system login user
+# admin" without a specific authentication line). PASSWORD_NEEDLE can't see
+# into a collapsed delete to know whether it removes a password -- since
+# real users almost always have one configured, treat any subtree-level
+# login deletion as password-bearing by default, same conservative stance
+# as PASSWORD_NEEDLE itself.
+LOGIN_SUBTREE_DELETE_NEEDLE = re.compile(
+    r"^delete system login(?:\s+user\s+\S+(?:\s+authentication)?)?\s*$",
+)
+
+
+def sanitize_config(config, result, allow):
+    result["filtered"] = list()
+
+    if allow == "all":
+        return
+
+    index_to_filter = list()
+
+    for index, line in enumerate(list(config)):
+        found = PASSWORD_NEEDLE.search(line)
+
+        if found is not None:
+            if allow == found[1]:
+                continue
+            result["filtered"].append(line)
+            index_to_filter.append(index)
+            continue
+
+        if LOGIN_SUBTREE_DELETE_NEEDLE.match(line.strip()):
+            result["filtered"].append(line)
+            index_to_filter.append(index)
+
+    # Delete all filtered configs
+    for filter_index in sorted(index_to_filter, reverse=True):
+        del config[filter_index]
+
 
 def get_candidate(module):
     contents = module.params["src"] or module.params["lines"]
@@ -407,31 +462,6 @@ def diff_config(commands, config):
     return list(updates)
 
 
-def sanitize_config(config, result, allow):
-    result["filtered"] = list()
-
-    if allow == "all":
-        return
-
-    index_to_filter = list()
-
-    for index, line in enumerate(list(config)):
-        found = PASSWORD_NEEDLE.search(line)
-
-        if found is None:
-            continue
-
-        if allow == found[1]:
-            continue
-
-        result["filtered"].append(line)
-        index_to_filter.append(index)
-
-    # Delete all filtered configs
-    for filter_index in sorted(index_to_filter, reverse=True):
-        del config[filter_index]
-
-
 def run(module, result):
     # get the current active config from the node or passed in via
     # the config param
@@ -459,16 +489,20 @@ def run(module, result):
 
     result["commands"] = commands
 
+    confirm_param = module.params["confirm"]
+    if confirm_param is None:
+        confirm_param = "automatic" if module.params["match"] == "enforce" else "none"
+
     commit = not module.check_mode
     comment = module.params["comment"]
     confirm = None
-    if module.params["confirm"] == "automatic" or module.params["confirm"] == "manual":
+    if confirm_param in ("automatic", "manual"):
         confirm = module.params["confirm_timeout"]
 
     diff = None
     if commands:
         diff = load_config(module, commands, commit=commit, comment=comment, confirm=confirm)
-        if module.params["confirm"] == "automatic":
+        if confirm_param == "automatic" and not module.check_mode:
             run_commands(module, ["configure", "confirm", "exit"])
 
         if result.get("filtered"):
@@ -526,10 +560,14 @@ def run_replace_config(module, result):
     finally:
         os.unlink(local_path)
 
+    confirm_param = module.params["confirm"]
+    if confirm_param is None:
+        confirm_param = "none"
+
     commit = not module.check_mode
     comment = module.params["comment"]
     confirm = None
-    if module.params["confirm"] == "automatic" or module.params["confirm"] == "manual":
+    if confirm_param in ("automatic", "manual"):
         confirm = module.params["confirm_timeout"]
 
     diff = load_config(
@@ -539,7 +577,7 @@ def run_replace_config(module, result):
         comment=comment,
         confirm=confirm,
     )
-    if module.params["confirm"] == "automatic" and diff and not module.check_mode:
+    if confirm_param == "automatic" and diff and not module.check_mode:
         run_commands(module, ["configure", "confirm", "exit"])
 
     result["commands"] = ["load %s" % remote_path]
@@ -555,9 +593,9 @@ def main():
     argument_spec = dict(
         src=dict(type="path"),
         lines=dict(type="list", elements="str"),
-        match=dict(default="line", choices=["line", "none"]),
+        match=dict(default="line", choices=["line", "enforce", "none"]),
         comment=dict(default=DEFAULT_COMMENT),
-        confirm=dict(choices=["automatic", "manual", "none"], default="none"),
+        confirm=dict(choices=["automatic", "manual", "none"], default=None),
         confirm_timeout=dict(type="int", default=10),
         config=dict(),
         backup=dict(type="bool", default=False),

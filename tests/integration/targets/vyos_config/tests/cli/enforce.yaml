@@ -1,0 +1,124 @@
+---
+- debug: msg="START cli/enforce.yaml on connection={{ ansible_connection }}"
+
+# SAFETY: this file exercises match=enforce's full end-state enforcement,
+# which fully enforces every top-level section the candidate touches.
+# NEVER include any "system ..." line in an enforce candidate below --
+# system login (including the currently-authenticated user) lives under
+# that top-level section, and enforce would attempt to delete it if not
+# restated. service ssh must also be restated in every candidate that
+# touches "service", or the module's built-in guard refuses the run
+# (see the dedicated guard test near the end of this file).
+
+- name: setup baseline config
+  vyos.vyos.vyos_config:
+    lines:
+      - set system host-name {{ inventory_hostname_short }}
+      - set service lldp
+      - set protocols static
+      - set service ssh port 22
+    match: none
+
+- block:
+    - name: enforce end-state with match=enforce (should remove lldp, keep static+ssh, add ntp)
+      register: result
+      vyos.vyos.vyos_config:
+        lines:
+          - set protocols static
+          - set service ssh port 22
+          - set service ntp server 192.0.2.1
+        match: enforce
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'delete service lldp' in result.commands"
+          - "'set service ntp server 192.0.2.1' in result.commands"
+          - "'delete protocols static' not in result.commands"
+          - "'delete service ssh port 22' not in result.commands"
+
+    - name: check match=enforce is idempotent against the same end-state
+      register: result
+      vyos.vyos.vyos_config:
+        lines:
+          - set protocols static
+          - set service ssh port 22
+          - set service ntp server 192.0.2.1
+        match: enforce
+
+    - assert:
+        that:
+          - result.changed == false
+
+    - name: match=enforce tolerates blank lines and comments in the candidate
+      register: result
+      vyos.vyos.vyos_config:
+        lines:
+          - "# this is a comment"
+          - ""
+          - set protocols static
+          - set service ssh port 22
+          - set service ntp server 192.0.2.1
+        match: enforce
+
+    - assert:
+        that:
+          - result.changed == false
+
+    - name: match=enforce rejects an incomplete set command
+      register: result
+      ignore_errors: true
+      vyos.vyos.vyos_config:
+        lines:
+          - set service ssh port 22
+          - set
+        match: enforce
+
+    - assert:
+        that:
+          - result.failed == true
+
+    - name: match=enforce rejects delete lines in the candidate
+      register: result
+      ignore_errors: true
+      vyos.vyos.vyos_config:
+        lines:
+          - set service ssh port 22
+          - delete protocols static
+        match: enforce
+
+    - assert:
+        that:
+          - result.failed == true
+
+    - name: match=enforce refuses a candidate that would delete service ssh
+      register: result
+      ignore_errors: true
+      vyos.vyos.vyos_config:
+        lines:
+          - set service ntp server 192.0.2.1
+        match: enforce
+
+    - assert:
+        that:
+          - result.failed == true
+          - "'delete service ssh' in result.msg"
+
+  always:
+    - name: teardown
+      vyos.vyos.vyos_config:
+        lines:
+          - set system host-name {{ inventory_hostname_short }}
+          - set service ssh port 22
+        match: none
+
+    - name: remove leftover test config
+      vyos.vyos.vyos_config:
+        lines:
+          - delete service ntp
+          - delete protocols static
+          - delete service lldp
+        match: none
+      ignore_errors: true
+
+- debug: msg="END cli/enforce.yaml on connection={{ ansible_connection }}"
