@@ -1,2 +1,0 @@
-minor_changes:
-  - vyos_firewall_rules - Added 'return' and 'continue' to default action.

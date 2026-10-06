@@ -1,3 +1,0 @@
----
-trivial:
-  - Add .git-blame-ignore-revs to exclude bulk formatting commits from git blame output.

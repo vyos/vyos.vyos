@@ -1,3 +1,0 @@
----
-minor_changes:
-  - vyos_static_routes - Fixed interface handling in next-hop parsing

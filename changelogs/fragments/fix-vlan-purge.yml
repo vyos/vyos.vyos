@@ -1,3 +1,0 @@
----
-bugfixes:
-  - vyos_vlan - fix purge generating invalid ``delete ... vif None`` commands for bare interfaces without VLAN sub-interfaces.
