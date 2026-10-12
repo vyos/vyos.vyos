@@ -6,8 +6,7 @@
 
 The Ansible VyOS collection includes a variety of Ansible content to help automate the management of VyOS network appliances.
 
-This collection has been tested against VyOS 1.3.8, 1.4.1 and the current rolling release for 1.5. Where possible,
-compatibility with older versions of VyOS are maintained but not guaranteed.
+This collection has been tested against VyOS 1.3.8, 1.4.1 and the current rolling release for 1.5. Where possible, compatibility with older versions of VyOS are maintained but not guaranteed.
 
 ## Communication
 
@@ -20,7 +19,7 @@ compatibility with older versions of VyOS are maintained but not guaranteed.
 <!--start requires_ansible-->
 ## Ansible version compatibility
 
-This collection has been tested against the following Ansible versions: **>=2.15.0**.
+This collection has been tested against the following Ansible versions: **>=2.16.0**.
 
 Plugins and modules within a collection may be tested with only specific Ansible versions.
 A collection may contain metadata that identifies these versions.
@@ -30,6 +29,14 @@ PEP440 is the schema used to describe the versions of Ansible.
 
 ### Supported connections
 The VyOS collection supports ``network_cli`` connections.
+
+## Requirements
+
+- ansible-core >=2.16.0, see [Ansible version compatibility](#ansible-version-compatibility).
+- Python >=3.10 on the Ansible controller, as required by ansible-core 2.16.
+- [ansible.netcommon](https://galaxy.ansible.com/ui/repo/published/ansible/netcommon/) >=2.5.1, installed automatically as a dependency of this collection.
+- Python packages `paramiko` and `scp`, listed in [requirements.txt](https://github.com/vyos/vyos.vyos/blob/main/requirements.txt). `ansible-builder` picks these up when you build an execution environment that includes this collection.
+- VyOS devices reachable over SSH with the `ansible.netcommon.network_cli` connection.
 
 ## Included content
 
@@ -86,6 +93,20 @@ Click the ``Content`` button to see the list of content included in this collect
 You can install the VyOS collection with the Ansible Galaxy CLI:
 
     ansible-galaxy collection install vyos.vyos
+
+Red Hat customers should install this collection from
+[Red Hat Ansible Automation Hub](https://console.redhat.com/ansible/automation-hub/repo/published/vyos/vyos/).
+Configure Automation Hub as a Galaxy server in `ansible.cfg` as described in
+[Configuring Ansible Automation Hub](https://docs.redhat.com/en/documentation/red_hat_ansible_automation_platform/),
+then use the same commands as below. Red Hat does not support installing collections from GitHub.
+
+To install a specific version, for example 6.2.0:
+
+    ansible-galaxy collection install vyos.vyos:==6.2.0
+
+To upgrade to the latest version:
+
+    ansible-galaxy collection install vyos.vyos --upgrade
 
 You can also include it in a `requirements.yml` file and install it with `ansible-galaxy collection install -r requirements.yml`, using the format:
 
@@ -261,10 +282,17 @@ Ansible Resources
 - [Ansible Developer guide](https://docs.ansible.com/ansible/latest/dev_guide/index.html)
 - [Ansible Community code of conduct](https://docs.ansible.com/ansible/latest/community/code_of_conduct.html)
 
+## Support
+
+As Red Hat Ansible Certified Content, this collection is entitled to support through Ansible Automation Platform (AAP) using the **Create issue** button in the top right corner
+of the collection page on Automation Hub.
+
+The collection is maintained by the VyOS team. <!-- TODO: VyOS commercial support statement/link -->
+If the collection was obtained from Galaxy or GitHub, community help is available through [GitHub issues](https://github.com/vyos/vyos.vyos/issues), the [VyOS forum](https://forum.vyos.io/)
+and the [Ansible Forum](https://forum.ansible.com/).
+
 ## Licensing
 
 GNU General Public License v3.0 or later.
 
 See [LICENSE](https://www.gnu.org/licenses/gpl-3.0.txt) to see the full text.
-
-
