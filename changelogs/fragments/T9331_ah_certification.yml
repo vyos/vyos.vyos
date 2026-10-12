@@ -1,0 +1,7 @@
+---
+removed_features:
+  - vyos.vyos - support for ansible-core 2.15 has been dropped; the minimum supported ansible-core version is now 2.16.0.
+trivial:
+  - action plugins - replace symlinks with import shims so sanity results are consistent across ansible-test and ADE.
+  - README - add Requirements and Support sections and Automation Hub installation instructions.
+  - CI - fix missing commas in the all_green gate so failures of unit, lint and build-import jobs fail the workflow.

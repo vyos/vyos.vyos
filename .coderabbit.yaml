@@ -191,7 +191,7 @@ reviews:
       instructions: |
         Module redirects and tombstones. Adding a new module requires a redirect
         entry (short name → FQCN). Tombstoned modules (logging, vyos_logging) must
-        not be un-tombstoned. requires_ansible must stay >=2.15.0 unless explicitly
+        not be un-tombstoned. requires_ansible must stay >=2.16.0 unless explicitly
         bumping minimum version.
 
 knowledge_base:
