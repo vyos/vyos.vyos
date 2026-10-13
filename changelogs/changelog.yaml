@@ -764,3 +764,13 @@ releases:
       - vyos-user-quote-plaintext-password.yml
       - vyos-user-update-password-no-log.yml
     release_date: "2026-09-17"
+  6.2.0:
+    changes:
+      release_summary: This is the 6.2.0 release of vyos.vyos collection.
+      removed_features:
+        - vyos.vyos - support for ansible-core 2.15 has been dropped; the minimum supported
+          ansible-core version is now 2.16.0.
+    fragments:
+      - 6.2.0.yml
+      - T9331_ah_certification.yml
+    release_date: "2026-10-13"
