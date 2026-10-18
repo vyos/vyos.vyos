@@ -10,6 +10,7 @@ The module file for vyos_logging_global
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """

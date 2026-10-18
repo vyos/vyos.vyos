@@ -1,0 +1,3 @@
+---
+trivial:
+  - Re-run isort (and add-trailing-comma) across the collection to fix lint drift accumulated since T8512.
