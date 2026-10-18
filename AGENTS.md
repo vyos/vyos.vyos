@@ -7,7 +7,7 @@ The official Ansible Collection for managing VyOS network appliances (`vyos.vyos
 ## Tech stack
 
 - Ansible Collection (Galaxy). Python control-plane code under `plugins/`.
-- `galaxy.yml` declares `namespace: vyos`, `name: vyos`, `version: 6.0.0`, dep `ansible.netcommon >= 2.5.1`, license_file `LICENSE` (GPL-3.0).
+- `galaxy.yml` declares `namespace: vyos`, `name: vyos`, `version: 6.1.0`, dep `ansible.netcommon >= 2.5.1`, license_file `LICENSE` (GPL-3.0).
 - Test stack: `pytest` + `tox-ansible.ini`; lint via flake8, isort, black (line-length 100), pre-commit, ansible-lint.
 - Runtime deps: `paramiko`, `scp` (`requirements.txt`); `bindep.txt` for system deps.
 

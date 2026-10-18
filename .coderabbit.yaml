@@ -35,8 +35,8 @@ reviews:
     # ── Global PR hygiene ──────────────────────────────────────────────
     - path: "**"
       instructions: |
-        This is the vyos.vyos Ansible network collection (namespace=vyos, name=vyos,
-        version=6.0.0). PR titles must follow the format `T{id}: description` referencing
+        This is the vyos.vyos Ansible network collection (namespace=vyos, name=vyos;
+        version in galaxy.yml). PR titles must follow the format `T{id}: description` referencing
         a Phorge task at vyos.dev. Every PR must include a changelog fragment in
         changelogs/fragments/ (YAML, valid keys: major_changes, minor_changes,
         breaking_changes, deprecated_features, removed_features, security_fixes,
