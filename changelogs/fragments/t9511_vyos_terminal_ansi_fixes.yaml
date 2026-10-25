@@ -1,0 +1,4 @@
+---
+bugfixes:
+  - vyos terminal plugin - strip the bracketed-paste escape sequences ``ESC[?2004h`` and ``ESC[?2004l`` emitted by vbash on rolling images with readline ``enable-bracketed-paste on``. Previously they leaked into command output, so ``vyos_command`` output started with ``[?2004l``, JSON output failed to parse and empty output was treated as non-empty (https://github.com/vyos/vyos.vyos/issues/XXX).
+  - vyos terminal plugin - fix loss of one character at every terminal-width (512 column) wrap in long output lines. The wrap artefact (space followed by backspace) was stripped by the generic backspace rule together with the following real character, corrupting output such as ``show configuration json`` on all VyOS versions (https://github.com/vyos/vyos.vyos/issues/XXX).
