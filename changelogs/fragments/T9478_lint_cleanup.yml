@@ -1,0 +1,5 @@
+---
+trivial:
+  - utils/version - declare ``LooseVersion`` re-export via ``__all__`` to satisfy flake8 F401.
+  - AGENTS.md - update collection version to 6.1.0.
+  - .coderabbit.yaml - refer to galaxy.yml instead of hardcoding the collection version.
