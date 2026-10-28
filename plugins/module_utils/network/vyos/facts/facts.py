@@ -9,6 +9,7 @@ calls the appropriate facts gathering function
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.facts.facts import (
@@ -93,6 +94,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vpn_i
     Vpn_ipsec_s2sFacts,
 )
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vrf.vrf import VrfFacts
+
 
 FACT_LEGACY_SUBSETS = dict(default=Default, neighbors=Neighbors, config=Config)
 FACT_RESOURCE_SUBSETS = dict(
