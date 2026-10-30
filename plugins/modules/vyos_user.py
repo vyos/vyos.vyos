@@ -427,10 +427,8 @@ def update_objects(want, have):
         item = next((i for i in have if i["name"] == entry["name"]), None)
         if item is None:
             updates.append((entry, {}))
-        elif item:
-            for key, value in entry.items():
-                if value and value != item[key]:
-                    updates.append((entry, item))
+        elif any(value and value != item.get(key) for key, value in entry.items()):
+            updates.append((entry, item))
     return updates
 
 
