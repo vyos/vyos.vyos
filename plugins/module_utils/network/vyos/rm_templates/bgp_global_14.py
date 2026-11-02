@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -1687,7 +1688,8 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp parameters no-client-to-client-reflection",
-            "compval": "bgp_params.log_neighbor_changes",
+            # "compval": "bgp_params.log_neighbor_changes",
+            "compval": "bgp_params.no_client_to_client_reflection",
             "result": {
                 "as_number": "{{ as_num }}",
                 "bgp_params": {

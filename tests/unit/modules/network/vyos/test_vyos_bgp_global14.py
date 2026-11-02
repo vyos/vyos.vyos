@@ -413,3 +413,25 @@ class TestVyosBgpglobalModule(TestVyosModule):
             ],
         }
         self.assertEqual(sorted(gather_list), sorted(result["gathered"]))
+
+    def test_vyos_bgp_global_reflection_flags_independent(self):
+        self.get_os_version.return_value = "1.5"
+        set_module_args(
+            dict(
+                config=dict(as_number=65001, bgp_params=dict(log_neighbor_changes=True)),
+                state="rendered",
+            ),
+        )
+        cmds = self.execute_module(changed=False)["rendered"]
+        self.assertIn("set protocols bgp parameters log-neighbor-changes", cmds)
+        self.assertFalse(any("no-client-to-client-reflection" in c for c in cmds))
+
+        set_module_args(
+            dict(
+                config=dict(as_number=65001, bgp_params=dict(no_client_to_client_reflection=True)),
+                state="rendered",
+            ),
+        )
+        cmds = self.execute_module(changed=False)["rendered"]
+        self.assertIn("set protocols bgp parameters no-client-to-client-reflection", cmds)
+        self.assertFalse(any("log-neighbor-changes" in c for c in cmds))

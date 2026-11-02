@@ -1,3 +1,8 @@
 ---
 minor_changes:
-  - vyos_vrf, vyos_bgp_global - Add error message for missing as_number.
+  - vyos_vrf, vyos_bgp_global - Add error message for missing as_number (T9427).
+bugfixes:
+  - vyos_bgp_global - setting log_neighbor_changes no longer also sets
+    no-client-to-client-reflection, and no_client_to_client_reflection is now rendered on its own;
+    on a route reflector, enabling neighbour-change logging silently stopped reflection between
+    clients (VyOS 1.4 and later) (T9411).
