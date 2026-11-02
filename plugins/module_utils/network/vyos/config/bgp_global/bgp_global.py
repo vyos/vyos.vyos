@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -92,6 +93,12 @@ class Bgp_global(ResourceModule):
         """
         wantd = {}
         haved = {}
+
+        if self.want and self.want.get("as_number") is None and self.state != "deleted":
+            self._module.fail_json(
+                msg="as_number is required: VyOS needs a system-as for every BGP "
+                "instance, including the BGP instance of each VRF",
+            )
 
         if (
             self.want.get("as_number") == self.have.get("as_number")
