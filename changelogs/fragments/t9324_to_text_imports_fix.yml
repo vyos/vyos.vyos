@@ -1,0 +1,3 @@
+---
+trivial:
+  - replace deprecated ansible.module_utils._text import to_text by ansible.module_utils.common.text.converters
