@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -60,9 +61,16 @@ class Bgp_globalFacts(object):
         if not data:
             data = self.get_device_data(connection)
 
+        peer_groups = set()
         for resource in data.splitlines():
             if "address-family" not in resource:
-                config_lines.append(re.sub("'", "", resource))
+                line = re.sub("'", "", resource)
+                # parse peer-group definitions with the neighbor parsers
+                match = re.match(r"^set protocols bgp peer-group (\S+)(.*)$", line)
+                if match:
+                    peer_groups.add(match.group(1))
+                    line = "set protocols bgp neighbor " + "".join(match.groups())
+                config_lines.append(line)
 
         if LooseVersion(get_os_version(self._module)) >= LooseVersion("1.4"):
             bgp_global_parser = Bgp_globalTemplate14(lines=config_lines, module=self._module)
@@ -72,6 +80,8 @@ class Bgp_globalFacts(object):
         objs = bgp_global_parser.parse()
 
         if "neighbor" in objs:
+            for name in peer_groups & set(objs["neighbor"]):
+                objs["neighbor"][name]["peer_group"] = True
             objs["neighbor"] = list(objs["neighbor"].values())
             objs["neighbor"] = sorted(objs["neighbor"], key=lambda k: k["address"])
         if "network" in objs:

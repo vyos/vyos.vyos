@@ -435,3 +435,34 @@ class TestVyosBgpglobalModule(TestVyosModule):
         cmds = self.execute_module(changed=False)["rendered"]
         self.assertIn("set protocols bgp parameters no-client-to-client-reflection", cmds)
         self.assertFalse(any("log-neighbor-changes" in c for c in cmds))
+
+    def test_vyos_bgp_global_peer_group_rendered(self):
+        self.get_os_version.return_value = "1.5"
+        group = dict(address="RR-CLIENTS", peer_group=True, remote_as=65001, update_source="lo")
+        member = dict(address="192.0.2.1", peer_group_name="RR-CLIENTS")
+        set_module_args(
+            dict(config=dict(as_number=65001, neighbor=[group, member]), state="rendered"),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set protocols bgp neighbor 192.0.2.1 peer-group RR-CLIENTS",
+                "set protocols bgp peer-group RR-CLIENTS remote-as 65001",
+                "set protocols bgp peer-group RR-CLIENTS update-source lo",
+                "set protocols bgp system-as 65001",
+            ],
+        )
+
+    def test_vyos_bgp_global_peer_group_replaced(self):
+        self.get_os_version.return_value = "1.5"
+        self.get_facts_os_version.return_value = "1.5"
+        group = dict(address="RR-CLIENTS", peer_group=True, remote_as=65001)
+        member = dict(address="192.0.2.1", peer_group_name="RR-CLIENTS")
+        set_module_args(
+            dict(config=dict(as_number=65001, neighbor=[group, member]), state="replaced"),
+        )
+        self.execute_module(
+            changed=True,
+            commands=["delete protocols bgp peer-group RR-CLIENTS update-source lo"],
+            filename="vyos_bgp_global_peer_group_config_14.cfg",
+        )

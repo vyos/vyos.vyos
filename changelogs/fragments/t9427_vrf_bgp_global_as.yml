@@ -1,8 +1,12 @@
 ---
 minor_changes:
   - vyos_vrf, vyos_bgp_global - Add error message for missing as_number (T9427).
+  - vyos_bgp_global - additional UAT/SIT test cases
 bugfixes:
   - vyos_bgp_global - setting log_neighbor_changes no longer also sets
     no-client-to-client-reflection, and no_client_to_client_reflection is now rendered on its own;
     on a route reflector, enabling neighbour-change logging silently stopped reflection between
     clients (VyOS 1.4 and later) (T9411).
+  - vyos_bgp_global - peer-group definitions (neighbor entries with peer_group true) are
+    configured as protocols bgp peer-group instead of an invalid neighbor, and are read back
+    from the device (VyOS 1.4 and later) (T9417).

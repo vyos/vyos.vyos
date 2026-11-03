@@ -17,3 +17,32 @@
         that:
           - result.changed == false
           - result.gathered == ansible_facts['network_resources']['bgp_global']
+
+- include_tasks: _get_version.yaml
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: setup peer group
+      vyos.vyos.vyos_config:
+        lines:
+          - set protocols bgp system-as 65536
+          - set protocols bgp peer-group RR-CLIENTS remote-as '65536'
+          - set protocols bgp peer-group RR-CLIENTS update-source 'lo'
+          - set protocols bgp neighbor 192.0.2.1 peer-group 'RR-CLIENTS'
+      vars:
+        ansible_connection: ansible.netcommon.network_cli
+
+    - name: Gather the peer group from the device
+      register: result
+      vyos.vyos.vyos_bgp_global:
+        state: gathered
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.gathered == gathered_peer_group.config
+
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  always:
+    - include_tasks: _remove_config.yaml

@@ -7,6 +7,8 @@
 
 from __future__ import absolute_import, division, print_function
 
+import re
+
 
 __metaclass__ = type
 
@@ -220,6 +222,8 @@ class Bgp_global(ResourceModule):
 
         wneigh = want.pop("neighbor", {})
         hneigh = have.pop("neighbor", {})
+        peer_groups = [n for d in (wneigh, hneigh) for n, e in d.items() if e.get("peer_group")]
+        first = len(self.commands)
         self._compare_neigh_lists(wneigh, hneigh)
 
         for name, entry in wneigh.items():
@@ -259,6 +263,15 @@ class Bgp_global(ResourceModule):
                         "neighbor": {"address": name, k: v},
                     },
                 )
+        # peer-group definitions are compared like neighbors, then renamed
+        for i, cmd in enumerate(self.commands[first:], first):
+            for name in peer_groups:
+                cmd = re.sub(
+                    r"^(\S+ protocols bgp )neighbor " + re.escape(name) + r"(?= |$)",
+                    r"\1peer-group " + name,
+                    cmd,
+                )
+            self.commands[i] = cmd
 
     def _compare_bgp_params(self, want, have):
         parsers = [

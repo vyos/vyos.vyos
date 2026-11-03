@@ -57,3 +57,53 @@
 
   always:
     - include_tasks: _remove_config.yaml
+
+- include_tasks: _get_version.yaml
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: setup peer group
+      vyos.vyos.vyos_config:
+        lines:
+          - set protocols bgp system-as 65536
+          - set protocols bgp peer-group RR-CLIENTS remote-as '65536'
+          - set protocols bgp peer-group RR-CLIENTS update-source 'lo'
+          - set protocols bgp neighbor 192.0.2.1 peer-group 'RR-CLIENTS'
+      vars:
+        ansible_connection: ansible.netcommon.network_cli
+
+    - name: Replace the peer group without update-source
+      register: result
+      vyos.vyos.vyos_bgp_global: &id002
+        config:
+          as_number: 65536
+          neighbor:
+            - address: RR-CLIENTS
+              peer_group: true
+              remote_as: 65536
+            - address: 192.0.2.1
+              peer_group_name: RR-CLIENTS
+        state: replaced
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: bgp_global
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands|symmetric_difference(replaced_peer_group.commands) == []
+          - result.after == ansible_facts['network_resources']['bgp_global']
+
+    - name: Replace the peer group without update-source (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_bgp_global: *id002
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  always:
+    - include_tasks: _remove_config.yaml
