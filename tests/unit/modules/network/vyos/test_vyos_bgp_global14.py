@@ -466,3 +466,35 @@ class TestVyosBgpglobalModule(TestVyosModule):
             commands=["delete protocols bgp peer-group RR-CLIENTS update-source lo"],
             filename="vyos_bgp_global_peer_group_config_14.cfg",
         )
+
+    def test_vyos_bgp_global_peer_group_af_replaced(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65001,
+                    neighbor=[dict(address="PG1", peer_group=True, remote_as=65001)],
+                ),
+                state="replaced",
+            ),
+        )
+        result = self.execute_module(
+            failed=True,
+            filename="vyos_bgp_global_peer_group_af_config_14.cfg",
+        )
+        self.assertIn("address_family under neighbor PG10", result["msg"])
+
+    def test_vyos_bgp_global_peer_group_af_exact_name(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65001,
+                    neighbor=[dict(address="PG10", peer_group=True, remote_as=65001)],
+                ),
+                state="replaced",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=["delete protocols bgp peer-group PG1"],
+            filename="vyos_bgp_global_peer_group_af_config_14.cfg",
+        )

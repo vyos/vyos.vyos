@@ -420,16 +420,14 @@ class Bgp_global(ResourceModule):
             )
 
     def _check_af(self, neighbor):
-        af_present = False
-        if self._connection:
-            config_lines = self._get_config(self._connection).splitlines()
-            for line in config_lines:
-                if neighbor in line:
-                    if "address-family" in line:
-                        af_present = True
-        return af_present
+        if not self._connection:
+            return False
+        af_line = re.compile(
+            r"^set protocols bgp (?:\d+ )?(?:neighbor|peer-group) "
+            + re.escape(neighbor)
+            + r" address-family\b",
+        )
+        return any(af_line.match(line) for line in self._get_config(self._connection).splitlines())
 
     def _get_config(self, connection):
-        return connection.get(
-            'show configuration commands |  match "set protocols bgp .*neighbor"',
-        )
+        return connection.get('show configuration commands | match "set protocols bgp"')
