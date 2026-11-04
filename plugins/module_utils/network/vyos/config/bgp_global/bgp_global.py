@@ -96,6 +96,20 @@ class Bgp_global(ResourceModule):
         wantd = {}
         haved = {}
 
+        # VyOS 1.4 and later have no "parameters default no-ipv4-unicast": FRR is always
+        # configured with "no bgp default ipv4-unicast", so the option is dropped from want.
+        default = self.want.get("bgp_params", {}).get("default", {})
+        if "no_ipv4_unicast" in default and LooseVersion(
+            get_os_version(self._module),
+        ) >= LooseVersion("1.4"):
+            default.pop("no_ipv4_unicast")
+            self._module.warn(
+                "no_ipv4_unicast is ignored: VyOS 1.4 and later always apply it "
+                "(no bgp default ipv4-unicast)",
+            )
+            if not default:
+                self.want["bgp_params"].pop("default")
+
         if self.want and self.want.get("as_number") is None and self.state != "deleted":
             self._module.fail_json(
                 msg="as_number is required: VyOS needs a system-as for every BGP "

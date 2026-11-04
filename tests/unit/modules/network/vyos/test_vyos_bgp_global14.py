@@ -23,6 +23,8 @@ __metaclass__ = type
 
 from unittest.mock import patch
 
+from ansible.module_utils.common.warnings import get_warning_messages
+
 from ansible_collections.vyos.vyos.plugins.modules import vyos_bgp_global
 from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
 
@@ -212,7 +214,6 @@ class TestVyosBgpglobalModule(TestVyosModule):
             ),
         )
         commands = [
-            "delete protocols bgp parameters default",
             "delete protocols bgp parameters bestpath compare-routerid",
             "delete protocols bgp parameters bestpath as-path confed",
             "delete protocols bgp neighbor 2001:db8::2 update-source 2001:db8::1",
@@ -323,7 +324,6 @@ class TestVyosBgpglobalModule(TestVyosModule):
             "set protocols bgp neighbor 2001:db8::2 update-source 2001:db8::1",
             "set protocols bgp parameters bestpath as-path confed",
             "set protocols bgp parameters bestpath compare-routerid",
-            "set protocols bgp parameters default no-ipv4-unicast",
             "set protocols bgp parameters router-id 10.1.1.1",
         ]
         result = self.execute_module(changed=False)
@@ -498,3 +498,14 @@ class TestVyosBgpglobalModule(TestVyosModule):
             commands=["delete protocols bgp peer-group PG1"],
             filename="vyos_bgp_global_peer_group_af_config_14.cfg",
         )
+
+    def test_vyos_bgp_global_no_ipv4_unicast_ignored(self):
+        set_module_args(
+            dict(
+                config=dict(as_number=65536, bgp_params=dict(default=dict(no_ipv4_unicast=True))),
+                state="rendered",
+            ),
+        )
+        result = self.execute_module(changed=False)
+        self.assertEqual(result["rendered"], ["set protocols bgp system-as 65536"])
+        self.assertTrue(any("no_ipv4_unicast is ignored" in w for w in get_warning_messages()))

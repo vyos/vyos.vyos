@@ -52,8 +52,6 @@ def _tmplt_delete_bgp_maximum_paths(config_data):
 
 def _tmplt_bgp_params_default(config_data):
     command = "protocols bgp parameters default".format(**config_data)
-    if config_data["bgp_params"]["default"].get("no_ipv4_unicast"):
-        command += " no-ipv4-unicast"
     if config_data["bgp_params"]["default"].get("local_pref"):
         command += " local-pref {local_pref}".format(**config_data["bgp_params"]["default"])
     return command
@@ -1496,7 +1494,6 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+bgp
                 \s+parameters
                 \s+default
-                \s*(?P<no_ipv4_unicast>no-ipv4-unicast)?
                 \s*(?P<local_pref>local-pref\s\S+)?\s*$""",
                 re.VERBOSE,
             ),
@@ -1507,7 +1504,6 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 "as_number": "{{ as_num }}",
                 "bgp_params": {
                     "default": {
-                        "no_ipv4_unicast": "{{ True if no_ipv4_unicast is defined }}",
                         "local_pref": "{{ local_pref.split(" " )[1] if local_pref is defined }}",
                     },
                 },
