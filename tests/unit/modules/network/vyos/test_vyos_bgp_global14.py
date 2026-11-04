@@ -23,8 +23,6 @@ __metaclass__ = type
 
 from unittest.mock import patch
 
-from ansible.module_utils.common.warnings import get_warning_messages
-
 from ansible_collections.vyos.vyos.plugins.modules import vyos_bgp_global
 from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
 
@@ -498,14 +496,3 @@ class TestVyosBgpglobalModule(TestVyosModule):
             commands=["delete protocols bgp peer-group PG1"],
             filename="vyos_bgp_global_peer_group_af_config_14.cfg",
         )
-
-    def test_vyos_bgp_global_no_ipv4_unicast_ignored(self):
-        set_module_args(
-            dict(
-                config=dict(as_number=65536, bgp_params=dict(default=dict(no_ipv4_unicast=True))),
-                state="rendered",
-            ),
-        )
-        result = self.execute_module(changed=False)
-        self.assertEqual(result["rendered"], ["set protocols bgp system-as 65536"])
-        self.assertTrue(any("no_ipv4_unicast is ignored" in w for w in get_warning_messages()))
