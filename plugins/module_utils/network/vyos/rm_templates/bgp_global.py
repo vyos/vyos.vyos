@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -1321,7 +1322,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 \s+parameters
                 \s+bestpath
                 \s+as-path
-                \s+(?P<path>confed|ignore)
+                \s+(?P<path>confed|ignore|multipath-relax)
                 *$""",
                 re.VERBOSE,
             ),
