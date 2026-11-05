@@ -128,3 +128,23 @@ gathered_peer_group:
         peer_group: true
         remote_as: 65536
         update_source: lo
+
+round_trip:
+  after:
+    as_number: 65536
+    bgp_params:
+      bestpath:
+        as_path: confed
+      router_id: 192.0.2.1
+    neighbor:
+      - address: 192.0.2.10
+        peer_group_name: RR-CLIENTS
+      - address: 192.0.2.20
+        remote_as: 65002
+      - address: RR-CLIENTS
+        peer_group: true
+        remote_as: external
+        update_source: lo
+    timers:
+      holdtime: 30
+      keepalive: 10

@@ -498,3 +498,15 @@ class TestVyosBgpglobalModule(TestVyosModule):
             self.execute_module(changed=False)["parsed"],
             {"as_number": 65536, "bgp_params": {"bestpath": {"as_path": "multipath-relax"}}},
         )
+
+    def test_vyos_bgp_global_remote_as_external_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp 65536 neighbor 192.0.2.1 remote-as external",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {"as_number": 65536, "neighbor": [{"address": "192.0.2.1", "remote_as": "external"}]},
+        )

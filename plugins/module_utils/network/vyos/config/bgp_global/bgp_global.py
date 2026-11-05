@@ -96,6 +96,11 @@ class Bgp_global(ResourceModule):
         wantd = {}
         haved = {}
 
+        # remote_as is an AS number or "external"/"internal"; numbers are compared as int
+        for neighbor in self.want.get("neighbor", []):
+            if "remote_as" in neighbor:
+                neighbor["remote_as"] = self._remote_as(neighbor["address"], neighbor["remote_as"])
+
         # Options without a CLI path on VyOS 1.4 and later are dropped from want, with a
         # warning. The version is only checked when one of them is set (no device access
         # otherwise, e.g. for state rendered).
@@ -325,6 +330,19 @@ class Bgp_global(ResourceModule):
 
         wbgp = want.pop("bgp_params", {})
         hbgp = have.pop("bgp_params", {})
+        # The as-path flags (confed, ignore, multipath-relax) are separate leaves in VyOS:
+        # changing as_path has to delete the flag it replaces.
+        w_as_path = wbgp.get("bestpath", {}).get("as_path")
+        h_as_path = hbgp.get("bestpath", {}).get("as_path")
+        if w_as_path and h_as_path and w_as_path != h_as_path:
+            self.addcmd(
+                {
+                    "as_number": want["as_number"],
+                    "bgp_params": {"bestpath": {"as_path": h_as_path}},
+                },
+                "bgp_params.bestpath.as_path",
+                True,
+            )
         for name, entry in wbgp.items():
             if name == "confederation":
                 if entry != hbgp.pop(name, {}):
@@ -457,3 +475,13 @@ class Bgp_global(ResourceModule):
 
     def _get_config(self, connection):
         return connection.get('show configuration commands | match "set protocols bgp"')
+
+    def _remote_as(self, address, value):
+        if str(value) in ("external", "internal"):
+            return str(value)
+        if str(value).isdigit() and 1 <= int(value) <= 4294967294:
+            return int(value)
+        self._module.fail_json(
+            msg="neighbor {0}: remote_as must be an AS number (1-4294967294), "
+            "'external' or 'internal', got {1!r}".format(address, value),
+        )

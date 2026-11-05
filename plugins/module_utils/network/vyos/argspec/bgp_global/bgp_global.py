@@ -65,7 +65,7 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                         "peer_group_name": {"type": "str"},
                         "peer_group": {"type": "bool"},
                         "port": {"type": "int"},
-                        "remote_as": {"type": "int"},
+                        "remote_as": {"type": "raw"},
                         "solo": {"type": "bool"},
                         "shutdown": {"type": "bool"},
                         "strict_capability_match": {"type": "bool"},

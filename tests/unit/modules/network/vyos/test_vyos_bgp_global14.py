@@ -527,3 +527,59 @@ class TestVyosBgpglobalModule(TestVyosModule):
             self.execute_module(changed=False)["parsed"],
             {"as_number": 65536, "bgp_params": {"bestpath": {"as_path": "multipath-relax"}}},
         )
+
+    def test_vyos_bgp_global_remote_as_external_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    neighbor=[dict(address="192.0.2.1", remote_as="external")],
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set protocols bgp neighbor 192.0.2.1 remote-as external",
+                "set protocols bgp system-as 65536",
+            ],
+        )
+
+    def test_vyos_bgp_global_remote_as_external_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp system-as 65536\n"
+                "set protocols bgp neighbor 192.0.2.1 remote-as external\n"
+                "set protocols bgp neighbor 192.0.2.2 remote-as 65002",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {
+                "as_number": 65536,
+                "neighbor": [
+                    {"address": "192.0.2.1", "remote_as": "external"},
+                    {"address": "192.0.2.2", "remote_as": 65002},
+                ],
+            },
+        )
+
+    def test_vyos_bgp_global_bestpath_as_path_change(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    bgp_params=dict(bestpath=dict(as_path="multipath-relax")),
+                ),
+                state="merged",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=[
+                "delete protocols bgp parameters bestpath as-path confed",
+                "set protocols bgp parameters bestpath as-path multipath-relax",
+            ],
+        )

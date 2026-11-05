@@ -908,7 +908,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 "neighbor": {
                     "{{ address }}": {
                         "address": "{{ address }}",
-                        "remote_as": "{{ num|int }}",
+                        "remote_as": "{{ num if num in ['external', 'internal'] else num|int }}",
                     },
                 },
             },

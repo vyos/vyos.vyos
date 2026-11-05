@@ -139,8 +139,10 @@ options:
             description: Neighbor's BGP port
             type: int
           remote_as:
-            description: Neighbor BGP AS number
-            type: int
+            description:
+              - Neighbor BGP AS number (1-4294967294), or C(external) or C(internal)
+                to accept any AS number other than, or equal to, the local one.
+            type: raw
           shutdown:
             description: Administratively shut down neighbor
             type: bool
