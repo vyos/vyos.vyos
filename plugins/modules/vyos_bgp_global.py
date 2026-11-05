@@ -90,6 +90,10 @@ options:
           default_originate:
             description:
             - Send default route to this neighbor
+              (C(set protocols bgp neighbor <address> default-originate route-map <map>)).
+            - Deprecated. VyOS 1.4 and later only support default-originate per address family;
+              use M(vyos.vyos.vyos_bgp_address_family). On those versions the option is ignored,
+              with a warning.
             type: str
           description:
             description:

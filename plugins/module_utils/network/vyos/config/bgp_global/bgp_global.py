@@ -96,19 +96,31 @@ class Bgp_global(ResourceModule):
         wantd = {}
         haved = {}
 
-        # VyOS 1.4 and later have no "parameters default no-ipv4-unicast": FRR is always
-        # configured with "no bgp default ipv4-unicast", so the option is dropped from want.
+        # Options without a CLI path on VyOS 1.4 and later are dropped from want, with a
+        # warning. The version is only checked when one of them is set (no device access
+        # otherwise, e.g. for state rendered).
         default = self.want.get("bgp_params", {}).get("default", {})
-        if "no_ipv4_unicast" in default and LooseVersion(
+        neighbors = [n for n in self.want.get("neighbor", []) if "default_originate" in n]
+        if ("no_ipv4_unicast" in default or neighbors) and LooseVersion(
             get_os_version(self._module),
         ) >= LooseVersion("1.4"):
-            default.pop("no_ipv4_unicast")
-            self._module.warn(
-                "no_ipv4_unicast is ignored: VyOS 1.4 and later always apply it "
-                "(no bgp default ipv4-unicast)",
-            )
-            if not default:
-                self.want["bgp_params"].pop("default")
+            # no "parameters default no-ipv4-unicast": FRR always has it
+            if default.pop("no_ipv4_unicast", None) is not None:
+                self._module.warn(
+                    "no_ipv4_unicast is ignored: VyOS 1.4 and later always apply it "
+                    "(no bgp default ipv4-unicast)",
+                )
+                if not default:
+                    self.want["bgp_params"].pop("default")
+            # default-originate only exists per address family
+            for neighbor in neighbors:
+                neighbor.pop("default_originate")
+                self._module.warn(
+                    "neighbor {0}: default_originate is ignored: VyOS 1.4 and later only "
+                    "support it per address family, see vyos_bgp_address_family".format(
+                        neighbor["address"],
+                    ),
+                )
 
         if self.want and self.want.get("as_number") is None and self.state != "deleted":
             self._module.fail_json(

@@ -456,7 +456,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} default-originate route-map {{ neighbor.default_originate }}",
-            "compval": "neighbor.advertisement_interval",
+            "compval": "neighbor.default_originate",
             "result": {
                 "as_number": "{{ as_num }}",
                 "neighbor": {
@@ -1376,7 +1376,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_params_confederation,
-            "compval": "bgp_params.always_compare_med",
+            "compval": "bgp_params.confederation",
             "result": {
                 "as_number": "{{ as_num }}",
                 "bgp_params": {

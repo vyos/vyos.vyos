@@ -791,7 +791,8 @@ Parameters
                 <td>
                 </td>
                 <td>
-                        <div>Send default route to this neighbor</div>
+                        <div>Send default route to this neighbor (<code>set protocols bgp neighbor &lt;address&gt; default-originate route-map &lt;map&gt;</code>).</div>
+                        <div>Deprecated. VyOS 1.4 and later only support default-originate per address family; use <span class='module'>vyos.vyos.vyos_bgp_address_family</span>. On those versions the option is ignored, with a warning.</div>
                 </td>
             </tr>
             <tr>

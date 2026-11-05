@@ -13,3 +13,7 @@ bugfixes:
   - vyos_bgp_global - no_ipv4_unicast is ignored with a warning on VyOS 1.4 and later, which no
     longer have "parameters default no-ipv4-unicast" and always apply it; before, the module
     rendered the removed path and the commit failed (T9487).
+  - vyos_bgp_global - neighbor default_originate is ignored with a warning on VyOS 1.4 and later,
+    which only support default-originate per address family (vyos_bgp_address_family). Before, the
+    module could render the invalid "neighbor <address> default-originate" path, and the commit
+    failed.
