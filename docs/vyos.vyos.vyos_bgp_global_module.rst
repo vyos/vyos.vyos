@@ -136,10 +136,13 @@ Parameters
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
                                     <li>confed</li>
                                     <li>ignore</li>
+                                    <li>multipath-relax</li>
                         </ul>
                 </td>
                 <td>
-                        <div>AS-path attribute comparison parameters</div>
+                        <div>AS-path attribute comparison parameters.</div>
+                        <div><code>confed</code> compares path lengths including confederation sets and sequences, <code>ignore</code> ignores the AS-path length, and <code>multipath-relax</code> allows multipath across paths received from different neighbouring ASes.</div>
+                        <div>Only one of these can be set at a time.</div>
                 </td>
             </tr>
             <tr>

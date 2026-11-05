@@ -220,9 +220,14 @@ options:
             type: dict
             suboptions:
               as_path:
-                description: AS-path attribute comparison parameters
+                description:
+                  - AS-path attribute comparison parameters.
+                  - C(confed) compares path lengths including confederation sets and sequences,
+                    C(ignore) ignores the AS-path length, and C(multipath-relax) allows multipath
+                    across paths received from different neighbouring ASes.
+                  - Only one of these can be set at a time.
                 type: str
-                choices: ['confed', 'ignore']
+                choices: ['confed', 'ignore', 'multipath-relax']
               compare_routerid:
                 description: Compare the router-id for identical EBGP paths
                 type: bool

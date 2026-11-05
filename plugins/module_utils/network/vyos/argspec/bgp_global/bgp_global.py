@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 #############################################
@@ -96,7 +97,7 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                             "options": {
                                 "as_path": {
                                     "type": "str",
-                                    "choices": ["confed", "ignore"],
+                                    "choices": ["confed", "ignore", "multipath-relax"],
                                 },
                                 "compare_routerid": {"type": "bool"},
                                 "med": {

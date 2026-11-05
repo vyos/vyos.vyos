@@ -1277,7 +1277,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+parameters
                 \s+bestpath
                 \s+as-path
-                \s+(?P<path>confed|ignore)
+                \s+(?P<path>confed|ignore|multipath-relax)
                 *$""",
                 re.VERBOSE,
             ),

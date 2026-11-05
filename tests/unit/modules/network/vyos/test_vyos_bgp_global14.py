@@ -496,3 +496,34 @@ class TestVyosBgpglobalModule(TestVyosModule):
             commands=["delete protocols bgp peer-group PG1"],
             filename="vyos_bgp_global_peer_group_af_config_14.cfg",
         )
+
+    def test_vyos_bgp_global_bestpath_multipath_relax_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    bgp_params=dict(bestpath=dict(as_path="multipath-relax")),
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set protocols bgp parameters bestpath as-path multipath-relax",
+                "set protocols bgp system-as 65536",
+            ],
+        )
+
+    def test_vyos_bgp_global_bestpath_multipath_relax_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp system-as 65536\n"
+                "set protocols bgp parameters bestpath as-path multipath-relax",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {"as_number": 65536, "bgp_params": {"bestpath": {"as_path": "multipath-relax"}}},
+        )

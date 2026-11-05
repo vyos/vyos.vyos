@@ -2,6 +2,9 @@
 minor_changes:
   - vyos_vrf, vyos_bgp_global - Add error message for missing as_number (T9427).
   - vyos_bgp_global - additional UAT/SIT test cases
+  - vyos_bgp_global - bgp_params.bestpath.as_path accepts multipath-relax
+    (protocols bgp parameters bestpath as-path multipath-relax). The same option is available
+    for the BGP instance of a VRF in vyos_vrf
 bugfixes:
   - vyos_bgp_global - setting log_neighbor_changes no longer also sets
     no-client-to-client-reflection, and no_client_to_client_reflection is now rendered on its own;
