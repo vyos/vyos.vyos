@@ -10,6 +10,7 @@ The module file for vyos_bgp_global
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -89,6 +90,10 @@ options:
           default_originate:
             description:
             - Send default route to this neighbor
+              (C(set protocols bgp neighbor <address> default-originate route-map <map>)).
+            - Deprecated. VyOS 1.4 and later only support default-originate per address family;
+              use M(vyos.vyos.vyos_bgp_address_family). On those versions the option is ignored,
+              with a warning.
             type: str
           description:
             description:
@@ -134,8 +139,25 @@ options:
             description: Neighbor's BGP port
             type: int
           remote_as:
-            description: Neighbor BGP AS number
-            type: int
+            description:
+              - Neighbor BGP AS number (1-4294967294), or C(external) or C(internal)
+                to accept any AS number other than, or equal to, the local one.
+            type: raw
+          interface:
+            description: Interface parameters, for a neighbor that is an interface (BGP unnumbered).
+            type: dict
+            suboptions:
+              v6only:
+                description: Enable BGP with IPv6 link-local addresses only.
+                type: dict
+                suboptions:
+                  peer_group:
+                    description: Peer group for this neighbor.
+                    type: str
+                  remote_as:
+                    description:
+                      - Neighbor BGP AS number (1-4294967294), or C(external) or C(internal).
+                    type: raw
           shutdown:
             description: Administratively shut down neighbor
             type: bool
@@ -215,9 +237,14 @@ options:
             type: dict
             suboptions:
               as_path:
-                description: AS-path attribute comparison parameters
+                description:
+                  - AS-path attribute comparison parameters.
+                  - C(confed) compares path lengths including confederation sets and sequences,
+                    C(ignore) ignores the AS-path length, and C(multipath-relax) allows multipath
+                    across paths received from different neighbouring ASes.
+                  - Only one of these can be set at a time.
                 type: str
-                choices: ['confed', 'ignore']
+                choices: ['confed', 'ignore', 'multipath-relax']
               compare_routerid:
                 description: Compare the router-id for identical EBGP paths
                 type: bool
@@ -263,9 +290,12 @@ options:
                 description: Default local preference
                 type: int
               no_ipv4_unicast:
-                description: |
-                  Deactivate IPv4 unicast for a peer by default
-                  Deprecated: Unavailable after 1.4
+                description:
+                  - Deactivate IPv4 unicast for a peer by default
+                    (C(set protocols bgp parameters default no-ipv4-unicast)).
+                  - Deprecated. VyOS 1.4 and later no longer have this command and always configure
+                    FRR with C(no bgp default ipv4-unicast). On those versions the option is
+                    ignored, with a warning.
                 type: bool
           deterministic_med:
             description: Compare MEDs between different peers in the same AS
@@ -371,8 +401,6 @@ EXAMPLES = """
         bestpath:
           as_path: "confed"
           compare_routerid: true
-        default:
-          no_ipv4_unicast: true
         router_id: "192.1.2.9"
         confederation:
           - peers: 20
@@ -425,7 +453,6 @@ EXAMPLES = """
 # set protocols bgp parameters confederation identifier '66'
 # set protocols bgp parameters confederation peers '20'
 # set protocols bgp parameters confederation peers '55'
-# set protocols bgp parameters default 'no-ipv4-unicast'
 # set protocols bgp parameters router-id '192.1.2.9'
 # set protocols bgp redistribute connected route-map 'map01'
 # set protocols bgp redistribute kernel metric '45'
@@ -462,9 +489,6 @@ EXAMPLES = """
 #                     "peers": 55
 #                 }
 #             ],
-#             "default": {
-#                 "no_ipv4_unicast": true
-#             },
 #             "router_id": "192.1.2.9"
 #         },
 #         "maximum_paths": [
@@ -554,7 +578,6 @@ EXAMPLES = """
 #         "set protocols bgp aggregate-address 192.0.2.0/24 summary-only",
 #         "set protocols bgp parameters bestpath as-path confed",
 #         "set protocols bgp parameters bestpath compare-routerid",
-#         "set protocols bgp parameters default no-ipv4-unicast",
 #         "set protocols bgp parameters router-id 192.1.2.9",
 #         "set protocols bgp parameters confederation peers 20",
 #         "set protocols bgp parameters confederation peers 55",
@@ -593,7 +616,6 @@ EXAMPLES = """
 # set protocols bgp parameters confederation identifier '66'
 # set protocols bgp parameters confederation peers '20'
 # set protocols bgp parameters confederation peers '55'
-# set protocols bgp parameters default 'no-ipv4-unicast'
 # set protocols bgp parameters router-id '192.1.2.9'
 # set protocols bgp redistribute connected route-map 'map01'
 # set protocols bgp redistribute kernel metric '45'
@@ -690,9 +712,6 @@ EXAMPLES = """
 #                     "peers": 55
 #                 }
 #             ],
-#             "default": {
-#                 "no_ipv4_unicast": true
-#             },
 #             "router_id": "192.1.2.9"
 #         },
 #         "maximum_paths": [
@@ -881,7 +900,6 @@ EXAMPLES = """
 # set protocols bgp parameters confederation identifier '66'
 # set protocols bgp parameters confederation peers '20'
 # set protocols bgp parameters confederation peers '55'
-# set protocols bgp parameters default 'no-ipv4-unicast'
 # set protocols bgp parameters router-id '192.1.2.9'
 # set protocols bgp redistribute connected route-map 'map01'
 # set protocols bgp redistribute kernel metric '45'
@@ -931,9 +949,6 @@ EXAMPLES = """
 #                     "peers": 55
 #                 }
 #             ],
-#             "default": {
-#                 "no_ipv4_unicast": true
-#             },
 #             "router_id": "192.1.2.9"
 #         },
 #         "maximum_paths": [
@@ -1027,7 +1042,6 @@ EXAMPLES = """
 # set protocols bgp parameters dampening max-suppress-time '20'
 # set protocols bgp parameters dampening re-use '60'
 # set protocols bgp parameters dampening start-suppress-time '5'
-# set protocols bgp parameters default 'no-ipv4-unicast'
 # set protocols bgp parameters distance global external '66'
 # set protocols bgp parameters distance global internal '20'
 # set protocols bgp parameters distance global local '10'
@@ -1084,7 +1098,6 @@ EXAMPLES = """
 # set protocols bgp parameters dampening max-suppress-time '20'
 # set protocols bgp parameters dampening re-use '60'
 # set protocols bgp parameters dampening start-suppress-time '5'
-# set protocols bgp parameters default 'no-ipv4-unicast'
 # set protocols bgp parameters distance global external '66'
 # set protocols bgp parameters distance global internal '20'
 # set protocols bgp parameters distance global local '10'
@@ -1103,9 +1116,6 @@ EXAMPLES = """
 #             "bestpath": {
 #                 "as_path": "confed",
 #                 "compare_routerid": true
-#             },
-#             "default": {
-#                 "no_ipv4_unicast": true
 #             },
 #             "distance": [
 #                 {
@@ -1177,7 +1187,6 @@ EXAMPLES = """
 # set protocols bgp parameters dampening max-suppress-time '20'
 # set protocols bgp parameters dampening re-use '60'
 # set protocols bgp parameters dampening start-suppress-time '5'
-# set protocols bgp parameters default 'no-ipv4-unicast'
 # set protocols bgp parameters distance global external '66'
 # set protocols bgp parameters distance global internal '20'
 # set protocols bgp parameters distance global local '10'
@@ -1198,9 +1207,6 @@ EXAMPLES = """
 #             "bestpath": {
 #                 "as_path": "confed",
 #                 "compare_routerid": true
-#             },
-#             "default": {
-#                 "no_ipv4_unicast": true
 #             },
 #             "distance": [
 #                 {
@@ -1282,8 +1288,6 @@ EXAMPLES = """
         bestpath:
           as_path: "confed"
           compare_routerid: true
-        default:
-          no_ipv4_unicast: true
       neighbor:
         - address: "192.0.2.43"
           disable_connected_check: true
@@ -1317,8 +1321,7 @@ EXAMPLES = """
 #         "set protocols bgp parameters distance global local 10",
 #         "set protocols bgp parameters distance global external 66",
 #         "set protocols bgp parameters bestpath as-path confed",
-#         "set protocols bgp parameters bestpath compare-routerid",
-#         "set protocols bgp parameters default no-ipv4-unicast"
+#         "set protocols bgp parameters bestpath compare-routerid"
 #     ]
 """
 

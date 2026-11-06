@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -937,7 +938,67 @@ class Bgp_globalTemplate(NetworkTemplate):
                 "neighbor": {
                     "{{ address }}": {
                         "address": "{{ address }}",
-                        "remote_as": "{{ num|int }}",
+                        "remote_as": "{{ num if num in ['external', 'internal'] else num|int }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "neighbor.interface.v6only.peer_group",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+(?P<as_num>\d+)
+                \s+neighbor
+                \s+(?P<address>\S+)
+                \s+interface
+                \s+v6only
+                \s+peer-group
+                \s+(?P<pg>\S+)\s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} interface v6only peer-group {{ neighbor.interface.v6only.peer_group }}",
+            "compval": "neighbor.interface.v6only.peer_group",
+            "result": {
+                "as_number": "{{ as_num }}",
+                "neighbor": {
+                    "{{ address }}": {
+                        "address": "{{ address }}",
+                        "interface": {"v6only": {"peer_group": "{{ pg }}"}},
+                    },
+                },
+            },
+        },
+        {
+            "name": "neighbor.interface.v6only.remote_as",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+(?P<as_num>\d+)
+                \s+neighbor
+                \s+(?P<address>\S+)
+                \s+interface
+                \s+v6only
+                \s+remote-as
+                \s+(?P<num>\S+)\s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "protocols bgp {{ as_number }} neighbor {{ neighbor.address }} interface v6only remote-as {{ neighbor.interface.v6only.remote_as }}",
+            "compval": "neighbor.interface.v6only.remote_as",
+            "result": {
+                "as_number": "{{ as_num }}",
+                "neighbor": {
+                    "{{ address }}": {
+                        "address": "{{ address }}",
+                        "interface": {
+                            "v6only": {
+                                "remote_as": "{{ num if num in ['external', 'internal'] else num|int }}",
+                            },
+                        },
                     },
                 },
             },
@@ -1321,7 +1382,7 @@ class Bgp_globalTemplate(NetworkTemplate):
                 \s+parameters
                 \s+bestpath
                 \s+as-path
-                \s+(?P<path>confed|ignore)
+                \s+(?P<path>confed|ignore|multipath-relax)
                 *$""",
                 re.VERBOSE,
             ),

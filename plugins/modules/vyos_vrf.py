@@ -8,6 +8,7 @@ The module file for vyos_vrf
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -180,8 +181,25 @@ options:
                         description: Neighbor's BGP port
                         type: int
                       remote_as:
-                        description: Neighbor BGP AS number
-                        type: int
+                        description:
+                          - Neighbor BGP AS number (1-4294967294), or C(external) or C(internal)
+                            to accept any AS number other than, or equal to, the local one.
+                        type: raw
+                      interface:
+                        description: Interface parameters, for a neighbor that is an interface (BGP unnumbered).
+                        type: dict
+                        suboptions:
+                          v6only:
+                            description: Enable BGP with IPv6 link-local addresses only.
+                            type: dict
+                            suboptions:
+                              peer_group:
+                                description: Peer group for this neighbor.
+                                type: str
+                              remote_as:
+                                description:
+                                  - Neighbor BGP AS number (1-4294967294), or C(external) or C(internal).
+                                type: raw
                       shutdown:
                         description: Administratively shut down neighbor
                         type: bool
@@ -232,9 +250,14 @@ options:
                         type: dict
                         suboptions:
                           as_path:
-                            description: AS-path attribute comparison parameters
+                            description:
+                              - AS-path attribute comparison parameters.
+                              - C(confed) compares path lengths including confederation sets and sequences,
+                                C(ignore) ignores the AS-path length, and C(multipath-relax) allows multipath
+                                across paths received from different neighbouring ASes.
+                              - Only one of these can be set at a time.
                             type: str
-                            choices: ['confed', 'ignore']
+                            choices: ['confed', 'ignore', 'multipath-relax']
                           compare_routerid:
                             description: Compare the router-id for identical EBGP paths
                             type: bool
