@@ -510,3 +510,20 @@ class TestVyosBgpglobalModule(TestVyosModule):
             self.execute_module(changed=False)["parsed"],
             {"as_number": 65536, "neighbor": [{"address": "192.0.2.1", "remote_as": "external"}]},
         )
+
+    def test_vyos_bgp_global_interface_v6only_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp 65536 neighbor eth1 interface v6only remote-as external",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {
+                "as_number": 65536,
+                "neighbor": [
+                    {"address": "eth1", "interface": {"v6only": {"remote_as": "external"}}},
+                ],
+            },
+        )

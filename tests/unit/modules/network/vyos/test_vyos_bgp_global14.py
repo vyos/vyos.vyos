@@ -583,3 +583,51 @@ class TestVyosBgpglobalModule(TestVyosModule):
                 "set protocols bgp parameters bestpath as-path multipath-relax",
             ],
         )
+
+    def test_vyos_bgp_global_interface_v6only_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    neighbor=[
+                        dict(
+                            address="eth1",
+                            interface=dict(
+                                v6only=dict(remote_as="external", peer_group="RR-CLIENTS"),
+                            ),
+                        ),
+                    ],
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set protocols bgp neighbor eth1 interface v6only peer-group RR-CLIENTS",
+                "set protocols bgp neighbor eth1 interface v6only remote-as external",
+                "set protocols bgp system-as 65536",
+            ],
+        )
+
+    def test_vyos_bgp_global_interface_v6only_replaced(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    neighbor=[
+                        dict(address="eth1", interface=dict(v6only=dict(remote_as=65002))),
+                        dict(address="RR-CLIENTS", peer_group=True, remote_as="external"),
+                    ],
+                ),
+                state="replaced",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=[
+                "delete protocols bgp neighbor eth1 interface v6only peer-group RR-CLIENTS",
+                "set protocols bgp neighbor eth1 interface v6only remote-as 65002",
+            ],
+            filename="vyos_bgp_global_v6only_config_14.cfg",
+        )

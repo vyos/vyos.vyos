@@ -143,6 +143,21 @@ options:
               - Neighbor BGP AS number (1-4294967294), or C(external) or C(internal)
                 to accept any AS number other than, or equal to, the local one.
             type: raw
+          interface:
+            description: Interface parameters, for a neighbor that is an interface (BGP unnumbered).
+            type: dict
+            suboptions:
+              v6only:
+                description: Enable BGP with IPv6 link-local addresses only.
+                type: dict
+                suboptions:
+                  peer_group:
+                    description: Peer group for this neighbor.
+                    type: str
+                  remote_as:
+                    description:
+                      - Neighbor BGP AS number (1-4294967294), or C(external) or C(internal).
+                    type: raw
           shutdown:
             description: Administratively shut down neighbor
             type: bool

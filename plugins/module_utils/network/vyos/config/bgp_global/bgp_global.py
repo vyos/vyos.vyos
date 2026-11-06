@@ -100,7 +100,9 @@ class Bgp_global(ResourceModule):
         for neighbor in self.want.get("neighbor", []):
             if "remote_as" in neighbor:
                 neighbor["remote_as"] = self._remote_as(neighbor["address"], neighbor["remote_as"])
-
+            v6only = neighbor.get("interface", {}).get("v6only", {})
+            if "remote_as" in v6only:
+                v6only["remote_as"] = self._remote_as(neighbor["address"], v6only["remote_as"])
         # Options without a CLI path on VyOS 1.4 and later are dropped from want, with a
         # warning. The version is only checked when one of them is set (no device access
         # otherwise, e.g. for state rendered).
@@ -221,6 +223,8 @@ class Bgp_global(ResourceModule):
             "neighbor.capability_orf",
             "neighbor.default_originate",
             "neighbor.description",
+            "neighbor.interface.v6only.peer_group",
+            "neighbor.interface.v6only.remote_as",
             "neighbor.disable_capability_negotiation",
             "neighbor.disable_connected_check",
             "neighbor.disable_send_community",
