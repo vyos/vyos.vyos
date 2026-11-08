@@ -4,14 +4,26 @@ Vyos Collection Release Notes
 
 .. contents:: Topics
 
+v6.2.0
+======
+
+Release Summary
+---------------
+
+This is the 6.2.0 release of vyos.vyos collection. This release raises the minimum supported ansible-core version to 2.16.0 and resolves sanity test and documentation issues raised during Red Hat Automation Hub certification; it contains no functional changes and includes all new modules, features and bugfixes from 6.1.0, which was released on Ansible Galaxy only.
+
+Removed Features (previously deprecated)
+----------------------------------------
+
+- vyos.vyos - support for ansible-core 2.15 has been dropped; the minimum supported ansible-core version is now 2.16.0.
+
 v6.1.0
 ======
 
 Release Summary
 ---------------
 
-This is the 6.1.0 release vyos.vyos collection. This release adds new VyOS resource module capabilities across configuration management, networking, security, high availability, NAT, VPN, VRF, and file management. It also introduces enhanced vyos_config workflows including enforce mode, commit-confirm, configurable password filtering, and full configuration replacement.
-Numerous bug fixes improve configuration parsing and performance, firewall and interface handling, user management, VLAN cleanup, logging compatibility, and BGP/OSPF/route-map processing. Additional unit test coverage has been added for LLDP interfaces, VLANs, and resource module template performance.
+This is the 6.1.0 release vyos.vyos collection. This release adds new VyOS resource module capabilities across configuration management, networking, security, high availability, NAT, VPN, VRF, and file management. It also introduces enhanced vyos_config workflows including enforce mode, commit-confirm, configurable password filtering, and full configuration replacement. Numerous bug fixes improve configuration parsing and performance, firewall and interface handling, user management, VLAN cleanup, logging compatibility, and BGP/OSPF/route-map processing. Additional unit test coverage has been added for LLDP interfaces, VLANs, and resource module template performance.
 
 Minor Changes
 -------------
