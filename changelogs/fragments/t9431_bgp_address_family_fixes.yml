@@ -1,0 +1,10 @@
+---
+minor_changes:
+  - vyos_bgp_address_family - neighbor address families accept ipv4-vpn and ipv6-vpn next to ipv4
+    and ipv6 (protocols bgp neighbor <address> address-family ipv4-vpn|ipv6-vpn), for example for
+    route-reflector-client and nexthop-self on an L3VPN route reflector. They need VyOS 1.4 or later;
+    older versions fail with a clear message.
+bugfixes:
+  - vyos_bgp_address_family - a neighbor address family other than unicast or VPN on the device,
+    such as ipv4-labeled-unicast, no longer makes the module fail; before, it was read as
+    afi ipv4-labeled, which the argument spec rejected.

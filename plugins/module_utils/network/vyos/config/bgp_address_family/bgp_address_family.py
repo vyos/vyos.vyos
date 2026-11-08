@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -89,6 +90,21 @@ class Bgp_address_family(ResourceModule):
         """
         wantd = {}
         haved = {}
+
+        # The VPN address families (ipv4-vpn, ipv6-vpn) only exist on VyOS 1.4 and later.
+        # The version is only checked when one of them is used.
+        vpn = sorted(
+            {
+                af["afi"]
+                for neighbor in self.want.get("neighbors", [])
+                for af in neighbor.get("address_family", [])
+                if af.get("afi", "").endswith("-vpn")
+            },
+        )
+        if vpn and LooseVersion(get_os_version(self._module)) < LooseVersion("1.4"):
+            self._module.fail_json(
+                msg="address family {0} needs VyOS 1.4 or later".format(", ".join(vpn)),
+            )
 
         if (
             self.want.get("as_number") == self.have.get("as_number")
