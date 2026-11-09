@@ -147,8 +147,6 @@ def _tmplt_bgp_af_neighbor_delete(config_data):
     elif config_data.get("capability"):
         command += " capability"
     elif config_data.get("default_originate"):
-        if config_data["default_originate"] is not True:
-            command += " route-map {default_originate}".format(**config_data)
         command += " default-originate"
     elif config_data.get("maximum_prefix"):
         command += " maximum-prefix"
@@ -199,7 +197,9 @@ def _tmplt_bgp_af_neighbor(config_data):
         elif config_data["capability"].get("orf"):
             command += " prefix-list {orf}".format(**config_data["capability"])
     elif config_data.get("default_originate"):
-        command += " default-originate route-map {default_originate}".format(**config_data)
+        command += " default-originate"
+        if config_data["default_originate"] is not True:
+            command += " route-map {default_originate}".format(**config_data)
     elif config_data.get("maximum_prefix"):
         command += " maximum-prefix {maximum_prefix}".format(**config_data)
     elif config_data.get("nexthop_local"):
