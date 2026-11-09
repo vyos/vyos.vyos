@@ -256,6 +256,18 @@ class Bgp_address_family(ResourceModule):
         hneigh = have.get("neighbors", {})
         for name, entry in wneigh.items():
             for afi, af_entry in entry.get("address_family").items():
+                if set(af_entry) == {"afi"} and not hneigh.get(name, {}).get(
+                    "address_family",
+                    {},
+                ).get(afi):
+                    self.addcmd(
+                        {
+                            "as_number": want["as_number"],
+                            "neighbors": {"neighbor_address": name, "address_family": {"afi": afi}},
+                        },
+                        "neighbors.address_family",
+                        False,
+                    )
                 for k, val in af_entry.items():
                     w = {
                         "as_number": want["as_number"],
@@ -300,7 +312,18 @@ class Bgp_address_family(ResourceModule):
                 continue
 
             for hafi, haf_entry in entry.get("address_family").items():
-                # remove surplus configs for given neighbor - replace and overridden
+                if set(haf_entry) == {"afi"} and hafi not in wneigh[name].get("address_family", {}):
+                    self.addcmd(
+                        {
+                            "as_number": have["as_number"],
+                            "neighbors": {
+                                "neighbor_address": name,
+                                "address_family": {"afi": hafi},
+                            },
+                        },
+                        "neighbors.address_family",
+                        True,
+                    )
                 for k, val in haf_entry.items():
                     h = {
                         "as_number": have["as_number"],

@@ -8,3 +8,8 @@ bugfixes:
   - vyos_bgp_address_family - a neighbor address family other than unicast or VPN on the device,
     such as ipv4-labeled-unicast, no longer makes the module fail; before, it was read as
     afi ipv4-labeled, which the argument spec rejected.
+  - vyos_bgp_address_family - a neighbor address family without options (afi only) activates the
+    neighbor in that family (protocols bgp neighbor <address> address-family <afi>); before, it
+    rendered nothing, so on VyOS 1.4 and later, where FRR always has "no bgp default
+    ipv4-unicast", such a neighbor carried no routes. With state replaced or overridden, a family
+    without options on the device that the configuration no longer lists is now deleted.
