@@ -141,8 +141,12 @@ options:
                     type: str
                     choices: ['send', 'receive']
               default_originate:
-                description: Send default route to this neighbor
-                type: str
+                description:
+                  - Send a default route to this neighbor.
+                  - C(true) for C(default-originate), or a route-map name for
+                    C(default-originate route-map <name>), which only originates the default route
+                    when the route map matches.
+                type: raw
               distribute_list:
                 description:  Access-list to filter route updates to/from this neighbor.
                 type: list

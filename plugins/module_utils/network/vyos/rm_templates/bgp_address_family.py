@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -146,6 +147,8 @@ def _tmplt_bgp_af_neighbor_delete(config_data):
     elif config_data.get("capability"):
         command += " capability"
     elif config_data.get("default_originate"):
+        if config_data["default_originate"] is not True:
+            command += " route-map {default_originate}".format(**config_data)
         command += " default-originate"
     elif config_data.get("maximum_prefix"):
         command += " maximum-prefix"
@@ -906,8 +909,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                 \s+address-family
                 \s+(?P<afi>\S+)-unicast
                 \s+default-originate
-                \s+route-map
-                \s+(?P<map>\S+)\s*$""",
+                (?:\s+route-map\s+(?P<map>\S+))?\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor,
@@ -921,7 +923,7 @@ class Bgp_address_familyTemplate(NetworkTemplate):
                         "address_family": {
                             "{{ afi }}": {
                                 "afi": "{{ afi }}",
-                                "default_originate": "{{ map }}",
+                                "default_originate": "{{ map if map is defined else True }}",
                             },
                         },
                     },

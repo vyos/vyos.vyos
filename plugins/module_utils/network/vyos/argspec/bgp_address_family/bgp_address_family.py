@@ -116,7 +116,7 @@ class Bgp_address_familyArgs(object):  # pylint: disable=R0903
                                         },
                                     },
                                 },
-                                "default_originate": {"type": "str"},
+                                "default_originate": {"type": "raw"},
                                 "distribute_list": {
                                     "type": "list",
                                     "elements": "dict",

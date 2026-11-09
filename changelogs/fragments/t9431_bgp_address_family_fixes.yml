@@ -13,3 +13,7 @@ bugfixes:
     rendered nothing, so on VyOS 1.4 and later, where FRR always has "no bgp default
     ipv4-unicast", such a neighbor carried no routes. With state replaced or overridden, a family
     without options on the device that the configuration no longer lists is now deleted.
+  - vyos_bgp_address_family - neighbor default_originate accepts true for a plain default-originate,
+    next to a route-map name for default-originate route-map <name>; before, only the route-map form
+    existed, true rendered "default-originate route-map True", and a plain default-originate on the
+    device was not read back. Changing from a route map to the plain form now removes the route map.

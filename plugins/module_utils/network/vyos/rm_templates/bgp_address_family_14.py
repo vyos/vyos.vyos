@@ -208,7 +208,9 @@ def _tmplt_bgp_af_neighbor(config_data):
         elif config_data["capability"].get("orf"):
             command += " prefix-list {orf}".format(**config_data["capability"])
     elif config_data.get("default_originate"):
-        command += " default-originate route-map {default_originate}".format(**config_data)
+        command += " default-originate"
+        if config_data["default_originate"] is not True:
+            command += " route-map {default_originate}".format(**config_data)
     elif config_data.get("maximum_prefix"):
         command += " maximum-prefix {maximum_prefix}".format(**config_data)
     elif config_data.get("nexthop_local"):
@@ -915,8 +917,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+address-family
                 \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+default-originate
-                \s+route-map
-                \s+(?P<map>\S+)\s*$""",
+                (?:\s+route-map\s+(?P<map>\S+))?\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor,
@@ -930,7 +931,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                         "address_family": {
                             "{{ afi }}": {
                                 "afi": "{{ afi }}",
-                                "default_originate": "{{ map }}",
+                                "default_originate": "{{ map if map is defined else True }}",
                             },
                         },
                     },

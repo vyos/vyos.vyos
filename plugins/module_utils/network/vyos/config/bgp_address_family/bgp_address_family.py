@@ -93,6 +93,22 @@ class Bgp_address_family(ResourceModule):
 
         # The VPN address families (ipv4-vpn, ipv6-vpn) only exist on VyOS 1.4 and later.
         # The version is only checked when one of them is used.
+        # default_originate is true (default-originate) or a route-map name
+        # (default-originate route-map <name>); false means not configured.
+        for neighbor in self.want.get("neighbors", []):
+            for af in neighbor.get("address_family", []):
+                value = af.get("default_originate")
+                if value is False:
+                    af.pop("default_originate")
+                elif (
+                    value is not None
+                    and value is not True
+                    and not (isinstance(value, str) and value)
+                ):
+                    self._module.fail_json(
+                        msg="neighbor {0}: default_originate must be true or a route-map name, "
+                        "got {1!r}".format(neighbor["neighbor_address"], value),
+                    )
         vpn = sorted(
             {
                 af["afi"]
@@ -290,6 +306,15 @@ class Bgp_address_family(ResourceModule):
                                         },
                                     },
                                 }
+                    # from default-originate route-map <name> to plain default-originate:
+                    # the route map has to be deleted, setting the plain form keeps it
+                    if (
+                        k == "default_originate"
+                        and val is True
+                        and isinstance(h.get("neighbors", {}).get("address_family", {}).get(k), str)
+                    ):
+                        self.addcmd(h, "neighbors.default_originate", True)
+
                     self.compare(
                         parsers=parsers,
                         want=w,

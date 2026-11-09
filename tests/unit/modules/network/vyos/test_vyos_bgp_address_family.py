@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -44,13 +45,13 @@ class TestVyosBgpafModule13(TestVyosModule):
         )
         self.execute_show_command = self.mock_execute_show_command.start()
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_address_family.bgp_address_family.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_address_family.bgp_address_family.get_os_version",
         )
         self.test_version = "1.2"
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = self.test_version
         self.mock_facts_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family.get_os_version",
         )
         self.get_facts_os_version = self.mock_facts_get_os_version.start()
         self.get_facts_os_version.return_value = self.test_version
@@ -614,6 +615,26 @@ class TestVyosBgpafModule13(TestVyosModule):
         }
         self.assertEqual(sorted(gather_list), sorted(result["gathered"]))
 
+    def test_vyos_bgp_af_neighbor_default_originate_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp 65536 neighbor 192.0.2.1 address-family ipv4-unicast default-originate",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {
+                "as_number": 65536,
+                "neighbors": [
+                    {
+                        "neighbor_address": "192.0.2.1",
+                        "address_family": [{"afi": "ipv4", "default_originate": True}],
+                    },
+                ],
+            },
+        )
+
 
 class TestVyosBgpafOpsModule13(TestVyosModule):
     module = vyos_bgp_address_family
@@ -631,13 +652,13 @@ class TestVyosBgpafOpsModule13(TestVyosModule):
         )
         self.execute_show_command = self.mock_execute_show_command.start()
         self.mock_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_address_family.bgp_address_family.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.config.bgp_address_family.bgp_address_family.get_os_version",
         )
         self.test_version = "1.2"
         self.get_os_version = self.mock_get_os_version.start()
         self.get_os_version.return_value = self.test_version
         self.mock_facts_get_os_version = patch(
-            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family.get_os_version"
+            "ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.bgp_address_family.bgp_address_family.get_os_version",
         )
         self.get_facts_os_version = self.mock_facts_get_os_version.start()
         self.get_facts_os_version.return_value = self.test_version
