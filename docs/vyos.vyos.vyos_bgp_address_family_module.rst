@@ -432,10 +432,13 @@ Parameters
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
                                     <li>ipv4</li>
                                     <li>ipv6</li>
+                                    <li>ipv4-vpn</li>
+                                    <li>ipv6-vpn</li>
                         </ul>
                 </td>
                 <td>
-                        <div>BGP neighbor parameters.</div>
+                        <div>Address family of the neighbor.</div>
+                        <div><code>ipv4</code> and <code>ipv6</code> are the unicast address families (<code>ipv4-unicast</code>, <code>ipv6-unicast</code>), <code>ipv4-vpn</code> and <code>ipv6-vpn</code> the L3VPN ones.</div>
                 </td>
             </tr>
             <tr>
@@ -640,13 +643,14 @@ Parameters
                     <b>default_originate</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
-                        <span style="color: purple">string</span>
+                        <span style="color: purple">raw</span>
                     </div>
                 </td>
                 <td>
                 </td>
                 <td>
-                        <div>Send default route to this neighbor</div>
+                        <div>Send a default route to this neighbor.</div>
+                        <div><code>true</code> for <code>default-originate</code>, or a route-map name for <code>default-originate route-map &lt;name&gt;</code>, which only originates the default route when the route map matches.</div>
                 </td>
             </tr>
             <tr>

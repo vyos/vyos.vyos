@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -19,6 +20,17 @@ import re
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.network_template import (
     NetworkTemplate,
 )
+
+
+def _afi_cli(afi):
+    # ipv4/ipv6 are the unicast families; the VPN families are used as they are
+    return afi if afi.endswith("-vpn") else afi + "-unicast"
+
+
+def _tmplt_bgp_af_neighbor_afi(config_data):
+    return "protocols bgp neighbor {neighbor_address} address-family ".format(
+        **config_data["neighbors"],
+    ) + _afi_cli(config_data["neighbors"]["address_family"]["afi"])
 
 
 def _tmplt_bgp_af_aggregate_address(config_data):
@@ -66,7 +78,7 @@ def _tmplt_bgp_af_redistribute_delete(config_data):
 
 def _tmplt_bgp_af_neighbor_distribute_list(config_data):
     command = []
-    afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
+    afi = _afi_cli(config_data["neighbors"]["address_family"]["afi"])
     cmd = "protocols bgp neighbor ".format(**config_data)
     cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
@@ -79,7 +91,7 @@ def _tmplt_bgp_af_neighbor_distribute_list(config_data):
 
 def _tmplt_bgp_af_neighbor_route_map(config_data):
     command = []
-    afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
+    afi = _afi_cli(config_data["neighbors"]["address_family"]["afi"])
     cmd = "protocols bgp neighbor ".format(**config_data)
     cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
@@ -92,7 +104,7 @@ def _tmplt_bgp_af_neighbor_route_map(config_data):
 
 def _tmplt_bgp_af_neighbor_prefix_list(config_data):
     command = []
-    afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
+    afi = _afi_cli(config_data["neighbors"]["address_family"]["afi"])
     cmd = "protocols bgp neighbor ".format(**config_data)
     cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
@@ -105,7 +117,7 @@ def _tmplt_bgp_af_neighbor_prefix_list(config_data):
 
 def _tmplt_bgp_af_neighbor_filter_list(config_data):
     command = []
-    afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
+    afi = _afi_cli(config_data["neighbors"]["address_family"]["afi"])
     cmd = "protocols bgp neighbor ".format(**config_data)
     cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
@@ -118,7 +130,7 @@ def _tmplt_bgp_af_neighbor_filter_list(config_data):
 
 def _tmplt_bgp_af_neighbor_attribute(config_data):
     command = []
-    afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
+    afi = _afi_cli(config_data["neighbors"]["address_family"]["afi"])
     cmd = "protocols bgp neighbor ".format(**config_data)
     cmd += "{neighbor_address} address-family ".format(**config_data["neighbors"])
     config_data = config_data["neighbors"]["address_family"]
@@ -131,7 +143,7 @@ def _tmplt_bgp_af_neighbor_attribute(config_data):
 
 
 def _tmplt_bgp_af_neighbor_delete(config_data):
-    afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
+    afi = _afi_cli(config_data["neighbors"]["address_family"]["afi"])
     command = "protocols bgp ".format(**config_data)
     command += (
         "neighbor {neighbor_address} address-family ".format(**config_data["neighbors"]) + afi
@@ -179,7 +191,7 @@ def _tmplt_bgp_af_neighbor_delete(config_data):
 
 
 def _tmplt_bgp_af_neighbor(config_data):
-    afi = config_data["neighbors"]["address_family"]["afi"] + "-unicast"
+    afi = _afi_cli(config_data["neighbors"]["address_family"]["afi"])
     command = "protocols bgp ".format(**config_data)
     command += (
         "neighbor {neighbor_address} address-family ".format(**config_data["neighbors"]) + afi
@@ -196,7 +208,9 @@ def _tmplt_bgp_af_neighbor(config_data):
         elif config_data["capability"].get("orf"):
             command += " prefix-list {orf}".format(**config_data["capability"])
     elif config_data.get("default_originate"):
-        command += " default-originate route-map {default_originate}".format(**config_data)
+        command += " default-originate"
+        if config_data["default_originate"] is not True:
+            command += " route-map {default_originate}".format(**config_data)
     elif config_data.get("maximum_prefix"):
         command += " maximum-prefix {maximum_prefix}".format(**config_data)
     elif config_data.get("nexthop_local"):
@@ -624,11 +638,11 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
-                *$""",
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
+                \s*$""",
                 re.VERBOSE,
             ),
-            "setval": "protocols bgp neighbor {{ neighbors.neighbor_address }} address-family {{ neighbors.address_family.afi }}-unicast",
+            "setval": _tmplt_bgp_af_neighbor_afi,
             "compval": "neighbors",
             "result": {
                 "as_number": "{{ as_num }}",
@@ -654,7 +668,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+allowas-in
                 \s+number
                 \s+(?P<num>\S+)\s*$""",
@@ -688,7 +702,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+as-override
                 *$""",
                 re.VERBOSE,
@@ -721,7 +735,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+attribute-unchanged
                 \s+(?P<val>as-path)
                 *$""",
@@ -757,7 +771,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+attribute-unchanged
                 \s+(?P<val>med)
                 *$""",
@@ -793,7 +807,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+attribute-unchanged
                 \s+(?P<val>next-hop)
                 *$""",
@@ -829,7 +843,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+capability
                 \s+dynamic
                 *$""",
@@ -865,7 +879,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+capability
                 \s+prefix-list
                 \s+(?P<orf>\S+)\s*$""",
@@ -901,10 +915,9 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+default-originate
-                \s+route-map
-                \s+(?P<map>\S+)\s*$""",
+                (?:\s+route-map\s+(?P<map>\S+))?\s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_af_neighbor,
@@ -918,7 +931,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                         "address_family": {
                             "{{ afi }}": {
                                 "afi": "{{ afi }}",
-                                "default_originate": "{{ map }}",
+                                "default_originate": "{{ map if map is defined else True }}",
                             },
                         },
                     },
@@ -935,7 +948,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+distribute-list
                 \s+(?P<action>export|import)
                 \s+(?P<list>\d+)
@@ -975,7 +988,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+prefix-list
                 \s+(?P<action>export|import)
                 \s+(?P<list>\S+)\s*$""",
@@ -1014,7 +1027,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+filter-list
                 \s+(?P<action>export|import)
                 \s+(?P<list>\S+)\s*$""",
@@ -1053,7 +1066,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+maximum-prefix
                 \s+(?P<num>\S+)\s*$""",
                 re.VERBOSE,
@@ -1086,7 +1099,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+nexthop-local
                 *$""",
                 re.VERBOSE,
@@ -1119,7 +1132,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+nexthop-self
                 *$""",
                 re.VERBOSE,
@@ -1152,7 +1165,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+peer-group
                 \s+(?P<name>\S+)\s*$""",
                 re.VERBOSE,
@@ -1185,7 +1198,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+remove-private-as
                 *$""",
                 re.VERBOSE,
@@ -1218,7 +1231,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+route-map
                 \s+(?P<action>export|import)
                 \s+(?P<map>\S+)\s*$""",
@@ -1257,7 +1270,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+route-reflector-client
                 *$""",
                 re.VERBOSE,
@@ -1290,7 +1303,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+route-server-client
                 *$""",
                 re.VERBOSE,
@@ -1323,7 +1336,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+soft-reconfiguration
                 \s+inbound
                 *$""",
@@ -1357,7 +1370,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+unsuppress-map
                 \s+(?P<map>\S+)\s*$""",
                 re.VERBOSE,
@@ -1390,7 +1403,7 @@ class Bgp_address_familyTemplate14(NetworkTemplate):
                 \s+neighbor
                 \s+(?P<address>\S+)
                 \s+address-family
-                \s+(?P<afi>\S+)-unicast
+                \s+(?P<afi>ipv4-vpn|ipv6-vpn|ipv4|ipv6)(?:-unicast)?
                 \s+weight
                 \s+(?P<num>\S+)\s*$""",
                 re.VERBOSE,

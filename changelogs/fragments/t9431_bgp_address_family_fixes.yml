@@ -1,0 +1,19 @@
+---
+minor_changes:
+  - vyos_bgp_address_family - neighbor address families accept ipv4-vpn and ipv6-vpn next to ipv4
+    and ipv6 (protocols bgp neighbor <address> address-family ipv4-vpn|ipv6-vpn), for example for
+    route-reflector-client and nexthop-self on an L3VPN route reflector. They need VyOS 1.4 or later;
+    older versions fail with a clear message.
+bugfixes:
+  - vyos_bgp_address_family - a neighbor address family other than unicast or VPN on the device,
+    such as ipv4-labeled-unicast, no longer makes the module fail; before, it was read as
+    afi ipv4-labeled, which the argument spec rejected.
+  - vyos_bgp_address_family - a neighbor address family without options (afi only) activates the
+    neighbor in that family (protocols bgp neighbor <address> address-family <afi>); before, it
+    rendered nothing, so on VyOS 1.4 and later, where FRR always has "no bgp default
+    ipv4-unicast", such a neighbor carried no routes. With state replaced or overridden, a family
+    without options on the device that the configuration no longer lists is now deleted.
+  - vyos_bgp_address_family - neighbor default_originate accepts true for a plain default-originate,
+    next to a route-map name for default-originate route-map <name>; before, only the route-map form
+    existed, true rendered "default-originate route-map True", and a plain default-originate on the
+    device was not read back. Changing from a route map to the plain form now removes the route map.

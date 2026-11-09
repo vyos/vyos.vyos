@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -89,6 +90,37 @@ class Bgp_address_family(ResourceModule):
         """
         wantd = {}
         haved = {}
+
+        # The VPN address families (ipv4-vpn, ipv6-vpn) only exist on VyOS 1.4 and later.
+        # The version is only checked when one of them is used.
+        # default_originate is true (default-originate) or a route-map name
+        # (default-originate route-map <name>); false means not configured.
+        for neighbor in self.want.get("neighbors", []):
+            for af in neighbor.get("address_family", []):
+                value = af.get("default_originate")
+                if value is False:
+                    af.pop("default_originate")
+                elif (
+                    value is not None
+                    and value is not True
+                    and not (isinstance(value, str) and value)
+                ):
+                    self._module.fail_json(
+                        msg="neighbor {0}: default_originate must be true or a route-map name, "
+                        "got {1!r}".format(neighbor["neighbor_address"], value),
+                    )
+        vpn = sorted(
+            {
+                af["afi"]
+                for neighbor in self.want.get("neighbors", [])
+                for af in neighbor.get("address_family", [])
+                if af.get("afi", "").endswith("-vpn")
+            },
+        )
+        if vpn and LooseVersion(get_os_version(self._module)) < LooseVersion("1.4"):
+            self._module.fail_json(
+                msg="address family {0} needs VyOS 1.4 or later".format(", ".join(vpn)),
+            )
 
         if (
             self.want.get("as_number") == self.have.get("as_number")
@@ -240,6 +272,18 @@ class Bgp_address_family(ResourceModule):
         hneigh = have.get("neighbors", {})
         for name, entry in wneigh.items():
             for afi, af_entry in entry.get("address_family").items():
+                if set(af_entry) == {"afi"} and not hneigh.get(name, {}).get(
+                    "address_family",
+                    {},
+                ).get(afi):
+                    self.addcmd(
+                        {
+                            "as_number": want["as_number"],
+                            "neighbors": {"neighbor_address": name, "address_family": {"afi": afi}},
+                        },
+                        "neighbors.address_family",
+                        False,
+                    )
                 for k, val in af_entry.items():
                     w = {
                         "as_number": want["as_number"],
@@ -262,6 +306,15 @@ class Bgp_address_family(ResourceModule):
                                         },
                                     },
                                 }
+                    # from default-originate route-map <name> to plain default-originate:
+                    # the route map has to be deleted, setting the plain form keeps it
+                    if (
+                        k == "default_originate"
+                        and val is True
+                        and isinstance(h.get("neighbors", {}).get("address_family", {}).get(k), str)
+                    ):
+                        self.addcmd(h, "neighbors.default_originate", True)
+
                     self.compare(
                         parsers=parsers,
                         want=w,
@@ -284,7 +337,18 @@ class Bgp_address_family(ResourceModule):
                 continue
 
             for hafi, haf_entry in entry.get("address_family").items():
-                # remove surplus configs for given neighbor - replace and overridden
+                if set(haf_entry) == {"afi"} and hafi not in wneigh[name].get("address_family", {}):
+                    self.addcmd(
+                        {
+                            "as_number": have["as_number"],
+                            "neighbors": {
+                                "neighbor_address": name,
+                                "address_family": {"afi": hafi},
+                            },
+                        },
+                        "neighbors.address_family",
+                        True,
+                    )
                 for k, val in haf_entry.items():
                     h = {
                         "as_number": have["as_number"],

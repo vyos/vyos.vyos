@@ -10,6 +10,7 @@ The module file for vyos_bgp_address_family
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -103,9 +104,12 @@ options:
             elements: dict
             suboptions:
               afi:
-                description: BGP neighbor parameters.
+                description:
+                  - Address family of the neighbor.
+                  - C(ipv4) and C(ipv6) are the unicast address families (C(ipv4-unicast), C(ipv6-unicast)),
+                    C(ipv4-vpn) and C(ipv6-vpn) the L3VPN ones.
                 type: str
-                choices: ['ipv4', 'ipv6']
+                choices: ['ipv4', 'ipv6', 'ipv4-vpn', 'ipv6-vpn']
               allowas_in:
                 description: Number of occurrences of AS number.
                 type: int
@@ -137,8 +141,12 @@ options:
                     type: str
                     choices: ['send', 'receive']
               default_originate:
-                description: Send default route to this neighbor
-                type: str
+                description:
+                  - Send a default route to this neighbor.
+                  - C(true) for C(default-originate), or a route-map name for
+                    C(default-originate route-map <name>), which only originates the default route
+                    when the route map matches.
+                type: raw
               distribute_list:
                 description:  Access-list to filter route updates to/from this neighbor.
                 type: list
