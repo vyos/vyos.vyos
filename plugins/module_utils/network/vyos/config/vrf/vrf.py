@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -101,6 +102,13 @@ class Vrf(ResourceModule):
         wantd = deepcopy(self.want)
         haved = deepcopy(self.have)
 
+        # bind_to_all: omitted keeps the device's setting with merged, and removes it with
+        # replaced and overridden; false only deletes a bind-to-all that the device has.
+        if self.state in ("merged", "replaced", "overridden", "rendered"):
+            if self.state in ("replaced", "overridden"):
+                wantd.setdefault("bind_to_all", False)
+            if wantd.get("bind_to_all") is False and not haved.get("bind_to_all"):
+                wantd.pop("bind_to_all")
         # if state is merged, merge want onto have and then compare
         if self.state in ["merged", "replaced"]:
 

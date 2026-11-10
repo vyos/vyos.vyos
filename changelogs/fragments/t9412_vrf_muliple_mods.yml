@@ -1,0 +1,6 @@
+---
+bugfixes:
+  - vyos_vrf - bind_to_all no longer defaults to false. With state merged, omitting it leaves the
+    device's setting as it is; before, every merge deleted an existing bind-to-all. With state
+    replaced or overridden, omitting it still removes it, and an explicit false only deletes a
+    bind-to-all that the device has (T9412).
