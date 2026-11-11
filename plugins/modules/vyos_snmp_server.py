@@ -10,6 +10,7 @@ The module file for vyos_snmp_server
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -160,6 +161,9 @@ options:
                 description: Specifies the type of notification between inform and trap
                 type: str
                 choices: ['inform', 'trap']
+              user:
+                description: Defines the username of the SNMPv3 user for this trap target.
+                type: str
           users:
             description: Defines username for authentication
             type: list

@@ -1,0 +1,12 @@
+---
+bugfixes:
+  - vyos_snmp_server - a trap target's community and port are rendered, as separate commands;
+    before, they were silently dropped (T9415).
+  - vyos_snmp_server - SNMPv3 trap-target port, protocol, type and user render with the trap
+    target's address; before, they rendered an invalid "service snmp v3 trap-target port X" (T9416).
+  - vyos_snmp_server - SNMPv3 trap-target authentication and privacy are rendered; before, they
+    were silently dropped.
+  - vyos_snmp_server - SNMPv3 trap-target port, protocol, type and user are read back as their
+    values; before, a device with an SNMPv3 trap-target port made the module fail.
+minor_changes:
+  - vyos_snmp_server - new option snmp_v3.trap_targets.user.

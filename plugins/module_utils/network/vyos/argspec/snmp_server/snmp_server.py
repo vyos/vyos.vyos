@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 #############################################
@@ -133,6 +134,7 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                                     "type": "str",
                                     "choices": ["inform", "trap"],
                                 },
+                                "user": {"type": "str"},
                             },
                         },
                         "users": {
