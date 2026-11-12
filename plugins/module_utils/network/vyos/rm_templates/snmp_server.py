@@ -111,11 +111,12 @@ def _tmplt_snmp_server_v3_user(config_data):
 def _tmplt_snmp_server_v3_views(config_data):
     config_data = config_data["snmp_v3"]["views"]
     command = "service snmp v3 view {view} oid {oid}".format(**config_data)
+    commands = []
     if "exclude" in config_data:
-        command += " exclude {exclude}".format(**config_data)
+        commands.append(command + " exclude {exclude}".format(**config_data))
     if "mask" in config_data:
-        command += " mask {mask}".format(**config_data)
-    return command
+        commands.append(command + " mask {mask}".format(**config_data))
+    return commands or command
 
 
 class Snmp_serverTemplate(NetworkTemplate):
@@ -553,8 +554,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\suser
                 \s+(?P<name>\S+)
-                \s+(?P<mode>mode\s\S+)?
-                $""",
+                \s+mode\s+(?P<mode>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "service snmp v3 user {{ snmp_v3.users.user }} mode {{ snmp_v3.users.mode }}",

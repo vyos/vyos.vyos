@@ -216,6 +216,7 @@ class Snmp_server(ResourceModule):
             hattrib = get_from_dict(hdict, attrib) or {}
             for key, entry in wattrib.items():
                 self._compare_snmp_v3_auth_privacy(entry, hattrib.get(key, {}), attrib)
+                have_oid = hattrib.get(key, {}).get("oid") if attrib == "views" else None
                 for k, v in entry.items():
                     if k != attribute_dict[attrib]:
                         h = {}
@@ -230,18 +231,22 @@ class Snmp_server(ResourceModule):
                                     },
                                 },
                             }
-                        self.compare(
-                            parsers=parsers,
-                            want={
-                                "snmp_v3": {
-                                    attrib: {
-                                        k: v,
-                                        attribute_dict[attrib]: entry[attribute_dict[attrib]],
-                                    },
+                            if attrib == "views" and k != "oid" and have_oid:
+                                h["snmp_v3"][attrib]["oid"] = have_oid
+                        w = {
+                            "snmp_v3": {
+                                attrib: {
+                                    k: v,
+                                    attribute_dict[attrib]: entry[attribute_dict[attrib]],
                                 },
                             },
-                            have=h,
-                        )
+                        }
+                        if attrib == "views" and k != "oid":
+                            w["snmp_v3"][attrib]["oid"] = entry.get("oid")
+                        self.compare(parsers=parsers, want=w, have=h)
+                # options left on the device are deleted below; keep the oid for their commands
+                if have_oid and hattrib.get(key) and set(hattrib[key]) - {"view", "oid"}:
+                    hattrib[key]["oid"] = have_oid
             # remove remaining items in have for replaced
             for key, entry in hattrib.items():
                 self._compare_snmp_v3_auth_privacy({}, entry, attrib)

@@ -630,3 +630,32 @@ class TestVyosSnmpServerModule(TestVyosModule):
             ],
             filename="vyos_snmp_server_trap_targets_config.cfg",
         )
+
+    def test_snmp_server_v3_user_mode_parsed(self):
+        set_module_args(
+            dict(running_config="set service snmp v3 user u1 mode 'ro'", state="parsed"),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {"snmp_v3": {"users": [{"user": "u1", "mode": "ro"}]}},
+        )
+
+    def test_snmp_server_v3_view_exclude_and_mask_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    snmp_v3=dict(
+                        views=[dict(view="v1", oid="1.3.6", exclude="1.3.6.1", mask="ff")],
+                    ),
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set service snmp v3 view v1 oid 1.3.6",
+                "set service snmp v3 view v1 oid 1.3.6 exclude 1.3.6.1",
+                "set service snmp v3 view v1 oid 1.3.6 mask ff",
+            ],
+        )

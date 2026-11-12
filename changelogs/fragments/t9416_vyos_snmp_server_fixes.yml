@@ -8,6 +8,14 @@ bugfixes:
     were silently dropped.
   - vyos_snmp_server - SNMPv3 trap-target port, protocol, type and user are read back as their
     values; before, a device with an SNMPv3 trap-target port made the module fail.
+  - vyos_snmp_server - an SNMPv3 user's mode is read back as its value; before, a device with an
+    SNMPv3 user mode made the module fail.
+  - vyos_snmp_server - an SNMPv3 view's exclude and mask render as separate commands; before, a
+    view with both rendered one invalid command.
+  - vyos_snmp_server - an SNMPv3 user's mode is read back as its value; before, a device with an
+    SNMPv3 user mode made the module fail.
+  - vyos_snmp_server - an SNMPv3 view's exclude and mask are rendered, as separate commands; before,
+    they were silently dropped.
 minor_changes:
   - vyos_snmp_server - new option snmp_v3.trap_targets.user.
   - vyos_snmp_server - new option trap_targets, a list of SNMPv2c trap targets (address, community,
