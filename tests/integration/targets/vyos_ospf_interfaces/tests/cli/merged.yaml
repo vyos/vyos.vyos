@@ -50,3 +50,61 @@
 
   always:
     - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge an interface exempt from passive-interface default, with an area
+      register: result
+      vyos.vyos.vyos_ospf_interfaces: &id_b9
+        config:
+          - name: eth1
+            address_family:
+              - afi: ipv4
+                passive: false
+                area: "0"
+              - afi: ipv6
+                area: "0.0.0.0"
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: ospf_interfaces
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set protocols ospf interface eth1 passive disable' in result.commands"
+          - "'set protocols ospf interface eth1 area 0' in result.commands"
+          - "'set protocols ospfv3 interface eth1 area 0.0.0.0' in result.commands"
+          - result.after == ansible_facts['network_resources']['ospf_interfaces']
+
+    - name: Merge an interface exempt from passive-interface default, with an area (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_ospf_interfaces: *id_b9
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+    - name: Make the exempted interface passive again
+      register: result
+      vyos.vyos.vyos_ospf_interfaces:
+        config:
+          - name: eth1
+            address_family:
+              - afi: ipv4
+                passive: true
+        state: merged
+
+    - assert:
+        that:
+          - result.commands == expected
+          - eth1_ipv4.passive == true
+      vars:
+        expected:
+          - delete protocols ospf interface eth1 passive disable
+          - set protocols ospf interface eth1 passive
+        eth1_ipv4: "{{ (result.after | selectattr('name', 'equalto', 'eth1') | first).address_family | selectattr('afi', 'equalto', 'ipv4') | first }}"
+
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  always:
+    - include_tasks: _remove_config.yaml

@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -537,3 +538,85 @@ class TestVyosOspfInterfacesModule14(TestVyosModule):
         result_list = self.sort_address_family(result["gathered"])
         given_list = self.sort_address_family(gathered_list)
         self.assertEqual(result_list, given_list)
+
+    def test_vyos_ospf_interfaces_passive_false_rendered(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth1",
+                        address_family=[
+                            dict(afi="ipv4", passive=False),
+                            dict(afi="ipv6", passive=False),
+                        ],
+                    ),
+                ],
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["rendered"],
+            ["set protocols ospf interface eth1 passive disable"],
+        )
+
+    def test_vyos_ospf_interfaces_passive_disable_to_passive(self):
+        set_module_args(
+            dict(
+                config=[dict(name="eth1", address_family=[dict(afi="ipv4", passive=True)])],
+                state="merged",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=[
+                "delete protocols ospf interface eth1 passive disable",
+                "set protocols ospf interface eth1 passive",
+            ],
+            sort=False,
+            filename="vyos_ospf_interfaces_passive_disable_config.cfg",
+        )
+
+    def test_vyos_ospf_interfaces_passive_disable_and_area_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols ospf interface eth1 passive disable\n"
+                "set protocols ospf interface eth1 area '0.0.0.1'\n"
+                "set protocols ospfv3 interface eth1 area '0'",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            [
+                {
+                    "name": "eth1",
+                    "address_family": [
+                        {"afi": "ipv4", "passive": False, "area": "0.0.0.1"},
+                        {"afi": "ipv6", "area": "0"},
+                    ],
+                },
+            ],
+        )
+
+    def test_vyos_ospf_interfaces_area_rendered(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth1",
+                        address_family=[
+                            dict(afi="ipv4", area="0"),
+                            dict(afi="ipv6", area="0.0.0.0"),
+                        ],
+                    ),
+                ],
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set protocols ospf interface eth1 area 0",
+                "set protocols ospfv3 interface eth1 area 0.0.0.0",
+            ],
+        )

@@ -10,6 +10,7 @@ The module file for vyos_ospf_interfaces
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -111,7 +112,15 @@ options:
           passive:
             description:
             - If True, disables forming adjacency.
+            - For C(ipv4), C(false) exempts the interface from C(passive-interface default)
+              (C(passive disable)). OSPFv3 has no such exemption, so for C(ipv6), C(false)
+              means the interface is not passive.
             type: bool
+          area:
+            description:
+            - OSPF area of the interface, as a number or in dotted-decimal notation.
+            - Supported on VyOS 1.4 and later.
+            type: str
   running_config:
     description:
     - This option is used only with state I(parsed).
