@@ -1,0 +1,30 @@
+---
+bugfixes:
+  - vyos_snmp_server - a trap target's community and port are rendered, as separate commands;
+    before, they were silently dropped (T9415).
+  - vyos_snmp_server - SNMPv3 trap-target port, protocol, type and user render with the trap
+    target's address; before, they rendered an invalid "service snmp v3 trap-target port X" (T9416).
+  - vyos_snmp_server - SNMPv3 trap-target authentication and privacy are rendered; before, they
+    were silently dropped.
+  - vyos_snmp_server - SNMPv3 trap-target port, protocol, type and user are read back as their
+    values; before, a device with an SNMPv3 trap-target port made the module fail.
+  - vyos_snmp_server - an SNMPv3 user's mode is read back as its value; before, a device with an
+    SNMPv3 user mode made the module fail.
+  - vyos_snmp_server - an SNMPv3 view's exclude and mask render as separate commands; before, a
+    view with both rendered one invalid command.
+  - vyos_snmp_server - an SNMPv3 user's mode is read back as its value; before, a device with an
+    SNMPv3 user mode made the module fail.
+  - vyos_snmp_server - an SNMPv3 view's exclude and mask are rendered, as separate commands; before,
+    they were silently dropped.
+minor_changes:
+  - vyos_snmp_server - new option snmp_v3.trap_targets.user.
+  - vyos_snmp_server - new option trap_targets, a list of SNMPv2c trap targets (address, community,
+    port); VyOS allows more than one, trap_target only allowed one (T9436).
+deprecated_features:
+  - vyos_snmp_server - the trap_target option is deprecated since 7.0.0 in favour of trap_targets,
+    and will be removed in version 8.0.0. It keeps working throughout 7.x, as a list of one trap
+    target, and is mutually exclusive with trap_targets.
+breaking_changes:
+  - vyos_snmp_server - the module's output (gathered, parsed, before and after) reports SNMPv2c trap
+    targets as the list trap_targets instead of the single trap_target, so that more than one trap
+    target on the device can be represented.

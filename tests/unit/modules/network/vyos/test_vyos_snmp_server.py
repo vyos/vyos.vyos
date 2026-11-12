@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -220,7 +221,12 @@ class TestVyosSnmpServerModule(TestVyosModule):
             "set service snmp description snmp_config",
             "set service snmp smux-peer peer1",
             "set service snmp trap-source 1.1.1.1",
-            "set service snmp trap-target 10.10.1.1",
+            "set service snmp trap-target 10.10.1.1 community switches",
+            "set service snmp trap-target 10.10.1.1 port 80",
+            "set service snmp v3 trap-target 20.12.1.1 auth type sha",
+            "set service snmp v3 trap-target 20.12.1.1 auth plaintext-password abc1234567",
+            "set service snmp v3 trap-target 20.12.1.1 privacy type aes",
+            "set service snmp v3 trap-target 20.12.1.1 privacy plaintext-password abc1234567",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -287,7 +293,12 @@ class TestVyosSnmpServerModule(TestVyosModule):
             "set service snmp description snmp_config",
             "set service snmp smux-peer peer1",
             "set service snmp trap-source 1.1.1.1",
-            "set service snmp trap-target 10.10.1.1",
+            "set service snmp trap-target 10.10.1.1 community switches",
+            "set service snmp trap-target 10.10.1.1 port 80",
+            "set service snmp v3 trap-target 20.12.1.1 auth type sha",
+            "set service snmp v3 trap-target 20.12.1.1 auth plaintext-password abc1234567",
+            "set service snmp v3 trap-target 20.12.1.1 privacy type aes",
+            "set service snmp v3 trap-target 20.12.1.1 privacy plaintext-password abc1234567",
             "delete service snmp location 'RDU, NC'",
         ]
 
@@ -356,7 +367,12 @@ class TestVyosSnmpServerModule(TestVyosModule):
             "set service snmp description snmp_config",
             "set service snmp smux-peer peer1",
             "set service snmp trap-source 1.1.1.1",
-            "set service snmp trap-target 10.10.1.1",
+            "set service snmp trap-target 10.10.1.1 community switches",
+            "set service snmp trap-target 10.10.1.1 port 80",
+            "set service snmp v3 trap-target 20.12.1.1 auth type sha",
+            "set service snmp v3 trap-target 20.12.1.1 auth plaintext-password abc1234567",
+            "set service snmp v3 trap-target 20.12.1.1 privacy type aes",
+            "set service snmp v3 trap-target 20.12.1.1 privacy plaintext-password abc1234567",
             "delete service snmp location 'RDU, NC'",
         ]
 
@@ -423,7 +439,12 @@ class TestVyosSnmpServerModule(TestVyosModule):
             "set service snmp description snmp_config",
             "set service snmp smux-peer peer1",
             "set service snmp trap-source 1.1.1.1",
-            "set service snmp trap-target 10.10.1.1",
+            "set service snmp trap-target 10.10.1.1 community switches",
+            "set service snmp trap-target 10.10.1.1 port 80",
+            "set service snmp v3 trap-target 20.12.1.1 auth type sha",
+            "set service snmp v3 trap-target 20.12.1.1 auth plaintext-password abc1234567",
+            "set service snmp v3 trap-target 20.12.1.1 privacy type aes",
+            "set service snmp v3 trap-target 20.12.1.1 privacy plaintext-password abc1234567",
         ]
         result = self.execute_module(changed=False)
         self.assertEqual(
@@ -475,7 +496,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                 ],
             },
             "trap_source": "1.1.1.1",
-            "trap_target": {"address": "10.10.1.1"},
+            "trap_targets": [{"address": "10.10.1.1"}],
         }
         self.assertEqual(parsed_list, result["parsed"])
 
@@ -516,3 +537,125 @@ class TestVyosSnmpServerModule(TestVyosModule):
             },
         }
         self.assertEqual(gathered_list, result["gathered"])
+
+    def test_snmp_server_v3_trap_target_options_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    snmp_v3=dict(
+                        trap_targets=[
+                            dict(
+                                address="192.0.2.20",
+                                port=1162,
+                                protocol="udp",
+                                type="inform",
+                                user="trapuser",
+                            ),
+                        ],
+                    ),
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set service snmp v3 trap-target 192.0.2.20 port 1162",
+                "set service snmp v3 trap-target 192.0.2.20 protocol udp",
+                "set service snmp v3 trap-target 192.0.2.20 type inform",
+                "set service snmp v3 trap-target 192.0.2.20 user trapuser",
+            ],
+        )
+
+    def test_snmp_server_v3_trap_target_options_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set service snmp v3 trap-target 192.0.2.20 port '1162'\n"
+                "set service snmp v3 trap-target 192.0.2.20 protocol 'udp'\n"
+                "set service snmp v3 trap-target 192.0.2.20 type 'inform'\n"
+                "set service snmp v3 trap-target 192.0.2.20 user 'trapuser'",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {
+                "snmp_v3": {
+                    "trap_targets": [
+                        {
+                            "address": "192.0.2.20",
+                            "port": 1162,
+                            "protocol": "udp",
+                            "type": "inform",
+                            "user": "trapuser",
+                        },
+                    ],
+                },
+            },
+        )
+
+    def test_snmp_server_trap_targets_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    trap_targets=[
+                        dict(address="192.0.2.10", community="public", port=1162),
+                        dict(address="192.0.2.11", community="private"),
+                    ],
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set service snmp trap-target 192.0.2.10 community public",
+                "set service snmp trap-target 192.0.2.10 port 1162",
+                "set service snmp trap-target 192.0.2.11 community private",
+            ],
+        )
+
+    def test_snmp_server_trap_targets_replaced(self):
+        set_module_args(
+            dict(
+                config=dict(trap_targets=[dict(address="192.0.2.10", community="public")]),
+                state="replaced",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=[
+                "delete service snmp trap-target 192.0.2.11",
+                "delete service snmp trap-target 192.0.2.10 port 1162",
+            ],
+            filename="vyos_snmp_server_trap_targets_config.cfg",
+        )
+
+    def test_snmp_server_v3_user_mode_parsed(self):
+        set_module_args(
+            dict(running_config="set service snmp v3 user u1 mode 'ro'", state="parsed"),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {"snmp_v3": {"users": [{"user": "u1", "mode": "ro"}]}},
+        )
+
+    def test_snmp_server_v3_view_exclude_and_mask_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    snmp_v3=dict(
+                        views=[dict(view="v1", oid="1.3.6", exclude="1.3.6.1", mask="ff")],
+                    ),
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set service snmp v3 view v1 oid 1.3.6",
+                "set service snmp v3 view v1 oid 1.3.6 exclude 1.3.6.1",
+                "set service snmp v3 view v1 oid 1.3.6 mask ff",
+            ],
+        )

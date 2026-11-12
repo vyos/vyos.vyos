@@ -10,6 +10,7 @@ The module file for vyos_snmp_server
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -75,12 +76,32 @@ options:
         description:  SNMP trap source address
         type: str
       trap_target:
-        description: Address of trap target
+        description:
+          - One SNMPv2c trap target.
+          - Deprecated since 7.0.0, use I(trap_targets), which allows more than one trap target.
+            This option will be removed in version 8.0.0. Mutually exclusive with I(trap_targets).
         type: dict
         suboptions:
           address:
             description: Address of trap target
             type: str
+          community:
+            description: Community used when sending trap information
+            type: str
+          port:
+            description: Destination port used for trap notification
+            type: int
+      trap_targets:
+        description:
+          - SNMPv2c trap targets.
+          - Mutually exclusive with I(trap_target).
+        type: list
+        elements: dict
+        suboptions:
+          address:
+            description: Address of trap target
+            type: str
+            required: true
           community:
             description: Community used when sending trap information
             type: str
@@ -160,6 +181,9 @@ options:
                 description: Specifies the type of notification between inform and trap
                 type: str
                 choices: ['inform', 'trap']
+              user:
+                description: Defines the username of the SNMPv3 user for this trap target.
+                type: str
           users:
             description: Defines username for authentication
             type: list
@@ -1014,9 +1038,11 @@ EXAMPLES = """
 #                 }
 #             ]
 #         },
-#         "trap_target": {
-#             "address": "203.0.113.10"
-#         }
+#         "trap_targets": [
+#             {
+#                 "address": "203.0.113.10"
+#             }
+#         ]
 #     }
 #
 """

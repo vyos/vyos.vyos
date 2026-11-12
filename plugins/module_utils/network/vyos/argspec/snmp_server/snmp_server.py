@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 #############################################
@@ -33,6 +34,7 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
     argument_spec = {
         "config": {
             "type": "dict",
+            "mutually_exclusive": [["trap_target", "trap_targets"]],
             "options": {
                 "communities": {
                     "type": "list",
@@ -62,8 +64,19 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                 "trap_source": {"type": "str"},
                 "trap_target": {
                     "type": "dict",
+                    "removed_in_version": "8.0.0",
+                    "removed_from_collection": "vyos.vyos",
                     "options": {
                         "address": {"type": "str"},
+                        "community": {"type": "str"},
+                        "port": {"type": "int"},
+                    },
+                },
+                "trap_targets": {
+                    "type": "list",
+                    "elements": "dict",
+                    "options": {
+                        "address": {"type": "str", "required": True},
                         "community": {"type": "str"},
                         "port": {"type": "int"},
                     },
@@ -133,6 +146,7 @@ class Snmp_serverArgs(object):  # pylint: disable=R0903
                                     "type": "str",
                                     "choices": ["inform", "trap"],
                                 },
+                                "user": {"type": "str"},
                             },
                         },
                         "users": {

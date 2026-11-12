@@ -69,3 +69,52 @@
 
   always:
     - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge two v2c trap targets
+      register: result
+      vyos.vyos.vyos_snmp_server: &id_targets
+        config:
+          trap_targets:
+            - address: 192.0.2.10
+              community: public
+              port: 1162
+            - address: 192.0.2.11
+              community: private
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: snmp_server
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.after == ansible_facts['network_resources']['snmp_server']
+          - result.after.trap_targets | length == 2
+
+    - name: Merge two v2c trap targets (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_snmp_server: *id_targets
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+    - name: Replace with one v2c trap target
+      register: result
+      vyos.vyos.vyos_snmp_server:
+        config:
+          trap_targets:
+            - address: 192.0.2.10
+              community: public
+              port: 1162
+        state: replaced
+
+    - assert:
+        that:
+          - "'delete service snmp trap-target 192.0.2.11' in result.commands"
+          - "result.after.trap_targets == [{'address': '192.0.2.10', 'community': 'public', 'port': 1162}]"
+
+  always:
+    - include_tasks: _remove_config.yaml
