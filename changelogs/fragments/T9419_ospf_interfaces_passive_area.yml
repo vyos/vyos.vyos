@@ -1,0 +1,9 @@
+---
+bugfixes:
+  - vyos_ospf_interfaces - passive false for ipv4 renders "passive disable", which exempts the
+    interface from passive-interface default, and "passive disable" on the device is read back as
+    passive false; before, passive false rendered nothing and the exemption was not recognised
+    (T9419). For ipv6, OSPFv3 has no such exemption, so passive false means not passive.
+minor_changes:
+  - vyos_ospf_interfaces - new option address_family.area, the OSPF area of an interface (VyOS 1.4
+    and later).

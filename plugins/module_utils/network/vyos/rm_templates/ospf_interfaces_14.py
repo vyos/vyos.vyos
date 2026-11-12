@@ -56,7 +56,7 @@ def _tmplt_ospf_int_auth_password(config_data):
         + params[0]
         + " interface {name}".format(**config_data)
         + " authentication plaintext-password {plaintext_password}".format(
-            **config_data["address_family"]["authentication"]
+            **config_data["address_family"]["authentication"],
         )
     )
     return command
@@ -69,7 +69,7 @@ def _tmplt_ospf_int_auth_md5(config_data):
         + params[0]
         + " interface {name}".format(**config_data)
         + " authentication md5 key-id {key_id} ".format(
-            **config_data["address_family"]["authentication"]["md5_key"]
+            **config_data["address_family"]["authentication"]["md5_key"],
         )
         + "md5-key {key}".format(**config_data["address_family"]["authentication"]["md5_key"])
     )
@@ -204,6 +204,21 @@ def _tmplt_ospf_int_instance(config_data):
 def _tmplt_ospf_int_passive(config_data):
     params = _get_parameters(config_data["address_family"])
     command = "protocols " + params[0] + " interface {name}".format(**config_data) + " passive"
+    # OSPFv2 exempts an interface from passive-interface default with "passive disable"
+    if config_data["address_family"].get("passive") is False:
+        command += " disable"
+
+    return command
+
+
+def _tmplt_ospf_int_area(config_data):
+    params = _get_parameters(config_data["address_family"])
+    command = (
+        "protocols "
+        + params[0]
+        + " interface {name}".format(**config_data)
+        + " area {area}".format(**config_data["address_family"])
+    )
 
     return command
 
@@ -212,7 +227,10 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
         super(Ospf_interfacesTemplate14, self).__init__(
-            lines=lines, tmplt=self, prefix=prefix, module=module
+            lines=lines,
+            tmplt=self,
+            prefix=prefix,
+            module=module,
         )
 
     # fmt: off
@@ -235,9 +253,9 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                    }
-                }
-            }
+                    },
+                },
+            },
         },
         {
             "name": "authentication_password",
@@ -261,11 +279,11 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
                         "authentication": {
-                            "plaintext_password": "{{ text }}"
-                        }
-                    }
-                }
-            }
+                            "plaintext_password": "{{ text }}",
+                        },
+                    },
+                },
+            },
         },
         {
             "name": "authentication_md5",
@@ -295,12 +313,12 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                         "authentication": {
                             "md5_key": {
                                 "key_id": "{{ id }}",
-                                "key": "{{ text }}"
-                            }
-                        }
-                    }
-                }
-            }
+                                "key": "{{ text }}",
+                            },
+                        },
+                    },
+                },
+            },
         },
         {
             "name": "bandwidth",
@@ -323,10 +341,10 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                        "bandwidth": "{{ bw }}"
-                    }
-                }
-            }
+                        "bandwidth": "{{ bw }}",
+                    },
+                },
+            },
         },
         {
             "name": "cost",
@@ -349,10 +367,10 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                        "cost": "{{ val }}"
-                    }
-                }
-            }
+                        "cost": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "hello_interval",
@@ -375,10 +393,10 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                        "hello_interval": "{{ val }}"
-                    }
-                }
-            }
+                        "hello_interval": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "dead_interval",
@@ -401,10 +419,10 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                        "dead_interval": "{{ val }}"
-                    }
-                }
-            }
+                        "dead_interval": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "mtu_ignore",
@@ -426,10 +444,10 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                        "mtu_ignore": "{{ True if mtu is defined }}"
-                    }
-                }
-            }
+                        "mtu_ignore": "{{ True if mtu is defined }}",
+                    },
+                },
+            },
         },
         {
             "name": "network",
@@ -451,10 +469,10 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                        "network": "{{ val }}"
-                    }
-                }
-            }
+                        "network": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "priority",
@@ -477,10 +495,10 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                        "priority": "{{ val }}"
-                    }
-                }
-            }
+                        "priority": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "retransmit_interval",
@@ -503,10 +521,10 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                        "retransmit_interval": "{{ val }}"
-                    }
-                }
-            }
+                        "retransmit_interval": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "transmit_delay",
@@ -529,10 +547,10 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                        "transmit_delay": "{{ val }}"
-                    }
-                }
-            }
+                        "transmit_delay": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "ifmtu",
@@ -555,10 +573,10 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                        "ifmtu": "{{ val }}"
-                    }
-                }
-            }
+                        "ifmtu": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "instance",
@@ -581,10 +599,10 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                        "instance": "{{ val }}"
-                    }
-                }
-            }
+                        "instance": "{{ val }}",
+                    },
+                },
+            },
         },
         {
             "name": "passive",
@@ -596,7 +614,8 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 \s+interface
                 \s+(?P<name>\S+)
                 \s+(?P<pass>passive)
-                *$""",
+                (?:\s+(?P<dis>disable))?
+                \s*$""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_ospf_int_passive,
@@ -606,10 +625,36 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
                 "address_family": {
                     '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
                         "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
-                        "passive": "{{ True if pass is defined }}"
-                    }
-                }
-            }
+                        "passive": "{{ False if dis is defined else True }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "area",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+protocols
+                \s+(?P<proto>ospf|ospfv3)
+                \s+interface
+                \s+(?P<name>\S+)
+                \s+area
+                \s+'?(?P<area>[^'\s]+)'?
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": _tmplt_ospf_int_area,
+            "compval": "address_family.area",
+            "result": {
+                "name": "{{ name }}",
+                "address_family": {
+                    '{{ "ipv4" if proto == "ospf" else "ipv6" }}': {
+                        "afi": '{{ "ipv4" if proto == "ospf" else "ipv6" }}',
+                        "area": "{{ area }}",
+                    },
+                },
+            },
         },
         {
             "name": "interface_name",
@@ -626,7 +671,7 @@ class Ospf_interfacesTemplate14(NetworkTemplate):
             "setval": "set protocols {{ proto }} interface {{ name }}",
             "result": {
                 "name": "{{ name }}",
-            }
+            },
         },
     ]
     # fmt: on

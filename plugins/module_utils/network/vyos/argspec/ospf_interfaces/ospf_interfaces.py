@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 #############################################
@@ -74,6 +75,7 @@ class Ospf_interfacesArgs(object):  # pylint: disable=R0903
                         "ifmtu": {"type": "int"},
                         "instance": {"type": "str"},
                         "passive": {"type": "bool"},
+                        "area": {"type": "str"},
                     },
                 },
             },
