@@ -43,7 +43,7 @@ def _tmplt_snmp_server_communities(config_data):
 
 
 def _tmplt_snmp_server_trap_target(config_data):
-    config_data = config_data["trap_target"]
+    config_data = config_data["trap_targets"]
     command = "service snmp trap-target {address}".format(**config_data)
     commands = []
     if config_data.get("community"):
@@ -249,23 +249,26 @@ class Snmp_serverTemplate(NetworkTemplate):
                 "trap_source": "{{ name }}",
             },
         },
-        # service snmp trap-target <>
+        # service snmp trap-target <> (one or more v2c trap targets)
         {
-            "name": "trap_target",
+            "name": "trap_targets",
             "getval": re.compile(
                 r"""
                 ^set\sservice\ssnmp\strap-target
                 \s+(?P<name>\S+)
                 \s*(?P<comm>community\s\S+)?
-                \s*(?P<port>port\s\d+)?                $""",
+                \s*(?P<port>port\s\d+)?
+                $""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_snmp_server_trap_target,
             "result": {
-                "trap_target": {
-                    "address": "{{ name }}",
-                    "community": "{{ comm.split(" ")[1] if comm is defined else None }}",
-                    "port": "{{ port.split(" ")[1] if port is defined else None }}",
+                "trap_targets": {
+                    "{{ name }}": {
+                        "address": "{{ name }}",
+                        "community": "{{ comm.split(" ")[1] if comm is defined else None }}",
+                        "port": "{{ port.split(" ")[1] if port is defined else None }}",
+                    },
                 },
             },
         },
@@ -527,7 +530,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\suser
                 \s+(?P<name>\S+)
-                \s+(?P<group>group\s.+)?                $""",
+                \s+(?P<group>group\s.+)?
+                $""",
                 re.VERBOSE,
             ),
             "setval": "service snmp v3 user {{ snmp_v3.users.user }} group {{ snmp_v3.users.group }}",

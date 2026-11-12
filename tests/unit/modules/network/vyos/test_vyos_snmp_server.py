@@ -496,7 +496,7 @@ class TestVyosSnmpServerModule(TestVyosModule):
                 ],
             },
             "trap_source": "1.1.1.1",
-            "trap_target": {"address": "10.10.1.1"},
+            "trap_targets": [{"address": "10.10.1.1"}],
         }
         self.assertEqual(parsed_list, result["parsed"])
 
@@ -592,4 +592,41 @@ class TestVyosSnmpServerModule(TestVyosModule):
                     ],
                 },
             },
+        )
+
+    def test_snmp_server_trap_targets_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    trap_targets=[
+                        dict(address="192.0.2.10", community="public", port=1162),
+                        dict(address="192.0.2.11", community="private"),
+                    ],
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set service snmp trap-target 192.0.2.10 community public",
+                "set service snmp trap-target 192.0.2.10 port 1162",
+                "set service snmp trap-target 192.0.2.11 community private",
+            ],
+        )
+
+    def test_snmp_server_trap_targets_replaced(self):
+        set_module_args(
+            dict(
+                config=dict(trap_targets=[dict(address="192.0.2.10", community="public")]),
+                state="replaced",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=[
+                "delete service snmp trap-target 192.0.2.11",
+                "delete service snmp trap-target 192.0.2.10 port 1162",
+            ],
+            filename="vyos_snmp_server_trap_targets_config.cfg",
         )

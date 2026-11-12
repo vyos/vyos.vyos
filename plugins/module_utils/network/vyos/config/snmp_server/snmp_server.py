@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -52,7 +53,6 @@ class Snmp_server(ResourceModule):
             "location",
             "smux_peer",
             "trap_source",
-            "trap_target",
         ]
 
     def execute_module(self):
@@ -70,6 +70,9 @@ class Snmp_server(ResourceModule):
         """Generate configuration commands to send based on
         want, have and desired state.
         """
+        if self.want.get("trap_target"):
+            self.want.setdefault("trap_targets", []).append(self.want.pop("trap_target"))
+
         wantd = self._snmp_server_list_to_dict(self.want)
         haved = self._snmp_server_list_to_dict(self.have)
 
@@ -104,6 +107,7 @@ class Snmp_server(ResourceModule):
         for the Snmp_server network resource.
         """
         self._compare_lists(want, have)
+        self._compare_trap_targets(want, have)
         self._compare_snmp_v3(want, have)
         for key, value in want.items():
             self.compare(
@@ -162,6 +166,30 @@ class Snmp_server(ResourceModule):
                             )
                 else:
                     self.compare(parsers=parsers, want={}, have={attrib: entry})
+
+    def _compare_trap_targets(self, want, have):
+        """v2c trap targets, by address and option by option"""
+        wdict = want.pop("trap_targets", {}) or {}
+        hdict = have.pop("trap_targets", {}) or {}
+        for address, wentry in wdict.items():
+            hentry = hdict.pop(address, {})
+            if not hentry and not (wentry.get("community") or wentry.get("port")):
+                self.addcmd({"trap_targets": {"address": address}}, "trap_targets", False)
+            for key in ("community", "port"):
+                w = (
+                    {"trap_targets": {"address": address, key: wentry[key]}}
+                    if wentry.get(key)
+                    else {}
+                )
+                h = (
+                    {"trap_targets": {"address": address, key: hentry[key]}}
+                    if hentry.get(key)
+                    else {}
+                )
+                self.compare(parsers="trap_targets", want=w, have=h)
+        # trap targets that want does not list (replaced, overridden) are deleted as a whole
+        for address in hdict:
+            self.addcmd({"trap_targets": {"address": address}}, "trap_targets", True)
 
     def _compare_snmp_v3(self, want, have):
         parsers = [
@@ -282,6 +310,7 @@ class Snmp_server(ResourceModule):
         param_dict = {
             "communities": "name",
             "listen_addresses": "address",
+            "trap_targets": "address",
         }
         v3_param_dict = {
             "groups": "group",
