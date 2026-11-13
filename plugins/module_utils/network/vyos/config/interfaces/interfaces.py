@@ -46,7 +46,7 @@ class Interfaces(ResourceModule):
             tmplt=InterfacesTemplate(),
         )
         self.parsers = ["description", "mtu", "duplex", "speed", "vrf"]
-        self.vif_parsers = ["vifs.description", "vifs.mtu"]
+        self.vif_parsers = ["vifs.description", "vifs.mtu", "vifs.vrf"]
 
     def execute_module(self):
         """Execute the module

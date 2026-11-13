@@ -703,3 +703,26 @@ class TestVyosInterfacesModule(TestVyosModule):
         # an interface without configuration on the device: nothing to delete
         set_module_args(dict(config=[dict(name="eth9")], state="deleted"))
         self.execute_module(changed=False, commands=[])
+
+    def test_vyos_interfaces_parsed_quoted_vif(self):
+        # a vif without options ends the line, and VyOS quotes its VLAN ID
+        set_module_args(
+            dict(
+                running_config="set interfaces ethernet eth1 vif '10'\n"
+                "set interfaces ethernet eth1 vif 20 description 'twenty'",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            [
+                {
+                    "name": "eth1",
+                    "enabled": True,
+                    "vifs": [
+                        {"vlan_id": 10, "enabled": True},
+                        {"vlan_id": 20, "description": "twenty", "enabled": True},
+                    ],
+                },
+            ],
+        )

@@ -42,7 +42,7 @@ VIF = (
     INTF
     + r"""
     \s+vif
-    \s+(?P<vlan>\d+)
+    \s+'?(?P<vlan>\d+)'?
 """
 )
 
@@ -115,6 +115,7 @@ class InterfacesTemplate(NetworkTemplate):
         },
         _vif_parser("vifs.description", "description", "description"),
         _vif_parser("vifs.mtu", "mtu", "mtu"),
+        _vif_parser("vifs.vrf", "vrf", "vrf"),
         {
             "name": "vifs.disable",
             "getval": re.compile(VIF + r"\s+disable\s*$", re.VERBOSE),

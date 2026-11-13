@@ -10,6 +10,7 @@ The arg spec for the vyos_interfaces module
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 
@@ -57,6 +58,7 @@ class InterfacesArgs(object):  # pylint: disable=R0903
                         },
                         "mtu": {"type": "int"},
                         "vlan_id": {"type": "int"},
+                        "vrf": {"type": "str"},
                     },
                     "type": "list",
                 },
