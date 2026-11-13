@@ -1,0 +1,15 @@
+---
+bugfixes:
+  - vyos_interfaces - options starting with "disable", such as disable-link-detect or
+    disable-flow-control, no longer mark the interface as disabled.
+  - vyos_interfaces - the options of one vif no longer leak into another whose VLAN ID contains
+    it (for example vif 110 into vif 10).
+  - vyos_interfaces - an interface line containing "vif", such as a description, is no longer
+    taken for a vif line and lost.
+  - vyos_interfaces - re-enabling a disabled interface with state replaced or overridden deletes
+    disable once; before, the command was sent twice and the second one failed.
+  - vyos_interfaces - state deleted with an interface that has no configuration on the device no
+    longer fails with an AttributeError.
+trivial:
+  - vyos_interfaces - rewritten on the resource module template framework (rm_template); options,
+    output and behaviour are unchanged apart from the fixes above.

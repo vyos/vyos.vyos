@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -34,7 +35,7 @@ class TestVyosInterfacesModule(TestVyosModule):
     def setUp(self):
         super(TestVyosInterfacesModule, self).setUp()
         self.mock_get_config = patch(
-            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.network.Config.get_config",
+            "ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module_base.get_resource_connection",
         )
         self.get_config = self.mock_get_config.start()
 
@@ -634,3 +635,94 @@ class TestVyosInterfacesModule(TestVyosModule):
             "set interfaces ethernet eth1 vrf 'pink'",
         ]
         self.assertEqual(sorted(result["rendered"]), sorted(commands))
+
+    def test_vyos_interfaces_parsed_disable_prefixed_options(self):
+        # disable-link-detect is not disable: the interface stays enabled
+        set_module_args(
+            dict(
+                running_config="set interfaces ethernet eth0 disable-link-detect\n"
+                "set interfaces ethernet eth0 hw-id '00:50:56:00:00:01'",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            [{"name": "eth0", "enabled": True}],
+        )
+
+    def test_vyos_interfaces_parsed_vif_ids_kept_apart(self):
+        # vif 110's lines must not end up in vif 10
+        set_module_args(
+            dict(
+                running_config="set interfaces ethernet eth1 vif 10 description 'ten'\n"
+                "set interfaces ethernet eth1 vif 110 description 'one-ten'\n"
+                "set interfaces ethernet eth1 vif 110 mtu '1400'",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            [
+                {
+                    "name": "eth1",
+                    "enabled": True,
+                    "vifs": [
+                        {"vlan_id": 10, "description": "ten", "enabled": True},
+                        {"vlan_id": 110, "description": "one-ten", "mtu": 1400, "enabled": True},
+                    ],
+                },
+            ],
+        )
+
+    def test_vyos_interfaces_parsed_vif_in_description(self):
+        # a description containing "vif" is an interface option, not a vif line
+        set_module_args(
+            dict(
+                running_config="set interfaces ethernet eth2 description 'vif uplink'\n"
+                "set interfaces ethernet eth2 mtu '1450'",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            [{"name": "eth2", "description": "vif uplink", "mtu": 1450, "enabled": True}],
+        )
+
+    def test_vyos_interfaces_replaced_enable_once(self):
+        # re-enabling a disabled interface deletes disable once, not twice
+        set_module_args(dict(config=[dict(name="eth3")], state="replaced"))
+        self.execute_module(
+            changed=True,
+            commands=[
+                "delete interfaces ethernet eth3 description",
+                "delete interfaces ethernet eth3 disable",
+            ],
+        )
+
+    def test_vyos_interfaces_deleted_not_on_device(self):
+        # an interface without configuration on the device: nothing to delete
+        set_module_args(dict(config=[dict(name="eth9")], state="deleted"))
+        self.execute_module(changed=False, commands=[])
+
+    def test_vyos_interfaces_parsed_quoted_vif(self):
+        # a vif without options ends the line, and VyOS quotes its VLAN ID
+        set_module_args(
+            dict(
+                running_config="set interfaces ethernet eth1 vif '10'\n"
+                "set interfaces ethernet eth1 vif 20 description 'twenty'",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            [
+                {
+                    "name": "eth1",
+                    "enabled": True,
+                    "vifs": [
+                        {"vlan_id": 10, "enabled": True},
+                        {"vlan_id": 20, "description": "twenty", "enabled": True},
+                    ],
+                },
+            ],
+        )

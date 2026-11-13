@@ -28,6 +28,7 @@ The module file for vyos_interfaces
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 ANSIBLE_METADATA = {
@@ -128,6 +129,10 @@ options:
             - MTU for the virtual sub-interface.
             - Refer to vendor documentation for valid values.
             type: int
+          vrf:
+            description:
+            - VRF associated with the virtual sub-interface.
+            type: str
       vrf:
         description:
         - VRF associated with the interface.

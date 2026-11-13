@@ -11,330 +11,138 @@ created
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from copy import deepcopy
 
-from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.cfg.base import (
-    ConfigBase,
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
+    ResourceModule,
 )
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
-    dict_diff,
-    remove_empties,
-    to_list,
+    dict_merge,
 )
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.interfaces import (
+    InterfacesTemplate,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.utils.utils import (
-    dict_delete,
     get_interface_type,
-    search_obj_in_list,
 )
 
 
-class Interfaces(ConfigBase):
+class Interfaces(ResourceModule):
     """
     The vyos_interfaces class
     """
 
-    gather_subset = [
-        "!all",
-        "!min",
-    ]
-
-    gather_network_resources = ["interfaces"]
-
     def __init__(self, module):
-        super(Interfaces, self).__init__(module)
-
-    def get_interfaces_facts(self, data=None):
-        """Get the 'facts' (the current configuration)
-
-        :rtype: A dictionary
-        :returns: The current configuration as a dictionary
-        """
-        facts, _warnings = Facts(self._module).get_facts(
-            self.gather_subset,
-            self.gather_network_resources,
-            data=data,
+        super(Interfaces, self).__init__(
+            empty_fact_val=[],
+            facts_module=Facts(module),
+            module=module,
+            resource="interfaces",
+            tmplt=InterfacesTemplate(),
         )
-        interfaces_facts = facts["ansible_network_resources"].get("interfaces")
-        if not interfaces_facts:
-            return []
-        return interfaces_facts
+        self.parsers = ["description", "mtu", "duplex", "speed", "vrf"]
+        self.vif_parsers = ["vifs.description", "vifs.mtu", "vifs.vrf"]
 
     def execute_module(self):
         """Execute the module
-         :rtype: A dictionary
+
+        :rtype: A dictionary
         :returns: The result from module execution
         """
-        result = {"changed": False}
-        commands = list()
-        warnings = list()
+        if self.state not in ["parsed", "gathered"]:
+            self.generate_commands()
+            self.run_commands()
+        return self.result
 
-        if self.state in self.ACTION_STATES:
-            existing_interfaces_facts = self.get_interfaces_facts()
-
-        else:
-            existing_interfaces_facts = []
-
-        if self.state in self.ACTION_STATES or self.state == "rendered":
-            commands.extend(self.set_config(existing_interfaces_facts))
-
-        if commands and self.state in self.ACTION_STATES:
-            if not self._module.check_mode:
-                self._connection.edit_config(commands)
-            result["changed"] = True
-
-        if self.state in self.ACTION_STATES:
-            result["commands"] = commands
-
-        if self.state in self.ACTION_STATES or self.state == "gathered":
-            changed_interfaces_facts = self.get_interfaces_facts()
-        elif self.state == "rendered":
-            result["rendered"] = commands
-        elif self.state == "parsed":
-            running_config = self._module.params["running_config"]
-            if not running_config:
-                self._module.fail_json(
-                    msg="value of running_config parameter must not be empty for state parsed",
-                )
-            result["parsed"] = self.get_interfaces_facts(data=running_config)
-        else:
-            changed_interfaces_facts = []
-
-        if self.state in self.ACTION_STATES:
-            result["before"] = existing_interfaces_facts
-            if result["changed"]:
-                result["after"] = changed_interfaces_facts
-        elif self.state == "gathered":
-            result["gathered"] = changed_interfaces_facts
-
-        result["warnings"] = warnings
-        return result
-
-    def set_config(self, existing_interfaces_facts):
-        """Collect the configuration from the args passed to the module,
-            collect the current configuration (as a dict from facts)
-
-        :rtype: A list
-        :returns: the commands necessary to migrate the current configuration
-                  to the desired configuration
+    def generate_commands(self):
+        """Generate configuration commands to send based on
+        want, have and desired state.
         """
-        want = self._module.params["config"]
-        have = existing_interfaces_facts
-        resp = self.set_state(want, have)
-        return to_list(resp)
-
-    def set_state(self, want, have):
-        """Select the appropriate function based on the state provided
-
-        :param want: the desired configuration as a dictionary
-        :param have: the current configuration as a dictionary
-        :rtype: A list
-        :returns: the commands necessary to migrate the current configuration
-                  to the desired configuration
-        """
-        commands = []
-
-        if self.state in ("merged", "replaced", "overridden", "rendered") and not want:
+        if self.state in ("merged", "replaced", "overridden", "rendered") and not self.want:
             self._module.fail_json(
                 msg="value of config parameter must not be empty for state {0}".format(self.state),
             )
 
-        if self.state == "overridden":
-            commands.extend(self._state_overridden(want=want, have=have))
+        wantd = self._list_to_dict(self.want)
+        haved = self._list_to_dict(self.have)
 
-        elif self.state == "deleted":
-            if not want:
-                for intf in have:
-                    commands.extend(self._state_deleted({"name": intf["name"]}, intf))
-            else:
-                for item in want:
-                    obj_in_have = search_obj_in_list(item["name"], have)
-                    commands.extend(self._state_deleted(item, obj_in_have))
-        else:
-            for item in want:
-                name = item["name"]
-                enable_state = item["enabled"]
-                obj_in_have = search_obj_in_list(name, have)
-                if not obj_in_have:
-                    obj_in_have = {"name": name, "enabled": enable_state}
-
-                if self.state in ("merged", "rendered"):
-                    commands.extend(self._state_merged(item, obj_in_have))
-
-                elif self.state == "replaced":
-                    commands.extend(self._state_replaced(item, obj_in_have))
-
-        return commands
-
-    def _state_replaced(self, want, have):
-        """The command generator when state is replaced
-
-        :rtype: A list
-        :returns: the commands necessary to migrate the current configuration
-                  to the desired configuration
-        """
-        commands = []
-        if have:
-            commands.extend(self._state_deleted(want, have))
-
-        commands.extend(self._state_merged(want, have))
-
-        return commands
-
-    def _state_overridden(self, want, have):
-        """The command generator when state is overridden
-
-        :rtype: A list
-        :returns: the commands necessary to migrate the current configuration
-                  to the desired configuration
-        """
-        commands = []
-
-        for intf in have:
-            intf_in_want = search_obj_in_list(intf["name"], want)
-            if not intf_in_want:
-                commands.extend(self._state_deleted({"name": intf["name"]}, intf))
-
-        for intf in want:
-            intf_in_have = search_obj_in_list(intf["name"], have)
-            if not intf_in_have:
-                intf_in_have = {
-                    "name": intf["name"],
-                    "enabled": intf["enabled"],
-                }
-            commands.extend(self._state_replaced(intf, intf_in_have))
-
-        return commands
-
-    def _state_merged(self, want, have):
-        """The command generator when state is merged
-
-        :rtype: A list
-        :returns: the commands necessary to merge the provided into
-                  the current configuration
-        """
-        commands = []
-        want_copy = deepcopy(remove_empties(want))
-        have_copy = deepcopy(have)
-
-        want_vifs = want_copy.pop("vifs", [])
-        have_vifs = have_copy.pop("vifs", [])
-
-        updates = dict_diff(have_copy, want_copy)
-
-        if updates:
-            for key, value in updates.items():
-                commands.append(
-                    self._compute_commands(key=key, value=value, interface=want_copy["name"]),
+        for name in wantd:
+            if not get_interface_type(name):
+                self._module.fail_json(
+                    msg="interface {0} is not a valid interface type".format(name),
                 )
 
-        if want_vifs:
-            for want_vif in want_vifs:
-                have_vif = search_obj_in_list(want_vif["vlan_id"], have_vifs, key="vlan_id")
-                if not have_vif:
-                    have_vif = {
-                        "vlan_id": want_vif["vlan_id"],
-                        "enabled": True,
-                    }
+        if self.state == "deleted":
+            # reset the given interfaces, or all of them
+            for name in wantd or haved:
+                if name in haved:
+                    self._compare(name, self._reset(name), haved[name])
+            return
 
-                vif_updates = dict_diff(have_vif, want_vif)
-                if vif_updates:
-                    for key, value in vif_updates.items():
-                        commands.append(
-                            self._compute_commands(
-                                key=key,
-                                value=value,
-                                interface=want_copy["name"],
-                                vif=want_vif["vlan_id"],
-                            ),
-                        )
+        if self.state == "overridden":
+            for name, have in haved.items():
+                if name not in wantd:
+                    self._compare(name, self._reset(name), have)
 
-        return commands
+        for name, want in wantd.items():
+            # an interface not on the device yet keeps its wanted enabled state
+            have = haved.get(name, {"name": name, "enabled": want.get("enabled", True)})
+            if self.state in ("merged", "rendered"):
+                want = dict_merge(have, want)
+            self._compare(name, want, have)
 
-    def _state_deleted(self, want, have):
-        """The command generator when state is deleted
+    def _compare(self, name, want, have):
+        """Compare one interface: its options, enabled, and its vifs."""
+        base = {"name": name, "type": get_interface_type(name)}
+        want = deepcopy(want)
+        have = deepcopy(have)
+        wvifs = want.pop("vifs", {}) or {}
+        hvifs = have.pop("vifs", {}) or {}
 
-        :rtype: A list
-        :returns: the commands necessary to remove the current configuration
-                  of the provided objects
-        """
-        commands = []
+        self.compare(parsers=self.parsers, want=dict(want, **base), have=dict(have, **base))
+        self._compare_enabled(
+            base,
+            "disable",
+            want.get("enabled", True),
+            have.get("enabled", True),
+        )
 
-        want_copy = deepcopy(remove_empties(want))
-        have_copy = deepcopy(have)
-        want_vifs = want_copy.pop("vifs", [])
-        have_vifs = have_copy.pop("vifs", [])
-
-        for key in dict_delete(have_copy, want_copy).keys():
-            if key == "enabled":
-                continue
-            commands.append(
-                self._compute_commands(key=key, interface=want_copy["name"], remove=True),
+        for vlan_id, wvif in wvifs.items():
+            hvif = hvifs.pop(vlan_id, {"vlan_id": vlan_id, "enabled": True})
+            self.compare(
+                parsers=self.vif_parsers,
+                want=dict(base, vifs=wvif),
+                have=dict(base, vifs=hvif),
             )
-        if have_copy["enabled"] is False and not (
-            "enabled" in want_copy and want_copy["enabled"] is False
-        ):
-            commands.append(
-                self._compute_commands(key="enabled", value=True, interface=want_copy["name"]),
+            self._compare_enabled(
+                dict(base, vifs={"vlan_id": vlan_id}),
+                "vifs.disable",
+                wvif.get("enabled", True),
+                hvif.get("enabled", True),
             )
+        # vifs the configuration does not list are deleted as a whole
+        for vlan_id in hvifs:
+            self.addcmd(dict(base, vifs={"vlan_id": vlan_id}), "vifs", True)
 
-        if have_vifs:
-            for have_vif in have_vifs:
-                want_vif = search_obj_in_list(have_vif["vlan_id"], want_vifs, key="vlan_id")
-                if not want_vif:
-                    commands.append(
-                        self._compute_commands(
-                            key="",
-                            interface=want_copy["name"],
-                            vif=have_vif["vlan_id"],
-                            remove=True,
-                        ),
-                    )
-                    continue
+    def _compare_enabled(self, data, parser, want, have):
+        """enabled is the inverse of the disable flag: false sets it, true deletes it."""
+        if want != have:
+            self.addcmd(data, parser, want)
 
-                for key in dict_delete(have_vif, want_vif).keys():
-                    if key == "enabled":
-                        continue
-                    commands.append(
-                        self._compute_commands(
-                            key=key,
-                            interface=want_copy["name"],
-                            vif=want_vif["vlan_id"],
-                            remove=True,
-                        ),
-                    )
-        return commands
+    def _reset(self, name):
+        """The configuration of an interface without any options: enabled, no vifs."""
+        return {"name": name, "enabled": True}
 
-    def _compute_commands(self, interface, key, vif=None, value=None, remove=False):
-        interface_type = get_interface_type(interface)
-        if not interface_type:
-            self._module.fail_json(
-                msg="interface {0} is not a valid interface type".format(interface),
-            )
-        intf_context = "interfaces {0} {1}".format(interface_type, interface)
-        set_cmd = "set {0}".format(intf_context)
-        del_cmd = "delete {0}".format(intf_context)
-
-        if vif:
-            set_cmd = set_cmd + (" vif {0}".format(vif))
-            del_cmd = del_cmd + (" vif {0}".format(vif))
-        if key == "" or key is None:
-            if not remove:
-                command = "{0}".format(set_cmd)
-            else:
-                command = "{0}".format(del_cmd)
-        elif key == "enabled":
-            if not value:
-                command = "{0} disable".format(set_cmd)
-            else:
-                command = "{0} disable".format(del_cmd)
-        else:
-            if not remove:
-                command = "{0} {1} '{2}'".format(set_cmd, key, value)
-            else:
-                command = "{0} {1}".format(del_cmd, key)
-
-        return command
+    def _list_to_dict(self, entries):
+        """Interfaces by name, and their vifs by VLAN ID."""
+        result = {}
+        for entry in deepcopy(entries) or []:
+            vifs = entry.get("vifs") or []
+            entry["vifs"] = {vif["vlan_id"]: vif for vif in vifs}
+            result[entry["name"]] = entry
+        return result
