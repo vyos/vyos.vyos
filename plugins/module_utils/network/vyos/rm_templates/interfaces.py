@@ -139,6 +139,187 @@ class InterfacesTemplate(NetworkTemplate):
                 },
             },
         },
+        # set interfaces tunnel <name> encapsulation|source-address|source-interface|remote <value>
+        {
+            "name": "tunnel.encapsulation",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>tunnel)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+encapsulation
+                \s+'?(?P<encapsulation>[^'\s]+)'?
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} encapsulation '{{ tunnel.encapsulation }}'",
+            "remval": "interfaces {{ type }} {{ name }} encapsulation",
+            "compval": "tunnel.encapsulation",
+            "result": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"encapsulation": "{{ encapsulation }}"}}},
+        },
+        {
+            "name": "tunnel.source_address",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>tunnel)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+source-address
+                \s+'?(?P<source_address>[^'\s]+)'?
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} source-address '{{ tunnel.source_address }}'",
+            "remval": "interfaces {{ type }} {{ name }} source-address",
+            "compval": "tunnel.source_address",
+            "result": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"source_address": "{{ source_address }}"}}},
+        },
+        {
+            "name": "tunnel.source_interface",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>tunnel)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+source-interface
+                \s+'?(?P<source_interface>[^'\s]+)'?
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} source-interface '{{ tunnel.source_interface }}'",
+            "remval": "interfaces {{ type }} {{ name }} source-interface",
+            "compval": "tunnel.source_interface",
+            "result": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"source_interface": "{{ source_interface }}"}}},
+        },
+        {
+            "name": "tunnel.remote",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>tunnel)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+remote
+                \s+'?(?P<remote>[^'\s]+)'?
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} remote '{{ tunnel.remote }}'",
+            "remval": "interfaces {{ type }} {{ name }} remote",
+            "compval": "tunnel.remote",
+            "result": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"remote": "{{ remote }}"}}},
+        },
+        # set interfaces tunnel <name> enable-multicast
+        {
+            "name": "tunnel.enable_multicast",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>tunnel)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+enable-multicast
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} enable-multicast",
+            "remval": "interfaces {{ type }} {{ name }} enable-multicast",
+            "compval": "tunnel.enable_multicast",
+            "result": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"enable_multicast": True}}},
+        },
+        # set interfaces tunnel <name> parameters ip key|ttl|tos <value>
+        {
+            "name": "tunnel.parameters.ip.key",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>tunnel)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+parameters\s+ip\s+key
+                \s+'?(?P<key>[^'\s]+)'?
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} parameters ip key '{{ tunnel.parameters.ip.key }}'",
+            "remval": "interfaces {{ type }} {{ name }} parameters ip key",
+            "compval": "tunnel.parameters.ip.key",
+            "result": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"parameters": {"ip": {"key": "{{ key }}"}}}}},
+        },
+        {
+            "name": "tunnel.parameters.ip.ttl",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>tunnel)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+parameters\s+ip\s+ttl
+                \s+'?(?P<ttl>[^'\s]+)'?
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} parameters ip ttl '{{ tunnel.parameters.ip.ttl }}'",
+            "remval": "interfaces {{ type }} {{ name }} parameters ip ttl",
+            "compval": "tunnel.parameters.ip.ttl",
+            "result": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"parameters": {"ip": {"ttl": "{{ ttl }}"}}}}},
+        },
+        {
+            "name": "tunnel.parameters.ip.tos",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>tunnel)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+parameters\s+ip\s+tos
+                \s+'?(?P<tos>[^'\s]+)'?
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} parameters ip tos '{{ tunnel.parameters.ip.tos }}'",
+            "remval": "interfaces {{ type }} {{ name }} parameters ip tos",
+            "compval": "tunnel.parameters.ip.tos",
+            "result": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"parameters": {"ip": {"tos": "{{ tos }}"}}}}},
+        },
+        # set interfaces tunnel <name> parameters ip no-pmtu-discovery|ignore-df
+        {
+            "name": "tunnel.parameters.ip.no_pmtu_discovery",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>tunnel)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+parameters\s+ip\s+no-pmtu-discovery
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} parameters ip no-pmtu-discovery",
+            "remval": "interfaces {{ type }} {{ name }} parameters ip no-pmtu-discovery",
+            "compval": "tunnel.parameters.ip.no_pmtu_discovery",
+            "result": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"parameters": {"ip": {"no_pmtu_discovery": True}}}}},
+        },
+        {
+            "name": "tunnel.parameters.ip.ignore_df",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>tunnel)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+parameters\s+ip\s+ignore-df
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} parameters ip ignore-df",
+            "remval": "interfaces {{ type }} {{ name }} parameters ip ignore-df",
+            "compval": "tunnel.parameters.ip.ignore_df",
+            "result": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"parameters": {"ip": {"ignore_df": True}}}}},
+        },
         {
             # any other interface line: the interface exists
             "name": "name",

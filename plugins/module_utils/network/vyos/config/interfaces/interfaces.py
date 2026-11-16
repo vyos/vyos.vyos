@@ -45,7 +45,23 @@ class Interfaces(ResourceModule):
             resource="interfaces",
             tmplt=InterfacesTemplate(),
         )
-        self.parsers = ["description", "mtu", "duplex", "speed", "vrf"]
+        self.parsers = [
+            "description",
+            "mtu",
+            "duplex",
+            "speed",
+            "vrf",
+            "tunnel.encapsulation",
+            "tunnel.source_address",
+            "tunnel.source_interface",
+            "tunnel.remote",
+            "tunnel.enable_multicast",
+            "tunnel.parameters.ip.key",
+            "tunnel.parameters.ip.ttl",
+            "tunnel.parameters.ip.tos",
+            "tunnel.parameters.ip.no_pmtu_discovery",
+            "tunnel.parameters.ip.ignore_df",
+        ]
         self.vif_parsers = ["vifs.description", "vifs.mtu", "vifs.vrf"]
 
     def execute_module(self):
@@ -71,10 +87,16 @@ class Interfaces(ResourceModule):
         wantd = self._list_to_dict(self.want)
         haved = self._list_to_dict(self.have)
 
-        for name in wantd:
+        for name, want in wantd.items():
+
             if not get_interface_type(name):
                 self._module.fail_json(
                     msg="interface {0} is not a valid interface type".format(name),
+                )
+
+            if want.get("tunnel") and get_interface_type(name) != "tunnel":
+                self._module.fail_json(
+                    msg="tunnel options are only valid for tunnel interfaces, not {0}".format(name),
                 )
 
         if self.state == "deleted":
@@ -103,6 +125,11 @@ class Interfaces(ResourceModule):
         have = deepcopy(have)
         wvifs = want.pop("vifs", {}) or {}
         hvifs = have.pop("vifs", {}) or {}
+
+        # a configuration without tunnel options leaves the tunnel definition as it is:
+        # encapsulation, source and remote are required, so they are never removed implicitly
+        if not want.get("tunnel"):
+            have.pop("tunnel", None)
 
         self.compare(parsers=self.parsers, want=dict(want, **base), have=dict(have, **base))
         self._compare_enabled(

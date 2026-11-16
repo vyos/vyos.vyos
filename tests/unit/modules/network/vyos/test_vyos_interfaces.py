@@ -726,3 +726,172 @@ class TestVyosInterfacesModule(TestVyosModule):
                 },
             ],
         )
+
+    def test_vyos_interfaces_merged_vif_vrf(self):
+        set_module_args(
+            dict(
+                config=[dict(name="eth1", vifs=[dict(vlan_id=200, vrf="green")])],
+                state="merged",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=["set interfaces ethernet eth1 vif 200 vrf 'green'"],
+        )
+
+    def test_vyos_interfaces_parsed_vif_vrf(self):
+        set_module_args(
+            dict(
+                running_config="set interfaces ethernet eth1 vif 200 vrf 'green'\n"
+                "set interfaces ethernet eth1 vif 200 description 'in green'",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            [
+                {
+                    "name": "eth1",
+                    "enabled": True,
+                    "vifs": [
+                        {
+                            "vlan_id": 200,
+                            "vrf": "green",
+                            "description": "in green",
+                            "enabled": True,
+                        },
+                    ],
+                },
+            ],
+        )
+
+    def test_vyos_interfaces_replaced_vif_vrf_removed(self):
+        self.fixture_path = "vyos_interfaces_config_vif_vrf.cfg"
+        set_module_args(
+            dict(
+                config=[dict(name="eth1", vifs=[dict(vlan_id=200, description="in green")])],
+                state="replaced",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=["delete interfaces ethernet eth1 vif 200 vrf"],
+        )
+
+    def test_vyos_interfaces_parsed_tunnel(self):
+        set_module_args(
+            dict(
+                running_config="set interfaces tunnel tun0 encapsulation 'gre'\n"
+                "set interfaces tunnel tun0 source-address '192.0.2.1'\n"
+                "set interfaces tunnel tun0 enable-multicast\n"
+                "set interfaces tunnel tun0 parameters ip key '1'\n"
+                "set interfaces tunnel tun0 parameters ip no-pmtu-discovery",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            [
+                {
+                    "name": "tun0",
+                    "enabled": True,
+                    "tunnel": {
+                        "encapsulation": "gre",
+                        "source_address": "192.0.2.1",
+                        "enable_multicast": True,
+                        "parameters": {"ip": {"key": 1, "no_pmtu_discovery": True}},
+                    },
+                },
+            ],
+        )
+
+    def test_vyos_interfaces_rendered_tunnel(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="tun1",
+                        tunnel=dict(
+                            encapsulation="gre",
+                            source_interface="eth0",
+                            remote="198.51.100.1",
+                            parameters=dict(ip=dict(ttl=0, tos="inherit")),
+                        ),
+                    ),
+                ],
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set interfaces tunnel tun1 encapsulation 'gre'",
+                "set interfaces tunnel tun1 parameters ip tos 'inherit'",
+                "set interfaces tunnel tun1 parameters ip ttl '0'",
+                "set interfaces tunnel tun1 remote '198.51.100.1'",
+                "set interfaces tunnel tun1 source-interface 'eth0'",
+            ],
+        )
+
+    def test_vyos_interfaces_merged_tunnel_idempotent(self):
+        self.fixture_path = "vyos_interfaces_config_tunnel.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="tun0",
+                        description="dmvpn hub",
+                        tunnel=dict(
+                            encapsulation="gre",
+                            source_address="192.0.2.1",
+                            enable_multicast=True,
+                            parameters=dict(ip=dict(key=1)),
+                        ),
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+        self.execute_module(changed=False, commands=[])
+
+    def test_vyos_interfaces_replaced_without_tunnel_keeps_tunnel(self):
+        # no tunnel key: the tunnel definition is left as it is
+        self.fixture_path = "vyos_interfaces_config_tunnel.cfg"
+        set_module_args(dict(config=[dict(name="tun0", description="new")], state="replaced"))
+        self.execute_module(
+            changed=True,
+            commands=["set interfaces tunnel tun0 description 'new'"],
+        )
+
+    def test_vyos_interfaces_replaced_tunnel_options(self):
+        # a tunnel key: options it does not list are removed
+        self.fixture_path = "vyos_interfaces_config_tunnel.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="tun0",
+                        description="dmvpn hub",
+                        tunnel=dict(encapsulation="gre", source_address="192.0.2.1"),
+                    ),
+                ],
+                state="replaced",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=[
+                "delete interfaces tunnel tun0 enable-multicast",
+                "delete interfaces tunnel tun0 parameters ip key",
+            ],
+        )
+
+    def test_vyos_interfaces_tunnel_on_non_tunnel(self):
+        set_module_args(
+            dict(config=[dict(name="eth1", tunnel=dict(encapsulation="gre"))], state="merged"),
+        )
+        result = self.execute_module(failed=True)
+        self.assertEqual(
+            result["msg"],
+            "tunnel options are only valid for tunnel interfaces, not eth1",
+        )

@@ -13,3 +13,8 @@ bugfixes:
 trivial:
   - vyos_interfaces - rewritten on the resource module template framework (rm_template); options,
     output and behaviour are unchanged apart from the fixes above.
+minor_changes:
+  - vyos_interfaces - new option tunnel, for tunnel interfaces - encapsulation, source_address,
+    source_interface, remote, enable_multicast, and parameters.ip with key, ttl, tos,
+    no_pmtu_discovery and ignore_df (T9422). Without the tunnel option, the tunnel definition on
+    the device is left as it is, in every state.
