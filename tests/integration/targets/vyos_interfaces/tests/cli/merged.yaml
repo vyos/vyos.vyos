@@ -166,3 +166,49 @@
 
   always:
     - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge MSS clamping on a tunnel, an ethernet interface and a vif
+      register: result
+      vyos.vyos.vyos_interfaces: &id_mss
+        config:
+          - name: tun0
+            ip:
+              adjust_mss: 1360
+            tunnel:
+              encapsulation: gre
+              source_interface: eth0
+          - name: eth1
+            ip:
+              adjust_mss: 1436
+            vifs:
+              - vlan_id: 100
+                ipv6:
+                  adjust_mss: clamp-mss-to-pmtu
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: interfaces
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands | intersect(expected) | length == expected | length
+          - result.after == ansible_facts['network_resources']['interfaces']
+      vars:
+        expected:
+          - set interfaces tunnel tun0 ip adjust-mss '1360'
+          - set interfaces ethernet eth1 ip adjust-mss '1436'
+          - set interfaces ethernet eth1 vif 100 ipv6 adjust-mss 'clamp-mss-to-pmtu'
+
+    - name: Merge MSS clamping on a tunnel, an ethernet interface and a vif (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_interfaces: *id_mss
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

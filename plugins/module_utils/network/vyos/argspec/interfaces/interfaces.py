@@ -59,10 +59,26 @@ class InterfacesArgs(object):  # pylint: disable=R0903
                         "mtu": {"type": "int"},
                         "vlan_id": {"type": "int"},
                         "vrf": {"type": "str"},
+                        "ip": {
+                            "type": "dict",
+                            "options": {"adjust_mss": {"type": "str"}},
+                        },
+                        "ipv6": {
+                            "type": "dict",
+                            "options": {"adjust_mss": {"type": "str"}},
+                        },
                     },
                     "type": "list",
                 },
                 "vrf": {"type": "str"},
+                "ip": {
+                    "type": "dict",
+                    "options": {"adjust_mss": {"type": "str"}},
+                },
+                "ipv6": {
+                    "type": "dict",
+                    "options": {"adjust_mss": {"type": "str"}},
+                },
                 "tunnel": {
                     "type": "dict",
                     "options": {

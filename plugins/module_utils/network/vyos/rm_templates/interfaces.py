@@ -127,6 +127,58 @@ class InterfacesTemplate(NetworkTemplate):
                 },
             },
         },
+        # set interfaces <type> <name> vif <vlan-id> ip adjust-mss <value>
+        {
+            "name": "vifs.ip.adjust_mss",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+vif
+                \s+'?(?P<vlan>\d+)'?
+                \s+ip\s+adjust-mss
+                \s+'?(?P<mss>[^'\s]+)'?
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} ip adjust-mss '{{ vifs.ip.adjust_mss }}'",
+            "remval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} ip adjust-mss",
+            "compval": "vifs.ip.adjust_mss",
+            "result": {
+                "{{ name }}": {
+                    "name": "{{ name }}",
+                    "vifs": {"{{ vlan }}": {"vlan_id": "{{ vlan }}", "ip": {"adjust_mss": "{{ mss }}"}}},
+                },
+            },
+        },
+        # set interfaces <type> <name> vif <vlan-id> ipv6 adjust-mss <value>
+        {
+            "name": "vifs.ipv6.adjust_mss",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+vif
+                \s+'?(?P<vlan>\d+)'?
+                \s+ipv6\s+adjust-mss
+                \s+'?(?P<mss>[^'\s]+)'?
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} ipv6 adjust-mss '{{ vifs.ipv6.adjust_mss }}'",
+            "remval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} ipv6 adjust-mss",
+            "compval": "vifs.ipv6.adjust_mss",
+            "result": {
+                "{{ name }}": {
+                    "name": "{{ name }}",
+                    "vifs": {"{{ vlan }}": {"vlan_id": "{{ vlan }}", "ipv6": {"adjust_mss": "{{ mss }}"}}},
+                },
+            },
+        },
         {
             # any other vif line: the vif exists
             "name": "vifs",
@@ -319,6 +371,44 @@ class InterfacesTemplate(NetworkTemplate):
             "remval": "interfaces {{ type }} {{ name }} parameters ip ignore-df",
             "compval": "tunnel.parameters.ip.ignore_df",
             "result": {"{{ name }}": {"name": "{{ name }}", "tunnel": {"parameters": {"ip": {"ignore_df": True}}}}},
+        },
+        # set interfaces <type> <name> ip adjust-mss <value>
+        {
+            "name": "ip.adjust_mss",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|tunnel|vti|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+ip\s+adjust-mss
+                \s+'?(?P<mss>[^'\s]+)'?
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} ip adjust-mss '{{ ip.adjust_mss }}'",
+            "remval": "interfaces {{ type }} {{ name }} ip adjust-mss",
+            "compval": "ip.adjust_mss",
+            "result": {"{{ name }}": {"name": "{{ name }}", "ip": {"adjust_mss": "{{ mss }}"}}},
+        },
+        # set interfaces <type> <name> ipv6 adjust-mss <value>
+        {
+            "name": "ipv6.adjust_mss",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|tunnel|vti|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+ipv6\s+adjust-mss
+                \s+'?(?P<mss>[^'\s]+)'?
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} ipv6 adjust-mss '{{ ipv6.adjust_mss }}'",
+            "remval": "interfaces {{ type }} {{ name }} ipv6 adjust-mss",
+            "compval": "ipv6.adjust_mss",
+            "result": {"{{ name }}": {"name": "{{ name }}", "ipv6": {"adjust_mss": "{{ mss }}"}}},
         },
         {
             # any other interface line: the interface exists

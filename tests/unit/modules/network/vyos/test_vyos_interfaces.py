@@ -911,3 +911,98 @@ class TestVyosInterfacesModule(TestVyosModule):
             changed=True,
             commands=["set interfaces vxlan vxlan2 description 'new'"],
         )
+
+    def test_vyos_interfaces_parsed_adjust_mss(self):
+        set_module_args(
+            dict(
+                running_config="set interfaces ethernet eth1 ip adjust-mss '1436'\n"
+                "set interfaces ethernet eth1 ipv6 adjust-mss 'clamp-mss-to-pmtu'\n"
+                "set interfaces ethernet eth1 vif 10 ip adjust-mss 'clamp-mss-to-pmtu'",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            [
+                {
+                    "name": "eth1",
+                    "enabled": True,
+                    "ip": {"adjust_mss": "1436"},
+                    "ipv6": {"adjust_mss": "clamp-mss-to-pmtu"},
+                    "vifs": [
+                        {"vlan_id": 10, "enabled": True, "ip": {"adjust_mss": "clamp-mss-to-pmtu"}},
+                    ],
+                },
+            ],
+        )
+
+    def test_vyos_interfaces_merged_adjust_mss_idempotent(self):
+        # a number given as an integer matches the device's quoted value
+        self.fixture_path = "vyos_interfaces_config_adjust_mss.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        name="eth1",
+                        ip=dict(adjust_mss=1436),
+                        ipv6=dict(adjust_mss="clamp-mss-to-pmtu"),
+                        vifs=[dict(vlan_id=10, ip=dict(adjust_mss="clamp-mss-to-pmtu"))],
+                    ),
+                    dict(name="tun0", ip=dict(adjust_mss=1360)),
+                ],
+                state="merged",
+            ),
+        )
+        self.execute_module(changed=False, commands=[])
+
+    def test_vyos_interfaces_merged_adjust_mss(self):
+        self.fixture_path = "vyos_interfaces_config_adjust_mss.cfg"
+        set_module_args(
+            dict(
+                config=[
+                    dict(name="tun0", ip=dict(adjust_mss="clamp-mss-to-pmtu")),
+                    dict(name="bond0", vifs=[dict(vlan_id=20, ipv6=dict(adjust_mss=1400))]),
+                ],
+                state="merged",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=[
+                "set interfaces tunnel tun0 ip adjust-mss 'clamp-mss-to-pmtu'",
+                "set interfaces bonding bond0 vif 20 ipv6 adjust-mss '1400'",
+            ],
+        )
+
+    def test_vyos_interfaces_replaced_adjust_mss_removed(self):
+        self.fixture_path = "vyos_interfaces_config_adjust_mss.cfg"
+        set_module_args(
+            dict(
+                config=[dict(name="eth1", ip=dict(adjust_mss="1436"), vifs=[dict(vlan_id=10)])],
+                state="replaced",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=[
+                "delete interfaces ethernet eth1 ipv6 adjust-mss",
+                "delete interfaces ethernet eth1 vif 10 ip adjust-mss",
+            ],
+        )
+
+    def test_vyos_interfaces_adjust_mss_out_of_range(self):
+        set_module_args(
+            dict(config=[dict(name="eth1", ip=dict(adjust_mss="100"))], state="merged"),
+        )
+        result = self.execute_module(failed=True)
+        self.assertEqual(
+            result["msg"],
+            "ip adjust_mss of eth1 must be clamp-mss-to-pmtu or 536-65535, got 100",
+        )
+
+    def test_vyos_interfaces_adjust_mss_on_loopback(self):
+        set_module_args(
+            dict(config=[dict(name="lo", ip=dict(adjust_mss="1400"))], state="merged"),
+        )
+        result = self.execute_module(failed=True)
+        self.assertEqual(result["msg"], "ip adjust-mss is not supported on lo")

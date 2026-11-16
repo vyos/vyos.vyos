@@ -133,10 +133,54 @@ options:
             description:
             - VRF associated with the virtual sub-interface.
             type: str
+          ip:
+            description:
+            - IPv4 options of the virtual sub-interface.
+            type: dict
+            suboptions:
+              adjust_mss:
+                description:
+                - TCP maximum segment size clamping, in bytes (536-65535), or C(clamp-mss-to-pmtu)
+                  to derive it from the path MTU.
+                - Not available on dummy and loopback interfaces.
+                type: str
+          ipv6:
+            description:
+            - IPv6 options of the virtual sub-interface.
+            type: dict
+            suboptions:
+              adjust_mss:
+                description:
+                - TCP maximum segment size clamping, in bytes (536-65535), or C(clamp-mss-to-pmtu)
+                  to derive it from the path MTU.
+                - Not available on dummy and loopback interfaces.
+                type: str
       vrf:
         description:
         - VRF associated with the interface.
         type: str
+      ip:
+        description:
+        - IPv4 options of the interface.
+        type: dict
+        suboptions:
+          adjust_mss:
+            description:
+            - TCP maximum segment size clamping, in bytes (536-65535), or C(clamp-mss-to-pmtu)
+              to derive it from the path MTU.
+            - Not available on dummy and loopback interfaces.
+            type: str
+      ipv6:
+        description:
+        - IPv6 options of the interface.
+        type: dict
+        suboptions:
+          adjust_mss:
+            description:
+            - TCP maximum segment size clamping, in bytes (536-65535), or C(clamp-mss-to-pmtu)
+              to derive it from the path MTU.
+            - Not available on dummy and loopback interfaces.
+            type: str
       tunnel:
         description:
         - Tunnel options, for tunnel interfaces (C(tunN)) only.

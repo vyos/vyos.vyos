@@ -61,8 +61,16 @@ class Interfaces(ResourceModule):
             "tunnel.parameters.ip.tos",
             "tunnel.parameters.ip.no_pmtu_discovery",
             "tunnel.parameters.ip.ignore_df",
+            "ip.adjust_mss",
+            "ipv6.adjust_mss",
         ]
-        self.vif_parsers = ["vifs.description", "vifs.mtu", "vifs.vrf"]
+        self.vif_parsers = [
+            "vifs.description",
+            "vifs.mtu",
+            "vifs.vrf",
+            "vifs.ip.adjust_mss",
+            "vifs.ipv6.adjust_mss",
+        ]
 
     def execute_module(self):
         """Execute the module
@@ -98,6 +106,7 @@ class Interfaces(ResourceModule):
                 self._module.fail_json(
                     msg="tunnel options are only valid for tunnel interfaces, not {0}".format(name),
                 )
+            self._validate_adjust_mss(name, want)
 
         if self.state == "deleted":
             # reset the given interfaces, or all of them
@@ -155,6 +164,29 @@ class Interfaces(ResourceModule):
         # vifs the configuration does not list are deleted as a whole
         for vlan_id in hvifs:
             self.addcmd(dict(base, vifs={"vlan_id": vlan_id}), "vifs", True)
+
+    def _validate_adjust_mss(self, name, want):
+        """adjust_mss is clamp-mss-to-pmtu or a number of bytes, 536 to 65535;
+        dummy and loopback interfaces do not have it."""
+        entries = [(name, want)] + [
+            ("{0} vif {1}".format(name, vlan_id), vif) for vlan_id, vif in want["vifs"].items()
+        ]
+        for label, entry in entries:
+            for afi in ("ip", "ipv6"):
+                value = (entry.get(afi) or {}).get("adjust_mss")
+                if value is None:
+                    continue
+                if get_interface_type(name) in ("dummy", "loopback"):
+                    self._module.fail_json(
+                        msg="{0} adjust-mss is not supported on {1}".format(afi, label),
+                    )
+                if value != "clamp-mss-to-pmtu" and not (
+                    value.isdigit() and 536 <= int(value) <= 65535
+                ):
+                    self._module.fail_json(
+                        msg="{0} adjust_mss of {1} must be clamp-mss-to-pmtu or 536-65535, "
+                        "got {2}".format(afi, label, value),
+                    )
 
     def _compare_enabled(self, data, parser, want, have):
         """enabled is the inverse of the disable flag: false sets it, true deletes it."""

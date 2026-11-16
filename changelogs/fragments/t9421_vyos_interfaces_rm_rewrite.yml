@@ -22,3 +22,6 @@ minor_changes:
     source_interface, remote, enable_multicast, and parameters.ip with key, ttl, tos,
     no_pmtu_discovery and ignore_df (T9422). Without the tunnel option, the tunnel definition on
     the device is left as it is, in every state.
+  - vyos_interfaces - new options ip.adjust_mss and ipv6.adjust_mss, on interfaces and vifs, for TCP
+    MSS clamping - a number of bytes (536-65535) or clamp-mss-to-pmtu (T9423). Not available on
+    dummy and loopback interfaces (T9423).
