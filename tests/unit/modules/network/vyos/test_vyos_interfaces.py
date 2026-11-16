@@ -895,3 +895,19 @@ class TestVyosInterfacesModule(TestVyosModule):
             result["msg"],
             "tunnel options are only valid for tunnel interfaces, not eth1",
         )
+
+    def test_vyos_interfaces_merged_vxlan_unchanged(self):
+        # an unchanged VXLAN interface: nothing to do, and no failure
+        self.fixture_path = "vyos_interfaces_config_vxlan.cfg"
+        set_module_args(
+            dict(config=[dict(name="vxlan2", description="overlay", mtu=1450)], state="merged"),
+        )
+        self.execute_module(changed=False, commands=[])
+
+    def test_vyos_interfaces_merged_vxlan(self):
+        self.fixture_path = "vyos_interfaces_config_vxlan.cfg"
+        set_module_args(dict(config=[dict(name="vxlan2", description="new")], state="merged"))
+        self.execute_module(
+            changed=True,
+            commands=["set interfaces vxlan vxlan2 description 'new'"],
+        )

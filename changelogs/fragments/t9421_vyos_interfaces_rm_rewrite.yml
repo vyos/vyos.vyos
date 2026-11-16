@@ -10,6 +10,10 @@ bugfixes:
     disable once; before, the command was sent twice and the second one failed.
   - vyos_interfaces - state deleted with an interface that has no configuration on the device no
     longer fails with an AttributeError.
+  - vyos_interfaces - VXLAN interfaces (vxlanN) are recognised as an interface type; an unchanged
+    VXLAN configuration no longer fails with "is not a valid interface type", and changes to a
+    VXLAN interface render the right commands. The shared interface type helper used by other
+    modules now recognises VXLAN interfaces as well.
 trivial:
   - vyos_interfaces - rewritten on the resource module template framework (rm_template); options,
     output and behaviour are unchanged apart from the fixes above.

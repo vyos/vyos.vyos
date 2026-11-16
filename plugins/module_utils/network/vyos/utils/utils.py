@@ -6,8 +6,10 @@
 # utils
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 from ansible.module_utils.basic import missing_required_lib
+
 
 try:
     import ipaddress
@@ -45,6 +47,8 @@ def get_interface_type(interface):
         return "bridge"
     elif interface.startswith("dum"):
         return "dummy"
+    elif interface.startswith("vxlan"):
+        return "vxlan"
 
 
 def get_interface_with_vif(interface):
