@@ -22,72 +22,6 @@ from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.r
 )
 
 
-# interface types the module manages
-TYPES = r"ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard"
-
-# set interfaces <type> <name>; the name is quoted when it ends the line ('lo')
-INTF = (
-    r"""
-    ^set
-    \s+interfaces
-    \s+(?P<type>"""
-    + TYPES
-    + r""")
-    \s+'?(?P<name>[^'\s]+)'?
-"""
-)
-
-# ... vif <vlan-id>
-VIF = (
-    INTF
-    + r"""
-    \s+vif
-    \s+'?(?P<vlan>\d+)'?
-"""
-)
-
-# a value, quoted ('text with spaces') or not
-VALUE = r"""
-    \s+(?:'(?P<q>.*)'|(?P<u>\S+))
-    \s*$
-"""
-
-VAL = "{{ q if q is defined else u }}"
-
-
-def _intf_parser(name, keyword, key=None):
-    """An interface option with a value, e.g. description 'text'."""
-    key = key or name
-    return {
-        "name": name,
-        "getval": re.compile(INTF + r"\s+" + keyword + VALUE, re.VERBOSE),
-        "setval": "interfaces {{ type }} {{ name }} " + keyword + " '{{ " + key + " }}'",
-        "remval": "interfaces {{ type }} {{ name }} " + keyword,
-        "result": {"{{ name }}": {"name": "{{ name }}", key: VAL}},
-    }
-
-
-def _vif_parser(name, keyword, key):
-    """A vif option with a value, e.g. vif 10 description 'text'."""
-    return {
-        "name": name,
-        "getval": re.compile(VIF + r"\s+" + keyword + VALUE, re.VERBOSE),
-        "setval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} "
-        + keyword
-        + " '{{ vifs."
-        + key
-        + " }}'",
-        "remval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} " + keyword,
-        "compval": "vifs." + key,
-        "result": {
-            "{{ name }}": {
-                "name": "{{ name }}",
-                "vifs": {"{{ vlan }}": {"vlan_id": "{{ vlan }}", key: VAL}},
-            },
-        },
-    }
-
-
 class InterfacesTemplate(NetworkTemplate):
     def __init__(self, lines=None, module=None):
         prefix = {"set": "set", "remove": "delete"}
@@ -102,23 +36,203 @@ class InterfacesTemplate(NetworkTemplate):
     # then the vif catch-all, then the interface catch-all.
     # fmt: off
     PARSERS = [
-        _intf_parser("description", "description"),
-        _intf_parser("mtu", "mtu"),
-        _intf_parser("duplex", "duplex"),
-        _intf_parser("speed", "speed"),
-        _intf_parser("vrf", "vrf"),
+        # set interfaces <type> <name> description <value>
+        {
+            "name": "description",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+description
+                \s+(?:'(?P<q>.*)'|(?P<u>\S+))
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} description '{{ description }}'",
+            "remval": "interfaces {{ type }} {{ name }} description",
+            "result": {"{{ name }}": {"name": "{{ name }}", "description": "{{ q if q is defined else u }}"}},
+        },
+        # set interfaces <type> <name> mtu <value>
+        {
+            "name": "mtu",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+mtu
+                \s+(?:'(?P<q>.*)'|(?P<u>\S+))
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} mtu '{{ mtu }}'",
+            "remval": "interfaces {{ type }} {{ name }} mtu",
+            "result": {"{{ name }}": {"name": "{{ name }}", "mtu": "{{ q if q is defined else u }}"}},
+        },
+        # set interfaces <type> <name> duplex <value>
+        {
+            "name": "duplex",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+duplex
+                \s+(?:'(?P<q>.*)'|(?P<u>\S+))
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} duplex '{{ duplex }}'",
+            "remval": "interfaces {{ type }} {{ name }} duplex",
+            "result": {"{{ name }}": {"name": "{{ name }}", "duplex": "{{ q if q is defined else u }}"}},
+        },
+        # set interfaces <type> <name> speed <value>
+        {
+            "name": "speed",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+speed
+                \s+(?:'(?P<q>.*)'|(?P<u>\S+))
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} speed '{{ speed }}'",
+            "remval": "interfaces {{ type }} {{ name }} speed",
+            "result": {"{{ name }}": {"name": "{{ name }}", "speed": "{{ q if q is defined else u }}"}},
+        },
+        # set interfaces <type> <name> vrf <value>
+        {
+            "name": "vrf",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+vrf
+                \s+(?:'(?P<q>.*)'|(?P<u>\S+))
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} vrf '{{ vrf }}'",
+            "remval": "interfaces {{ type }} {{ name }} vrf",
+            "result": {"{{ name }}": {"name": "{{ name }}", "vrf": "{{ q if q is defined else u }}"}},
+        },
         {
             "name": "disable",
-            "getval": re.compile(INTF + r"\s+disable\s*$", re.VERBOSE),
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+disable
+                \s*$""",
+                re.VERBOSE,
+            ),
             "setval": "interfaces {{ type }} {{ name }} disable",
             "result": {"{{ name }}": {"name": "{{ name }}", "enabled": False}},
         },
-        _vif_parser("vifs.description", "description", "description"),
-        _vif_parser("vifs.mtu", "mtu", "mtu"),
-        _vif_parser("vifs.vrf", "vrf", "vrf"),
+        # set interfaces <type> <name> vif <vlan-id> description <value>
+        {
+            "name": "vifs.description",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+vif
+                \s+'?(?P<vlan>\d+)'?
+                \s+description
+                \s+(?:'(?P<q>.*)'|(?P<u>\S+))
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} description '{{ vifs.description }}'",
+            "remval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} description",
+            "compval": "vifs.description",
+            "result": {
+                "{{ name }}": {
+                    "name": "{{ name }}",
+                    "vifs": {"{{ vlan }}": {"vlan_id": "{{ vlan }}", "description": "{{ q if q is defined else u }}"}},
+                },
+            },
+        },
+        # set interfaces <type> <name> vif <vlan-id> mtu <value>
+        {
+            "name": "vifs.mtu",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+vif
+                \s+'?(?P<vlan>\d+)'?
+                \s+mtu
+                \s+(?:'(?P<q>.*)'|(?P<u>\S+))
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} mtu '{{ vifs.mtu }}'",
+            "remval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} mtu",
+            "compval": "vifs.mtu",
+            "result": {
+                "{{ name }}": {
+                    "name": "{{ name }}",
+                    "vifs": {"{{ vlan }}": {"vlan_id": "{{ vlan }}", "mtu": "{{ q if q is defined else u }}"}},
+                },
+            },
+        },
+        # set interfaces <type> <name> vif <vlan-id> vrf <value>
+        {
+            "name": "vifs.vrf",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+vif
+                \s+'?(?P<vlan>\d+)'?
+                \s+vrf
+                \s+(?:'(?P<q>.*)'|(?P<u>\S+))
+                \s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} vrf '{{ vifs.vrf }}'",
+            "remval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} vrf",
+            "compval": "vifs.vrf",
+            "result": {
+                "{{ name }}": {
+                    "name": "{{ name }}",
+                    "vifs": {"{{ vlan }}": {"vlan_id": "{{ vlan }}", "vrf": "{{ q if q is defined else u }}"}},
+                },
+            },
+        },
         {
             "name": "vifs.disable",
-            "getval": re.compile(VIF + r"\s+disable\s*$", re.VERBOSE),
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+vif
+                \s+'?(?P<vlan>\d+)'?
+                \s+disable
+                \s*$""",
+                re.VERBOSE,
+            ),
             "setval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }} disable",
             "result": {
                 "{{ name }}": {
@@ -182,7 +296,17 @@ class InterfacesTemplate(NetworkTemplate):
         {
             # any other vif line: the vif exists
             "name": "vifs",
-            "getval": re.compile(VIF + r"(?:\s.*)?$", re.VERBOSE),
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                \s+vif
+                \s+'?(?P<vlan>\d+)'?
+                (?:\s.*)?$""",
+                re.VERBOSE,
+            ),
             "setval": "interfaces {{ type }} {{ name }} vif {{ vifs.vlan_id }}",
             "result": {
                 "{{ name }}": {
@@ -413,7 +537,15 @@ class InterfacesTemplate(NetworkTemplate):
         {
             # any other interface line: the interface exists
             "name": "name",
-            "getval": re.compile(INTF + r"(?:\s.*)?$", re.VERBOSE),
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+interfaces
+                \s+(?P<type>ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard)
+                \s+'?(?P<name>[^'\s]+)'?
+                (?:\s.*)?$""",
+                re.VERBOSE,
+            ),
             "setval": "interfaces {{ type }} {{ name }}",
             "result": {"{{ name }}": {"name": "{{ name }}"}},
         },
