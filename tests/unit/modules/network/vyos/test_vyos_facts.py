@@ -171,3 +171,10 @@ class TestVyosFactsModule(TestVyosModule):
         facts = self.execute_module()["ansible_facts"]
         self.assertNotIn("ansible_net_secure_boot", facts)
         self.assertEqual(len(facts), 10)
+
+    def test_vyos_facts_secure_boot_connection_error(self):
+        # a connection problem is not "command not supported": the module fails
+        self.outputs = {"show secure-boot": ConnectionError("timeout value 30 seconds reached")}
+        set_module_args(dict(gather_subset="default"))
+        result = self.execute_module(failed=True)
+        self.assertIn("timeout value 30 seconds reached", result["msg"])

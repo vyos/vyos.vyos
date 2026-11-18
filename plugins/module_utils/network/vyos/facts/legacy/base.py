@@ -16,6 +16,7 @@ __metaclass__ = type
 import platform
 import re
 
+from ansible.module_utils.common.text.converters import to_text
 from ansible.module_utils.connection import ConnectionError
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
@@ -80,11 +81,18 @@ class Default(LegacyFactsBase):
         return facts
 
     def run_optional(self, command):
-        """Output of a command the image may not have, or None when the device rejects it."""
+        """Output of a command the image may not have, or None when the device rejects it.
+
+        Only "Invalid command" means the image lacks the command; other connection errors
+        (timeouts, disconnects) fail the module as in run_commands.
+        """
         try:
             return get_connection(self.module).run_commands(commands=[command])[0]
-        except ConnectionError:
-            return None
+        except ConnectionError as exc:
+            msg = to_text(exc, errors="surrogate_then_replace")
+            if "Invalid command" in msg:
+                return None
+            self.module.fail_json(msg=msg)
 
     def parse_serialnum(self, data):
         match = re.search(r"(?:HW|Hardware) S/N:\s+(\S+)", data)
