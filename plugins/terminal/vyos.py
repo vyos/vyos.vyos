@@ -18,6 +18,7 @@
 #
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 import os
@@ -40,18 +41,27 @@ class TerminalModule(TerminalBase):
         re.compile(rb"\n\s+Delete failed"),
     ]
 
-    ansi_re = TerminalBase.ansi_re + [
-        # Color codes
-        re.compile(rb"\x1b\[(\d+(;\d+)*)?m"),
-        # Clear line (CSI K)
-        re.compile(rb"\x1b\[K"),
-        # Xterm change cursor mode (CSI ? 1 [h|l])
-        re.compile(rb"\x1b\[\?1(h|l)"),
-        # Xterm change keypad (ESC [=|>])
-        re.compile(rb"\x1b(=|>)"),
-        # Xterm window title string (OSC <title string> BEL)
-        re.compile(rb"\x1b]0;[^\x07]*\x07"),
-    ]
+    ansi_re = (
+        [
+            re.compile(
+                rb"\x1b\[\?2004[hl]",
+            ),  # bracketed paste (rolling), before \x08. can eat its ESC
+            re.compile(rb" \x08"),  # 512-col wrap artefact, before \x08. eats the real char
+        ]
+        + TerminalBase.ansi_re
+        + [
+            # Color codes
+            re.compile(rb"\x1b\[(\d+(;\d+)*)?m"),
+            # Clear line (CSI K)
+            re.compile(rb"\x1b\[K"),
+            # Xterm change cursor mode (CSI ? 1 [h|l])
+            re.compile(rb"\x1b\[\?1(h|l)"),
+            # Xterm change keypad (ESC [=|>])
+            re.compile(rb"\x1b(=|>)"),
+            # Xterm window title string (OSC <title string> BEL)
+            re.compile(rb"\x1b]0;[^\x07]*\x07"),
+        ]
+    )
 
     terminal_config_prompt = re.compile(r"^.+#$")
 
