@@ -959,3 +959,132 @@ class TestVyosNatModule(TestVyosModule):
             commands=commands,
             filename="vyos_nat_config_dnat_source.cfg",
         )
+
+    # -------------------------------------------------------------------------
+    # group matches on NAT66 rules
+    # -------------------------------------------------------------------------
+    def test_vyos_nat_parsed_nat66_groups(self):
+        # NAT66 rules with group matches used to fail argspec validation
+        set_module_args(
+            dict(
+                running_config="set nat66 source rule 10 source group network-group 'LAN6'\n"
+                "set nat66 source rule 10 destination group address-group 'REMOTE6'\n"
+                "set nat66 source rule 10 translation address 'masquerade'\n"
+                "set nat66 destination rule 20 source group domain-group 'PARTNERS'\n"
+                "set nat66 destination rule 20 destination group port-group 'WEB'\n"
+                "set nat66 destination rule 20 translation address '2001:db8::10'",
+                state="parsed",
+            ),
+        )
+        parsed = self.execute_module(changed=False)["parsed"]["nat66"]
+        self.assertEqual(
+            parsed["source"]["rule"],
+            [
+                {
+                    "id": 10,
+                    "source": {"network_group": "LAN6"},
+                    "destination": {"address_group": "REMOTE6"},
+                    "translation": {"address": "masquerade"},
+                },
+            ],
+        )
+        self.assertEqual(
+            parsed["destination"]["rule"],
+            [
+                {
+                    "id": 20,
+                    "source": {"domain_group": "PARTNERS"},
+                    "destination": {"port_group": "WEB"},
+                    "translation": {"address": "2001:db8::10"},
+                },
+            ],
+        )
+
+    def test_vyos_nat_merged_nat66_groups(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat66=dict(
+                        destination=dict(
+                            rule=[
+                                dict(
+                                    id=21,
+                                    inbound_interface=dict(name="eth1"),
+                                    source=dict(port_group="HIGH"),
+                                    destination=dict(address_group="WEB6"),
+                                    translation=dict(address="2001:db8::21"),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+                state="merged",
+            ),
+        )
+        commands = [
+            "set nat66 destination rule 21 inbound-interface name eth1",
+            "set nat66 destination rule 21 source group port-group HIGH",
+            "set nat66 destination rule 21 destination group address-group WEB6",
+            "set nat66 destination rule 21 translation address 2001:db8::21",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_nat_merged_nat66_groups_idempotent(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat66=dict(
+                        source=dict(
+                            rule=[
+                                dict(
+                                    id=10,
+                                    outbound_interface=dict(name="eth0"),
+                                    source=dict(network_group="LAN6"),
+                                    destination=dict(network_group="REMOTE6"),
+                                    translation=dict(address="masquerade"),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+                state="merged",
+            ),
+        )
+        self.execute_module(
+            changed=False,
+            commands=[],
+            filename="vyos_nat_config_nat66_groups.cfg",
+        )
+
+    def test_vyos_nat_replaced_nat66_group_removed(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat66=dict(
+                        source=dict(
+                            rule=[
+                                dict(
+                                    id=10,
+                                    outbound_interface=dict(name="eth0"),
+                                    source=dict(network_group="LAN6"),
+                                    translation=dict(address="masquerade"),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+                state="replaced",
+            ),
+        )
+        # replaced re-creates the rule; the destination group is gone afterwards
+        commands = [
+            "delete nat66 source rule 10",
+            "set nat66 source rule 10 outbound-interface name eth0",
+            "set nat66 source rule 10 source group network-group LAN6",
+            "set nat66 source rule 10 translation address masquerade",
+        ]
+        self.execute_module(
+            changed=True,
+            commands=commands,
+            filename="vyos_nat_config_nat66_groups.cfg",
+        )

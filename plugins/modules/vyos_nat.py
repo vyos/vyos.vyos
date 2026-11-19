@@ -538,6 +538,21 @@ options:
                       port:
                         type: str
                         description: Port number or range to match.
+                      address_group:
+                        type: str
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
                   disable:
                     type: bool
                     description: Disable this NAT66 destination rule.
@@ -567,6 +582,21 @@ options:
                       port:
                         type: str
                         description: Source port number or range to match.
+                      address_group:
+                        type: str
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
                   translation:
                     type: dict
                     description: Translation configuration for NAT66 destination rule.
@@ -603,6 +633,21 @@ options:
                       prefix:
                         type: str
                         description: IPv6 destination prefix to match (h:h:h:h:h:h:h:h/x).
+                      address_group:
+                        type: str
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
                   disable:
                     type: bool
                     description: Disable this NAT66 source rule.
@@ -632,6 +677,21 @@ options:
                       prefix:
                         type: str
                         description: IPv6 source prefix to match (h:h:h:h:h:h:h:h/x).
+                      address_group:
+                        type: str
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
                   translation:
                     type: dict
                     description: Translation configuration for NAT66 source rule.

@@ -3,3 +3,6 @@ bugfixes:
   - vyos_nat - destination NAT rules accept a source match (address, port, fqdn and the address,
     domain, MAC, network and port groups), as VyOS does; before, a router with such a rule made the
     module fail in every state with "Unsupported parameters ... config.nat.destination.rule.source".
+  - vyos_nat - NAT66 source and destination rules accept group matches (address, domain, MAC, network
+    and port groups) on their source and destination, as VyOS does; before, a router with such a
+    rule made the module fail in every state with "Unsupported parameters ... network_group".

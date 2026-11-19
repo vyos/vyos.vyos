@@ -153,3 +153,51 @@
 
   always:
     - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Create the IPv6 network group the NAT66 rule refers to
+      vyos.vyos.vyos_config:
+        lines:
+          - set firewall group ipv6-network-group LAN6 network 2001:db8:1::/64
+
+    - name: Merge a NAT66 source rule with a group match
+      register: result
+      vyos.vyos.vyos_nat: &id_nat66_group
+        config:
+          nat66:
+            source:
+              rule:
+                - id: 10
+                  outbound_interface:
+                    name: eth1
+                  source:
+                    network_group: LAN6
+                  translation:
+                    address: masquerade
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: nat
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set nat66 source rule 10 source group network-group LAN6' in result.commands"
+          - result.after|symmetric_difference(ansible_facts['network_resources']['nat']) == []
+
+    - name: Merge a NAT66 source rule with a group match (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id_nat66_group
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+    - name: Remove the IPv6 network group
+      vyos.vyos.vyos_config:
+        lines:
+          - delete firewall group ipv6-network-group LAN6

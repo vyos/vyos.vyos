@@ -519,10 +519,25 @@ class NatArgs(object):  # pylint: disable=R0903
                                         "destination": {
                                             "type": "dict",
                                             "options": {
+                                                "port": {
+                                                    "type": "str",
+                                                },
                                                 "address": {
                                                     "type": "str",
                                                 },
-                                                "port": {
+                                                "address_group": {
+                                                    "type": "str",
+                                                },
+                                                "domain_group": {
+                                                    "type": "str",
+                                                },
+                                                "mac_group": {
+                                                    "type": "str",
+                                                },
+                                                "network_group": {
+                                                    "type": "str",
+                                                },
+                                                "port_group": {
                                                     "type": "str",
                                                 },
                                             },
@@ -554,6 +569,21 @@ class NatArgs(object):  # pylint: disable=R0903
                                                     "type": "str",
                                                 },
                                                 "port": {
+                                                    "type": "str",
+                                                },
+                                                "address_group": {
+                                                    "type": "str",
+                                                },
+                                                "domain_group": {
+                                                    "type": "str",
+                                                },
+                                                "mac_group": {
+                                                    "type": "str",
+                                                },
+                                                "network_group": {
+                                                    "type": "str",
+                                                },
+                                                "port_group": {
                                                     "type": "str",
                                                 },
                                             },
@@ -593,6 +623,21 @@ class NatArgs(object):  # pylint: disable=R0903
                                                 "port": {
                                                     "type": "str",
                                                 },
+                                                "address_group": {
+                                                    "type": "str",
+                                                },
+                                                "domain_group": {
+                                                    "type": "str",
+                                                },
+                                                "mac_group": {
+                                                    "type": "str",
+                                                },
+                                                "network_group": {
+                                                    "type": "str",
+                                                },
+                                                "port_group": {
+                                                    "type": "str",
+                                                },
                                                 "prefix": {
                                                     "type": "str",
                                                 },
@@ -622,6 +667,21 @@ class NatArgs(object):  # pylint: disable=R0903
                                             "type": "dict",
                                             "options": {
                                                 "port": {
+                                                    "type": "str",
+                                                },
+                                                "address_group": {
+                                                    "type": "str",
+                                                },
+                                                "domain_group": {
+                                                    "type": "str",
+                                                },
+                                                "mac_group": {
+                                                    "type": "str",
+                                                },
+                                                "network_group": {
+                                                    "type": "str",
+                                                },
+                                                "port_group": {
                                                     "type": "str",
                                                 },
                                                 "prefix": {
