@@ -145,8 +145,8 @@ class TestVyosFactsModule(TestVyosModule):
         # format of the op-mode script (secure_boot.py); placeholder certificate names
         self.outputs = {
             "show secure-boot": "SecureBoot enabled",
-            "show secure-boot detail": "Issuer:  CN=VyOS Secure Boot CA\n"
-            "Subject: CN=VyOS Secure Boot Signer",
+            "show secure-boot detail": "Issuer:  /CN=VyOS Networks Secure Boot CA\n"
+            "Subject: /CN=VyOS Networks Secure Boot Signer 2025 - linux",
         }
         set_module_args(dict(gather_subset="default"))
         facts = self.execute_module()["ansible_facts"]
@@ -157,8 +157,8 @@ class TestVyosFactsModule(TestVyosModule):
                 "uefi": True,
                 "certificates": [
                     {
-                        "issuer": "CN=VyOS Secure Boot CA",
-                        "subject": "CN=VyOS Secure Boot Signer",
+                        "issuer": "/CN=VyOS Networks Secure Boot CA",
+                        "subject": "/CN=VyOS Networks Secure Boot Signer 2025 - linux",
                     },
                 ],
             },

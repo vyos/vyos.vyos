@@ -141,8 +141,8 @@ ansible_net_secure_boot:
     enabled: true
     uefi: true
     certificates:
-      - issuer: CN=VyOS Secure Boot CA
-        subject: CN=VyOS Secure Boot Signer
+      - issuer: /CN=VyOS Networks Secure Boot CA
+        subject: /CN=VyOS Networks Secure Boot Signer 2025 - linux
 ansible_net_version:
   description: The version of the software running
   returned: always
