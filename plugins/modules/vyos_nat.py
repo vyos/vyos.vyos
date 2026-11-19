@@ -179,6 +179,36 @@ options:
                       port_group:
                         type: str
                         description: Port group name to match.
+                  source:
+                    type: dict
+                    description:
+                      - Source match criteria for destination NAT, for example to forward only
+                        traffic from given sources.
+                    suboptions:
+                      address:
+                        type: str
+                        description: IP address, subnet, or range to match.
+                      fqdn:
+                        type: str
+                        description: Fully qualified domain name to match.
+                      port:
+                        type: str
+                        description: Port number or range to match.
+                      address_group:
+                        type: str
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
                   translation:
                     type: dict
                     description: Translation configuration for destination NAT.

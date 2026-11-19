@@ -108,3 +108,48 @@
 
   always:
     - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge a destination NAT rule restricted to a source
+      register: result
+      vyos.vyos.vyos_nat: &id_dnat_source
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 110
+                  description: Partner SSH
+                  protocol: tcp
+                  inbound_interface:
+                    name: eth1
+                  destination:
+                    port: "2222"
+                  source:
+                    address: 203.0.113.5
+                    port: 1024-65535
+                  translation:
+                    address: 192.168.1.20
+                    port: "22"
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: nat
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set nat destination rule 110 source address 203.0.113.5' in result.commands"
+          - "'set nat destination rule 110 source port 1024-65535' in result.commands"
+          - result.after|symmetric_difference(ansible_facts['network_resources']['nat']) == []
+
+    - name: Merge a destination NAT rule restricted to a source (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id_dnat_source
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

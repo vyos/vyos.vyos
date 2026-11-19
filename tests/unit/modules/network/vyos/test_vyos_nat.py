@@ -837,3 +837,125 @@ class TestVyosNatModule(TestVyosModule):
             "set nat destination rule 105 load-balance backend 10.10.10.1 weight 100",
         ]
         self.execute_module(changed=True, commands=commands)
+
+    # -------------------------------------------------------------------------
+    # source match on destination NAT rules
+    # -------------------------------------------------------------------------
+    def test_vyos_nat_parsed_destination_rule_source(self):
+        # a destination rule with a source match used to fail argspec validation
+        set_module_args(
+            dict(
+                running_config="set nat destination rule 110 source address '203.0.113.5'\n"
+                "set nat destination rule 110 source group network-group 'PARTNERS'\n"
+                "set nat destination rule 110 translation address '192.168.1.20'",
+                state="parsed",
+            ),
+        )
+        result = self.execute_module(changed=False)
+        self.assertEqual(
+            result["parsed"]["nat"]["destination"]["rule"],
+            [
+                {
+                    "id": 110,
+                    "source": {"address": "203.0.113.5", "network_group": "PARTNERS"},
+                    "translation": {"address": "192.168.1.20"},
+                },
+            ],
+        )
+
+    def test_vyos_nat_merged_destination_rule_source(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat=dict(
+                        destination=dict(
+                            rule=[
+                                dict(
+                                    id=111,
+                                    protocol="tcp",
+                                    destination=dict(port="443"),
+                                    source=dict(address="203.0.113.0/24", port_group="HIGH"),
+                                    translation=dict(address="192.168.1.30"),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+                state="merged",
+            ),
+        )
+        commands = [
+            "set nat destination rule 111 protocol tcp",
+            "set nat destination rule 111 destination port 443",
+            "set nat destination rule 111 source address 203.0.113.0/24",
+            "set nat destination rule 111 source group port-group HIGH",
+            "set nat destination rule 111 translation address 192.168.1.30",
+        ]
+        self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_nat_merged_destination_rule_source_idempotent(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat=dict(
+                        destination=dict(
+                            rule=[
+                                dict(
+                                    id=110,
+                                    description="Partner SSH",
+                                    protocol="tcp",
+                                    inbound_interface=dict(name="eth0"),
+                                    destination=dict(port="2222"),
+                                    source=dict(address="203.0.113.5", port="1024-65535"),
+                                    translation=dict(address="192.168.1.20", port="22"),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+                state="merged",
+            ),
+        )
+        self.execute_module(
+            changed=False,
+            commands=[],
+            filename="vyos_nat_config_dnat_source.cfg",
+        )
+
+    def test_vyos_nat_replaced_destination_rule_source_removed(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    nat=dict(
+                        destination=dict(
+                            rule=[
+                                dict(
+                                    id=110,
+                                    description="Partner SSH",
+                                    protocol="tcp",
+                                    inbound_interface=dict(name="eth0"),
+                                    destination=dict(port="2222"),
+                                    translation=dict(address="192.168.1.20", port="22"),
+                                ),
+                            ],
+                        ),
+                    ),
+                ),
+                state="replaced",
+            ),
+        )
+        # replaced re-creates the rule; the source match is gone afterwards
+        commands = [
+            "delete nat destination rule 110",
+            "set nat destination rule 110 description 'Partner SSH'",
+            "set nat destination rule 110 protocol tcp",
+            "set nat destination rule 110 inbound-interface name eth0",
+            "set nat destination rule 110 destination port 2222",
+            "set nat destination rule 110 translation address 192.168.1.20",
+            "set nat destination rule 110 translation port 22",
+        ]
+        self.execute_module(
+            changed=True,
+            commands=commands,
+            filename="vyos_nat_config_dnat_source.cfg",
+        )

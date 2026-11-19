@@ -176,6 +176,19 @@ class NatArgs(object):  # pylint: disable=R0903
                                                 },
                                             },
                                         },
+                                        "source": {
+                                            "type": "dict",
+                                            "options": {
+                                                "address": {"type": "str"},
+                                                "fqdn": {"type": "str"},
+                                                "port": {"type": "str"},
+                                                "address_group": {"type": "str"},
+                                                "domain_group": {"type": "str"},
+                                                "mac_group": {"type": "str"},
+                                                "network_group": {"type": "str"},
+                                                "port_group": {"type": "str"},
+                                            },
+                                        },
                                         "translation": {
                                             "type": "dict",
                                             "options": {
