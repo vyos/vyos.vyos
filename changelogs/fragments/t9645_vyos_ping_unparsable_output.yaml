@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - vyos_ping - fail with ``Unable to parse ping output`` and the raw output instead of crashing with a Python traceback when the ping output has no statistics line, for example for an unresolvable host (https://vyos.dev/T9645).
