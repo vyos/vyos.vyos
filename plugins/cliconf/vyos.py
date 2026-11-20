@@ -335,13 +335,14 @@ class Cliconf(CliconfBase):
                     )
             return diff
 
-        running_commands = [str(c).replace("'", "") for c in running.splitlines()]
+        # running config quotes values with single quotes, candidates may use either
+        running_commands = [str(c).replace("'", "").replace('"', "") for c in running.splitlines()]
 
         updates = list()
         visited = set()
 
         for line in candidate_commands:
-            item = str(line).replace("'", "")
+            item = str(line).replace("'", "").replace('"', "")
 
             if not item.startswith("set") and not item.startswith("delete"):
                 raise ValueError("line must start with either `set` or `delete`")
@@ -357,7 +358,7 @@ class Cliconf(CliconfBase):
                     item = re.sub(r"delete", "set", item)
 
                     for entry in running_commands:
-                        if re.match(rf"^{re.escape(item)}\b", entry) and line not in visited:
+                        if re.match(rf"^{re.escape(item)}(\s|$)", entry) and line not in visited:
                             updates.append(line)
                             visited.add(line)
 

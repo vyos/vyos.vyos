@@ -1,0 +1,4 @@
+---
+bugfixes:
+  - vyos_config - with ``match=line``, strip double quotes as well as single quotes when comparing candidate and running lines, so a value written in double quotes is idempotent (https://vyos.dev/T9644).
+  - vyos_config - with ``match=line``, match ``delete`` lines against the running config on whole words only. Previously ``delete ... address 10.0.0.1`` matched the running ``address '10.0.0.1/24'`` and sent a delete for a node that does not exist, failing the commit (https://vyos.dev/T9644).
