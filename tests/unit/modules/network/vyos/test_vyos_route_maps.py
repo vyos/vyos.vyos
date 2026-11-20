@@ -544,7 +544,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                             dict(
                                 sequence=1,
                                 action="permit",
-                                description="test",
+                                description="test route map",
                                 on_match=dict(next=True),
                             ),
                             dict(
@@ -577,7 +577,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
             "set policy route-map test3 rule 1 match peer 1.1.1.2",
             "set policy route-map test3 rule 1 match ipv6 nexthop fdda:5cc1:23:4::1f",
             "set policy route-map test3 rule 1 match rpki invalid",
-            "set policy route-map test1 rule 1 description test",
+            "set policy route-map test1 rule 1 description 'test route map'",
             "set policy route-map test1 rule 1 action permit",
             "set policy route-map test1 rule 1 on-match next",
             "set policy route-map test1 rule 2 action permit",
@@ -602,6 +602,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
             "rule 1 set metric-type 'type-1'\nset policy route-map test3 rule 1 set origin 'egp'\nset policy route-map test3 rule 1 set originator-id "
             "'10.0.2.3'\nset policy route-map test3 rule 1 set src '10.0.2.15'"
             "\nset policy route-map test3 rule 1 set tag '5'\nset policy route-map test3 rule 1 set weight '4'"
+            "\nset policy route-map test3 rule 1 description 'test route map'"
         )
         set_module_args(dict(running_config=parsed_str, state="parsed"))
         result = self.execute_module(changed=False)
@@ -610,6 +611,7 @@ class TestVyosRouteMapsModule(TestVyosModule):
                 "entries": [
                     {
                         "action": "permit",
+                        "description": "test route map",
                         "match": {
                             "interface": "eth2",
                             "ipv6": {"next_hop": "fdda:5cc1:23:4::1f"},

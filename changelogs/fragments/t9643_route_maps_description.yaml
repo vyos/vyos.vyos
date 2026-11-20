@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - vyos_route_maps - parse rule descriptions containing spaces and quote the description in generated commands. Previously such descriptions were dropped from facts and rendered as an invalid unquoted command, so tasks were never idempotent (https://vyos.dev/T9643).
