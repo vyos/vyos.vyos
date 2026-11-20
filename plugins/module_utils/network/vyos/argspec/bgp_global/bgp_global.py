@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 #############################################
@@ -64,7 +65,19 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                         "peer_group_name": {"type": "str"},
                         "peer_group": {"type": "bool"},
                         "port": {"type": "int"},
-                        "remote_as": {"type": "int"},
+                        "remote_as": {"type": "raw"},
+                        "interface": {
+                            "type": "dict",
+                            "options": {
+                                "v6only": {
+                                    "type": "dict",
+                                    "options": {
+                                        "peer_group": {"type": "str"},
+                                        "remote_as": {"type": "raw"},
+                                    },
+                                },
+                            },
+                        },
                         "solo": {"type": "bool"},
                         "shutdown": {"type": "bool"},
                         "strict_capability_match": {"type": "bool"},
@@ -96,7 +109,7 @@ class Bgp_globalArgs(object):  # pylint: disable=R0903
                             "options": {
                                 "as_path": {
                                     "type": "str",
-                                    "choices": ["confed", "ignore"],
+                                    "choices": ["confed", "ignore", "multipath-relax"],
                                 },
                                 "compare_routerid": {"type": "bool"},
                                 "med": {

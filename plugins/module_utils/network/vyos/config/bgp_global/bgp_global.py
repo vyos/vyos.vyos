@@ -7,6 +7,9 @@
 
 from __future__ import absolute_import, division, print_function
 
+import re
+
+
 __metaclass__ = type
 
 """
@@ -92,6 +95,45 @@ class Bgp_global(ResourceModule):
         """
         wantd = {}
         haved = {}
+
+        # remote_as is an AS number or "external"/"internal"; numbers are compared as int
+        for neighbor in self.want.get("neighbor", []):
+            if "remote_as" in neighbor:
+                neighbor["remote_as"] = self._remote_as(neighbor["address"], neighbor["remote_as"])
+            v6only = neighbor.get("interface", {}).get("v6only", {})
+            if "remote_as" in v6only:
+                v6only["remote_as"] = self._remote_as(neighbor["address"], v6only["remote_as"])
+        # Options without a CLI path on VyOS 1.4 and later are dropped from want, with a
+        # warning. The version is only checked when one of them is set (no device access
+        # otherwise, e.g. for state rendered).
+        default = self.want.get("bgp_params", {}).get("default", {})
+        neighbors = [n for n in self.want.get("neighbor", []) if "default_originate" in n]
+        if ("no_ipv4_unicast" in default or neighbors) and LooseVersion(
+            get_os_version(self._module),
+        ) >= LooseVersion("1.4"):
+            # no "parameters default no-ipv4-unicast": FRR always has it
+            if default.pop("no_ipv4_unicast", None) is not None:
+                self._module.warn(
+                    "no_ipv4_unicast is ignored: VyOS 1.4 and later always apply it "
+                    "(no bgp default ipv4-unicast)",
+                )
+                if not default:
+                    self.want["bgp_params"].pop("default")
+            # default-originate only exists per address family
+            for neighbor in neighbors:
+                neighbor.pop("default_originate")
+                self._module.warn(
+                    "neighbor {0}: default_originate is ignored: VyOS 1.4 and later only "
+                    "support it per address family, see vyos_bgp_address_family".format(
+                        neighbor["address"],
+                    ),
+                )
+
+        if self.want and self.want.get("as_number") is None and self.state != "deleted":
+            self._module.fail_json(
+                msg="as_number is required: VyOS needs a system-as for every BGP "
+                "instance, including the BGP instance of each VRF",
+            )
 
         if (
             self.want.get("as_number") == self.have.get("as_number")
@@ -181,6 +223,8 @@ class Bgp_global(ResourceModule):
             "neighbor.capability_orf",
             "neighbor.default_originate",
             "neighbor.description",
+            "neighbor.interface.v6only.peer_group",
+            "neighbor.interface.v6only.remote_as",
             "neighbor.disable_capability_negotiation",
             "neighbor.disable_connected_check",
             "neighbor.disable_send_community",
@@ -213,6 +257,8 @@ class Bgp_global(ResourceModule):
 
         wneigh = want.pop("neighbor", {})
         hneigh = have.pop("neighbor", {})
+        peer_groups = [n for d in (wneigh, hneigh) for n, e in d.items() if e.get("peer_group")]
+        first = len(self.commands)
         self._compare_neigh_lists(wneigh, hneigh)
 
         for name, entry in wneigh.items():
@@ -252,6 +298,15 @@ class Bgp_global(ResourceModule):
                         "neighbor": {"address": name, k: v},
                     },
                 )
+        # peer-group definitions are compared like neighbors, then renamed
+        for i, cmd in enumerate(self.commands[first:], first):
+            for name in peer_groups:
+                cmd = re.sub(
+                    r"^(\S+ protocols bgp )neighbor " + re.escape(name) + r"(?= |$)",
+                    r"\1peer-group " + name,
+                    cmd,
+                )
+            self.commands[i] = cmd
 
     def _compare_bgp_params(self, want, have):
         parsers = [
@@ -279,6 +334,19 @@ class Bgp_global(ResourceModule):
 
         wbgp = want.pop("bgp_params", {})
         hbgp = have.pop("bgp_params", {})
+        # The as-path flags (confed, ignore, multipath-relax) are separate leaves in VyOS:
+        # changing as_path has to delete the flag it replaces.
+        w_as_path = wbgp.get("bestpath", {}).get("as_path")
+        h_as_path = hbgp.get("bestpath", {}).get("as_path")
+        if w_as_path and h_as_path and w_as_path != h_as_path:
+            self.addcmd(
+                {
+                    "as_number": want["as_number"],
+                    "bgp_params": {"bestpath": {"as_path": h_as_path}},
+                },
+                "bgp_params.bestpath.as_path",
+                True,
+            )
         for name, entry in wbgp.items():
             if name == "confederation":
                 if entry != hbgp.pop(name, {}):
@@ -400,16 +468,24 @@ class Bgp_global(ResourceModule):
             )
 
     def _check_af(self, neighbor):
-        af_present = False
-        if self._connection:
-            config_lines = self._get_config(self._connection).splitlines()
-            for line in config_lines:
-                if neighbor in line:
-                    if "address-family" in line:
-                        af_present = True
-        return af_present
+        if not self._connection:
+            return False
+        af_line = re.compile(
+            r"^set protocols bgp (?:\d+ )?(?:neighbor|peer-group) "
+            + re.escape(neighbor)
+            + r" address-family\b",
+        )
+        return any(af_line.match(line) for line in self._get_config(self._connection).splitlines())
 
     def _get_config(self, connection):
-        return connection.get(
-            'show configuration commands |  match "set protocols bgp .*neighbor"',
+        return connection.get('show configuration commands | match "set protocols bgp"')
+
+    def _remote_as(self, address, value):
+        if str(value) in ("external", "internal"):
+            return str(value)
+        if str(value).isdigit() and 1 <= int(value) <= 4294967294:
+            return int(value)
+        self._module.fail_json(
+            msg="neighbor {0}: remote_as must be an AS number (1-4294967294), "
+            "'external' or 'internal', got {1!r}".format(address, value),
         )

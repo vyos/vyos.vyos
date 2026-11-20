@@ -46,3 +46,251 @@
 
   always:
     - include_tasks: _remove_config.yaml
+
+- include_tasks: _get_version.yaml
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge a peer group and a member
+      register: result
+      vyos.vyos.vyos_bgp_global: &id002
+        config:
+          as_number: 65536
+          neighbor:
+            - address: RR-CLIENTS
+              peer_group: true
+              remote_as: 65536
+              update_source: lo
+            - address: 192.0.2.1
+              peer_group_name: RR-CLIENTS
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: bgp_global
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands|symmetric_difference(merged_peer_group.commands) == []
+          - result.after == ansible_facts['network_resources']['bgp_global']
+          - result.after == merged_peer_group.after
+
+    - name: Merge a peer group and a member (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_bgp_global: *id002
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  always:
+    - include_tasks: _remove_config.yaml
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge log-neighbor-changes only
+      register: result
+      vyos.vyos.vyos_bgp_global: &id003
+        config:
+          as_number: 65536
+          bgp_params:
+            log_neighbor_changes: true
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: bgp_global
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands|symmetric_difference(merged_reflection.commands) == []
+          - result.after == ansible_facts['network_resources']['bgp_global']
+          - result.after == merged_reflection.after
+
+    - name: Merge log-neighbor-changes only (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_bgp_global: *id003
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+    - name: Merge without as_number
+      register: result
+      ignore_errors: true
+      vyos.vyos.vyos_bgp_global:
+        config:
+          neighbor:
+            - address: 192.0.2.1
+              remote_as: 65002
+        state: merged
+
+    - assert:
+        that:
+          - result.failed == true
+          - "'as_number is required' in result.msg"
+
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  always:
+    - include_tasks: _remove_config.yaml
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge no_ipv4_unicast, which VyOS 1.4 and later always apply
+      register: result
+      vyos.vyos.vyos_bgp_global:
+        config:
+          as_number: 65536
+          bgp_params:
+            default:
+              no_ipv4_unicast: true
+        state: merged
+
+    - assert:
+        that:
+          - result.commands == ['set protocols bgp system-as 65536']
+          - result.warnings | select('search', 'no_ipv4_unicast is ignored') | list | length == 1
+
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  always:
+    - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge a neighbor with default_originate, which VyOS 1.4 and later only support per address family
+      register: result
+      vyos.vyos.vyos_bgp_global:
+        config:
+          as_number: 65536
+          neighbor:
+            - address: 192.0.2.1
+              remote_as: 65002
+              default_originate: RM-DEF
+        state: merged
+
+    - assert:
+        that:
+          - result.commands | select('search', 'default-originate') | list == []
+          - result.warnings | select('search', 'default_originate is ignored') | list | length == 1
+
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  always:
+    - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge bestpath as-path multipath-relax
+      register: result
+      vyos.vyos.vyos_bgp_global: &id005
+        config:
+          as_number: 65536
+          bgp_params:
+            bestpath:
+              as_path: multipath-relax
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: bgp_global
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set protocols bgp parameters bestpath as-path multipath-relax' in result.commands"
+          - result.after == ansible_facts['network_resources']['bgp_global']
+          - result.after.bgp_params.bestpath.as_path == 'multipath-relax'
+
+    - name: Merge bestpath as-path multipath-relax (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_bgp_global: *id005
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  always:
+    - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge a neighbor with remote-as external
+      register: result
+      vyos.vyos.vyos_bgp_global: &id006
+        config:
+          as_number: 65536
+          neighbor:
+            - address: 192.0.2.1
+              remote_as: external
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: bgp_global
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set protocols bgp neighbor 192.0.2.1 remote-as external' in result.commands"
+          - result.after == ansible_facts['network_resources']['bgp_global']
+          - (result.after.neighbor | selectattr('address', 'eq', '192.0.2.1') | first).remote_as == 'external'
+
+    - name: Merge a neighbor with remote-as external (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_bgp_global: *id006
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  always:
+    - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge v6only neighbors on interfaces (BGP unnumbered)
+      register: result
+      vyos.vyos.vyos_bgp_global: &id007
+        config:
+          as_number: 65536
+          neighbor:
+            - address: RR-CLIENTS
+              peer_group: true
+              remote_as: external
+            - address: eth1
+              interface:
+                v6only:
+                  remote_as: external
+            - address: eth2
+              interface:
+                v6only:
+                  peer_group: RR-CLIENTS
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: bgp_global
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set protocols bgp neighbor eth1 interface v6only remote-as external' in result.commands"
+          - "'set protocols bgp neighbor eth2 interface v6only peer-group RR-CLIENTS' in result.commands"
+          - result.after == ansible_facts['network_resources']['bgp_global']
+          - (result.after.neighbor | selectattr('address', 'eq', 'eth1') | first).interface.v6only.remote_as == 'external'
+          - (result.after.neighbor | selectattr('address', 'eq', 'eth2') | first).interface.v6only.peer_group == 'RR-CLIENTS'
+
+    - name: Merge v6only neighbors on interfaces (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_bgp_global: *id007
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  always:
+    - include_tasks: _remove_config.yaml

@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -485,3 +486,44 @@ class TestVyosBgpglobalModule(TestVyosModule):
             # ],
         }
         self.assertEqual(sorted(gather_list), sorted(result["gathered"]))
+
+    def test_vyos_bgp_global_bestpath_multipath_relax_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp 65536 parameters bestpath as-path multipath-relax",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {"as_number": 65536, "bgp_params": {"bestpath": {"as_path": "multipath-relax"}}},
+        )
+
+    def test_vyos_bgp_global_remote_as_external_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp 65536 neighbor 192.0.2.1 remote-as external",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {"as_number": 65536, "neighbor": [{"address": "192.0.2.1", "remote_as": "external"}]},
+        )
+
+    def test_vyos_bgp_global_interface_v6only_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp 65536 neighbor eth1 interface v6only remote-as external",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {
+                "as_number": 65536,
+                "neighbor": [
+                    {"address": "eth1", "interface": {"v6only": {"remote_as": "external"}}},
+                ],
+            },
+        )

@@ -1,0 +1,34 @@
+---
+minor_changes:
+  - vyos_vrf, vyos_bgp_global - Add error message for missing as_number (T9427).
+  - vyos_bgp_global - additional UAT/SIT test cases
+  - vyos_bgp_global - bgp_params.bestpath.as_path accepts multipath-relax
+    (protocols bgp parameters bestpath as-path multipath-relax). The same option is available
+    for the BGP instance of a VRF in vyos_vrf
+  - vyos_bgp_global - neighbor remote_as accepts external and internal next to an AS number
+    (protocols bgp neighbor <address> remote-as external|internal); also for peer groups and,
+    in vyos_vrf, for the BGP instance of a VRF (T9429).
+  - vyos_bgp_global - new neighbor option interface.v6only with peer_group and remote_as, for BGP
+    unnumbered over IPv6 link-local addresses (protocols bgp neighbor <interface> interface v6only);
+    also for the BGP instance of a VRF in vyos_vrf. Existing v6only configuration on a device is now
+    read back; before, it was missing from the gathered facts (T9428).
+bugfixes:
+  - vyos_bgp_global - setting log_neighbor_changes no longer also sets
+    no-client-to-client-reflection, and no_client_to_client_reflection is now rendered on its own;
+    on a route reflector, enabling neighbour-change logging silently stopped reflection between
+    clients (VyOS 1.4 and later) (T9411).
+  - vyos_bgp_global - peer-group definitions (neighbor entries with peer_group true) are
+    configured as protocols bgp peer-group instead of an invalid neighbor, and are read back
+    from the device (VyOS 1.4 and later) (T9417).
+  - vyos_bgp_global - no_ipv4_unicast is ignored with a warning on VyOS 1.4 and later, which no
+    longer have "parameters default no-ipv4-unicast" and always apply it; before, the module
+    rendered the removed path and the commit failed (T9487).
+  - vyos_bgp_global - neighbor default_originate is ignored with a warning on VyOS 1.4 and later,
+    which only support default-originate per address family (vyos_bgp_address_family). Before, the
+    module could render the invalid "neighbor <address> default-originate" path, and the commit
+    failed.
+  - vyos_bgp_global - a neighbor configured with remote-as external or internal on the device
+    is read back as such; before, it was gathered as remote_as 0, so replaced tried to change it.
+  - vyos_bgp_global - changing bgp_params.bestpath.as_path deletes the previous as-path flag;
+    before, the old one (confed, ignore or multipath-relax) stayed configured next to the new
+    one, and the module reported a change on every run (T9429).

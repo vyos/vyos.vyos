@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -111,20 +112,11 @@ class TestVyosBgpglobalModule(TestVyosModule):
                             update_source="2001:db8::1",
                         ),
                     ],
-                    # network=[
-                    #     dict(address="172.16.42.32/27", backdoor=True),
-                    #     dict(address="172.16.42.251/32", route_map="map01"),
-                    # ],
                     bgp_params=dict(
                         bestpath=dict(as_path="confed", compare_routerid=True),
                         default=dict(no_ipv4_unicast=True),
                         router_id="10.1.1.1",
                     ),
-                    # redistribute=[
-                    #     dict(protocol="kernel", route_map="map01"),
-                    #     dict(protocol="static", metric=20),
-                    #     dict(protocol="static", route_map="map01"),
-                    # ],
                 ),
                 state="merged",
             ),
@@ -182,27 +174,17 @@ class TestVyosBgpglobalModule(TestVyosModule):
                             update_source="2001:db8::1",
                         ),
                     ],
-                    # network=[
-                    #     dict(address="172.16.42.32/27", backdoor=True),
-                    #     dict(address="172.16.42.251/32", route_map="map01"),
-                    # ],
                     bgp_params=dict(
                         bestpath=dict(as_path="confed", compare_routerid=True),
                         default=dict(no_ipv4_unicast=True),
                         router_id="10.1.1.1",
                     ),
-                    # redistribute=[
-                    #     dict(protocol="kernel", route_map="map01"),
-                    #     dict(protocol="static", metric=20),
-                    #     dict(protocol="static", route_map="map01"),
-                    # ],
                 ),
                 state="replaced",
             ),
         )
         self.execute_module(changed=False, commands=[])
 
-    #
     def test_vyos_bgp_global_replaced(self):
         set_module_args(
             dict(
@@ -230,11 +212,8 @@ class TestVyosBgpglobalModule(TestVyosModule):
             ),
         )
         commands = [
-            "delete protocols bgp parameters default",
             "delete protocols bgp parameters bestpath compare-routerid",
             "delete protocols bgp parameters bestpath as-path confed",
-            # "delete protocols bgp network",
-            # "delete protocols bgp redistribute",
             "delete protocols bgp neighbor 2001:db8::2 update-source 2001:db8::1",
             "delete protocols bgp neighbor 2001:db8::2 ebgp-multihop 2",
             "delete protocols bgp neighbor 192.168.0.2",
@@ -254,41 +233,6 @@ class TestVyosBgpglobalModule(TestVyosModule):
         #
         commands = ["delete protocols bgp"]
         self.execute_module(changed=True, commands=commands)
-
-    #
-    # def test_vyos_bgp_global_incorrect_instance(self):
-    #     set_module_args(
-    #         dict(
-    #             config=dict(
-    #                 as_number="100",
-    #                 timers=dict(holdtime=30, keepalive=10),
-    #                 neighbor=[
-    #                     dict(
-    #                         address="200.11.155.3",
-    #                         allowas_in=10,
-    #                     ),
-    #                     dict(
-    #                         address="2001:db8::2",
-    #                         remote_as="65535",
-    #                         as_override=True,
-    #                         default_originate="map01",
-    #                         route_map=[
-    #                             dict(action="export", route_map="map01"),
-    #                         ],
-    #                     ),
-    #                 ],
-    #                 bgp_params=dict(
-    #                     log_neighbor_changes=True,
-    #                     no_client_to_client_reflection=True,
-    #                     confederation=[dict(peers=20), dict(identifier=66)],
-    #                     router_id="10.1.1.1",
-    #                 ),
-    #             ),
-    #             state="replaced",
-    #         ),
-    #     )
-    #     result = self.execute_module(failed=True)
-    #     self.assertIn("Only one bgp instance is allowed per device", result["msg"])
 
     def test_vyos_bgp_global_replaced_af(self):
         set_module_args(
@@ -322,6 +266,16 @@ class TestVyosBgpglobalModule(TestVyosModule):
             result["msg"],
         )
 
+    def test_vyos_bgp_global_missing_as_number(self):
+        set_module_args(
+            dict(
+                config=dict(neighbor=[dict(address="192.0.2.1", remote_as=65002)]),
+                state="merged",
+            ),
+        )
+        result = self.execute_module(failed=True)
+        self.assertIn("as_number is required", result["msg"])
+
     def test_vyos_bgp_global_rendered(self):
         set_module_args(
             dict(
@@ -346,20 +300,11 @@ class TestVyosBgpglobalModule(TestVyosModule):
                             update_source="2001:db8::1",
                         ),
                     ],
-                    # network=[
-                    #     dict(address="172.16.42.32/27", backdoor=True),
-                    #     dict(address="172.16.42.251/32", route_map="map01"),
-                    # ],
                     bgp_params=dict(
                         bestpath=dict(as_path="confed", compare_routerid=True),
                         default=dict(no_ipv4_unicast=True),
                         router_id="10.1.1.1",
                     ),
-                    # redistribute=[
-                    #     dict(protocol="kernel", route_map="map01"),
-                    #     dict(protocol="static", metric=20),
-                    #     dict(protocol="static", route_map="map01"),
-                    # ],
                 ),
                 state="rendered",
             ),
@@ -375,13 +320,8 @@ class TestVyosBgpglobalModule(TestVyosModule):
             "set protocols bgp neighbor 2001:db8::2 ebgp-multihop 2",
             "set protocols bgp neighbor 2001:db8::2 remote-as 65535",
             "set protocols bgp neighbor 2001:db8::2 update-source 2001:db8::1",
-            # "set protocols bgp redistribute kernel route-map map01",
-            # "set protocols bgp redistribute static route-map map01",
-            # "set protocols bgp network 172.16.42.32/27 backdoor",
-            # "set protocols bgp network 172.16.42.251/32 route-map map01",
             "set protocols bgp parameters bestpath as-path confed",
             "set protocols bgp parameters bestpath compare-routerid",
-            "set protocols bgp parameters default no-ipv4-unicast",
             "set protocols bgp parameters router-id 10.1.1.1",
         ]
         result = self.execute_module(changed=False)
@@ -403,10 +343,6 @@ class TestVyosBgpglobalModule(TestVyosModule):
             "set protocols bgp neighbor 2001:db8::2 ebgp-multihop 2",
             "set protocols bgp neighbor 2001:db8::2 remote-as 65535",
             "set protocols bgp neighbor 2001:db8::2 update-source 2001:db8::1",
-            # "set protocols bgp redistribute kernel route-map map01",
-            # "set protocols bgp redistribute static route-map map01",
-            # "set protocols bgp network 172.16.42.32/27 backdoor",
-            # "set protocols bgp network 172.16.42.251/32 route-map map01",
             "set protocols bgp parameters bestpath as-path confed",
             "set protocols bgp parameters bestpath compare-routerid",
             "set protocols bgp parameters default no-ipv4-unicast",
@@ -441,14 +377,6 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     "update_source": "2001:db8::1",
                 },
             ],
-            # "network": [
-            #     {"address": "172.16.42.32/27", "backdoor": True},
-            #     {"address": "172.16.42.251/32", "route_map": "map01"},
-            # ],
-            # "redistribute": [
-            #     {"protocol": "kernel", "route_map": "map01"},
-            #     {"protocol": "static", "route_map": "map01"},
-            # ],
         }
         self.assertEqual(sorted(parsed_list), sorted(result["parsed"]))
 
@@ -481,14 +409,225 @@ class TestVyosBgpglobalModule(TestVyosModule):
                     "update_source": "2001:db8::1",
                 },
             ],
-            # "network": [
-            #     {"address": "172.16.42.32/27", "backdoor": True},
-            #     {"address": "172.16.42.251/32", "route_map": "map01"},
-            # ],
-            # "redistribute": [
-            #     {"protocol": "kernel", "route_map": "map01"},
-            #     {"metric": 20, "protocol": "static"},
-            #     {"protocol": "static", "route_map": "map01"},
-            # ],
         }
         self.assertEqual(sorted(gather_list), sorted(result["gathered"]))
+
+    def test_vyos_bgp_global_reflection_flags_independent(self):
+        self.get_os_version.return_value = "1.5"
+        set_module_args(
+            dict(
+                config=dict(as_number=65001, bgp_params=dict(log_neighbor_changes=True)),
+                state="rendered",
+            ),
+        )
+        cmds = self.execute_module(changed=False)["rendered"]
+        self.assertIn("set protocols bgp parameters log-neighbor-changes", cmds)
+        self.assertFalse(any("no-client-to-client-reflection" in c for c in cmds))
+
+        set_module_args(
+            dict(
+                config=dict(as_number=65001, bgp_params=dict(no_client_to_client_reflection=True)),
+                state="rendered",
+            ),
+        )
+        cmds = self.execute_module(changed=False)["rendered"]
+        self.assertIn("set protocols bgp parameters no-client-to-client-reflection", cmds)
+        self.assertFalse(any("log-neighbor-changes" in c for c in cmds))
+
+    def test_vyos_bgp_global_peer_group_rendered(self):
+        self.get_os_version.return_value = "1.5"
+        group = dict(address="RR-CLIENTS", peer_group=True, remote_as=65001, update_source="lo")
+        member = dict(address="192.0.2.1", peer_group_name="RR-CLIENTS")
+        set_module_args(
+            dict(config=dict(as_number=65001, neighbor=[group, member]), state="rendered"),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set protocols bgp neighbor 192.0.2.1 peer-group RR-CLIENTS",
+                "set protocols bgp peer-group RR-CLIENTS remote-as 65001",
+                "set protocols bgp peer-group RR-CLIENTS update-source lo",
+                "set protocols bgp system-as 65001",
+            ],
+        )
+
+    def test_vyos_bgp_global_peer_group_replaced(self):
+        self.get_os_version.return_value = "1.5"
+        self.get_facts_os_version.return_value = "1.5"
+        group = dict(address="RR-CLIENTS", peer_group=True, remote_as=65001)
+        member = dict(address="192.0.2.1", peer_group_name="RR-CLIENTS")
+        set_module_args(
+            dict(config=dict(as_number=65001, neighbor=[group, member]), state="replaced"),
+        )
+        self.execute_module(
+            changed=True,
+            commands=["delete protocols bgp peer-group RR-CLIENTS update-source lo"],
+            filename="vyos_bgp_global_peer_group_config_14.cfg",
+        )
+
+    def test_vyos_bgp_global_peer_group_af_replaced(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65001,
+                    neighbor=[dict(address="PG1", peer_group=True, remote_as=65001)],
+                ),
+                state="replaced",
+            ),
+        )
+        result = self.execute_module(
+            failed=True,
+            filename="vyos_bgp_global_peer_group_af_config_14.cfg",
+        )
+        self.assertIn("address_family under neighbor PG10", result["msg"])
+
+    def test_vyos_bgp_global_peer_group_af_exact_name(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65001,
+                    neighbor=[dict(address="PG10", peer_group=True, remote_as=65001)],
+                ),
+                state="replaced",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=["delete protocols bgp peer-group PG1"],
+            filename="vyos_bgp_global_peer_group_af_config_14.cfg",
+        )
+
+    def test_vyos_bgp_global_bestpath_multipath_relax_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    bgp_params=dict(bestpath=dict(as_path="multipath-relax")),
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set protocols bgp parameters bestpath as-path multipath-relax",
+                "set protocols bgp system-as 65536",
+            ],
+        )
+
+    def test_vyos_bgp_global_bestpath_multipath_relax_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp system-as 65536\n"
+                "set protocols bgp parameters bestpath as-path multipath-relax",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {"as_number": 65536, "bgp_params": {"bestpath": {"as_path": "multipath-relax"}}},
+        )
+
+    def test_vyos_bgp_global_remote_as_external_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    neighbor=[dict(address="192.0.2.1", remote_as="external")],
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set protocols bgp neighbor 192.0.2.1 remote-as external",
+                "set protocols bgp system-as 65536",
+            ],
+        )
+
+    def test_vyos_bgp_global_remote_as_external_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp system-as 65536\n"
+                "set protocols bgp neighbor 192.0.2.1 remote-as external\n"
+                "set protocols bgp neighbor 192.0.2.2 remote-as 65002",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {
+                "as_number": 65536,
+                "neighbor": [
+                    {"address": "192.0.2.1", "remote_as": "external"},
+                    {"address": "192.0.2.2", "remote_as": 65002},
+                ],
+            },
+        )
+
+    def test_vyos_bgp_global_bestpath_as_path_change(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    bgp_params=dict(bestpath=dict(as_path="multipath-relax")),
+                ),
+                state="merged",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=[
+                "delete protocols bgp parameters bestpath as-path confed",
+                "set protocols bgp parameters bestpath as-path multipath-relax",
+            ],
+        )
+
+    def test_vyos_bgp_global_interface_v6only_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    neighbor=[
+                        dict(
+                            address="eth1",
+                            interface=dict(
+                                v6only=dict(remote_as="external", peer_group="RR-CLIENTS"),
+                            ),
+                        ),
+                    ],
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set protocols bgp neighbor eth1 interface v6only peer-group RR-CLIENTS",
+                "set protocols bgp neighbor eth1 interface v6only remote-as external",
+                "set protocols bgp system-as 65536",
+            ],
+        )
+
+    def test_vyos_bgp_global_interface_v6only_replaced(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    neighbor=[
+                        dict(address="eth1", interface=dict(v6only=dict(remote_as=65002))),
+                        dict(address="RR-CLIENTS", peer_group=True, remote_as="external"),
+                    ],
+                ),
+                state="replaced",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=[
+                "delete protocols bgp neighbor eth1 interface v6only peer-group RR-CLIENTS",
+                "set protocols bgp neighbor eth1 interface v6only remote-as 65002",
+            ],
+            filename="vyos_bgp_global_v6only_config_14.cfg",
+        )

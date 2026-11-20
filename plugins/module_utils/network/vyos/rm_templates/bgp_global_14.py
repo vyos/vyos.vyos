@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -51,8 +52,6 @@ def _tmplt_delete_bgp_maximum_paths(config_data):
 
 def _tmplt_bgp_params_default(config_data):
     command = "protocols bgp parameters default".format(**config_data)
-    if config_data["bgp_params"]["default"].get("no_ipv4_unicast"):
-        command += " no-ipv4-unicast"
     if config_data["bgp_params"]["default"].get("local_pref"):
         command += " local-pref {local_pref}".format(**config_data["bgp_params"]["default"])
     return command
@@ -457,7 +456,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp neighbor {{ neighbor.address }} default-originate route-map {{ neighbor.default_originate }}",
-            "compval": "neighbor.advertisement_interval",
+            "compval": "neighbor.default_originate",
             "result": {
                 "as_number": "{{ as_num }}",
                 "neighbor": {
@@ -909,7 +908,65 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 "neighbor": {
                     "{{ address }}": {
                         "address": "{{ address }}",
-                        "remote_as": "{{ num|int }}",
+                        "remote_as": "{{ num if num in ['external', 'internal'] else num|int }}",
+                    },
+                },
+            },
+        },
+        {
+            "name": "neighbor.interface.v6only.peer_group",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+neighbor
+                \s+(?P<address>\S+)
+                \s+interface
+                \s+v6only
+                \s+peer-group
+                \s+(?P<pg>\S+)\s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "protocols bgp neighbor {{ neighbor.address }} interface v6only peer-group {{ neighbor.interface.v6only.peer_group }}",
+            "compval": "neighbor.interface.v6only.peer_group",
+            "result": {
+                "as_number": "{{ as_num }}",
+                "neighbor": {
+                    "{{ address }}": {
+                        "address": "{{ address }}",
+                        "interface": {"v6only": {"peer_group": "{{ pg }}"}},
+                    },
+                },
+            },
+        },
+        {
+            "name": "neighbor.interface.v6only.remote_as",
+            "getval": re.compile(
+                r"""
+                ^set
+                \s+protocols
+                \s+bgp
+                \s+neighbor
+                \s+(?P<address>\S+)
+                \s+interface
+                \s+v6only
+                \s+remote-as
+                \s+(?P<num>\S+)\s*$""",
+                re.VERBOSE,
+            ),
+            "setval": "protocols bgp neighbor {{ neighbor.address }} interface v6only remote-as {{ neighbor.interface.v6only.remote_as }}",
+            "compval": "neighbor.interface.v6only.remote_as",
+            "result": {
+                "as_number": "{{ as_num }}",
+                "neighbor": {
+                    "{{ address }}": {
+                        "address": "{{ address }}",
+                        "interface": {
+                            "v6only": {
+                                "remote_as": "{{ num if num in ['external', 'internal'] else num|int }}",
+                            },
+                        },
                     },
                 },
             },
@@ -1278,7 +1335,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+parameters
                 \s+bestpath
                 \s+as-path
-                \s+(?P<path>confed|ignore)
+                \s+(?P<path>confed|ignore|multipath-relax)
                 *$""",
                 re.VERBOSE,
             ),
@@ -1377,7 +1434,7 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": _tmplt_bgp_params_confederation,
-            "compval": "bgp_params.always_compare_med",
+            "compval": "bgp_params.confederation",
             "result": {
                 "as_number": "{{ as_num }}",
                 "bgp_params": {
@@ -1495,7 +1552,6 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 \s+bgp
                 \s+parameters
                 \s+default
-                \s*(?P<no_ipv4_unicast>no-ipv4-unicast)?
                 \s*(?P<local_pref>local-pref\s\S+)?\s*$""",
                 re.VERBOSE,
             ),
@@ -1506,7 +1562,6 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 "as_number": "{{ as_num }}",
                 "bgp_params": {
                     "default": {
-                        "no_ipv4_unicast": "{{ True if no_ipv4_unicast is defined }}",
                         "local_pref": "{{ local_pref.split(" " )[1] if local_pref is defined }}",
                     },
                 },
@@ -1687,7 +1742,8 @@ class Bgp_globalTemplate14(NetworkTemplate):
                 re.VERBOSE,
             ),
             "setval": "protocols bgp parameters no-client-to-client-reflection",
-            "compval": "bgp_params.log_neighbor_changes",
+            # "compval": "bgp_params.log_neighbor_changes",
+            "compval": "bgp_params.no_client_to_client_reflection",
             "result": {
                 "as_number": "{{ as_num }}",
                 "bgp_params": {
