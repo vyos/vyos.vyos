@@ -100,7 +100,7 @@ class Nat(ResourceModule):
             for rule in nat64["source"]["rule"].values():
                 pools = rule.get("translation", {}).get("pool")
                 if isinstance(pools, list):
-                    rule["translation"]["pool"] = {p["id"]: p for p in pools}
+                    rule["translation"]["pool"] = {p["id"]: self._normalise_pool(p) for p in pools}
 
         nat66 = config.get("nat66", {})
         for section in ("destination", "source"):
@@ -507,6 +507,18 @@ class Nat(ResourceModule):
             elif self.state in ("replaced", "overridden"):
                 self.addcmd(dict(ctx, mark=h), "nat64_match_mark", True)
 
+    @staticmethod
+    def _normalise_pool(pool):
+        """protocol (deprecated) is folded into protocols, which is kept sorted."""
+        pool = dict(pool)
+        protocols = set(pool.get("protocols") or [])
+        if pool.get("protocol"):
+            protocols.add(pool.pop("protocol"))
+        pool.pop("protocol", None)
+        if protocols:
+            pool["protocols"] = sorted(protocols)
+        return pool
+
     def _cmp_nat64_pools(self, want, have, ctx):
         want_pools = want.get("translation", {}).get("pool", {})
         have_pools = have.get("translation", {}).get("pool", {})
@@ -524,6 +536,13 @@ class Nat(ResourceModule):
                 continue
 
             changed = {k: v for k, v in wp.items() if k != "id" and hp.get(k) != v}
+            if "protocols" in changed:
+                # protocols are a set; only missing ones are added
+                missing = sorted(set(wp["protocols"]) - set(hp.get("protocols") or []))
+                if missing:
+                    changed["protocols"] = missing
+                else:
+                    del changed["protocols"]
             removed = {
                 k: v
                 for k, v in hp.items()

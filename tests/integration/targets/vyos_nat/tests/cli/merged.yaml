@@ -108,3 +108,140 @@
 
   always:
     - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge a destination NAT rule restricted to a source
+      register: result
+      vyos.vyos.vyos_nat: &id_dnat_source
+        config:
+          nat:
+            destination:
+              rule:
+                - id: 110
+                  description: Partner SSH
+                  protocol: tcp
+                  inbound_interface:
+                    name: eth1
+                  destination:
+                    port: "2222"
+                  source:
+                    address: 203.0.113.5
+                    port: 1024-65535
+                  translation:
+                    address: 192.168.1.20
+                    port: "22"
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: nat
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set nat destination rule 110 source address 203.0.113.5' in result.commands"
+          - "'set nat destination rule 110 source port 1024-65535' in result.commands"
+          - result.after|symmetric_difference(ansible_facts['network_resources']['nat']) == []
+
+    - name: Merge a destination NAT rule restricted to a source (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id_dnat_source
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Create the IPv6 network group the NAT66 rule refers to
+      vyos.vyos.vyos_config:
+        lines:
+          - set firewall group ipv6-network-group LAN6 network 2001:db8:1::/64
+
+    - name: Merge a NAT66 source rule with a group match
+      register: result
+      vyos.vyos.vyos_nat: &id_nat66_group
+        config:
+          nat66:
+            source:
+              rule:
+                - id: 10
+                  outbound_interface:
+                    name: eth1
+                  source:
+                    network_group: LAN6
+                  translation:
+                    address: masquerade
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: nat
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set nat66 source rule 10 source group network-group LAN6' in result.commands"
+          - result.after|symmetric_difference(ansible_facts['network_resources']['nat']) == []
+
+    - name: Merge a NAT66 source rule with a group match (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id_nat66_group
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+    - name: Remove the IPv6 network group
+      vyos.vyos.vyos_config:
+        lines:
+          - delete firewall group ipv6-network-group LAN6
+
+- block:
+    - name: Merge a NAT64 pool with two protocols
+      register: result
+      vyos.vyos.vyos_nat: &id_nat64_protocols
+        config:
+          nat64:
+            source:
+              rule:
+                - id: 10
+                  source:
+                    prefix: 64:ff9b::/96
+                  translation:
+                    pool:
+                      - id: 1
+                        address: 192.0.2.10
+                        port: 1024-32767
+                        protocols:
+                          - tcp
+                          - udp
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: nat
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set nat64 source rule 10 translation pool 1 protocol tcp' in result.commands"
+          - "'set nat64 source rule 10 translation pool 1 protocol udp' in result.commands"
+          - (result.after.nat64.source.rule[0].translation.pool[0].protocols | sort) == ['tcp', 'udp']
+          - result.after|symmetric_difference(ansible_facts['network_resources']['nat']) == []
+
+    - name: Merge a NAT64 pool with two protocols (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nat: *id_nat64_protocols
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

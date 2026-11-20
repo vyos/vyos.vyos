@@ -179,6 +179,36 @@ options:
                       port_group:
                         type: str
                         description: Port group name to match.
+                  source:
+                    type: dict
+                    description:
+                      - Source match criteria for destination NAT, for example to forward only
+                        traffic from given sources.
+                    suboptions:
+                      address:
+                        type: str
+                        description: IP address, subnet, or range to match.
+                      fqdn:
+                        type: str
+                        description: Fully qualified domain name to match.
+                      port:
+                        type: str
+                        description: Port number or range to match.
+                      address_group:
+                        type: str
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
                   translation:
                     type: dict
                     description: Translation configuration for destination NAT.
@@ -477,7 +507,19 @@ options:
                               - icmp
                               - tcp
                               - udp
-                            description: Protocol for this translation pool entry.
+                            description:
+                              - Protocol for this translation pool entry.
+                              - Deprecated, use I(protocols) instead; this option will be removed in
+                                version 8.0.0. It is mutually exclusive with I(protocols).
+                          protocols:
+                            type: list
+                            elements: str
+                            choices:
+                              - icmp
+                              - tcp
+                              - udp
+                            description:
+                              - Protocols for this translation pool entry; a pool can carry several.
       nat66:
         type: dict
         description: Configuration for NAT66 (IPv6-to-IPv6) rules.
@@ -508,6 +550,21 @@ options:
                       port:
                         type: str
                         description: Port number or range to match.
+                      address_group:
+                        type: str
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
                   disable:
                     type: bool
                     description: Disable this NAT66 destination rule.
@@ -537,6 +594,21 @@ options:
                       port:
                         type: str
                         description: Source port number or range to match.
+                      address_group:
+                        type: str
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
                   translation:
                     type: dict
                     description: Translation configuration for NAT66 destination rule.
@@ -573,6 +645,21 @@ options:
                       prefix:
                         type: str
                         description: IPv6 destination prefix to match (h:h:h:h:h:h:h:h/x).
+                      address_group:
+                        type: str
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
                   disable:
                     type: bool
                     description: Disable this NAT66 source rule.
@@ -602,6 +689,21 @@ options:
                       prefix:
                         type: str
                         description: IPv6 source prefix to match (h:h:h:h:h:h:h:h/x).
+                      address_group:
+                        type: str
+                        description: Address group name to match.
+                      domain_group:
+                        type: str
+                        description: Domain group name to match.
+                      mac_group:
+                        type: str
+                        description: MAC address group name to match.
+                      network_group:
+                        type: str
+                        description: Network group name to match.
+                      port_group:
+                        type: str
+                        description: Port group name to match.
                   translation:
                     type: dict
                     description: Translation configuration for NAT66 source rule.
@@ -735,8 +837,9 @@ EXAMPLES = """
                 pool:
                   - id: 1
                     address: 192.168.100.10
-                    port: "1-65535"
-                    protocol: udp
+                    port: "1024-32767"
+                    protocols:
+                      - udp
     state: merged
 
 # Using merged - configure NAT66
