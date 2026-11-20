@@ -24,6 +24,8 @@ remove_commands:
   - delete protocols ospf interface bond2
   - delete protocols ospfv3 interface bond2
   - delete protocols ospfv3 interface eth0
+  - delete protocols ospf interface eth1
+  - delete protocols ospfv3 interface eth1
 
 parsed_config_file: "_parsed_config_1_4.cfg"
 

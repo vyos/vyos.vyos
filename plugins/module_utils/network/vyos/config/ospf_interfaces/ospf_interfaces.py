@@ -7,6 +7,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 """
 The vyos_ospf_interfaces config file.
@@ -63,13 +64,15 @@ class Ospf_interfaces(ResourceModule):
             "transmit_delay",
             "ifmtu",
             "instance",
-            "passive",
         ]
 
     def _validate_template(self):
         version = get_os_version(self._module)
         if LooseVersion(version) >= LooseVersion("1.4"):
             self._tmplt = Ospf_interfacesTemplate14()
+            # the interface area only exists on VyOS 1.4 and later
+            if "area" not in self.parsers:
+                self.parsers.append("area")
         else:
             self._tmplt = Ospf_interfacesTemplate()
 
@@ -166,6 +169,13 @@ class Ospf_interfaces(ResourceModule):
         hdict = have.get("address_family", {})
         wname = want.get("name")
         hname = have.get("name")
+        for name in set(wdict) | set(hdict):
+            self._compare_passive(
+                wname or hname,
+                name,
+                wdict.get(name, {}).pop("passive", None),
+                hdict.get(name, {}).pop("passive", None),
+            )
         for name, entry in wdict.items():
             for key, param in entry.items():
                 w_addr = {"afi": name, key: param}
@@ -191,3 +201,25 @@ class Ospf_interfaces(ResourceModule):
                     addr_dict.update({entry["afi"]: entry})
                 family["address_family"] = addr_dict
                 self._ospf_int_list_to_dict(family["address_family"])
+
+    def _compare_passive(self, name, afi, want, have):
+        """passive has three states in OSPFv2: absent, passive, and passive disable
+        (exempt from passive-interface default, passive: false); OSPFv3 has only the flag,
+        where passive: false means not passive."""
+        # OSPFv3, and the pre-1.4 template, have no "passive disable": false means not passive
+        if afi == "ipv6" or not isinstance(self._tmplt, Ospf_interfacesTemplate14):
+            want, have = want or None, have or None
+        if want == have:
+            return
+
+        def entry(value):
+            return {"name": name, "address_family": {"afi": afi, "passive": value}}
+
+        if have is not None:
+            if have is False and want is True:
+                # only the exemption goes; the passive node stays
+                self.addcmd(entry(False), "passive", True)
+            elif want is None:
+                self.addcmd(entry(True), "passive", True)
+        if want is not None:
+            self.addcmd(entry(want), "passive", False)
