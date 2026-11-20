@@ -135,5 +135,5 @@ parsed:
       views:
         - oid: "1"
           view: default
-    trap_target:
-      address: 203.0.113.10
+    trap_targets:
+      - address: 203.0.113.10

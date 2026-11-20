@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -70,6 +71,11 @@ class Snmp_serverFacts(object):
                 objs["communities"] = sorted(
                     list(objs["communities"].values()),
                     key=lambda k, sk="name": k[sk],
+                )
+            if "trap_targets" in objs:
+                objs["trap_targets"] = sorted(
+                    list(objs["trap_targets"].values()),
+                    key=lambda k, sk="address": k[sk],
                 )
             if "listen_addresses" in objs:
                 objs["listen_addresses"] = sorted(

@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -42,15 +43,14 @@ def _tmplt_snmp_server_communities(config_data):
 
 
 def _tmplt_snmp_server_trap_target(config_data):
-    config_data = config_data["trap_target"]
+    config_data = config_data["trap_targets"]
     command = "service snmp trap-target {address}".format(**config_data)
-    if "authorization_type" in config_data:
-        command += " authorization {authorization_type}".format(**config_data)
-    if "client" in config_data:
-        command += " client {client}".format(**config_data)
-    if "network" in config_data:
-        command += " network {network}".format(**config_data)
-    return command
+    commands = []
+    if config_data.get("community"):
+        commands.append(command + " community {community}".format(**config_data))
+    if config_data.get("port"):
+        commands.append(command + " port {port}".format(**config_data))
+    return commands or command
 
 
 def _tmplt_snmp_server_v3_groups(config_data):
@@ -71,20 +71,18 @@ def _tmplt_snmp_server_v3_groups(config_data):
 
 def _tmplt_snmp_server_v3_trap_target(config_data):
     config_data = config_data["snmp_v3"]["trap_targets"]
-    command = "service snmp v3 trap-target {address} ".format(**config_data)
-    if "authentication" in config_data:
-        command += " auth"
-        config_data = config_data["authentication"]
-    if "privacy" in config_data:
-        command += " privacy"
-        config_data = config_data["privacy"]
-    if "type" in config_data:
-        command += " type {mode}".format(**config_data)
-    if "encrypted_key" in config_data:
-        command += " encrypted-password {encrypted_key}".format(**config_data)
-    if "plaintext_key" in config_data:
-        command += " plaintext-password {plaintext_key}".format(**config_data)
-    return command
+    command = "service snmp v3 trap-target {address}".format(**config_data)
+    commands = []
+    for key, node in (("authentication", "auth"), ("privacy", "privacy")):
+        values = config_data.get(key) or {}
+        for option, leaf in (
+            ("type", "type"),
+            ("encrypted_key", "encrypted-password"),
+            ("plaintext_key", "plaintext-password"),
+        ):
+            if values.get(option):
+                commands.append("{0} {1} {2} {3}".format(command, node, leaf, values[option]))
+    return commands
 
 
 def _tmplt_snmp_server_v3_user(config_data):
@@ -113,11 +111,12 @@ def _tmplt_snmp_server_v3_user(config_data):
 def _tmplt_snmp_server_v3_views(config_data):
     config_data = config_data["snmp_v3"]["views"]
     command = "service snmp v3 view {view} oid {oid}".format(**config_data)
+    commands = []
     if "exclude" in config_data:
-        command += " exclude {exclude}".format(**config_data)
+        commands.append(command + " exclude {exclude}".format(**config_data))
     if "mask" in config_data:
-        command += " mask {mask}".format(**config_data)
-    return command
+        commands.append(command + " mask {mask}".format(**config_data))
+    return commands or command
 
 
 class Snmp_serverTemplate(NetworkTemplate):
@@ -251,23 +250,26 @@ class Snmp_serverTemplate(NetworkTemplate):
                 "trap_source": "{{ name }}",
             },
         },
-        # service snmp trap-target <>
+        # service snmp trap-target <> (one or more v2c trap targets)
         {
-            "name": "trap_target",
+            "name": "trap_targets",
             "getval": re.compile(
                 r"""
                 ^set\sservice\ssnmp\strap-target
                 \s+(?P<name>\S+)
                 \s*(?P<comm>community\s\S+)?
-                \s*(?P<port>port\s\d+)?                $""",
+                \s*(?P<port>port\s\d+)?
+                $""",
                 re.VERBOSE,
             ),
             "setval": _tmplt_snmp_server_trap_target,
             "result": {
-                "trap_target": {
-                    "address": "{{ name }}",
-                    "community": "{{ comm.split(" ")[1] if comm is defined else None }}",
-                    "port": "{{ port.split(" ")[1] if port is defined else None }}",
+                "trap_targets": {
+                    "{{ name }}": {
+                        "address": "{{ name }}",
+                        "community": "{{ comm.split(" ")[1] if comm is defined else None }}",
+                        "port": "{{ port.split(" ")[1] if port is defined else None }}",
+                    },
                 },
             },
         },
@@ -351,10 +353,10 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\strap-target
                 \s+(?P<name>\S+)
-                \s+(?P<port>port\s\d+)?                $""",
+                \s+port\s+(?P<port>\d+)\s*$""",
                 re.VERBOSE,
             ),
-            "setval": "service snmp v3 trap-target port {{ snmp_v3.trap_targets.port }}",
+            "setval": "service snmp v3 trap-target {{ snmp_v3.trap_targets.address }} port {{ snmp_v3.trap_targets.port }}",
             "result": {
                 "snmp_v3": {
                     "trap_targets": {
@@ -373,11 +375,10 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\strap-target
                 \s+(?P<name>\S+)
-                \s+(?P<protocol>protocol\s\S+)?
-                $""",
+                \s+protocol\s+(?P<protocol>\S+)\s*$""",
                 re.VERBOSE,
             ),
-            "setval": "service snmp v3 trap-target protocol {{ snmp_v3.trap_targets.protocol }}",
+            "setval": "service snmp v3 trap-target {{ snmp_v3.trap_targets.address }} protocol {{ snmp_v3.trap_targets.protocol }}",
             "result": {
                 "snmp_v3": {
                     "trap_targets": {
@@ -396,11 +397,10 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\strap-target
                 \s+(?P<name>\S+)
-                \s+(?P<type>type\s\S+)?
-                $""",
+                \s+type\s+(?P<type>\S+)\s*$""",
                 re.VERBOSE,
             ),
-            "setval": "service snmp v3 trap-target type {{ snmp_v3.trap_targets.type }}",
+            "setval": "service snmp v3 trap-target {{ snmp_v3.trap_targets.address }} type {{ snmp_v3.trap_targets.type }}",
             "result": {
                 "snmp_v3": {
                     "trap_targets": {
@@ -419,11 +419,10 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\strap-target
                 \s+(?P<name>\S+)
-                \s+(?P<user>user\s\S+)?
-                $""",
+                \s+user\s+(?P<user>\S+)\s*$""",
                 re.VERBOSE,
             ),
-            "setval": "service snmp v3 trap-target user {{ snmp_v3.trap_targets.user }}",
+            "setval": "service snmp v3 trap-target {{ snmp_v3.trap_targets.address }} user {{ snmp_v3.trap_targets.user }}",
             "result": {
                 "snmp_v3": {
                     "trap_targets": {
@@ -532,7 +531,8 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\suser
                 \s+(?P<name>\S+)
-                \s+(?P<group>group\s.+)?                $""",
+                \s+(?P<group>group\s.+)?
+                $""",
                 re.VERBOSE,
             ),
             "setval": "service snmp v3 user {{ snmp_v3.users.user }} group {{ snmp_v3.users.group }}",
@@ -554,8 +554,7 @@ class Snmp_serverTemplate(NetworkTemplate):
                 r"""
                 ^set\sservice\ssnmp\sv3\suser
                 \s+(?P<name>\S+)
-                \s+(?P<mode>mode\s\S+)?
-                $""",
+                \s+mode\s+(?P<mode>\S+)\s*$""",
                 re.VERBOSE,
             ),
             "setval": "service snmp v3 user {{ snmp_v3.users.user }} mode {{ snmp_v3.users.mode }}",
