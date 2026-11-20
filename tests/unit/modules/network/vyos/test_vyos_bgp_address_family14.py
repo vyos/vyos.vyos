@@ -18,6 +18,7 @@
 # Make coding more python3-ish
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import patch
@@ -783,6 +784,192 @@ class TestVyosBgpafModule14(TestVyosModule):
             "set protocols bgp neighbor 203.0.113.5 address-family ipv6-unicast attribute-unchanged next-hop",
         ]
         self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_bgp_af_neighbor_vpn_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    neighbors=[
+                        dict(
+                            neighbor_address="192.0.2.1",
+                            address_family=[
+                                dict(
+                                    afi="ipv4-vpn",
+                                    route_reflector_client=True,
+                                    nexthop_self=True,
+                                ),
+                                dict(afi="ipv6-vpn", route_reflector_client=True),
+                            ],
+                        ),
+                    ],
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv4-vpn nexthop-self",
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv4-vpn route-reflector-client",
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv6-vpn route-reflector-client",
+                "set protocols bgp system-as 65536",
+            ],
+        )
+
+    def test_vyos_bgp_af_neighbor_vpn_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp system-as 65536\n"
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv4-labeled-unicast\n"
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv4-unicast route-reflector-client\n"
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv4-vpn nexthop-self\n"
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv4-vpn route-reflector-client",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {
+                "as_number": 65536,
+                "neighbors": [
+                    {
+                        "neighbor_address": "192.0.2.1",
+                        "address_family": [
+                            {"afi": "ipv4", "route_reflector_client": True},
+                            {
+                                "afi": "ipv4-vpn",
+                                "nexthop_self": True,
+                                "route_reflector_client": True,
+                            },
+                        ],
+                    },
+                ],
+            },
+        )
+
+    def test_vyos_bgp_af_neighbor_bare_family_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    neighbors=[
+                        dict(
+                            neighbor_address="192.0.2.1",
+                            address_family=[dict(afi="ipv4"), dict(afi="ipv4-vpn")],
+                        ),
+                    ],
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv4-unicast",
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv4-vpn",
+                "set protocols bgp system-as 65536",
+            ],
+        )
+
+    def test_vyos_bgp_af_neighbor_bare_family_replaced(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    neighbors=[
+                        dict(neighbor_address="192.0.2.1", address_family=[dict(afi="ipv6")]),
+                    ],
+                ),
+                state="replaced",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=[
+                "delete protocols bgp neighbor 192.0.2.1 address-family ipv4-unicast",
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv6-unicast",
+            ],
+            filename="vyos_bgp_address_family_bare_config_14.cfg",
+        )
+
+    def test_vyos_bgp_af_neighbor_default_originate_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    neighbors=[
+                        dict(
+                            neighbor_address="192.0.2.1",
+                            address_family=[dict(afi="ipv4", default_originate=True)],
+                        ),
+                        dict(
+                            neighbor_address="192.0.2.2",
+                            address_family=[dict(afi="ipv4", default_originate="RM-DEF")],
+                        ),
+                    ],
+                ),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            sorted(self.execute_module(changed=False)["rendered"]),
+            [
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv4-unicast default-originate",
+                "set protocols bgp neighbor 192.0.2.2 address-family ipv4-unicast default-originate route-map RM-DEF",
+                "set protocols bgp system-as 65536",
+            ],
+        )
+
+    def test_vyos_bgp_af_neighbor_default_originate_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp system-as 65536\n"
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv4-unicast default-originate\n"
+                "set protocols bgp neighbor 192.0.2.2 address-family ipv4-unicast default-originate route-map RM-DEF",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {
+                "as_number": 65536,
+                "neighbors": [
+                    {
+                        "neighbor_address": "192.0.2.1",
+                        "address_family": [{"afi": "ipv4", "default_originate": True}],
+                    },
+                    {
+                        "neighbor_address": "192.0.2.2",
+                        "address_family": [{"afi": "ipv4", "default_originate": "RM-DEF"}],
+                    },
+                ],
+            },
+        )
+
+    def test_vyos_bgp_af_neighbor_default_originate_route_map_to_plain(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    as_number=65536,
+                    neighbors=[
+                        dict(
+                            neighbor_address="192.0.2.1",
+                            address_family=[dict(afi="ipv4", default_originate=True)],
+                        ),
+                    ],
+                ),
+                state="merged",
+            ),
+        )
+        self.execute_module(
+            changed=True,
+            commands=[
+                "delete protocols bgp neighbor 192.0.2.1 address-family ipv4-unicast default-originate",
+                "set protocols bgp neighbor 192.0.2.1 address-family ipv4-unicast default-originate",
+            ],
+            filename="vyos_bgp_address_family_default_originate_config_14.cfg",
+        )
 
 
 class TestVyosBgpafOpsModule14(TestVyosModule):

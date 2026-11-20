@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 #############################################
@@ -93,7 +94,7 @@ class Bgp_address_familyArgs(object):  # pylint: disable=R0903
                             "options": {
                                 "afi": {
                                     "type": "str",
-                                    "choices": ["ipv4", "ipv6"],
+                                    "choices": ["ipv4", "ipv6", "ipv4-vpn", "ipv6-vpn"],
                                 },
                                 "allowas_in": {"type": "int"},
                                 "as_override": {"type": "bool"},
@@ -115,7 +116,7 @@ class Bgp_address_familyArgs(object):  # pylint: disable=R0903
                                         },
                                     },
                                 },
-                                "default_originate": {"type": "str"},
+                                "default_originate": {"type": "raw"},
                                 "distribute_list": {
                                     "type": "list",
                                     "elements": "dict",
