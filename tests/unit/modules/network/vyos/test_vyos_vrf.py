@@ -18,6 +18,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 from unittest.mock import MagicMock, patch
@@ -686,3 +687,26 @@ class TestVyosVrfModule(TestVyosModule):
             "delete vrf",
         ]
         self.execute_module(changed=True, commands=commands)
+
+    def test_vrf_merged_bind_to_all_omitted(self):
+        set_module_args(
+            dict(config=dict(instances=[dict(name="red", table_id=101)]), state="merged"),
+        )
+        self.execute_module(changed=False, filename="vyos_vrf_bind_to_all_config.cfg")
+
+    def test_vrf_rendered_bind_to_all_false(self):
+        set_module_args(
+            dict(
+                config=dict(bind_to_all=False, instances=[dict(name="red", table_id=101)]),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["rendered"],
+            ["set vrf name red table 101"],
+        )
+
+    def test_vrf_gathered_empty(self):
+        set_module_args(dict(state="gathered"))
+        result = self.execute_module(changed=False, filename="vyos_vrf_empty_config.cfg")
+        self.assertEqual(result["gathered"], {})

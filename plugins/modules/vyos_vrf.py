@@ -8,6 +8,7 @@ The module file for vyos_vrf
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 DOCUMENTATION = """
@@ -27,8 +28,10 @@ options:
     type: dict
     suboptions:
       bind_to_all:
-        default: false
-        description: Enable binding services to all VRFs
+        description:
+          - Enable binding services to all VRFs.
+          - When omitted, C(merged) leaves the device's setting as it is, and C(replaced) and
+            C(overridden) remove it.
         type: bool
       instances:
         description: Virtual Routing and Forwarding instance

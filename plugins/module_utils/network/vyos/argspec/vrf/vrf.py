@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 #############################################
@@ -52,7 +53,7 @@ class VrfArgs(object):  # pylint: disable=R0903
         "config": {
             "type": "dict",
             "options": {
-                "bind_to_all": {"type": "bool", "default": False},
+                "bind_to_all": {"type": "bool"},
                 "instances": {
                     "type": "list",
                     "elements": "dict",

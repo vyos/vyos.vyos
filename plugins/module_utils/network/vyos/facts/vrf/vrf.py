@@ -5,6 +5,7 @@
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
 """
@@ -117,7 +118,7 @@ class VrfFacts(object):
             ),
         )
 
-        if not resources:
+        if not resources and params.get("config"):
             params["config"].pop("bind_to_all", None)
 
         if params.get("config"):
