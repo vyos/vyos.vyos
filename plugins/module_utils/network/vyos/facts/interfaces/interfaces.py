@@ -12,16 +12,17 @@ based on the configuration.
 
 from __future__ import absolute_import, division, print_function
 
+
 __metaclass__ = type
 
-
-from copy import deepcopy
-from re import M, findall, search
 
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common import utils
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.argspec.interfaces.interfaces import (
     InterfacesArgs,
+)
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_templates.interfaces import (
+    InterfacesTemplate,
 )
 
 
@@ -31,16 +32,6 @@ class InterfacesFacts(object):
     def __init__(self, module, subspec="config", options="options"):
         self._module = module
         self.argument_spec = InterfacesArgs.argument_spec
-        spec = deepcopy(self.argument_spec)
-        if subspec:
-            if options:
-                facts_argument_spec = spec[subspec][options]
-            else:
-                facts_argument_spec = spec[subspec]
-        else:
-            facts_argument_spec = spec
-
-        self.generated_spec = utils.generate_dict(facts_argument_spec)
 
     def get_device_data(self, connection):
         data = connection.get_config(flags=["| grep interfaces"])
@@ -57,20 +48,16 @@ class InterfacesFacts(object):
         if not data:
             data = self.get_device_data(connection)
 
-        objs = []
-        interface_names = findall(
-            r"^set interfaces (?:ethernet|bonding|bridge|dummy|tunnel|vti|loopback|vxlan|openvpn|wireguard) (?:\'*)(\S+)(?:\'*)",
-            data,
-            M,
-        )
-        if interface_names:
-            for interface in set(interface_names):
-                intf_regex = r" %s (.+$)" % interface.strip("'")
-                cfg = findall(intf_regex, data, M)
-                obj = self.render_config(cfg)
-                obj["name"] = interface.strip("'")
-                if obj:
-                    objs.append(obj)
+        parser = InterfacesTemplate(lines=data.splitlines(), module=self._module)
+        objs = list(parser.parse().values())
+        for obj in objs:
+            # disable is the only state on the device; enabled is the default
+            obj.setdefault("enabled", True)
+            if "vifs" in obj:
+                for vif in obj["vifs"].values():
+                    vif.setdefault("enabled", True)
+                obj["vifs"] = sorted(obj["vifs"].values(), key=lambda vif: int(vif["vlan_id"]))
+
         facts = {}
         if objs:
             facts["interfaces"] = []
@@ -81,66 +68,3 @@ class InterfacesFacts(object):
         ansible_facts["ansible_network_resources"].update(facts)
 
         return ansible_facts
-
-    def render_config(self, conf):
-        """
-        Render config as dictionary structure and delete keys
-          from spec for null values
-
-        :param spec: The facts tree, generated from the argspec
-        :param conf: The configuration
-        :rtype: dictionary
-        :returns: The generated config
-        """
-        vif_conf = "\n".join(filter(lambda x: ("vif" in x), conf))
-        eth_conf = "\n".join(filter(lambda x: ("vif" not in x), conf))
-        config = self.parse_attribs(["description", "speed", "mtu", "duplex", "vrf"], eth_conf)
-        config["vifs"] = self.parse_vifs(vif_conf)
-
-        return utils.remove_empties(config)
-
-    def parse_vifs(self, conf):
-        vif_names = findall(r"vif (?:\'*)(\d+)(?:\'*)", conf, M)
-        vifs_list = None
-
-        if vif_names:
-            vifs_list = []
-            for vif in set(vif_names):
-                vif_regex = r"%s (.+$)" % vif
-                cfg = "\n".join(findall(vif_regex, conf, M))
-                obj = self.parse_attribs(["description", "mtu"], cfg)
-                obj["vlan_id"] = int(vif)
-                if obj:
-                    vifs_list.append(obj)
-            vifs_list = sorted(vifs_list, key=lambda i: i["vlan_id"])
-
-        return vifs_list
-
-    def parse_attribs(self, attribs, conf):
-        """
-        Parse the attributes of a network interface.
-
-        :param attribs: List of attribute names.
-        :param conf: Configuration string.
-        :rtype: dict
-        :returns: Parsed configuration dictionary.
-        """
-        config = {}
-        for item in attribs:
-            value = utils.parse_conf_arg(conf, item)
-            if value and item == "mtu":
-                config[item] = int(value.strip("'"))
-            elif value:
-                config[item] = value.strip("'")
-            else:
-                config[item] = None
-
-        # match only on disable next to the interface name
-        # there are other sub-commands that can be disabled
-        match = search(r"^ *disable", conf, M)
-        if match:
-            config["enabled"] = False
-        else:
-            config["enabled"] = True
-
-        return utils.remove_empties(config)

@@ -9,8 +9,10 @@
       delete interfaces ethernet "{{ intf }}" mtu
       delete interfaces ethernet "{{ intf }}" disable
       delete interfaces ethernet "{{ intf }}" vif
+      delete interfaces ethernet "{{ intf }}" ip adjust-mss
+      delete interfaces ethernet "{{ intf }}" ipv6 adjust-mss
       {% endfor %}
-
+      delete interfaces tunnel tun0
 - name: Cleanup - Remove VRF from eth
   ansible.netcommon.cli_config:
     config: |-
