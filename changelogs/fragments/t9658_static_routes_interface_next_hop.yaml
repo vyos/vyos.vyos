@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - vyos_static_routes - parse interface next-hops (``route X interface Y``) per interface, so several interface next-hops on one route no longer collapse into one or crash fact gathering, and generate ``interface Y distance N`` / ``interface Y disable`` commands for interface-only next-hops instead of failing with ``KeyError 'forward_router_address'`` (https://vyos.dev/T9658).
