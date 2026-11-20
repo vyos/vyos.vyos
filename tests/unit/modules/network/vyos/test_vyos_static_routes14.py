@@ -74,7 +74,7 @@ class TestVyosStaticRoutesModule14(TestVyosModule):
 
     def load_fixtures(self, commands=None, filename=None):
         def load_from_file(*args, **kwargs):
-            return load_fixture("vyos_static_routes_config.cfg")
+            return load_fixture(filename or "vyos_static_routes_config.cfg")
 
         self.execute_show_command.side_effect = load_from_file
 
@@ -276,3 +276,91 @@ class TestVyosStaticRoutesModule14(TestVyosModule):
         )
         commands = ["delete protocols static route"]
         self.execute_module(changed=True, commands=commands)
+
+    def _interface_route(self, next_hops):
+        return [
+            dict(
+                address_families=[
+                    dict(afi="ipv4", routes=[dict(dest="10.0.0.0/8", next_hops=next_hops)]),
+                ],
+            ),
+        ]
+
+    def _interface_hops(self):
+        return [
+            dict(interface="eth0"),
+            dict(interface="eth1", admin_distance=20),
+            dict(interface="eth2", enabled=False),
+            dict(forward_router_address="192.0.2.1", admin_distance=10),
+        ]
+
+    def test_vyos_static_routes_parsed_interface_next_hops(self):
+        set_module_args(
+            dict(
+                running_config=load_fixture("vyos_static_routes_interface_config.cfg"),
+                state="parsed",
+            ),
+        )
+        result = self.execute_module(changed=False)
+        self.assertEqual(result["parsed"], self._interface_route(self._interface_hops()))
+
+    def test_vyos_static_routes_merged_interface_next_hops_idempotent(self):
+        set_module_args(dict(config=self._interface_route(self._interface_hops()), state="merged"))
+        self.execute_module(
+            changed=False,
+            commands=[],
+            filename="vyos_static_routes_interface_config.cfg",
+        )
+
+    def test_vyos_static_routes_merged_interface_next_hops(self):
+        set_module_args(
+            dict(
+                config=self._interface_route(
+                    [
+                        dict(interface="eth3", admin_distance=30),
+                        dict(interface="eth4", enabled=False),
+                    ],
+                ),
+                state="merged",
+            ),
+        )
+        commands = [
+            "set protocols static route 10.0.0.0/8 interface 'eth3'",
+            "set protocols static route 10.0.0.0/8 interface eth3 distance '30'",
+            "set protocols static route 10.0.0.0/8 interface 'eth4'",
+            "set protocols static route 10.0.0.0/8 interface eth4 'disable'",
+        ]
+        self.execute_module(
+            changed=True,
+            commands=commands,
+            filename="vyos_static_routes_interface_config.cfg",
+        )
+
+    def test_vyos_static_routes_replaced_interface_next_hops(self):
+        set_module_args(
+            dict(
+                config=self._interface_route(
+                    [dict(interface="eth0"), dict(interface="eth1", admin_distance=20)],
+                ),
+                state="replaced",
+            ),
+        )
+        commands = [
+            "delete protocols static route 10.0.0.0/8 interface 'eth2'",
+            "delete protocols static route 10.0.0.0/8 interface eth2 'disable'",
+            "delete protocols static route 10.0.0.0/8 next-hop '192.0.2.1'",
+            "delete protocols static route 10.0.0.0/8 next-hop 192.0.2.1 distance '10'",
+        ]
+        self.execute_module(
+            changed=True,
+            commands=commands,
+            filename="vyos_static_routes_interface_config.cfg",
+        )
+
+    def test_vyos_static_routes_deleted_interface_next_hops(self):
+        set_module_args(dict(config=[dict(address_families=[dict(afi="ipv4")])], state="deleted"))
+        self.execute_module(
+            changed=True,
+            commands=["delete protocols static route"],
+            filename="vyos_static_routes_interface_config.cfg",
+        )
