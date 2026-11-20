@@ -1,0 +1,3 @@
+---
+bugfixes:
+  - vyos cliconf / get_os_version - do not crash with ``KeyError`` when ``show version`` has no ``Version:`` line or its value does not match ``VyOS <major>.<minor>`` (for example custom image names); version-dependent modules now fail with a clear message naming the reported version (https://vyos.dev/T9660).
