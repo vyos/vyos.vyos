@@ -495,6 +495,33 @@ class TestVyosConfigModule(TestVyosModule):
         )
         self.assertIn("set system host-name foo", response["config_diff"])
 
+    def test_vyos_config_match_line_double_quoted_value_is_idempotent(self):
+        """
+        The running config shows values in single quotes; a candidate line
+        using double quotes for the same value must not be reported as a change.
+        """
+        candidate = 'set interfaces ethernet eth0 description "test string"'
+        diff = self.cliconf_obj.get_diff(candidate, self.running_config)
+        self.assertEqual(diff["config_diff"], [])
+
+    def test_vyos_config_match_line_delete_does_not_match_value_prefix(self):
+        """
+        A delete must only match a running node or value as a whole word:
+        address 1.2.3.4 is not the configured 1.2.3.4/24, and eth0 is not eth00.
+        """
+        candidate = "\n".join(
+            [
+                "delete interfaces ethernet eth0 address 1.2.3.4",
+                "delete interfaces ethernet eth1 address '6.7.8.9/24'",
+                "delete interfaces ethernet eth",
+            ],
+        )
+        diff = self.cliconf_obj.get_diff(candidate, self.running_config)
+        self.assertEqual(
+            diff["config_diff"],
+            ["delete interfaces ethernet eth1 address '6.7.8.9/24'"],
+        )
+
     def test_vyos_config_match_line_ignores_comment_and_blank_lines(self):
         """
         A src/lines candidate containing comment or blank lines must not
