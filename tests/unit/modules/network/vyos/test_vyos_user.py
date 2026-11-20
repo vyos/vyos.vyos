@@ -24,6 +24,7 @@ __metaclass__ = type
 from unittest.mock import patch
 
 from ansible_collections.vyos.vyos.plugins.modules import vyos_user
+from ansible_collections.vyos.vyos.plugins.modules.vyos_user import update_objects
 from ansible_collections.vyos.vyos.tests.unit.modules.utils import set_module_args
 
 from .vyos_module import TestVyosModule, load_fixture
@@ -339,4 +340,68 @@ class TestVyosUserModule(TestVyosModule):
                     "set system login user user2 authentication public-keys user2@host2 type 'ssh-ed25519'",
                 ],
             ),
+        )
+
+    def test_vyos_user_loop_existing_user_with_new_public_keys(self):
+        # Regression: second looped call for an existing user with fields absent from `have`
+        set_module_args(
+            dict(
+                name="admin",
+                full_name="Admin User",
+                public_keys=[
+                    dict(
+                        name="admin@host",
+                        key="AAAAC3NzaC1lZDI1NTE5AAAAIFIR0jrMvBdmvTJNY5EDhOD",
+                        type="ssh-ed25519",
+                    ),
+                ],
+            ),
+        )
+        result = self.execute_module(changed=True)
+        self.assertIn(
+            "set system login user admin full-name 'Admin User'",
+            result["commands"],
+        )
+
+    def test_vyos_user_existing_user_no_changes(self):
+        set_module_args(dict(name="admin"))
+        result = self.execute_module(changed=False)
+        self.assertEqual(result["commands"], [])
+
+
+class TestVyosUserUpdateObjects(TestVyosModule):
+    def test_new_user_is_added(self):
+        want = [{"name": "new", "full_name": None}]
+        self.assertEqual(update_objects(want, []), [(want[0], {})])
+
+    def test_existing_user_unchanged(self):
+        have = [{"name": "a", "full_name": "A", "public_keys": []}]
+        want = [{"name": "a", "full_name": "A", "public_keys": []}]
+        self.assertEqual(update_objects(want, have), [])
+
+    def test_existing_user_falsy_values_ignored(self):
+        have = [{"name": "a", "full_name": "A"}]
+        want = [{"name": "a", "full_name": None, "public_keys": []}]
+        self.assertEqual(update_objects(want, have), [])
+
+    def test_existing_user_key_missing_from_have(self):
+        have = [{"name": "a"}]
+        want = [{"name": "a", "full_name": "A"}]
+        self.assertEqual(update_objects(want, have), [(want[0], have[0])])
+
+    def test_existing_user_changed_value_appended_once(self):
+        have = [{"name": "a", "full_name": "A", "encrypted_password": "x"}]
+        want = [{"name": "a", "full_name": "B", "encrypted_password": "y"}]
+        self.assertEqual(update_objects(want, have), [(want[0], have[0])])
+
+    def test_multiple_users(self):
+        have = [{"name": "a", "full_name": "A"}, {"name": "b", "full_name": "B"}]
+        want = [
+            {"name": "a", "full_name": "A"},
+            {"name": "b", "full_name": "changed"},
+            {"name": "c", "full_name": "C"},
+        ]
+        self.assertEqual(
+            update_objects(want, have),
+            [(want[1], have[1]), (want[2], {})],
         )
