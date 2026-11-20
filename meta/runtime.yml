@@ -58,6 +58,8 @@ plugin_routing:
       redirect: vyos.vyos.vyos_ping
     prefix_lists:
       redirect: vyos.vyos.vyos_prefix_lists
+    route_maps:
+      redirect: vyos.vyos.vyos_route_maps
     snmp_server:
       redirect: vyos.vyos.vyos_snmp_server
     static_routes:
@@ -76,3 +78,51 @@ plugin_routing:
       redirect: vyos.vyos.vyos_vpn_ipsec_s2s
     ha:
       redirect: vyos.vyos.vyos_ha
+    interface:
+      tombstone:
+        removal_version: 4.0.0
+        warning_text: use vyos_interfaces instead
+    vyos_interface:
+      tombstone:
+        removal_version: 4.0.0
+        warning_text: use vyos_interfaces instead
+    l3_interface:
+      tombstone:
+        removal_version: 4.0.0
+        warning_text: use vyos_l3_interfaces instead
+    vyos_l3_interface:
+      tombstone:
+        removal_version: 4.0.0
+        warning_text: use vyos_l3_interfaces instead
+    linkagg:
+      tombstone:
+        removal_version: 4.0.0
+        warning_text: use vyos_lag_interfaces instead
+    vyos_linkagg:
+      tombstone:
+        removal_version: 4.0.0
+        warning_text: use vyos_lag_interfaces instead
+    lldp:
+      tombstone:
+        removal_version: 4.0.0
+        warning_text: use vyos_lldp_global instead
+    vyos_lldp:
+      tombstone:
+        removal_version: 4.0.0
+        warning_text: use vyos_lldp_global instead
+    lldp_interface:
+      tombstone:
+        removal_version: 4.0.0
+        warning_text: use vyos_lldp_interfaces instead
+    vyos_lldp_interface:
+      tombstone:
+        removal_version: 4.0.0
+        warning_text: use vyos_lldp_interfaces instead
+    static_route:
+      tombstone:
+        removal_version: 4.0.0
+        warning_text: use vyos_static_routes instead
+    vyos_static_route:
+      tombstone:
+        removal_version: 4.0.0
+        warning_text: use vyos_static_routes instead
