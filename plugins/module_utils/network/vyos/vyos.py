@@ -137,7 +137,12 @@ def load_config(module, commands, commit=False, comment=None, confirm=None):
 
 
 def get_os_version(module):
-    connection = get_connection(module)
-    if connection.get_device_info():
-        os_version = connection.get_device_info()["network_os_major_version"]
+    device_info = get_connection(module).get_device_info() or {}
+    os_version = device_info.get("network_os_major_version")
+    if not os_version:
+        module.fail_json(
+            msg="Unable to determine the VyOS major version from 'show version' "
+            "(Version: %s); expected 'VyOS <major>.<minor>'"
+            % device_info.get("network_os_version", "not found"),
+        )
     return os_version
