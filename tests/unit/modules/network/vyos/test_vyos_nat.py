@@ -1088,3 +1088,79 @@ class TestVyosNatModule(TestVyosModule):
             commands=commands,
             filename="vyos_nat_config_nat66_groups.cfg",
         )
+
+    # -------------------------------------------------------------------------
+    # NAT64 pool protocols
+    # -------------------------------------------------------------------------
+    def _nat64_pool(self, state="merged", **pool):
+        return dict(
+            config=dict(
+                nat64=dict(
+                    source=dict(
+                        rule=[
+                            dict(
+                                id=10,
+                                description="NAT64 example",
+                                match=dict(mark=100),
+                                source=dict(prefix="2001:db8::/96"),
+                                translation=dict(
+                                    pool=[
+                                        dict(
+                                            id=1,
+                                            address="192.168.100.10",
+                                            port="1-65535",
+                                            **pool,
+                                        ),
+                                    ],
+                                ),
+                            ),
+                        ],
+                    ),
+                ),
+            ),
+            state=state,
+        )
+
+    def test_vyos_nat_parsed_nat64_pool_protocols(self):
+        # with several protocols on one pool, all of them are reported, not just the last
+        set_module_args(
+            dict(
+                running_config="set nat64 source rule 10 translation pool 1 address '192.0.2.10'\n"
+                "set nat64 source rule 10 translation pool 1 protocol 'tcp'\n"
+                "set nat64 source rule 10 translation pool 1 protocol 'udp'",
+                state="parsed",
+            ),
+        )
+        result = self.execute_module(changed=False)
+        self.assertEqual(
+            result["parsed"]["nat64"]["source"]["rule"][0]["translation"]["pool"],
+            [{"id": 1, "address": "192.0.2.10", "protocols": ["tcp", "udp"]}],
+        )
+
+    def test_vyos_nat_merged_nat64_pool_protocols(self):
+        # the pool has udp; only tcp is added, whatever the order in the playbook
+        set_module_args(self._nat64_pool(protocols=["udp", "tcp"]))
+        self.execute_module(
+            changed=True,
+            commands=["set nat64 source rule 10 translation pool 1 protocol tcp"],
+        )
+
+    def test_vyos_nat_merged_nat64_pool_protocols_idempotent(self):
+        set_module_args(self._nat64_pool(protocols=["udp"]))
+        self.execute_module(changed=False, commands=[])
+
+    def test_vyos_nat_merged_nat64_pool_protocol_deprecated(self):
+        # the deprecated protocol option still works, as a one-element protocols
+        set_module_args(self._nat64_pool(protocol="udp"))
+        self.execute_module(changed=False, commands=[])
+
+    def test_vyos_nat_nat64_pool_protocol_and_protocols(self):
+        set_module_args(self._nat64_pool(protocol="udp", protocols=["tcp"]))
+        result = self.execute_module(failed=True)
+        self.assertIn("mutually exclusive: protocol|protocols", result["msg"])
+
+    def test_vyos_nat_rendered_nat64_pool_protocols(self):
+        set_module_args(self._nat64_pool(state="rendered", protocols=["tcp", "icmp"]))
+        rendered = self.execute_module(changed=False)["rendered"]
+        self.assertIn("set nat64 source rule 10 translation pool 1 protocol icmp", rendered)
+        self.assertIn("set nat64 source rule 10 translation pool 1 protocol tcp", rendered)

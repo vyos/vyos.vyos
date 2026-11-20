@@ -2711,6 +2711,34 @@ Parameters
                 </td>
                 <td>
                         <div>Protocol for this translation pool entry.</div>
+                        <div>Deprecated, use <em>protocols</em> instead; this option will be removed in version 8.0.0. It is mutually exclusive with <em>protocols</em>.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="1">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>protocols</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">list</span>
+                         / <span style="color: purple">elements=string</span>
+                    </div>
+                </td>
+                <td>
+                        <ul style="margin: 0; padding: 0"><b>Choices:</b>
+                                    <li>icmp</li>
+                                    <li>tcp</li>
+                                    <li>udp</li>
+                        </ul>
+                </td>
+                <td>
+                        <div>Protocols for this translation pool entry; a pool can carry several.</div>
                 </td>
             </tr>
 
@@ -4063,8 +4091,9 @@ Examples
                     pool:
                       - id: 1
                         address: 192.168.100.10
-                        port: "1-65535"
-                        protocol: udp
+                        port: "1024-32767"
+                        protocols:
+                          - udp
         state: merged
 
     # Using merged - configure NAT66

@@ -488,8 +488,22 @@ class NatArgs(object):  # pylint: disable=R0903
                                                                 "tcp",
                                                                 "udp",
                                                             ],
+                                                            "removed_in_version": "8.0.0",
+                                                            "removed_from_collection": "vyos.vyos",
+                                                        },
+                                                        "protocols": {
+                                                            "type": "list",
+                                                            "elements": "str",
+                                                            "choices": [
+                                                                "icmp",
+                                                                "tcp",
+                                                                "udp",
+                                                            ],
                                                         },
                                                     },
+                                                    "mutually_exclusive": [
+                                                        ["protocol", "protocols"],
+                                                    ],
                                                 },
                                             },
                                         },

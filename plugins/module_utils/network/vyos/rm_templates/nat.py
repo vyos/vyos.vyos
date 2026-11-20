@@ -79,8 +79,8 @@ def _tmplt_nat64_translation_pool(config_data):
         commands.append(f"{base} description '{pool['description']}'")
     if pool.get("port") is not None:
         commands.append(f"{base} port {pool['port']}")
-    if pool.get("protocol") is not None:
-        commands.append(f"{base} protocol {pool['protocol']}")
+    for protocol in pool.get("protocols") or []:
+        commands.append(f"{base} protocol {protocol}")
     if pool.get("disable"):
         commands.append(f"{base} disable")
 
@@ -1174,7 +1174,7 @@ class NatTemplate(NetworkTemplate):
                             {
                                 "id": "{{ id }}",
                                 "translation": {
-                                    "pool": [{"id": "{{ pool_id }}", "protocol": "{{ value }}"}],
+                                    "pool": [{"id": "{{ pool_id }}", "protocols": ["{{ value }}"]}],
                                 },
                             },
                         ],

@@ -507,7 +507,19 @@ options:
                               - icmp
                               - tcp
                               - udp
-                            description: Protocol for this translation pool entry.
+                            description:
+                              - Protocol for this translation pool entry.
+                              - Deprecated, use I(protocols) instead; this option will be removed in
+                                version 8.0.0. It is mutually exclusive with I(protocols).
+                          protocols:
+                            type: list
+                            elements: str
+                            choices:
+                              - icmp
+                              - tcp
+                              - udp
+                            description:
+                              - Protocols for this translation pool entry; a pool can carry several.
       nat66:
         type: dict
         description: Configuration for NAT66 (IPv6-to-IPv6) rules.
@@ -825,8 +837,9 @@ EXAMPLES = """
                 pool:
                   - id: 1
                     address: 192.168.100.10
-                    port: "1-65535"
-                    protocol: udp
+                    port: "1024-32767"
+                    protocols:
+                      - udp
     state: merged
 
 # Using merged - configure NAT66
