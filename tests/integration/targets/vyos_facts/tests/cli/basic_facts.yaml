@@ -75,3 +75,22 @@
       - result.ansible_facts.ansible_net_system is defined
       - result.ansible_facts.ansible_net_version is defined
       - result.ansible_facts.ansible_network_resources == {}
+
+- name: Collect the default facts, including Secure Boot where the image reports it
+  register: result
+  vyos.vyos.vyos_facts:
+    gather_subset: default
+
+- name: Read the Secure Boot state directly, on images that have the command
+  register: secure_boot
+  when: result.ansible_facts.ansible_net_secure_boot is defined
+  vyos.vyos.vyos_command:
+    commands:
+      - show secure-boot
+
+- name: Check that the Secure Boot facts match the device
+  when: result.ansible_facts.ansible_net_secure_boot is defined
+  assert:
+    that:
+      - result.ansible_facts.ansible_net_secure_boot.enabled == ('SecureBoot enabled' in secure_boot.stdout[0])
+      - result.ansible_facts.ansible_net_secure_boot.uefi == ('legacy BIOS' not in secure_boot.stdout[0])

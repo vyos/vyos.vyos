@@ -16,8 +16,12 @@ __metaclass__ = type
 import platform
 import re
 
+from ansible.module_utils.common.text.converters import to_text
+from ansible.module_utils.connection import ConnectionError
+
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.vyos import (
     get_capabilities,
+    get_connection,
     run_commands,
 )
 
@@ -45,6 +49,50 @@ class Default(LegacyFactsBase):
         data = self.responses[0]
         self.facts["serialnum"] = self.parse_serialnum(data)
         self.facts.update(self.platform_facts())
+        secure_boot = self.secure_boot_facts()
+        if secure_boot:
+            self.facts["secure_boot"] = secure_boot
+
+    def secure_boot_facts(self):
+        """Secure Boot state, on images that have show secure-boot.
+
+        Older images reject the command; the fact is then left out.
+        """
+        data = self.run_optional("show secure-boot")
+        if data is None:
+            return None
+        match = re.search(r"^SecureBoot\s+(enabled|disabled)\s*$", data, re.M)
+        if not match:
+            return None
+        facts = {
+            "enabled": match.group(1) == "enabled",
+            "uefi": "legacy BIOS mode" not in data,
+        }
+        if facts["enabled"]:
+            detail = self.run_optional("show secure-boot detail") or ""
+            facts["certificates"] = [
+                {"issuer": issuer, "subject": subject}
+                for issuer, subject in re.findall(
+                    r"^Issuer:\s+(.+?)\s*\nSubject:\s+(.+?)\s*$",
+                    detail,
+                    re.M,
+                )
+            ]
+        return facts
+
+    def run_optional(self, command):
+        """Output of a command the image may not have, or None when the device rejects it.
+
+        Only "Invalid command" means the image lacks the command; other connection errors
+        (timeouts, disconnects) fail the module as in run_commands.
+        """
+        try:
+            return get_connection(self.module).run_commands(commands=[command])[0]
+        except ConnectionError as exc:
+            msg = to_text(exc, errors="surrogate_then_replace")
+            if "Invalid command" in msg:
+                return None
+            self.module.fail_json(msg=msg)
 
     def parse_serialnum(self, data):
         match = re.search(r"(?:HW|Hardware) S/N:\s+(\S+)", data)

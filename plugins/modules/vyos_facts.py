@@ -113,6 +113,36 @@ ansible_net_serialnum:
   description: The serial number of the device
   returned: always
   type: str
+ansible_net_secure_boot:
+  description:
+    - The Secure Boot state of the device, from C(show secure-boot).
+    - Only on images that have the command; older images do not return it.
+  returned: when the device reports its Secure Boot state
+  type: dict
+  contains:
+    enabled:
+      description: Whether Secure Boot is enabled.
+      type: bool
+    uefi:
+      description: Whether the system booted with UEFI; C(false) for legacy BIOS.
+      type: bool
+    certificates:
+      description: Issuer and subject of the kernel signing certificates, when Secure Boot is enabled.
+      type: list
+      elements: dict
+      contains:
+        issuer:
+          description: Certificate issuer.
+          type: str
+        subject:
+          description: Certificate subject.
+          type: str
+  sample:
+    enabled: true
+    uefi: true
+    certificates:
+      - issuer: /CN=VyOS Networks Secure Boot CA
+        subject: /CN=VyOS Networks Secure Boot Signer 2025 - linux
 ansible_net_version:
   description: The version of the software running
   returned: always
