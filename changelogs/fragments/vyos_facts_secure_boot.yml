@@ -1,0 +1,5 @@
+---
+minor_changes:
+  - vyos_facts - new fact ansible_net_secure_boot in the default subset, with the device's Secure
+    Boot state - enabled, uefi (false for legacy BIOS) and, when Secure Boot is enabled, the
+    kernel signing certificates. Images without the show secure-boot command do not return it.
