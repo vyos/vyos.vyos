@@ -1,0 +1,18 @@
+---
+bugfixes:
+  - vyos_nat - destination NAT rules accept a source match (address, port, fqdn and the address,
+    domain, MAC, network and port groups), as VyOS does; before, a router with such a rule made the
+    module fail in every state with "Unsupported parameters ... config.nat.destination.rule.source".
+  - vyos_nat - NAT66 source and destination rules accept group matches (address, domain, MAC, network
+    and port groups) on their source and destination, as VyOS does; before, a router with such a
+    rule made the module fail in every state with "Unsupported parameters ... network_group".
+  - vyos_nat - a NAT64 translation pool with several protocols reports all of them in the facts;
+    before, only the last one parsed was kept, so runs were not idempotent and replaced or
+    overridden could remove the other protocols.
+minor_changes:
+  - vyos_nat - new option protocols for NAT64 translation pools, a list of icmp, tcp and udp, since
+    VyOS allows several protocols per pool.
+deprecated_features:
+  - vyos_nat - the protocol option of NAT64 translation pools is deprecated since 7.0.0 and will be
+    removed in version 8.0.0; use protocols instead. Until then it is accepted as a one-element
+    protocols list and is mutually exclusive with protocols.

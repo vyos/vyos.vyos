@@ -157,6 +157,9 @@ class NatFacts(object):
                     if pools and isinstance(pools, list):
                         rule["translation"]["pool"] = self._merge_rule_list(pools)
                         rule["translation"]["pool"].sort(key=lambda x: x.get("id", 0))
+                        for pool in rule["translation"]["pool"]:
+                            if pool.get("protocols"):
+                                pool["protocols"] = sorted(set(pool["protocols"]))
 
         self._cast_ports(objs)
         return objs
