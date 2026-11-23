@@ -162,10 +162,10 @@ class Snmp_serverTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\sservice\ssnmp\scontact
-                \s+(?P<name>\S+)\s*$""",
+                \s+(?P<name>.+?)\s*$""",
                 re.VERBOSE,
             ),
-            "setval": "service snmp contact {{ contact }}",
+            "setval": "service snmp contact {{ '\\'' + contact + '\\'' }}",
             "result": {
                 "contact": "{{ name }}",
             },
@@ -176,10 +176,10 @@ class Snmp_serverTemplate(NetworkTemplate):
             "getval": re.compile(
                 r"""
                 ^set\sservice\ssnmp\sdescription
-                \s+(?P<name>\S+)\s*$""",
+                \s+(?P<name>.+?)\s*$""",
                 re.VERBOSE,
             ),
-            "setval": "service snmp description {{ description }}",
+            "setval": "service snmp description {{ '\\'' + description + '\\'' }}",
             "result": {
                 "description": "{{ name }}",
             },

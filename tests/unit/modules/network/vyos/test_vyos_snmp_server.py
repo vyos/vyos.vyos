@@ -217,8 +217,8 @@ class TestVyosSnmpServerModule(TestVyosModule):
             "set service snmp v3 group default seclevel priv",
             "set service snmp v3 group default view view1",
             "set service snmp v3 engineid 34",
-            "set service snmp contact admin@example.com",
-            "set service snmp description snmp_config",
+            "set service snmp contact 'admin@example.com'",
+            "set service snmp description 'snmp_config'",
             "set service snmp smux-peer peer1",
             "set service snmp trap-source 1.1.1.1",
             "set service snmp trap-target 10.10.1.1 community switches",
@@ -289,8 +289,8 @@ class TestVyosSnmpServerModule(TestVyosModule):
             "delete service snmp v3 user guest_user privacy type aes",
             "delete service snmp v3 user guest_user privacy plaintext-password opq1234567",
             "set service snmp v3 engineid 34",
-            "set service snmp contact admin@example.com",
-            "set service snmp description snmp_config",
+            "set service snmp contact 'admin@example.com'",
+            "set service snmp description 'snmp_config'",
             "set service snmp smux-peer peer1",
             "set service snmp trap-source 1.1.1.1",
             "set service snmp trap-target 10.10.1.1 community switches",
@@ -363,8 +363,8 @@ class TestVyosSnmpServerModule(TestVyosModule):
             "delete service snmp v3 user guest_user privacy type aes",
             "delete service snmp v3 user guest_user privacy plaintext-password opq1234567",
             "set service snmp v3 engineid 34",
-            "set service snmp contact admin@example.com",
-            "set service snmp description snmp_config",
+            "set service snmp contact 'admin@example.com'",
+            "set service snmp description 'snmp_config'",
             "set service snmp smux-peer peer1",
             "set service snmp trap-source 1.1.1.1",
             "set service snmp trap-target 10.10.1.1 community switches",
@@ -435,8 +435,8 @@ class TestVyosSnmpServerModule(TestVyosModule):
             "set service snmp v3 group default seclevel priv",
             "set service snmp v3 group default view view1",
             "set service snmp v3 engineid 34",
-            "set service snmp contact admin@example.com",
-            "set service snmp description snmp_config",
+            "set service snmp contact 'admin@example.com'",
+            "set service snmp description 'snmp_config'",
             "set service snmp smux-peer peer1",
             "set service snmp trap-source 1.1.1.1",
             "set service snmp trap-target 10.10.1.1 community switches",
@@ -463,8 +463,8 @@ class TestVyosSnmpServerModule(TestVyosModule):
             "set service snmp v3 group default seclevel priv",
             "set service snmp v3 group default view view1",
             "set service snmp v3 engineid 34",
-            "set service snmp contact admin@example.com",
-            "set service snmp description snmp_config",
+            "set service snmp contact 'admin@example.com'",
+            "set service snmp description 'snmp_config'",
             "set service snmp smux-peer peer1",
             "set service snmp trap-source 1.1.1.1",
             "set service snmp trap-target 10.10.1.1",
@@ -659,3 +659,27 @@ class TestVyosSnmpServerModule(TestVyosModule):
                 "set service snmp v3 view v1 oid 1.3.6 mask ff",
             ],
         )
+
+    def test_snmp_server_contact_description_with_spaces(self):
+        # multi-word contact and description used to be dropped from the facts
+        set_module_args(
+            dict(
+                running_config="set service snmp contact 'NOC team, +420 123'\n"
+                "set service snmp description 'Edge router 1'",
+                state="parsed",
+            ),
+        )
+        parsed = self.execute_module(changed=False)["parsed"]
+        self.assertEqual(parsed["contact"], "NOC team, +420 123")
+        self.assertEqual(parsed["description"], "Edge router 1")
+
+    def test_snmp_server_contact_description_with_spaces_rendered(self):
+        set_module_args(
+            dict(
+                config=dict(contact="NOC team", description="Edge router 1"),
+                state="rendered",
+            ),
+        )
+        rendered = self.execute_module(changed=False)["rendered"]
+        self.assertIn("set service snmp contact 'NOC team'", rendered)
+        self.assertIn("set service snmp description 'Edge router 1'", rendered)
