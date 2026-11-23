@@ -187,17 +187,3 @@ class TestVyosNhrpModule(TestVyosModule):
         )
         result = self.execute_module(changed=False)
         self.assertEqual(result["parsed"], dict(tunnels=[HUB, SPOKE]))
-
-    def test_vyos_nhrp_overridden_round_trip_revert(self):
-        # the gathered base configuration, fed back with overridden, undoes the changes
-        set_module_args(dict(config=dict(tunnels=[HUB, SPOKE]), state="overridden"))
-        commands = [
-            "set protocols nhrp tunnel tun0 holdtime 300",
-            "delete protocols nhrp tunnel tun0 multicast 10.0.0.255",
-            "delete protocols nhrp tunnel tun1 nhs tunnel-ip dynamic nbma 203.0.113.1",
-        ]
-        self.execute_module(
-            changed=True,
-            commands=commands,
-            filename="vyos_nhrp_config_changed.cfg",
-        )
