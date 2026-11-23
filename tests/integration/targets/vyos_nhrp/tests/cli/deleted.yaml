@@ -1,0 +1,31 @@
+---
+- debug:
+    msg: START vyos_nhrp deleted integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Delete all NHRP configuration
+      register: result
+      vyos.vyos.vyos_nhrp: &id001
+        state: deleted
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands == deleted.commands
+          - result.after == {}
+
+    - name: Delete all NHRP configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nhrp: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

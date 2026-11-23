@@ -1,0 +1,43 @@
+---
+- debug:
+    msg: START vyos_nhrp replaced integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Replace the configuration of both tunnels
+      register: result
+      vyos.vyos.vyos_nhrp: &id001
+        config:
+          tunnels:
+            - name: tun0
+              authentication: newpass
+              multicast:
+                - dynamic
+            - name: tun1
+              nhs:
+                - tunnel_ip: dynamic
+                  nbma:
+                    - 192.0.2.1
+              shortcut: true
+        state: replaced
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands|symmetric_difference(replaced.commands) == []
+          - result.after == replaced.after
+
+    - name: Replace the configuration of both tunnels (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nhrp: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

@@ -1,0 +1,34 @@
+---
+- debug:
+    msg: START vyos_nhrp overridden integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Override the NHRP configuration with the hub tunnel only
+      register: result
+      vyos.vyos.vyos_nhrp: &id001
+        config:
+          tunnels:
+            - "{{ hub }}"
+        state: overridden
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands|symmetric_difference(overridden.commands) == []
+          - result.after == overridden.after
+
+    - name: Override the NHRP configuration with the hub tunnel only (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_nhrp: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

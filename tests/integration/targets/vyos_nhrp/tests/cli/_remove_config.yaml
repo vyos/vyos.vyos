@@ -1,0 +1,18 @@
+---
+# NHRP first: VyOS refuses to delete a tunnel that NHRP uses
+- name: Remove the NHRP configuration
+  vyos.vyos.vyos_config:
+    lines:
+      - delete protocols nhrp
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli
+
+- name: Remove the tunnels
+  vyos.vyos.vyos_config:
+    lines:
+      - delete interfaces tunnel tun0
+      - delete interfaces tunnel tun1
+  ignore_errors: true
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

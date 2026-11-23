@@ -1,0 +1,57 @@
+---
+- debug:
+    msg: START vyos_nhrp round trip integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _create_tunnels.yaml
+
+- block:
+    - name: Apply the provided configuration (base config)
+      register: base_config
+      vyos.vyos.vyos_nhrp:
+        config:
+          tunnels:
+            - "{{ hub }}"
+            - "{{ spoke }}"
+        state: merged
+
+    - name: Gather NHRP facts
+      vyos.vyos.vyos_facts:
+        gather_subset:
+          - default
+        gather_network_resources:
+          - nhrp
+
+    - name: Apply the provided configuration (config to be reverted)
+      register: result
+      vyos.vyos.vyos_nhrp:
+        config:
+          tunnels:
+            - name: tun0
+              holdtime: 600
+              multicast:
+                - 10.0.0.255
+            - name: tun1
+              nhs:
+                - tunnel_ip: dynamic
+                  nbma:
+                    - 203.0.113.1
+        state: merged
+
+    - name: Assert that changes were applied
+      assert:
+        that: result['after'] == round_trip['after']
+
+    - name: Revert back to base config using facts round trip
+      register: revert
+      vyos.vyos.vyos_nhrp:
+        config: "{{ ansible_facts['network_resources']['nhrp'] }}"
+        state: overridden
+
+    - name: Assert that config was reverted
+      assert:
+        that: revert['after'] == base_config['after']
+
+  always:
+    - include_tasks: _remove_config.yaml
