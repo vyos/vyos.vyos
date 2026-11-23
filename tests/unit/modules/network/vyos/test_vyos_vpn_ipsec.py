@@ -575,9 +575,7 @@ class TestVyosVpnIpsecModule(TestVyosModule):
         # prf was in the argspec but had no parser, so it was never reported
         set_module_args(
             dict(
-                running_config="set vpn ipsec ike-group IKE2 key-exchange 'ikev2'\n"
-                "set vpn ipsec ike-group IKE2 proposal 1 encryption 'aes256gcm128'\n"
-                "set vpn ipsec ike-group IKE2 proposal 1 prf 'prfsha384'",
+                running_config=load_fixture("vyos_vpn_ipsec_config_prf.cfg"),
                 state="parsed",
             ),
         )
