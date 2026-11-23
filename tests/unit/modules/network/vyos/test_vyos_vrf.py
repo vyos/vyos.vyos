@@ -254,7 +254,7 @@ class TestVyosVrfModule(TestVyosModule):
             "delete vrf bind-to-all",
             "set vrf name vrf-green table 110",
             "set vrf name vrf-green vni 1010",
-            "set vrf name vrf-green description green-vrf",
+            "set vrf name vrf-green description 'green-vrf'",
             "set vrf name vrf-green protocols ospf log-adjacency-changes 'detail'",
             "set vrf name vrf-green protocols ospf max-metric router-lsa administrative",
             "set vrf name vrf-green protocols ospf max-metric router-lsa on-shutdown 10",
@@ -328,7 +328,7 @@ class TestVyosVrfModule(TestVyosModule):
             ),
         )
         commands = [
-            "set vrf name vrf-blue description blue-vrf-replaced",
+            "set vrf name vrf-blue description 'blue-vrf-replaced'",
             "set vrf name vrf-blue disable",
             "delete vrf name vrf-red ip disable-forwarding",
             "delete vrf name vrf-red ipv6 nht no-resolve-via-default",
@@ -417,11 +417,11 @@ class TestVyosVrfModule(TestVyosModule):
             "commit",
             "set vrf name vrf-blue table 103",
             "set vrf name vrf-blue vni 1002",
-            "set vrf name vrf-blue description blue-vrf",
+            "set vrf name vrf-blue description 'blue-vrf'",
             "set vrf name vrf-blue disable",
             "set vrf name vrf-red table 101",
             "set vrf name vrf-red vni 1001",
-            "set vrf name vrf-red description red-vrf",
+            "set vrf name vrf-red description 'red-vrf'",
             "set vrf name vrf-red disable",
             "set vrf name vrf-red protocols bgp system-as 65000",
             "set vrf name vrf-red protocols bgp neighbor 192.0.2.1 remote-as 65003",
@@ -529,11 +529,11 @@ class TestVyosVrfModule(TestVyosModule):
             "set vrf bind-to-all",
             "set vrf name vrf-green table 105",
             "set vrf name vrf-green vni 1000",
-            "set vrf name vrf-green description green-vrf",
+            "set vrf name vrf-green description 'green-vrf'",
             "set vrf name vrf-green disable",
             "set vrf name vrf-amber table 111",
             "set vrf name vrf-amber vni 1001",
-            "set vrf name vrf-amber description amber-vrf",
+            "set vrf name vrf-amber description 'amber-vrf'",
             "set vrf name vrf-amber ip protocol ospf route-map rm1",
             "set vrf name vrf-amber ip disable-forwarding",
         ]
@@ -687,3 +687,55 @@ class TestVyosVrfModule(TestVyosModule):
             "delete vrf",
         ]
         self.execute_module(changed=True, commands=commands)
+
+    def test_vrf_merged_bind_to_all_omitted(self):
+        set_module_args(
+            dict(config=dict(instances=[dict(name="red", table_id=101)]), state="merged"),
+        )
+        self.execute_module(changed=False, filename="vyos_vrf_bind_to_all_config.cfg")
+
+    def test_vrf_rendered_bind_to_all_false(self):
+        set_module_args(
+            dict(
+                config=dict(bind_to_all=False, instances=[dict(name="red", table_id=101)]),
+                state="rendered",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["rendered"],
+            ["set vrf name red table 101"],
+        )
+
+    def test_vrf_gathered_empty(self):
+        set_module_args(dict(state="gathered"))
+        result = self.execute_module(changed=False, filename="vyos_vrf_empty_config.cfg")
+        self.assertEqual(result["gathered"], {})
+
+    def test_vyos_vrf_parsed_description_with_spaces(self):
+        # a multi-word description used to be dropped from the facts
+        set_module_args(
+            dict(
+                running_config="set vrf name vrf-cust description 'Customer A WAN'\n"
+                "set vrf name vrf-cust table '200'",
+                state="parsed",
+            ),
+        )
+        result = self.execute_module(changed=False)
+        self.assertEqual(
+            result["parsed"]["instances"][0]["description"],
+            "Customer A WAN",
+        )
+
+    def test_vyos_vrf_rendered_description_with_spaces(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    instances=[
+                        dict(name="vrf-cust", table_id=200, description="Customer A WAN"),
+                    ],
+                ),
+                state="rendered",
+            ),
+        )
+        rendered = self.execute_module(changed=False)["rendered"]
+        self.assertIn("set vrf name vrf-cust description 'Customer A WAN'", rendered)

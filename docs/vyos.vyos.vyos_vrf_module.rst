@@ -60,12 +60,13 @@ Parameters
                 </td>
                 <td>
                         <ul style="margin: 0; padding: 0"><b>Choices:</b>
-                                    <li><div style="color: blue"><b>no</b>&nbsp;&larr;</div></li>
+                                    <li>no</li>
                                     <li>yes</li>
                         </ul>
                 </td>
                 <td>
-                        <div>Enable binding services to all VRFs</div>
+                        <div>Enable binding services to all VRFs.</div>
+                        <div>When omitted, <code>merged</code> leaves the device&#x27;s setting as it is, and <code>replaced</code> and <code>overridden</code> remove it.</div>
                 </td>
             </tr>
             <tr>

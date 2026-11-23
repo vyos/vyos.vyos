@@ -52,3 +52,40 @@
 
   always:
     - include_tasks: _remove_config.yaml
+
+- block:
+    - name: setup bind-to-all and a VRF
+      vyos.vyos.vyos_config:
+        lines:
+          - set vrf bind-to-all
+          - set vrf name red table 101
+      vars:
+        ansible_connection: ansible.netcommon.network_cli
+
+    - name: Merge a VRF change without mentioning bind_to_all
+      register: result
+      vyos.vyos.vyos_vrf: &id_b2
+        config:
+          instances:
+            - name: red
+              table_id: 101
+              description: keeps-bind-to-all
+        state: merged
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'delete vrf bind-to-all' not in result.commands"
+          - result.after.bind_to_all == true
+
+    - name: Merge a VRF change without mentioning bind_to_all (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vrf: *id_b2
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml
