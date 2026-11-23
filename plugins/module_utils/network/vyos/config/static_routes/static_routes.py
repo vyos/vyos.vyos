@@ -331,21 +331,15 @@ class Static_routes(ConfigBase):
                         )
                     elif element == "enabled" and not hop[element]:
                         commands.append(
-                            self._compute_command(
-                                dest=want["dest"],
-                                key="next-hop",
-                                attrib=hop["forward_router_address"],
-                                value="disable",
-                                opr=opr,
-                            ),
+                            self._hop_attrib_command(want["dest"], hop, "", "disable", opr=opr),
                         )
                     elif element == "admin_distance":
                         commands.append(
-                            self._compute_command(
-                                dest=want["dest"],
-                                key="next-hop",
-                                attrib=hop["forward_router_address"] + " " + "distance",
-                                value=str(hop[element]),
+                            self._hop_attrib_command(
+                                want["dest"],
+                                hop,
+                                " distance",
+                                str(hop[element]),
                                 opr=opr,
                             ),
                         )
@@ -439,21 +433,15 @@ class Static_routes(ConfigBase):
                         )
                     elif element == "enabled":
                         commands.append(
-                            self._compute_command(
-                                dest=want["dest"],
-                                key="next-hop",
-                                attrib=hop["forward_router_address"],
-                                value="disable",
-                                remove=True,
-                            ),
+                            self._hop_attrib_command(want["dest"], hop, "", "disable", remove=True),
                         )
                     elif element == "admin_distance":
                         commands.append(
-                            self._compute_command(
-                                dest=want["dest"],
-                                key="next-hop",
-                                attrib=hop["forward_router_address"] + " " + "distance",
-                                value=str(hop[element]),
+                            self._hop_attrib_command(
+                                want["dest"],
+                                hop,
+                                " distance",
+                                str(hop[element]),
                                 remove=True,
                             ),
                         )
@@ -512,6 +500,31 @@ class Static_routes(ConfigBase):
                         if key == "blackhole_config":
                             commands.extend(self._add_blackhole(key, want, have))
         return commands
+
+    def _hop_attrib_command(self, dest, hop, attrib, value, **kwargs):
+        """
+        Build the command for an attribute (distance/disable) of a next hop, addressing
+        the hop by its gateway address or, for interface-only hops, by its interface.
+        """
+        if hop.get("forward_router_address"):
+            return self._compute_command(
+                dest=dest,
+                key="next-hop",
+                attrib=hop["forward_router_address"] + attrib,
+                value=value,
+                **kwargs
+            )
+        if LooseVersion(get_os_version(self._module)) < LooseVersion("1.4"):
+            return self._compute_command(
+                dest=dest,
+                key="next-hop-interface",
+                attrib=hop["interface"] + attrib,
+                value=value,
+                **kwargs
+            ).replace("route", "interface-route")
+        return self._compute_command(
+            dest=dest, key="interface", attrib=hop["interface"] + attrib, value=value, **kwargs
+        )
 
     def _compute_command(
         self,

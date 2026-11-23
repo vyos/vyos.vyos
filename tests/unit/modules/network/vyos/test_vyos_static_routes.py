@@ -277,3 +277,36 @@ class TestVyosStaticRoutesModule(TestVyosModule):
         )
         commands = ["delete protocols static route"]
         self.execute_module(changed=True, commands=commands)
+
+    def test_vyos_static_routes_merged_interface_next_hops(self):
+        set_module_args(
+            dict(
+                config=[
+                    dict(
+                        address_families=[
+                            dict(
+                                afi="ipv4",
+                                routes=[
+                                    dict(
+                                        dest="10.0.0.0/8",
+                                        next_hops=[
+                                            dict(interface="eth3", admin_distance=30),
+                                            dict(interface="eth4", enabled=False),
+                                        ],
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
+                ],
+                state="merged",
+            ),
+        )
+        commands = [
+            "set protocols static route 10.0.0.0/8",
+            "set protocols static interface-route 10.0.0.0/8 next-hop-interface 'eth3'",
+            "set protocols static interface-route 10.0.0.0/8 next-hop-interface eth3 distance '30'",
+            "set protocols static interface-route 10.0.0.0/8 next-hop-interface 'eth4'",
+            "set protocols static interface-route 10.0.0.0/8 next-hop-interface eth4 'disable'",
+        ]
+        self.execute_module(changed=True, commands=commands)
