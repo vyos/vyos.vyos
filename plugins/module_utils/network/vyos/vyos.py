@@ -35,7 +35,7 @@ from ansible.module_utils._text import to_text
 from ansible.module_utils.connection import Connection, ConnectionError
 
 
-_DEVICE_CONFIGS = {}
+_DEVICE_CONFIGS = None
 
 
 def get_connection(module):
@@ -69,22 +69,24 @@ def get_config(module, flags=None, format=None):
     flags = [] if flags is None else flags
     global _DEVICE_CONFIGS
 
-    # If _DEVICE_CONFIGS is non-empty and module.params["match"] is "none",
-    # return the cached device configurations. This avoids redundant calls
-    # to the connection when no specific match criteria are provided.
-    if _DEVICE_CONFIGS != {} and (
-        module.params["match"] is not None and module.params["match"] == "none"
+    # Reuse the cached config only for plain full-config reads when match is "none".
+    if (
+        _DEVICE_CONFIGS is not None
+        and module.params.get("match") == "none"
+        and not flags
+        and format is None
     ):
-        return to_text(_DEVICE_CONFIGS)
-    else:
-        connection = get_connection(module)
-        try:
-            out = connection.get_config(flags=flags, format=format)
-        except ConnectionError as exc:
-            module.fail_json(msg=to_text(exc, errors="surrogate_then_replace"))
-        cfg = to_text(out, errors="surrogate_then_replace").strip()
+        return _DEVICE_CONFIGS
+
+    connection = get_connection(module)
+    try:
+        out = connection.get_config(flags=flags, format=format)
+    except ConnectionError as exc:
+        module.fail_json(msg=to_text(exc, errors="surrogate_then_replace"))
+    cfg = to_text(out, errors="surrogate_then_replace").strip()
+    if not flags and format is None:
         _DEVICE_CONFIGS = cfg
-        return cfg
+    return cfg
 
 
 def copy_file(module, source, destination, proto="scp"):

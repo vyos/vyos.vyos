@@ -243,29 +243,31 @@ def spec_to_commands(updates, module):
         if needs_update(want, have, "full_name"):
             add(commands, want, "full-name '%s'" % want["full_name"])
 
-        # look both ways for public_keys to handle replacement
-        want_keys = want.get("public_keys") or dict()
-        have_keys = have.get("public_keys") or dict()
-        for key_name in want_keys:
-            key = want_keys[key_name]
-            if key_name not in have_keys or key != have_keys[key_name]:
-                add(
-                    commands,
-                    want,
-                    "authentication public-keys %s key '%s'" % (key["name"], key["key"]),
-                )
-                add(
-                    commands,
-                    want,
-                    "authentication public-keys %s type '%s'" % (key["name"], key["type"]),
-                )
+        # Only handle public_keys if explicitly provided in want
+        # If public_keys is omitted/None, preserve existing keys
+        if want.get("public_keys") is not None:
+            want_keys = want.get("public_keys") or dict()
+            have_keys = have.get("public_keys") or dict()
+            for key_name in want_keys:
+                key = want_keys[key_name]
+                if key_name not in have_keys or key != have_keys[key_name]:
+                    add(
+                        commands,
+                        want,
+                        "authentication public-keys %s key '%s'" % (key["name"], key["key"]),
+                    )
+                    add(
+                        commands,
+                        want,
+                        "authentication public-keys %s type '%s'" % (key["name"], key["type"]),
+                    )
 
-        for key_name in have_keys:
-            if key_name not in want_keys:
-                commands.append(
-                    "delete system login user %s authentication public-keys %s"
-                    % (want["name"], key_name),
-                )
+            for key_name in have_keys:
+                if key_name not in want_keys:
+                    commands.append(
+                        "delete system login user %s authentication public-keys %s"
+                        % (want["name"], key_name),
+                    )
 
         if needs_update(want, have, "encrypted_password"):
             add(
@@ -364,8 +366,14 @@ def config_to_dict(module):
 
 
 def get_param_value(key, item, module):
-    # if key doesn't exist in the item, get it from module.params
-    if not item.get(key):
+    # if key doesn't exist in the item, get it from module.params;
+    # keep an explicit empty public_keys list so existing keys get removed
+    if key == "public_keys":
+        inherit = item.get(key) is None
+    else:
+        inherit = not item.get(key)
+
+    if inherit:
         value = module.params[key]
     else:
         value = item.get(key)
@@ -381,12 +389,13 @@ def get_param_value(key, item, module):
 def map_key_params_to_dict(keys):
     """
     Map the list of keys to a dictionary of dictionaries
-    indexed by key name
+    indexed by key name. Returns None if keys is None (omitted),
+    or an empty/populated dict if explicitly supplied.
     """
-    all_keys = dict()
     if keys is None:
-        return all_keys
+        return None
 
+    all_keys = dict()
     for key in keys:
         key_name = key["name"]
         all_keys[key_name] = key
@@ -428,10 +437,24 @@ def update_objects(want, have):
         item = next((i for i in have if i["name"] == entry["name"]), None)
         if item is None:
             updates.append((entry, {}))
-        elif item:
+        else:
+            # Compare only device state fields, excluding update_password (a control parameter)
+            device_state_keys = {k for k in entry if k != "update_password"}
+            should_update = False
             for key, value in entry.items():
-                if value and value != item[key]:
-                    updates.append((entry, item))
+                if key not in device_state_keys:
+                    continue
+                # Special handling for public_keys: compare even if explicitly set to empty
+                if key == "public_keys" and value is not None:
+                    if value != item.get(key):
+                        should_update = True
+                        break
+                # For other fields, use truthiness check
+                elif value and value != item.get(key):
+                    should_update = True
+                    break
+            if should_update:
+                updates.append((entry, item))
     return updates
 
 
