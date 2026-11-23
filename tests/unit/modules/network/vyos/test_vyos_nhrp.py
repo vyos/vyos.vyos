@@ -187,3 +187,23 @@ class TestVyosNhrpModule(TestVyosModule):
         )
         result = self.execute_module(changed=False)
         self.assertEqual(result["parsed"], dict(tunnels=[HUB, SPOKE]))
+
+    def test_vyos_nhrp_merged_existing_bare_tunnel_idempotent(self):
+        # an existing tunnel without options is not re-created on every run
+        set_module_args(dict(config=dict(tunnels=[dict(name="tun3")]), state="merged"))
+        self.execute_module(
+            changed=False,
+            commands=[],
+            filename="vyos_nhrp_config_bare_tunnel.cfg",
+        )
+
+    def test_vyos_nhrp_map_without_nbma_rejected(self):
+        # VyOS requires an NBMA address on every map
+        set_module_args(
+            dict(
+                config=dict(tunnels=[dict(name="tun1", map=[dict(tunnel_ip="10.0.0.2")])]),
+                state="replaced",
+            ),
+        )
+        result = self.execute_module(failed=True)
+        self.assertIn("missing required arguments: nbma", result["msg"])

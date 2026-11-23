@@ -85,6 +85,7 @@ options:
               nbma:
                 description: The NBMA (underlay) address of the peer, or C(local) for this router.
                 type: str
+                required: true
           nhs:
             description: The next hop servers (hubs) this router registers with.
             type: list
@@ -98,6 +99,7 @@ options:
                 description: The NBMA (underlay) addresses of the server.
                 type: list
                 elements: str
+                required: true
   running_config:
     description:
       - This option is used only with state I(parsed).

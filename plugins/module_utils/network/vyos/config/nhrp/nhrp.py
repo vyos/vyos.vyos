@@ -88,20 +88,19 @@ class Nhrp(ResourceModule):
 
         merge = self.state in ("merged", "rendered")
         for name, want in wantd.items():
-            have = haved.get(name, {"name": name})
-            self._compare(name, want, have, merge)
+            if name not in haved and want.keys() == {"name"}:
+                # a new tunnel without options still needs its node
+                self.addcmd({"name": name}, "tunnel", False)
+                continue
+            self._compare(name, want, haved.get(name, {"name": name}), merge)
 
     def _compare(self, name, want, have, merge):
         """Compare one tunnel: options and flags, then multicast, map and nhs."""
-        begin = len(self.commands)
         scalars = dict_merge(have, want) if merge else want
         self.compare(parsers=self.parsers, want=scalars, have=have)
         self._compare_multicast(name, want, have, merge)
         self._compare_map(name, want, have, merge)
         self._compare_nhs(name, want, have, merge)
-        # a new tunnel without any options still needs its node
-        if len(self.commands) == begin and have.keys() == {"name"} and want.keys() == {"name"}:
-            self.addcmd({"name": name}, "tunnel", False)
 
     def _compare_multicast(self, name, want, have, merge):
         wantm = set(want.get("multicast") or [])
@@ -129,8 +128,6 @@ class Nhrp(ResourceModule):
         for ip, entry in sorted(wantn.items()):
             wnbma = set(entry.get("nbma") or [])
             hnbma = set((haven.get(ip) or {}).get("nbma") or [])
-            if ip not in haven and not wnbma:
-                self.addcmd({"name": name, "nhs": {"tunnel_ip": ip}}, "nhs", False)
             for nbma in sorted(wnbma - hnbma):
                 self.addcmd({"name": name, "nhs": {"tunnel_ip": ip, "nbma": nbma}}, "nhs", False)
             if not merge:

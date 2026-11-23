@@ -38,7 +38,7 @@ class NhrpArgs(object):  # pylint: disable=R0903
                             "elements": "dict",
                             "options": {
                                 "tunnel_ip": {"type": "str", "required": True},
-                                "nbma": {"type": "str"},
+                                "nbma": {"type": "str", "required": True},
                             },
                         },
                         "nhs": {
@@ -46,7 +46,7 @@ class NhrpArgs(object):  # pylint: disable=R0903
                             "elements": "dict",
                             "options": {
                                 "tunnel_ip": {"type": "str", "required": True},
-                                "nbma": {"type": "list", "elements": "str"},
+                                "nbma": {"type": "list", "elements": "str", "required": True},
                             },
                         },
                     },
