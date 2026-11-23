@@ -1,0 +1,82 @@
+---
+- debug:
+    msg: START vyos_bgp_global round trip integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _get_version.yaml
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Apply the provided configuration (base config)
+      register: base_config
+      vyos.vyos.vyos_bgp_global:
+        config:
+          as_number: 65536
+          bgp_params:
+            router_id: 192.0.2.1
+            log_neighbor_changes: true
+            bestpath:
+              as_path: multipath-relax
+          neighbor:
+            - address: RR-CLIENTS
+              peer_group: true
+              remote_as: external
+            - address: 192.0.2.10
+              peer_group_name: RR-CLIENTS
+            - address: 192.0.2.20
+              remote_as: external
+          timers:
+            holdtime: 30
+            keepalive: 10
+        state: merged
+
+    - name: Gather bgp_global facts
+      vyos.vyos.vyos_facts:
+        gather_subset:
+          - default
+        gather_network_resources:
+          - bgp_global
+
+    - name: Apply the provided configuration (config to be reverted)
+      register: result
+      vyos.vyos.vyos_bgp_global:
+        config:
+          as_number: 65536
+          bgp_params:
+            router_id: 192.0.2.1
+            bestpath:
+              as_path: confed
+          neighbor:
+            - address: RR-CLIENTS
+              peer_group: true
+              remote_as: external
+              update_source: lo
+            - address: 192.0.2.10
+              peer_group_name: RR-CLIENTS
+            - address: 192.0.2.20
+              remote_as: 65002
+          timers:
+            holdtime: 30
+            keepalive: 10
+        state: replaced
+
+    - name: Assert that changes were applied
+      assert:
+        that:
+          - >-
+            result.after | combine({'neighbor': result.after.neighbor | sort(attribute='address')})
+            == round_trip.after
+
+    - name: Revert back to base config using facts round trip
+      register: revert
+      vyos.vyos.vyos_bgp_global:
+        config: "{{ ansible_facts['network_resources']['bgp_global'] }}"
+        state: replaced
+
+    - name: Assert that config was reverted
+      assert:
+        that: "{{ base_config['after'] == revert['after'] }}"
+
+  when: vyos_version is version('1.4.0', '>=', version_type='semver')
+  always:
+    - include_tasks: _remove_config.yaml
