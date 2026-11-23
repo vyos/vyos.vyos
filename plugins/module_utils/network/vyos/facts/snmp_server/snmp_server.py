@@ -72,6 +72,11 @@ class Snmp_serverFacts(object):
                     list(objs["communities"].values()),
                     key=lambda k, sk="name": k[sk],
                 )
+            if "trap_targets" in objs:
+                objs["trap_targets"] = sorted(
+                    list(objs["trap_targets"].values()),
+                    key=lambda k, sk="address": k[sk],
+                )
             if "listen_addresses" in objs:
                 objs["listen_addresses"] = sorted(
                     list(objs["listen_addresses"].values()),

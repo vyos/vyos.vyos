@@ -16,7 +16,7 @@ merged:
     - set service snmp v3 user adminuser group testgroup
     - set service snmp v3 view default oid 1
     - set service snmp v3 engineid 000000000000000000000002
-    - set service snmp contact admin2@ex.com
+    - set service snmp contact 'admin2@ex.com'
   after:
     communities:
       - clients:
@@ -51,7 +51,7 @@ merged:
 
 overridden:
   commands:
-    - delete service snmp contact admin2@ex.com
+    - delete service snmp contact 'admin2@ex.com'
     - delete service snmp listen-address 20.1.1.1
     - delete service snmp community switches authorization rw
     - delete service snmp community bridges client 12.1.1.10
@@ -135,5 +135,5 @@ parsed:
       views:
         - oid: "1"
           view: default
-    trap_target:
-      address: 203.0.113.10
+    trap_targets:
+      - address: 203.0.113.10
