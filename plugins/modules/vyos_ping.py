@@ -192,6 +192,7 @@ def main():
     if rate is None:
         # e.g. "ping: <dest>: Name or service not known", or an invalid source interface
         module.fail_json(msg="Unable to parse ping output", output=ping_results[0], **results)
+        return
     pkt_loss, rx, tx = rate
     results["packet_loss"] = str(pkt_loss) + "%"
     results["packets_rx"] = int(rx)
