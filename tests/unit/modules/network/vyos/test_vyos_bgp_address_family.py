@@ -615,6 +615,26 @@ class TestVyosBgpafModule13(TestVyosModule):
         }
         self.assertEqual(sorted(gather_list), sorted(result["gathered"]))
 
+    def test_vyos_bgp_af_neighbor_default_originate_parsed(self):
+        set_module_args(
+            dict(
+                running_config="set protocols bgp 65536 neighbor 192.0.2.1 address-family ipv4-unicast default-originate",
+                state="parsed",
+            ),
+        )
+        self.assertEqual(
+            self.execute_module(changed=False)["parsed"],
+            {
+                "as_number": 65536,
+                "neighbors": [
+                    {
+                        "neighbor_address": "192.0.2.1",
+                        "address_family": [{"afi": "ipv4", "default_originate": True}],
+                    },
+                ],
+            },
+        )
+
 
 class TestVyosBgpafOpsModule13(TestVyosModule):
     module = vyos_bgp_address_family
