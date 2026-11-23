@@ -91,11 +91,11 @@ class VrfTemplate(NetworkTemplate):
                 \sname
                 \s(?P<name>\S+)
                 \sdescription
-                \s(?P<desc>\S+)
-                $""",
+                \s'?(?P<desc>.*?)'?
+                \s*$""",
                 re.VERBOSE,
             ),
-            "setval": "vrf name {{name}} description {{description}}",
+            "setval": "vrf name {{name}} description '{{description}}'",
             "result": {
                 "name": "{{ name }}",
                 "description": "{{ desc }}",
