@@ -96,10 +96,10 @@ class Route_mapsTemplate(NetworkTemplate):
             "name": "description",
             "getval": re.compile(
                 r"""
-                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sdescription\s(?P<description>\S+)\s*$""",
+                ^set\spolicy\sroute-map\s(?P<route_map>\S+)\srule\s(?P<sequence>\d+)\sdescription\s(?P<description>.+?)\s*$""",
                 re.VERBOSE,
             ),
-            "setval": "policy route-map {{route_map}} rule {{sequence}} description {{description}}",
+            "setval": "policy route-map {{route_map}} rule {{sequence}} description '{{description}}'",
             "result": {
                 "route_maps": {
                     "{{ route_map }}": {
