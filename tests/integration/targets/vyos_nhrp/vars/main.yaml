@@ -1,0 +1,127 @@
+---
+hub: &hub
+  name: tun0
+  authentication: secret
+  holdtime: 300
+  multicast:
+    - dynamic
+  network_id: 1
+  redirect: true
+  registration_no_unique: true
+
+spoke: &spoke
+  name: tun1
+  map:
+    - tunnel_ip: 10.0.0.2
+      nbma: 192.0.2.2
+  mtu: 1400
+  nhs:
+    - tunnel_ip: dynamic
+      nbma:
+        - 192.0.2.1
+        - 198.51.100.1
+  shortcut: true
+
+merged:
+  commands:
+    - set protocols nhrp tunnel tun0 authentication '********'
+    - set protocols nhrp tunnel tun0 holdtime 300
+    - set protocols nhrp tunnel tun0 network-id 1
+    - set protocols nhrp tunnel tun0 redirect
+    - set protocols nhrp tunnel tun0 registration-no-unique
+    - set protocols nhrp tunnel tun0 multicast dynamic
+    - set protocols nhrp tunnel tun1 mtu 1400
+    - set protocols nhrp tunnel tun1 shortcut
+    - set protocols nhrp tunnel tun1 map tunnel-ip 10.0.0.2 nbma 192.0.2.2
+    - set protocols nhrp tunnel tun1 nhs tunnel-ip dynamic nbma 192.0.2.1
+    - set protocols nhrp tunnel tun1 nhs tunnel-ip dynamic nbma 198.51.100.1
+  after:
+    tunnels:
+      - name: tun0
+        authentication: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
+        holdtime: 300
+        multicast:
+          - dynamic
+        network_id: 1
+        redirect: true
+        registration_no_unique: true
+      - *spoke
+
+replaced:
+  commands:
+    - set protocols nhrp tunnel tun0 authentication '********'
+    - delete protocols nhrp tunnel tun0 holdtime
+    - delete protocols nhrp tunnel tun0 network-id
+    - delete protocols nhrp tunnel tun0 redirect
+    - delete protocols nhrp tunnel tun0 registration-no-unique
+    - delete protocols nhrp tunnel tun1 map tunnel-ip 10.0.0.2
+    - delete protocols nhrp tunnel tun1 mtu
+    - delete protocols nhrp tunnel tun1 nhs tunnel-ip dynamic nbma 198.51.100.1
+  after:
+    tunnels:
+      - name: tun0
+        authentication: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
+        multicast:
+          - dynamic
+      - name: tun1
+        nhs:
+          - tunnel_ip: dynamic
+            nbma:
+              - 192.0.2.1
+        shortcut: true
+
+overridden:
+  commands:
+    - delete protocols nhrp tunnel tun1
+  after:
+    tunnels:
+      - name: tun0
+        authentication: "VALUE_SPECIFIED_IN_NO_LOG_PARAMETER"
+        holdtime: 300
+        multicast:
+          - dynamic
+        network_id: 1
+        redirect: true
+        registration_no_unique: true
+
+deleted:
+  commands:
+    - delete protocols nhrp
+
+parsed:
+  after:
+    tunnels:
+      - name: tun0
+        authentication: "secret"
+        holdtime: 300
+        multicast:
+          - dynamic
+        network_id: 1
+        redirect: true
+        registration_no_unique: true
+      - *spoke
+
+round_trip:
+  after:
+    tunnels:
+      - name: tun0
+        authentication: secret
+        holdtime: 600
+        multicast:
+          - 10.0.0.255
+          - dynamic
+        network_id: 1
+        redirect: true
+        registration_no_unique: true
+      - name: tun1
+        map:
+          - tunnel_ip: 10.0.0.2
+            nbma: 192.0.2.2
+        mtu: 1400
+        nhs:
+          - tunnel_ip: dynamic
+            nbma:
+              - 192.0.2.1
+              - 198.51.100.1
+              - 203.0.113.1
+        shortcut: true

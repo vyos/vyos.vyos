@@ -48,6 +48,8 @@ plugin_routing:
       redirect: vyos.vyos.vyos_ntp_global
     nat:
       redirect: vyos.vyos.vyos_nat
+    nhrp:
+      redirect: vyos.vyos.vyos_nhrp
     ospfv2:
       redirect: vyos.vyos.vyos_ospfv2
     ospfv3:

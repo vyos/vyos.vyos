@@ -1,0 +1,5 @@
+---
+minor_changes:
+  - vyos_nhrp - new resource module for the NHRP configuration of tunnel interfaces (protocols nhrp),
+    as used for DMVPN - authentication, holdtime, MTU, network ID, multicast, redirect, shortcut,
+    registration-no-unique, static maps and next hop servers, with all resource module states.

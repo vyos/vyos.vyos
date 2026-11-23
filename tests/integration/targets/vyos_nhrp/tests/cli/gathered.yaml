@@ -1,0 +1,25 @@
+---
+- debug:
+    msg: START vyos_nhrp gathered integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Gather the NHRP configuration
+      register: result
+      vyos.vyos.vyos_nhrp:
+        state: gathered
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: nhrp
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.gathered == parsed.after
+          - result.gathered == ansible_facts['network_resources']['nhrp']
+
+  always:
+    - include_tasks: _remove_config.yaml

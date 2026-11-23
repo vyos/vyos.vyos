@@ -1,0 +1,25 @@
+---
+- name: Populate the tunnels and their NHRP configuration
+  vyos.vyos.vyos_config:
+    lines:
+      - set interfaces tunnel tun0 encapsulation 'gre'
+      - set interfaces tunnel tun0 source-interface 'eth0'
+      - set interfaces tunnel tun0 parameters ip key '1'
+      - set interfaces tunnel tun0 address '10.0.0.1/32'
+      - set interfaces tunnel tun1 encapsulation 'gre'
+      - set interfaces tunnel tun1 source-interface 'eth0'
+      - set interfaces tunnel tun1 parameters ip key '2'
+      - set interfaces tunnel tun1 address '10.1.0.1/32'
+      - set protocols nhrp tunnel tun0 authentication 'secret'
+      - set protocols nhrp tunnel tun0 holdtime '300'
+      - set protocols nhrp tunnel tun0 multicast 'dynamic'
+      - set protocols nhrp tunnel tun0 network-id '1'
+      - set protocols nhrp tunnel tun0 redirect
+      - set protocols nhrp tunnel tun0 registration-no-unique
+      - set protocols nhrp tunnel tun1 map tunnel-ip '10.0.0.2' nbma '192.0.2.2'
+      - set protocols nhrp tunnel tun1 mtu '1400'
+      - set protocols nhrp tunnel tun1 nhs tunnel-ip 'dynamic' nbma '192.0.2.1'
+      - set protocols nhrp tunnel tun1 nhs tunnel-ip 'dynamic' nbma '198.51.100.1'
+      - set protocols nhrp tunnel tun1 shortcut
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

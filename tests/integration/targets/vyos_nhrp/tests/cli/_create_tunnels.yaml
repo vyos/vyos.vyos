@@ -1,0 +1,14 @@
+---
+- name: Create the tunnels NHRP runs on
+  vyos.vyos.vyos_config:
+    lines:
+      - set interfaces tunnel tun0 encapsulation 'gre'
+      - set interfaces tunnel tun0 source-interface 'eth0'
+      - set interfaces tunnel tun0 parameters ip key '1'
+      - set interfaces tunnel tun0 address '10.0.0.1/32'
+      - set interfaces tunnel tun1 encapsulation 'gre'
+      - set interfaces tunnel tun1 source-interface 'eth0'
+      - set interfaces tunnel tun1 parameters ip key '2'
+      - set interfaces tunnel tun1 address '10.1.0.1/32'
+  vars:
+    ansible_connection: ansible.netcommon.network_cli

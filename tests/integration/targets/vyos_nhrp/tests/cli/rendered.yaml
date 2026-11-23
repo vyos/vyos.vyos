@@ -1,0 +1,17 @@
+---
+- debug:
+    msg: START vyos_nhrp rendered integration tests on connection={{ ansible_connection }}
+
+- name: Render the configuration as device commands
+  register: result
+  vyos.vyos.vyos_nhrp:
+    config:
+      tunnels:
+        - "{{ hub }}"
+        - "{{ spoke }}"
+    state: rendered
+
+- assert:
+    that:
+      - result.changed == false
+      - result.rendered|symmetric_difference(merged.commands) == []
