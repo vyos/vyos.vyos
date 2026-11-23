@@ -47,6 +47,8 @@ def get_interface_type(interface):
         return "bridge"
     elif interface.startswith("dum"):
         return "dummy"
+    elif interface.startswith("vxlan"):
+        return "vxlan"
 
 
 def get_interface_with_vif(interface):

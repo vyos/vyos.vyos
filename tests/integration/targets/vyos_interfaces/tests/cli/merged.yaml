@@ -60,3 +60,155 @@
           - merged['after'] | symmetric_difference(result['before']) |length == 0
   always:
     - include_tasks: _remove_config.yaml
+
+- include_tasks: _setup_vrfs.yaml
+
+- block:
+    - name: Merge a vif into a VRF
+      register: result
+      vyos.vyos.vyos_interfaces: &id_vifvrf
+        config:
+          - name: eth1
+            vifs:
+              - vlan_id: 200
+                description: VIF 200 in green
+                vrf: green
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: interfaces
+
+    - assert:
+        that:
+          - result.changed == true
+          - "'set interfaces ethernet eth1 vif 200 vrf \\'green\\'' in result.commands"
+          - result.after == ansible_facts['network_resources']['interfaces']
+          - (eth1.vifs | selectattr('vlan_id', 'equalto', 200) | first).vrf == 'green'
+      vars:
+        eth1: "{{ result.after | selectattr('name', 'equalto', 'eth1') | first }}"
+
+    - name: Merge a vif into a VRF (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_interfaces: *id_vifvrf
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge a multipoint GRE tunnel (DMVPN hub)
+      register: result
+      vyos.vyos.vyos_interfaces: &id_tun
+        config:
+          - name: tun0
+            description: DMVPN hub
+            tunnel:
+              encapsulation: gre
+              source_interface: eth0
+              enable_multicast: true
+              parameters:
+                ip:
+                  key: 1
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: interfaces
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands | sort == expected | sort
+          - result.after == ansible_facts['network_resources']['interfaces']
+      vars:
+        expected:
+          - set interfaces tunnel tun0 description 'DMVPN hub'
+          - set interfaces tunnel tun0 encapsulation 'gre'
+          - set interfaces tunnel tun0 source-interface 'eth0'
+          - set interfaces tunnel tun0 enable-multicast
+          - set interfaces tunnel tun0 parameters ip key '1'
+
+    - name: Merge a multipoint GRE tunnel (DMVPN hub) (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_interfaces: *id_tun
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+    - name: Replace the tunnel's description only, without tunnel options
+      register: result
+      vyos.vyos.vyos_interfaces:
+        config:
+          - name: tun0
+            description: DMVPN hub (renamed)
+        state: replaced
+
+    - assert:
+        that:
+          - result.commands == expected
+          - tun0.tunnel == tunnel
+      vars:
+        expected:
+          - set interfaces tunnel tun0 description 'DMVPN hub (renamed)'
+        tunnel:
+          encapsulation: gre
+          source_interface: eth0
+          enable_multicast: true
+          parameters:
+            ip:
+              key: 1
+        tun0: "{{ result.after | selectattr('name', 'equalto', 'tun0') | first }}"
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge MSS clamping on a tunnel, an ethernet interface and a vif
+      register: result
+      vyos.vyos.vyos_interfaces: &id_mss
+        config:
+          - name: tun0
+            ip:
+              adjust_mss: 1360
+            tunnel:
+              encapsulation: gre
+              source_interface: eth0
+          - name: eth1
+            ip:
+              adjust_mss: 1436
+            vifs:
+              - vlan_id: 100
+                ipv6:
+                  adjust_mss: clamp-mss-to-pmtu
+        state: merged
+
+    - vyos.vyos.vyos_facts:
+        gather_network_resources: interfaces
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands | intersect(expected) | length == expected | length
+          - result.after == ansible_facts['network_resources']['interfaces']
+      vars:
+        expected:
+          - set interfaces tunnel tun0 ip adjust-mss '1360'
+          - set interfaces ethernet eth1 ip adjust-mss '1436'
+          - set interfaces ethernet eth1 vif 100 ipv6 adjust-mss 'clamp-mss-to-pmtu'
+
+    - name: Merge MSS clamping on a tunnel, an ethernet interface and a vif (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_interfaces: *id_mss
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

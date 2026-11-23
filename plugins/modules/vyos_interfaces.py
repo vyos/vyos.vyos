@@ -129,10 +129,119 @@ options:
             - MTU for the virtual sub-interface.
             - Refer to vendor documentation for valid values.
             type: int
+          vrf:
+            description:
+            - VRF associated with the virtual sub-interface.
+            type: str
+          ip:
+            description:
+            - IPv4 options of the virtual sub-interface.
+            type: dict
+            suboptions:
+              adjust_mss:
+                description:
+                - TCP maximum segment size clamping, in bytes (536-65535), or C(clamp-mss-to-pmtu)
+                  to derive it from the path MTU.
+                - Not available on dummy and loopback interfaces.
+                type: str
+          ipv6:
+            description:
+            - IPv6 options of the virtual sub-interface.
+            type: dict
+            suboptions:
+              adjust_mss:
+                description:
+                - TCP maximum segment size clamping, in bytes (536-65535), or C(clamp-mss-to-pmtu)
+                  to derive it from the path MTU.
+                - Not available on dummy and loopback interfaces.
+                type: str
       vrf:
         description:
         - VRF associated with the interface.
         type: str
+      ip:
+        description:
+        - IPv4 options of the interface.
+        type: dict
+        suboptions:
+          adjust_mss:
+            description:
+            - TCP maximum segment size clamping, in bytes (536-65535), or C(clamp-mss-to-pmtu)
+              to derive it from the path MTU.
+            - Not available on dummy and loopback interfaces.
+            type: str
+      ipv6:
+        description:
+        - IPv6 options of the interface.
+        type: dict
+        suboptions:
+          adjust_mss:
+            description:
+            - TCP maximum segment size clamping, in bytes (536-65535), or C(clamp-mss-to-pmtu)
+              to derive it from the path MTU.
+            - Not available on dummy and loopback interfaces.
+            type: str
+      tunnel:
+        description:
+        - Tunnel options, for tunnel interfaces (C(tunN)) only.
+        - VyOS requires I(encapsulation), I(source_address) or I(source_interface), and
+          I(remote) for every encapsulation but C(gre) (multipoint GRE, as used for DMVPN).
+        - When I(tunnel) is omitted, the tunnel definition on the device is left as it is, in
+          every state. When it is given, states C(replaced) and C(overridden) remove the tunnel
+          options it does not list.
+        type: dict
+        suboptions:
+          encapsulation:
+            description:
+            - Encapsulation of the tunnel.
+            type: str
+            choices: ['erspan', 'gre', 'gretap', 'ip6erspan', 'ip6gre', 'ip6gretap', 'ip6ip6', 'ipip', 'ipip6', 'sit']
+          source_address:
+            description:
+            - Local address of the tunnel.
+            type: str
+          source_interface:
+            description:
+            - Interface whose address is the local address of the tunnel.
+            type: str
+          remote:
+            description:
+            - Remote address of the tunnel; omitted for multipoint GRE.
+            type: str
+          enable_multicast:
+            description:
+            - Enable multicast operation over the tunnel.
+            type: bool
+          parameters:
+            description:
+            - Tunnel parameters.
+            type: dict
+            suboptions:
+              ip:
+                description:
+                - IPv4 parameters of the tunnel.
+                type: dict
+                suboptions:
+                  key:
+                    description:
+                    - Tunnel key; required for GRE tunnels that share a source address.
+                    type: int
+                  ttl:
+                    description:
+                    - Time to live, C(0) to copy it from the original packet.
+                    type: int
+                  tos:
+                    description:
+                    - Type of service, 0-99, or C(inherit).
+                    type: str
+                  no_pmtu_discovery:
+                    description:
+                    - Disable path MTU discovery; requires I(ttl) C(0).
+                    type: bool
+                  ignore_df:
+                    description:
+                    - Ignore the DF bit; GRETAP tunnels only, with path MTU discovery disabled.
+                    type: bool
   running_config:
     description:
     - This option is used only with state I(parsed).

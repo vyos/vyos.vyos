@@ -1,0 +1,27 @@
+---
+bugfixes:
+  - vyos_interfaces - options starting with "disable", such as disable-link-detect or
+    disable-flow-control, no longer mark the interface as disabled.
+  - vyos_interfaces - the options of one vif no longer leak into another whose VLAN ID contains
+    it (for example vif 110 into vif 10).
+  - vyos_interfaces - an interface line containing "vif", such as a description, is no longer
+    taken for a vif line and lost.
+  - vyos_interfaces - re-enabling a disabled interface with state replaced or overridden deletes
+    disable once; before, the command was sent twice and the second one failed.
+  - vyos_interfaces - state deleted with an interface that has no configuration on the device no
+    longer fails with an AttributeError.
+  - vyos_interfaces - VXLAN interfaces (vxlanN) are recognised as an interface type; an unchanged
+    VXLAN configuration no longer fails with "is not a valid interface type", and changes to a
+    VXLAN interface render the right commands. The shared interface type helper used by other
+    modules now recognises VXLAN interfaces as well.
+trivial:
+  - vyos_interfaces - rewritten on the resource module template framework (rm_template); options,
+    output and behaviour are unchanged apart from the fixes above.
+minor_changes:
+  - vyos_interfaces - new option tunnel, for tunnel interfaces - encapsulation, source_address,
+    source_interface, remote, enable_multicast, and parameters.ip with key, ttl, tos,
+    no_pmtu_discovery and ignore_df (T9422). Without the tunnel option, the tunnel definition on
+    the device is left as it is, in every state.
+  - vyos_interfaces - new options ip.adjust_mss and ipv6.adjust_mss, on interfaces and vifs, for TCP
+    MSS clamping - a number of bytes (536-65535) or clamp-mss-to-pmtu (T9423). Not available on
+    dummy and loopback interfaces (T9423).

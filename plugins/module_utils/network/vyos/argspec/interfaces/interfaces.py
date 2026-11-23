@@ -58,10 +58,66 @@ class InterfacesArgs(object):  # pylint: disable=R0903
                         },
                         "mtu": {"type": "int"},
                         "vlan_id": {"type": "int"},
+                        "vrf": {"type": "str"},
+                        "ip": {
+                            "type": "dict",
+                            "options": {"adjust_mss": {"type": "str"}},
+                        },
+                        "ipv6": {
+                            "type": "dict",
+                            "options": {"adjust_mss": {"type": "str"}},
+                        },
                     },
                     "type": "list",
                 },
                 "vrf": {"type": "str"},
+                "ip": {
+                    "type": "dict",
+                    "options": {"adjust_mss": {"type": "str"}},
+                },
+                "ipv6": {
+                    "type": "dict",
+                    "options": {"adjust_mss": {"type": "str"}},
+                },
+                "tunnel": {
+                    "type": "dict",
+                    "options": {
+                        "encapsulation": {
+                            "type": "str",
+                            "choices": [
+                                "erspan",
+                                "gre",
+                                "gretap",
+                                "ip6erspan",
+                                "ip6gre",
+                                "ip6gretap",
+                                "ip6ip6",
+                                "ipip",
+                                "ipip6",
+                                "sit",
+                            ],
+                        },
+                        "source_address": {"type": "str"},
+                        "source_interface": {"type": "str"},
+                        "remote": {"type": "str"},
+                        "enable_multicast": {"type": "bool"},
+                        "parameters": {
+                            "type": "dict",
+                            "options": {
+                                "ip": {
+                                    "type": "dict",
+                                    "options": {
+                                        "key": {"type": "int", "no_log": False},
+                                        "ttl": {"type": "int"},
+                                        "tos": {"type": "str"},
+                                        "no_pmtu_discovery": {"type": "bool"},
+                                        "ignore_df": {"type": "bool"},
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             },
             "type": "list",
         },
