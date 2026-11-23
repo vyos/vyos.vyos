@@ -75,6 +75,7 @@ class Ospf_interfacesArgs(object):  # pylint: disable=R0903
                         "ifmtu": {"type": "int"},
                         "instance": {"type": "str"},
                         "passive": {"type": "bool"},
+                        "area": {"type": "str"},
                     },
                 },
             },

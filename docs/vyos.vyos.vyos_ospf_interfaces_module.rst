@@ -94,6 +94,24 @@ Parameters
                     <td class="elbow-placeholder"></td>
                 <td colspan="3">
                     <div class="ansibleOptionAnchor" id="parameter-"></div>
+                    <b>area</b>
+                    <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
+                    <div style="font-size: small">
+                        <span style="color: purple">string</span>
+                    </div>
+                </td>
+                <td>
+                </td>
+                <td>
+                        <div>OSPF area of the interface, as a number or in dotted-decimal notation.</div>
+                        <div>Supported on VyOS 1.4 and later.</div>
+                </td>
+            </tr>
+            <tr>
+                    <td class="elbow-placeholder"></td>
+                    <td class="elbow-placeholder"></td>
+                <td colspan="3">
+                    <div class="ansibleOptionAnchor" id="parameter-"></div>
                     <b>authentication</b>
                     <a class="ansibleOptionLink" href="#parameter-" title="Permalink to this option"></a>
                     <div style="font-size: small">
@@ -341,6 +359,7 @@ Parameters
                 </td>
                 <td>
                         <div>If True, disables forming adjacency.</div>
+                        <div>For <code>ipv4</code>, <code>false</code> exempts the interface from <code>passive-interface default</code> (<code>passive disable</code>). OSPFv3 has no such exemption, so for <code>ipv6</code>, <code>false</code> means the interface is not passive.</div>
                 </td>
             </tr>
             <tr>
