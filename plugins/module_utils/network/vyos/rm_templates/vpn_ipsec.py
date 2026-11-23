@@ -256,6 +256,31 @@ class Vpn_ipsecTemplate(NetworkTemplate):
             },
         },
 
+        {
+            "name": "ike_group.proposal.prf",
+            "getval": re.compile(
+                r"""
+                ^set\svpn\sipsec\sike-group\s(?P<ike_group>\S+)
+                \sproposal\s(?P<proposal_id>\d+)
+                \sprf\s'?(?P<prf>[\w-]+)'?
+                \s*$""", re.VERBOSE,
+            ),
+            "setval": "vpn ipsec ike-group {{ name }} proposal {{ proposal_id }} prf {{ prf }}",
+            "result": {
+                "ike_group": {
+                    "{{ ike_group }}": {
+                        "name": "{{ ike_group }}",
+                        "proposal": {
+                            "{{ proposal_id }}": {
+                                "proposal_id": "{{ proposal_id }}",
+                                "prf": "{{ prf }}",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+
         # ---------------------------------------------------------------
         # authentication psk
         # ---------------------------------------------------------------

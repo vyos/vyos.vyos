@@ -35,3 +35,108 @@
 
   always:
     - include_tasks: _remove_config.yaml
+
+- block:
+    - name: Create the GRE tunnel the DMVPN profile binds to
+      vyos.vyos.vyos_config:
+        lines:
+          - set interfaces tunnel tun0 encapsulation 'gre'
+          - set interfaces tunnel tun0 source-interface 'eth0'
+          - set interfaces tunnel tun0 address '10.0.0.1/32'
+
+    - name: Merge a DMVPN IPsec configuration (transport ESP, IKEv1, profile bound to the tunnel)
+      register: result
+      vyos.vyos.vyos_vpn_ipsec: &id_dmvpn
+        config:
+          esp_group:
+            - name: ESP-HUB
+              lifetime: 1800
+              mode: transport
+              pfs: dh-group2
+              proposal:
+                - proposal_id: 1
+                  encryption: aes256
+                  hash: sha1
+          ike_group:
+            - name: IKE-HUB
+              key_exchange: ikev1
+              lifetime: 3600
+              proposal:
+                - proposal_id: 1
+                  dh_group: 2
+                  encryption: aes256
+                  hash: sha1
+          interface:
+            - eth0
+          profile:
+            - name: NHRPVPN
+              authentication:
+                mode: pre-shared-secret
+                pre_shared_secret: dmvpn-secret
+              bind_tunnel:
+                - tun0
+              esp_group: ESP-HUB
+              ike_group: IKE-HUB
+        state: merged
+
+    - name: Assert the DMVPN-specific commands were applied
+      assert:
+        that:
+          - result.changed == true
+          - "'set vpn ipsec esp-group ESP-HUB mode transport' in result.commands"
+          - "'set vpn ipsec ike-group IKE-HUB key-exchange ikev1' in result.commands"
+          - "'set vpn ipsec profile NHRPVPN bind tunnel tun0' in result.commands"
+          - result.after.profile[0].bind_tunnel == ['tun0']
+          - result.after.esp_group[0].mode == 'transport'
+
+    - name: Merge a DMVPN IPsec configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vpn_ipsec: *id_dmvpn
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml
+
+    - name: Remove the GRE tunnel
+      vyos.vyos.vyos_config:
+        lines:
+          - delete interfaces tunnel tun0
+
+- block:
+    - name: Merge an IKEv2 group with a PRF
+      register: result
+      vyos.vyos.vyos_vpn_ipsec: &id_prf
+        config:
+          ike_group:
+            - name: IKE-PRF
+              key_exchange: ikev2
+              proposal:
+                - proposal_id: 1
+                  dh_group: 14
+                  encryption: aes256
+                  hash: sha256
+                  prf: prfsha256
+        state: merged
+
+    - name: Assert the PRF was configured and is reported back
+      assert:
+        that:
+          - result.changed == true
+          - "'set vpn ipsec ike-group IKE-PRF proposal 1 prf prfsha256' in result.commands"
+          - result.after.ike_group[0].proposal[0].prf == 'prfsha256'
+
+    - name: Merge an IKEv2 group with a PRF (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vpn_ipsec: *id_prf
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

@@ -1,0 +1,4 @@
+---
+bugfixes:
+  - vyos_vpn_ipsec - the IKE proposal prf option is configured and reported; before, it was accepted
+    but silently dropped when rendering and never read back from the device.
