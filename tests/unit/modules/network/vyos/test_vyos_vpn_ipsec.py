@@ -566,3 +566,101 @@ class TestVyosVpnIpsecModule(TestVyosModule):
             self._normalize_scalar_lists(result["gathered"]),
             self._normalize_scalar_lists(gathered),
         )
+
+    # -------------------------------------------------------------------
+    # IKE proposal PRF
+    # -------------------------------------------------------------------
+
+    def test_vyos_vpn_ipsec_parsed_ike_proposal_prf(self):
+        # prf was in the argspec but had no parser, so it was never reported
+        set_module_args(
+            dict(
+                running_config=load_fixture("vyos_vpn_ipsec_config_prf.cfg"),
+                state="parsed",
+            ),
+        )
+        result = self.execute_module(changed=False)
+        self.assertEqual(
+            result["parsed"]["ike_group"][0]["proposal"],
+            [{"proposal_id": 1, "encryption": "aes256gcm128", "prf": "prfsha384"}],
+        )
+
+    def test_vyos_vpn_ipsec_merged_ike_proposal_prf(self):
+        # prf was silently dropped when rendering
+        set_module_args(
+            dict(
+                config=dict(
+                    ike_group=[
+                        dict(name="IKE-TEST", proposal=[dict(proposal_id=1, prf="prfsha256")]),
+                    ],
+                ),
+                state="merged",
+            ),
+        )
+        result = self.execute_module(changed=True)
+        self.assertEqual(
+            result["commands"],
+            ["set vpn ipsec ike-group IKE-TEST proposal 1 prf prfsha256"],
+        )
+
+    # -------------------------------------------------------------------
+    # DMVPN: transport-mode ESP, IKEv1, profile bound to the NHRP tunnel
+    # -------------------------------------------------------------------
+
+    DMVPN = dict(
+        esp_group=[
+            dict(
+                name="ESP-HUB",
+                lifetime=1800,
+                mode="transport",
+                pfs="dh-group2",
+                proposal=[dict(proposal_id=1, encryption="aes256", hash="sha1")],
+            ),
+        ],
+        ike_group=[
+            dict(
+                name="IKE-HUB",
+                key_exchange="ikev1",
+                lifetime=3600,
+                proposal=[dict(proposal_id=1, dh_group=2, encryption="aes256", hash="sha1")],
+            ),
+        ],
+        interface=["eth0"],
+        profile=[
+            dict(
+                name="NHRPVPN",
+                authentication=dict(mode="pre-shared-secret", pre_shared_secret="dmvpn-secret"),
+                bind_tunnel=["tun0"],
+                esp_group="ESP-HUB",
+                ike_group="IKE-HUB",
+            ),
+        ],
+    )
+
+    def test_vyos_vpn_ipsec_parsed_dmvpn(self):
+        set_module_args(
+            dict(
+                running_config=load_fixture("vyos_vpn_ipsec_config_dmvpn.cfg"),
+                state="parsed",
+            ),
+        )
+        result = self.execute_module(changed=False)
+        self.assertEqual(result["parsed"], self.DMVPN)
+
+    def test_vyos_vpn_ipsec_merged_dmvpn_idempotent(self):
+        set_module_args(dict(config=self.DMVPN, state="merged"))
+        self.execute_module(changed=False, filename="vyos_vpn_ipsec_config_dmvpn.cfg")
+
+    def test_vyos_vpn_ipsec_rendered_dmvpn(self):
+        set_module_args(dict(config=self.DMVPN, state="rendered"))
+        rendered = self.execute_module(changed=False)["rendered"]
+        for cmd in (
+            "set vpn ipsec esp-group ESP-HUB mode transport",
+            "set vpn ipsec esp-group ESP-HUB pfs dh-group2",
+            "set vpn ipsec ike-group IKE-HUB key-exchange ikev1",
+            "set vpn ipsec profile NHRPVPN authentication pre-shared-secret 'dmvpn-secret'",
+            "set vpn ipsec profile NHRPVPN bind tunnel tun0",
+            "set vpn ipsec profile NHRPVPN esp-group ESP-HUB",
+            "set vpn ipsec profile NHRPVPN ike-group IKE-HUB",
+        ):
+            self.assertIn(cmd, rendered)

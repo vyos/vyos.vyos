@@ -90,6 +90,7 @@ class Vpn_ipsec(ResourceModule):
             "ike_group.proposal.dh_group",
             "ike_group.proposal.encryption",
             "ike_group.proposal.hash",
+            "ike_group.proposal.prf",
             "ike_group.close_action",
             "ike_group.dead_peer_detection.action",
             "ike_group.dead_peer_detection.interval",
@@ -334,6 +335,7 @@ class Vpn_ipsec(ResourceModule):
                 "ike_group.proposal.hash",
                 "ike_group.proposal.dh_group",
                 reconcile,
+                prf_parser="ike_group.proposal.prf",
             )
 
     # -------------------------------------------------------------------
@@ -350,6 +352,7 @@ class Vpn_ipsec(ResourceModule):
         hash_parser,
         dh_group_parser,
         reconcile,
+        prf_parser=None,
     ):
         # a proposal collection lives entirely inside an already-selected
         # group -- once that group is in scope, its own proposals always
@@ -374,6 +377,8 @@ class Vpn_ipsec(ResourceModule):
             self._cmp_scalar(w, h, "hash", ctx, hash_parser, reconcile)
             if dh_group_parser:
                 self._cmp_scalar(w, h, "dh_group", ctx, dh_group_parser, reconcile)
+            if prf_parser:
+                self._cmp_scalar(w, h, "prf", ctx, prf_parser, reconcile)
 
     # -------------------------------------------------------------------
     # Profiles
