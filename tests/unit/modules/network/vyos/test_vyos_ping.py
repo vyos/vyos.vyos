@@ -105,3 +105,10 @@ class TestVyosPingModule(TestVyosModule):
         self.assertEqual(result["rtt"]["avg"], 3)
         self.assertEqual(result["rtt"]["max"], 21)
         self.assertEqual(result["rtt"]["mdev"], 5)
+
+    def test_vyos_ping_unparsable_output(self):
+        """Ping output without statistics (e.g. unknown host) must fail cleanly"""
+        set_module_args(dict(count=2, dest="nohost.invalid"))
+        result = self.execute_module(failed=True)
+        self.assertEqual(result["msg"], "Unable to parse ping output")
+        self.assertIn("Name or service not known", result["output"])
