@@ -52,7 +52,16 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "description",
             "setval": "vpp acl ip tag-name {{ name }} description '{{ description }}'",
             "remval": "vpp acl ip tag-name {{ name }} description",
-            "result": {"ip": {"acls": {"{{ name }}": {"name": "{{ name }}", "description": "{{ value }}"}}}},
+            "result": {
+                "ip": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "description": "{{ value }}",
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip tag-name <name> rule <n> action <value>
         {
@@ -75,7 +84,21 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "action",
             "setval": "vpp acl ip tag-name {{ acl }} rule {{ number }} action {{ action }}",
             "remval": "vpp acl ip tag-name {{ acl }} rule {{ number }} action",
-            "result": {"ip": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "action": "{{ value }}"}}}}}},
+            "result": {
+                "ip": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "action": "{{ value }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip tag-name <name> rule <n> description <value>
         {
@@ -98,7 +121,21 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "description",
             "setval": "vpp acl ip tag-name {{ acl }} rule {{ number }} description '{{ description }}'",
             "remval": "vpp acl ip tag-name {{ acl }} rule {{ number }} description",
-            "result": {"ip": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "description": "{{ value }}"}}}}}},
+            "result": {
+                "ip": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "description": "{{ value }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip tag-name <name> rule <n> protocol <value>
         {
@@ -121,7 +158,21 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "protocol",
             "setval": "vpp acl ip tag-name {{ acl }} rule {{ number }} protocol {{ protocol }}",
             "remval": "vpp acl ip tag-name {{ acl }} rule {{ number }} protocol",
-            "result": {"ip": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "protocol": "{{ value }}"}}}}}},
+            "result": {
+                "ip": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "protocol": "{{ value }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip tag-name <name> rule <n> source prefix <value>
         {
@@ -145,7 +196,23 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "source.prefix",
             "setval": "vpp acl ip tag-name {{ acl }} rule {{ number }} source prefix {{ source.prefix }}",
             "remval": "vpp acl ip tag-name {{ acl }} rule {{ number }} source prefix",
-            "result": {"ip": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "source": {"prefix": "{{ value }}"}}}}}}},
+            "result": {
+                "ip": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "source": {
+                                        "prefix": "{{ value }}",
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip tag-name <name> rule <n> source port <value>
         {
@@ -169,7 +236,23 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "source.port",
             "setval": "vpp acl ip tag-name {{ acl }} rule {{ number }} source port {{ source.port }}",
             "remval": "vpp acl ip tag-name {{ acl }} rule {{ number }} source port",
-            "result": {"ip": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "source": {"port": "{{ value }}"}}}}}}},
+            "result": {
+                "ip": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "source": {
+                                        "port": "{{ value }}",
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip tag-name <name> rule <n> destination prefix <value>
         {
@@ -193,7 +276,23 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "destination.prefix",
             "setval": "vpp acl ip tag-name {{ acl }} rule {{ number }} destination prefix {{ destination.prefix }}",
             "remval": "vpp acl ip tag-name {{ acl }} rule {{ number }} destination prefix",
-            "result": {"ip": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "destination": {"prefix": "{{ value }}"}}}}}}},
+            "result": {
+                "ip": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "destination": {
+                                        "prefix": "{{ value }}",
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip tag-name <name> rule <n> destination port <value>
         {
@@ -217,7 +316,23 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "destination.port",
             "setval": "vpp acl ip tag-name {{ acl }} rule {{ number }} destination port {{ destination.port }}",
             "remval": "vpp acl ip tag-name {{ acl }} rule {{ number }} destination port",
-            "result": {"ip": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "destination": {"port": "{{ value }}"}}}}}}},
+            "result": {
+                "ip": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "destination": {
+                                        "port": "{{ value }}",
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip tag-name <name> rule <n> tcp-flags is-set <flag>  (one line per flag)
         {
@@ -240,7 +355,25 @@ class Vpp_aclTemplate(NetworkTemplate):
             ),
             "compval": "tcp_flags.is_set",
             "setval": "vpp acl ip tag-name {{ acl }} rule {{ number }} tcp-flags is-set {{ tcp_flags.is_set }}",
-            "result": {"ip": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "tcp_flags": {"is_set": {"{{ value }}": "{{ value }}"}}}}}}}},
+            "result": {
+                "ip": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "tcp_flags": {
+                                        "is_set": {
+                                            "{{ value }}": "{{ value }}",
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip tag-name <name> rule <n> tcp-flags is-not-set <flag>  (one line per flag)
         {
@@ -263,7 +396,25 @@ class Vpp_aclTemplate(NetworkTemplate):
             ),
             "compval": "tcp_flags.is_not_set",
             "setval": "vpp acl ip tag-name {{ acl }} rule {{ number }} tcp-flags is-not-set {{ tcp_flags.is_not_set }}",
-            "result": {"ip": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "tcp_flags": {"is_not_set": {"{{ value }}": "{{ value }}"}}}}}}}},
+            "result": {
+                "ip": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "tcp_flags": {
+                                        "is_not_set": {
+                                            "{{ value }}": "{{ value }}",
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip tag-name <name> rule <n>  (any other rule line)
         {
@@ -283,7 +434,20 @@ class Vpp_aclTemplate(NetworkTemplate):
             ),
             "setval": "vpp acl ip tag-name {{ acl }} rule {{ number }}",
             "remval": "vpp acl ip tag-name {{ acl }} rule {{ number }}",
-            "result": {"ip": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}"}}}}}},
+            "result": {
+                "ip": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip interface <if> input acl-tag <n> tag-name <acl>  (compared one acl-tag at a time)
         {
@@ -307,7 +471,21 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "input",
             "setval": "vpp acl ip interface {{ name }} input acl-tag {{ input.acl_tag }} tag-name {{ input.tag_name }}",
             "remval": "vpp acl ip interface {{ name }} input acl-tag {{ input.acl_tag }}",
-            "result": {"ip": {"interfaces": {"{{ name }}": {"name": "{{ name }}", "input": {"{{ acl_tag }}": {"acl_tag": "{{ acl_tag }}", "tag_name": "{{ value }}"}}}}}},
+            "result": {
+                "ip": {
+                    "interfaces": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "input": {
+                                "{{ acl_tag }}": {
+                                    "acl_tag": "{{ acl_tag }}",
+                                    "tag_name": "{{ value }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip interface <if> output acl-tag <n> tag-name <acl>  (compared one acl-tag at a time)
         {
@@ -331,7 +509,21 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "output",
             "setval": "vpp acl ip interface {{ name }} output acl-tag {{ output.acl_tag }} tag-name {{ output.tag_name }}",
             "remval": "vpp acl ip interface {{ name }} output acl-tag {{ output.acl_tag }}",
-            "result": {"ip": {"interfaces": {"{{ name }}": {"name": "{{ name }}", "output": {"{{ acl_tag }}": {"acl_tag": "{{ acl_tag }}", "tag_name": "{{ value }}"}}}}}},
+            "result": {
+                "ip": {
+                    "interfaces": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "output": {
+                                "{{ acl_tag }}": {
+                                    "acl_tag": "{{ acl_tag }}",
+                                    "tag_name": "{{ value }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl ip interface <if>  (any other interface line)
         {
@@ -388,7 +580,16 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "description",
             "setval": "vpp acl mac tag-name {{ name }} description '{{ description }}'",
             "remval": "vpp acl mac tag-name {{ name }} description",
-            "result": {"mac": {"acls": {"{{ name }}": {"name": "{{ name }}", "description": "{{ value }}"}}}},
+            "result": {
+                "mac": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "description": "{{ value }}",
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl mac tag-name <name> rule <n> action <value>
         {
@@ -411,7 +612,21 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "action",
             "setval": "vpp acl mac tag-name {{ acl }} rule {{ number }} action {{ action }}",
             "remval": "vpp acl mac tag-name {{ acl }} rule {{ number }} action",
-            "result": {"mac": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "action": "{{ value }}"}}}}}},
+            "result": {
+                "mac": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "action": "{{ value }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl mac tag-name <name> rule <n> description <value>
         {
@@ -434,7 +649,21 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "description",
             "setval": "vpp acl mac tag-name {{ acl }} rule {{ number }} description '{{ description }}'",
             "remval": "vpp acl mac tag-name {{ acl }} rule {{ number }} description",
-            "result": {"mac": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "description": "{{ value }}"}}}}}},
+            "result": {
+                "mac": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "description": "{{ value }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl mac tag-name <name> rule <n> prefix <value>
         {
@@ -457,7 +686,21 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "prefix",
             "setval": "vpp acl mac tag-name {{ acl }} rule {{ number }} prefix {{ prefix }}",
             "remval": "vpp acl mac tag-name {{ acl }} rule {{ number }} prefix",
-            "result": {"mac": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "prefix": "{{ value }}"}}}}}},
+            "result": {
+                "mac": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "prefix": "{{ value }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl mac tag-name <name> rule <n> mac-address <value>
         {
@@ -480,7 +723,21 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "mac_address",
             "setval": "vpp acl mac tag-name {{ acl }} rule {{ number }} mac-address {{ mac_address }}",
             "remval": "vpp acl mac tag-name {{ acl }} rule {{ number }} mac-address",
-            "result": {"mac": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "mac_address": "{{ value }}"}}}}}},
+            "result": {
+                "mac": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "mac_address": "{{ value }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl mac tag-name <name> rule <n> mac-mask <value>
         {
@@ -503,7 +760,21 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "mac_mask",
             "setval": "vpp acl mac tag-name {{ acl }} rule {{ number }} mac-mask {{ mac_mask }}",
             "remval": "vpp acl mac tag-name {{ acl }} rule {{ number }} mac-mask",
-            "result": {"mac": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}", "mac_mask": "{{ value }}"}}}}}},
+            "result": {
+                "mac": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                    "mac_mask": "{{ value }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl mac tag-name <name> rule <n>  (any other rule line)
         {
@@ -523,7 +794,20 @@ class Vpp_aclTemplate(NetworkTemplate):
             ),
             "setval": "vpp acl mac tag-name {{ acl }} rule {{ number }}",
             "remval": "vpp acl mac tag-name {{ acl }} rule {{ number }}",
-            "result": {"mac": {"acls": {"{{ name }}": {"name": "{{ name }}", "rules": {"{{ number }}": {"number": "{{ number }}"}}}}}},
+            "result": {
+                "mac": {
+                    "acls": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "rules": {
+                                "{{ number }}": {
+                                    "number": "{{ number }}",
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl mac interface <if> tag-name <acl>
         {
@@ -544,7 +828,16 @@ class Vpp_aclTemplate(NetworkTemplate):
             "compval": "tag_name",
             "setval": "vpp acl mac interface {{ name }} tag-name {{ tag_name }}",
             "remval": "vpp acl mac interface {{ name }} tag-name",
-            "result": {"mac": {"interfaces": {"{{ name }}": {"name": "{{ name }}", "tag_name": "{{ value }}"}}}},
+            "result": {
+                "mac": {
+                    "interfaces": {
+                        "{{ name }}": {
+                            "name": "{{ name }}",
+                            "tag_name": "{{ value }}",
+                        },
+                    },
+                },
+            },
         },
         # set vpp acl mac interface <if>  (any other interface line)
         {
