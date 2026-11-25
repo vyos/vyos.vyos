@@ -105,8 +105,7 @@ overridden:
   commands:
     - delete vpp acl ip tag-name WEB-IN description
     - delete vpp acl ip tag-name WEB-IN rule 10
-    - delete vpp acl mac interface eth2
-    - delete vpp acl mac tag-name MAC-FILTER
+    - delete vpp acl mac
   after:
     ip:
       acls:

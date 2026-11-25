@@ -249,8 +249,7 @@ class TestVyosVppAclModule(TestVyosModule):
             "set vpp acl ip interface eth1 input acl-tag 1 tag-name MGMT",
             "delete vpp acl ip interface eth1 input acl-tag 2",
             "delete vpp acl ip interface eth1 output acl-tag 1",
-            "delete vpp acl mac interface eth1",
-            "delete vpp acl mac tag-name MAC-FILTER",
+            "delete vpp acl mac",
         ]
         self.execute_module(changed=True, commands=commands)
 
@@ -319,3 +318,30 @@ class TestVyosVppAclModule(TestVyosModule):
         )
         result = self.execute_module(changed=False)
         self.assertEqual(result["parsed"], ACLS)
+
+    def test_vyos_vpp_acl_deleted_whole_family(self):
+        # all MAC ACLs and bindings listed: the family node goes as a whole
+        set_module_args(
+            dict(
+                config=dict(
+                    mac=dict(acls=[dict(name="MAC-FILTER")], interfaces=[dict(name="eth1")]),
+                ),
+                state="deleted",
+            ),
+        )
+        self.execute_module(changed=True, commands=["delete vpp acl mac"])
+
+    def test_vyos_vpp_acl_deleted_both_families(self):
+        set_module_args(
+            dict(
+                config=dict(
+                    ip=dict(
+                        acls=[dict(name="MGMT"), dict(name="WEB-IN"), dict(name="WEB-OUT")],
+                        interfaces=[dict(name="eth1")],
+                    ),
+                    mac=dict(acls=[dict(name="MAC-FILTER")], interfaces=[dict(name="eth1")]),
+                ),
+                state="deleted",
+            ),
+        )
+        self.execute_module(changed=True, commands=["delete vpp acl"])

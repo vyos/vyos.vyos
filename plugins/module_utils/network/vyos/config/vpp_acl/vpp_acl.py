@@ -16,8 +16,14 @@ necessary to bring the current configuration to its desired end-state is
 created.
 """
 
+import re
+
 from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.rm_base.resource_module import (
     ResourceModule,
+)
+from ansible_collections.ansible.netcommon.plugins.module_utils.network.common.utils import (
+    dict_merge,
+    get_from_dict,
 )
 
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.facts import Facts
@@ -26,32 +32,7 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.rm_template
 )
 
 
-# rule leaves per family: (path in the rule, parser)
-RULE_LEAVES = {
-    "ip": [
-        (("action",), "ip.rule.action"),
-        (("description",), "ip.rule.description"),
-        (("protocol",), "ip.rule.protocol"),
-        (("source", "prefix"), "ip.rule.source.prefix"),
-        (("source", "port"), "ip.rule.source.port"),
-        (("destination", "prefix"), "ip.rule.destination.prefix"),
-        (("destination", "port"), "ip.rule.destination.port"),
-    ],
-    "mac": [
-        (("action",), "mac.rule.action"),
-        (("description",), "mac.rule.description"),
-        (("prefix",), "mac.rule.prefix"),
-        (("mac_address",), "mac.rule.mac_address"),
-        (("mac_mask",), "mac.rule.mac_mask"),
-    ],
-}
-TCP_FLAG_LISTS = ["is_set", "is_not_set"]
-
-
-def _get(data, path):
-    for key in path:
-        data = (data or {}).get(key)
-    return data
+FAMILIES = ("ip", "mac")
 
 
 def _by(items, key):
@@ -71,6 +52,14 @@ class Vpp_acl(ResourceModule):
             resource="vpp_acl",
             tmplt=Vpp_aclTemplate(),
         )
+        # parser groups come from the template: <family>.description for an ACL,
+        # <family>.rule.* for a rule, <family>.interface.* for an interface binding
+        names = [p["name"] for p in Vpp_aclTemplate.PARSERS]
+        self.acl_parsers = {f: [n for n in names if n == f + ".description"] for f in FAMILIES}
+        self.rule_parsers = {f: [n for n in names if n.startswith(f + ".rule.")] for f in FAMILIES}
+        self.interface_parsers = {
+            f: [n for n in names if n.startswith(f + ".interface.")] for f in FAMILIES
+        }
 
     def execute_module(self):
         """Execute the module
@@ -91,30 +80,21 @@ class Vpp_acl(ResourceModule):
         have = self.have or {}
 
         if self.state == "deleted":
-            if not want:
-                # no config given: remove all of vpp acl
-                if have:
-                    self.commands.append("delete vpp acl")
-                return
-            for family in ("ip", "mac"):
-                wsec, hsec = want.get(family) or {}, have.get(family) or {}
-                hacls, hifs = _by(hsec.get("acls"), "name"), _by(hsec.get("interfaces"), "name")
-                for iface in wsec.get("interfaces") or []:
-                    if iface["name"] in hifs:
-                        self.addcmd({"name": iface["name"]}, family + ".interface", True)
-                for acl in wsec.get("acls") or []:
-                    if acl["name"] in hacls:
-                        self.addcmd({"name": acl["name"]}, family + ".acl", True)
+            self._deleted(want, have)
             return
 
         merge = self.state in ("merged", "rendered")
-        for family in ("ip", "mac"):
+        emptied = []
+        for family in FAMILIES:
             wsec, hsec = want.get(family) or {}, have.get(family) or {}
             wacls, hacls = _by(wsec.get("acls"), "name"), _by(hsec.get("acls"), "name")
             wifs, hifs = _by(wsec.get("interfaces"), "name"), _by(hsec.get("interfaces"), "name")
 
             if self.state == "overridden":
-                # bindings first, so no ACL is deleted while still bound
+                if not (wacls or wifs):
+                    if hacls or hifs:
+                        emptied.append(family)
+                    continue
                 for name in sorted(set(hifs) - set(wifs)):
                     self.addcmd({"name": name}, family + ".interface", True)
                 for name in sorted(set(hacls) - set(wacls)):
@@ -123,89 +103,115 @@ class Vpp_acl(ResourceModule):
             for name, acl in sorted(wacls.items()):
                 self._compare_acl(family, acl, hacls.get(name), merge)
             for name, iface in sorted(wifs.items()):
-                if family == "ip":
-                    self._compare_ip_interface(iface, hifs.get(name), merge)
-                else:
-                    self._compare_mac_interface(iface, hifs.get(name), merge)
+                self._compare_entity(
+                    family + ".interface",
+                    self.interface_parsers[family],
+                    iface,
+                    hifs.get(name),
+                    merge,
+                )
+        self._delete_emptied(emptied, have)
+
+    def _deleted(self, want, have):
+        """Delete the given ACLs and bindings, or all of vpp acl."""
+        if not want:
+            if have:
+                self.commands.append("delete vpp acl")
+            return
+        emptied = []
+        for family in FAMILIES:
+            wsec, hsec = want.get(family) or {}, have.get(family) or {}
+            hacls, hifs = _by(hsec.get("acls"), "name"), _by(hsec.get("interfaces"), "name")
+            dels_if = [i["name"] for i in wsec.get("interfaces") or [] if i["name"] in hifs]
+            dels_acl = [a["name"] for a in wsec.get("acls") or [] if a["name"] in hacls]
+            if (hacls or hifs) and set(dels_if) == set(hifs) and set(dels_acl) == set(hacls):
+                emptied.append(family)
+                continue
+            for name in dels_if:
+                self.addcmd({"name": name}, family + ".interface", True)
+            for name in dels_acl:
+                self.addcmd({"name": name}, family + ".acl", True)
+        self._delete_emptied(emptied, have)
+
+    def _delete_emptied(self, families, have):
+        """Delete families that end up empty as a whole: VyOS rejects an empty family node."""
+        if not families:
+            return
+        remaining = [f for f in FAMILIES if f not in families and have.get(f)]
+        if not remaining and self.state == "deleted":
+            self.commands.append("delete vpp acl")
+            return
+        for family in families:
+            self.commands.append("delete vpp acl " + family)
 
     def _compare_acl(self, family, want, have, merge):
-        """Compare one ACL: its description, then its rules."""
+        """Compare one ACL, then its rules (each rule carries its ACL name as acl)."""
         name = want["name"]
-        if have is None and want.keys() == {"name"}:
-            self.addcmd({"name": name}, family + ".acl", False)
-            return
-        have = have or {"name": name}
-        self._leaf(
-            {"name": name},
-            want.get("description"),
-            have.get("description"),
-            family + ".description",
-            merge,
-        )
-        wrules, hrules = _by(want.get("rules"), "number"), _by(have.get("rules"), "number")
+        self._compare_entity(family + ".acl", self.acl_parsers[family], want, have, merge)
+        wrules = _by(want.get("rules"), "number")
+        hrules = _by((have or {}).get("rules"), "number")
         for number, rule in sorted(wrules.items()):
-            self._compare_rule(family, name, rule, hrules.get(number), merge)
+            hrule = hrules.get(number)
+            self._compare_entity(
+                family + ".rule",
+                self.rule_parsers[family],
+                dict(rule, acl=name),
+                dict(hrule, acl=name) if hrule else None,
+                merge,
+            )
         if not merge:
             for number in sorted(set(hrules) - set(wrules)):
-                self.addcmd({"name": name, "number": number}, family + ".rule", True)
+                self.addcmd({"acl": name, "number": number}, family + ".rule", True)
 
-    def _compare_rule(self, family, name, want, have, merge):
-        """Compare one rule: its leaves, and for IP rules the TCP flag lists."""
-        number = want["number"]
-        if have is None and want.keys() == {"number"}:
-            self.addcmd({"name": name, "number": number}, family + ".rule", False)
+    def _compare_entity(self, node, parsers, want, have, merge):
+        """Compare one ACL, rule or interface; create its bare node if it is new and empty."""
+        content = [k for k in want if k not in ("name", "acl", "number")]
+        if have is None and not content:
+            self.addcmd(want, node, False)
             return
-        have = have or {"number": number}
-        base = {"name": name, "number": number}
-        for path, parser in RULE_LEAVES[family]:
-            self._leaf(base, _get(want, path), _get(have, path), parser, merge)
-        if family == "ip":
-            for key in TCP_FLAG_LISTS:
-                wflags = set(_get(want, ("tcp_flags", key)) or [])
-                hflags = set(_get(have, ("tcp_flags", key)) or [])
-                parser = "ip.rule.tcp_flags." + key
-                for flag in sorted(wflags - hflags):
-                    self.addcmd(dict(base, value=flag), parser, False)
-                if not merge:
-                    for flag in sorted(hflags - wflags):
-                        self.addcmd(dict(base, value=flag), parser, True)
+        have = have or {k: v for k, v in want.items() if k in ("name", "acl", "number")}
+        if merge:
+            want = dict_merge(have, want)
+        for parser in parsers:
+            path = self._tmplt.get_parser(parser).get("compval") or parser
+            if isinstance(get_from_dict(want, path), list) or isinstance(
+                get_from_dict(have, path),
+                list,
+            ):
+                self._compare_items(parser, path, want, have, merge)
+            else:
+                self.compare(parsers=[parser], want=want, have=have)
 
-    def _compare_ip_interface(self, want, have, merge):
-        """Compare the input and output bindings of one interface, by acl_tag."""
-        name = want["name"]
-        if have is None and want.keys() == {"name"}:
-            self.addcmd({"name": name}, "ip.interface", False)
-            return
-        have = have or {"name": name}
-        for direction in ("input", "output"):
-            wtags = {b["acl_tag"]: b["tag_name"] for b in want.get(direction) or []}
-            htags = {b["acl_tag"]: b["tag_name"] for b in have.get(direction) or []}
-            parser = "ip.interface." + direction
-            for tag, acl in sorted(wtags.items()):
-                if htags.get(tag) != acl:
-                    self.addcmd({"name": name, "acl_tag": tag, "value": acl}, parser, False)
-            if not merge:
-                for tag in sorted(set(htags) - set(wtags)):
-                    self.addcmd({"name": name, "acl_tag": tag}, parser, True)
+    def _compare_items(self, parser, path, want, have, merge):
+        """Compare a list-valued field one item at a time; an item's identity is
+        what the parser's remval deletes by (the whole value when there is none)."""
+        remval = self._tmplt.get_parser(parser).get("remval") or ""
+        keys = re.findall(r"{{\s*%s\.(\w+)\s*}}" % re.escape(path), remval)
 
-    def _compare_mac_interface(self, want, have, merge):
-        """Compare the MAC ACL bound to one interface."""
-        name = want["name"]
-        if have is None and want.keys() == {"name"}:
-            self.addcmd({"name": name}, "mac.interface", False)
-            return
-        have = have or {"name": name}
-        self._leaf(
-            {"name": name},
-            want.get("tag_name"),
-            have.get("tag_name"),
-            "mac.interface.tag_name",
-            merge,
-        )
+        def ident(item):
+            return tuple(item[k] for k in keys) if keys else item
 
-    def _leaf(self, base, wval, hval, parser, merge):
-        """Set a changed leaf; in replaced and overridden, delete one that is not wanted."""
-        if wval is not None and wval != hval:
-            self.addcmd(dict(base, value=wval), parser, False)
-        elif wval is None and hval is not None and not merge:
-            self.addcmd(dict(base, value=hval), parser, True)
+        witems = {ident(i): i for i in get_from_dict(want, path) or []}
+        hitems = {ident(i): i for i in get_from_dict(have, path) or []}
+        if merge:
+            witems = dict(list(hitems.items()) + list(witems.items()))
+        base = {k: v for k, v in want.items() if not isinstance(v, (list, dict))}
+        for key in sorted(set(witems) | set(hitems), key=str):
+            self.compare(
+                parsers=[parser],
+                want=self._with(base, path, witems.get(key)),
+                have=self._with(base, path, hitems.get(key)),
+            )
+
+    @staticmethod
+    def _with(base, path, value):
+        """base with value placed at the dotted path (nothing placed for None)."""
+        data = dict(base)
+        if value is None:
+            return data
+        node = data
+        parts = path.split(".")
+        for part in parts[:-1]:
+            node = node.setdefault(part, {})
+        node[parts[-1]] = value
+        return data
