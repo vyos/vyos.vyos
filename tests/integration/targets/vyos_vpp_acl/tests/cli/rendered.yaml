@@ -1,0 +1,14 @@
+---
+- debug:
+    msg: START vyos_vpp_acl rendered integration tests on connection={{ ansible_connection }}
+
+- name: Render the configuration as device commands
+  register: result
+  vyos.vyos.vyos_vpp_acl:
+    config: "{{ base }}"
+    state: rendered
+
+- assert:
+    that:
+      - result.changed == false
+      - result.rendered|symmetric_difference(merged.commands) == []

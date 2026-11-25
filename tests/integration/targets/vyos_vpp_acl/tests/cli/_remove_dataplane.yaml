@@ -1,0 +1,7 @@
+---
+# removes all of vpp, so eth2 returns to the kernel
+- name: Remove the dataplane
+  vyos.vyos.vyos_config:
+    lines:
+      - delete vpp
+  ignore_errors: true

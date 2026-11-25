@@ -1,0 +1,31 @@
+---
+- debug:
+    msg: START vyos_vpp_acl merged integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- block:
+    - name: Merge the provided configuration with the existing running configuration
+      register: result
+      vyos.vyos.vyos_vpp_acl: &id001
+        config: "{{ base }}"
+        state: merged
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.before == {}
+          - result.commands|symmetric_difference(merged.commands) == []
+          - result.after == base
+
+    - name: Merge the provided configuration with the existing running configuration (IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vpp_acl: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

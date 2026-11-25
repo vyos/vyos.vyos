@@ -93,6 +93,9 @@ from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vpn_i
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vpn_ipsec_s2s.vpn_ipsec_s2s import (
     Vpn_ipsec_s2sFacts,
 )
+from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vpp_acl.vpp_acl import (
+    Vpp_aclFacts,
+)
 from ansible_collections.vyos.vyos.plugins.module_utils.network.vyos.facts.vrf.vrf import VrfFacts
 
 
@@ -123,6 +126,7 @@ FACT_RESOURCE_SUBSETS = dict(
     vrf=VrfFacts,
     vpn_ipsec=Vpn_ipsecFacts,
     vpn_ipsec_s2s=Vpn_ipsec_s2sFacts,
+    vpp_acl=Vpp_aclFacts,
 )
 
 
