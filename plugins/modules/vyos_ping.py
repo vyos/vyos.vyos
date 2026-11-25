@@ -188,12 +188,11 @@ def main():
                 rtt[k] = int(v)
         results["rtt"] = rtt
 
-    rate = parse_rate(rate_info) if rate_info else None
-    if rate is None:
+    try:
+        pkt_loss, rx, tx = parse_rate(rate_info or "")
+    except ValueError:
         # e.g. "ping: <dest>: Name or service not known", or an invalid source interface
         module.fail_json(msg="Unable to parse ping output", output=ping_results[0], **results)
-        return
-    pkt_loss, rx, tx = rate
     results["packet_loss"] = str(pkt_loss) + "%"
     results["packets_rx"] = int(rx)
     results["packets_tx"] = int(tx)
@@ -231,7 +230,7 @@ def parse_rate(rate_info):
 
     rate = rate_re.match(rate_info) or rate_err_re.match(rate_info)
     if not rate:
-        return None
+        raise ValueError("unparsable ping statistics: %r" % rate_info)
 
     return rate.group("pkt_loss"), rate.group("rx"), rate.group("tx")
 
