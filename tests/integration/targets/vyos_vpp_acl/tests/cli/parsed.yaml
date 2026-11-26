@@ -1,0 +1,14 @@
+---
+- debug:
+    msg: START vyos_vpp_acl parsed integration tests on connection={{ ansible_connection }}
+
+- name: Parse the provided running configuration
+  register: result
+  vyos.vyos.vyos_vpp_acl:
+    running_config: "{{ lookup('file', '_parsed.cfg') }}"
+    state: parsed
+
+- assert:
+    that:
+      - result.changed == false
+      - result.parsed == base

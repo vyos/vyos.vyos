@@ -1,0 +1,32 @@
+---
+- debug:
+    msg: START vyos_vpp_acl replaced integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Apply the configuration (replaced)
+      register: result
+      vyos.vyos.vyos_vpp_acl: &id001
+        config: "{{ replaced.config }}"
+        state: replaced
+
+    - assert:
+        that:
+          - result.changed == true
+          - result.commands|symmetric_difference(replaced.commands) == []
+          - result.after == replaced.after
+
+    - name: Apply the configuration (replaced, IDEMPOTENT)
+      register: result
+      vyos.vyos.vyos_vpp_acl: *id001
+
+    - name: Assert that the previous task was idempotent
+      assert:
+        that:
+          - result['changed'] == false
+
+  always:
+    - include_tasks: _remove_config.yaml

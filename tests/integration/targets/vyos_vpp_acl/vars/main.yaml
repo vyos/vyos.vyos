@@ -1,0 +1,164 @@
+---
+base: &base
+  ip:
+    acls:
+      - name: WEB-IN
+        description: Inbound web traffic
+        rules:
+          - number: 10
+            action: permit
+            protocol: tcp
+            source:
+              prefix: 192.0.2.0/24
+            destination:
+              port: "443"
+            tcp_flags:
+              is_set:
+                - syn
+          - number: 20
+            action: deny
+    interfaces:
+      - name: eth2
+        input:
+          - acl_tag: 1
+            tag_name: WEB-IN
+  mac:
+    acls:
+      - name: MAC-FILTER
+        rules:
+          - number: 10
+            action: permit
+            mac_address: 00:11:22:00:00:00
+            mac_mask: ff:ff:ff:00:00:00
+    interfaces:
+      - name: eth2
+        tag_name: MAC-FILTER
+
+merged:
+  commands:
+    - set vpp acl ip tag-name WEB-IN description 'Inbound web traffic'
+    - set vpp acl ip tag-name WEB-IN rule 10 action permit
+    - set vpp acl ip tag-name WEB-IN rule 10 protocol tcp
+    - set vpp acl ip tag-name WEB-IN rule 10 source prefix 192.0.2.0/24
+    - set vpp acl ip tag-name WEB-IN rule 10 destination port 443
+    - set vpp acl ip tag-name WEB-IN rule 10 tcp-flags is-set syn
+    - set vpp acl ip tag-name WEB-IN rule 20 action deny
+    - set vpp acl ip interface eth2 input acl-tag 1 tag-name WEB-IN
+    - set vpp acl mac tag-name MAC-FILTER rule 10 action permit
+    - set vpp acl mac tag-name MAC-FILTER rule 10 mac-address 00:11:22:00:00:00
+    - set vpp acl mac tag-name MAC-FILTER rule 10 mac-mask ff:ff:ff:00:00:00
+    - set vpp acl mac interface eth2 tag-name MAC-FILTER
+
+replaced:
+  config:
+    ip:
+      acls:
+        - name: WEB-IN
+          rules:
+            - number: 10
+              action: permit
+              protocol: tcp
+  commands:
+    - delete vpp acl ip tag-name WEB-IN description
+    - delete vpp acl ip tag-name WEB-IN rule 10 source prefix
+    - delete vpp acl ip tag-name WEB-IN rule 10 destination port
+    - delete vpp acl ip tag-name WEB-IN rule 10 tcp-flags is-set syn
+    - delete vpp acl ip tag-name WEB-IN rule 20
+  after:
+    ip:
+      acls:
+        - name: WEB-IN
+          rules:
+            - number: 10
+              action: permit
+              protocol: tcp
+      interfaces:
+        - name: eth2
+          input:
+            - acl_tag: 1
+              tag_name: WEB-IN
+    mac:
+      acls:
+        - name: MAC-FILTER
+          rules:
+            - number: 10
+              action: permit
+              mac_address: 00:11:22:00:00:00
+              mac_mask: ff:ff:ff:00:00:00
+      interfaces:
+        - name: eth2
+          tag_name: MAC-FILTER
+
+overridden:
+  config:
+    ip:
+      acls:
+        - name: WEB-IN
+          rules:
+            - number: 20
+              action: deny
+      interfaces:
+        - name: eth2
+          input:
+            - acl_tag: 1
+              tag_name: WEB-IN
+  commands:
+    - delete vpp acl ip tag-name WEB-IN description
+    - delete vpp acl ip tag-name WEB-IN rule 10
+    - delete vpp acl mac
+  after:
+    ip:
+      acls:
+        - name: WEB-IN
+          rules:
+            - number: 20
+              action: deny
+      interfaces:
+        - name: eth2
+          input:
+            - acl_tag: 1
+              tag_name: WEB-IN
+
+deleted:
+  commands:
+    - delete vpp acl
+
+round_trip:
+  after:
+    ip:
+      acls:
+        - name: WEB-IN
+          description: Inbound web traffic
+          rules:
+            - number: 10
+              action: permit
+              protocol: tcp
+              source:
+                prefix: 192.0.2.0/24
+              destination:
+                port: "443"
+              tcp_flags:
+                is_set:
+                  - fin
+                  - syn
+            - number: 20
+              action: deny
+            - number: 30
+              action: deny
+              protocol: udp
+      interfaces:
+        - name: eth2
+          input:
+            - acl_tag: 1
+              tag_name: WEB-IN
+    mac:
+      acls:
+        - name: MAC-FILTER
+          rules:
+            - number: 10
+              action: permit
+              mac_address: 00:11:22:00:00:00
+              mac_mask: ff:ff:ff:00:00:00
+      interfaces:
+        - name: eth2
+          tag_name: MAC-FILTER

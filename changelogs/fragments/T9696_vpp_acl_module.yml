@@ -1,0 +1,5 @@
+---
+minor_changes:
+  - vyos_vpp_acl - new resource module for the access control lists of the VPP dataplane
+    (vpp acl) - IP ACLs with protocol, prefix, port and TCP flag matches, MAC ACLs, and their
+    bindings to dataplane interfaces (IP ACLs per direction, ordered by ACL tag).

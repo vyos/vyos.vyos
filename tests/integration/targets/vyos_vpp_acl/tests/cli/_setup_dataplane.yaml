@@ -1,0 +1,7 @@
+---
+- name: Enable the dataplane on eth2
+  vyos.vyos.vyos_config:
+    lines:
+      - set vpp settings allow-unsupported-nics
+      - set vpp settings interface eth2
+      - set vpp settings resource-allocation memory main-heap-size '1G'

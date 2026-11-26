@@ -1,0 +1,21 @@
+---
+- debug:
+    msg: START vyos_vpp_acl gathered integration tests on connection={{ ansible_connection }}
+
+- include_tasks: _remove_config.yaml
+
+- include_tasks: _populate_config.yaml
+
+- block:
+    - name: Gather the dataplane ACL configuration
+      register: result
+      vyos.vyos.vyos_vpp_acl:
+        state: gathered
+
+    - assert:
+        that:
+          - result.changed == false
+          - result.gathered == base
+
+  always:
+    - include_tasks: _remove_config.yaml
