@@ -30,9 +30,16 @@ def _number(item, key):
 
 
 def _name_key(item):
-    """Numeric names (parsed as int) first, in numeric order, then the others."""
+    """Integer names first, in numeric order, then all others as text.
+
+    Parsing turns names that look like Python literals into values (20 into int,
+    1j into complex, True into bool); only real integers count as numeric here,
+    so every pair of keys is comparable.
+    """
     name = item["name"]
-    return (1, str(name)) if isinstance(name, str) else (0, name)
+    if type(name) is int:
+        return (0, name, "")
+    return (1, 0, str(name))
 
 
 class Vpp_aclFacts(object):
