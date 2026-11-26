@@ -345,3 +345,14 @@ class TestVyosVppAclModule(TestVyosModule):
             ),
         )
         self.execute_module(changed=True, commands=["delete vpp acl"])
+
+    def test_vyos_vpp_acl_parsed_numeric_and_text_names(self):
+        # numeric and text ACL names together, numeric ones first in numeric order
+        set_module_args(
+            dict(
+                running_config=load_fixture("vyos_vpp_acl_config_names.cfg"),
+                state="parsed",
+            ),
+        )
+        acls = self.execute_module(changed=False)["parsed"]["ip"]["acls"]
+        self.assertEqual([acl["name"] for acl in acls], ["20", "100", "WEB"])

@@ -98,6 +98,7 @@ Parameters
                 </td>
                 <td>
                         <div>The ACL description.</div>
+                        <div>VyOS does not accept the single quote character in values.</div>
                 </td>
             </tr>
             <tr>
@@ -906,6 +907,7 @@ Notes
    - ACLs can only be bound to interfaces that are part of the dataplane (``vpp settings interface``).
    - IP and MAC ACLs are handled independently. With *state=replaced*, the listed ACLs and interface bindings are replaced as given; with *state=overridden*, ACLs and bindings that are not listed are also deleted, bindings before ACLs.
    - When not configured, VyOS uses the protocol ``all`` for IP rules and the mask ``ff:ff:ff:ff:ff:ff`` for MAC rules; the module reports only configured values.
+   - For more information on using Ansible to manage network devices see the :ref:`Ansible Network Guide <network_guide>`
 
 
 
@@ -1222,4 +1224,4 @@ Status
 Authors
 ~~~~~~~
 
-- Evgeny Molotkov (@omnom62)
+- VyOS community (@vyos)

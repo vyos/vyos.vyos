@@ -21,7 +21,9 @@ description:
   - This module manages the access control lists of the accelerated dataplane (VPP) on devices
     running VyOS - IP and MAC ACLs, and their bindings to dataplane interfaces.
 author:
-  - Evgeny Molotkov (@omnom62)
+  - VyOS community (@vyos)
+extends_documentation_fragment:
+  - vyos.vyos.vyos
 notes:
   - Tested against VyOS 1.5.1.
   - This module works with connection C(network_cli).
@@ -50,7 +52,9 @@ options:
                 type: str
                 required: true
               description:
-                description: The ACL description.
+                description:
+                  - The ACL description.
+                  - VyOS does not accept the single quote character in values.
                 type: str
               rules:
                 description: The ACL rules.

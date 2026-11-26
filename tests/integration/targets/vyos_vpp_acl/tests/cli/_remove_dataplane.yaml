@@ -4,4 +4,3 @@
   vyos.vyos.vyos_config:
     lines:
       - delete vpp
-  ignore_errors: true

@@ -29,6 +29,12 @@ def _number(item, key):
     return int(item[key])
 
 
+def _name_key(item):
+    """Numeric names (parsed as int) first, in numeric order, then the others."""
+    name = item["name"]
+    return (1, str(name)) if isinstance(name, str) else (0, name)
+
+
 class Vpp_aclFacts(object):
     """The vyos vpp_acl facts class"""
 
@@ -69,7 +75,7 @@ class Vpp_aclFacts(object):
                     acl["rules"] = sorted(rules, key=lambda r: _number(r, "number"))
                 acls.append(acl)
             if acls:
-                section["acls"] = sorted(acls, key=lambda a: a["name"])
+                section["acls"] = sorted(acls, key=_name_key)
             interfaces = []
             for iface in (section.get("interfaces") or {}).values():
                 for direction in ("input", "output"):
@@ -80,7 +86,7 @@ class Vpp_aclFacts(object):
                         )
                 interfaces.append(iface)
             if interfaces:
-                section["interfaces"] = sorted(interfaces, key=lambda i: i["name"])
+                section["interfaces"] = sorted(interfaces, key=_name_key)
 
         facts = {"vpp_acl": {}}
         if objs:
