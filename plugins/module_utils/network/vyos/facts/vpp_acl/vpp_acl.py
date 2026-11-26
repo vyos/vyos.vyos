@@ -37,7 +37,7 @@ def _name_key(item):
     so every pair of keys is comparable.
     """
     name = item["name"]
-    if type(name) is int:
+    if isinstance(name, int) and not isinstance(name, bool):
         return (0, name, "")
     return (1, 0, str(name))
 
