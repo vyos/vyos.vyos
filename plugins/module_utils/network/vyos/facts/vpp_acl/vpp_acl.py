@@ -30,16 +30,9 @@ def _number(item, key):
 
 
 def _name_key(item):
-    """Integer names first, in numeric order, then all others as text.
-
-    Parsing turns names that look like Python literals into values (20 into int,
-    1j into complex, True into bool); only real integers count as numeric here,
-    so every pair of keys is comparable.
-    """
+    """Numeric names first, in numeric order, then the others as text."""
     name = item["name"]
-    if isinstance(name, int) and not isinstance(name, bool):
-        return (0, name, "")
-    return (1, 0, str(name))
+    return (0, int(name), "") if name.isdigit() else (1, 0, name)
 
 
 class Vpp_aclFacts(object):
@@ -72,6 +65,7 @@ class Vpp_aclFacts(object):
                 continue
             acls = []
             for acl in (section.get("acls") or {}).values():
+                acl["name"] = str(acl["name"])
                 rules = []
                 for rule in (acl.get("rules") or {}).values():
                     flags = rule.get("tcp_flags") or {}
@@ -85,7 +79,12 @@ class Vpp_aclFacts(object):
                 section["acls"] = sorted(acls, key=_name_key)
             interfaces = []
             for iface in (section.get("interfaces") or {}).values():
+                iface["name"] = str(iface["name"])
+                if "tag_name" in iface:
+                    iface["tag_name"] = str(iface["tag_name"])
                 for direction in ("input", "output"):
+                    for binding in (iface.get(direction) or {}).values():
+                        binding["tag_name"] = str(binding["tag_name"])
                     if direction in iface:
                         iface[direction] = sorted(
                             iface[direction].values(),
